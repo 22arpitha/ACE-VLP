@@ -1,0 +1,114 @@
+<div class="container-fluid">
+  
+  <div class="container-middle">
+            <form [formGroup]="monthForm" >
+           
+                  <mat-form-field appearance="outline" >
+                    <mat-label>Select month</mat-label>
+                    <mat-select formControlName="fromMonth" (change)="onChanges()">
+                      <mat-option *ngFor="let month of monthNames" [value]="month.id">
+                        {{month.name}}
+                      </mat-option>
+                    </mat-select>
+                    <mat-error *ngIf="f['fromMonth'].touched && f['fromMonth'].invalid">
+                      <span *ngIf="f['fromMonth'].errors['required']" >Month is required</span>
+                    </mat-error>
+                  </mat-form-field>
+          
+                  
+                  <img src="../../../../assets/images/Go.svg" class="icon-submit-btn" ngbTooltip="Submit" (click)="submit()" />
+                               
+                  <img src="../../../../assets/images/refresh.svg" class="icon-submit-btn" ngbTooltip="Reset" (click)="reset()" />
+            
+                <button *ngIf="userRole ==='Employee' && accessPermissions[0]?.update || userRole === 'Admin'" mat-icon-button type="button" class="submit-btn" style="margin: auto;"  (click)="exportToExcel()" ngbTooltip="Download Excel"
+                style="background-color:#126EB4;color:white;transform: scale(0.85);">
+                <i class="bi bi-download" style="font-size: 17px;"></i>
+              </button>
+            </form>
+    
+            <div class="row">
+              <div class="col-sm-12">
+                <ng-container >
+                  <div class="row p-r webView">
+                                
+                    <!-- <div class="col-sm-4 search-div" >
+                        <button mat-icon-button  class="close-icon search-button" style="top:0" ngbTooltip="Search" *ngIf="!showSearch" (click)="showSearch=!showSearch">
+                            <i class="bi bi-search"></i>
+                        </button>
+                       
+                        <input type="search" *ngIf="showSearch" (input)="searchFiter($event)" class="form-control p-2 sizeinput" [(ngModel)]="term"
+                          placeholder="Search by employee" aria-describedby="emailHelp" autocomplete="off">
+                        <i class="bi bi-search" id="search-icon-tab" *ngIf="showSearch"></i>
+                      
+                        <i class="bi bi-x-circle close-icon" ngbTooltip="Close" *ngIf="showSearch" (click)="showSearch=!showSearch"></i>
+                    </div> -->
+                      
+                  </div>
+                  <mat-tab-group class="custom-tab-group" (selectedTabChange)="tabState($event)">
+                    <!-- Pending -->
+                    <mat-tab label="Pending">
+                      <!-- <div class="row p-r mobileView" style="padding: 1rem 0px 0px;margin: auto;">
+                        <div class="col-sm-12 col-md-6 search-div">
+                            <input type="search" (input)="searchFiter($event)" class="form-control p-2 sizeinput" [(ngModel)]="term"
+                              placeholder="Search by employee" aria-describedby="emailHelp" autocomplete="off">
+                            <i class="bi bi-search" id="search-icon-tab" ></i>
+                          </div>
+                       
+                      </div> -->
+                      <!-- <ng-container *ngIf="allDetails[0]?.approved_state === 'YET_TO_APPROVED'; else noRecords">
+                        -->
+                        <ng-container *ngIf="allDetails">
+                       
+                      <app-month-yet-approve
+                      *ngIf="selectedTab === 'Pending'" 
+                      [data]="allDetails" [totalCount]="totalCount" (filter)="searchFiter($event)"
+                      (buttonClick)="buttonClick($event)"></app-month-yet-approve>
+                      </ng-container>
+                    </mat-tab>
+        
+                    <!-- Approved Timesheet Tab -->
+                    <mat-tab label="Approved">
+                      <!-- <div class="row p-r mobileView" style="padding: 1rem 0px 0px;margin: auto;">
+                        <div class="col-sm-12 col-md-6 search-div">
+                            <input type="search" (input)="searchFiter($event)" class="form-control p-2 sizeinput" [(ngModel)]="term"
+                              placeholder="Search by employee" aria-describedby="emailHelp" autocomplete="off">
+                            <i class="bi bi-search" id="search-icon-tab" ></i>
+                          </div>
+                       
+                      </div> -->
+                      <ng-container>
+                        <app-month-approve *ngIf="selectedTab === 'Approved'"  [data]="allDetails"
+                        [totalCount]="totalCount" (filter)="searchFiter($event)"
+                        (buttonClick)="buttonClick($event)">
+                      </app-month-approve>
+                      </ng-container>
+                    </mat-tab>
+        
+                    <!-- Declined Timesheet Tab -->
+                    <mat-tab label="Declined">
+                      <!-- <div class="row p-r mobileView" style="padding: 1rem 0px 0px;margin: auto;">
+                        <div class="col-sm-12 col-md-6 search-div">
+                            <input type="search" (input)="searchFiter($event)" class="form-control p-2 sizeinput" [(ngModel)]="term"
+                              placeholder="Search by employee" aria-describedby="emailHelp" autocomplete="off">
+                            <i class="bi bi-search" id="search-icon-tab" ></i>
+                          </div>
+                       
+                      </div> -->
+                      <ng-container>
+                       
+
+                        <app-month-declined *ngIf="selectedTab === 'Declined'" [data]="allDetails"
+                        [totalCount]="totalCount" (filter)="searchFiter($event)"
+                        (buttonClick)="buttonClick($event)"></app-month-declined>
+                      </ng-container>
+                    </mat-tab>
+                  </mat-tab-group>
+                </ng-container>
+        
+                <!-- No Records Template -->
+                
+              </div>
+            </div>
+   
+  </div>
+</div>

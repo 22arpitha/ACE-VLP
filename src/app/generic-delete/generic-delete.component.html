@@ -1,0 +1,43 @@
+<div class="container-fluid">
+    <!-- <div class="modal-header" >
+        <!-- <h4 class="modal-title" *ngIf="!message"><i class="bi bi-exclamation-triangle"></i> Delete</h4>
+        <h4 class="modal-title" *ngIf="message"><i class="bi bi-exclamation-triangle" ></i>  {{message}}</h4> --
+        <button type="button" class="btn-close" aria-label="Close" (click)="modalStatus('cancel')"></button>
+    </div> -->
+    <div class="modal-body custom-modal" >
+        <!-- <p class="title-icon"><i class="bi bi-exclamation-circle"></i></p> -->
+        <h4 class="modal-title" *ngIf="!message"><i class="bi bi-exclamation-circle"></i> Delete</h4>
+        <h4 class="modal-title" *ngIf="message"><i class="bi bi-box-arrow-right"></i> {{message}}</h4>
+        <p *ngIf="!title"> Are you sure you want to delete ?</p>
+        <p *ngIf="title && message !== 'Decline' || message === 'Revoke'" >{{title}}?</p>
+        
+        <p *ngIf="title && message === 'Decline' && bulkAction !== 'bulk'" >{{title}}? Please enter the reason for decline</p>
+        <p *ngIf="title && message === 'Decline' && bulkAction === 'bulk'" >{{title}}?</p>
+       
+
+        <form  [formGroup]="declineForm" *ngIf="message === 'Decline' && bulkAction !== 'bulk'" class="pt-3" >
+        <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Comment <b class="r-star">*</b></mat-label>
+        <textarea matInput placeholder="Enter comments"  class="w-100"
+        formControlName="comments" autocomplete="off">
+       </textarea>
+      <mat-error *ngIf="f['comments'].touched && f['comments'].hasError('required')">
+        Comment is required.
+      </mat-error>
+      <mat-error *ngIf="f['comments'].hasError('pattern')">
+        Comment cannot start with a space.
+      </mat-error>
+      </mat-form-field>
+    </form>
+    </div>
+
+    <!-- <div class="modal-footer" [ngClass]="title ? 'justify-content-center':''">
+        <button type="button"  class="act-btn btn-cancel"  (click)="modalStatus('cancel')">Cancel</button>
+        <button type="button" class="act-btn btn-yes" (click)="modalStatus('ok')">Yes</button>
+    </div> -->
+    <div class="modal-footer" [ngClass]="title ? 'justify-content-center':''">
+        <button mat-button type="button"  class="btn-cancel"  (click)="modalStatus('cancel')">Back</button>
+        <button mat-button type="button" class="btn-yes" [style.backgroundColor]="message ? '' : '#B41212'" (click)="modalStatus('ok')" >{{message || 'Delete'}}</button>
+    </div>
+</div>
+

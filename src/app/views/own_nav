@@ -1,0 +1,14 @@
+import { INavData } from '@coreui/angular';
+
+export const navItemsOwn: any = [
+  {
+    name: 'Dashboard',
+    url: '/dashboards',
+    icon: 'bi bi-speedometer',
+  },
+  {
+    name: 'Organization',
+    url: '/organization/orgList',
+    icon: 'bi bi-bank2',
+  },
+]

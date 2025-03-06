@@ -1,0 +1,94 @@
+<div class="container-fluid">
+
+    <div class="row">
+        <div class="col-sm-3 col-md-4 col-lg-3 search-div px-0">
+          <!-- <input type="text" class="form-control p-2 sizeinput" placeholder="Search"[(ngModel)]="term" aria-describedby="emailHelp"  autocomplete="off">
+          <i class="bi bi-search" id="search-icon-tab"></i> -->
+      </div>
+        <div class="col-sm"></div>
+        <div class="col-md-4 col-lg-3 text-center align-self-center">
+            <div class="d-flex justify-content-center pg-bg">
+                <button *ngFor="let size of tableSizes" class="page-size-btn" [value]="size" (click)="onTableSizeChange($event)" [ngClass]="{'active-size': tableSize === size}"
+                >{{size}}</button>
+            </div>
+                    </div>
+         
+      </div>
+      
+    
+<div class="bg" [ngClass]="list?.length ? 'over-flow' : ''">
+    <div class="row">
+        <div class="col">
+            <table class="table">
+                <thead>
+                    <tr>
+                      <th scope="col">S.No</th>
+                      <th scope="col">Date </th>
+                      <th scope="col">People </th>
+                      <th scope="col">Timesheet Id</th>
+                      <th scope="col">Time</th>
+                      <th scope="col">Saved On</th>
+                      <th scope="col">Status</th>
+                      <th scope="col">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <ng-container *ngIf="(list | filter:term) as result">
+                    <tr *ngFor='let item of result| filter:term| paginate : {
+                        itemsPerPage: tableSize,
+                        currentPage: page,
+                        totalItems: count
+                    }; let i=index'>
+                        <td>{{i + 1}}</td>
+                        <td>{{item.created_date_time | date:'dd/MM/YYYY'}}</td>
+                        <td>{{item.created_by_id}}</td>
+                        <td>{{item.id}}</td>
+                        <td>{{item.time_spent}}</td>
+                        <td>{{item.created_date_time | date:'dd/MM/YYYY'}}</td>
+                        <td>{{item.status ? item.status :"Flagged"}}</td>
+                         <td>
+                         <ng-container *ngFor="let approval of accessConfig">
+                            <span *ngIf="approval == 'DELETE'">
+                                <button   style="border: none;background-color: inherit;" (click)="open(item)"> <i class="fas fa-trash-alt" style="color: red;" container="body" ngbTooltip="Delete"></i></button>
+                            </span>
+                            <!-- <span *ngIf="approval == 'APPROVE'">
+                                <button  style="border: none;background-color: inherit;" (click)="openDialogue(item.id,'APPROVED')"><i class="bi bi-check-circle" container="body" ngbTooltip="Approve" style="color:green"></i></button>
+                            </span>
+                            <span *ngIf="approval == 'REJECT'">
+                                <button  style="border: none;background-color: inherit;" (click)="openDialogue(item.id,'DECLINED')"><i class="bi bi-x-circle" container="body" ngbTooltip="Reject" style="color:red"></i></button>
+                            </span> -->
+                        </ng-container>
+                    </td>
+                    </tr>
+                    <tr *ngIf="result.length === 0" class="nodata">
+                        <td> No records found
+  !</td>  
+                    </tr>
+                </ng-container>
+                  </tbody>
+              </table>
+        </div>
+    </div>
+    
+</div>
+</div>
+<div class="row">      
+    <div class="col-sm">
+        <div class="d-flex justify-content-center">
+            <pagination-controls 
+              previousLabel="Prev" 
+              nextLabel="Next" 
+              (pageChange)="onTableDataChange($event)">
+            </pagination-controls>
+          </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+

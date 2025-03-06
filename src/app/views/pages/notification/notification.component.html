@@ -1,0 +1,222 @@
+
+      <div class="notification-container" *ngIf="user_role_name === 'ADMIN'">
+        <div class="notification-modal">
+        <div class="n-header">
+          <h2 class="title">Notifications </h2>
+          <div class="close-btn"><i class="bi bi-x-lg" (click)="closeBtn()"></i> </div>
+        </div>
+      </div>
+        <div class="notification-main-content" [ngClass]="displayedNotifications$ ?.length ? 'h-70':'h-30'">
+       <ng-container *ngIf="displayedNotifications$ ?.length">    
+        <div *ngFor="let notification of displayedNotifications$" class="notification-item" 
+        [ngClass]="{'new-notification': !notification.is_seen, 'seen-notification': notification.is_seen}"      
+        >
+        <a [routerLink]="notification?.text?.redirect_url || null" class="w-100" (click)="handleNotificationClick(notification);"  >
+          <!-- Notification Content -->
+          <div class="notification-content">
+            <div class="notification-header p-r">
+             
+              <mat-label class="date">{{ notification.created_datetime | date : 'dd-MM-yyyy' }}</mat-label>
+              <div class="row">
+                <div class="col">
+                  <strong>{{ notification.text.name }}</strong>
+                  <span  class="flex-container" *ngIf="notification?.text?.leave_type || notification?.text?.project_status || notification?.text?.timesheet_status || notification?.text?.subscription_type">
+                    <div>
+                      <i [class]="notification.text.icon" ></i>
+                    </div>
+                    <span class="h-leave-message" *ngIf="notification.text.leave_type">{{"Leave"}}</span>
+                    <span class="h-leave-message" *ngIf="notification.text.timesheet_status">{{"Timesheet"}}</span>
+                    <span class="h-leave-message" *ngIf="!notification.text.subscription_type && !notification.text.leave_type && !notification.text.timesheet_status && !notification.text.project_status">{{notification.text.message}}</span>
+                    <span class="h-leave-message" *ngIf="notification.text.subscription_type">{{'Subscription'}}</span>
+                    <span class="h-leave-message" *ngIf="notification.text.project_status">{{'Project'}}</span>
+               
+                    <mat-chip-list>
+                      <mat-chip [ngClass]="notification?.text?.leave_type ? 'leave-type' : 'project-name'" selected >
+                        <i class="pe-1" [class]="notification.text.icon"></i>
+                        {{ notification?.text?.leave_type || notification?.text?.project_name || notification.text.subscription_type}}
+                      </mat-chip>
+                    </mat-chip-list>
+                    
+                   
+                  </span>
+                </div>
+                
+              </div>
+              
+
+              
+            </div>
+
+           
+            <div class="row">
+              <!-- <div class="col-1 tree-view"></div> -->
+              <div class="col">
+                <!-- <div class="notification-message" *ngIf="notification?.text?.leave_description">
+                  {{ notification?.text?.leave_description}}
+                 </div>
+                 <div class="notification-message" *ngIf="notification?.text?.timesheet_description">
+                   {{ notification?.text?.timesheet_description || 'NA'}}
+                 </div> -->
+                 <div class="notification-message" *ngIf="notification?.text?.message">
+                  {{ notification?.text?.message || 'NA'}}
+                </div>
+              </div>
+            </div>
+            
+          
+          </div>
+        </a>
+
+        </div>
+     
+      </ng-container>
+      <div *ngIf="displayedNotifications$?.length === 0" class="text-center">No notifications found!</div>
+      </div>
+      <!-- View More -->
+      <div class="p-r">
+        <div class="view-more" *ngIf="displayedNotifications$.length > 4">
+          <button mat-button class="btn-more" [disabled]="displayedNotifications$.length === totalCount" (click)="getNotification(10,'viewmore')">View More</button>
+        </div>
+       </div>
+      </div>
+  
+      <div class="notification-container" *ngIf="user_role_name === 'SUPERADMIN' || user_role_name === 'SUPER ADMIN'">
+        <div class="notification-modal">
+        <div class="n-header">
+          <h2 class="title">Notifications </h2>
+          <div class="close-btn"><i class="bi bi-x-lg" (click)="closeBtn()"></i> </div>
+        </div>
+      </div>
+        <div class="notification-main-content" [ngClass]="displayedNotifications$ ?.length ? 'h-70':'h-30'">
+       <ng-container *ngIf="displayedNotifications$?.length">
+        <div *ngFor="let notification of displayedNotifications$" class="notification-item" 
+        [ngClass]="{'new-notification': !notification.is_seen, 'seen-notification': notification.is_seen}"
+        (click)="handleNotificationClick(notification)" style="cursor: pointer;" 
+        [routerLink]="notification?.text?.redirect_url || null ">
+          <div class="tree-line" *ngIf="notification.text.name || notification.text.subscription_type">
+            <i [class]="notification.text.icon"></i>
+          </div>
+          <!-- Notification Content -->
+          <div class="notification-content">
+            <div class="notification-header p-r">
+              <strong style="cursor: pointer;">{{ notification.text.name || notification.text.subscription_type}}</strong>
+              <span class="date">{{ notification.created_datetime | date : 'dd-MM-yyyy' }}</span>
+            </div>
+            <div class="row">
+              
+                <!-- <div class="col-1 tree-view p-0" style="right: -18px;">
+                  
+                </div> -->
+             
+              <div class="col p-0">
+                <div class="notification-message" style="margin-right: 15px;">
+                  <!-- <div class="row">
+                    <div class="col-1 d-flex align-items-center" ><i class="px-2" [class]="notification.text.icon"></i></div> <div class="col-11">{{ notification.text.message }}</div>
+                  </div> -->
+                  <i class="px-2" [class]="notification.text.icon"></i>{{ notification.text.message }}
+                 
+                </div> 
+              </div>
+            </div>
+            
+          </div> 
+        </div>
+      </ng-container>
+      <div *ngIf="displayedNotifications$?.length === 0" class="text-center">No notifications found!</div>
+      
+      </div>
+       <!-- View More -->
+       <div class="p-r">
+        <div class="view-more" *ngIf="displayedNotifications$.length > 4">
+          <button mat-button class="btn-more" [disabled]="displayedNotifications$.length === totalCount" (click)="getNotification(10,'viewmore')">View More</button>
+        </div>
+       </div>
+      </div>
+      
+      <div class="notification-container" *ngIf="user_role_name === 'EMPLOYEE'">
+        <div class="notification-modal">
+        <div class="n-header">
+          <h2 class="title">Notifications </h2>
+          <div class="close-btn"><i class="bi bi-x-lg" (click)="closeBtn()"></i> </div>
+        </div>
+      </div>
+      <div class="notification-main-content" [ngClass]="displayedNotifications$ ?.length ? 'h-70':'h-30'">
+        <ng-container *ngIf="displayedNotifications$?.length">
+         <div *ngFor="let notification of displayedNotifications$" class="notification-item py-3"
+         [ngClass]="{'new-notification': !notification.is_seen, 'seen-notification': notification.is_seen}"
+         >
+         <a [routerLink]="notification?.text?.redirect_url || null" class="w-100" (click)="handleNotificationClick(notification);"  >
+       
+           <!-- Notification Content -->
+           <div class="notification-content">
+             <div class="notification-header p-r">
+               
+               <mat-label class="date" style="top:-15px;">{{ notification.created_datetime | date : 'dd-MM-yyyy' }}</mat-label>
+               <div class="row">
+                 <div class="col">
+                  
+                   <span  class="flex-container" *ngIf="notification?.text?.leave_type || notification?.text?.project_status || notification?.text?.task_status
+                    || notification?.text?.project_name">
+                     <div>
+                       <i [class]="notification.text.icon" ></i>
+                     </div>
+                     <span class="h-leave-message" *ngIf="!notification?.text?.leave_type && !notification?.text?.project_status && !notification?.text?.timesheet_status && !notification?.text?.task_status">{{notification?.text?.message}}</span>
+                     <span class="h-leave-message" *ngIf="notification?.text?.leave_type || notification?.text?.leave_status">{{'Leave'}}</span>
+                     <span class="h-leave-message" *ngIf="notification?.text?.timesheet_status">{{'Timesheet'}}</span>
+                     <span class="h-leave-message" *ngIf="notification?.text?.project_status || notification?.text?.task_status">{{'Project'}}</span>
+                     <span *ngIf="notification?.text?.timesheet_status" [ngClass]="notification?.text?.timesheet_status  === 'Approved' ? 'approved' : notification?.text?.timesheet_status  === 'Pending' ? 'pending' : 'declined'">{{notification?.text?.timesheet_status}}</span>
+                     <span *ngIf="notification?.text?.leave_status" [ngClass]="notification?.text?.leave_status  === 'Approved' ? 'approved' : notification?.text?.leave_status  === 'Pending' ? 'pending' : 'declined'">{{notification?.text?.leave_status}}</span>
+                     <mat-chip-list>
+                      <mat-chip [ngClass]="notification?.text?.leave_type ? 'leave-type' : 'project-name'" selected  
+                      >
+                        <i class="pe-1" [class]="notification.text.icon"></i>
+                        {{ notification?.text?.leave_type || notification?.text?.project_name }}
+                      </mat-chip>
+                    </mat-chip-list>
+                    
+                   </span>
+                 </div>
+                 
+               </div>
+               
+ 
+              
+             </div>
+ 
+             
+             <div class="row" [routerLink]="notification?.text?.redirect_url"  style="cursor: pointer;">
+               <!-- <div class="col-1 tree-view"></div> -->
+               <div class="col">
+                 <div class="notification-message" *ngIf="notification?.text?.leave_description || notification?.text?.timesheet_status ||  notification?.text?.project_status || notification?.text?.task_status">
+                   {{ notification?.text?.message}}
+                  </div>
+                  <!-- <div class="notification-message" *ngIf="notification?.text?.project_description">
+                    {{ notification?.text?.project_description}}
+                   </div>
+                   <div class="notification-message" *ngIf="notification?.text?.timesheet_description || !notification?.text?.timesheet_status">
+                    {{ notification?.text?.timesheet_description}}
+                    <!-- <span [ngClass]="notification?.text?.timesheet_status  === 'Approved' ? 'approved' : notification?.text?.timesheet_status  === 'Pending' ? 'pending' : 'declined'">{{notification?.text?.timesheet_status}}</span>
+                     --
+                    
+                   </div> -->
+                  
+
+               </div>
+             </div>
+             
+           
+           </div>
+          </a>
+         </div>
+        
+       </ng-container>
+       <div *ngIf="displayedNotifications$?.length === 0" class="text-center">No notifications found!</div>
+       
+      </div>
+       <!-- View More -->
+       <div class="p-r">
+        <div class="view-more" *ngIf="displayedNotifications$.length > 4" >
+          <button mat-button class="btn-more" [disabled]="displayedNotifications$.length === totalCount" (click)="getNotification(10,'viewmore')">View More</button>
+        </div>
+       </div>
+      </div>

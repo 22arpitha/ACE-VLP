@@ -1,0 +1,123 @@
+ol{
+    background-color: inherit;
+}
+a{
+    color: #3F51B5;
+    text-decoration: none;
+}
+li{
+    
+    list-style: none;
+    color: grey;
+}
+ul{
+    padding: 0px;
+}
+.bg{
+    background-color: white;
+    height: 100%;
+    width: 100%;
+    padding: 10px;
+    border-radius: 5px;
+
+}
+.proceedbtn{
+    background-color: #3F51B5;
+    border-radius: 5px;
+    border: none;
+    height: 40px;
+    width: 100%;
+    color: white;
+    margin: 10px 0px;
+}
+.printbtn{
+    background-color: #00BCD4;
+    border-radius: 5px;
+    border: none;
+    height: 40px;
+    width: 100%;
+    color: white;
+    margin: 10px 0px;
+}
+.row{
+    padding: 5px;
+}
+
+.btnicon{
+    display: none;
+}
+button:hover .btnicon{
+    display: block;
+}
+
+select{
+    width: 100%;
+    height: 40px;
+    margin: 1px 0px 0px 1px;
+}
+span{
+    color: red;
+}
+// p{
+//     color: grey;
+// }
+html{
+    position: relative;
+}
+
+
+.prefix-card{
+    border:0;
+    border-radius: 10px;
+   box-shadow: rgba(0, 0, 0, 0.1) 0px 0px 5px 0px, rgba(0, 0, 0, 0.1) 0px 0px 1px 0px;
+    text-align: center;
+    margin: 10px 15px;
+    // zoom: 90%;
+    //background: lightblue;
+    background-color: rgba(255, 255, 255, 0.6) !important;
+    font-size: 13px;
+    border:5px solid white;
+}
+.clr{
+color:white !important;
+}
+h6{
+    // font-size: 15px;
+    margin-bottom: 2px;
+}
+.row-b{
+    margin: 0 20px 20px 0px;
+    // background-color: #f6f6f6;
+    padding: 2px;
+    // border: 1px solid #dddd;
+}
+.prefix-card p{
+    margin: 0;
+}
+.row-b .c-1{
+        border-radius: 0px 7px 7px 0px;
+        // background-color: white;
+}
+.row-b .c-2{
+    // background-color: #f6f6f6;
+    // border-left: 0;
+
+}
+.c-scroll{
+    height: 80vh;
+    overflow-y: auto;
+    margin-bottom: 20px;
+    padding-bottom: 20px;
+}
+.prefix-card:hover{
+    opacity: 0.9;
+}
+.main-col{
+    padding: 5px;
+}
+table th {
+    position: sticky;
+     position: -webkit-sticky;
+   top: -15px;
+    z-index: 1; // any positive value, layer order is global
+}

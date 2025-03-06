@@ -1,0 +1,246 @@
+<!-- <form [formGroup]="adminForm" *ngIf="isAdminForm">
+         
+  <div class="row me-3 mt-2">
+  <div class="col-11 pe-0">
+    <div class="row-container editable">
+      
+      <div class="column">
+        <div class="p-ab">
+          <mat-label class="admin-labels">Admin name</mat-label><b class="r-star" >*</b>
+        </div>
+      <input type="text" class="pt-1" matInput formControlName="admin_name" placeholder="Admin name"  autocomplete="off"/>
+        <div *ngIf="a['admin_name']?.touched && a['admin_name']?.invalid"
+        class="error-text">
+        <span
+            *ngIf="a['admin_name']?.errors && a['admin_name']?.errors['required']">Admin
+             name is required
+        </span>
+        <span *ngIf="a['admin_name']?.invalid && a['admin_name']?.hasError('pattern')">Invalid admin name</span>
+    </div>
+   
+      </div>
+      <div class="column">
+        <div class="p-ab">
+          <mat-label class="admin-labels">Email</mat-label><b class="r-star" >*</b>
+        </div>
+        <input type="email" class="pt-1" matInput formControlName="admin_email_id" placeholder="Email"  autocomplete="off"/> 
+        <div *ngIf="a['admin_email_id']?.touched && a['admin_email_id']?.invalid"
+        class="error-text">
+        <span
+            *ngIf="a['admin_email_id']?.invalid && a['admin_email_id']?.errors['email']">Invalid
+            email Id </span>
+        <span
+            *ngIf="a['admin_email_id']?.invalid && a['admin_email_id']?.errors['required']">Email
+            Id is required</span>
+            <span
+            *ngIf="a['admin_email_id']?.invalid && a['admin_email_id']?.errors['emailMatch']">
+            Admin emails must be unique.
+        </span>
+        </div>
+     
+      </div>
+      <div class="column">
+        <div class="p-ab">
+          <mat-label class="admin-labels">Phone number</mat-label><b class="r-star" >*</b>
+        </div>
+        <input type="tel" class="pt-1" matInput onkeydown="return event.keyCode !== 69" onKeyPress="if(this.value.length==10) return false;" formControlName="admin_phone_number" placeholder="Phone number"  autocomplete="off"/>
+       
+        <div *ngIf="a['admin_phone_number']?.touched && a['admin_phone_number']?.invalid"
+        class="error-text">
+        <span
+            *ngIf="a['admin_phone_number']?.invalid && a['admin_phone_number']?.errors['required']">Phone
+            number is required
+        </span>
+        <span
+            *ngIf="a['admin_phone_number']?.invalid && a['admin_phone_number']?.hasError('phoneNumberLength')"
+            >Please enter 10 digit phone number
+        </span>
+      </div>
+        
+      </div>
+         
+      <div class="column">
+        <div class="p-ab" style="top:-11px !important;">
+          <mat-label class="admin-labels">Status</mat-label><b class="r-star" >*</b>
+        </div>
+        <mat-slide-toggle class="pt-1" formControlName="is_active" >
+          {{ a['is_active']?.value ? 'Active' : 'Inactive' }}
+        </mat-slide-toggle>
+        <div *ngIf="a['is_active']?.touched && a['is_active']?.invalid" class="error-text" style="top:33px">
+          <span *ngIf="f['is_active']?.errors['required']">Status is required</span>
+      </div>
+    
+      </div>
+    </div>
+  </div>
+ 
+  <div class="col-1  d-flex justify-content-center align-items-center"  [attr.disabled]="adminForm.invalid">
+    <img src="../../../../assets/images/tick.svg" class="icon-image" container="body" [ngbTooltip]="adminForm.invalid ? 'Add admin details':'Add'" (click)="addAdmin();"/>
+    <img src="../../../../assets/images/Close.svg" class="icon-image"  container="body" ngbTooltip="Cancel" *ngIf="adminList.length" (click)="isAdminForm=!isAdminForm"/>
+  </div>
+</div> 
+
+</form>
+
+<ng-container *ngFor="let admin of adminList; let i = index">
+  <form class="row me-1 mt-4" [formGroup]="getAdminFormGroup(i)">
+    <div class="col-11">
+      <div  tabindex="0" class="row-container2"    [ngClass]="{
+        'editable': admin.isEditing
+        
+      }" >
+        
+        <div class="column py-2">
+          <div class="p-ab">
+            <mat-label class="admin-labels">Admin Name </mat-label><b class="r-star">*</b>
+          </div>
+          <input matInput class="pt-1" formControlName="admin_name" placeholder="First Name" 
+          [readonly]="!admin.isEditing">
+                  <div *ngIf="getAdminFormGroup(i)?.get('admin_name').touched && getAdminFormGroup(i)?.get('admin_name').invalid"
+                  class="error-text">
+               <span *ngIf="getAdminFormGroup(i)?.get('admin_name').hasError('required')">
+                 Admin name is required
+               </span>
+               <span *ngIf="getAdminFormGroup(i)?.get('admin_name').hasError('pattern')">
+                 Invalid name.
+               </span>
+             </div>
+        </div>
+        
+        <div class="column py-2">
+          <div class="p-ab">
+            <mat-label class="admin-labels">Email </mat-label><b class="r-star">*</b>
+          </div>
+          <input matInput class="pt-1" formControlName="admin_email_id" placeholder="Enter email Id" 
+          [readonly]="!admin.isEditing">
+            <mat-error class="error-text" *ngIf="getAdminFormGroup(i)?.get('admin_email_id').hasError('required') && getAdminFormGroup(i)?.get('admin_email_id').touched">
+              Email is required
+            </mat-error>
+            <mat-error class="error-text" *ngIf="getAdminFormGroup(i)?.get('admin_email_id').hasError('email') && getAdminFormGroup(i)?.get('admin_email_id').touched">
+              Invalid email Id.
+            </mat-error>
+           
+            <mat-error class="error-text"
+            *ngIf="f['email'].value && getAdminFormGroup(i)?.get('admin_email_id').touched && getAdminFormGroup(i)?.get('admin_email_id')?.errors?.['emailMatch']">
+            Admin emails must be unique.
+        </mat-error>
+        <mat-error class="error-text" *ngIf="getAdminFormGroup(i)?.get('admin_email_id')?.errors?.['duplicateArrEmail'] && getAdminFormGroup(i)?.get('admin_email_id')?.touched && getAdminFormGroup(i)?.get('admin_email_id')?.invalid">
+          Admin with this email already exists.
+        </mat-error>
+        </div>
+        
+        <div class="column py-2">
+          <div class="p-ab">
+            <mat-label class="admin-labels">Phone number</mat-label><b class="r-star">*</b>
+          </div>
+          <input type="tel" class="pt-1" matInput formControlName="admin_phone_number" onKeyPress="if(this.value.length==10) return false;" placeholder="Enter phone number" 
+          [readonly]="!admin.isEditing">
+                  <div *ngIf="getAdminFormGroup(i)?.get('admin_phone_number').touched && getAdminFormGroup(i)?.get('admin_phone_number').invalid"
+                  class="error-text">
+               <div *ngIf="getAdminFormGroup(i)?.get('admin_phone_number').hasError('required')">
+                 Phone number is required
+               </div>
+               <div *ngIf="getAdminFormGroup(i)?.get('admin_phone_number').hasError('phoneNumberLength')">
+                 Please enter 10 digits
+               </div>
+             </div>
+        </div>
+        
+        <div class="column py-2">
+          <div class="p-ab" style="top:-11px !important">
+            <mat-label class="admin-labels">Status</mat-label><b class="r-star" >*</b>
+          </div>
+          <mat-slide-toggle class="pt-1" formControlName="is_active"  [disabled]="!admin.isEditing">
+            {{ getAdminFormGroup(i)?.get('is_active')?.value == true  ? 'Active' : 'Inactive' }}
+          </mat-slide-toggle>
+        </div>
+      </div>
+    </div>
+    
+    <!-- <div class="col-1 d-flex align-items-center p-0"  *ngIf="admin?.isEditing">
+      <i class="bi bi-check-circle me-1 icon-bg" container="body" ngbTooltip="Save" style="color:#50C20D;" (click)="saveAdmin(i)"></i> 
+      <i class="bi bi-x-circle icon-bg" container="body" style="color:#126EB4;margin-right: 5px;" ngbTooltip="Cancel" (click)="toggleFormControlState(i, false)"></i> 
+      <i class="bi bi-trash icon-bg" container="body" style="color:red;"  ngbTooltip="Delete" (click)="open(admin.id,i)"></i>
+    </div>
+    <div class="col-1 d-flex align-items-center p-0" (click)="toggleFormControlState(i, true)"  *ngIf="!admin?.isEditing">
+      <i class="bi bi-pencil-square icon-bg"></i>
+    </div> --
+    <div class="col-1 d-flex align-items-center p-0"  *ngIf="admin?.isEditing">
+      <img src="../../../../assets/images/tick.svg" class="icon-image" container="body" ngbTooltip="Save" style="color:#50C20D;" (click)="saveAdmin(i)"/>
+      <img src="../../../../assets/images/Close.svg" class="icon-image"  container="body" ngbTooltip="Cancel" (click)="toggleFormControlState(i, false)"/>
+      <img src="../../../../assets/images/Delete.svg" class="icon-image"  container="body" ngbTooltip="Delete" (click)="open(admin.id,i)" *ngIf="adminList.length >1"/>
+    </div>
+    <div class="col-1 d-flex align-items-center p-0" (click)="toggleFormControlState(i, true)"  *ngIf="!admin?.isEditing">
+      <img src="../../../../assets/images/Edit.svg" class="icon-image"  container="body" ngbTooltip="Edit" />
+    </div>
+  </form>
+</ng-container> 
+
+
+<form class="row me-1 mt-4" [formGroup]="adminForm" *ngIf="adminForm">
+    <div class="col-11">
+      <div tabindex="0" class="row-container2" [ngClass]="{ 'editable': adminForm?.get('isEditing')?.value }">
+        <!-- Admin Name --
+        <div class="column py-2">
+          <div class="p-ab">
+            <mat-label class="admin-labels">Admin Name </mat-label><b class="r-star">*</b>
+          </div>
+          <input matInput class="pt-1" formControlName="admin_name" placeholder="Enter admin name" [readonly]="!adminForm?.get('isEditing')?.value" />
+          <div *ngIf="adminForm?.get('admin_name')?.invalid && adminForm?.get('admin_name')?.touched" class="error-text">
+            <span *ngIf="adminForm?.get('admin_name')?.hasError('required')">Admin name is required</span>
+            <span *ngIf="adminForm?.get('admin_name')?.hasError('pattern')">Invalid admin name.</span>
+          </div>
+        </div>
+  
+        <!-- Email --
+        <div class="column py-2">
+          <div class="p-ab">
+            <mat-label class="admin-labels">Email </mat-label><b class="r-star">*</b>
+          </div>
+          <input matInput class="pt-1" formControlName="admin_email_id" placeholder="Enter email ID"  [readonly]="!adminForm?.get('isEditing')?.value" />
+          <div *ngIf="adminForm?.get('admin_email_id')?.invalid && adminForm?.get('admin_email_id')?.touched" class="error-text">
+            <span *ngIf="adminForm?.get('admin_email_id')?.hasError('required')">Email is required</span>
+            <span *ngIf="adminForm?.get('admin_email_id')?.hasError('email')">Invalid email ID</span>
+            <span *ngIf="adminForm?.get('admin_email_id')?.hasError('duplicateArrEmail')">Email must be unique</span>
+          </div>
+        </div>
+  
+        <!-- Phone Number --
+        <div class="column py-2">
+          <div class="p-ab">
+            <mat-label class="admin-labels">Phone Number</mat-label><b class="r-star">*</b>
+          </div>
+          <input type="tel" matInput class="pt-1" formControlName="admin_phone_number" placeholder="Enter phone number" 
+          [readonly]="!adminForm?.get('isEditing')?.value"  />
+          <div *ngIf="adminForm?.get('admin_phone_number')?.invalid && adminForm?.get('admin_phone_number')?.touched" class="error-text">
+            <span *ngIf="adminForm?.get('admin_phone_number')?.hasError('required')">Phone number is required</span>
+            <span *ngIf="adminForm?.get('admin_phone_number')?.hasError('phoneNumberLength')">Please enter 10 digits</span>
+          </div>
+        </div>
+  
+        <!-- Status --
+        <div class="column py-2">
+          <div class="p-ab" style="top: -11px !important">
+            <mat-label class="admin-labels">Status</mat-label><b class="r-star">*</b>
+          </div>
+          <mat-slide-toggle class="pt-1" formControlName="is_active" [disabled]="!adminForm?.get('isEditing')?.value">
+            <!-- {{ adminForm?.get('is_active')?.value ? 'Active' : 'Inactive' }} --
+          </mat-slide-toggle>
+        </div>
+      </div>
+    </div>
+  
+    <!-- Actions --
+    <div class="col-1 d-flex align-items-center p-0">
+      <!-- <ng-container *ngIf="isEditing; else viewMode"> --
+        <ng-container *ngIf="adminForm?.get('isEditing')?.value; else viewMode">
+        <img src="../../../../assets/images/tick.svg" class="icon-image" container="body" ngbTooltip="Save" (click)="onSave()" />
+        <img src="../../../../assets/images/Close.svg" class="icon-image" container="body" ngbTooltip="Cancel" (click)="onCancel()" />
+        <img src="../../../../assets/images/Delete.svg" class="icon-image" container="body" ngbTooltip="Delete" (click)="onDelete()" />
+      </ng-container>
+      <ng-template #viewMode>
+        <img src="../../../../assets/images/Edit.svg" class="icon-image" container="body" ngbTooltip="Edit" (click)="onEdit()" />
+      </ng-template>
+    </div>
+  </form>
+   -->

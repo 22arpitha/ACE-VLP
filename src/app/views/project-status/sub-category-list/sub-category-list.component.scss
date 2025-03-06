@@ -1,0 +1,120 @@
+ol{
+    background-color: inherit;
+}
+a{
+    color: #3F51B5;
+    text-decoration: none;
+}
+li{
+    
+    list-style: none;
+    color: grey;
+}
+ul{
+    padding: 0px;
+}
+.bg{
+    background-color: white;
+    height: 100%;
+    width: 100%;
+    border-radius: 5px;
+    padding: 10px;
+}
+.proceedbtn{
+    background-color: #3F51B5;
+    border-radius: 5px;
+    border: none;
+    height: 40px;
+    width: 100%;
+    color: white;
+    margin: 10px 0px;
+}
+.printbtn{
+    background-color: #00BCD4;
+    border-radius: 5px;
+    border: none;
+    height: 40px;
+    width: 100%;
+    color: white;
+    margin: 10px 0px;
+}
+.row{
+    padding: 5px;
+}
+i{
+    padding: 2px 3px 0px 0px;
+}
+.btnicon{
+    display: none;
+}
+button:hover .btnicon{
+    display: block;
+}
+
+select{
+    width: 100%;
+    height: 40px;
+    margin: 1px 0px 0px 1px;
+}
+span{
+    color: red;
+}
+p{
+    color: grey;
+}
+html{
+    position: relative;
+}
+// .createbtn{
+//     background-color: #3F51B5;
+//     border: none;
+//     color: white;
+//     padding: 10px 13px;
+//     text-align: center;
+//     text-decoration: none;
+//     display: inline-block;
+//     font-size: 25px;
+//     margin: 0px 2px;
+//     border-radius: 50%;
+//     position: fixed;
+//     right: 5%;
+//     bottom: 10%;
+// }
+
+.card{
+    border: none;
+    box-shadow: 0 4px 8px 0 rgb(0 0 0 / 20%), 0 6px 20px 0 rgb(0 0 0 / 4%);
+    padding: 10px 0.4rem 7px;
+    margin: 10px 15px;
+    zoom: 90%;
+    // border: 3px solid #cadaf4;
+    background: #dfdfdf;
+    border-radius: 16px;
+}
+.card {
+    .col-4{
+        padding: 5px;
+        border:1px solid #eeecee;
+        text-align:center;
+        background: #fff;
+    }
+    i{
+        color: #4e5052;
+    }
+}
+.card-subtitle{
+    color: #0c5aa8;
+    padding-top: 5px;
+    text-transform: uppercase;
+    font-size: 14px;
+    font-weight: 600;
+}
+.main-c{
+    padding: 1px 3px 1px 5px;
+}
+.r-p{
+    padding: 5px 7px;
+}
+.card:hover{
+    opacity: 0.8;
+}

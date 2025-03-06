@@ -1,0 +1,86 @@
+<div class="container-fluid">
+  
+  <div class="generic-form bg mx-1">
+    <div class="container-fluid">
+     
+      <div class="row">
+        <!-- Sidebar for days selection -->
+        <div class="col-lg-3 col-md-5 mb-4">
+          <mat-card>
+            <div class="title-column">
+              <div class="header-row">
+                <mat-card-title>Working Hours</mat-card-title>
+                <div class="select-all-container">
+                  <span>Select All</span>
+                  <mat-checkbox [(ngModel)]="selectAll" (change)="toggleSelectAll($event.checked)"></mat-checkbox>
+                </div>
+              </div>
+            </div>
+            
+            
+            <!-- <div>Working Hours </div><div style="display: inline-block;"><mat-checkbox  color="primary" (change)="toggleSelectAll($event.checked)">Select All</mat-checkbox></div> -->
+            <div *ngFor="let day of days; let i = index" style="line-height:3.5;padding: 0 10px;">
+              
+              <div class="row">
+                <div class="col">{{ day?.name | titlecase}}</div>
+                <div class="col check-bx"><mat-checkbox [(ngModel)]="day.selected"  (change)="toggleDaySelection(i)"></mat-checkbox></div>
+            </div>
+            </div>
+          </mat-card>
+        </div>
+    
+        <!-- Main content area for time selection -->
+        <div class="col-lg-9 col-md-7">
+          <div *ngFor="let day of days">
+            <div *ngIf="day.selected" class="day-selection">
+              
+              <div class="d-flex align-items-center flex-wrap">
+                <div style="width: 15%;"><h5>{{ day?.name | titlecase}}</h5>
+                </div>
+                <div>
+                <!-- From time select -->
+                <mat-form-field appearance="outline" class="px-2 time-field">
+                  <mat-label>From</mat-label>
+                  <mat-select [(ngModel)]="day.fromTime">
+                    <mat-option *ngFor="let time of times" [value]="time">{{ time }}</mat-option>
+                  </mat-select>
+                </mat-form-field>
+                </div>
+               <div style="width: 5%;">
+                <h5>To</h5>
+               </div>
+               
+                <!-- To time select -->
+                <mat-form-field appearance="outline" class="mr-2 time-field">
+                  <mat-label>To</mat-label>
+                  <mat-select [(ngModel)]="day.toTime">
+                    <mat-option *ngFor="let time of times" [value]="time">{{ time }}</mat-option>
+                  </mat-select>
+                </mat-form-field>
+    
+                <!-- Total working hours display -->
+                <div class="hours-display">
+                  <p class="m-0">Total Working Hours</p>
+                  <strong>{{ calculateHours(day.fromTime, day.toTime) }} hrs</strong>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div  class="col-10 text-end">
+            <button mat-raised-button class="submit-btn" type="button" *ngIf="selectAll || days.length" (click)="addWorkingHours()">Save</button>
+          </div>
+          
+        </div>
+      </div>
+    </div>
+    
+  </div>
+ 
+</div>
+
+
+
+
+
+
+

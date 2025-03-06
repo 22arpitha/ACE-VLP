@@ -1,0 +1,264 @@
+// Here you can add other styles;
+@import "../../node_modules/bootstrap-icons/font/bootstrap-icons.scss";
+
+.dropdown-list {
+    font-size: small !important;
+    width: fit-content !important;
+    margin-top: 0px !important;
+}
+
+.dropdown-list .filter-textbox input {
+    height: 20px !important;
+}
+
+.multiselect-item-checkbox input[type=checkbox]+div:before {
+    box-sizing: content-box;
+    content: "";
+    color: rgb(56, 56, 248) !important;
+    border: 2px solid rgb(56, 56, 248) !important;
+}
+
+.multiselect-item-checkbox input[type=checkbox]:checked+div:before {
+    background: rgb(56, 56, 248) !important;
+}
+
+.multiselect-dropdown .dropdown-btn .selected-item-container .selected-item {
+    border: 0 !important;
+    background: rgb(56, 56, 248) !important;
+    color: #fff;
+}
+
+// .industry-title{
+//     font-size: 2vw;
+// }
+@media only screen and (max-width: 767px) {
+    .container-middle{
+        height: 70vh !important;
+        overflow-y: auto;
+    }
+
+}
+
+@media only screen and (min-width: 768px) and (max-width:1023px) {
+    .container-middle {
+        height: 70vh !important;
+        width: 99% !important;
+        // overflow-x: auto !important;
+    }
+}
+
+@media only screen and (min-width: 1024px) {
+    .container-middle {
+        height: 69vh !important;
+    }
+}
+
+.footer {
+    --cui-footer-bg: transparent !important;
+    --cui-footer-padding-x: 0rem;
+    border-top: 0;
+}
+
+label,
+p {
+    color: black !important;
+    font-weight: 400 !important;
+    font-family: 'Exo FT' !important;
+
+}
+
+.error-msg {
+    color: red !important;
+    font-family: 'Exo FT' !important;
+
+
+}
+
+.fa-sort-up,
+.fa-sort-down {
+    cursor: pointer !important;
+    padding-left: 3px !important;
+    color: #f3f3f3;
+}
+
+.fa-sort-up:hover,
+.fa-sort-down:hover {
+    color: lightgray;
+}
+
+.fc-col-header-cell-cushion {
+    color: white !important;
+    text-decoration: none;
+    font-family: 'Exo FT' !important;
+
+}
+
+.fc .fc-daygrid-day-number {
+    font-size: 1em;
+    text-decoration: none;
+    color: #000;
+    font-weight: 600;
+    font-family: 'Exo FT' !important;
+
+}
+
+// .fc .fc-toolbar-title {
+//     font-size: 1.40em;
+//     margin: 0;
+//     text-transform: uppercase;
+//     background: #2d2d2d;
+//     padding: 5px 18px;
+//     border-radius: 3px;
+//     color: white;
+// }
+.webView {
+    .bi-trash {
+        color: #f0441b !important;
+    }
+
+    .bi-pencil-square {
+        color: #000 !important;
+    }
+}
+
+h5 {
+    font-size: 15px !important;
+    margin-bottom: 0px !important;
+}
+
+.mat-h4,
+.mat-subheading-1,
+.mat-typography h4 {
+    font: 400 23px/24px, "Exo FT";
+}
+
+.mat-h1,
+.mat-headline,
+.mat-typography h1 {
+    margin: 16px 0 12px;
+}
+
+nav {
+    margin-top: 5px;
+}
+
+form {
+    p {
+        margin: 0px 0px 2px !important;
+    }
+}
+
+.fc .fc-daygrid-day.fc-day-today {
+    background: #fffc76 !important;
+}
+
+
+
+.mat-mini-fab {
+    height: 30px !important;
+    width: 30px !important;
+}
+
+.mat-mini-fab.mat-accent {
+    background-color: #fff;
+    margin: 0 2px;
+    border-radius: 3px;
+
+    i {
+        padding: 0 !important;
+        position: absolute;
+        top: 5px;
+        right: 8px;
+        font-size: 16px !important;
+    }
+}
+
+// .mat-fab:not([class*=mat-elevation-z]),
+// .mat-mini-fab:not([class*=mat-elevation-z]) {
+//     box-shadow: rgba(0, 0, 0, 0.1) 0px 0px 5px 0px, rgba(0, 0, 0, 0.1) 0px 0px 1px 0px;
+//     stroke: #D7D7D7;
+//     height: 50px !important;
+//     width: 50px !important;
+// }
+
+.mat-btn-s:hover {
+    box-shadow: 0px 3px 50px -1px rgba(0, 0, 0, 0.2), 0px 6px 10px 0px rgba(0, 0, 0, 0.14), 0px 1px 18px 0px rgba(0, 0, 0, 0.12);
+}
+
+.fc .fc-toolbar {
+    align-items: center;
+    display: flex;
+    zoom: 84% !important;
+}
+
+.fc-direction-ltr .fc-toolbar>*>:not(:first-child) {
+
+    display: none !important;
+}
+
+.fc .fc-button-primary {
+    background-color: #3f51b5 !important;
+    border-color: #3f51b5 !important;
+}
+
+.fc .fc-daygrid-more-link {
+    position: relative;
+    top: -12px;
+    left: -3px;
+    z-index: 4;
+}
+
+@media(max-width:1023px) {
+    input[type="date"]::before {
+        color: #999999;
+        content: "mm/dd/yyyy";
+    }
+
+    input[type="date"] {
+        color: #ffffff;
+    }
+
+    input[type="date"]:focus,
+    input[type="date"]:valid {
+        color: black;
+    }
+
+    input[type="date"]:focus::before,
+    input[type="date"]:valid::before {
+        content: "" !important;
+    }
+}
+
+
+.md-drppicker.drops-down-auto.ltr.shown {
+    left: unset !important;
+    right: unset !important;
+}
+
+.avatar-img {
+  width: 40px;
+
+}
+
+@media(min-width:1023px) {
+    .c_class.modal-dialog {
+        position: absolute !important;
+        right: 15px !important;
+        top: 67px !important;
+        width: 30%;
+        // margin: var(--bs-modal-margin);
+        pointer-events: none;
+    }
+    .buystandardplan.modal-dialog {
+        width: 31%;
+    }
+    .custom-dialog .mat-dialog-container {
+        width: 400px;
+        padding: 0;
+      }
+}
+
+
+.btn-close:focus {
+    box-shadow: none !important;
+}

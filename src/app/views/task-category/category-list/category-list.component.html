@@ -1,0 +1,193 @@
+<div class="container-wrapper webView">
+  <div class="row pb-3">
+    <div class="col-sm-4 search-div">
+      <input type="search" (input)="filterSearch($event)" class="form-control p-2 sizeinput" [(ngModel)]="term"
+        placeholder="Search by template name" aria-describedby="emailHelp" autocomplete="off">
+      <i class="bi bi-search" id="search-icon-tab"></i>
+    </div>
+    <div class="col-sm"></div>
+    <div class="col-md-3 col-lg-3 p-1 text-end create-buttons">
+      <button mat-raised-button class="proceedbtn mat-btn-s" routerLink="/task/add" type="submit"
+      *ngIf="userRole ==='Employee' && accessPermissions[0]?.create || userRole === 'Admin'">
+        <mat-icon>add</mat-icon> Create Project Template
+      </button>
+
+    </div>
+  </div>
+  <div class="bg" *ngIf="userRole ==='Employee' && accessPermissions[0]?.view || userRole === 'Admin'">
+    <div class="row">
+      <div class="col px-0">
+        <table class="table table-hover table-list">
+          <thead>
+            <tr>
+              <th scope="col">S.No</th>
+              <th scope="col">Template Name
+                <i *ngIf="!arrowState['category_name']" (click)="sort('asc','category_name')"
+                  class="bi bi-arrow-up"></i>
+                <i (click)="sort('desc','category_name')" *ngIf="arrowState['category_name']"
+                  class="bi bi-arrow-down"></i>
+              </th>
+              <th scope="col">Added Date
+                <i *ngIf="!arrowState['created_datetime']" (click)="sort('asc','created_datetime')"
+                  class="bi bi-arrow-up"></i>
+                <i (click)="sort('desc','created_datetime')" *ngIf="arrowState['created_datetime']"
+                  class="bi bi-arrow-down"></i>
+              </th>
+              <!-- <th scope="col">Status <i  *ngIf="!arrow" (click)="sort('asc','tpc_status')" class="bi bi-arrow-up"></i><i (click)="sort('desc','tpc_status')" *ngIf="arrow" class="bi bi-arrow-down"></i></th> -->
+              <th scope="col">Action</th>
+
+            </tr>
+          </thead>
+          <tbody>
+
+            <ng-container *ngIf="(categoryList) as result">
+              <tr *ngFor='let item of result | customSort:directionValue:sortValue
+                    |paginate : {
+                       itemsPerPage: tableSize,
+                       currentPage: page,
+                       totalItems: count
+                     }; let i=index'>
+                <td>{{getContinuousIndex(i)}}</td>
+                <td>{{item.category_name ?item.category_name:"NA" | titlecase }}</td>
+                <td>{{item.created_datetime| date:'dd-MM-yyyy' | titlecase}}</td>
+                <!-- <td>{{item.tpc_status?item.tpc_status:"NA"}}</td>  -->
+                <td>
+                  <!-- <ng-container *ngFor="let access of permissions">
+                    <button mat-raised-button mat-mini-fab routerLink="/task/update/{{item.id}}/{{page}}/{{tableSize}}"
+                      *ngIf="access === 'UPDATE'">
+                      <i class="bi bi-pencil-square" container="body" ngbTooltip="Edit"
+                        style="color: #000; font-size: 24px;"></i>
+                    </button>
+                    <button mat-raised-button mat-mini-fab (click)="open(item.id)" *ngIf="access === 'DELETE'">
+                      <i class="bi bi-trash" style="color: red;" container="body" ngbTooltip="Delete"></i>
+                    </button>
+                  </ng-container> -->
+                  <ng-container>
+                    <img src="../../../../assets/images/Edit.svg" class="icon-image" 
+                      *ngIf="userRole ==='Employee' && accessPermissions[0]?.update || userRole === 'Admin'"
+                      routerLink="/task/update/{{item.id}}/{{page}}/{{tableSize}}" container="body" ngbTooltip="Edit" />
+                    <img src="../../../../assets/images/Delete.svg" class="icon-image" container="body" 
+                      *ngIf="userRole ==='Employee' && accessPermissions[0]?.delete || userRole === 'Admin'"
+                      ngbTooltip="Delete" (click)="open(item.id)" />
+                    <span  *ngIf="userRole ==='Employee' && !accessPermissions[0]?.update && !accessPermissions[0]?.delete">-</span>
+                  </ng-container>
+
+                  <!-- <a routerLink="/task/update/{{item.id}}/{{page}}/{{tableSize}}"><i class="bi bi-pencil-square"  container="body" ngbTooltip="Edit" style="color: #000; font-size: 24px;"></i></a>
+                                <button mat-raised-button style="border: none;background-color: inherit;" (click)="open(item.id)"><i class="bi bi-trash" style="color: red;" container="body" ngbTooltip="Delete"></i></button> -->
+                </td>
+              </tr>
+             
+            </ng-container>
+          </tbody>
+        </table>
+        <div class="col-12" *ngIf="categoryList.length === 0">
+          <app-generic-norecards></app-generic-norecards>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <!-- <div class="row">
+    <div class="col-sm"></div>
+    <div class="col-sm-12" *ngIf="categoryList.length > 0">
+      <div class="d-flex justify-content-center p-nav">
+        <pagination-controls previousLabel="Prev" nextLabel="Next" (pageChange)="onTableDataChange($event)">
+        </pagination-controls>
+      </div>
+    </div>
+  </div> -->
+  <div class="pagination-container p-0 pt-2">
+    <pagination-controls previousLabel="Prev" nextLabel="Next" (pageChange)="onTableDataChange($event)">
+    </pagination-controls>
+    <div class="items-per-page-container">
+      <div>Items per page</div>
+      <mat-select [(ngModel)]="tableSize" (selectionChange)="onTableSizeChange($event)" placeholder="10"
+        class="page-size">
+        <mat-option *ngFor="let size of tableSizes" [value]="size">{{size}}</mat-option>
+      </mat-select>
+    </div>
+  </div>
+  <!-- <ng-container *ngFor="let access of permissions">
+    <button mat-raised-button mat-fab color="primary" *ngIf="access == 'CREATE'" routerLink="/task/add"
+      class="createbtn" placement="top" container="body" ngbTooltip="Add category/checklist">
+      <i class="fa fa-plus"></i>
+
+    </button>
+  </ng-container> -->
+  <!-- <a routerLink="/task/add"> <button mat-raised-button type="button"  class="createbtn" placement="top" container="body" ngbTooltip="Add Category/Checklist"><i class="fa fa-plus"></i>
+  </button></a> -->
+</div>
+
+<div class="container-wrapper mobileView">
+  <div class="row mx-1 my-2">
+    <div class="col-sm-12 col-md-6">
+      <!-- <h1>Project category list</h1> -->
+    </div>
+    <div class="col-sm-6 col-md-6 mb-1 search-div px-0">
+      <input type="text" class="form-control py-3 px-4" (input)="filterSearch($event)" [(ngModel)]="term" placeholder="Search by template name"
+        aria-describedby="emailHelp" autocomplete="off">
+      <i class="bi bi-search" id="search-icon"></i>
+    </div>
+  </div>
+  <div class="bg row mx-0 my-1">
+    <ng-container *ngIf="(categoryList) as result">
+      <div class="col-sm-12 col-md-6 main-col" *ngFor='let item of result
+        |paginate : {
+            itemsPerPage: tableSize,
+            currentPage: page,
+            totalItems: count
+          }'>
+
+        <div class="card outer-card">
+          <div class="row py-1">
+            <div class="col-6 text-start">
+              <h6 class="card-subtitle">Template name</h6>
+              <div class="value-container">{{item.category_name|titlecase}}</div>
+            </div>
+            <div class="col-6 p-0 text-end">
+              <img src="../../../../assets/images/Edit.svg" class="icon-image" (click)='editCard(item.id
+    )' container="body" ngbTooltip="Edit" />
+              <img src="../../../../assets/images/Delete.svg" class="icon-image" container="body" ngbTooltip="Delete"
+                (click)="open(item.id
+    )" />
+            </div>
+          </div>
+          <div class="row ">
+
+            <div class="col-6 text-start">
+              <h6 class="card-subtitle">Added date</h6>
+              <div class="value-container">{{item.created_datetime| date:'dd-MM-yyyy'}}</div>
+            </div>
+            <!-- <div class="col-4 c-1">
+                    <h6 class="card-subtitle">Status</h6>
+                    <div class="value-container">{{item.tpc_status}}</div>
+                </div> -->
+          </div>
+        </div>
+      </div>
+
+      
+    </ng-container>
+    <div class="col-12" *ngIf="categoryList.length === 0">
+      <app-generic-norecards></app-generic-norecards>
+    </div>
+    <div class="pagination-container p-0 pt-2">
+      <pagination-controls previousLabel="Prev" nextLabel="Next" (pageChange)="onTableDataChange($event)">
+      </pagination-controls>
+      <div class="items-per-page-container">
+        <div>Items per page</div>
+        <mat-select [(ngModel)]="tableSize" (selectionChange)="onTableSizeChange($event)" placeholder="10"
+          class="page-size">
+          <mat-option *ngFor="let size of tableSizes" [value]="size">{{size}}</mat-option>
+        </mat-select>
+      </div>
+    </div>
+    <div class="s-position">
+      <ng-container>
+        <button routerLink="/task/add" type="button" mat-fab class="createbtn-new mat-btn-s"><i class="fa fa-plus"></i>
+        </button>
+      </ng-container>
+    </div>
+  </div>
+
+</div>

@@ -1,0 +1,174 @@
+<!--sidebar-->
+<c-sidebar #sidebar="cSidebar" class="d-print-none sidebar sidebar-fixed" id="sidebar" visible>
+
+  <c-sidebar-brand class="p-r">
+   
+    <img src="../../../assets/images/logo.svg" width="170px" height="65px" class="sidebar-logo-sidebar" />
+  </c-sidebar-brand>
+  <div *ngFor="let items of subscriptionData" class="mb-3 d-block d-lg-none text-center">
+    <button mat-button type="button" class="btn-4" *ngIf="items?.subscription_type_name === 'Free Trial' && items?.is_active">
+          <div><img src="../../../../assets/images/megaphone_white.svg" style="position: absolute;
+            left: 10px;
+            top: 10px;"/><small>{{items?.subscription_type_name}}</small></div>
+          <strong>{{items?.remaining_number_of_days  || 0 }} {{items?.remaining_number_of_days > 1 ? 'days left' : 'day left'}}</strong>
+    </button>
+  </div>
+  <perfect-scrollbar [config]="perfectScrollbarConfig">
+    <!-- <c-sidebar-nav [navItems]="sidebarNavItems" dropdownMode="close">
+
+    </c-sidebar-nav> -->
+    
+    <mat-nav-list class="d-block d-lg-none  nav-list-custom" style="padding-right: 2px;" [class.disabled-item]="mySubscription">
+      <ng-container *ngFor="let item of sidebarNavItems">
+        <!-- Parent item -->
+        <mat-list-item 
+          [routerLink]="shouldDisableItem(item) ? null : (item.children?.length ? null : item.url)"
+          routerLinkActive="active-link"
+          (click)="shouldDisableItem(item) ? null : (toggleSubmenu(item));"
+          [class.parent-item]="item.children?.length"
+          [class.disabled-item]="shouldDisableItem(item)"
+          [style.opacity]="shouldDisableItem(item) ? '0.7' : '1'"
+          [style.pointer-events]="shouldDisableItem(item) ? 'none' : 'auto'"
+          [cSidebarToggle]="!item.children?.length ? 'sidebar' : null" 
+          [ngClass]="item.children?.length && item.isExpanded ? 'set-bg':''">
+         
+            <i [class]="item.icon" style="padding-right: 15px;"></i>
+            <span matListItemTitle>{{item.name}}</span>
+            <mat-icon class="expand-icon" *ngIf="item.children?.length" >
+              {{item.isExpanded ? 'expand_more' : 'chevron_right'}}
+            </mat-icon>
+         
+         
+        </mat-list-item>
+    
+        <!-- Child items -->
+        <mat-list-item *ngFor="let child of item.children"
+        cSidebarToggle="sidebar"
+          [routerLink]="shouldDisableItem(child) ? null : child.url"
+          routerLinkActive="active-link"
+          class="child-item"
+          [style.display]="item.isExpanded ? 'flex' : 'none'"
+          [class.disabled-item]="shouldDisableItem(child)"
+          [style.opacity]="shouldDisableItem(child) ? '0.7' : '1'"
+          [style.pointer-events]="shouldDisableItem(child) ? 'none' : 'auto'">
+          
+          <i [class]="child.icon" style="padding-right: 15px;"></i>
+          <span matListItemTitle>{{child.name}}</span>
+        </mat-list-item>
+     
+      </ng-container>
+      <mat-list-item class="d-block d-lg-none" routerLinkActive="active-link" routerLink='/login'
+        cSidebarToggle="sidebar">
+        <i class="bi bi-power" style="padding-right: 15px;"></i>
+        <span matListItemTitle>{{'Logout'}}</span>
+      </mat-list-item>
+    </mat-nav-list>
+  
+  
+    <mat-nav-list class="d-none d-lg-block  nav-list-custom" style="padding-right: 2px;" [class.disabled-item]="mySubscription">
+      <ng-container *ngFor="let item of sidebarNavItems">
+        <!-- Parent item -->
+        <mat-list-item 
+          [routerLink]="shouldDisableItem(item) ? null : (item.children?.length ? null : item.url)"
+          routerLinkActive="active-link"
+          (click)="shouldDisableItem(item) ? null : (toggleSubmenu(item));"
+          [class.parent-item]="item.children?.length"
+          [class.disabled-item]="shouldDisableItem(item)"
+          [style.opacity]="shouldDisableItem(item) ? '0.7' : '1'"
+          [style.pointer-events]="shouldDisableItem(item) ? 'none' : 'auto'"
+          [ngClass]="item.children?.length && item.isExpanded ? 'set-bg':''">
+          
+          <i [class]="item.icon" style="padding-right: 15px;"></i>
+          <span matListItemTitle>{{item.name}}</span>
+          
+          <mat-icon class="expand-icon" *ngIf="item.children?.length">
+            {{item.isExpanded ? 'expand_more' : 'chevron_right'}}
+          </mat-icon>
+        </mat-list-item>
+    
+        <!-- Child items -->
+        <mat-list-item *ngFor="let child of item.children"
+          [routerLink]="shouldDisableItem(child) ? null : child.url"
+          routerLinkActive="active-link"
+          class="child-item"
+          [style.display]="item.isExpanded ? 'flex' : 'none'"
+          [class.disabled-item]="shouldDisableItem(child)"
+          [style.opacity]="shouldDisableItem(child) ? '0.7' : '1'"
+          [style.pointer-events]="shouldDisableItem(child) ? 'none' : 'auto'">
+          
+          <i [class]="child.icon" style="padding-right: 15px;"></i>
+          <span matListItemTitle>{{child.name}}</span>
+        </mat-list-item>
+     
+      </ng-container>
+      <mat-list-item class="d-block d-lg-none" routerLinkActive="active-link" routerLink='/login'>
+        <i class="bi bi-power" style="padding-right: 15px;"></i>
+        <span matListItemTitle>{{'Logout'}}</span>
+      </mat-list-item>
+    </mat-nav-list>
+  </perfect-scrollbar>
+  <mat-card class="profile-settings-card">
+    <div class="d-flex">
+      <c-avatar cTextColor="primary" shape="rounded-1" size="md"  [src]="profileImage? profileImage: '../assets/images/no-profile-pic.png'" >
+      </c-avatar>
+      <p class="mx-2" [ngClass]="user_role_Name !== 'EMPLOYEE' ? 'nonemployee' : 'employee'">
+        <small class="user-name" *ngIf="user_role_Name !== 'EMPLOYEE'">{{user_name |titlecase}} {{last_name}}</small><br />
+        <mat-label class="user-role">{{user_role_Name}}</mat-label>
+      </p>
+
+    </div>
+    <ng-container *ngTemplateOutlet="userDropdown"></ng-container>
+  </mat-card>
+
+</c-sidebar>
+
+<!--main-->
+<div class="wrapper d-flex flex-column dark:bg-transparent">
+  <!--app-header-->
+  <ngx-ui-loader fgsColor="#126EB4" pbColor="#126EB4" textColor="#126EB4"  overlayColor="rgba(255,255,255,0.25)"  blur="0" fgsType="rectangle-bounce" [fgsSize]="fgSize"></ngx-ui-loader>
+  <!--app-body-->
+  <div class="body scroll-fix">
+    <mat-card class="p-0 default-header-card">
+      <mat-card class="p-0 mb-1 header-card"> 
+        <app-default-header class="d-print-none header header-sticky" position="sticky"
+        sidebarId="sidebar"></app-default-header>
+       </mat-card>
+      <router-outlet></router-outlet>
+    </mat-card>
+  </div>
+  <!--app footer-->
+  <app-default-footer class="mobileView"></app-default-footer>
+
+</div>
+
+<ng-template #userDropdown>
+  <c-dropdown alignment="end" variant="nav-item" >
+    <button mat-stroked-button [caret]="false" cDropdownToggle class="py-1" style="
+    text-align: left;
+    width: 100%;
+    background-color: #ebedef;
+    height: 50px;
+    line-height: 0px;"><i class="bi bi-gear pe-1"></i> Settings
+      <!-- <i class="bi bi-gear" style="position: absolute;right: 5px;"></i> -->
+      <i class="bi bi-chevron-down" style="position: absolute;right: 5px;"></i>
+    </button>
+    <ul cDropdownMenu class="py-2 pr-5 w-auto c-dropClass" 
+    style="padding: 11px !important;background: rgb(255 255 255) !important;
+    font-size: 12px !important;position: absolute;inset: auto 0px 0px auto;
+    border: 1px solid #ecfaff;margin: 2px;transform: translate3d(0px, -40.6667px, 0px);">
+      <li></li>
+      <li *ngFor="let headNav of headerNav" >
+        <div [ngClass]="getHeaderNavStyles(headNav)">
+          <a (click)="navigateTo(headNav)" cDropdownItem class="profile-settings-content" >
+            <i class="{{headNav.icons}}" id="nav-icon" ></i>
+            <span class="title">&nbsp;&nbsp;{{headNav.page | titlecase}} </span>
+            
+          </a>
+          
+        </div>
+      </li>
+    </ul>
+
+  </c-dropdown>
+</ng-template>
+<!-- <c-sidebar-nav [navItems]="config == 'SUPER ADMIN'? navItems : sidebarNavItems" dropdownMode="close"> -->

@@ -1,0 +1,581 @@
+ @import '~@angular/material/prebuilt-themes/indigo-pink.css';
+ /* You can add global styles to this file, and also import other style files */
+ // If you want to override variables do it here
+ @import "variables";
+
+ $enable-ltr: true;
+ $enable-rtl: true;
+ // @import "../../node_modules/@angular/material/";
+ // Import styles with default layout.
+ @import "@coreui/coreui/scss/coreui";
+
+ // Import Chart.js custom tooltips styles
+ @import "@coreui/chartjs/scss/coreui-chartjs";
+
+ // perfect scrollbar theming for use with [perfectScrollbar] directive
+ //@import '~perfect-scrollbar/css/perfect-scrollbar.css';
+
+ @import "layout";
+
+ // Some temp fixes
+ @import "fixes";
+
+ // Prism.js
+ @import "examples";
+
+ // If you want to add something do it here
+ @import "custom";
+ @import "accordian";
+ @import "_sidebar.scss";
+ @import "theme_content.scss";
+ @import "cards.scss";
+ @import "_material_input.scss";
+ // @import 'ngx-toastr/toastr';
+ @font-face {
+   font-family: 'Exo FT';
+   src: url('/assets/fonts/Exo/Exo-VariableFont_wght.ttf');
+ }
+
+ .p-error {
+   color: red;
+   font-size: 8px;
+ }
+ 
+
+ input[type=number]::-webkit-inner-spin-button,
+ input[type=number]::-webkit-outer-spin-button {
+   -webkit-appearance: none;
+   -moz-appearance: none;
+   appearance: none;
+   margin: 0;
+ }
+ body,html{
+  font-family: 'Exo FT' !important;
+ }
+
+ .mat-h6,
+
+ .mat-typography {
+   //  font: 400 calc(22px * 0.67)/20px Roboto, "Helvetica Neue", sans-serif;
+   font-family: 'Exo FT' !important;
+   margin: 0 0 12px;
+ }
+
+ h1,
+ h2,
+ h3,
+ h4,
+ h5,
+ h6 {
+   font-family: 'Exo FT' !important;
+ }
+  .body{
+    background-color: #f6f6f6;
+    height: 100vh;
+    font-family: 'Exo FT' !important;
+  }
+ /* based on angular-toastr css https://github.com/Foxandxss/angular-toastr/blob/cb508fe6801d6b288d3afc525bb40fee1b101650/dist/angular-toastr.css */
+ .default-header-card{
+  border-radius: 20px 20px 0 0!important;
+  box-shadow: none !important;
+  // transform: scale(0.95);
+  // zoom: 98%;
+  margin: 15px;
+  height: 95% !important;
+  
+  mat-card.header-card{
+    border-radius:20px 20px 0 0 !important;
+    box-shadow: rgba(0, 0, 0, 0.09) 0px 3px 12px !important;
+  }
+ }
+ /* position */
+ .toast-center-center {
+   top: 50%;
+   left: 50%;
+   transform: translate(-50%, -50%);
+ }
+
+ .toast-top-center {
+   top: 30px !important;
+   //right: 0 !important;
+   left: 50% !important;
+   transform: translate(-50%, -50%);
+   width: 100% !important;
+ }
+
+ .toast-bottom-center {
+   bottom: 0;
+   right: 0;
+   width: 100%;
+ }
+
+ .toast-top-full-width {
+   top: 0;
+   right: 0;
+   width: 100%;
+ }
+
+ .toast-bottom-full-width {
+   bottom: 0;
+   right: 0;
+   width: 100%;
+ }
+
+ .toast-top-left {
+   top: 12px;
+   left: 12px;
+ }
+
+ .toast-top-right {
+   top: 12px;
+   right: 12px;
+   width: 98% !important;
+ }
+
+ .toast-bottom-right {
+   right: 12px;
+   bottom: 12px;
+ }
+
+ .toast-bottom-left {
+   bottom: 12px;
+   left: 12px;
+ }
+
+ /* toast styles */
+ .toast-title {
+   font-weight: bold;
+ }
+
+ .toast-message {
+   word-wrap: break-word;
+ }
+
+ .toast-message a,
+ .toast-message label {
+   color: #FFFFFF;
+ }
+
+ .toast-message a:hover {
+   color: #CCCCCC;
+   text-decoration: none;
+ }
+
+ .toast-close-button {
+   position: relative;
+   right: -0.3em;
+   top: -0.3em;
+   float: right;
+   font-size: 20px;
+   font-weight: bold;
+   color: #FFFFFF;
+   text-shadow: 0 1px 0 #ffffff;
+   /* opacity: 0.8; */
+ }
+
+ .toast-close-button:hover,
+ .toast-close-button:focus {
+   color: #000000;
+   text-decoration: none;
+   cursor: pointer;
+   opacity: 0.4;
+ }
+
+ /*Additional properties for button version
+ iOS requires the button element instead of an anchor tag.
+ If you want the anchor version, it requires `href="#"`.*/
+ button.toast-close-button {
+   padding: 0;
+   cursor: pointer;
+   background: transparent;
+   border: 0;
+ }
+
+ .toast-container {
+   pointer-events: none;
+   position: fixed;
+   z-index: 999999;
+ }
+
+ .toast-container * {
+   box-sizing: border-box;
+ }
+
+ .toast-container .ngx-toastr {
+  //  position: fixed;
+   overflow: hidden;
+   margin: 0 0 6px;
+  //  padding: 15px 15px 15px 50px;
+   padding: 10px 5em;
+   width: fit-content !important;
+   text-align: center;
+   border-radius: 3px 3px 3px 3px;
+   background-position: 15px center;
+   background-repeat: no-repeat;
+   //background-size: 20px;
+   box-shadow: 0 0 12px #999999;
+   font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+   font-weight:600;
+   background-position: 10%;
+  //  color: #FFFFFF;
+ }
+
+//  .toast-container .ngx-toastr:hover {
+//    box-shadow: 0 0 12px #000000;
+//    opacity: 1;
+//    cursor: pointer;
+//  }
+
+ /* https://github.com/FortAwesome/Font-Awesome-Pro/blob/master/advanced-options/raw-svg/regular/info-circle.svg */
+ .toast-info {
+   background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCA1MTIgNTEyJyB3aWR0aD0nNTEyJyBoZWlnaHQ9JzUxMic+PHBhdGggZmlsbD0ncmdiKDI1NSwyNTUsMjU1KScgZD0nTTI1NiA4QzExOS4wNDMgOCA4IDExOS4wODMgOCAyNTZjMCAxMzYuOTk3IDExMS4wNDMgMjQ4IDI0OCAyNDhzMjQ4LTExMS4wMDMgMjQ4LTI0OEM1MDQgMTE5LjA4MyAzOTIuOTU3IDggMjU2IDh6bTAgMTEwYzIzLjE5NiAwIDQyIDE4LjgwNCA0MiA0MnMtMTguODA0IDQyLTQyIDQyLTQyLTE4LjgwNC00Mi00MiAxOC44MDQtNDIgNDItNDJ6bTU2IDI1NGMwIDYuNjI3LTUuMzczIDEyLTEyIDEyaC04OGMtNi42MjcgMC0xMi01LjM3My0xMi0xMnYtMjRjMC02LjYyNyA1LjM3My0xMiAxMi0xMmgxMnYtNjRoLTEyYy02LjYyNyAwLTEyLTUuMzczLTEyLTEydi0yNGMwLTYuNjI3IDUuMzczLTEyIDEyLTEyaDY0YzYuNjI3IDAgMTIgNS4zNzMgMTIgMTJ2MTAwaDEyYzYuNjI3IDAgMTIgNS4zNzMgMTIgMTJ2MjR6Jy8+PC9zdmc+");
+ }
+
+ /* https://github.com/FortAwesome/Font-Awesome-Pro/blob/master/advanced-options/raw-svg/regular/times-circle.svg */
+ .toast-error {
+   background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgZmlsbD0iY3VycmVudENvbG9yIiBjbGFzcz0iYmkgYmktZXhjbGFtYXRpb24tdHJpYW5nbGUiIHZpZXdCb3g9IjAgMCAxNiAxNiI+CiAgPHBhdGggZD0iTTcuOTM4IDIuMDE2QS4xMy4xMyAwIDAgMSA4LjAwMiAyYS4xMy4xMyAwIDAgMSAuMDYzLjAxNi4xNS4xNSAwIDAgMSAuMDU0LjA1N2w2Ljg1NyAxMS42NjdjLjAzNi4wNi4wMzUuMTI0LjAwMi4xODNhLjIuMiAwIDAgMS0uMDU0LjA2LjEuMSAwIDAgMS0uMDY2LjAxN0gxLjE0NmEuMS4xIDAgMCAxLS4wNjYtLjAxNy4yLjIgMCAwIDEtLjA1NC0uMDYuMTguMTggMCAwIDEgLjAwMi0uMTgzTDcuODg0IDIuMDczYS4xNS4xNSAwIDAgMSAuMDU0LS4wNTdtMS4wNDQtLjQ1YTEuMTMgMS4xMyAwIDAgMC0xLjk2IDBMLjE2NSAxMy4yMzNjLS40NTcuNzc4LjA5MSAxLjc2Ny45OCAxLjc2N2gxMy43MTNjLjg4OSAwIDEuNDM4LS45OS45OC0xLjc2N3oiLz4KICA8cGF0aCBkPSJNNy4wMDIgMTJhMSAxIDAgMSAxIDIgMCAxIDEgMCAwIDEtMiAwTTcuMSA1Ljk5NWEuOTA1LjkwNSAwIDEgMSAxLjggMGwtLjM1IDMuNTA3YS41NTIuNTUyIDAgMCAxLTEuMSAweiIvPgo8L3N2Zz4=");
+ }
+
+ /* https://github.com/FortAwesome/Font-Awesome-Pro/blob/master/advanced-options/raw-svg/regular/check.svg */
+ .toast-success {
+   background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgZmlsbD0iY3VycmVudENvbG9yIiBjbGFzcz0iYmkgYmktY2hlY2syLWFsbCIgdmlld0JveD0iMCAwIDE2IDE2Ij4KICA8cGF0aCBkPSJNMTIuMzU0IDQuMzU0YS41LjUgMCAwIDAtLjcwOC0uNzA4TDUgMTAuMjkzIDEuODU0IDcuMTQ2YS41LjUgMCAxIDAtLjcwOC43MDhsMy41IDMuNWEuNS41IDAgMCAwIC43MDggMHptLTQuMjA4IDctLjg5Ni0uODk3LjcwNy0uNzA3LjU0My41NDMgNi42NDYtNi42NDdhLjUuNSAwIDAgMSAuNzA4LjcwOGwtNyA3YS41LjUgMCAwIDEtLjcwOCAwIi8+CiAgPHBhdGggZD0ibTUuMzU0IDcuMTQ2Ljg5Ni44OTctLjcwNy43MDctLjg5Ny0uODk2YS41LjUgMCAxIDEgLjcwOC0uNzA4Ii8+Cjwvc3ZnPg==");
+ }
+
+ /* https://github.com/FortAwesome/Font-Awesome-Pro/blob/master/advanced-options/raw-svg/regular/exclamation-triangle.svg */
+ .toast-warning {
+   background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgZmlsbD0iY3VycmVudENvbG9yIiBjbGFzcz0iYmkgYmktZXhjbGFtYXRpb24tdHJpYW5nbGUiIHZpZXdCb3g9IjAgMCAxNiAxNiI+CiAgPHBhdGggZD0iTTcuOTM4IDIuMDE2QS4xMy4xMyAwIDAgMSA4LjAwMiAyYS4xMy4xMyAwIDAgMSAuMDYzLjAxNi4xNS4xNSAwIDAgMSAuMDU0LjA1N2w2Ljg1NyAxMS42NjdjLjAzNi4wNi4wMzUuMTI0LjAwMi4xODNhLjIuMiAwIDAgMS0uMDU0LjA2LjEuMSAwIDAgMS0uMDY2LjAxN0gxLjE0NmEuMS4xIDAgMCAxLS4wNjYtLjAxNy4yLjIgMCAwIDEtLjA1NC0uMDYuMTguMTggMCAwIDEgLjAwMi0uMTgzTDcuODg0IDIuMDczYS4xNS4xNSAwIDAgMSAuMDU0LS4wNTdtMS4wNDQtLjQ1YTEuMTMgMS4xMyAwIDAgMC0xLjk2IDBMLjE2NSAxMy4yMzNjLS40NTcuNzc4LjA5MSAxLjc2Ny45OCAxLjc2N2gxMy43MTNjLjg4OSAwIDEuNDM4LS45OS45OC0xLjc2N3oiLz4KICA8cGF0aCBkPSJNNy4wMDIgMTJhMSAxIDAgMSAxIDIgMCAxIDEgMCAwIDEtMiAwTTcuMSA1Ljk5NWEuOTA1LjkwNSAwIDEgMSAxLjggMGwtLjM1IDMuNTA3YS41NTIuNTUyIDAgMCAxLTEuMSAweiIvPgo8L3N2Zz4=");
+  }
+
+ .toast-container.toast-top-center .ngx-toastr,
+ .toast-container.toast-bottom-center .ngx-toastr {
+   width: 500px;
+   margin-left: auto !important;
+   margin-right: auto !important;
+ }
+
+ .toast-container.toast-top-full-width .ngx-toastr,
+ .toast-container.toast-bottom-full-width .ngx-toastr {
+   width: 96%;
+   margin-left: auto;
+   margin-right: auto;
+ }
+
+ .ngx-toastr {
+   background-color: #030303;
+   pointer-events: auto;
+ }
+
+ .toast-success {
+   background-color: #C5FFD6 !important;
+   color:#009921;
+ }
+
+ .toast-error {
+   background-color: #FFE4E4 !important;
+   color:#990000;
+ }
+
+ .toast-info {
+   background-color: #2F96B4 !important;
+ }
+
+ .toast-warning {
+   background-color: #FFFEC5;
+   color:#859900;
+ }
+
+ .toast-progress {
+   position: absolute;
+   left: 0;
+   bottom: 0;
+   height: 4px;
+   background-color: #000000;
+   opacity: 0.4;
+ }
+
+ /* Responsive Design */
+ @media all and (max-width: 240px) {
+   .toast-container .ngx-toastr.div {
+     padding: 8px 8px 8px 50px;
+     width: 11em !important;
+   }
+
+
+
+   .toast-container .toast-close-button {
+     right: -0.2em;
+     top: -0.2em;
+   }
+ }
+
+ @media all and (min-width: 241px) and (max-width: 319px) {}
+
+ @media all and (min-width: 241px) and (max-width: 480px) {
+   .toast-container .ngx-toastr.div {
+     padding: 8px 8px 8px 50px;
+     width: 18em;
+   }
+
+   .toast-container .toast-close-button {
+     right: -0.2em;
+     top: -0.2em;
+   }
+
+   
+
+   .body-card {
+     padding: 0px !important;
+     border-radius: 0px;
+     background: #f2f9ff !important;
+   }
+ }
+
+
+ .toast-container .ngx-toastr {
+     position: unset !important;
+     margin: auto !important;
+    
+  }
+ @media(max-width:767px) {
+   .toast-top-right {
+     top: 50px;
+     right: 2px;
+     left: 2px;
+     width: 98% !important;
+     z-index: 1;
+   }
+   .toast-container .ngx-toastr {
+      width:80% !important;
+      background-position: 20%;
+    }
+
+ }
+
+ @media (min-width:768px) and (max-width:1022px) {
+   .toast-top-right {
+     top: 12px;
+     right: 12px;
+     width: 98% !important;
+   }
+
+  
+ }
+
+ @media(min-width:1023px) and (max-width:1279px) {
+   .toast-top-right {
+     top: 12px;
+     right: 12px;
+     width: 98% !important;
+   }
+
+  
+ }
+
+ @media(min-width:1280px) {
+   .toast-top-right {
+     top: 12px;
+     right: 12px;
+     width: 98% !important;
+   }
+
+  
+ }
+
+ /* Target the password input field */
+ input[type="password"] {
+   /* Use "-webkit-appearance: none" to reset Safari's default styling */
+   -moz-webkit-appearance: none !important;
+   -ms-webkit-appearance: none !important;
+ }
+
+ /* Target the password reveal icon (pseudo-element) */
+ input[type="password"]::-moz-webkit-search-cancel-button,
+ input[type="password"]::-ms-webkit-search-cancel-button,
+ input[type="password"]::-webkit-search-cancel-button {
+   /* Set display to none to hide the icon */
+   display: none !important;
+ }
+
+ .body-card {
+   box-shadow: none !important;
+   padding: 15px 15px;
+   margin: 0 !important;
+   border-radius: 16px;
+   background: #fff;
+ }
+
+ 
+
+ mat-card.profile-settings-card {
+  background: rgb(237 247 255 / 67%);
+  border: 1px solid #e7f0f3 !important;
+  padding: 20px !important;
+  margin: 20px !important;
+  box-shadow: none !important;
+ }
+
+ button.settings-btn {
+   background: #FFFFFF4D;
+   width: 100% !important;
+   border-radius: 5px !important;
+   border: 1px solid #126EB4 !important;
+   &:hover{
+    background-color: #126EB4 !important; 
+    color:white;
+    opacity: 1;
+   }
+ }
+
+
+ .header-sticky {
+   border: none !important;
+   z-index: 1 !important;
+ }
+
+ .mobile-pagination-content {
+   display: flex !important;
+   justify-content: space-between !important;
+ }
+
+ .ngx-pagination {
+   display: inline-flex;
+   margin-bottom: 0px !important;
+   margin: 0px !important;
+   padding-left: 0px !important
+ }
+
+ .ngx-pagination ul {
+   padding-left: 0px !important;
+ }
+
+ ul.ngx-pagination>li.pagination-previous>span,
+ ul.ngx-pagination>li.pagination-next>span {
+   display: none !important;
+ }
+
+ .mobile-pagination {
+   position: fixed;
+   bottom: 9%;
+   left: 0%;
+   right: 0%;
+   height: 50px;
+   z-index: 10;
+   background: #FFFFFFCC;
+   backdrop-filter: blur(2px);
+   box-shadow: 0px -1px 4px 0px #00000040;
+ }
+
+ table thead tr>th,
+ table thead tr>td {
+   font-family: "Exo FT" !important;
+   font-size: 14px;
+   font-weight: 600;
+   text-align: center;
+   white-space: nowrap;
+ }
+
+ th:first-child,
+ td:first-child {
+   width: 50px !important;
+ }
+
+ th:last-child,
+ td:last-child {
+   width: 100px !important;
+ }
+
+ th:not(:first-child),
+ td:not(:first-child):not(:last-child) {
+   min-width: max-content !important;
+   max-width: 100% !important;
+ }
+
+
+ button,
+ .title,
+ input.form-control[type=text]::placeholder {
+   font-family: "Exo FT" !important;
+ }
+
+ table tr>th {
+   font-size: 12px !important;
+ }
+
+ .profile-settings-content {
+   cursor: pointer !important;
+ }
+ .mat-badge-medium .mat-badge-content {
+  width: 16px;
+  height: 12px;
+  line-height: 13px;
+  right:0;
+  top:0;
+  border-radius: 10px;
+  text-overflow: initial;
+}
+.mat-badge-medium.mat-badge-overlap.mat-badge-after .mat-badge-content {
+  right: -2px;
+}
+.mat-badge-medium.mat-badge-above .mat-badge-content {
+  top: -4px;
+}
+
+input[type='search']::-webkit-search-cancel-button {
+  cursor: pointer;
+}
+.sidebar-logo-sidebar{
+  position:absolute ;
+  left: 20px;
+}
+.mat-step-icon-state-edit {
+  background-color: white !important;
+  color: rgb(47, 199, 47) !important;
+}
+.mat-step-header[ng-reflect-state="edit"]  {
+  background: #E2FFE5 !important;
+  box-shadow: 4px 4px 0px 0px #1BA104 !important;
+
+}
+.btn-4 {
+  text-align: center;
+  border: 1px solid #fff;
+  background: #126EB4;
+  color:white;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  width: 150px;
+  padding: 5px !important;
+  line-height: 18px !important;
+}
+
+@media(min-width:1024px) {
+  .btn-4:before {
+    content: "";
+      position: absolute;
+      height: 99px;
+      width: 36px;
+      background: #ffffff8a;
+      right: -40px;
+      top: -27px;
+      border-radius: 10px;
+      transform: rotate(37deg);
+      opacity: 0.2;
+      animation: slideEffect 4s infinite;
+  }
+  
+  @keyframes slideEffect {
+    0% {
+      right: -40px;
+    }
+    50% {
+      right: 100%;
+    }
+    100% {
+      right: -40px;
+    }
+  }
+}
+
+
+

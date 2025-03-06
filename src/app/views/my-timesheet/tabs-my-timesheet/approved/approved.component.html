@@ -1,0 +1,140 @@
+<div class="container-fluid">
+
+        <div class="row">
+            <div class="col-sm-1">
+                <select class="form-select page-set" aria-label="Default select example">
+                    <option selected>10</option>
+                    <option value="2">25</option>
+                    <option value="3">50</option>
+                    <option value="3">100</option>
+                  </select>
+            </div>
+            <div class="col-sm"></div>
+            <div class="col-sm-3 search-div px-0">
+                <input type="text" class="form-control p-2 sizeinput" placeholder="Search"[(ngModel)]="term" aria-describedby="emailHelp"  autocomplete="off">
+                <i class="bi bi-search" id="search-icon-tab"></i>
+            </div>
+        </div>
+        
+    <div class="bg">
+        <div class="row">
+            <div class="col">
+                <table class="table table-hover table-list">
+                    <thead>
+                        <tr>
+                          <th scope="col">S.No</th>
+                          <th scope="col">Date </th>
+                          <th scope="col">Employee </th>
+                          <th scope="col">Timesheets</th>
+                          <th scope="col">Time</th>
+                          <th scope="col">Saved On</th>
+                          <th scope="col">Approved On</th>
+                          <th scope="col">Approved By</th>
+                          <th scope="col">Status</th>
+                          <th scope="col">Action</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <!-- <tr *ngIf="list.length > 0">
+                            <td>
+                                <input type="text" class="form-control p-1 sizeinput" placeholder="Sl. No."  [(ngModel)]="slno"  aria-describedby="emailHelp"  autocomplete="off">
+                            </td>
+                            <td>
+                                <input type="text" class="form-control p-1 sizeinput" placeholder="Date"  [(ngModel)]="date"  aria-describedby="emailHelp"  autocomplete="off">
+                            </td>
+                            <td>
+                                <input type="text" class="form-control p-1 sizeinput" placeholder="Employee"  [(ngModel)]="people"  aria-describedby="emailHelp"  autocomplete="off">
+                            </td>
+                            <td>
+                                <input type="text" class="form-control p-1 sizeinput" placeholder="Timesheets"  [(ngModel)]="timesheet"  aria-describedby="emailHelp"  autocomplete="off">
+                            </td>
+                            <td>
+                                <input type="text" class="form-control p-1 sizeinput" placeholder="Time"  [(ngModel)]="time" aria-describedby="emailHelp"  autocomplete="off">
+                            </td>
+                            <td>
+                                <input type="text" class="form-control p-1 sizeinput" placeholder="Saved On"  [(ngModel)]="savedon"  aria-describedby="emailHelp"  autocomplete="off">
+                            </td>
+                            <td>
+                                <input type="text" class="form-control p-1 sizeinput" placeholder="Approved On"  [(ngModel)]="approvedOn"  aria-describedby="emailHelp"  autocomplete="off">
+                            </td>
+                            <td>
+                                <input type="text" class="form-control p-1 sizeinput" placeholder="Approved By"  [(ngModel)]="approvedBy"  aria-describedby="emailHelp"  autocomplete="off">
+                            </td>
+                            <td>
+                                <input type="text" class="form-control p-1 sizeinput" placeholder="Status"  [(ngModel)]="status"  aria-describedby="emailHelp"  autocomplete="off">
+                            </td>
+                            <td>
+                                <input type="text" class="form-control p-1 sizeinput" placeholder="Action"  [(ngModel)]="action"  aria-describedby="emailHelp"  autocomplete="off">
+                            </td>
+                        </tr> -->
+                        <!-- <th scope="col">S.No</th>
+                          <th scope="col">Date </th>
+                          <th scope="col">Employee </th>
+                          <th scope="col">Timesheets</th>
+                          <th scope="col">Time</th>
+                          <th scope="col">Saved On</th>
+                          <th scope="col">Approved On</th>
+                          <th scope="col">Approved By</th>
+                          <th scope="col">Status</th>
+                          <th scope="col">Action</th> -->
+                        <tr *ngFor='let item of list|paginate : {
+                            itemsPerPage: tableSize,
+                            currentPage: page,
+                            totalItems: count
+                        }|filter:term; let i=index'>
+                            <td>{{i + 1}}</td>
+                            <td>{{item.created_date_time | date:'dd/MM/YYYY'}}</td>
+                            <td>{{"NA"}}</td>
+                            <td>{{"NA"}}</td>
+                            <td>{{item.time_spent}}</td>
+                            <td>{{item.created_date_time | date:'dd/MM/YYYY'}}</td>
+                            <td>{{item.approved_date_time | date:'dd/MM/YYYY'}}</td>
+                            <td>{{item.approved_by_user}}</td>
+                            <td>{{item.status}}</td>
+                            <td>
+                                <button mat-raised-button style="border: none;background-color: inherit;" (click)="statusExecution(item,'approved')" > <i class="fa fa-check-circle" aria-hidden="true" style="color: green;cursor: pointer;" placement="top"  ngbTooltip="Approve"></i></button>
+                               <button mat-raised-button style="border: none;background-color: inherit;" (click)="statusExecution(item,'rejected')"> <i class="fa fa-times-circle" aria-hidden="true" style="color: red;cursor: pointer;" placement="top"  ngbTooltip="Reject"></i></button>
+                            </td>
+                        </tr>
+                      </tbody>
+                  </table>
+                  <div *ngIf="list.length < 1" class="nodata">
+                    No records found
+  !
+                </div>
+            </div>
+        </div>
+        
+    </div>
+    <div class="row">
+        <div class="col-sm"></div>
+        <!-- <div class="col-sm-3"  *ngIf="list.length > 0">
+            <nav aria-label="Page navigation example">
+                <ul class="pagination">
+                  <li class="page-item"><a class="page-link" href="#">Previous</a></li>
+                  <li class="page-item" ><a class="page-link" style="background-color: #3F51B5;color: white;" href="#">1</a></li>
+                  <li class="page-item"><a class="page-link" href="#">Next</a></li>
+                </ul>
+              </nav>
+        </div> -->
+        
+            <div class="col-sm" *ngIf="list.length > 0">
+                <div class="d-flex justify-content-center p-nav">
+                    <pagination-controls 
+                      previousLabel="Prev" 
+                      nextLabel="Next" 
+                      (pageChange)="onTableDataChange($event)">
+                    </pagination-controls>
+                  </div>
+            </div>
+        
+    </div>
+</div>
+
+
+
+
+
+
+
+

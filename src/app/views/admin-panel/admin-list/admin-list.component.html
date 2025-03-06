@@ -1,0 +1,289 @@
+<!-- 
+<div class="container-wrapper">
+  <div class="row pb-3">
+    
+  <div class="bg">
+    <div class="row">
+      <div class="col px-0">
+        <div class="row">
+
+        </div>
+       
+        <div style="border: 1px solid #cdcdcd;padding: 20px 10px 26px;border-radius: 5px;">
+          <div class="row">
+            <div class="col-6">
+              <h5><b>Create/Update Admin</b></h5>
+              <h6 class="mb-0">Create Multiple Admin</h6>
+            </div>
+            <div class="col-4"></div>
+            <div class="col-2 text-center" *ngIf="!isAdminForm">
+              <button type="button" mat-raised-button class="proceedbtn" color="primary" (click)="openAdminForm()">Add Admin</button>
+            </div>
+          </div> 
+          <form [formGroup]="adminForm" *ngIf="isAdminForm">
+           
+            <div class="row me-3 mt-2">
+            <div class="col-11 pe-0">
+              <div class="row-container editable">
+                
+                <div class="column">
+                  <div class="p-ab">
+                    <mat-label class="admin-labels">Admin name</mat-label><b class="r-star" >*</b>
+                  </div>
+                <input type="text" class="pt-1" matInput formControlName="admin_name" placeholder="Admin name"  autocomplete="off"/>
+                  <div *ngIf="a['admin_name']?.touched && a['admin_name']?.invalid"
+                  class="error-text">
+                  <span
+                      *ngIf="a['admin_name']?.errors && a['admin_name']?.errors['required']">Admin
+                       name is required
+                  </span>
+                  <span *ngIf="a['admin_name']?.invalid && a['admin_name']?.hasError('pattern')">Invalid admin name</span>
+              </div>
+             
+                </div>
+                <div class="column">
+                  <div class="p-ab">
+                    <mat-label class="admin-labels">Email</mat-label><b class="r-star" >*</b>
+                  </div>
+                  <input type="email" class="pt-1" matInput formControlName="admin_email_id" placeholder="Email"  autocomplete="off"/> 
+                  <div *ngIf="a['admin_email_id']?.touched && a['admin_email_id']?.invalid"
+                  class="error-text">
+                  <span
+                      *ngIf="a['admin_email_id']?.invalid && a['admin_email_id']?.errors['email']">Invalid
+                      email Id </span>
+                  <span
+                      *ngIf="a['admin_email_id']?.invalid && a['admin_email_id']?.errors['required']">Email
+                      Id is required</span>
+                      <span
+                      *ngIf="a['admin_email_id']?.invalid && a['admin_email_id']?.errors['emailMatch']">
+                      Admin emails must be unique.
+                  </span>
+                  </div>
+               
+                </div>
+                <div class="column">
+                  <div class="p-ab">
+                    <mat-label class="admin-labels">Phone number</mat-label><b class="r-star" >*</b>
+                  </div>
+                  <input type="tel" class="pt-1" matInput onkeydown="return event.keyCode !== 69" onKeyPress="if(this.value.length==10) return false;" formControlName="admin_phone_number" placeholder="Phone number"  autocomplete="off"/>
+                 
+                  <div *ngIf="a['admin_phone_number']?.touched && a['admin_phone_number']?.invalid"
+                  class="error-text">
+                  <span
+                      *ngIf="a['admin_phone_number']?.invalid && a['admin_phone_number']?.errors['required']">Phone
+                      number is required
+                  </span>
+                  <span
+                      *ngIf="a['admin_phone_number']?.invalid && a['admin_phone_number']?.hasError('phoneNumberLength')"
+                      >Please enter 10 digit phone number
+                  </span>
+                </div>
+                  
+                </div>
+                   
+                <div class="column">
+                  <div class="p-ab" style="top:-11px !important;">
+                    <mat-label class="admin-labels">Status</mat-label><b class="r-star" >*</b>
+                  </div>
+                  <mat-slide-toggle class="pt-1" formControlName="is_active" >
+                    {{ a['is_active']?.value ? 'Active' : 'Inactive' }}
+                  </mat-slide-toggle>
+                  <div *ngIf="a['is_active']?.touched && a['is_active']?.invalid" class="error-text" style="top:33px">
+                    <span *ngIf="f['is_active']?.errors['required']">Status is required</span>
+                </div>
+              
+                </div>
+              </div>
+            </div>
+           
+            <div class="col-1  d-flex justify-content-center align-items-center"  [attr.disabled]="adminForm.invalid">
+              <img src="../../../../assets/images/tick.svg" class="icon-image" container="body" [ngbTooltip]="adminForm.invalid ? 'Add admin details':'Add'" (click)="addAdmin();"/>
+              <img src="../../../../assets/images/Close.svg" class="icon-image"  container="body" ngbTooltip="Cancel" *ngIf="adminList.length" (click)="isAdminForm=!isAdminForm"/>
+            </div>
+          </div> 
+         
+        </form>
+      
+        <ng-container *ngIf="adminList?.length > 0">
+          <ng-container *ngFor="let admin of adminList|paginate : {
+            itemsPerPage: tableSize,
+            currentPage: page,
+            totalItems: count
+          }; let i = index">
+            <form class="row me-1 mt-4" [formGroup]="getAdminFormGroup(i)">
+              <div class="col-11">
+                <div  tabindex="0" class="row-container2"    [ngClass]="{
+                  'editable': admin && admin?.isEditing
+                  
+                }" >
+                  
+                  <div class="column py-2">
+                    <div class="p-ab">
+                      <mat-label class="admin-labels">Admin Name </mat-label><b class="r-star">*</b>
+                    </div>
+                    <input matInput class="pt-1" formControlName="admin_name" placeholder="First Name" 
+                    [readonly]="!admin.isEditing">
+                            <div *ngIf="getAdminFormGroup(i)?.get('admin_name').touched && getAdminFormGroup(i)?.get('admin_name').invalid"
+                            class="error-text">
+                         <span *ngIf="getAdminFormGroup(i)?.get('admin_name').hasError('required')">
+                           Admin name is required
+                         </span>
+                         <span *ngIf="getAdminFormGroup(i)?.get('admin_name').hasError('pattern')">
+                           Invalid name.
+                         </span>
+                       </div>
+                  </div>
+                  
+                  <div class="column py-2">
+                    <div class="p-ab">
+                      <mat-label class="admin-labels">Email </mat-label><b class="r-star">*</b>
+                    </div>
+                    <input matInput class="pt-1" formControlName="admin_email_id" placeholder="Enter email Id" 
+                    [readonly]="!admin?.isEditing">
+                      <mat-error class="error-text" *ngIf="getAdminFormGroup(i)?.get('admin_email_id').hasError('required') && getAdminFormGroup(i)?.get('admin_email_id').touched">
+                        Email is required
+                      </mat-error>
+                      <mat-error class="error-text" *ngIf="getAdminFormGroup(i)?.get('admin_email_id').hasError('email') && getAdminFormGroup(i)?.get('admin_email_id').touched">
+                        Invalid email Id.
+                      </mat-error>
+                     
+                      
+                  <mat-error class="error-text" *ngIf="getAdminFormGroup(i)?.get('admin_email_id')?.errors?.['duplicateArrEmail'] && getAdminFormGroup(i)?.get('admin_email_id')?.touched && getAdminFormGroup(i)?.get('admin_email_id')?.invalid">
+                    Admin with this email already exists.
+                  </mat-error>
+                  </div>
+                  
+                  <div class="column py-2">
+                    <div class="p-ab">
+                      <mat-label class="admin-labels">Phone number</mat-label><b class="r-star">*</b>
+                    </div>
+                    <input type="tel" class="pt-1" matInput formControlName="admin_phone_number" onKeyPress="if(this.value.length==10) return false;" placeholder="Enter phone number" 
+                    [readonly]="!admin.isEditing">
+                            <div *ngIf="getAdminFormGroup(i)?.get('admin_phone_number').touched && getAdminFormGroup(i)?.get('admin_phone_number').invalid"
+                            class="error-text">
+                         <div *ngIf="getAdminFormGroup(i)?.get('admin_phone_number').hasError('required')">
+                           Phone number is required
+                         </div>
+                         <div *ngIf="getAdminFormGroup(i)?.get('admin_phone_number').hasError('phoneNumberLength')">
+                           Please enter 10 digits
+                         </div>
+                       </div>
+                  </div>
+                  
+                  <div class="column py-2">
+                    <div class="p-ab" style="top:-11px !important">
+                      <mat-label class="admin-labels">Status</mat-label><b class="r-star" >*</b>
+                    </div>
+                    <mat-slide-toggle class="pt-1" formControlName="is_active"  [disabled]="!admin.isEditing">
+                      {{ getAdminFormGroup(i)?.get('is_active')?.value == true  ? 'Active' : 'Inactive' }}
+                    </mat-slide-toggle>
+                  </div>
+                </div>
+              </div>
+              
+             
+              <div class="col-1 d-flex align-items-center p-0"  *ngIf="admin?.isEditing">
+                <img src="../../../../assets/images/tick.svg" class="icon-image" container="body" ngbTooltip="Save" style="color:#50C20D;" (click)="saveAdmin(i)"/>
+                <img src="../../../../assets/images/Close.svg" class="icon-image"  container="body" ngbTooltip="Cancel" (click)="toggleFormControlState(i, false)"/>
+                <img src="../../../../assets/images/Delete.svg" class="icon-image"  container="body" ngbTooltip="Delete" (click)="open(admin?.id,i)" *ngIf="adminList.length >1"/>
+              </div>
+              <div class="col-1 d-flex align-items-center p-0" (click)="toggleFormControlState(i, true)"  *ngIf="!admin?.isEditing">
+                <img src="../../../../assets/images/Edit.svg" class="icon-image"  container="body" ngbTooltip="Edit" />
+              </div>
+            </form>
+          </ng-container> 
+        </ng-container>
+          
+      </div>
+   
+      </div>
+    </div>
+
+  </div>
+ 
+ 
+  <div class="pagination-container p-0 pt-2">
+    <pagination-controls previousLabel="Prev" nextLabel="Next" (pageChange)="onTableDataChange($event)">
+    </pagination-controls>
+    <div class="items-per-page-container">
+      <div>Items per page</div>
+      <mat-select [(ngModel)]="tableSize" (selectionChange)="onTableSizeChange($event)" placeholder="10" class="page-size">
+        <mat-option *ngFor="let size of tableSizes" [value]="size">{{size}}</mat-option>
+      </mat-select>
+    </div>
+  </div>
+  
+</div> -->
+<div class="subscription-container">
+
+  <!-- Free Trial Card -->
+  <mat-card class="free-trial-card">
+    <h2 class="plan-title">Free Trial</h2>
+    <p class="plan-description">
+      This plan is active for a duration of <strong>30 days</strong>. 
+      It includes all features, but access is restricted to just 10 users.
+    </p>
+    <div class="plan-price">
+      <span>₹0</span>
+      <span class="validity">Valid for 30 days</span>
+      
+    </div>
+
+    <!-- White Background for List -->
+    <div class="white-background">
+      <ul class="plan-features">
+        <li>✓ Trial Plan</li>
+        <li>✓ Restricted to 10 users</li>
+        <li>✓ Access to All Modules</li>
+      </ul>
+    </div>
+    <div class="text-center">
+      <button mat-flat-button color="primary" class="cta-button">
+        Start your 30 days Free Trial
+      </button>
+    </div>
+    
+  </mat-card>
+
+  <!-- Standard Plan Card -->
+  <mat-card class="standard-card">
+    <h2 class="plan-title standard-title">Standard</h2>
+    <p class="plan-description">
+      This flexibility enables you to choose a payment plan that charges per user. 
+      You can choose to be charged either annually or monthly.
+    </p>
+
+    <!-- Highlighted Background for Monthly and Yearly -->
+    <div class="payment-options">
+      <div class="payment-option highlighted-option">
+        <span class="price">₹30</span>
+        <small>/ user / per month</small>
+        <div class="option-title">Monthly</div>
+      </div>
+      <div class="payment-option highlighted-option yearly-option">
+        <span class="price">₹25</span>
+        <small>/ user / per month</small>
+        <div class="option-title">Yearly</div>
+        <div class="discount-badge">10% OFF</div>
+      </div>
+    </div>
+
+    <!-- List inside white background -->
+    <div class="dark-background">
+      <ul class="plan-features">
+        <li>✓ Enterprise Plan</li>
+        <li>✓ Access to all modules</li>
+      </ul>
+    </div>
+
+    <div class="no-refund-note">No Refund on cancellation</div>
+    <div class="text-center">
+      <button mat-flat-button color="primary" class="cta-button">
+        Buy Standard Plan
+      </button>
+    </div>
+   
+  </mat-card>
+
+</div>
+

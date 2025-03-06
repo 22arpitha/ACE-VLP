@@ -1,0 +1,143 @@
+<!-- New Login Design -->
+<div class="container-fluid login-main-bg" style="margin: 0;padding: 5px 0px;">
+    <div>
+        <div class="row login-content-bg">
+            <div
+                class="d-none d-md-block col-12 col-md-12 col-lg-6 col-xl-6 login-left-content order-2 order-sm-2 order-md-2 order-lg-1 order-xl-1 ">
+                <img src="./../../../assets/images/login-left-content.png" class="left-content-img"
+                    alt="left-content-img" />
+            </div>
+            <div class="col-12 col-md-12 col-lg-6 col-xl-6 order-1 order-sm-1 order-md-1 order-lg-2 order-xl-2"
+                style="position: relative; align-self: center;">
+                <div class="login-right-content">
+                    <div class="row">
+                        <div class="logo-section">
+                            <img src="./../../../assets/images/logo.svg" alt="logo-img" width="200px" height="65px"
+                                class="app-logo-content" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <h2 class="login-text"><b>LOGIN</b></h2>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                            <form [formGroup]='loginForm' (ngSubmit)='login()' class="login-form-content">
+                                <div class="row my-2">
+                                    <div class="col custome-column">
+                                        <mat-form-field appearance="outline" class="w-100 custom-mat-form-field" >
+                                            <mat-label>Email Address<b class="r-star">*</b></mat-label>
+                                            <input matInput formControlName='email' placeholder="Email Address" (keypress)="preventSpace($event)"
+                                            aria-describedby="emailHelp" autocomplete="off" id="emailId" oninput="this.value = this.value.toLowerCase()">
+                                            <mat-icon matSuffix>mail_outline</mat-icon>
+                                            <mat-error *ngIf="f['email'].touched && f['email'].invalid">
+                                              <span *ngIf="f['email'].errors && f['email'].errors['required']">Email Id is required.</span>
+                                              <span *ngIf="f['email'].errors && f['email'].errors['email']">Email Id is invalid.</span>
+                                            </mat-error>
+                                          </mat-form-field>
+                                    </div>
+                                </div>
+                                <div class="row my-2">
+                                    <div class="col custome-column p-r">
+                                        <mat-form-field appearance="outline" class="w-100 custom-mat-form-field" >
+                                            <mat-label>Password<b class="r-star">*</b></mat-label>
+                                            <input matInput [type]="passwordType" formControlName='password' placeholder="Password"
+                                            aria-describedby="emailHelp" autocomplete="off" id="password">
+                                            <mat-icon matSuffix  (click)="showPassword()">{{eyeIcon}}</mat-icon>
+                                            <mat-error  *ngIf="f['password'].touched && f['password'].invalid">
+                                              <span *ngIf="f['password'].errors && f['password'].errors['required']">Password is required.</span>
+                                            </mat-error>
+                                          </mat-form-field>
+                                    </div>
+                                </div>
+                                
+                                <div class="action-btn-link-content">
+                                    <a routerLink="../forgotPassword" class="m-0">Forgot Password?</a>
+                                    <button mat-raised-button class="proceedbtn" type="submit">Login</button>
+                                </div>
+                                <div class="webView">
+                                    <div class="row sign-up-card">
+                                        <div class="col-sm-2 col-md-2 content-signup">
+                                            <img  src="../../../assets/images/octicon_organization-24.svg" alt="" width="45" height="45">
+                                        </div>
+                                        <div class="col-sm-10 col-md-7 mx-0 content-signup">
+                                            <p class="fs-6">Create an account for your organization by clicking here.</p>
+                                        </div>
+                                        <div class="col-sm-2 col-md-3 content-signup">
+                                            <button mat-raised-button class="sign-up-button" (click)="signUp()" type="button">Register</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="mobileView row sign-up-card">
+                                    
+                                    <div class="col-12 mx-0 content-signup">
+                                        <p class="pf-s text-center"><img  src="../../../assets/images/octicon_organization-24.svg" alt="" width="35" height="35"/>Create an account for your organization by clicking here.</p>
+                                    </div>
+                                    <div class="col-12 content-signup">
+                                        <button mat-raised-button class="sign-up-button pf-s" (click)="signUp()" type="button">Register</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+    
+            </div>
+            
+        </div>
+        <div class="row login-footer">
+            <div class="col-12">
+                <div class="row">
+                    <div class="d-none d-md-block col-sm-12 col-md-6 col-lg-4 text-center text-md-start">
+                        <p class="">Customer@projectace.com</p>
+                    </div>
+                    <div class="d-none d-md-block col-sm-12 col-md-6 col-lg-4 text-center">
+                        <p><span><i class="bi bi-c-circle fs-6 p-0"></i></span>  Project Ace. All rights reserved</p>
+                    </div>
+
+                   
+                     <div class="d-none d-md-block col-sm-12 col-md-6 col-lg-4 text-center text-md-end ">
+                        <div class="d-flex justify-content-center justify-content-md-end align-items-center social-media">
+                            <div>
+                                <a href="https://www.linkedin.com/company/ekfrazo-technologies/" target="_blank"><i
+                                    class="bi bi-linkedin"></i></a>
+                            </div>
+                            <div>
+                                <a href="https://www.facebook.com/ekfrazotechnologies/" target="_blank"><i
+                                    class="bi bi-facebook"></i></a>
+                            </div>
+                            <div>
+                                <a href="https://twitter.com/ekfrazo" target="_blank"><i class="bi bi-twitter-x"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="d-block d-md-none col-sm-12 col-md-6 col-lg-4 text-center text-md-start">
+                        <p class="pf-s">Customer@projectace.com</p>
+                    </div>
+                    <div class="d-block d-md-none col-sm-12 col-md-6 col-lg-4 text-center">
+                        <p class="pf-s"><span><i class="bi bi-c-circle pf-s p-0"></i></span>  Project Ace. All rights reserved</p>
+                    </div>
+                    <div class="col-sm-12 col-md-6 col-lg-4 text-center text-md-end mobileView my-2">
+                        <div class="d-flex justify-content-center justify-content-md-end align-items-center social-media">
+                            <div>
+                                <a href="https://www.linkedin.com/company/ekfrazo-technologies/" target="_blank"><i
+                                    class="bi bi-linkedin"></i></a>
+                            </div>
+                            <div>
+                                <a href="https://www.facebook.com/ekfrazotechnologies/" target="_blank"><i
+                                    class="bi bi-facebook"></i></a>
+                            </div>
+                            <div>
+                                <a href="https://twitter.com/ekfrazo" target="_blank"><i class="bi bi-twitter-x"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    
+</div>

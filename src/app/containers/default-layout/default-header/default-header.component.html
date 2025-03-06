@@ -1,0 +1,144 @@
+<!--<c-header class="mb-4 d-print-none" position="sticky">-->
+<!-- <ng-container>
+  <c-container [fluid]="true" class="header-content">
+    <button 
+      toggle="visible"
+      cHeaderToggler
+      [cSidebarToggle]="sidebarId"
+      class="ps-1 desktop-hide-content"
+    >
+      <svg cIcon
+        name="cilMenu"
+        size="lg"
+      ></svg>
+    </button>
+    <div class="row" >
+      <div class="col-sm-12">
+         
+          <h1 class="breadcrumb-title" *ngIf="pageName" [ngStyle]="{'padding-top': pageName === 'Dashboard' ? '10px' : '0px'}">{{pageName |titlecase}}</h1>
+         <!-- <div class="mobile-hide-content" *ngIf="pageName!=''">
+          <nav aria-label="breadcrumb ">
+            <ol class="breadcrumb mb-2">
+              <li class="breadcrumb-item" *ngIf="pageName !== 'Dashboard' && dashboardAccess?.['name'] === 'Dashboard' "><a routerLink="/dashboards">Dashboard</a> </li>
+              <li class="breadcrumb-item sub-title" *ngIf="pageName !== 'Dashboard'"><a [ngStyle]="dashboardAccess?.['name'] !== 'Dashboard' ? {'text-decoration':'none'}:{'':''}">{{pageName |titlecase}}</a></li>
+            </ol>
+          </nav>
+         </div> --
+      </div>
+  </div>
+   
+    <c-header-nav class="p-r">
+      <div class="row" style="transform: scale(0.9);">
+        <div class="col" *ngIf="user_role_Name ==='Admin'" >
+          <div *ngFor="let items of mySubscription">
+          <button mat-button type="button" class="btn-4" *ngIf="items?.subscription_type_name === 'Free Trial' && items?.is_active">
+            
+              
+                <div><img src="../../../../assets/images/megaphone_white.svg" style="position: absolute;
+                  left: 10px;
+                  top: 10px;"/><small>{{items?.subscription_type_name}}</small></div>
+                <strong>{{items?.remaining_number_of_days  || 'NA'}} {{items?.remaining_number_of_days > 1 ? 'days left' : 'day left'}}</strong>
+              
+            
+          </button>
+        </div>
+          
+        </div>
+        <div class="col p-0">
+          <button *ngIf="user_role_Name!='SuperAdmin'"  container="body"
+          ngbTooltip="Get started" placement="top" type="click" class="user-guide-btn"  (click)="openWelcomeDialog()">
+            <img src="../../../assets/images/bulb.svg" width="25" height="25">
+          </button>
+        </div>
+        <div class="col" >
+          <div class="d-flex justify-content-between">
+            <div class="notification-container">
+              <i class="bi bi-bell" [matBadge]="notification_count || 0"  matBadgeColor="warn"   container="body"
+              ngbTooltip="notification" placement="top" (click)="openNotification()"></i>
+            </div>
+            <i class="bi bi-power power-icon" (click)="openDialogue()" container="body"
+            ngbTooltip="logout" placement="top"></i>
+            
+          </div>
+        </div>
+       
+      </div>
+      
+     
+     
+    </c-header-nav>
+   
+  </c-container>
+  
+</ng-container> -->
+<!--</c-header>-->
+
+<header class="header">
+  <div class="menu-icon desktop-hide-content">
+    <button mat-icon-button toggle="visible"
+    cHeaderToggler
+    [cSidebarToggle]="sidebarId">
+      <mat-icon>menu</mat-icon>
+    </button>
+  </div>
+
+  <div class="title">
+    <h1 class="breadcrumb-title" *ngIf="pageName">{{pageName |titlecase}}</h1>
+  </div>
+
+  <div class="actions">
+    <div *ngFor="let items of mySubscription" class="d-none d-lg-block">
+          <button mat-button type="button" class="btn-4" *ngIf="items?.subscription_type_name === 'Free Trial' && items?.is_active">
+                <div><img src="../../../../assets/images/megaphone_white.svg" style="position: absolute;
+                  left: 10px;
+                  top: 10px;"/><small>{{items?.subscription_type_name}}</small></div>
+                <strong>{{items?.remaining_number_of_days  || 0 }} {{items?.remaining_number_of_days > 1 ? 'days left' : 'day left'}}</strong>
+          </button>
+        </div>
+        <div *ngIf="hideHeaderButton && user_role_Name !== 'SuperAdmin'">
+          <div *ngFor="let items of mySubscription">
+            <button *ngIf="items?.is_active" mat-icon-button aria-label="Get Started" class="icon-button user-guide-btn"
+            container="body"
+                  ngbTooltip="Get started" placement="top" (click)="openWelcomeDialog()">
+                  <img src="../../../assets/images/bulb.svg" width="25" height="25">
+            </button>
+          </div>
+        </div>
+      
+      <div *ngIf="user_role_Name === 'SuperAdmin'">
+        <button  mat-icon-button aria-label="Notifications" class="icon-button"
+        container="body" ngbTooltip="Notifications" placement="top" 
+        (click)="openNotification()" style="position: relative;">
+      <img src="../../../../assets/images/Notification.svg" class="notification-icon" />
+      
+      <!-- Custom Badge -->
+      <span class="custom-badge" *ngIf="notification_count > 0" [ngClass]="notification_count > 99 ? 'cs-notification-pad' : ''">
+        {{ notification_count > 99 ? '99+' : notification_count }}
+      </span>
+
+    </button>
+       
+      </div>
+      <div *ngFor="let items of mySubscription">
+        <button *ngIf="items?.is_active" mat-icon-button aria-label="Notifications" class="icon-button"
+        container="body" ngbTooltip="Notifications" placement="top" 
+        (click)="openNotification()" style="position: relative;">
+      
+      <img src="../../../../assets/images/Notification.svg" class="notification-icon" />
+      
+      <!-- Custom Badge -->
+      <span class="custom-badge" *ngIf="notification_count > 0" [ngClass]="notification_count > 98 ? 'cs-notification-pad' : ''">
+        {{ notification_count > 98 ? '99+' : notification_count }}
+      </span>
+
+    </button>
+      </div>
+    <button mat-icon-button aria-label="Logout" class="icon-button mobile-hide-content"
+    (click)="openDialogue()" container="body"
+            ngbTooltip="Logout" placement="top">
+      <mat-icon>power_settings_new</mat-icon>
+    </button>
+  </div>
+</header>
+
+

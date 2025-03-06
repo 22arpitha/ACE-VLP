@@ -1,0 +1,181 @@
+<div class="container-wrapper webView">
+  <div class="row pb-3">
+    <div class="col-sm-4 search-div">
+      <input type="search" (input)="filterSearch($event)" class="form-control p-2 sizeinput" [(ngModel)]="term"
+        placeholder="Search by client name" aria-describedby="emailHelp" autocomplete="off">
+      <i class="bi bi-search" id="search-icon-tab"></i>
+    </div>
+    <div class="col-sm"></div>
+    <div class="col-md-3 col-lg-3 p-1 text-end create-buttons">
+      <button mat-raised-button class="proceedbtn mat-btn-s" routerLink="/client/create" type="submit"
+      *ngIf="userRole ==='Employee' && accessPermissions[0]?.create || userRole === 'Admin'">
+        <mat-icon>add</mat-icon>Create Clients</button>
+
+    </div>
+  </div>
+
+  <div class="bg" *ngIf="userRole ==='Employee' && accessPermissions[0]?.view || userRole === 'Admin'">
+    <div class="row">
+      <div class="col px-0">
+        <table class="table table-hover table-list">
+          <thead>
+            <tr>
+              <th scope="col">S.No</th>
+              <th scope="col">Client Name
+                <i *ngIf="!arrowState['clint_name']" (click)="sort('asc','clint_name')" class="bi bi-arrow-up"></i>
+                <i (click)="sort('desc','clint_name')" *ngIf="arrowState['clint_name']" class="bi bi-arrow-down"></i>
+              </th>
+              <th scope="col">Contact Person
+                <i *ngIf="!arrowState['contact_person_name']" (click)="sort('asc','contact_person_name')"
+                  class="bi bi-arrow-up"></i>
+                <i (click)="sort('desc','contact_person_name')" *ngIf="arrowState['contact_person_name']"
+                  class="bi bi-arrow-down"></i>
+              </th>
+              <th scope="col">Email
+                <i *ngIf="!arrowState['email']" (click)="sort('asc','email')"
+                  class="bi bi-arrow-up"></i>
+                <i (click)="sort('desc','email')" *ngIf="arrowState['email']"
+                  class="bi bi-arrow-down"></i>
+              </th>
+              <th scope="col">Reg. Date
+                <i *ngIf="!arrowState['created_datetime']" (click)="sort('asc','created_datetime')"
+                  class="bi bi-arrow-up"></i>
+                <i (click)="sort('desc','created_datetime')" *ngIf="arrowState['created_datetime']"
+                  class="bi bi-arrow-down"></i>
+              <th scope="col">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <ng-container *ngIf="(allClientList) as result">
+              <tr *ngFor='let item of result | customSort:directionValue:sortValue
+                        |paginate : {
+                                 itemsPerPage: tableSize,
+                                 currentPage: page,
+                                 totalItems: count
+                               }; let i=index'>
+                <td>{{getContinuousIndex(i)}}</td>
+                <td>{{item.clint_name|titlecase}}</td>
+                <td>{{item.contact_person_name|titlecase}}</td>
+                <td>{{item.email}}</td>
+                <td>{{item.created_datetime | date:'dd-MM-yyyy'}}</td>
+
+                <td>
+                  <ng-container>
+                    <img src="../../../../assets/images/Edit.svg" class="icon-image"
+                      *ngIf="userRole ==='Employee' && accessPermissions[0]?.update || userRole === 'Admin'"
+                      routerLink="/client/update/{{item.id}}/{{page}}/{{tableSize}}" container="body"
+                      ngbTooltip="Edit" />
+                    <img src="../../../../assets/images/Delete.svg" class="icon-image" container="body"
+                      *ngIf="userRole ==='Employee' && accessPermissions[0]?.delete || userRole === 'Admin'"
+                      ngbTooltip="Delete" (click)="open(item.id)" />
+                      <span  *ngIf="userRole ==='Employee' && !accessPermissions[0]?.update && !accessPermissions[0]?.delete">-</span>
+                  </ng-container>
+                </td>
+              </tr>
+            
+            </ng-container>
+          </tbody>
+        </table>
+        <div class="col-12" *ngIf="allClientList.length === 0">
+          <app-generic-norecards></app-generic-norecards>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <div class="pagination-container p-0 pt-2">
+    <pagination-controls previousLabel="Prev" nextLabel="Next" (pageChange)="onTableDataChange($event)">
+    </pagination-controls>
+    <div class="items-per-page-container">
+      <div>Items per page</div>
+      <mat-select [(ngModel)]="tableSize" (selectionChange)="onTableSizeChange($event)" placeholder="10"
+        class="page-size">
+        <mat-option *ngFor="let size of tableSizes" [value]="size">{{size}}</mat-option>
+      </mat-select>
+    </div>
+  </div>
+</div>
+
+<div class="container-wrapper mobileView">
+  <div class="row mx-1 my-2">
+    <div class="col-sm-6">
+      <!-- <h1>Client list</h1> -->
+    </div>
+    <div class="col-sm-6 col-md-6 mb-1 search-div px-0">
+      <input type="text" class="form-control py-3 px-4" (input)="filterSearch($event)" [(ngModel)]="term"
+        placeholder="Search by client name/contact person" aria-describedby="emailHelp" autocomplete="off">
+      <i class="bi bi-search" id="search-icon"></i>
+    </div>
+  </div>
+  <div class="bg">
+    <div class="row">
+      <ng-container *ngIf="(allClientList) as result">
+        <div class="col-sm-12 col-md-6 c-m main-col" *ngFor='let item of result | paginate : {
+                itemsPerPage: tableSize,
+                currentPage: page,
+                totalItems: count
+              }'>
+          <div class="card p-3">
+            <div class="row">
+              <div class="col-6 b-b">
+                <h6 class="card-subtitle"><i class="bi bi-person-circle"></i> Client name</h6>
+                <div class="value-container">{{item.clint_name |titlecase}}</div>
+              </div>
+              <div class="col-6 p-2 text-end">
+                <ng-container *ngFor="let access of permissions">
+                  <a *ngIf="access == 'UPDATE'"> <button type="button" class="toolbar-btn"
+                      (click)='editCard(item.id)'><i class="bi bi-pencil-square"
+                        style="color: #000; font-size: 24px;"></i></button></a>
+                  <a *ngIf="access == 'DELETE'"> <button type="button" class="toolbar-btn" (click)="open(item.id)"><i
+                        class="bi bi-trash" style="color: red; font-size: 24px;"></i></button></a>
+                </ng-container>
+              </div>
+            </div>
+            <!-- <div class="row">
+                        <div class="col-12 b-b">
+                            <h6 class="card-subtitle"><i class="bi bi-person-circle"></i> Client name</h6>
+                            <div class="value-container">{{item.clint_name}}</div>
+                        </div>
+                    </div> -->
+            <div class="row">
+              <div class="col-6">
+                <h6 class="card-subtitle"><i class="bi bi-calendar-week"></i> Reg. date</h6>
+                <div class="value-container">{{item.created_datetime | date:'dd-MM-yyyy'}}</div>
+              </div>
+              <div class="col-6">
+                <h6 class="card-subtitle"><i class="bi bi-person-rolodex"></i> Contact person</h6>
+                <div class="value-container">{{item.contact_person_name|titlecase}}</div>
+              </div>
+            </div>
+            <div class="row">
+            </div>
+
+          </div>
+        </div>
+        
+      </ng-container>
+      <div class="col-12" *ngIf="allClientList.length === 0">
+        <app-generic-norecards></app-generic-norecards>
+      </div>
+    </div>
+    <div class="pagination-container p-0 pt-2">
+      <pagination-controls previousLabel="Prev" nextLabel="Next" (pageChange)="onTableDataChange($event)">
+      </pagination-controls>
+      <div class="items-per-page-container">
+        <div>Items per page</div>
+        <mat-select [(ngModel)]="tableSize" (selectionChange)="onTableSizeChange($event)" placeholder="10"
+          class="page-size">
+          <mat-option *ngFor="let size of tableSizes" [value]="size">{{size}}</mat-option>
+        </mat-select>
+      </div>
+    </div>
+    <div class="s-position">
+      <ng-container *ngFor="let access of permissions">
+        <button *ngIf="access == 'CREATE'" routerLink="/client/create" type="button" mat-fab class="createbtn-new"><i
+            class="fa fa-plus"></i>
+        </button>
+      </ng-container>
+  </div>
+  
+  </div>
+</div>

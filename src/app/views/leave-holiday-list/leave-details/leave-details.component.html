@@ -1,0 +1,143 @@
+<div class="container-fluid">
+
+    <div class="generic-form bg mx-1 p-20">
+
+            <form [formGroup]="leaveTypeForm">
+          
+              <!-- Leave Details Section -->
+              <h5 class="c-header">Leave Details</h5>
+              <div class="row">
+                <div class="col-md-6 mat-custom-input">
+                  <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Leave Title <b class="r-star">*</b></mat-label>
+                    <input matInput formControlName="leave_title" placeholder="Enter leave type Name">
+                    <mat-error *ngIf="leaveTypeForm?.get('leave_title')?.touched && leaveTypeForm.get('leave_title')?.invalid && leaveTypeForm.get('leave_title')?.hasError('required')">
+                      Leave title is required.
+                    </mat-error>
+                    <mat-error *ngIf="!leaveTypeForm.get('leave_title')?.hasError('required') && !leaveTypeForm.get('leave_description')?.hasError('maxlength') && leaveTypeForm?.get('leave_title')?.touched && leaveTypeForm?.get('leave_title')?.touched && leaveTypeForm.get('leave_title')?.hasError('pattern')">
+                      Invalid leave title.It accepts only characters.
+                    </mat-error>
+                   
+                    <mat-error *ngIf="!leaveTypeForm.get('leave_title')?.hasError('required') && leaveTypeForm.get('leave_title')?.hasError('pattern') && leaveTypeForm?.get('leave_title')?.touched && leaveTypeForm.get('leave_title')?.hasError('maxlength')">
+                      Leave title cannot exceed 50 characters.
+                    </mat-error>
+                    
+                  </mat-form-field>
+
+                </div>
+             
+              </div>
+              <div class="row">
+                <div class="col-md-6">
+                    <mat-form-field appearance="outline" class="full-width">
+                      <mat-label>Leave Description </mat-label>
+                      <textarea matInput formControlName="leave_description" placeholder="Enter leave description"></textarea>
+                      
+                      <mat-error *ngIf="!leaveTypeForm.get('leave_description')?.hasError('maxlength') && leaveTypeForm?.get('leave_description')?.touched && leaveTypeForm.get('leave_description')?.hasError('pattern')">
+                        Leave description cannot start with a space.
+                       </mat-error>
+                       <mat-error *ngIf="!leaveTypeForm.get('leave_description')?.hasError('pattern') && leaveTypeForm?.get('leave_description')?.touched && leaveTypeForm.get('leave_description')?.hasError('maxlength')">
+                        Leave description cannot exceed 300 characters.
+                       </mat-error>
+                       <mat-hint align="end">{{leaveTypeForm.get('leave_description')?.value?.length }}/300 characters</mat-hint>
+                    </mat-form-field>
+                  </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4 mat-custom-input">
+                    <mat-form-field appearance="outline" class="full-width">
+                      <mat-label>Number of Leaves <b class="r-star">*</b></mat-label>
+                      <input matInput type="number" formControlName="number_of_leaves" placeholder="Enter number of leaves">
+                      <mat-error *ngIf="leaveTypeForm?.get('number_of_leaves')?.touched && leaveTypeForm?.get('number_of_leaves')?.invalid && !leaveTypeForm.get('number_of_leaves')?.hasError('min')">
+                        Number of leaves is required.
+                      </mat-error>
+                      <mat-error *ngIf="!leaveTypeForm?.get('number_of_leaves')?.hasError('required') && leaveTypeForm.get('number_of_leaves')?.hasError('min')">
+                        Number of leaves must be greater than 1
+                      </mat-error>
+                    </mat-form-field>
+                  </div>
+              </div>
+              <!-- Accruals & Carry Forward Section -->
+              <section class="d-flex align-items-center mb-2 p-1">
+                <mat-checkbox color="primary" class="example-margin" formControlName="accruals_or_carry_forward_chx_bx"><h5 class="c-header">Accruals & Carry Forward</h5></mat-checkbox>
+              </section>
+              <section *ngIf="leaveTypeForm?.get('accruals_or_carry_forward_chx_bx')?.value">
+              <div class="row">
+                <div class="col-md-4">
+                  <mat-label  style="margin-right: 10px;" [ngClass]="!leaveTypeForm?.get('accruals_or_carry_forward')?.value ? 'active-accruals':''">Monthly</mat-label> 
+                    <mat-slide-toggle class="pt-1" formControlName="accruals_or_carry_forward" >
+                    </mat-slide-toggle>
+                    <mat-label style="margin-left: 10px;" [ngClass]="leaveTypeForm?.get('accruals_or_carry_forward')?.value ? 'active-accruals':''">Yearly</mat-label>
+                    <mat-error *ngIf="leaveTypeForm?.get('accruals_or_carry_forward')?.touched && leaveTypeForm?.get('accruals_or_carry_forward')?.invalid">
+                      This field is required.
+                    </mat-error>
+                </div>
+              </div>
+             
+              <div class="row">
+                <div class="col-md-4 mat-custom-input">
+                  <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Carry Forward (in %)</mat-label>
+                    <input matInput type="text" formControlName="cary_forward_percentage" placeholder="Enter carry forward (in %)" (blur)="formatPercentage()">
+                    <!-- <mat-error *ngIf="leaveTypeForm?.get('cary_forward_percentage')?.touched && leaveTypeForm?.get('carry_forward_percentage')?.invalid">
+                      Carry forward percentage is required.
+                    </mat-error> -->
+                    <mat-error *ngIf="leaveTypeForm.get('cary_forward_percentage')?.hasError('pattern') && !leaveTypeForm.get('cary_forward_percentage')?.hasError('max')">
+                        Please enter a valid percentage (e.g., 50 or 50%)
+                      </mat-error>
+                      <mat-error *ngIf="!leaveTypeForm.get('cary_forward_percentage')?.hasError('pattern') && leaveTypeForm.get('cary_forward_percentage')?.hasError('max')">
+                        Percentage cannot exceed 100%.
+                      </mat-error>
+                  </mat-form-field>
+                </div>
+              </div>
+            </section>
+              <!-- Graceful/Encashment Days Section -->
+              <h5 class="c-header">Graceful/Encashment Days</h5>
+              <div class="row">
+                <div class="col-md-4 mat-custom-input">
+                  <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Graceful Days </mat-label>
+                    <input matInput type="number" formControlName="graceful_days" placeholder="Enter graceful days">
+                    <!-- <mat-error *ngIf="leaveTypeForm?.get('graceful_days')?.touched && leaveTypeForm?.get('graceful_days')?.invalid">
+                      Graceful days are required.
+                    </mat-error> -->
+                    <mat-error *ngIf="leaveTypeForm.get('graceful_days')?.hasError('min')">
+                        Graceful days must be greater than 1
+                    </mat-error>
+                  </mat-form-field>
+                </div>
+              
+              </div>
+            
+             <section class="d-flex align-items-center mb-2 p-1">
+                <mat-checkbox color="primary" class="example-margin" formControlName="encashment"><h5 class="c-header">Encashment</h5></mat-checkbox>
+              </section>
+              <div class="row" *ngIf="leaveTypeForm?.get('encashment')?.value">
+                <div class="col-md-4 mat-custom-input">
+                  <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Maximum Encashment</mat-label>
+                    <input matInput type="number" formControlName="maximum_enhancement" placeholder="Enter maximum encashment">
+                    <mat-error *ngIf="leaveTypeForm.get('maximum_enhancement')?.hasError('min')">
+                        Maximum encashment must be greater than 1
+                    </mat-error>
+                </mat-form-field>
+                </div>
+              </div>
+          
+              <!-- Buttons -->
+              <div class="row">
+               
+                <div class="col-md-6 text-right">
+                  <button mat-raised-button class="submit-button" type="button" (click)="onSubmit()">Submit</button>
+                </div>
+              </div>
+            </form>
+          
+       
+    </div>
+   
+</div>
+
+
+

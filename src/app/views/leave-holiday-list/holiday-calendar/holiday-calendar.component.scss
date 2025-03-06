@@ -1,0 +1,28 @@
+.file{
+    border: 1px solid #ebedef;
+    padding: 5px;
+    border-radius: 5px;
+}
+
+.p-30{
+    padding:10px 30px;
+}
+
+.bi{
+   color: #126EB4;
+}
+.proceed-btn{
+    background-color: #126EB4;
+    color:white;
+    margin: auto;
+}
+@media only screen and (min-width: 200px) {
+    .mat-card{
+        width: 100%;
+    }
+  }
+  @media only screen and (min-width: 767px) {
+    .mat-card{
+        width: 30%;
+    }
+  }

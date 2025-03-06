@@ -1,0 +1,88 @@
+<div class="container-fluid">
+   
+        <div class="background-content">
+            <div class="d-flex justify-content-center align-items-center container">
+              
+     <!-- <form [formGroup]='roleForm' (ngSubmit)='addRole()' class="card bg-role" *ngIf="admin"> -->
+        <form [formGroup]='roleForm' (ngSubmit)='addRole()' class="card bg-role" >
+        <div class="row">
+            <div class="col-sm-12 text-center">
+                <h4>Create Role</h4>
+            </div>
+        </div>
+     
+        <div class="row">
+            <div class="col-sm-12">
+                <p>Role Name <span >*</span></p> 
+                <input type="text" class="form-control p-2sizeinput" formControlName="user_role_name" placeholder="Enter Role Name" aria-describedby="emailHelp"  autocomplete="off">
+                <div *ngIf="f['user_role_name'].touched && f['user_role_name'].invalid" >
+                    <p *ngIf="f['user_role_name'].errors['required']" class="error-msg">Role Name is required</p>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <p>Description <span >*</span></p>
+                    <textarea class="form-control" placeholder="Enter Your Description Here..." formControlName="description" id="floatingTextarea2" style="height:60px"></textarea>
+                    <div *ngIf="f['description'].touched && f['description'].invalid" >
+                        <div *ngIf="f['description'].errors && f['description'].errors['required'] " ><p class="error-msg">Description is required</p></div>
+                    </div>      
+              </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <p>Priority <span >*</span></p>
+                <select class="form-select" aria-label="Default select example"  formControlName="priority">
+                    <option value="" disabled selected>Select Priority</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                  </select>
+                  <div *ngIf="f['priority'].touched && f['priority'].invalid" >
+                    <div *ngIf="f['priority'].errors && f['priority'].errors['required'] " ><p class="error-msg">Priority is required</p></div>
+                </div> 
+            </div>
+            
+        </div>
+     
+        <div class="row">
+            <div class="col-sm-12">
+                <p>Status <span >*</span></p>
+                <select formControlName="role_status" class="form-select p-2 sizeinput">
+                    <option value="" selected disabled>Select An Option</option>
+                    <option value="Active" >Active</option>
+                    <option value="Inactive">Inactive</option>
+                </select>
+                <div *ngIf="f['role_status'].touched && f['role_status'].invalid" >
+                    <div *ngIf="f['role_status'].errors && f['role_status'].errors['required'] " ><p class="error-msg">Status is required</p></div>
+                </div> 
+            </div>
+        </div>
+        <div class="row">
+            <!-- <div class="col-sm-3">
+                <p><i class="bi bi-newspaper"></i>Note: <span>*</span>Mandatory fields</p>
+            </div> -->
+            <!-- <div class="col-sm"></div> -->
+            <div class="col-sm-12">
+                <button mat-raised-button class="proceedbtn" type="submit">Submit</button>
+            </div>
+        </div>
+          <div class="row" style="text-align: center;">
+        <div class="col">
+            <a routerLink="../register" class="login-links">REGISTER?</a><br/>
+            <a routerLink="/dashboards" class="login-links">DASHBOARD?</a><br>
+            <a routerLink="../login" class="login-links">LOGIN?</a>
+            
+           
+            
+        </div>
+    </div>
+     </form> 
+   
+    </div>
+    </div>
+   
+</div>
+

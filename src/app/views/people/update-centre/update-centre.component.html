@@ -1,0 +1,166 @@
+<div class="container-fluid webView">
+    <!-- <div class="row">
+        <div class="col-sm-6">
+            <h1>Update centers</h1>
+        </div>
+        <div class="col-sm"></div>
+        <div class="col-sm-3">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                  <li class="breadcrumb-item"><a routerLink="/dashboards">Home</a></li>
+                  <li class="breadcrumb-item">Update centers</li>
+                  
+                </ol>
+              </nav>
+        </div>
+        
+    </div> -->
+    <div class="generic-form bg mx-1">
+        <form [formGroup]='updateForm' (ngSubmit)='update()' >
+            <div class="row">
+                <div class="col-sm-6">
+                    <h4>Center details</h4>
+                </div>
+            </div>
+        
+            <div class="row">
+                <div class="col-sm-6">
+                    <p>Center name  <span >*</span></p> 
+                    <input type="text" class="form-control p-3 sizeinput" formControlName="center_name" placeholder="Enter center name" aria-describedby="emailHelp"  autocomplete="off">
+                    <div *ngIf="f['center_name'].touched && f['center_name'].invalid" >
+                        <div *ngIf="f['center_name'].errors && f['center_name'].errors['required'] " ><p class="error-msg">Center name is required</p></div>
+                    </div>
+                    <div *ngIf="f['center_name'].invalid && f['center_name'].hasError('pattern')">
+                        <p class="error-msg">Center name cannot contain spaces,numbers and special characters.</p>
+                    </div>
+                </div>
+            </div>
+       
+            <!-- <div class="row">
+                <div class="col-sm-6">
+                    <p>Year start date <span >*</span></p>
+                    <input class="form-control" formControlName="year_start_date" id="date-input" type="date" name="date-input" placeholder="date" (change)="checkValues($event)">  
+                    <div *ngIf="f['year_start_date'].touched && f['year_start_date'].invalid" >
+                        <div *ngIf="f['year_start_date'].errors && f['year_start_date'].errors['required'] " ><p class="error-msg">Year start date is required</p></div>
+                    </div>
+                </div>
+            </div> -->
+         
+            <!-- <div class="row">
+                <div class="col-sm-6">
+                    <p>Year end date <span >*</span></p>
+                    <input class="form-control" [min]="updateForm.value.year_start_date" formControlName="year_end_date" id="date-input" type="date" name="date-input" placeholder="date" (change)="changeYearEndDate($event)">     
+                    <div *ngIf="f['year_end_date'].touched && f['year_end_date'].invalid">
+                        <div *ngIf="f['year_end_date'].errors && f['year_end_date'].errors['required']" ><p class="error-msg">Year end date is required</p></div>
+                    </div>
+                    <div *ngIf="invalidDate">
+                        <p class="error-msg">Year end date should be greater than year start date</p>
+                    </div>
+                </div>
+            </div> -->
+            <div class="row">
+                <div class="col-sm-6">
+                    <p>Status <span >*</span></p>
+                    <select class="form-select" aria-label="Default select example" formControlName="center_status" >  
+                        <option value="" selected disabled>Select status</option>        
+                        <option value="Active">Active</option>
+                        <option value="Inactive">Inactive</option>
+                      </select>
+                      <div *ngIf="f['center_status'].touched && f['center_status'].invalid" >
+                        <div *ngIf="f['center_status'].errors && f['center_status'].errors['required']"><p class="error-msg">Status is required</p></div>
+                    </div>
+                </div>            
+            </div>
+            
+    
+            <div class="row">
+                
+                <div class="col-sm-2">
+                    <button mat-raised-button class="proceedbtn mat-btn-s" type="submit">Update</button>
+                </div>
+            </div>
+        </form>
+       
+    </div>
+   
+</div>
+<div class="container-fluid mobileView">
+    <div class="row mx-1 my-2">
+        <div class="col-sm-12">
+            <h1> <i  class="bi bi-arrow-left" (click)="goBack($event)
+  
+  "></i> Update centers</h1>
+        </div>
+       
+    </div>
+    <div class="generic-form bg mx-1">
+        <form [formGroup]='updateForm' (ngSubmit)='update()' >
+            <div class="row">
+                <div class="col-sm-6">
+                    <h4>Center details</h4>
+                </div>
+            </div>
+        
+            <div class="row">
+                <div class="col-sm-6">
+                    <p>Center name  <span >*</span></p> 
+                    <input type="text" class="form-control p-3 sizeinput" formControlName="center_name" placeholder="Enter center name" aria-describedby="emailHelp"  autocomplete="off">
+                    <div *ngIf="f['center_name'].touched && f['center_name'].invalid" >
+                        <div *ngIf="f['center_name'].errors && f['center_name'].errors['required'] " ><p class="error-msg">Center name is required</p></div>
+                    </div>
+                    <div *ngIf="f['center_name'].invalid && f['center_name'].hasError('pattern')">
+                        <p class="error-msg">Center name cannot contain spaces,numbers and special characters.</p>
+                    </div>
+                </div>
+            </div>
+       
+            <!-- <div class="row">
+                <div class="col-sm-6">
+                    <p>Year start date <span >*</span></p>
+                    <input class="form-control" formControlName="year_start_date" id="date-input" type="date" name="date-input" placeholder="date" (change)="checkValues($event)">  
+                    <div *ngIf="f['year_start_date'].touched && f['year_start_date'].invalid" >
+                        <div *ngIf="f['year_start_date'].errors && f['year_start_date'].errors['required'] " ><p class="error-msg">Year start date is required</p></div>
+                    </div>
+                </div>
+            </div> -->
+         
+            <!-- <div class="row">
+                <div class="col-sm-6">
+                    <p>Year end date <span >*</span></p>
+                    <input class="form-control" [min]="updateForm.value.year_start_date" formControlName="year_end_date" id="date-input" type="date" name="date-input" placeholder="date" (change)="changeYearEndDate($event)">     
+                    <div *ngIf="f['year_end_date'].touched && f['year_end_date'].invalid">
+                        <div *ngIf="f['year_end_date'].errors && f['year_end_date'].errors['required']" ><p class="error-msg">Year end date is required</p></div>
+                    </div>
+                    <div *ngIf="invalidDate">
+                        <p class="error-msg">Year end date should be greater than year start date</p>
+                    </div>
+                </div>
+            </div> -->
+            <div class="row">
+                <div class="col-sm-6">
+                    <p>Status <span >*</span></p>
+                    <select class="form-select" aria-label="Default select example" formControlName="center_status" >  
+                        <option value="" selected disabled>Select status</option>        
+                        <option value="Active">Active</option>
+                        <option value="Inactive">Inactive</option>
+                      </select>
+                      <div *ngIf="f['center_status'].touched && f['center_status'].invalid" >
+                        <div *ngIf="f['center_status'].errors && f['center_status'].errors['required']"><p class="error-msg">Status is required</p></div>
+                    </div>
+                </div>            
+            </div>
+            
+    
+            <div class="row">
+                
+                <div class="col-sm-12 col-md-6 col-lg-6">
+                    <button mat-raised-button class="proceedbtn mat-btn-s" type="submit">Update</button>
+                </div>
+            </div>
+        </form>
+       
+    </div>
+   
+</div>
+
+

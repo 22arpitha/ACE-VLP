@@ -1,0 +1,119 @@
+
+.sidebar-nav .nav-link {
+     color: black !important;
+  //   padding: 11px 15px 11px 0px;
+ }
+ #sidebar{
+    background-image: url(./../assets/images/sidebar-bg-transparent-img.png), radial-gradient(100% 60.3% at 0% 45.5%, #FFFFFF 0%, #D7EEFF 100%);
+     background-repeat: no-repeat;
+     background-size: cover;
+     
+ }
+@media (min-width: 992px) {
+    #sidebar{
+       z-index: 1;
+    }
+}
+ .sidebar-nav{
+     padding: 10px 20px 0px 0px;
+     
+ }
+ 
+ 
+ // .sidebar-nav .nav-group.show {
+ //     background: #eeeeee !important;
+ // }
+ //.sidebar-nav .nav-group.show {
+   //   background: #d8d8d8;
+   //   color: black !important;
+ //}
+
+ .sidebar-nav .nav-group-items .nav-item .nav-link{
+    padding-left: 30px !important;
+ }
+.sidebar-nav .nav-link.active {
+    color: #212529 !important;
+    font-weight: 500;
+    font-family: 'Exo FT' !important;
+    background: white;
+    // margin: 0px 5px 0px 0px;
+    border-bottom-right-radius: 5px;
+    border-top-right-radius: 5px;
+}
+ // .sidebar-nav .nav-link{
+ //     color:white !important;
+ // }
+ //a.nav-link.ng-star-inserted {
+ //   color: black;
+//}
+ 
+ .sidebar-nav .nav-link:hover .nav-icon {
+    opacity: 0.7;
+ }
+ .sidebar-nav .nav-link:hover {
+  //   color: #6c757d !important;
+     text-decoration: none;
+    //  transition: all 0.2s ease
+ }
+ .sidebar {
+    //  --cui-sidebar-width: 15rem;
+     font-size: 14px;
+     font-family: 'Exo FT' !important;
+
+ }
+ .mobileView{
+    .sidebar {
+        //  --cui-sidebar-width: 15rem;
+         font-size: 16px !important;
+         font-family: 'Exo FT' !important;
+
+     }
+ }
+ .sidebar-brand {
+     height: 50px;
+     background: transparent!important;
+     padding: 5px!important;
+     justify-content: left;
+    // border: 3px solid black;
+ }
+ //.sidebar-nav .nav-link .nav-icon {
+  //  color: black !important;
+// }
+.sidebar-nav .nav-icon {
+    color: rgb(13 107 178);
+    font-size: 16px;
+    font-family: 'Exo FT' !important;
+
+}
+.sidebar-nav .nav-link:hover .nav-icon{
+    color: white !important;
+    font-size: 16px;
+    font-family: 'Exo FT' !important;
+
+}
+ .sidebar-nav .nav-link.active .nav-icon {
+  color: white !important;
+ }
+ //.sidebar-nav .nav-group.show .nav-group-toggle {
+  //  background: rgba(255, 255, 255, 0.87);
+  //  color: black;
+ //}
+ .sidebar-toggler {   
+   background-color:transparent !important; 
+ }
+ .sidebar-toggler:hover::before {
+  background-image: var(--cui-sidebar-toggler-indicator) !important;
+ }
+ .sidebar-nav .nav-group-toggle::after {
+     background-image: var(--cui-sidebar-toggler-indicator) !important;
+     transform: rotate(-92deg) !important;
+    //  transition: all 0.5s ease
+ }
+ .sidebar-nav .nav-group.show > .nav-group-toggle::after {
+     transform: rotate(92deg) !important;
+ }
+//  .sidebar-logo{
+//      transform: scale(0.8);
+//  }
+ 
+ 

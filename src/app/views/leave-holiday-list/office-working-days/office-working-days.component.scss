@@ -1,0 +1,144 @@
+$primay-color: #126EB4;
+
+.container-fluid {
+    padding: 0 15px;
+  }
+  *{
+    font-size: 13px !important;
+  }
+  /* Generic form background styling */
+  .generic-form.bg {
+    padding: 20px 0;
+    border-radius: 8px;
+  }
+  .mat-card-title {
+    margin-bottom: 0 !important;
+    color:$primay-color;
+  }
+  
+ 
+  mat-card {
+    padding: 0px;
+    border-radius: 10px !important;
+    font-family: "Exo FT" !important;
+  }
+  .mat-form-field {
+    height: 40px !important;
+    margin-bottom: 20px !important;
+  }
+  .check-bx{
+    text-align: right;
+  }
+  h5{
+    padding-bottom: 15px;
+    font-weight: 500;
+  }
+  .col-align{
+    padding: 0 6px;
+    text-align: right;
+  }
+  .mat-checkbox {
+    display: block;
+  }
+  .title-column {
+    display: flex;
+    flex-direction: column;
+    background: #f6f6f6;
+    padding:15px 10px;
+  }
+  .submit-btn{
+    background-color: $primay-color;
+    color: white;
+  }
+  .header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .select-all-container {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  
+  /* Flexbox styling for the time selection section */
+  .d-flex {
+    display: flex;
+  }
+  
+  .align-items-center {
+    align-items: center;
+  }
+  
+  .flex-wrap {
+    flex-wrap: wrap;
+  }
+  
+  /* Adjust width for time select fields */
+  .mat-form-field.time-field {
+    width: 150px;
+    margin-right: 10px;
+  }
+  
+  .hours-display {
+    padding-bottom: 15px;
+    p{
+      font-size: 11px !important;
+    color: #8c8c8c !important;
+
+    }
+  }
+  
+  /* Responsive styles */
+  @media (max-width: 768px) {
+    .mat-form-field.time-field {
+      width: 100%; /* Full width on mobile */
+    }
+  
+    .hours-display {
+      width: 100%;
+      text-align: left;
+    }
+  
+    /* Adjust day selection section for smaller screens */
+    .day-selection {
+      padding: 10px;
+    }
+  
+    /* Font size adjustment for smaller headers */
+    h3 {
+      font-size: 1.5rem;
+    }
+  
+    h5 {
+      font-size: 1.2rem;
+    }
+  }
+  
+  @media (max-width: 576px) {
+    .container-fluid {
+      padding: 0 10px; /* Reduce padding for extra small screens */
+    }
+  
+    h3 {
+      font-size: 1.2rem;
+    }
+  
+    /* Stack flex items vertically on extra small screens */
+    .d-flex.align-items-center {
+      flex-direction: column;
+      align-items: stretch;
+    }
+    
+    .mat-form-field.time-field {
+      margin-bottom: 10px; /* Add spacing between fields */
+    }
+  
+    /* Adjust the layout of hours display for extra small screens */
+    .hours-display {
+      margin-top: 5px;
+      text-align: left;
+    }
+  }
+  

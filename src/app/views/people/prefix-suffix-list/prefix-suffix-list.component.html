@@ -1,0 +1,175 @@
+<div class="container-wrapper webView">
+    <!-- <div class="row">
+        <div class="col-sm-6">
+            <h1>Prefix/suffix list</h1>
+        </div>
+        <div class="col-sm"></div>
+        <div class="col-sm-3">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                 <li class="breadcrumb-item"><a routerLink="/dashboards">Home</a></li>
+                  <li class="breadcrumb-item">Prefix/suffix list</li>
+                  
+                </ol>
+              </nav>
+        </div>
+        
+    </div> -->
+        <div class="row p-20">
+           
+            <div class="col-md-7 col-lg-4 search-div px-0">
+                <input type="text" class="form-control p-2 sizeinput" [(ngModel)]="term" placeholder="Search by prefix /suffix"aria-describedby="emailHelp"  autocomplete="off">
+                <i class="bi bi-search" id="search-icon-tab" (click)="filterSearch()"></i>         
+            </div>
+            <div class="col-sm"></div>
+            <div class="col-md-4 col-lg-3 text-center align-self-center">
+              <div class="d-flex justify-content-center pg-bg">
+                <button *ngFor="let size of tableSizes" class="page-size-btn" [value]="size" (click)="onTableSizeChange($event)" [ngClass]="{'active-size': tableSize === size}"
+              >{{size}}</button>
+              </div>
+                      </div>
+
+        </div>
+        <div class="bg">
+          <div class="row">
+            <div class="col px-0">
+                <table class="table table-hover table-list">
+                    <thead>
+                        <tr>
+                          <th scope="col">S.No</th>
+                          <th scope="col">Prefix <i  *ngIf="!arrow" (click)="sort('asc','prefix')" class="bi bi-arrow-up"></i><i (click)="sort('desc','prefix')" *ngIf="arrow" class="bi bi-arrow-down"></i></th>
+                          <th scope="col">Suffix <i  *ngIf="!arrow" (click)="sort('asc','suffix')" class="bi bi-arrow-up"></i><i (click)="sort('desc','suffix')" *ngIf="arrow" class="bi bi-arrow-down"></i></th>
+                          <th scope="col">Added Date <i  *ngIf="!arrow" (click)="sort('asc','added_date')" class="bi bi-arrow-up"></i><i (click)="sort('desc','added_date')" *ngIf="arrow" class="bi bi-arrow-down"></i></th>
+                          <th scope="col">Action</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <ng-container *ngIf="(allPrefixSuffix) as result">
+                        <tr *ngFor='let item of result| paginate : {
+                            itemsPerPage: tableSize,
+                            currentPage: page,
+                            totalItems: count
+                          }|customSort:directionValue:sortValue; let i=index' [class.active]="i == currentIndex">
+                         <td>{{getContinuousIndex(i)}}</td>
+                         <td>{{item.prefix}}</td>
+                         <td>{{item.suffix}}</td>
+                         <td>{{item.added_date | date:'dd-MM-yyyy'}}</td>
+                          <td>
+                            <ng-container *ngFor="let access of permissions">
+      
+                              <button mat-raised-button mat-mini-fab  routerLink="/people/updatePrefixSuffix/{{item.id}}/{{page}}/{{tableSize}}" *ngIf="access === 'UPDATE'">
+                                <i class="bi bi-pencil-square"  container="body" ngbTooltip="Edit" style="color: #000; font-size: 24px;"></i>
+                              </button>
+                              <button mat-raised-button mat-mini-fab  aria-label="Example icon button with a filter list icon" (click)="open(item.id)" *ngIf="access === 'DELETE'">
+                                <i class="bi bi-trash" style="color: red;" container="body" ngbTooltip="Delete"></i>
+                              </button>
+                            </ng-container>  
+                         </td>
+                        </tr>
+                        <tr *ngIf="result.length === 0" class="nodata">
+                            <td> No records found
+                           </td>  
+                        </tr>
+                        </ng-container>
+                        
+                      </tbody>
+                  </table>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+      <div class="col-sm" *ngIf="allPrefixSuffix.length > 0">
+<div class="d-flex justify-content-center  p-nav">
+   <pagination-controls 
+     previousLabel="Prev" 
+     nextLabel="Next" 
+     (pageChange)="onTableDataChange($event)">
+   </pagination-controls>
+ </div>
+</div>
+</div>
+    <ng-container *ngFor="let access of permissions">
+      <button mat-raised-button mat-fab color="primary" routerLink="/people/create-prefix-suffix" *ngIf="access == 'CREATE'"  class="createbtn" placement="top" container="body" ngbTooltip="Add prefix/suffix">
+        <i class="fa fa-plus"></i>
+  
+      </button>
+    </ng-container>
+</div>
+
+
+  <div class="container-fluid mobileView">
+    
+    <div class="row mx-1 my-2">
+        <div class="col-sm-6">
+            <!-- <h1>Prefix/Suffix List</h1> -->
+        </div>
+        <div class="col-sm-6 col-md-6 mb-1 search-div px-0">
+            <input type="text" class="form-control py-3 px-4" [(ngModel)]="term" placeholder="Search by prefix /suffix "aria-describedby="emailHelp"  autocomplete="off">
+            <i class="bi bi-search" id="search-icon" (click)="filterSearch()"></i>
+          </div>
+        
+    </div>
+    <div class="bg">
+   <div class="row ">
+    <ng-container *ngIf="(allPrefixSuffix) as result">
+    <div class="col-sm-12 col-md-6 px-1 main-col" *ngFor='let item of result|paginate : {
+        itemsPerPage: tableSize,
+        currentPage: page,
+        totalItems: count
+      }'>
+        <div class="card prefix-card" (click)="cardId(item)">
+            <div class="row">
+              <div class="col p-3 text-start">
+                <h6 class="card-subtitle">Added Date</h6>
+                <p class="value-container">{{item.added_date | date:'dd-MM-yyyy'}}</p>
+             
+              </div>
+                <div class="col-5 p-3 text-end">
+                  <ng-container *ngFor="let access of permissions">
+                    <a> <button  type="button" class="toolbar-btn"  *ngIf="access =='UPDATE'" (click)='editCard(item.id)' ><i class="bi bi-pencil-square" style="color: #000; font-size: 24px;" ></i></button></a>
+                    <a> <button  type="button" class="toolbar-btn"  *ngIf="access =='DELETE'"  (click)="open(item.id)" ><i class="bi bi-trash" style="color: red; font-size: 24px;"></i></button></a>
+                  </ng-container>
+                  </div>
+            </div>
+            
+            <div class="row row-b">
+                <div class="col-6 c-1 text-start">
+                  <h6 class="card-subtitle">Prefix</h6>
+                  <p class="value-container">{{item.prefix}}</p>
+                </div>
+                <div class="col-6 c-2 text-start">
+                  <h6 class="card-subtitle">Suffix</h6>
+                  <p class="value-container">{{item.suffix}}</p>
+                </div>
+            </div>
+        </div>
+       
+    </div>
+    <div *ngIf="result.length === 0" >
+        <app-generic-norecards></app-generic-norecards>
+    </div>
+   </ng-container>
+   </div> 
+  
+  </div>
+  <div class="row mobile-pagination" *ngIf="allPrefixSuffix.length !== 0">
+    <div class="col-sm-12" >
+        <div class="mobile-pagination-content">
+            <pagination-controls 
+              previousLabel="Prev" 
+              nextLabel="Next" 
+              (pageChange)="onTableDataChange($event)">
+            </pagination-controls>
+           <div><button *ngFor="let size of tableSizes" class="page-size-btn" [value]="size" (click)="onTableSizeChange($event)" [ngClass]="{'active-size': tableSize === size}"
+            >{{size}}</button></div>
+          </div>
+    </div>
+  </div>
+  <div class="s-position" *ngFor="let access of permissions" >
+    <ng-container *ngIf="access === 'CREATE'">
+    <button type="button" mat-fab  routerLink="/people/create-prefix-suffix" class="createbtn-new" placement="top" container="body" ngbTooltip="Add"><i class="fa fa-plus"></i>
+    </button>
+  </ng-container>
+  </div>
+
+</div>

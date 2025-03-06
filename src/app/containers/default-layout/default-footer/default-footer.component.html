@@ -1,0 +1,82 @@
+<!--<c-footer>-->
+<!-- <div class="container-fluid mobileView">
+    <div class="navigation">
+     
+      <div class="menu">
+        <ul>
+          <li routerLink="/dashboards">
+            <div class="row"><i class="bi bi-speedometer2"></i></div>
+            <div class="row f-head">Dashboard</div>
+          </li>
+  
+          <li routerLink="/client/list">
+            <div class="row"> <i class="bi bi-person"></i></div>
+            <div class="row f-head">Client</div>
+          </li>
+          <li routerLink="/project/list">
+            <div class="row"><i class="bi bi-journal-album"></i> </div>
+            <div class="row f-head">Project</div>
+          </li>
+          <li routerLink="/leave/appliedApprovedLeaves">
+            <div class="row"> <i class="bi bi-envelope-paper"></i></div>
+            <div class="row f-head">Leaves</div>
+          </li>
+         
+        </ul>
+      </div>
+    </div>
+  
+   
+  </div> -->
+
+<!--</c-footer>-->
+
+<div class="wrapper">
+  <!-- <div class="page">
+        Body
+      </div> -->
+  <div class="bottom-appbar">
+    <div class="tabs">
+      <div class="tab" routerLink="/dashboards" routerLinkActive="active">
+        <div class="row"><i class="bi bi-speedometer2"></i></div>
+        <span>Dashboard</span>
+      </div>
+      <div class="tab" routerLink="/project/list" routerLinkActive="active" *ngIf="config!='SUPER ADMIN'">
+        <div class="row"><i class="bi bi-layers"></i></div>
+        <span>Projects</span>
+      </div>
+      <div class="tab" routerLink="/myTimesheet/timesheet" routerLinkActive="active" *ngIf="config!='SUPER ADMIN'">
+        <div class="row"><i class="bi bi-calendar4-week"></i></div>
+        <span>Timesheets</span>
+      </div>
+      <div class="tab" routerLink="/organization/orgList" routerLinkActive="active" *ngIf="config==='SUPER ADMIN'">
+        <div class="row"><i class="bi bi-bank2"></i></div>
+        <span>Organizations</span>
+      </div>
+      <div class="tab" routerLink="/profile" routerLinkActive="active">
+        <div class="row"><i class="bi bi-person"></i></div>
+        <span>Profile</span>
+      </div>
+    </div>
+  </div>
+  <!-- <div class="bottom-appbar">
+        <div class="tabs">
+          <div class="tab tab--left" routerLink="/dashboards" routerLinkActive="active">
+            <div class="row"><i  class="bi bi-speedometer2"></i></div>
+            <span>Dashboard</span>
+          </div>
+          <div class="tab tab--fab">
+            <div class="top">
+              <button  mat-fab color="primary" class="createbtn-new"  (click)="goBack($event)
+  ">
+                <i class="fa fa-times"></i>
+              </button>
+            </div>
+          </div>
+          <div class="tab tab--right" routerLink="/people/people-list" routerLinkActive="active">
+            <div class="row"> <i  class="bi bi-person"></i></div>
+            <span>People</span>
+          </div>
+        </div>
+      </div> -->
+</div>

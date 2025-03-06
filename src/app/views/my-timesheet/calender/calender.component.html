@@ -1,0 +1,100 @@
+<div class="container-fluid webView">
+    <!-- <div class="row">
+        <div class="col-sm-12 col-md-12 col-lg-6">
+            <h1>Timesheet calendar</h1>
+        </div>
+        <div class="col-sm"></div>
+            <div class="col-sm-12 col-md-12 col-lg-3" id="h-1">
+                <nav aria-label="breadcrumb p-0 m-0" >
+                    <ol class="breadcrumb p-0 m-0">
+                      <li class="breadcrumb-item p-0 m-0"><a routerLink="/dashboards">Home</a></li>
+                      <li class="breadcrumb-item p-0 m-0">Timesheet calendar</li>
+                    </ol>
+                  </nav>
+            </div>  
+        </div> -->
+    
+    <div class="bg">
+        <!-- <full-calendar [options]="calendarOptions"></full-calendar> -->
+        
+<div class='demo-app'>
+
+    <!-- <div class='demo-app-sidebar'> -->
+      <!-- <div class='demo-app-sidebar-section'>
+        <h2>Instructions</h2>
+        <ul>
+          <li>Select dates and you will be prompted to create a new event</li>
+          <li>Drag, drop, and resize events</li>
+          <li>Click an event to delete it</li>
+        </ul>
+      </div>
+      <div class='demo-app-sidebar-section'>
+        <label>
+          <input
+            type='checkbox'
+            [checked]='calendarVisible'
+            (change)='handleCalendarToggle()'
+          />
+          toggle whole calendar
+        </label>
+      </div>
+      <div class='demo-app-sidebar-section'>
+        <label>
+          <input
+            type='checkbox'
+            [checked]='calendarOptions.weekends'
+            (change)='handleWeekendsToggle()'
+          />
+          toggle weekends
+        </label>
+      </div> -->
+      <!-- <div class='demo-app-sidebar-section'>
+        <h2>All Events ({{currentEvents.length}})</h2>
+        <ul>
+          <li *ngFor='let event of currentEvents'>
+            <b>{{event.startStr}}</b>
+            <i>{{event.title}}</i>
+          </li>
+        </ul>
+      </div>
+    </div> -->
+  
+    <div class='demo-app-main'>
+      <full-calendar *ngIf='calendarVisible' [options]='calendarOptions'>
+        <ng-template #eventContent let-arg>
+          <b>{{ arg.timeText }}</b>
+          <i [ngClass]="{'approve-status':arg.event.title==='APPROVED','yet-to-approve-status':arg.event.title==='YET_TO_APPROVED','declined-status':arg.event.title==='DECLINED'}">{{ arg.event.title }}</i>
+        </ng-template>
+      </full-calendar>
+    </div>
+  
+  </div>
+    </div>
+   
+</div>
+
+<div class="container-fluid mobileView">
+  <div class="row mx-1 my-2">
+      <div class="col-sm-12 col-md-12 col-lg-6">
+          <!-- <h1>Timesheet calendar</h1> -->
+      </div>
+  </div>
+  
+  <div class="bg">
+  
+      
+<div class='demo-app'>
+
+  <div class='demo-app-main'>
+    <full-calendar *ngIf='calendarVisible' [options]='calendarOptions'>
+      <ng-template #eventContent let-arg>
+        <b>{{ arg.timeText }}</b>
+        <i [ngClass]="{'approve-status':arg.event.title==='APPROVED','yet-to-approve-status':arg.event.title==='YET_TO_APPROVED','declined-status':arg.event.title==='DECLINED'}">{{ arg.event.title }}</i>
+      </ng-template>
+    </full-calendar>
+  </div>
+
+</div>
+  </div>
+ 
+</div>

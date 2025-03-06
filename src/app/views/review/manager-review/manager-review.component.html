@@ -1,0 +1,546 @@
+<div class="container-fluid p-30">
+  <div class="heading-1 mb-4">Employees</div>
+  <div class="row">
+    <div class="col-sm-12 col-md-6 col-lg-3">
+      <div class="d-flex justify-content-start mb-3" style="border: 1px solid #f4f4f4;width:fit-content;font-family: 'Exo FT' !important;">
+        <div 
+          (click)="selectedTab('lists')" 
+          [ngClass]="{'active-tab': selectedSection === 'lists'}"
+           class="tab-size">
+          Lists
+        </div>
+        <div 
+          class="ml-2" 
+          (click)="selectedTab('leaves')" 
+          [ngClass]="{'active-tab': selectedSection === 'leaves'}"
+           class="tab-size">
+          Leaves
+        </div>
+        <div 
+          class="ml-2" 
+          (click)="selectedTab('timesheets')" 
+          [ngClass]="{'active-tab': selectedSection === 'timesheets'}"
+           class="tab-size">
+          Timesheets
+        </div>
+        
+      </div>
+     
+    </div>
+    <div class="col-sm-2 col-md-1 col-lg-1 mx-3 d-flex justify-content-start mb-3" 
+      *ngIf="selectedSection === 'timesheets'">
+      <button *ngIf="userRole ==='Employee' && accessPermissions[0]?.update || userRole === 'Admin'" type="button" mat-icon-button (click)="exportToExcel()" ngbTooltip="Download Excel" style="transform: scale(0.98);background-color:#126EB4;color:white;">
+          <i class="bi bi-download" style="font-size: 17px;"></i>
+      </button>
+  </div>
+  </div>
+  
+  <!-- Tabs Section using Flexbox -->
+ 
+
+  <!-- Section Content -->
+  <div *ngIf="selectedSection === 'lists'">
+    <!-- Lists Section: Employee Table -->
+    <div class="scroll-h">
+    <div class="table-responsive">
+      <table class="table table-bordered table-list" *ngIf="empInfoList?.length">
+        <thead>
+          <tr>
+            <th>Sl No</th>
+            <th>Employee Name</th>
+            <th>ID</th>
+            <th>Designation</th>
+            <th>Email</th>
+            <th>Contact</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let employee of empInfoList |paginate : {
+            itemsPerPage: tableSize,
+            currentPage: page,
+            totalItems: count
+          }; let i = index">
+            <td>{{ i + 1 }}</td>
+            <td>{{ employee.user.first_name || 'NA'}} {{ employee.user.last_name || 'NA'}}</td>
+            <td>{{ employee.user.id || 'NA'}}</td>
+            <td>{{ employee.designation_name || 'NA'}}</td>
+            <td>{{ employee.user.email || 'NA' }}</td>
+            <td>{{ employee.user.phone_number || 'NA' }}</td>
+           
+          </tr>
+        </tbody>
+      </table>
+      <div class="no-records" *ngIf="empInfoList?.length === 0">
+        <app-generic-norecards></app-generic-norecards>
+      </div>
+    </div>
+    <div class="pagination-container p-0 py-4" *ngIf="empInfoList?.length > 0">
+      <!-- Pagination Controls (Center-Aligned) -->
+      <pagination-controls previousLabel="Prev" nextLabel="Next" (pageChange)="onTableDataChange($event)">
+      </pagination-controls>
+    
+      <!-- Items Per Page Selector (Right-Aligned) -->
+      <div class="items-per-page-container">
+        <div>Items per page</div>
+        <mat-select  [(ngModel)]="tableSize" (selectionChange)="onTableSizeChange($event)" placeholder="10" class="page-size">
+          <mat-option *ngFor="let size of tableSizes" [value]="size">{{size}}</mat-option>
+        </mat-select>
+      </div>
+    </div>
+  </div>
+  </div>
+
+  <!-- Leaves Section -->
+  <div *ngIf="selectedSection === 'leaves'">
+    <mat-tab-group class="custom-tab-group" (selectedTabChange)="tabLeaveSection($event)">
+      <mat-tab label="Pending">
+        <!-- Pending Leaves Table -->
+        <div class="scroll-h">
+        <div class="table-responsive">
+          <table class="table table-bordered table-list" *ngIf="leaveList?.length">
+            <thead>
+              <tr>
+                <th>Sl No</th>
+                <th>Name</th>
+                <th>Leave Type</th>
+                <th>Days</th>
+                <th>From Date</th>
+                <th>To Date</th>
+                <th>Reason</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+             
+              <tr *ngFor="let leave of leaveList |paginate : {
+                itemsPerPage: tableSize,
+                currentPage: page,
+                totalItems: count
+              }; let i = index">
+                <td>{{ i + 1 }}</td>
+                <td>{{ leave.employee_name }}</td>
+                <td>{{ leave.leave_type_name }}</td>
+                <td>{{ leave.number_of_leaves_applying_for }}</td>
+                <td>{{ leave.from_date |date:'dd-MM-yyyy'}}</td>
+                <td>{{ leave.to_date |date:'dd-MM-yyyy'}}</td>
+                <td>{{ leave.message }}</td>
+                <td>
+                  <span *ngIf="userRole ==='Employee' && accessPermissions[0]?.update || userRole === 'Admin'">
+                    <img src="../../../../../assets/images/tick.svg" class="icon-image" container="body" ngbTooltip="Approve" (click)="open(leave,'Approve')"/>
+                  </span>
+                  <span *ngIf="userRole ==='Employee' && accessPermissions[0]?.update || userRole === 'Admin'">
+                    <img src="../../../../../assets/images/Close.svg" class="icon-image"  container="body" ngbTooltip="Decline"  (click)="open(leave,'Decline')"/>
+                  </span>
+                  <span  *ngIf="userRole ==='Employee' && !accessPermissions[0]?.update">-</span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="no-records" *ngIf="leaveList?.length === 0">
+            <app-generic-norecards></app-generic-norecards>
+          </div>
+        </div>
+        <div class="pagination-container p-0 py-4" *ngIf="leaveList?.length > 0">
+          <!-- Pagination Controls (Center-Aligned) -->
+          <pagination-controls previousLabel="Prev" nextLabel="Next" (pageChange)="onTableDataChange($event)">
+          </pagination-controls>
+        
+          <!-- Items Per Page Selector (Right-Aligned) -->
+          <div class="items-per-page-container">
+            <div>Items per page</div>
+            <mat-select  [(ngModel)]="tableSize" (selectionChange)="onTableSizeChange($event)" placeholder="10" class="page-size">
+              <mat-option *ngFor="let size of tableSizes" [value]="size">{{size}}</mat-option>
+            </mat-select>
+          </div>
+        </div>
+        </div>
+      </mat-tab>
+
+      <mat-tab label="Approved">
+        <!-- Approved Leaves Table -->
+        <div class="scroll-h">
+        <div class="table-responsive">
+          <table class="table table-bordered table-list" *ngIf="leaveList?.length">
+            <thead>
+              <tr>
+                <th>Sl No</th>
+                <th>Name</th>
+                <th>Leave Type</th>
+                <th>Days</th>
+                <th>From Date</th>
+                <th>To Date</th>
+                <th>Reason</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let leave of leaveList |paginate : {
+                itemsPerPage: tableSize,
+                currentPage: page,
+                totalItems: count
+              }; let i = index">
+                <td>{{ i + 1 }}</td>
+                <td>{{ leave.employee_name }}</td>
+                <td>{{ leave.leave_type_name }}</td>
+                <td>{{ leave.number_of_leaves_applying_for }}</td>
+                <td>{{ leave.from_date| date:'dd-MM-yyyy'}}</td>
+                <td>{{ leave.to_date |date:'dd-MM-yyyy'}}</td>
+                <td>{{ leave.message }}</td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="no-records" *ngIf="leaveList?.length === 0">
+            <app-generic-norecards></app-generic-norecards>
+          </div>
+        </div>
+        <div class="pagination-container p-0 py-4" *ngIf="leaveList?.length > 0">
+          <!-- Pagination Controls (Center-Aligned) -->
+          <pagination-controls previousLabel="Prev" nextLabel="Next" (pageChange)="onTableDataChange($event)">
+          </pagination-controls>
+        
+          <!-- Items Per Page Selector (Right-Aligned) -->
+          <div class="items-per-page-container">
+            <div>Items per page</div>
+            <mat-select  [(ngModel)]="tableSize" (selectionChange)="onTableSizeChange($event)" placeholder="10" class="page-size">
+              <mat-option *ngFor="let size of tableSizes" [value]="size">{{size}}</mat-option>
+            </mat-select>
+          </div>
+        </div>
+        </div>
+      </mat-tab>
+
+      <mat-tab label="Declined">
+        <!-- Declined Leaves Table -->
+        <div class="scroll-h">
+        <div class="table-responsive">
+          <table class="table table-bordered table-list" *ngIf="leaveList?.length">
+            <thead>
+              <tr>
+                <th>Sl No</th>
+                <th>Name</th>
+                <th>Leave Type</th>
+                <th>Days</th>
+                <th>From Date</th>
+                <th>To Date</th>
+                <th>Reason</th>
+                <th>Comments</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let leave of leaveList |paginate : {
+                itemsPerPage: tableSize,
+                currentPage: page,
+                totalItems: count
+              }; let i = index">
+                <td>{{ i + 1 }}</td>
+                <td>{{ leave.employee_name }}</td>
+                <td>{{ leave.leave_type_name }}</td>
+                <td>{{ leave.number_of_leaves_applying_for }}</td>
+                <td>{{ leave.from_date |date:'dd-MM-yyyy' }}</td>
+                <td>{{ leave.to_date |date:'dd-MM-yyyy' }}</td>
+                <td>{{ leave.message }}</td>
+                <td>{{ leave.comment || 'NA' }}</td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="no-records" *ngIf="leaveList?.length === 0">
+            <app-generic-norecards></app-generic-norecards>
+          </div>
+        </div>
+        <div class="pagination-container p-0 py-4" *ngIf="leaveList?.length > 0">
+          <!-- Pagination Controls (Center-Aligned) -->
+          <pagination-controls previousLabel="Prev" nextLabel="Next" (pageChange)="onTableDataChange($event)">
+          </pagination-controls>
+        
+          <!-- Items Per Page Selector (Right-Aligned) -->
+          <div class="items-per-page-container">
+            <div>Items per page</div>
+            <mat-select  [(ngModel)]="tableSize" (selectionChange)="onTableSizeChange($event)" placeholder="10" class="page-size">
+              <mat-option *ngFor="let size of tableSizes" [value]="size">{{size}}</mat-option>
+            </mat-select>
+          </div>
+        </div>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+  </div>
+
+  <!-- Timesheets Section -->
+  <div *ngIf="selectedSection === 'timesheets'">
+    
+    <mat-tab-group class="custom-tab-group custom-tab-height" (selectedTabChange)="tabTimesheet($event)">
+      <mat-tab label="Pending">
+        <!-- Pending Timesheets Table -->
+        <div class="scroll-h">
+          <table class="table table-bordered table-list" *ngIf="timesheetList?.length">
+            <thead>
+              <tr>
+                <th>Sl No</th>
+                <th>Created Date</th>
+                <th>Employee Name</th>
+                <th>Project/Task</th>
+                <th>Hours</th>
+                <th>Description</th>
+                <th>Submitted On</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <ng-container *ngIf="(timesheetList) as result">
+              <tr *ngFor="let timesheet of result |paginate : {
+                itemsPerPage: tableSize,
+                currentPage: page,
+                totalItems: count
+              };  ; let i = index">
+                <td>{{ i + 1 }}</td>
+                <td>{{(timesheet.created_date | date :'dd-MM-yyyy') || 'NA'}}</td>
+                <td>{{ timesheet.created_by_name }}</td>
+                <td class="text-center" *ngIf="timesheet?.tasks?.length">
+                  <div *ngFor="let task of timesheet.tasks; let j = index">
+                    <div>
+                      <span  *ngIf="j === 0">{{ timesheet.project_name }} / </span> 
+                      {{ task?.task__task_name || 'NA' }}{{ j !== timesheet.tasks.length - 1 ? ',' : '' }}
+                    </div>
+                  </div>
+                </td>
+                <td *ngIf="timesheet?.tasks?.length === 0">
+                  {{'NA'}}
+                </td>
+                <td class="text-center" *ngIf="timesheet?.tasks?.length">
+                  <div *ngFor="let task of timesheet?.tasks; let j = index">
+                    <div>
+                      {{ task?.time_required_to_complete || 'NA' }}
+                    </div>
+                  </div>
+                </td>
+                <td *ngIf="timesheet?.tasks?.length === 0">
+                  {{'NA'}}
+                </td>
+                <td class="text-center" [title]="timesheet.description">
+                  {{ timesheet.description?.length > 20 ? (timesheet.description | slice:0:20) + '...' : timesheet.description || 'NA' }}
+                </td>
+                <td>
+                  {{(timesheet.updated_datetime | date :'dd-MM-yyyy') || 'NA'}}
+                </td>
+                <td>
+                  <span *ngIf="userRole ==='Employee' && accessPermissions[0]?.update || userRole === 'Admin'">
+                    <img src="../../../../../assets/images/tick.svg" class="icon-image"  ngbTooltip="Approve" (click)="openDialogue(timesheet,'Approve')"/>
+                  </span>
+                  <span *ngIf="userRole ==='Employee' && accessPermissions[0]?.update || userRole === 'Admin'">
+                    <img src="../../../../../assets/images/Close.svg" class="icon-image"   ngbTooltip="Decline"  (click)="openDialogue(timesheet,'Decline')"/>
+                  </span>
+                  <span  *ngIf="userRole ==='Employee' && !accessPermissions[0]?.update">-</span>
+                </td>
+                
+              </tr>
+             
+             
+            </ng-container>
+            </tbody>
+          </table>
+          <div class="no-records" *ngIf="timesheetList?.length === 0">
+            <app-generic-norecards></app-generic-norecards>
+          </div>
+          <div class="pagination-container p-0 py-4" *ngIf="timesheetList?.length > 0">
+            <!-- Pagination Controls (Center-Aligned) -->
+            <pagination-controls previousLabel="Prev" nextLabel="Next" (pageChange)="onTableDataChange($event)">
+            </pagination-controls>
+          
+            <!-- Items Per Page Selector (Right-Aligned) -->
+            <div class="items-per-page-container">
+              <div>Items per page</div>
+              <mat-select  [(ngModel)]="tableSize" (selectionChange)="onTableSizeChange($event)" placeholder="10" class="page-size">
+                <mat-option *ngFor="let size of tableSizes" [value]="size">{{size}}</mat-option>
+              </mat-select>
+            </div>
+          </div>
+        </div> 
+      </mat-tab>
+
+      <mat-tab label="Approved">
+        <!-- Pending Timesheets Table -->
+        <div class="scroll-h">
+          <table class="table table-bordered table-list" *ngIf="timesheetList?.length">
+            <thead>
+              <tr>
+                <th>Sl No</th>
+                <th>Created Date</th>
+                <th>Employee Name</th>
+                <th>Project/Task</th>
+                <th>Hours</th>
+                <th>Description</th>
+                <th>Submitted On</th>
+                <th>Approved On</th>
+                <th>Approved By</th>
+              </tr>
+            </thead>
+            <tbody>
+              <ng-container *ngIf="(timesheetList) as result">
+              <tr *ngFor="let timesheet of result |paginate : {
+                itemsPerPage: tableSize,
+                currentPage: page,
+                totalItems: count
+                };let i = index">
+                <td>{{ i + 1 }}</td>
+                <td>{{timesheet.created_date | date :'dd-MM-yyyy'}}</td>
+                <td>{{ timesheet.created_by_name }}</td>
+                <!-- <td>{{ timesheet.client_name }}</td>
+                <td>{{ timesheet.project_name }}</td> -->
+               
+                <td class="text-center" *ngIf="timesheet?.tasks?.length">
+                  <div *ngFor="let task of timesheet?.tasks; let j = index">
+                    <div>
+                      <span  *ngIf="j === 0">{{ timesheet?.project_name }} / </span> 
+                      {{ task?.task__task_name || 'NA' }}{{ j !== timesheet?.tasks?.length - 1 ? ',' : '' }}
+                    </div>
+                  </div>
+                </td>
+                <td *ngIf="timesheet?.tasks?.length === 0">
+                  {{'NA'}}
+                </td>
+                <td class="text-center" *ngIf="timesheet?.tasks?.length">
+                  <div *ngFor="let task of timesheet?.tasks; let j = index">
+                    <div>
+                      {{ task?.time_required_to_complete || 'NA' }}
+                    </div>
+                  </div>
+                </td>
+                <td *ngIf="timesheet?.tasks?.length === 0">
+                  {{'NA'}}
+                </td>
+                <td class="text-center" [title]="timesheet.description">
+                  {{ timesheet.description?.length > 20 ? (timesheet.description | slice:0:20) + '...' : timesheet.description || 'NA' }}
+                </td>
+                <td>
+                  {{(timesheet.updated_datetime | date :'dd-MM-yyyy') || 'NA'}}
+                </td>
+                <td>
+                  {{(timesheet.approved_on | date : 'dd-MM-yyyy') || 'NA'}}
+                </td>
+                <td>
+                  {{timesheet.approved_by_name?timesheet.approved_by_name:'NA'|titlecase}}
+                </td>
+                
+                
+              </tr>
+              <!-- <div class="no-records"  *ngIf="result?.length === 0">
+                <div><app-generic-norecards></app-generic-norecards></div>
+              </div> -->
+              <tr>
+                
+              </tr>
+              </ng-container>
+            </tbody>
+          </table>
+          <div class="no-records" *ngIf="timesheetList?.length === 0">
+            <app-generic-norecards></app-generic-norecards>
+          </div>
+          <div class="pagination-container p-0 py-4" *ngIf="timesheetList?.length > 0">
+            <!-- Pagination Controls (Center-Aligned) -->
+            <pagination-controls previousLabel="Prev" nextLabel="Next" (pageChange)="onTableDataChange($event)">
+            </pagination-controls>
+          
+            <!-- Items Per Page Selector (Right-Aligned) -->
+            <div class="items-per-page-container">
+              <div>Items per page</div>
+              <mat-select  [(ngModel)]="tableSize" (selectionChange)="onTableSizeChange($event)" placeholder="10" class="page-size">
+                <mat-option *ngFor="let size of tableSizes" [value]="size">{{size}}</mat-option>
+              </mat-select>
+            </div>
+          </div>
+        </div>
+      </mat-tab>
+
+      <mat-tab label="Declined">
+        <!-- Pending Timesheets Table -->
+        <div class="scroll-h">
+          <table class="table table-bordered table-list" *ngIf="timesheetList?.length">
+            <thead>
+              <tr>
+                <th>Sl No</th>
+                <th>Created Date</th>
+                <th>Employee Name</th>
+                <th>Project/Task</th>
+                <th>Hours</th>
+                <th>Description</th>
+                <th>Submitted On</th>
+                <th>Rejected On</th>
+                <th>Rejected By</th>
+                <th>Comments</th>
+              </tr>
+            </thead>
+            <tbody>
+              <ng-container *ngIf="(timesheetList) as result">
+              <tr *ngFor="let timesheet of result |paginate : {
+                itemsPerPage: tableSize,
+                currentPage: page,
+                totalItems: count
+              };let i = index">
+                <td>{{ i + 1 }}</td>
+                <td>{{(timesheet?.created_date | date :'dd-MM-yyyy') || 'NA'}}</td>
+                <td>{{ timesheet.created_by_name }}</td>
+                <!-- <td>{{ timesheet.client_name }}</td>
+                <td>{{ timesheet.project_name }}</td> -->
+               
+                <td class="text-center" *ngIf="timesheet?.tasks?.length">
+                  <div *ngFor="let task of timesheet?.tasks; let j = index">
+                    <div>
+                      <span  *ngIf="j === 0">{{ timesheet?.project_name }} / </span> 
+                      {{ task?.task__task_name || 'NA' }}{{ j !== timesheet?.tasks?.length - 1 ? ',' : '' }}
+                    </div>
+                  </div>
+                </td>
+                <td *ngIf="timesheet?.tasks?.length === 0">
+                  {{'NA'}}
+                </td>
+                <td class="text-center" *ngIf="timesheet?.tasks?.length">
+                  <div *ngFor="let task of timesheet?.tasks; let j = index">
+                    <div>
+                      {{ task?.time_required_to_complete || 'NA' }}
+                    </div>
+                  </div>
+                </td>
+                <td *ngIf="timesheet?.tasks?.length === 0">
+                  {{'NA'}}
+                </td>
+                <td class="text-center" [title]="timesheet.description">
+                  {{ timesheet.description?.length > 20 ? (timesheet.description | slice:0:20) + '...' : timesheet.description || 'NA' }}
+                </td>
+                <td>
+                  {{(timesheet.updated_datetime | date :'dd-MM-yyyy') || 'NA'}}
+                </td>
+                <td>
+                  {{(timesheet.rejected_on | date :'dd-MM-yyyy') || 'NA'}}
+                </td>
+                <td>
+                  {{timesheet.rejected_by_name?timesheet.rejected_by_name:'NA'|titlecase}}
+                </td>
+                <td>
+                  {{timesheet.comment || 'NA'}}
+                </td>
+                
+              </tr>
+             
+            </ng-container>
+            </tbody>
+          </table>
+          <div class="no-records" *ngIf="timesheetList?.length === 0">
+            <app-generic-norecards></app-generic-norecards>
+          </div>
+          <div class="pagination-container p-0 py-4" *ngIf="timesheetList?.length > 0">
+            <!-- Pagination Controls (Center-Aligned) -->
+            <pagination-controls previousLabel="Prev" nextLabel="Next" (pageChange)="onTableDataChange($event)">
+            </pagination-controls>
+          
+            <!-- Items Per Page Selector (Right-Aligned) -->
+            <div class="items-per-page-container">
+              <div>Items per page</div>
+              <mat-select  [(ngModel)]="tableSize" (selectionChange)="onTableSizeChange($event)" placeholder="10" class="page-size">
+                <mat-option *ngFor="let size of tableSizes" [value]="size">{{size}}</mat-option>
+              </mat-select>
+            </div>
+          </div>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+  </div>
+</div>

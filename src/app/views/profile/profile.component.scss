@@ -1,0 +1,83 @@
+.bg {
+    background-color: white;
+    height: auto;
+    // width: 100%;
+    padding: 20px;
+    border-radius: 5px;
+}
+
+.error-text,
+.r-star {
+    color: red !important;
+    font-size: 14px;
+}
+
+.proceedbtn {
+    background-color: #3F51B5;
+    border-radius: 5px;
+    border: none;
+    height: 40px;
+    color: white;
+    width: fit-content;
+    padding: 0 10px;
+    margin: 10px 0px;
+}
+
+.update-btn {
+    float: right;
+}
+
+.update-btn-mobile {
+    float: left;
+}
+
+.form-select {
+    height: 41px;
+}
+
+.f-label {
+    color: #545353;
+    font-weight: 500;
+}
+
+.mt {
+    margin-top: 20px;
+}
+
+h1 {
+    margin: 10px 16px !important;
+}
+
+a {
+    text-decoration: none;
+}
+
+form {
+    margin: 0px 16px !important;
+    padding: 0px !important;
+}
+
+.edit-or-upload-icon {
+    font-size: 17px;
+    color: white;
+    background: #1b64a0;
+    border-radius: 12px;
+}
+.temp-style{
+    border: 2px solid #d2cfcf !important;
+}
+.image-background{
+    border-radius: 30px;
+    margin: 2px 0px;
+}
+::ng-deep .mat-form-field-can-float .mat-form-field-should-float .mat-form-field-label {
+    display: block;
+    font-size: medium;
+    font-weight: 600 !important;
+}
+::ng-deep .mat-form-field-wrapper{
+    padding-bottom: 0em;
+}
+::ng-deep .date-joining .mat-form-field-appearance-outline .mat-form-field-suffix {
+    top: .25em !important;
+}

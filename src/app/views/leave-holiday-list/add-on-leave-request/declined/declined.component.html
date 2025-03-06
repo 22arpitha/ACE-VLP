@@ -1,0 +1,225 @@
+<div class="container-fluid webView">
+    <div class="row ">
+        <div class="col-sm-1 col-md-6 col-lg-2">
+            <select class="form-select page-set" aria-label="Default select example" (change)="onTableSizeChange($event)">
+                <option *ngFor="let size of tableSizes" [ngValue]="size">
+                    {{ size }}
+                  </option>
+              </select>
+        </div>
+        <div class="col-sm col-md col-lg"></div>
+        <div class="col-sm-3 col-md-6 col-lg-3 search-div px-0">
+            <input type="text" class="form-control p-2 sizeinput" placeholder="Search"[(ngModel)]="term" aria-describedby="emailHelp"  autocomplete="off">
+            <i class="bi bi-search" id="search-icon-tab"></i>          
+        </div>
+    </div>
+    <div class="bg">
+    <div class="row">
+        <div class="col">
+            <table class="table">
+                <thead>
+                    <tr>
+                      <th scope="col">S.No</th>
+                      <th scope="col" class="text-center">From Date</th>
+                      <th scope="col" class="text-center">To Date</th>
+                      <th scope="col" class="text-center">Applied Days</th>
+                      <!-- <th scope="col">Alloted Leaves</th>
+                      <th scope="col">Used Leaves</th>
+                      <th scope="col">Applied Date</th>
+                      <th scope="col">Rejected By</th> -->
+                      <th scope="col" class="text-center">Rejected Date</th> 
+                      <th scope="col" class="text-center">Status</th>
+                      <th scope="col" class="text-center">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                   
+                    <ng-container *ngIf="(list | filter:term) as result">
+                    <tr *ngFor='let item of result | filter:term |paginate:{
+                        itemsPerPage: tableSize,
+                        currentPage: page,
+                        totalItems: count
+                      }; let i=index'>
+                      <td>{{i+1}}</td>
+                      <td class="text-center">{{item.leaveApplication_from_date *1000 | date : 'dd-MM-yyyy'}}</td>
+                      <td class="text-center">{{item.leaveApplication_to_date *1000 | date : 'dd-MM-yyyy'}}</td>
+                      <td class="text-center">{{item.days}}</td>
+                      <!-- <td>{{item.alloted_leaves}}</td> -->
+                      <!-- <td>{{item.used_leaves}}</td> -->
+                      <td class="text-center">{{item.c_timestamp | date : 'dd-MM-yyyy'}}</td>
+                      <td class="text-center">{{item.approved_state}}</td>                                                         
+                        
+                         <td>
+                            <ng-container *ngFor="let approval of accessConfig">
+                                <span *ngIf="approval == 'DELETE'">
+                                    <button   style="border: none;background-color: inherit;" (click)="open(item)"> <i class="fas fa-trash-alt" style="color: red;" container="body" ngbTooltip="Delete"></i></button>
+                                </span>
+                                <!-- <span *ngIf="approval == 'APPROVE'">
+                                    <button mat-raised-button style="border: none;background-color: inherit;" (click)="openDialogue(item.id,'APPROVED')"><i class="bi bi-check-circle" container="body" ngbTooltip="Approve" style="color:green"></i></button>
+                                </span>
+                                <span *ngIf="approval == 'REJECT'">
+                                    <button mat-raised-button style="border: none;background-color: inherit;" (click)="openDialogue(item.id,'DECLINED')"><i class="bi bi-x-circle" container="body" ngbTooltip="Reject" style="color:red"></i></button>
+                                </span> -->
+                            </ng-container>
+                        </td>
+                    </tr>
+                    <tr *ngIf="result.length === 0" class="nodata">
+                        <td> No records found
+  !</td>  
+                    </tr>
+                </ng-container>
+                  </tbody>
+              </table>
+          
+        </div>
+    </div>
+
+</div>
+<div class="row">
+  <div class="col-sm"></div>
+  <div class="col-sm">
+      <div class="d-flex justify-content-end ">
+          <pagination-controls 
+            previousLabel="Prev" 
+            nextLabel="Next" 
+            (pageChange)="onTableDataChange($event)">
+          </pagination-controls>
+        </div>
+  </div>
+</div>
+</div>
+
+
+<div class="container-fluid mobileView">
+    <div class="row mx-1 my-2">
+      <div class="col-sm-12 col-md-6 col-lg-2">
+        <select class="form-select page-set" aria-label="Default select example" (change)="onTableSizeChange($event)">
+            <option *ngFor="let size of tableSizes" [ngValue]="size">
+                {{ size }}
+              </option>
+          </select>
+    </div>
+      <div class="col-sm-6 col-md-6 mb-1 search-div px-0">
+        <input type="text" class="form-control py-3 px-4" [(ngModel)]="term" placeholder="Search" aria-describedby="emailHelp" autocomplete="off">
+        <i class="bi bi-search" id="search-icon" ></i>      </div>
+    </div>
+  
+    <div class="bg row mx-0 my-1">
+      <ng-container *ngIf="(list | filter:term) as result">
+        <div class="col-sm-12 col-md-6 p-0" *ngFor="let item of result | filter:term| paginate : {
+          itemsPerPage: tableSize,
+          currentPage: page,
+          totalItems: count
+          };">
+          <div class="card outer-card" >
+            <div class="row rc-p">
+              <div class="col-7">
+                <div class="row">
+                  <div class="col-12">
+                    <h6 class="card-subtitle">Status</h6>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-12 status-text">
+                    {{ item.approved_state ? item.approved_state : 'Yet to Approve' }}
+                  </div>
+                </div>
+              </div>
+              <div class="col-5">
+                  <ng-container *ngFor="let approval of accessConfig">
+                      <span *ngIf="approval == 'DELETE'" style="float: right;">
+                          <button mat-raised-button type="button" class="toolbar-btn "   (click)="open(item)"  ><i class="bi bi-trash" style="color: red; font-size: 24px;"></i></button>
+                        </span>
+                  </ng-container>  
+              </div>
+            </div>
+            <div class="card inner-card">
+              <div class="card-body">
+                <div class="row">
+                  <div class="col-6">
+                    <div class="row">
+                      <div class="col-12">
+                        <h6 class="card-subtitle">From date</h6>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-12 val-r">
+                        {{item.leaveApplication_from_date *1000 | date : 'dd-MM-yyyy' }}
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-6">
+                    <div class="row">
+                      <div class="col-12">
+                        <h6 class="card-subtitle">To date</h6>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-12 val-r">
+                        {{ item.leaveApplication_to_date *1000 | date : 'dd-MM-yyyy' }}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+  
+                <div class="row">
+                  <div class="col-6">
+                    <div class="row">
+                      <div class="col-12">
+                        <h6 class="card-subtitle">Applied Days</h6>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-12 val-r">
+                        {{ item.days }}
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-6">
+                    <div class="row">
+                      <div class="col-12">
+                        <h6 class="card-subtitle">Applied Date</h6>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-12 val-r">
+                        {{ item.c_timestamp | date : 'dd-MM-yyyy' }}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div *ngIf="result.length === 0" class="col-12">
+          <div class="card">
+            <div class="card-body">
+              <p>No records found
+  !</p>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+    </div>
+    <div class="row mobile-pagination" *ngIf="list.length !== 0">
+      <div class="col-sm-12" >
+          <div class="mobile-pagination-content">
+             
+              <pagination-controls 
+                previousLabel="Prev" 
+                nextLabel="Next" 
+                (pageChange)="onTableDataChange($event)">
+              </pagination-controls>
+             <div><button *ngFor="let size of tableSizes" class="page-size-btn" [value]="size" (click)="onTableSizeChange($event)" [ngClass]="{'active-size': tableSize === size}"
+              >{{size}}</button></div>
+            </div>
+      </div>
+  </div>
+  </div>
+
+
+
+
+
+

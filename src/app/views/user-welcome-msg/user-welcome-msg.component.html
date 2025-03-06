@@ -1,0 +1,17 @@
+<div class="container-fluid" *ngIf="data.isModalOpen">
+    <div class="modal-body custom-modal" >
+        <div class="d-flex align-items-center mb-2">
+            <img src="../../../assets/images/wavinghand.png" alt="" width="25" height="25">
+            <h4 class="modal-title ps-2" *ngIf="data">{{data.title}}</h4>
+        </div>
+        <p *ngIf="data" >{{data.message1}}?</p>
+        <p *ngIf="data" >{{data.message2}}?</p>
+    </div>
+    <div class="modal-footer">
+        <button mat-button type="button"  class="btn-cancel"  (click)="modalStatus('cancel')">Skip</button>
+        <button mat-button type="button" class="btn-yes" [style.backgroundColor]="data ? '' : '#B41212'" (click)="modalStatus('ok')" >
+            Next
+        </button>
+    </div>
+</div>
+

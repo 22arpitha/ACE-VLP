@@ -1,0 +1,16 @@
+.page{
+    background: #fff;
+}
+.update-btn{
+    float:right 
+}
+form input{
+    height: auto !important;
+}
+.selectable-all{
+    margin-right: 5px !important;
+  }
+tbody tr:nth-child(6),
+tbody tr:nth-child(7) {
+  display: none;
+}

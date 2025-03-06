@@ -1,0 +1,201 @@
+
+.table {
+    th, td {
+      text-align: center;
+      vertical-align: middle;
+    }
+  }
+  .bg{
+    height: 70vh !important;
+    overflow-y: auto;
+  }
+  
+  .badge {
+    font-size: 0.85rem;
+  }
+  .custom-card {
+    border: 2px solid;
+    border-radius: 8px;
+    padding: 20px 16px;
+    box-shadow: rgba(0, 0, 0, 0.09) 0px 3px 12px;
+    font-size: small !important;
+    // line-height: 18px;
+    p{
+      margin-bottom: 0px;
+    }
+  }
+  
+  .border-danger {
+    background-color: #f5ffe9; // Light pink background
+    border: 0;
+  }
+  
+  .border-primary {
+    background-color: #cfe2ff; // Light blue background
+    border: 0;
+  }
+  
+  .card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  
+  .card-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin: 0;
+  }
+  
+  .status-badge {
+    font-size: 0.9rem;
+    padding: 4px 8px;
+  }
+  
+  .card-text {
+    font-size: 12px;
+    margin: 0 0 8px;
+  }
+  
+  .days-left {
+    font-size: 15px;
+    font-weight: 600 !important;
+  }
+  
+  .button-group {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 16px;
+    .btn-cancel{
+    background: #FFE9E9;
+    color:red;
+    }
+    .btn-add-user{
+      background:#E3F4FF;
+    }
+    .btn-renew{
+      background:#E3F4FF;
+    }
+  }
+  
+  .action-button {
+    font-size: 13px;
+    text-transform: none;
+    border-radius: 5px;
+    height: 25px;
+    line-height: 1;
+  }
+  /* Standard Plan Card */
+  .standard-card {
+    background: #126EB4;
+    background-image: url('../../../../assets/images/standard-plan-bg.png');
+    background-size: cover;
+    color: white;
+    font-size: 12px;
+    p{
+      color: white !important;
+    }
+    .spakle-image{
+      position: absolute;
+      height: 41px;
+      top: -22px;
+    //   right: 45px;
+    }
+    
+
+    .plan-title {
+      font-weight: 700;
+      font-size: 20px;
+    }
+  }
+  .sub-header{
+    margin-bottom: 5px;
+  }
+  .btn-outline-primary{
+    border-radius: 50%;
+    background: #f3f3f3;
+    border: none;
+    color: black;
+  }
+  .btn-buy{
+    background-color: #f3f3f3;
+    color:#126EB4;
+    width: 100%;
+  }
+  .trial-plan-staus{
+    background: #0EFF2E;
+    color: black;
+    margin-left: 12px;
+  }
+  .payment-options {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin: 15px 0;
+    
+    .payment-option{
+      width: 50%;
+    }
+    .highlighted-option {
+      border:1px solid #FFFFFF;
+      background: transparent;
+      padding: 10px;
+      border-radius: 8px;
+      width: 50%;
+      color:white;
+      cursor: pointer;
+      .price {
+        font-size: 20px;
+        font-weight: bold;
+      }
+     
+      small {
+        font-size: 12px;
+      }
+     
+      .option-title {
+        margin-top: 5px;
+        font-size: 14px;
+      }
+    }
+
+    .yearly-option {
+      position: relative;
+
+      .discount-badge {
+        position: absolute;
+        top: -10px;
+        right: 13px;
+        background: #FFEB0E;
+        color:black;
+        font-size: 12px;
+        font-weight: 600;
+        padding: 3px 5px;
+        border-radius: 0 10px 0 10px;
+      }
+    }
+  }
+  .active{
+    background: #075691;
+    color:#FFFFFF;
+    .price {
+        font-size: 20px;
+        font-weight: bold;
+      }
+
+  }
+
+  .pagination-container {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+  }
+  
+  .items-per-page-container {
+    position: absolute;
+    right: 0;
+    display: flex;
+    align-items: center;
+  }

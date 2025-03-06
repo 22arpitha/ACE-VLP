@@ -1,0 +1,16 @@
+<div class="container-fluid">
+    <div class="modal-body custom-modal" >
+        <div class="d-flex">
+            <img *ngIf="message==='Free Trial Plan'" src="../../../../assets/images/Approvals.svg" style="vertical-align: middle;height: 35px;"/>
+            <img *ngIf="message!='Free Trial Plan'" src="../../../../assets/images/Close.png" style="vertical-align: middle;height: 30px;"/>
+            <h4 class="modal-title"> {{message}}</h4>
+        </div>
+        <p *ngIf="title"  class="text-start text-wrap">{{title}}</p>
+    </div>
+    <div class="modal-footer" [ngClass]="title ? 'justify-content-center':''">
+        <button mat-button type="button"  class="btn-cancel"  (click)="modalStatus('cancel')">No</button>
+        <button mat-button type="button" class="btn-yes" [style.backgroundColor]="message ? '' : '#B41212'" (click)="modalStatus('ok')" >{{buttonName}}</button>
+    </div>
+</div>
+
+

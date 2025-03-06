@@ -1,0 +1,249 @@
+<div class="container-fluid webView">
+
+
+  <div class="bg" [ngClass]="declinedAll.length ? 'over-flow' : ''">
+    <div class="row">
+      <div class="col">
+        <table class="table table-hover table-list" *ngIf="declinedAll?.length">
+          <thead>
+            <tr>
+              <th scope="col">S.No</th>
+              <th scope="col" class="text-center">Date </th>
+              <th scope="col" class="text-center">Employee</th>
+              <th scope="col" class="text-center">Project/Task</th>
+              <th scope="col" class="text-center">Hours</th>
+              <th scope="col" class="text-center">Description</th>
+              <th scope="col" class="text-center">Submitted On</th>
+              <th scope="col" class="text-center">Rejected On</th>
+              <th scope="col" class="text-center">Rejected By</th>
+              <th scope="col" class="text-center">Comments</th>
+            </tr>
+          </thead>
+          <tbody>
+ 
+            <ng-container *ngIf="(declinedAll) as result">
+              <tr *ngFor="let items of result|paginate:paginationConfig;let i=index">
+                <td>{{getContinuousIndex(i)}}</td>
+                <td class="text-center">{{(items.created_date |date:'dd-MM-yyyy') || 'NA'}}</td>
+                <td class="text-center">{{(items?.created_by_name|titlecase) || 'NA'}}</td>
+                <td class="text-center" *ngIf="items.tasks.length">
+                  <div *ngFor="let task of items.tasks; let j = index">
+                    <div>
+                      <span  *ngIf="j === 0">{{ items.project_name }} / </span> 
+                      {{ task?.task__task_name || 'NA' }}{{ j !== items.tasks.length - 1 ? ',' : '' }}
+                    </div>
+                  </div>
+                </td>
+                <td *ngIf="items.tasks.length === 0">
+                  {{'NA'}}
+                </td>
+                <td class="text-center" *ngIf="items.tasks.length">
+                  <div *ngFor="let task of items.tasks; let j = index">
+                    <div>
+                      {{ task?.time_required_to_complete || 'NA' }}
+                    </div>
+                  </div>
+                </td>
+                <td *ngIf="items.tasks.length === 0">
+                  {{'NA'}}
+                </td>
+                
+                <td class="text-center" [title]="items.description">
+                  {{ items.description?.length > 20 ? (items.description | slice:0:20) + '...' : items.description || 'NA' }}
+                </td>
+                <td class="text-center">{{(items.updated_datetime|date:'dd-MM-yyyy') || "NA"}}</td>
+                <td class="text-center">{{(items.rejected_on|date:'dd-MM-yyyy') || 'NA'}}</td>
+                <td class="text-center">{{(items?.rejected_by_name|titlecase) || 'NA'}}</td>
+                <td class="text-center">{{items?.comment || 'NA'}}</td>
+              
+              </tr>
+             
+            </ng-container>
+          </tbody>
+        </table>
+        <div *ngIf="declinedAll?.length === 0">
+          <app-generic-norecards></app-generic-norecards>
+        </div>
+
+      </div>
+    </div>
+
+
+  </div>
+  <div class="pagination-container p-0 py-4">
+    <!-- Pagination Controls (Center-Aligned) -->
+    <pagination-controls previousLabel="Prev" nextLabel="Next" (pageChange)="onTableDataChange($event)">
+    </pagination-controls>
+  
+    <!-- Items Per Page Selector (Right-Aligned) -->
+    <div class="items-per-page-container">
+      <div>Items per page</div>
+      <mat-select [(ngModel)]="tableSize" (selectionChange)="onTableSizeChange($event)" placeholder="10" class="page-size">
+        <mat-option *ngFor="let size of tableSizes" [value]="size">{{size}}</mat-option>
+      </mat-select>
+    </div>
+  </div>
+</div>
+
+
+<div class="container-fluid mobileView">
+ 
+  <div class="bg row mx-0 my-1">
+    <ng-container *ngIf="(declinedAll) as result">
+      <div class="col-sm-12 col-md-6 p-0" *ngFor="let item of result|paginate:paginationConfig;">
+        <div class="card outer-card">
+          <div class="row rc-p">
+            <div class="col-7">
+              <div class="row">
+                <div class="col-12">
+                  <h6 class="card-subtitle">Status</h6>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-12 status-text">
+                  {{ item.approved_state ? item.approved_state : 'Declined'|titlecase }}
+                </div>
+              </div>
+            </div>
+            <div class="col-5">
+             
+            </div>
+          </div>
+
+          <div class="card inner-card">
+            <div class="card-body">
+              <div class="row">
+                <div class="col-6">
+                  <div class="row">
+                    <div class="col-12">
+                      <h6 class="card-subtitle">Created Date</h6>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-12 val-r">
+                      {{(item['created_date'] |date:'dd-MM-yyyy') || 'NA'}}
+                    </div>
+                  </div>
+                </div>
+                <div class="col-6">
+                  <div class="row">
+                    <div class="col-12">
+                      <h6 class="card-subtitle">Employee</h6>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-12 val-r">
+                      {{ (item?.created_by_name |titlecase) || 'NA'}}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="row">
+                  <div class="col-6">
+                    <div class="row">
+                      <div class="col-12">
+                        <h6 class="card-subtitle">Project/Task</h6>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-12 val-r" *ngIf="item.tasks.length">
+                        <div *ngFor="let task of item.tasks; let j = index">
+                          <div>
+                            <span  *ngIf="j === 0">{{ item.project_name }} / </span> 
+                            {{ task?.task__task_name || 'NA' }}{{ j !== item.tasks.length - 1 ? ',' : '' }}
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-12 val-r" *ngIf="item.tasks.length === 0">
+                        {{'NA'}}
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-6">
+                    <div class="row">
+                      <div class="col-12">
+                        <h6 class="card-subtitle">Hours</h6>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-12 val-r" *ngIf="item.tasks.length">
+                        <div *ngFor="let task of item.tasks; let j = index">
+                          <div>
+                            {{ (task?.time_required_to_complete) || 'NA' }}
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-12 val-r" *ngIf="item.tasks.length === 0">
+                        {{'NA'}}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+              <div class="row">
+                <div class="col-6">
+                  <div class="row">
+                    <div class="col-12">
+                      <h6 class="card-subtitle">Rejected Date</h6>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-12 val-r">
+                      {{ item['rejected_on'] |date:'dd-MM-yyyy' ||'NA'}}
+                    </div>
+                  </div>
+                </div>
+                <div class="col-6">
+                  <div class="row">
+                    <div class="col-12">
+                      <h6 class="card-subtitle">Rejected By</h6>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-12 val-r">
+                      {{ (item?.rejected_by_name|titlecase) || 'NA' }}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-12">
+                  <div class="row">
+                    <div class="col-12">
+                      <h6 class="card-subtitle">Description</h6>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-12 val-r" [title]="item.description">
+                      {{ item.description?.length > 130 ? (item.description | slice:0:130) + '...' : item.description || 'NA' }}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+     
+    </ng-container>
+    <div *ngIf="declinedAll.length === 0" class="col-12">
+          <app-generic-norecards></app-generic-norecards>
+       
+    </div>
+  </div>
+  <div class="pagination-container p-0 pt-2" >
+    <!-- Pagination Controls (Center-Aligned) -->
+    <pagination-controls previousLabel="Prev" nextLabel="Next" (pageChange)="onTableDataChange($event)">
+    </pagination-controls> 
+  </div>
+  <!-- Items Per Page Selector (Right-Aligned) -->
+  <div class="pagination-container">
+    <div class="mx-2">Items per page</div>
+    <mat-select [(ngModel)]="tableSize" (change)="onTableSizeChange($event)" placeholder="10" class="page-size">
+      <mat-option *ngFor="let size of tableSizes" [value]="size">{{size}}</mat-option>
+    </mat-select>
+  </div>
+
+</div>

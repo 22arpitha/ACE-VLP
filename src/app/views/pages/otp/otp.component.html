@@ -1,0 +1,75 @@
+<div class="container-fluid login-main-bg" style="margin: 0;padding: 5px 0px;">
+    <div class="row login-content-bg">
+        <div
+            class="col-12 col-md-12 col-lg-8 col-xl-8 login-left-content order-2 order-sm-2 order-md-2 order-lg-1 order-xl-1 ">
+            <img src="./../../../assets/images/login-left-content.png" class="left-content-img"
+                alt="left-content-img" />
+        </div>
+        <div class="col-12 col-md-12 col-lg-4 col-xl-4 order-1 order-sm-1 order-md-1 order-lg-2 order-xl-2"
+            style="position: relative; align-self: center;">
+            <div class="login-right-content">
+                <div class="row">
+                    <div class="logo-section">
+                        <img src="./../../../assets/images/logo.svg" alt="logo-img" width="170px" height="65px"
+                            class="app-logo-content" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <h2 class="login-text"><b>OTP Verification</b></h2>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                        <form [formGroup]='otpForm' (ngSubmit)='sendOTP()' #el>
+                            <div class="row">
+                                <label class="email-text">Enter OTP </label>
+                            </div>
+                            <div class="d-flex flex-row my-3 otp_fields">
+                                <input type="text" inputmode="numeric" class="form-control me-1 me-md-2 me-lg-1"
+                                    onkeypress='return event.charCode >= 48 && event.charCode <= 57' maxlength="1"
+                                    formControlName="num1" on-keyup="valCheck()"
+                                    (keydown)="handleBackspace($event, 'num1')" autofocus="true">
+                                <input type="text" inputmode="numeric" class="form-control me-1 me-md-2 me-lg-1"
+                                    onkeypress='return event.charCode >= 48 && event.charCode <= 57' maxlength="1"
+                                    formControlName="num2" on-keyup="valCheck()"
+                                    (keydown)="handleBackspace($event, 'num2')">
+                                <input type="text" inputmode="numeric" class="form-control me-1 me-md-2 me-lg-1"
+                                    onkeypress='return event.charCode >= 48 && event.charCode <= 57' maxlength="1"
+                                    formControlName="num3" on-keyup="valCheck()"
+                                    (keydown)="handleBackspace($event, 'num3')">
+                                <input type="text" inputmode="numeric" class="form-control me-1 me-md-2 me-lg-1"
+                                    onkeypress='return event.charCode >= 48 && event.charCode <= 57' maxlength="1"
+                                    formControlName="num4" on-keyup="valCheck()"
+                                    (keydown)="handleBackspace($event, 'num4')">
+                                <input type="text" inputmode="numeric" class="form-control me-1 me-md-2 me-lg-1"
+                                    onkeypress='return event.charCode >= 48 && event.charCode <= 57' maxlength="1"
+                                    formControlName="num5" on-keyup="valCheck()"
+                                    (keydown)="handleBackspace($event, 'num5')">
+                                <input type="text" inputmode="numeric" class="form-control me-2 me-md-2 me-lg-1"
+                                    onkeypress='return event.charCode >= 48 && event.charCode <= 57' maxlength="1"
+                                    formControlName="num6" on-keyup="valCheck()"
+                                    (keydown)="handleBackspace($event, 'num6')">
+                            </div>
+                            <div class="text-end mb-3">
+                                <p *ngIf="!isButtonEnabled" class="fw-medium">resend OTP in {{countdown}} seconds</p>
+                                <div *ngIf="isButtonEnabled">
+                                    <button type="button" class="btn btn-sm btn-link"  [disabled]="resendButtonClicked"  (click)="resendOtp()">Resend OTP</button>
+                                </div>
+                            </div>
+                           
+                            <!-- <div class="text-center mt-5">
+                        <span class="d-block email-text">Don't receive the code? <span class="cursor fw-bold" (click)="resendOTP()">Resend</span></span>
+                    </div> -->
+                            <div class="action-btn-link-content">
+                                <a routerLink="../login" class="m-0">Go back to Login</a>
+                                <button mat-raised-button class="proceedbtn cursor" type="submit">Submit OTP</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>

@@ -1,0 +1,79 @@
+::ng-deep .custom-modal-lg {
+    max-width: 75%;
+    width: 100%;
+    padding: 0px;
+    // height: 60%;
+}
+
+.custom-carousel {
+    padding: 0px 35px !important;
+}
+
+.pull-right {
+    border: none;
+    background: #938e8e;
+    border-radius: 50%;
+    color: white;
+    padding: 3px 5px;
+    font-size: x-large;
+}
+
+/* Common styles for arrows */
+.custom-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    // background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+    border: none;
+    font-size: 24px;
+    padding: 10px;
+    border-radius: 50%;
+    cursor: pointer;
+    z-index: 1000;
+}
+
+::ng-deep {
+
+    .modal-body{
+        padding: 0px !important;
+    }
+    .carousel-control-prev {
+        width: 4%;
+        left: -60px;
+        opacity: 1;
+    }
+
+    .carousel-control-next {
+        width: 4%;
+        right: -60px;
+        opacity: 1;
+        // align-items: flex-end;
+        // margin: 0px 30px;
+    }
+
+    .carousel-control-prev:hover,
+    .carousel-control-next:hover {
+        color: rgba(0, 0, 0, 0.1);
+        // color: #fff;
+    }
+
+    .carousel-control-next-icon {
+
+        // background-color: rgb(56, 55, 55) !important;
+        opacity: 1;
+        border-radius: 30px;
+        height: 40px;
+        width: 40px;
+    }
+
+    .carousel-control-prev-icon {
+        // background-color: rgb(56, 55, 55) !important;
+        content: "" !important;
+        opacity: 1;
+        border-radius: 30px;
+        height: 40px;
+        width: 40px;
+    }
+
+}

@@ -1,0 +1,86 @@
+.list-group-item {
+  padding: 16px 15px;
+  cursor: pointer;
+}
+
+.main-heading {
+  background: #F4F4F4;
+  padding: 16px 15px;
+}
+
+.main-heading label {
+  color: #126EB4 !important;
+  font-weight: bold !important;
+}
+
+
+#h-icon {
+  position: absolute;
+  right: 24px;
+  bottom: 15px;
+  color: gray;
+  text-align: end !important;
+}
+
+.icon-span {
+  display: none;
+}
+
+.list-group-item:hover {
+  background: rgb(238, 237, 237);
+
+  .icon-span {
+    display: block;
+  }
+}
+
+.set-scrol {
+  width: 99% !important;
+  overflow-x: scroll !important;
+
+}
+
+@media(max-width:767px) {
+ 
+
+  h1.margin-in-mob {
+    margin-left: 20px;
+  }
+}
+
+.bi-arrow-left {
+  margin-right: 10px;
+}
+
+// .mobileView{
+//   height: 70vh !important;
+//   overflow: auto;
+// }
+@media only screen and (min-width: 768px) and (max-width: 1023px) {
+  .mobileView {
+    width: 100% !important;
+    // display:flex !important;
+  }
+}
+
+.content-page {
+  height: 80vh !important;
+  overflow-y: auto !important;
+  width: 100% !important;
+  overflow-x: hidden;
+}
+.list-group {
+  box-shadow: 0px 0px 4px 0px #00000040;
+  border-radius: 10px;
+  list-style: none;
+}
+.access_given{
+  color: green;
+  font-size: large;
+}
+.list-group-item.selected-tab {
+  // background-color: #126EB4 !important;
+  color: black !important;
+  font-weight: 600 !important;
+}
+

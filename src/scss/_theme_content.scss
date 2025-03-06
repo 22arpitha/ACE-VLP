@@ -1,0 +1,211 @@
+// Place for temp fixes
+//$primay-color: #3F51B5;
+
+@font-face {
+  font-family: 'Exo FT';
+  src: url('/assets/fonts/Exo/Exo-VariableFont_wght.ttf');
+}
+$primay-color: #126EB4;
+$secondary-color:#FFFFFF4D;
+body .sidebar {
+    // --cui-sidebar-bg: #e9f5ff !important;
+    --cui-sidebar-bg: #fafafa !important;
+    background: radial-gradient(100% 60.3% at 0% 45.5%, #FFFFFF 0%, #D7EEFF 100%) /* warning: gradient uses a rotation that is not supported by CSS and may not behave as expected */;
+
+    //box-shadow: 0px 3px 2px -1px rgba(0, 0, 0, 0.2), 0px 6px 2px 0px rgba(0, 0, 0, 0.14), 0px 1px 18px 0px rgba(0, 0, 0, 0.12);
+}
+.proceedbtn,.mat-fab.mat-primary,.createbtn-new,.addTask {
+  background-color: $primay-color !important;
+}
+.sidebar-nav .nav-link.active {
+  background-color: $primay-color !important;
+  color:white !important;
+}
+.dropdown-item, .dropdown-item{
+  i{
+    font-size: large;
+    vertical-align: bottom;
+  }
+  font-weight: 500;
+  color: #454545;
+  &:focus{
+    color: #ffffff !important;
+    background-color: $primay-color !important;
+    border-radius: 5px;
+  }
+  &:hover{
+    color: #ffffff !important;
+    background-color: $primay-color !important;
+    border-radius: 5px;
+  }
+  
+}
+.sidebar-nav .nav-link:hover {
+  background-color: $primay-color !important;
+  color:white !important;
+  // margin: 10px 5px 0px 0px;
+  border-bottom-right-radius: 5px;
+  border-top-right-radius: 5px;
+}
+.sidebar-nav .nav-group.show {
+  background:  #fafafa;
+  border-bottom-right-radius: 5px;
+  border-top-right-radius: 5px;
+  border: 1px solid;
+  margin-top: 10px !important;
+border-image-source: linear-gradient(286.72deg, #FFFFFF 13.46%, rgba(255, 255, 255, 0) 96.13%);
+
+
+  // background: #e4fbff !important;
+}
+.sidebar-nav .nav-group.show:has(.nav-link.active) .nav-group-toggle,
+.sidebar-nav .nav-group:has(.nav-link.active) .nav-group-toggle {
+  background-color: $primay-color !important;
+  color: #fff !important; 
+  border-bottom-right-radius: 5px;
+  border-top-right-radius: 5px;
+}
+.sidebar-nav .nav-group.show:has(.nav-link.active) .nav-group-toggle::after,
+.sidebar-nav .nav-group:has(.nav-link.active) .nav-group-toggle i{
+  color:#fff !important;
+}
+
+.sidebar-nav .nav-group.show .nav-link.active {
+  background:  transparent !important; 
+  color: #000 !important; 
+  font-weight: 600 !important;
+}
+.table-list thead tr th{
+    background-color: $primay-color !important;
+    color:white !important;
+    text-transform: uppercase;
+    height: 50px;
+    padding: 16px 20px !important;
+    align-content: center;
+    text-align: center;
+    font-family: 'Exo FT';
+  }
+  #register-icon{
+    font-size: x-large;
+    color:$primay-color;
+    padding-right: 10px;
+    cursor: pointer;
+  }
+.ngx-pagination .current {
+  padding: 0.1875rem 0.625rem;
+    background: #f4f4f4 !important;
+    // border-radius: 50%;
+    color: black !important;
+    cursor: default;
+    &:hover{
+      opacity: 0.7;
+    }
+}
+.ngx-pagination a, .ngx-pagination button {
+    // color: $primay-color !important;
+    display: block;
+    padding: 0.1875rem 0.625rem;
+    border-radius: 0;
+    text-decoration: none;
+    
+}
+// .ngx-pagination a {
+//   span{
+//     &:hover{
+//       border-radius: 50%;
+//     }
+//   }
+  
+// }
+.ngx-pagination .pagination-next,.pagination-previous{
+  // background-color: #f4f4f4;
+  // border-radius: 5px !important;
+  &:hover{
+    border-radius: 5px;
+  }
+}
+.createbtn{
+    background: $primay-color !important;
+    // font-size: 25px;
+    border-radius: 50%;
+    position: fixed !important;
+    right: 4% !important;
+    // width: 50px !important;
+    // height: 50px !important;
+    
+    i{
+      display: flex;
+      justify-content:center
+    }
+  
+  }
+  .user-container{    
+    background: $primay-color !important;
+}
+  .bg-role{
+    background: $primay-color !important;
+    height: 85vh !important;
+    overflow-y: auto;
+    overflow-x: hidden;
+    font-size: small;
+    input,textarea,select{
+        font-size: small !important;
+    }
+  }
+
+  .page-size-btn{
+    outline: none;
+    border: none;
+    margin: auto 5px;
+    border-radius: 5px;
+    font-size: 14px;
+    padding: 6px 8px;
+    background: transparent;
+    font-family: 'Exo FT' !important;
+
+  }
+  .active-size,
+.page-size-btn:active,
+.page-size-btn:hover,
+.page-size-btn:visited{
+    background: $primay-color !important;
+    box-shadow: 0px 0px 4px 0px #00000040;
+    color: #fff;
+}
+.pg-bg{
+  background: #F8F9FD;
+  max-width: 180px;
+  border-radius: 5px;
+}
+.proceedbtn{
+  background-color: $primay-color !important;
+  color:white;
+}
+.bi-arrow-up-right-square-fill,.bi-arrow-repeat{
+  color: $primay-color !important;
+}
+
+.mat-slide-toggle.mat-checked .mat-slide-toggle-thumb{
+  background-color: $primay-color !important;
+}
+.mat-slide-toggle.mat-checked .mat-slide-toggle-bar {
+  background-color: #c0e4ff;
+}
+.search-div{
+  .form-control:focus{
+    border: 1px solid gray;
+    box-shadow: none;
+    outline: 0;
+  }
+}
+
+
+.custom-tab-group .mat-tab-label-active {
+  color: $primay-color !important; /* Selected tab text color */
+  border-bottom: 2px solid $primay-color !important; /* Border color for selected tab */
+}
+
+/* Optional: Add hover effect */
+.custom-tab-group .mat-tab-label:hover {
+  opacity: 0.8;
+}

@@ -1,0 +1,76 @@
+
+::ng-deep .add-project-template .mat-form-field-wrapper {
+    padding-bottom: 0em;
+}
+
+.add-project-template .proceedbtn {
+    background-color: #126EB4 !important;
+    border-radius: 5px !important;
+    border: none !important;
+    height: 35px !important;
+    width: auto !important;
+    color: white !important;
+    font-size: small !important;
+    padding: 0px 4px;
+
+}
+
+.add-project-template .invalid-button .proceedbtn {
+    background-color: #5588af !important;
+    border-radius: 5px !important;
+    border: none !important;
+    height: 35px !important;
+    width: auto !important;
+    color: white !important;
+    font-size: small !important;
+    padding: 0px 4px;
+}
+
+::ng-deep .add-project-template .mat-icon-button .mat-icon {
+    line-height: 22px !important;
+}
+
+::ng-deep .add-project-template .mat-icon {
+    font-size: medium !important;
+}
+
+::ng-deep .add-project-template .mat-icon-button {
+    line-height: 0px !important;
+}
+
+.add-project-template .task-border {
+    border: 1px solid #c1c0c0;
+    border-radius: 5px;
+}
+
+.add-project-template .icon-bg {
+    background: #f4f4f4;
+    padding: 5px 7px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 18px;
+
+    &:hover {
+        opacity: 0.8;
+    }
+}
+::ng-deep .add-project-template .disabled-bg .mat-form-field-flex {
+    background-color: lightgrey;
+    border-radius: 10px;
+}
+.add-project-template .disabled-bg .input-group {
+    background-color: lightgrey;
+    height: 50px !important;
+    font-family: "Exo FT" !important;
+    font-size: 14px;
+}
+.add-project-template .form-control{
+    // height: 50px !important;
+    font-family: "Exo FT" !important;
+    font-size: 14px;
+}
+ 
+.add-project-template .form-control:focus {
+    outline: none;
+    box-shadow: none;
+}

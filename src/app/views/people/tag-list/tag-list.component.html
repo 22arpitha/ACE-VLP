@@ -1,0 +1,191 @@
+<div class="container-wrapper webView">
+    <!-- <div class="row">
+        <div class="col-sm-6">
+            <h1>Tag list</h1>
+        </div>
+        <div class="col-sm"></div>
+        <div class="col-sm-3">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                 <li class="breadcrumb-item"><a routerLink="/dashboards">Home</a></li>
+                  <li class="breadcrumb-item">Tag list</li>
+                  
+                </ol>
+              </nav>
+        </div>
+        
+    </div> -->
+  
+        <div class="row p-20">
+            <div class="col-md-7 col-lg-4 search-div px-0">
+                <input type="text" class="form-control p-2 sizeinput" [(ngModel)]="term" placeholder="Search by tag name/status" aria-describedby="emailHelp"  autocomplete="off">
+                <i class="bi bi-search" id="search-icon-tab" (click)="filterSearch()"></i>         
+            </div>
+            <div class="col-sm"></div>
+            <div class="col-md-4 col-lg-3 text-center align-self-center">
+              <div class="d-flex justify-content-center pg-bg">
+                <button *ngFor="let size of tableSizes" class="page-size-btn" [value]="size" (click)="onTableSizeChange($event)" [ngClass]="{'active-size': tableSize === size}"
+              >{{size}}</button>
+              </div>
+                      </div>
+        </div>
+        <div class="bg">
+        <div class="row">
+            <div class="col px-0">
+                <table class="table table-hover table-list">
+                    <thead>
+                        <tr>
+                          <th scope="col"> S.No</th>
+                          <th scope="col">Name <i  *ngIf="!arrow" (click)="sort('asc','tag_name')" class="bi bi-arrow-up"></i><i (click)="sort('desc','tag_name')" *ngIf="arrow" class="bi bi-arrow-down"></i></th>
+                          <th scope="col">Added Date <i  *ngIf="!arrow" (click)="sort('asc','added_date')" class="bi bi-arrow-up"></i><i (click)="sort('desc','added_date')" *ngIf="arrow" class="bi bi-arrow-down"></i></th>
+                          <th scope="col">Status <i  *ngIf="!arrow" (click)="sort('asc','tage_status')" class="bi bi-arrow-up"></i><i (click)="sort('desc','tage_status')" *ngIf="arrow" class="bi bi-arrow-down"></i></th>
+                          <th scope="col">Action</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        
+                        <ng-container *ngIf="(allTag) as result">
+                        <tr *ngFor='let item of result| paginate : {
+                            itemsPerPage: tableSize,
+                            currentPage: page,
+                            totalItems: count
+                          }|customSort:directionValue:sortValue
+                            ; let i=index' [class.active]="i == currentIndex">
+                            <td>{{getContinuousIndex(i)}}</td>
+                            <td>{{item.tag_name | titlecase}}</td>
+                            <td>{{item.added_date | date:'dd-MM-yyyy'}}</td>
+                            
+                            <td>{{item.tage_status ? item.tage_status : "NA" | titlecase}}</td>
+                            <td>
+                                <ng-container *ngFor="let access of permissions">
+                                    <button mat-raised-button mat-mini-fab  routerLink="/people/updateTag/{{item.id}}/{{page}}/{{tableSize}}" *ngIf="access === 'UPDATE'">
+                                      <i class="bi bi-pencil-square"  container="body" ngbTooltip="Edit" style="color: #000; font-size: 24px;"></i>
+                                    </button>
+                                    <button mat-raised-button mat-mini-fab   (click)="open(item.id)" *ngIf="access === 'DELETE'">
+                                      <i class="bi bi-trash" style="color: red;" container="body" ngbTooltip="Delete"></i>
+                                    </button>
+                                  </ng-container>  
+                                <!-- <a routerLink="/people/updateTag/{{item.id}}/{{page}}/{{tableSize}}"><i class="bi bi-pencil-square"  container="body" ngbTooltip="Edit" style="color: #000; font-size: 24px;"></i></a>
+                               <button mat-raised-button style="border: none;background-color: inherit;" (click)="open(item.id)"> <i class="bi bi-trash" style="color: red;" container="body" ngbTooltip="Delete"></i></button> -->
+                            </td>
+                        </tr>
+                        <tr *ngIf="result.length === 0" class="nodata">
+                            <td> No records found!</td>  
+                        </tr>
+                    </ng-container>
+                      </tbody>
+                  </table>
+                  
+            </div>
+        </div>
+        
+    </div>
+    <div class="row">
+           
+      <div class="col-sm"></div>
+      <div class="col-sm-12" *ngIf="allTag.length > 0">
+          <div class="d-flex justify-content-center p-nav">
+              <pagination-controls 
+                previousLabel="Prev" 
+                nextLabel="Next" 
+                (pageChange)="onTableDataChange($event)">
+              </pagination-controls>
+            </div>
+      </div>
+  </div>
+    <ng-container *ngFor="let access of permissions">
+        <button mat-raised-button mat-fab color="primary" *ngIf="access == 'CREATE'" routerLink="/people/add-tag-list" class="createbtn" placement="top" container="body" ngbTooltip="Add tag">
+          <i class="fa fa-plus"></i>
+  
+        </button>
+      </ng-container>
+    <!-- <a routerLink="/people/add-tag-list"> <button mat-raised-button type="button"  class="createbtn" placement="top"  ngbTooltip="Add Tag"><i class="fa fa-plus"></i>
+  </button></a> -->
+
+</div>
+
+<div class="container-wrapper mobileView">
+    <div class="row mx-1 my-2">
+        <div class="col-sm-12 col-md-6">
+            <!-- <h1>Tag List</h1> -->
+        </div>
+        <div class="col-sm-6 col-md-6 mb-1 search-div px-0">
+            <input type="text" class="form-control py-3 px-4" [(ngModel)]="term" placeholder="Search by tag name/status" aria-describedby="emailHelp"  autocomplete="off">
+            <i class="bi bi-search" id="search-icon" (click)="filterSearch()"></i>
+        </div>
+    </div>
+    <div class="bg">
+<div class="row">
+    <ng-container *ngIf="(allTag) as result">
+    <div class="col-sm-12 col-md-6 main-col" *ngFor='let item of allTag| paginate : {
+        itemsPerPage: tableSize,
+        currentPage: page,
+        totalItems: count
+      }'>
+     <div class="card">
+        <div class="row top-row">
+            <div class="col-7">
+                <h6 class="card-subtitle clr">Name</h6>
+                <span class="clr value-container">{{item.tag_name|titlecase}}</span>
+            </div>
+            <div class="col-5 p-3 text-end">
+                <ng-container *ngFor="let access of permissions">
+                <a *ngIf="access === 'UPDATE'"> <button  type="button" class="toolbar-btn"   (click)='editCard(item.id)'  ><i class="bi bi-pencil-square" style="color: #000; font-size: 24px;" ></i></button></a>
+                <a *ngIf="access === 'DELETE'"> <button  type="button" class="toolbar-btn"   (click)="open(item.id)"  ><i class="bi bi-trash" style="color: red; font-size: 24px;"></i></button></a>
+                </ng-container>
+            </div>   
+          </div>
+          <div class="card-inner">
+      <div class="row">
+        <div class="col-6">
+            <h6 class="card-subtitle">Added Date</h6>
+            <p class="value-container">{{item.added_date | date:'dd-MM-yyyy'|titlecase}}</p>
+        </div>
+        <div class="col-6">
+            <h6 class="card-subtitle">Status</h6>
+            <p class="value-container">{{item.tage_status ? item.tage_status : "NA"|titlecase}}</p>
+        </div>
+      </div>
+     </div>
+    </div>
+</div>
+
+
+  <div *ngIf="result.length === 0 " >
+    <app-generic-norecards></app-generic-norecards>
+   </div>
+    </ng-container>
+</div>
+
+</div>
+<div class="row mobile-pagination" *ngIf="allTag.length !== 0">
+  <div class="col-sm-12" >
+      <div class="mobile-pagination-content">
+          <pagination-controls 
+            previousLabel="Prev" 
+            nextLabel="Next" 
+            (pageChange)="onTableDataChange($event)">
+          </pagination-controls>
+         <div><button *ngFor="let size of tableSizes" class="page-size-btn" [value]="size" (click)="onTableSizeChange($event)" [ngClass]="{'active-size': tableSize === size}"
+          >{{size}}</button></div>
+        </div>
+  </div>
+</div>
+<!-- <div class="s-position">
+    <a routerLink="/people/add-tag-list"> <button type="button"  class="createbtn-new" placement="top" container="body" ngbTooltip="Add"><i class="fa fa-plus"></i>
+  </button></a>
+  </div> -->
+  <div class="s-position"  *ngFor="let access of permissions">
+  <ng-container *ngIf="access == 'CREATE'">
+    <button mat-raised-button mat-fab color="primary"  routerLink="/people/add-tag-list" class="createbtn-new" placement="top" container="body" ngbTooltip="Add tag">
+      <i class="fa fa-plus"></i>
+    </button>
+  </ng-container>
+  </div>
+  
+</div>
+
+
+
+
+

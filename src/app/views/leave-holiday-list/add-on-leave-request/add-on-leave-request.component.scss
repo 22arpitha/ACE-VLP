@@ -1,0 +1,140 @@
+ol{
+    background-color: inherit;
+}
+a{
+    color: #3F51B5;
+    text-decoration: none;
+}
+li{
+    
+    list-style: none;
+    color: grey;
+}
+ul{
+    padding: 0px;
+}
+.bg{
+    background-color: white;
+    height: 100%;
+    width: 100%;
+    padding: 20px;
+    border-radius: 5px;
+    overflow-x: auto !important;
+}
+.proceedbtn{
+    background-color: #3F51B5;
+    border-radius: 5px;
+    border: none;
+    height: 40px;
+    width: 100%;
+    color: white;
+}
+.printbtn{
+    background-color: #00BCD4;
+    border-radius: 5px;
+    border: none;
+    height: 40px;
+    width: 100%;
+    color: white;
+    margin: 10px 0px;
+}
+.row{
+    padding: 5px;
+}
+i{
+    padding: 0px 5px 0px 0px;
+}
+.btnicon{
+    display: none;
+}
+button:hover{
+   .btnicon{
+       display: block;
+   }
+}
+
+select{
+    width: 100%;
+    height: 30px;
+}
+span{
+    color: red;
+}
+p{
+    color: grey;
+}
+html{
+    position: relative;
+}
+
+
+h4{
+    color: black;
+}
+.card{
+    margin: 5px 1px;
+    border: none;
+    box-shadow: 0 1px 1px rgb(0 0 0 / 5%);
+    padding: 0 10px;
+    font-size: 14px;
+    .card-body{
+        padding: 0 10px;
+
+    }
+}
+.p-c{
+    padding: 5px 10px;
+    height: 15vh;
+    p{
+        margin-bottom: 0px !important;
+        color:gray;
+    }
+}
+.date-input{
+    font-size: 14px;
+    background: #f6f6f6;
+    border-radius: 2px;
+}
+.container-middle {
+    height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+    background: #f8f8f8;
+    padding-bottom: 7rem !important;
+}
+.no-data{
+    font-style: italic;
+    font-size: small;
+    font-weight: 500;
+}
+.error-msg p{
+    color:red !important;
+}
+.padd-top{
+    padding-top: 15px;
+}
+@media(max-width:767px){
+    .custom-scroll{
+        height: 60vh;
+        overflow: scroll;
+        overflow-x: hidden;
+        padding: 0;
+    }
+    .s-padd{
+        padding: 0  !important;
+    }
+    .date-label{
+        margin: 10px 0px !important;
+      }
+}
+@media(max-width:1023px){
+    .p-20 {
+      padding: 5px 5px 0 !important;
+    }
+  }
+  @media(min-width:1024px){
+    .p-20 {
+      padding: 14px 12px 0 !important;
+    }
+  }
+  

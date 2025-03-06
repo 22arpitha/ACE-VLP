@@ -1,0 +1,255 @@
+<div class="container-fluid bg mt-4 p-20">
+    <!-- Subscription Plans -->
+    <div class="row">
+       <!-- Standard Plan Card -->
+       <div  [ngClass]="my_subscription.length !== 1 ? 'col-md-7 mb-3' : 'col-md-6 offset-md-3'">
+       
+        <mat-card class="custom-card border-primary standard-card" >
+        <mat-card-content *ngFor="let plan of mySubscriptionData">
+          <ng-container *ngIf="plan.subscription_type_name === 'Standard' && plan.is_active">
+          <div class="card-header">
+            <h5 class="plan-title standard-title p-r">{{plan?.subscription_type_name}} <span class="badge standard-plan-staus">Active</span><img class="spakle-image" src="../../../../assets/images/sparkle-filled.svg"/></h5>
+          </div>
+          <p class="card-text mb-3 sub-header">{{plan?.subscribed_for}}</p> 
+          <div class="row">
+            <div class="col-sm-12 col-md-3">
+              <div class="row">
+                <div class="col-12">
+                  <p class="card-text">No of active users</p>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-12">
+                  <strong>{{plan?.added_users}}</strong>
+                </div>
+              </div>
+            </div>
+            <div class="col-sm-12 col-md-3">
+              <div class="row">
+                <div class="col-12">
+                  <p class="card-text">Total no of users</p>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-12">
+                  <strong>{{plan?.max_user}}</strong>
+                </div>
+              </div>
+            </div>
+            <div class="col-sm-12 col-md-3">
+              <div class="row">
+                <div class="col-12">
+                  <p class="card-text">No of days left</p>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-12">
+                  <strong>{{plan?.remaining_number_of_days}} </strong>
+                </div>
+              </div>
+            </div>
+            <div class="col-sm-12 col-md-3">
+              <div class="row">
+                <div class="col-12">
+                  <p class="card-text">Expiry Date</p>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-12">
+                  <strong>{{plan?.expiry_date | date}}</strong>
+                </div>
+              </div>
+            </div>
+          </div>
+         
+        
+            <div class="row button-group">
+              <div class="col-sm-12 col-md-3">
+                <button mat-raised-button [ngbTooltip]="disableCancelButton? 'please renew': 'cancel subscription'" 
+                 [disabled]="disableCancelButton" class="action-button btn-cancel" (click)="cancelSubscription(plan)"
+                 [ngStyle]="{'cursor': disableCancelButton ? 'not-allowed' : 'pointer'}">Cancel</button>
+              </div>
+              <div class="col-sm-12 col-md-3">
+                <button mat-raised-button [ngbTooltip]="disableAddButton? 'please renew': 'add users'" 
+                 [disabled]="disableAddButton"  class="action-button btn-add-user" (click)="addNewUser(plan)"
+                 [ngStyle]="{'cursor': disableAddButton ? 'not-allowed' : 'pointer'}">Add User</button>
+              </div>
+              <div class="col-sm-12 col-md-3">
+                <button [disabled]="showRenewalButton"  mat-raised-button  class="action-button btn-renew" 
+                (click)="renewSubscription(plan)" [ngStyle]="{'cursor': showRenewalButton ? 'not-allowed' : 'pointer'}">Renew</button>
+              </div>
+              <div class="col-sm-12 col-md-3"></div>
+            </div>
+          </ng-container>
+          
+        </mat-card-content>
+      </mat-card>
+    
+    </div>
+      <!-- Free Trial Card -->
+      <div class="col-md-5 mb-3" *ngIf="mySubscriptionData.length>1">
+        <mat-card class="custom-card border-danger" >
+          <mat-card-content *ngFor="let plan of mySubscriptionData">
+            <ng-container *ngIf="plan.subscription_type_name === 'Free Trial' && !plan.is_active">
+            <div class="card-header">
+              <h5 class="card-title">{{plan?.subscribed_for}}  <span class="badge bg-danger">Expired</span></h5>
+             
+            </div>
+            <p class="card-text mb-1 sub-header"></p>
+            <div class="row mt-3">
+              <div class="col-4">
+                <p class="card-text">No of active users</p>
+              </div>
+              <div class="col-4">
+                <p class="card-text">Expired on</p>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-4"> 
+                <strong>{{plan?.added_users}}</strong>
+              </div>
+              <div class="col-4">
+                <strong>{{plan?.expiry_date | date}}</strong>
+              </div>
+            </div>
+            
+          
+            <div>
+              <div class="row d-flex align-items-center">
+                <div class="col-1"><i class="bi bi-megaphone" style="font-size: 20px;"></i></div>
+                <div class="col">
+                  <p class="card-text">Free Plan</p>
+                  <p class="days-left">{{plan?.remaining_number_of_days}} days left</p>
+                </div>
+              </div>
+              
+            </div>
+            </ng-container>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    
+     
+    </div>
+    
+    
+  
+   <!-- Transaction History -->
+<div class="mb-3">
+  <strong>Transaction History</strong>
+</div>
+
+<!-- Loader -->
+<div *ngIf="isLoading" class="text-center">
+  <p>Loading transaction history...</p>
+</div>
+
+<!-- Table View -->
+<div class="d-none  d-md-block" *ngIf="!isLoading && transactionData.length > 0">
+  <table class="table table-list table-bordered">
+    <thead class="table-primary">
+      <tr>
+        <th>Sl No</th>
+        <th>Plan</th>
+        <th>Term</th>
+        <th>Per User</th>
+        <th>Users</th>
+        <th>Total Amount</th>
+        <th>Start Date</th>
+        <th>End Date</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let transaction of transactionData |paginate : {
+        itemsPerPage: tableSize,
+        currentPage: page,
+        totalItems: count
+       }; ">
+        <td>{{ transaction.slNo }}</td>
+        <td>{{ transaction.plan }}</td>
+        <td>{{ transaction.term }}</td>
+        <td>₹{{ transaction.perUser}}</td>
+        <td>{{ transaction.users }}</td>
+        <td>₹{{ transaction.totalAmount}}</td>
+        <td>{{ transaction.startDate }}</td>
+        <td>{{ transaction.endDate }}</td>
+        <td>
+          <button *ngIf="transaction.plan!='Free Trial'" class="btn btn-outline-primary btn-sm"  (click)="downloadInvoice(transaction.id)">
+            <i class="bi bi-download"></i>
+          </button>
+          <span *ngIf="transaction.plan==='Free Trial'">-</span>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="pagination-container p-0 pt-2">
+    <!-- Pagination Controls (Center-Aligned) -->
+    <pagination-controls previousLabel="Prev" nextLabel="Next" (pageChange)="onTableDataChange($event)">
+    </pagination-controls>
+  
+    <!-- Items Per Page Selector (Right-Aligned) -->
+    <div class="items-per-page-container">
+      <div>Items per page</div>
+      <mat-select [(ngModel)]="tableSize" (selectionChange)="onTableSizeChange($event)" placeholder="10" class="page-size">
+        <mat-option *ngFor="let size of tableSizes" [value]="size">{{size}}</mat-option>
+      </mat-select>
+    </div>
+  </div>
+</div>
+
+<!-- Cards for Mobile View -->
+<div class="d-block d-md-none pb-5" *ngIf="!isLoading && transactionData.length > 0">
+  <div class="card mb-3" *ngFor="let transaction of transactionData |paginate : {
+    itemsPerPage: tableSize,
+    currentPage: page,
+    totalItems: count
+   }; ">
+    <div class="card-body">
+      <p><strong>Sl No:</strong> {{ transaction.slNo }}</p>
+      <p><strong>Plan:</strong> {{ transaction.plan }}</p>
+      <p><strong>Term:</strong> {{ transaction.term }}</p>
+      <p><strong>Per User:</strong> ₹{{ transaction.perUser  }}</p>
+      <p><strong>Users:</strong> {{ transaction.users }}</p>
+      <p><strong>Total Amount:</strong> ₹{{ transaction.totalAmount  }}</p>
+      <p><strong>Start Date:</strong> {{ transaction.startDate}}</p>
+      <p><strong>End Date:</strong> {{ transaction.endDate}}</p>
+      <button *ngIf="transaction.plan!='Free Trial'" class="btn btn-outline-primary btn-sm" (click)="downloadInvoice(transaction.id)">
+        <i class="bi bi-download"></i>
+      </button>
+    </div>
+   
+  </div>
+  <div class="pagination-container p-0 pt-2">
+    <div class="row">
+      <div class="col-12">
+        <pagination-controls previousLabel="Prev" nextLabel="Next" (pageChange)="onTableDataChange($event)">
+        </pagination-controls>
+      </div>
+      <div class="col-12">
+        <div class="items-per-page-container">
+          <div>Items per page</div>
+          <mat-select [(ngModel)]="tableSize" (selectionChange)="onTableSizeChange($event)" placeholder="10" class="page-size">
+            <mat-option *ngFor="let size of tableSizes" [value]="size">{{size}}</mat-option>
+          </mat-select>
+        </div>
+      </div>
+    </div>
+    
+ 
+    
+  </div>
+</div>
+
+<!-- No Records Found -->
+<div class="text-center" *ngIf="!isLoading && transactionData.length === 0">
+  <p>No transaction history found.</p>
+</div>
+
+  </div>
+
+
+  <!-- <div id="invoiceTemplate" style="display: none;">
+    <app-subscription-invoice-details></app-subscription-invoice-details>
+  </div> -->
+  

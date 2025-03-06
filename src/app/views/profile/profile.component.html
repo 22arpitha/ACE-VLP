@@ -1,0 +1,451 @@
+<div class="container-fluid webView px-0">
+    <!-- <div class="row">
+        <div class="col-sm-6">
+            <h1>Profile update</h1>
+        </div>
+        <div class="col-sm"></div>
+        <div class="col-sm-4 text-end">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                  <li class="breadcrumb-item"><a routerLink="/dashboards">Home</a></li>
+                  <li class="breadcrumb-item">Profile update</li>
+                </ol>
+              </nav>
+        </div>
+        
+    </div> -->
+
+    <div class="generic-form bg mx-1">
+        <form [formGroup]='profileForm'>
+            <div class="row">
+                <div class="col-sm-6">
+                    <h4>Profile details</h4>
+                </div>
+            </div>
+            <div class="row mt-4">
+                <div class="col-12 mb-3">
+                    <div class="row">
+                        <div class="col-sm-12 col-md-3 col-lg-2 custom-mat-form-field">
+                            <input type="file" accept="image/*" formControlName="profile_image" #fileInput
+                                (change)="uploadProflieImageFile($event)" hidden>
+
+                            <div class="image-container temp-style d-flex justify-content-around align-items-center">
+                                <div class="image-background">
+                                    <img id="imagePreview"
+                                        [src]="fileDataUrl? fileDataUrl: '../assets/images/no-profile-pic.png'"
+                                        alt="profile">
+                                </div>
+                                <button type="button" mat-icon-button
+                                    (click)="triggerFileInput(fileDataUrl? 'Delete':'Upload')">
+                                    <mat-icon matTooltip="{{fileDataUrl? 'Delete':'Upload'}}"
+                                        class="edit-or-upload-icon">{{fileDataUrl? 'delete':'add_a_photo'}}</mat-icon>
+                                </button>
+                                <!-- <div class="img-container-label" >Profile<b class="r-star">*</b></div> -->
+                            </div>
+                            <div *ngIf="f['profile_image']?.touched && f['profile_image']?.invalid">
+                                <span *ngIf="!fileDataUrl" class="error-msg">Profile image is required</span>
+                                <span *ngIf="f['profile_image'].errors?.['accept']" class="error-msg">Invalid file
+                                    format. Only .jpg, .jpeg, .png formats are allowed.</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-sm-12 col-md-6 col-lg-3 mb-4">
+                    <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+                        <mat-label>First Name <b class="r-star">*</b></mat-label>
+                        <input matInput placeholder="Enter first name" formControlName="first_name" autocomplete="off"
+                            pattern="^[a-zA-Z]+( [a-zA-Z]+)*$">
+                    </mat-form-field>
+                    <div class="px-2" *ngIf="f['first_name']?.touched && f['first_name']?.invalid">
+                        <span class="text-errors" *ngIf="f['first_name'].errors?.['required']">First name is required
+                        </span>
+                        <span class="text-errors" *ngIf="f['first_name'].errors?.['pattern']">
+                            Invalid name. Only letters are allowed, and the name must start with a letter.
+                        </span>
+                        <span class="text-errors"
+                            *ngIf="!f['first_name'].errors?.['required'] && f['first_name'].errors?.['maxlength']">
+                            First name cannot exceed more than 50 characters.
+                        </span>
+                    </div>
+                </div>
+                <div class="col-sm-12 col-md-6 col-lg-3 mb-4">
+                    <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+                        <mat-label>Last Name <b class="r-star">*</b></mat-label>
+                        <input matInput placeholder="Enter last name" formControlName="last_name" autocomplete="off"
+                            pattern="^[a-zA-Z]+( [a-zA-Z]+)*$">
+                    </mat-form-field>
+                    <div class="px-2" *ngIf="f['last_name']?.touched && f['last_name']?.invalid">
+                        <span class="text-errors" *ngIf="f['last_name'].errors?.['required']">Last name is
+                            required</span>
+                        <span class="text-errors" *ngIf="f['last_name'].errors?.['pattern']">
+                            Invalid name. Only letters are allowed, and the name must start with a letter.
+                        </span>
+                        <span class="text-errors"
+                            *ngIf="!f['last_name'].errors?.['required'] && f['last_name'].errors?.['maxlength']">
+                            Last name cannot exceed more than 50 characters.
+                        </span>
+                    </div>
+                </div>
+                <div *ngIf="user_role=='Employee'" class="col-sm-12 col-md-6 col-lg-3 mb-4">
+                    <mat-form-field appearance="outline" class="w-100 custom-mat-form-field" >
+                        <mat-label>Designation <b class="r-star">*</b></mat-label>
+                        <input matInput placeholder="Enter designation" formControlName="designation" autocomplete="off"
+                         >
+                    </mat-form-field>
+                    <div class="px-2" *ngIf="f['designation']?.touched && f['designation']?.invalid">
+                        <span class="text-errors" *ngIf="f['designation'].errors?.['required']">Designation is
+                            required</span>
+                        <span class="text-errors" *ngIf="f['designation'].errors?.['pattern']">
+                            Invalid name. Only letters are allowed, and the name must start with a letter.
+                        </span>
+                    </div>
+                </div>
+                <div class="col-sm-12 col-md-6 col-lg-3 mb-4">
+                    <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+                        <mat-label>Email Id <b class="r-star">*</b></mat-label>
+                        <input matInput type="email" placeholder="Enter email Id" formControlName="email"
+                            autocomplete="off" oninput="this.value = this.value.toLowerCase()">
+                    </mat-form-field>
+                    <div class="px-2" *ngIf="f['email']?.touched && f['email']?.invalid">
+                        <span class="text-errors" *ngIf="f['email'].errors?.['required']">Email Id is required</span>
+                        <span class="text-errors" *ngIf="f['email'].errors?.['email']">Invalid email Id</span>
+                    </div>
+                </div>
+                <div class="col-sm-12 col-md-6 col-lg-3 mb-4">
+                    <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+                        <mat-label>Phone No <b class="r-star">*</b></mat-label>
+                        <input matInput type="number" placeholder="Enter phone no" formControlName="phone_number"
+                            autocomplete="off" maxlength="10" pattern="\d{10}"
+                            onKeyPress="if(this.value.length==10) return false;" (keypress)="validateKeyPress($event)">
+                    </mat-form-field>
+                    <div class="px-2" *ngIf="f['phone_number']?.touched && f['phone_number']?.invalid">
+                        <span class="text-errors" *ngIf="f['phone_number'].errors?.['pattern']">Please enter 10 digits
+                            phone number.</span>
+                        <span class="text-errors" *ngIf="f['phone_number'].errors?.['required']">Phone number is
+                            required.</span>
+                    </div>
+                </div>
+                <div class="col-sm-12 col-md-6 col-lg-3 mb-4 date-joining">
+                    <mat-form-field appearance="outline" class="w-100 p-0 custom-mat-form-field">
+                        <mat-label>Date of Joining <b class="r-star">*</b></mat-label>
+                        <input matInput [matDatepicker]="picker" placeholder="Enter start date"
+                            formControlName="date_joined" autocomplete="off" >
+                            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                             <mat-datepicker #picker></mat-datepicker>
+                    </mat-form-field>
+                    <!-- <mat-form-field appearance="outline" class="w-100 p-0 custom-mat-form-field">
+                        <mat-label>Date of Birth <b class="r-star">*</b></mat-label>
+                        <input style="padding: 0.3rem 0 0 0;" type="date" matInput placeholder="Enter date of birth"
+                            formControlName="date_joined" autocomplete="off">
+                    </mat-form-field> -->
+                    <div class="px-2" *ngIf="f['date_joined']?.touched && f['date_joined']?.invalid">
+                        <span class="text-errors" *ngIf="f['date_joined'].errors?.['required']">Date of joining is
+                            required</span>
+                    </div>
+                </div>
+                <div class="col-sm-12 col-md-6 col-lg-3 mb-4">
+                    <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+                        <mat-label>Country <b class="r-star">*</b></mat-label>
+                        <mat-select formControlName="country" (selectionChange)="getState($event.value)"
+                            autocomplete="off" panelClass="custom-select-panel" [disableOptionCentering]="true">
+                            <mat-option *ngFor="let country of country" [value]="country.id">
+                                {{country.country_name}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                    <div class="px-2" *ngIf="f['country']?.touched && f['country']?.invalid">
+                        <span class="text-errors" *ngIf="f['country'].errors?.['required']">Country is required</span>
+                    </div>
+                </div>
+                <div class="col-sm-12 col-md-6 col-lg-3 mb-4">
+                    <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+                        <mat-label>State <b class="r-star">*</b></mat-label>
+                        <mat-select formControlName="state" (selectionChange)="getCity($event.value)" autocomplete="off"
+                            panelClass="custom-select-panel" [disableOptionCentering]="true" [attr.disabled]="!f['country']?.value"
+                            [ngbTooltip]="!f['country']?.value ? 'Please select country' :''">
+                            <mat-option *ngFor="let state of state" [value]="state.id">
+                                {{state.state_name}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                    <div class="px-2" *ngIf="f['state']?.touched && f['state']?.invalid">
+                        <span class="text-errors" *ngIf="f['state'].errors?.['required']">State is required</span>
+                    </div>
+                </div>
+                <div class="col-sm-12 col-md-6 col-lg-3 mb-4">
+                    <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+                        <mat-label>City <b class="r-star">*</b></mat-label>
+                        <mat-select formControlName="city" autocomplete="off"
+                            [ngbTooltip]="!f['state']?.value ? 'Please select state' :''" panelClass="custom-select-panel"
+                            [attr.disabled]="!f['state']?.value" [disableOptionCentering]="true">
+                            <mat-option *ngFor="let city of city" [value]="city.id">{{city.city_name}}</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                    <div class="px-2" *ngIf="f['city']?.touched && f['city']?.invalid">
+                        <span class="text-errors" *ngIf="f['city'].errors?.['required']">City is required</span>
+                    </div>
+                </div>
+                <div class="col-sm-12 col-md-6 col-lg-3 mb-4">
+                    <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+                        <mat-label>Postal code</mat-label>
+                        <input matInput type="number" placeholder="Enter postal code" formControlName="postal_code"
+                            autocomplete="off" maxlength="6" pattern="^[1-9]{1}[0-9]{2}\s{0,1}[0-9]{3}$">
+                    </mat-form-field>
+                    <div class="px-2" *ngIf="f['postal_code']?.touched && f['postal_code']?.invalid">
+                        <span class="text-errors"
+                            *ngIf="f['postal_code'].invalid && f['postal_code'].hasError('pattern')">Invalid postal
+                            code.</span>
+                    </div>
+                </div>
+                <div class="col-sm-12 col-md-6 col-lg-6">
+                    <mat-form-field appearance="outline" class="w-100">
+                        <mat-label>Address</mat-label>
+                        <textarea matInput placeholder="Enter address" formControlName="address" autocomplete="off"
+                            pattern="^(?!\s)(.*\S)?$"></textarea>
+                        <!-- <mat-error *ngIf="f['address']?.touched && f['address']?.invalid">
+                            <span *ngIf="f['address'].invalid && f['address'].hasError('pattern')">Address cannot start with a space.</span>
+                        </mat-error> -->
+                    </mat-form-field>
+                    <div class="text-end"><small>{{f['address'].value?.length}}/300 characters</small></div>
+                    <div class="px-2" *ngIf="f['address']?.touched && f['address']?.invalid">
+                        <span class="text-errors"
+                            *ngIf="f['address'].invalid && f['address'].hasError('pattern')">Please remove extra space.</span>
+                        <span class="text-errors"
+                            *ngIf="!f['address'].errors?.['required'] && f['address'].errors?.['maxlength']">
+                            Address cannot exceed more than 300 characters.
+                        </span>
+                    </div>
+                </div>
+                <div class="col-12">
+                    <div class="row">
+                        <div class="col-sm-2 update-btn">
+                            <button mat-raised-button class="proceedbtn mat-btn-s" type="button" (click)="updateProfile()">Update Profile</button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </form>
+    </div>
+</div>
+<div class="container mobileView px-0">
+    <div class="row mx-1 my-2 gx-0">
+        <div class="col-sm-6">
+            <h1> <b><i class="bi bi-arrow-left" (click)="goBack($event)
+  
+                "></i> Update Profile </b></h1>
+        </div>
+    </div>
+
+    <div class="generic-form bg mx-1">
+        <form [formGroup]='profileForm'>
+            <div class="row">
+                <div class="col-sm-6">
+                    <h4>Profile details</h4>
+                </div>
+            </div>
+            <div class="row mt-4">
+                <div class="col-12 mb-3">
+                    <div class="row">
+                        <div class="col-sm-12 col-md-3">
+                            <input type="file" accept="image/*" formControlName="profile_image" #fileInput
+                                (change)="uploadProflieImageFile($event)" hidden>
+
+                            <div class="image-container w-100 d-flex justify-content-around align-items-center">
+                                <img id="imagePreview"
+                                    [src]="fileDataUrl? fileDataUrl: '../assets/images/no-profile-pic.png'"
+                                    alt="profile">
+                                <button type="button" mat-icon-button
+                                    (click)="triggerFileInput(fileDataUrl? 'Delete':'Upload')">
+                                    <mat-icon matTooltip="{{fileDataUrl? 'Delete':'Upload'}}"
+                                        class="edit-or-upload-icon">{{fileDataUrl? 'delete':'add_a_photo'}}</mat-icon>
+                                </button>
+                                <!-- <div class="img-container-label" >Profile<b class="r-star">*</b></div> -->
+                            </div>
+                            <div *ngIf="f['profile_image']?.touched && f['profile_image']?.invalid">
+                                <span *ngIf="f['profile_image'].errors?.['required']" class="error-msg">Profile
+                                    image is required</span>
+                                <span *ngIf="f['profile_image'].errors?.['accept']" class="error-msg">Invalid file
+                                    format. Only .jpg, .jpeg, .png formats are allowed.</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-sm-12 col-md-6 col-lg-3 mb-4">
+                    <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+                        <mat-label>First Name <b class="r-star">*</b></mat-label>
+                        <input matInput placeholder="Enter first name" formControlName="first_name" autocomplete="off"
+                            pattern="^[a-zA-Z]+( [a-zA-Z]+)*$">
+                    </mat-form-field>
+                    <div class="px-2" *ngIf="f['first_name']?.touched && f['first_name']?.invalid">
+                        <span class="text-errors" *ngIf="f['first_name'].errors?.['required']">First name is required
+                        </span>
+                        <span class="text-errors" *ngIf="f['first_name'].errors?.['pattern']">
+                            Invalid name. Only letters are allowed, and the name must start with a letter.
+                        </span>
+                        <span class="text-errors"
+                            *ngIf="!f['first_name'].errors?.['required'] && f['first_name'].errors?.['maxlength']">
+                            First name cannot exceed more than 50 characters.
+                        </span>
+                    </div>
+                </div>
+                <div class="col-sm-12 col-md-6 col-lg-3 mb-4">
+                    <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+                        <mat-label>Last Name <b class="r-star">*</b></mat-label>
+                        <input matInput placeholder="Enter last name" formControlName="last_name" autocomplete="off"
+                            pattern="^[a-zA-Z]+( [a-zA-Z]+)*$">
+                    </mat-form-field>
+                    <div class="px-2" *ngIf="f['last_name']?.touched && f['last_name']?.invalid">
+                        <span class="text-errors" *ngIf="f['last_name'].errors?.['required']">Last name is
+                            required</span>
+                        <span class="text-errors" *ngIf="f['last_name'].errors?.['pattern']">
+                            Invalid name. Only letters are allowed, and the name must start with a letter.
+                        </span>
+                        <span class="text-errors"
+                            *ngIf="!f['last_name'].errors?.['required'] && f['last_name'].errors?.['maxlength']">
+                            Last name cannot exceed more than 50 characters.
+                        </span>
+                    </div>
+                </div>
+                <div class="col-sm-12 col-md-6 col-lg-3 mb-4">
+                    <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+                        <mat-label>Designation <b class="r-star">*</b></mat-label>
+                        <input matInput placeholder="Enter designation" formControlName="designation"
+                            autocomplete="off">
+                    </mat-form-field>
+                    <div class="px-2" *ngIf="f['designation']?.touched && f['designation']?.invalid">
+                        <span class="text-errors" *ngIf="f['designation'].errors?.['required']">Designation is
+                            required</span>
+                        <span class="text-errors" *ngIf="f['designation'].errors?.['pattern']">
+                            Invalid name. Only letters are allowed, and the name must start with a letter.
+                        </span>
+                    </div>
+                </div>
+                <div class="col-sm-12 col-md-6 col-lg-3 mb-4">
+                    <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+                        <mat-label>Email Id <b class="r-star">*</b></mat-label>
+                        <input matInput type="email" placeholder="Enter email Id" formControlName="email"
+                            autocomplete="off" readonly title="readonly field" oninput="this.value = this.value.toLowerCase()">
+                    </mat-form-field>
+                    <div class="px-2" *ngIf="f['email']?.touched && f['email']?.invalid">
+                        <span class="text-errors" *ngIf="f['email'].errors?.['required']">Email Id is required</span>
+                        <span class="text-errors" *ngIf="f['email'].errors?.['email']">Invalid email Id</span>
+                    </div>
+                </div>
+                <div class="col-sm-12 col-md-6 col-lg-3 mb-4">
+                    <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+                        <mat-label>Phone No <b class="r-star">*</b></mat-label>
+                        <input matInput type="number" placeholder="Enter phone no" formControlName="phone_number"
+                            autocomplete="off" maxlength="10" pattern="\d{10}"
+                            onKeyPress="if(this.value.length==10) return false;" (keypress)="validateKeyPress($event)">
+                    </mat-form-field>
+                    <div class="px-2" *ngIf="f['phone_number']?.touched && f['phone_number']?.invalid">
+                        <span class="text-errors" *ngIf="f['phone_number'].errors?.['pattern']">Please enter 10 digits
+                            phone number.</span>
+                        <span class="text-errors" *ngIf="f['phone_number'].errors?.['required']">Phone number is
+                            required.</span>
+                    </div>
+                </div>
+                <div class="col-sm-12 col-md-6 col-lg-3 mb-4 date-joining">
+                    <!-- <mat-form-field appearance="outline" class="w-100 p-0 custom-mat-form-field">
+                        <mat-label>Date of Birth <b class="r-star">*</b></mat-label>
+                        <input class="pt-1" type="date" matInput placeholder="Enter date of birth"
+                            formControlName="date_joined" autocomplete="off">
+                    </mat-form-field> -->
+                    <mat-form-field appearance="outline" class="w-100 p-0 custom-mat-form-field">
+                        <mat-label>Date of Joining <b class="r-star">*</b></mat-label>
+                        <input matInput [matDatepicker]="picker1" placeholder="Enter start date"
+                            formControlName="date_joined" autocomplete="off" >
+                            <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+                             <mat-datepicker #picker1></mat-datepicker>
+                    </mat-form-field>
+                    <div class="px-2" *ngIf="f['date_joined']?.touched && f['date_joined']?.invalid">
+                        <span class="text-errors" *ngIf="f['date_joined'].errors?.['required']">Date of joining is
+                            required</span>
+                    </div>
+                </div>
+                <div class="col-sm-12 col-md-6 col-lg-3 mb-4">
+                    <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+                        <mat-label>Country <b class="r-star">*</b></mat-label>
+                        <mat-select formControlName="country" (selectionChange)="getState($event.value)"
+                            autocomplete="off">
+                            <mat-option *ngFor="let country of country" [value]="country.id">
+                                {{country.country_name}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                    <div class="px-2" *ngIf="f['country']?.touched && f['country']?.invalid">
+                        <span class="text-errors" *ngIf="f['country'].errors?.['required']">Country is required</span>
+                    </div>
+                </div>
+                <div class="col-sm-12 col-md-6 col-lg-3 mb-4">
+                    <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+                        <mat-label>State <b class="r-star">*</b></mat-label>
+                        <mat-select formControlName="state" (selectionChange)="getCity($event.value)" autocomplete="off"
+                            [attr.disabled]="!f['country']?.value"
+                            [ngbTooltip]="!f['country']?.value ? 'Please select country' :''">
+                            <mat-option *ngFor="let state of state" [value]="state.id">
+                                {{state.state_name}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                    <div class="px-2" *ngIf="f['state']?.touched && f['state']?.invalid">
+                        <span class="text-errors" *ngIf="f['state'].errors?.['required']">State is required</span>
+                    </div>
+                </div>
+                <div class="col-sm-12 col-md-6 col-lg-3 mb-4">
+                    <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+                        <mat-label>City <b class="r-star">*</b></mat-label>
+                        <mat-select formControlName="city" autocomplete="off"
+                            [ngbTooltip]="!f['state']?.value ? 'Please select state' :''"
+                            [attr.disabled]="!f['state']?.value">
+                            <mat-option *ngFor="let city of city" [value]="city.id">{{city.city_name}}</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                    <div class="px-2" *ngIf="f['city']?.touched && f['city']?.invalid">
+                        <span class="text-errors" *ngIf="f['city'].errors?.['required']">City is required</span>
+                    </div>
+                </div>
+                <div class="col-sm-12 col-md-6 col-lg-3 mb-4">
+                    <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+                        <mat-label>Postal code</mat-label>
+                        <input matInput type="number" placeholder="Enter postal code" formControlName="postal_code"
+                            autocomplete="off" maxlength="6" pattern="^[1-9]{1}[0-9]{2}\s{0,1}[0-9]{3}$">
+                    </mat-form-field>
+                    <div class="px-2" *ngIf="f['postal_code']?.touched && f['postal_code']?.invalid">
+                        <span class="text-errors"
+                            *ngIf="f['postal_code'].invalid && f['postal_code'].hasError('pattern')">Invalid postal
+                            code.</span>
+                    </div>
+                </div>
+                <div class="col-sm-12 col-md-6 col-lg-6">
+                    <mat-form-field appearance="outline" class="w-100">
+                        <mat-label>Address</mat-label>
+                        <textarea matInput placeholder="Enter address" formControlName="address" autocomplete="off"
+                            pattern="^(?!\s)(.*\S)?$"></textarea>
+                    </mat-form-field>
+                    <div class="text-end"><small>{{f['address'].value?.length}}/300 characters</small></div>
+                    <div class="px-2" *ngIf="f['address']?.touched && f['address']?.invalid">
+                        <span class="text-errors"
+                            *ngIf="f['address'].invalid && f['address'].hasError('pattern')">Please remove extra space.</span>
+                        <span class="text-errors"
+                            *ngIf="!f['address'].errors?.['required'] && f['address'].errors?.['maxlength']">
+                            Address cannot exceed more than 300 characters.
+                        </span>
+                    </div>
+                </div>
+                <div class="col-12">
+                    <div class="row">
+                        <div class="col-sm-2 update-btn">
+                            <button mat-raised-button class="proceedbtn mat-btn-s"  type="button" (click)="updateProfile()" >Update Profile</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<!-- *ngIf="profileimg === 'url'; else fileInput"
+*ngIf="profileimg === 'url'; else fileInput" -->

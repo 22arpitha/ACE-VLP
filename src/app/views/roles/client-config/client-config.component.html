@@ -1,0 +1,46 @@
+<div class="page px-2 pb-5 m-2">
+  <div class="page-content">
+    <div class="panel">
+      <div class="panel-body">
+        <div id="accessibilitydetailstable">
+          <!-- <span class="user-role">ROLE : {{userRole}}</span> -->
+          <span class="checkbox-custom checkbox-primary" style="float:right">
+            <input class="selectable-all" type="checkbox" [(ngModel)]="checkAll" (change)="checkAllOptions()">
+            <label>Select All</label>
+          </span>
+          <form>
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Menu</th>
+                  <th>Create</th>
+                  <th>Update</th>
+                  <th>View</th>
+                  <th>Delete</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let clients of data">
+                  <td>{{clients.names}}</td>
+                  <td *ngFor="let items of clients.clients">
+                    <div class="checkbox-custom checkbox-primary" style="text-align: inherit;"
+                      *ngIf="items.value !== 'NA'">
+                      <input type="checkbox" class="minimal" [name]="items.names" id="permission" [value]="items.value"
+                        [(ngModel)]="items.checked" autocomplete="off"
+                        (change)="singleSelection(items.names,items.arrnames,0)">
+                    </div>
+                    <div *ngIf="items.value == 'NA'">NA</div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <div class="update-btn">
+              <button mat-raised-button type="submit" class="btn proceedbtn text-white waves-effect waves-classic"
+                id="btnSubmit" style="display:show" (click)="UPDATE()">Update</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

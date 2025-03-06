@@ -1,0 +1,63 @@
+<div class="page">
+    <div class="page-content">
+        <div class="panel p-1 pb-5 m-3">
+            <div class="panel-body">
+                <div id="accessibilitydetailstable">
+                    <!-- <span class="user-role">ROLE : {{userRole}}</span> -->
+                    <span class="checkbox-custom checkbox-primary" style="float:right">
+                        <input class="selectable-all" type="checkbox" [(ngModel)]="checkAll"
+                            (change)="checkAllOptions()">
+                        <label>Select All</label>
+                    </span>
+                    <form>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Menu</th>
+                                    <th>Create</th>
+                                    <th>Update</th>
+                                    <th>View</th>
+                                    <th>Delete</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let plan of data">
+                                    <td>
+                                        {{plan.names}}
+                                    </td>
+                                    <td *ngFor="let items of plan.accountsMenu">
+                                        <div class="checkbox-custom checkbox-primary" style="text-align: inherit;"
+                                            *ngIf="items.value !== 'NA'">
+                                            <input type="checkbox" class="minimal" id="permission" [value]="items.value"
+                                                [name]="items.names" [(ngModel)]="items.checked"
+                                                (change)="singleSelection(items.checked,'accountsMenu',0)">
+                                            <label for="inputChecked"></label>
+                                        </div>
+                                        <div *ngIf="items.value == 'NA'">NA</div>
+                                    </td>
+                                    <td *ngFor="let items of plan.subscriptionPlan">
+                                        <div class="checkbox-custom checkbox-primary" style="text-align: inherit;"
+                                            *ngIf="items.value !== 'NA'">
+                                            <input type="checkbox" class="minimal" id="permission" [value]="items.value"
+                                                [name]="items.names" [(ngModel)]="items.checked"
+                                                (change)="singleSelection(items.checked,'subscriptionPlan',0)">
+                                            <label for="inputChecked"></label>
+                                        </div>
+                                        <div *ngIf="items.value == 'NA'">NA</div>
+                                    </td>
+                                </tr>
+
+                            </tbody>
+                        </table>
+                        <div class="update-btn">
+                            <button mat-raised-button type="submit"
+                                class="btn proceedbtn text-white waves-effect waves-classic" id="btnSubmit"
+                                style="display:show" (click)="UPDATE()">Update</button>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

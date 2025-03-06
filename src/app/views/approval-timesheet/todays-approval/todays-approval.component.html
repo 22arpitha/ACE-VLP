@@ -1,0 +1,96 @@
+<div class="container-fluid">
+  <div class="container-middle px-4">
+  
+    <div class="row">
+      <div class="col-sm-12">
+        <ng-container >
+          <!-- <div class="row p-r webView">
+                        
+            <div class="col-sm-4 search-div" >
+                <button mat-icon-button  class="close-icon" style="top:0" ngbTooltip="Search" *ngIf="!showSearch" (click)="showSearch=!showSearch">
+                    <i class="bi bi-search"></i>
+                </button>
+               
+                <input type="search" *ngIf="showSearch" (input)="searchFiter($event)" class="form-control p-2 sizeinput" [(ngModel)]="term"
+                  placeholder="Search by employee" aria-describedby="emailHelp" autocomplete="off">
+                <i class="bi bi-search" id="search-icon-tab" *ngIf="showSearch"></i>
+              
+                <i class="bi bi-x-circle close-icon" ngbTooltip="Close" *ngIf="showSearch" (click)="showSearch=!showSearch"></i>
+            </div>
+              
+          </div> -->
+          <mat-tab-group class="custom-tab-group" (selectedTabChange)="tabState($event)">
+            <!-- Pending -->
+            <mat-tab label="Pending">
+              <!-- <div class="row p-r mobileView" style="padding: 1rem 0px 0px;margin: auto;">
+                <div class="col-sm-12 col-md-6 search-div">
+                    <input type="search" (input)="searchFiter($event)" class="form-control p-2 sizeinput" [(ngModel)]="term"
+                      placeholder="Search by employee" aria-describedby="emailHelp" autocomplete="off">
+                    <i class="bi bi-search" id="search-icon-tab" ></i>
+                  </div>
+               
+              </div> -->
+              <ng-container>
+               
+                <app-yet-approve 
+                *ngIf="selectedTab === 'Pending'"
+                  [data]="allDetails" 
+                  [totalCount]="totalCount" 
+                  (buttonClick)="buttonClick($event)">
+                </app-yet-approve>
+              </ng-container>
+            </mat-tab>
+
+            <!-- Approved Timesheet Tab -->
+            <mat-tab label="Approved">
+              <!-- <div class="row p-r mobileView" style="padding: 1rem 0px 0px;margin: auto;">
+                <div class="col-sm-12 col-md-6 search-div">
+                    <input type="search" (input)="searchFiter($event)" class="form-control p-2 sizeinput" [(ngModel)]="term"
+                      placeholder="Search by employee" aria-describedby="emailHelp" autocomplete="off">
+                    <i class="bi bi-search" id="search-icon-tab" ></i>
+                  </div>
+               
+              </div> -->
+              <ng-container>
+                <app-approved 
+                *ngIf="selectedTab === 'Approved'"
+                  [data]="allDetails" 
+                  [totalCount]="totalCount" 
+                  (buttonClick)="buttonClick($event)">
+                </app-approved>
+              </ng-container>
+            </mat-tab>
+
+            <!-- Declined Timesheet Tab -->
+            <mat-tab label="Declined">
+              <!-- <div class="row p-r mobileView" style="padding: 1rem 0px 0px;margin: auto;">
+                <div class="col-sm-12 col-md-6 search-div">
+                    <input type="search" (input)="searchFiter($event)" class="form-control p-2 sizeinput" [(ngModel)]="term"
+                      placeholder="Search by employee" aria-describedby="emailHelp" autocomplete="off">
+                    <i class="bi bi-search" id="search-icon-tab" ></i>
+                  </div>
+               
+              </div> -->
+              <ng-container>
+                <app-declined 
+                *ngIf="selectedTab === 'Declined'"
+                  [data]="allDetails" 
+                  [totalCount]="totalCount" 
+                  (buttonClick)="buttonClick($event)">
+                </app-declined>
+              </ng-container>
+            </mat-tab>
+          </mat-tab-group>
+        </ng-container>
+
+        <!-- No Records Template -->
+        <!-- <ng-template #noRecords>
+          <div class="no-records text-center">
+            No records found !
+              <button mat-button (click)="refershPage()" class="proceedbtn" style="width: fit-content;">Refresh <i class="fa fa-refresh" aria-hidden="true"></i></button>
+          </div>
+        </ng-template> -->
+      </div>
+    </div>
+  </div>
+</div>

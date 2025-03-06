@@ -1,0 +1,142 @@
+
+    <!-- Header Section -->
+    <div class="header">
+      <h2 class="plan-title">Standard</h2>
+      <span class="discount-tag">
+        <mat-icon (click)="onCancel()">close</mat-icon>
+      </span>
+    </div>
+  
+    <div class="payment-card">
+    <!-- Pricing Switch -->
+    <form [formGroup]="userForm" >
+    <div class="payment-options">
+        <div class="row">
+            <div class="col-6 my-2" style="padding-right: 0;">
+                <mat-card class="payment-option"  (click)="setPaymentOption(true,monthlyAmount,'1',monthlyName)" 
+                [ngClass]="monthly ? 'active' : 'highlighted-option'">
+                  <span class="price">₹{{monthlyAmount}}</span>
+                  <small>per user / monthly</small>
+                  <div class="option-title">Monthly</div>
+                </mat-card>
+            </div>
+            <div class="col-6 my-2">
+                <mat-card class="payment-option yearly-option" 
+                (click)="setPaymentOption(false,yearlyAmount,'2',yearlyName)" 
+                [ngClass]="!monthly ? 'active' : 'highlighted-option'">
+                  <span class="price">₹{{yearlyAmount}}</span>
+                  <small>per user / monthly</small>
+                  <div class="option-title">Yearly</div>
+                  <div class="discount-badge"><i class="bi bi-x-circle"></i> {{discount}}% </div>
+                </mat-card>
+            </div>
+        </div>
+      </div>
+    <!-- User Input Section -->
+    <div class="user-input">
+        <h2 class="users-title">Users</h2>
+        <div class="users-container">
+          <div class="form-group">
+           
+              <div>
+                <label for="noOfUsers">No of Users</label>
+                <input
+                  matInput
+                  id="noOfUsers"
+                  formControlName="noOfUsers"
+                  (keyup)="calculateTotal()"
+                  (keydown)="calculateTotal()"
+                  type="number"
+                  oninput="if(this.value > 10000) this.value = 10000;"
+                  onkeypress="if(event.key < '0' || event.key > '9') event.preventDefault();"
+                  autocomplete="off"
+                  placeholder="Enter No of Users"
+                />
+                <!-- Validation Error Messages -->
+                <mat-error *ngIf="userForm.get('noOfUsers')?.invalid && userForm.get('noOfUsers')?.touched" class="error">
+                  <div *ngIf="userForm.get('noOfUsers')?.errors?.['required']">No of users is required.</div>
+                  <div *ngIf="userForm.get('noOfUsers')?.errors?.['min']">The minimum number of users is {{minUsers}}.</div>
+                  <div *ngIf="!userForm.get('noOfUsers')?.errors?.['min'] && !userForm.get('noOfUsers')?.errors?.['pattern'] && userForm.get('noOfUsers')?.errors?.['max']">The maximum number of users is 10,000.</div>
+                  <div *ngIf="!userForm.get('noOfUsers')?.errors?.['max'] && !userForm.get('noOfUsers')?.errors?.['min'] && userForm.get('noOfUsers')?.errors?.['pattern']">
+                   Special characters and space are not allowed.
+                  </div>
+                </mat-error>
+              </div>
+            
+            
+          </div>
+          <div>
+            <label for="noOfUsers">Total Amount</label>
+            <div class="total-amount">
+           
+                <div class="sub-total">₹{{ subtotal || 0 }}</div>
+              </div>
+            </div>
+          </div>
+          
+      </div>
+      
+  
+   
+    <!-- Summary Section -->
+    <div class="summary">
+         <!-- State Dropdown -->
+    <div class="state-dropdown">
+        <div class="row">
+            <div class="col-6">
+                <strong class="state-label">Choose State</strong>
+            </div>
+            <div class="col-6 px-1">
+                <mat-form-field appearance="fill" class="custom-mat-form-field w-100">
+                    <mat-select formControlName="state" placeholder="Select state"  
+                    
+                    panelClass="custom-select-panel" [disableOptionCentering]="true" (selectionChange)="calculateTotal()">
+                      <mat-option *ngFor="let state of state" [value]="state.id">
+                        {{state.state_name | titlecase}}
+                      </mat-option>
+                    
+                    </mat-select>
+                    <mat-error *ngIf="userForm.get('state')?.touched && userForm.get('state')?.invalid" class="error">
+                      <div *ngIf="userForm.get('state')?.errors?.['required']">State is required.</div>
+                    </mat-error>
+                </mat-form-field>
+            </div>
+        </div>
+      
+       
+      </div>
+    
+      <div class="summary-row">
+        <span>Subtotal</span>
+        <span>₹{{ subtotal || 0 }}</span>
+      </div>
+      <div class="summary-row" *ngIf="userForm.get('state')?.value === 4026">
+        <span>CGST {{cgst_per}}%</span>
+        <span>₹{{ cgst || 0 }}</span>
+      </div>
+      <div class="summary-row" *ngIf="userForm.get('state')?.value === 4026">
+        <span>SGST {{sgst_per}}%</span>
+        <span>₹{{ sgst || 0 }}</span>
+      </div>
+      <div class="summary-row" *ngIf="userForm.get('state')?.value !== 4026">
+        <span>IGST {{igst_per}}%</span>
+        <span>₹{{ igst || 0 }}</span>
+      </div>
+      <div class="summary-row total">
+        <span>Total Payable Amount</span>
+        <span>₹{{ totalPayable || 0 }}</span>
+      </div>
+    </div>
+  
+    <!-- Footer Section -->
+    <div class="footer">
+      <div class="no-refund text-center"><span style="margin-right: 5px;">⚠</span> No Refund on cancellation</div>
+      <div class="buttons" style="margin: auto;">
+        <button mat-button  style="background: #f2f2f2;
+         padding: 0 45px;" class="mx-2" type="button"  (click)="onCancel()">Cancel</button>
+        <button mat-button class="make-payment" type="button" (click)="razorpayTest()">Make Payment</button>
+      </div>
+    </div>
+    </form>
+  </div>
+  

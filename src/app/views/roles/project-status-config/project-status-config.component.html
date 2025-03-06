@@ -1,0 +1,62 @@
+<div class="page px-2 pb-5 m-2">
+    <div class="page-content">
+        <div class="panel">
+            <div class="panel-body">
+                <div id="accessibilitydetailstable">
+                    <!-- <span class="user-role">ROLE : {{userRole}}</span> -->
+                    <span class="checkbox-custom checkbox-primary" style="float:right">
+                        <input class="selectable-all" type="checkbox" [(ngModel)]="checkAll"
+                            (change)="checkAllOptions()">
+                        <label>Select All</label>
+                    </span>
+
+                    <form autocomplete="off" id="ci_form" name="ci_form" novalidate="novalidate">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Menu</th>
+                                    <th>Create</th>
+                                    <th>Update</th>
+                                    <th>View</th>
+                                    <th>Delete</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let projectStatus of data">
+                                    <td>{{projectStatus.names}}</td>
+                                    <!-- <td *ngFor="let items of projectStatus.projectStatus">
+                                    <div class="checkbox-custom checkbox-primary" style="text-align: inherit;">
+                                        <input type="checkbox" class="minimal" [name]="items.name" id="permission"
+                                            [value]="items.value" [(ngModel)]="items.checked">
+                                    </div>
+                                </td> -->
+                                    <td *ngFor="let items of projectStatus.mainCategories">
+                                        <div class="checkbox-custom checkbox-primary" style="text-align: inherit;">
+                                            <input type="checkbox" class="minimal" [name]="items.namesArr"
+                                                id="permission1" [value]="items.value" [(ngModel)]="items.checked"
+                                                (change)="singleSelection(items.checked,items.arrnames,0)">
+                                        </div>
+                                    </td>
+                                    <td *ngFor="let items of projectStatus.subCategories">
+                                        <div class="checkbox-custom checkbox-primary" style="text-align: inherit;">
+                                            <input type="checkbox" class="minimal" [name]="items.namesArr"
+                                                id="permission2" [value]="items.value" [(ngModel)]="items.checked"
+                                                (change)="singleSelection(items.checked,items.arrnames,0)">
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="update-btn">
+                            <button mat-raised-button type="submit"
+                                class="btn proceedbtn text-white waves-effect waves-classic" id="btnSubmit"
+                                style="display:show" (click)="UPDATE()">Update</button>
+                        </div>
+
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

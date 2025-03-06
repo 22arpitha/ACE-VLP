@@ -1,0 +1,91 @@
+<div class="page px-2 pb-5 m-2" *ngIf="data && data.access?.length > 0">
+    <div class="page-content">
+        <div class="panel">
+            <div class="panel-body">
+                <div id="accessibilitydetailstable">
+                    <!-- <span class="user-role">ROLE : {{userRole}}</span> -->
+                    <div class="d-flex justify-content-between mb-2">
+                        <div><h5><b>{{data.name}}</b></h5></div>
+                        <div class="d-flex align-items-start">
+                            <input class="selectable-all custom-checkbox" type="checkbox" [checked]="allSelected" (change)="selectAll($event)">
+                            <label>Select All</label>
+                       </div>
+                    </div>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Menu</th>
+                                <!-- <th *ngFor="let heading of tableHeadings">{{ heading | titlecase }}</th> -->
+                                <th>View</th>
+                                <th>Create</th>
+                                <th>Update</th>
+                                <th>Delete</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                           <tr *ngFor="let i of data.access">
+                            <td>{{i.name}}</td>
+                            <td>
+                                <input type="checkbox" class="custom-checkbox" (change)="modifyAccess($event,i.name,'view')" 
+                                [checked]="i.operations[0].view">
+                            </td>
+                            <td>
+                                <input type="checkbox" class="custom-checkbox" (change)="modifyAccess($event,i.name,'create')" 
+                                [checked]="i.operations[0].create">
+                            </td>
+                            <td>
+                                <input type="checkbox" class="custom-checkbox" (change)="modifyAccess($event,i.name,'update')" 
+                                [checked]="i.operations[0].update">
+                            </td>
+                            <td>
+                                <input type="checkbox" class="custom-checkbox" (change)="modifyAccess($event,i.name,'delete')" 
+                                [checked]="i.operations[0].delete">
+                            </td>
+                           </tr>
+                        </tbody>
+                    </table>
+                    <div *ngIf="errorMsg">
+                        <p class="error-msg">You must select at least one access option before leaving this page</p>
+                    </div>
+                    <div class="update-btn mt-3">
+                        <button mat-raised-button
+                            [ngStyle]="{'background-color': showBackButton ? 'lightgray' : 'rgba(211, 211, 211, 0.3098039216)','margin-right':'5px'}" 
+                            [disabled]="showBackButton" (click)="backToAllDesignations()">Back</button>
+                        <button mat-raised-button type="submit" (click)="addOrUpdate(buttonName)"
+                             [ngStyle]="{'background-color': disableAddOrUpdateBtn ? 'lightgray' : '#126eb4','color': disableAddOrUpdateBtn ? 'rgba(0, 0, 0, .26)' : 'white'}" 
+                             id="btnSubmit" [disabled]="disableAddOrUpdateBtn"
+                           >{{buttonName}}</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- <div *ngFor="let i of data.access">
+    <div class="card">
+        <div>{{i.name}}</div>
+        <div class="d-flex">
+            <div class="row">
+                <input type="checkbox" class="custom-checkbox" (change)="modifyAccess($event,i.name,'view')" 
+                                    [checked]="i.operations[0].view">
+                                    <label for="">view</label>
+            </div>
+            <div>
+                <input type="checkbox" class="custom-checkbox" (change)="modifyAccess($event,i.name,'create')" 
+                                    [checked]="i.operations[0].create">
+                                    <label for="">create</label>
+            </div>
+            <div>
+                <input type="checkbox" class="custom-checkbox" (change)="modifyAccess($event,i.name,'update')" 
+                                    [checked]="i.operations[0].update">
+                                    <label for="">update</label>
+            </div>
+            <div>
+                <input type="checkbox" class="custom-checkbox" (change)="modifyAccess($event,i.name,'delete')" 
+                                    [checked]="i.operations[0].delete">
+                                    <label for="delete"></label>
+            </div>
+        </div>
+    </div>
+</div> -->

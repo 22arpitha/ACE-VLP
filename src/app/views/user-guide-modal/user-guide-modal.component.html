@@ -1,0 +1,28 @@
+<div class="modal-header">
+    <h4 class="modal-title pull-left">User Guide</h4>
+    <button type="button" class="close pull-right" (click)="close()">&times;</button>
+</div>
+<div class="modal-body">
+    <carousel [isAnimated]="true" [noWrap]="true"  class="custom-carousel" [interval]="0">
+          <slide *ngFor="let slide of imageSlides">
+            <img [src]="slide.image" alt="Slide" style="display: block; width: 100%;">
+          </slide>
+    </carousel>
+</div>
+<!-- <div class="modal-footer">
+    <button type="button" class="btn btn-secondary" (click)="close()">Close</button>
+</div> -->
+
+<!-- <div>
+    <carousel [isAnimated]="true" [showIndicators]="false">
+        <slide>
+            <img src="../../../assets/images/Screenshots/1.png" alt="first slide" style="display: block; width: 100%;">
+        </slide>
+        <slide>
+            <img src="../../../assets/images/Screenshots/2.png" alt="second slide" style="display: block; width: 100%;">
+        </slide>
+        <slide>
+            <img src="../../../assets/images/Screenshots/3.png" alt="third slide" style="display: block; width: 100%;">
+        </slide>
+    </carousel>
+</div> -->

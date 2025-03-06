@@ -1,0 +1,64 @@
+
+$primay-color: #126EB4;
+  .full-width{
+    width: 100%;
+  }
+  .bg{
+    background-color: white;
+    height: 100%;
+    width: 100%;
+    padding: 20px;
+    border-radius: 5px;
+
+}
+.row{
+    padding: 5px;
+}
+.c-header{
+    font-weight: bold;
+    padding-bottom: 10px;
+}
+.submit-button{
+    background-color: $primay-color;
+    color:white;
+}
+.text-clr{
+    color: $primay-color;
+}
+.edit-or-upload-icon {
+    font-size: 16px;
+    color: white;
+    background: #1b64a0;
+    border-radius: 12px;
+    padding-right: 1px;
+  }
+  .c-position,.no-data{
+    position: absolute;
+    top:30px;
+    z-index: 1;
+    width: 250px;
+  }
+  .no-data{
+    top:20px;
+    padding: 10px;
+  }
+  mat-autocomplete{
+    padding: 5px;
+    transform: scale(0.85);
+    font-size: 12px;
+  }
+  .autocomplete-option {
+    height: 20px;
+    font-size: 12pt;
+    min-height: unset;
+}
+.error-ccmsg{
+   font-size: 11px;
+    padding-left: 15px;
+    position: absolute;
+    top: 50px;
+}
+.file-types {
+  font-size: 11px;
+  color: gray;
+}

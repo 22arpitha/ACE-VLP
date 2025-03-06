@@ -1,0 +1,32 @@
+
+<!-- Show Plan Selection -->
+<div *ngIf="shouldShowPlanSelection()">
+  <app-plan-selection
+    (trailPlanStaus)="onTrailPlanStatus($event)"
+    [data]="subscriptionData"
+    [disabled]="mySubscriptionData?.[0]?.subscription_type_name === 'Free Trial' && !mySubscriptionData?.[0]?.is_active">
+  </app-plan-selection>
+</div>
+
+<!-- Subscription Data Available -->
+<div *ngIf="mySubscriptionData && mySubscriptionData.length > 0">
+  <div *ngFor="let subscription of mySubscriptionData">
+    <!-- Free Trial Active -->
+    <div *ngIf="subscription.subscription_type_name === 'Free Trial' && subscription.is_active">
+      <app-trail-plan-details
+        [data]="subscriptionData"
+        [my_subscription]="mySubscriptionData">
+      </app-trail-plan-details>
+    </div>
+
+    <!-- Standard Active OR Free Trial Inactive -->
+    <div *ngIf="(subscription.subscription_type_name === 'Standard' && subscription.is_active)">
+      <app-success-plan-details
+        [data]="subscriptionData"
+        [my_subscription]="mySubscriptionData"
+        [selectedPlanDetails]="planDetails"
+        (successEmit)="onTrailPlanStatus($event)">
+      </app-success-plan-details>
+    </div>
+  </div>
+</div>

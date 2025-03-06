@@ -1,0 +1,12 @@
+<div class="search-div">
+    <input
+      type="search"
+      class="form-control p-2 sizeinput"
+      [(ngModel)]="searchTerm"
+      (input)="onSearch($event)"
+      placeholder="Search by admin name"
+      autocomplete="off"
+    />
+    <i class="bi bi-search" id="search-icon-tab"></i>
+  </div>
+  

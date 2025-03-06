@@ -1,0 +1,81 @@
+
+<div class="container-fluid">
+    <div class="generic-form bg mx-1 p-4">
+      <form [formGroup]="configurationForm" (ngSubmit)="addConfiguration()">
+        <div class="row">
+          <div class="col-sm-12 col-md-4">
+            <mat-form-field appearance="outline" >
+              <mat-label>Approval period</mat-label>
+              <mat-select formControlName="approval_period" required 
+              panelClass="custom-select-panel" [disableOptionCentering]="true">
+                <mat-option value="" disabled>Select period</mat-option>
+                <mat-option value="DAILY">Daily</mat-option>
+                <mat-option value="WEEKLY">Weekly</mat-option>
+                <mat-option value="MONTHLY">Monthly</mat-option>
+              </mat-select>
+              <mat-error *ngIf="f['approval_period'].touched && f['approval_period'].invalid">
+                Approval period is required.
+              </mat-error>
+            </mat-form-field>
+          </div>
+  
+          <div class="col-sm-12 col-md-4">
+            <mat-form-field appearance="outline" >
+              <mat-label>Grace day to approve</mat-label>
+              <mat-select formControlName="grce_days_to_approve" required
+              panelClass="custom-select-panel" [disableOptionCentering]="true">
+                <mat-option value="" disabled>Select grace days</mat-option>
+                <mat-option value="0">00</mat-option>
+                <mat-option value="1">01</mat-option>
+                <mat-option value="2">02</mat-option>
+                <mat-option value="3">03</mat-option>
+              </mat-select>
+              <mat-error *ngIf="f['grce_days_to_approve'].touched && f['grce_days_to_approve'].invalid">
+                Grace days is required.
+              </mat-error>
+            </mat-form-field>
+          </div>
+        </div>
+  
+        <div class="row" [ngClass]="(f['approval_period'].touched && f['approval_period'].invalid) || (f['grce_days_to_approve'].touched && f['grce_days_to_approve'].invalid) ? 'my-3' : 'my-2'">
+
+          <div class="col-sm-12 col-md-4">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Auto Approve</mat-label>
+              <mat-select formControlName="tmd_auto_approved" required
+              panelClass="custom-select-panel" [disableOptionCentering]="true">
+                <mat-option value="" disabled>Select auto approve</mat-option>
+                <mat-option [value]="true">Yes</mat-option>
+                <mat-option [value]="false">No</mat-option>
+              </mat-select>
+              <mat-error *ngIf="f['tmd_auto_approved'].touched && f['tmd_auto_approved'].invalid">
+                Auto approve is required.
+              </mat-error>
+            </mat-form-field>
+          </div>
+  
+          <div class="col-sm-12 col-md-4">
+            <mat-form-field appearance="outline" class="full-width" >
+              <mat-label>Status</mat-label>
+              <mat-select formControlName="status" required
+              panelClass="custom-select-panel" [disableOptionCentering]="true">
+                <mat-option value="" disabled>Select status</mat-option>
+                <mat-option value="Activate">Activate</mat-option>
+                <mat-option value="Suspend">Suspend</mat-option>
+              </mat-select>
+              <mat-error *ngIf="f['status'].touched && f['status'].invalid">
+                Status is required.
+              </mat-error>
+            </mat-form-field>
+          </div>
+        </div>
+  
+        <div class="row">
+          <div class="col-sm-2">
+            <button mat-raised-button type="submit">Save</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+  

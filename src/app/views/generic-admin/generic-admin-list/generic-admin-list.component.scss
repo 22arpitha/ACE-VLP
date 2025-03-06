@@ -1,0 +1,64 @@
+.icon-image{
+    cursor: pointer;
+    height: 25px;
+    margin: 0 2px;
+}
+
+.p-20{
+    padding: 0px 9px 20px 25px !important;
+}
+.temp-style {
+    border: 2px solid #d2cfcf !important;
+}
+.edit-or-upload-icon {
+  font-size: 16px;
+  color: white;
+  background: #1b64a0;
+  border-radius: 12px;
+  padding-right: 1px;
+}
+
+  
+  .row-container2.editable,.row-container.editable {
+    background-color: white !important;
+    border: 2px solid #126EB4 !important;
+  }
+.admin-card {
+    margin: 3px !important;
+    border-radius: 5px !important;
+    padding: 20px;
+}
+.add-btn{
+    font-size: 20px;
+}
+.icon-bg{
+background: #f4f4f4;
+padding: 2px 6px;
+border-radius: 50%;
+font-size: 14px;
+&:hover{
+    opacity: 0.8;
+  }
+}
+.p-ab{
+position:absolute ;
+top:-2px;
+}
+
+::ng-deep .mat-form-field-wrapper{
+  padding-bottom: 1em !important;
+}
+.icon-image{
+  cursor: pointer;
+  height: 25px;
+  margin: 0 2px;
+}
+.admin-labels{
+  font-size: 10px;
+  margin-right: 3px; 
+}
+.column{
+  b{
+    color: rgb(247, 77, 77) !important;
+  }
+}

@@ -1,0 +1,473 @@
+<div class="container-fluid">
+  <div class="generic-form bg mx-1">
+    <form [formGroup]="timeSheetForm" [ngStyle]="{'pointer-events': isPointerDisabled() ? 'all' : 'none'}">
+      <mat-accordion>
+        <div formArrayName="response">
+          <mat-expansion-panel class="mt-2 mb-4" #panels *ngFor="let project of createdProject.controls; let i = index ;"
+          [expanded]="!project.get('isSaved').value && i === (createdProject.length - 1)" [formGroupName]="i" (opened)="onPanelOpen(i)" (closed)="onPanelClose(i)" hideToggle>
+         
+          <mat-expansion-panel-header [ngClass]="!isPanelOpen(i) && project.get('isSaved').value ? 'preview-panel-header':'panel-header'">
+           
+              <div class="w-100 mobileView" *ngIf="isPanelOpen(i)"> 
+                <div class="row w-100 d-flex align-items-center p-0" style="font-size: 13px;">
+                  <div class="col-12 p-0">
+                    <div class="row p-0">
+                    <div class="col-5 p-0" >
+                      <mat-label> # {{ i + 1 }}<strong><b class="mx-2 text-muted" >|</b> {{'Timesheet'}}</strong>
+                      </mat-label>
+                     </div>
+  
+                  <div class="col-4 text-end text-muted">
+                    <mat-label ><i class="bi bi-clock"></i> 8 Hours</mat-label> 
+                  </div>
+                   
+                    <div class="col-2 text-center">
+                     
+                      <!-- <img src="../../../../assets/images/Option.svg" class="me-1 toolbar-btn" style="top:-2px" *ngIf="project.get('showSave').value" (click)="$event.stopPropagation();enableAction(i)"/>
+                      -->
+                      <button mat-button type="button" style="width: fit-content !important;"  class="save-btn toolbar-btn webView"  (click)="$event.stopPropagation();saveTimesheet(i)">
+                        Save
+                      </button>
+                      <button mat-button type="button" class="mobileView save-btn toolbar-btn"  style="right: 9%;
+                       top:5px;width: fit-content !important;" (click)="$event.stopPropagation();saveTimesheet(i)">
+                        Save
+                      </button>
+                      <button mat-button type="button" style="width: fit-content !important;" class="save-btn webView" *ngIf="project.get('showSave').value && createdProject.length >1" (click)="$event.stopPropagation(); open(i)">
+                        Delete
+                      </button>
+                    </div>
+                    <div class="col-1 text-end p-0">
+                    
+                      <mat-icon>keyboard_arrow_up</mat-icon>
+                      <!-- <mat-icon>keyboard_arrow_up</mat-icon> -->
+                    </div>
+                   
+                  </div>
+                 
+                </div>
+                </div>
+              </div>
+
+              <div class="webView p-0" *ngIf="isPanelOpen(i)">
+                <div class="container-fluid p-0">
+                  <div class="timesheet-column">
+                    <mat-label> # {{ i + 1 }}<strong><b class="mx-2 text-muted" >|</b> {{'Timesheet'}}</strong>
+                    </mat-label>
+                  </div>
+                  
+                  <div class="time-save-wrapper">
+                    <span><mat-label style="font-size: 13px;"><i class="bi bi-clock"></i> 8 Hours</mat-label></span>
+                    <button mat-button class="save-btn" *ngIf="project.get('showSave').value && createdProject.length >1" (click)="$event.stopPropagation(); open(i)">Delete</button>
+                    <button *ngIf="!isPointerDisabled()" disabled mat-button>Save</button>
+                    <button *ngIf="isPointerDisabled()" mat-button class="save-btn" (click)="$event.stopPropagation();saveTimesheet(i)">Save</button>
+                    <mat-icon>keyboard_arrow_up</mat-icon>
+                  </div>
+                </div>
+              </div>
+             
+              <div class="w-100"  [ngStyle]="!isPanelOpen(i) && !project.get('isSaved').value ? {'padding-top':'5px'}:{'':''}" *ngIf="!isPanelOpen(i)">
+                <!-- Header Content -->
+                 <div class="webView">
+                   <div class="d-flex flex-column w-100" style="font-size: 13px;" >
+                 
+                    <div class="container-fluid" [ngClass]="!isPanelOpen(i) && project.get('isSaved').value ? 'c-shade':''">
+                    <!-- Timesheet Header -->
+                    <div class="timesheet-column" [ngClass]="!isPanelOpen(i) && project.get('isSaved').value ? 'preview-content ':''">
+                      <mat-label> # {{ i + 1 }} <strong><b class="mx-2">|</b> {{'Timesheet'}}</strong>
+                      </mat-label>
+                    </div>
+                 
+                    <div class="time-save-wrapper" [ngClass]="!isPanelOpen(i) && project.get('isSaved').value ? 'preview-content':''"  >
+                     <span> <mat-label><i class="bi bi-clock"></i> 8 Hours</mat-label></span>
+                      <button mat-button type="button" class="save-btn"   *ngIf="project.get('showSave').value && createdProject.length >1" (click)="$event.stopPropagation(); open(i)">
+                        Delete
+                      </button>
+                    
+                      <mat-icon>keyboard_arrow_down</mat-icon>
+                    </div>
+                  
+                  </div>
+              
+                
+                  
+                  <!-- Details Content -->
+                  <div class="d-flex w-100" style="padding-left: 13px;margin-top: 13px;" *ngIf="!isPanelOpen(i) && project.get('isSaved').value">
+                    
+                    <!-- Client Name -->
+                    <div class="flex-grow-1">
+                      <mat-label class="text-muted">Client Name</mat-label>
+                      <div class="preview-label">{{ getClientNameById(project.get('client_id')?.value) }}</div>
+                    </div>
+                    <!-- Project Name -->
+                    <div class="flex-grow-1">
+                      <mat-label class="text-muted">Project Name</mat-label>
+                      <div class="preview-label">{{ getProjectNameById(project.get('project_id')?.value,i) }}</div>
+                    </div>
+                    <!-- Timesheet Date -->
+                    <div class="flex-grow-1">
+                      <mat-label class="text-muted">Created Date</mat-label>
+                      <div class="preview-label">{{ project.get('created_date')?.value | date }}</div>
+                    </div>
+                   
+                    <!-- Number of Tasks -->
+                    <div class="flex-grow-1">
+                      <mat-label class="text-muted">Tasks</mat-label>
+                      <div class="preview-label">{{ getTaskLength(project) }}</div>
+                    </div>
+                     <!-- Description -->
+                     <div class="flex-grow-1">
+                      <mat-label class="text-muted">Description</mat-label>
+                      <div class="preview-label">
+                        {{ (project.get('description')?.value?.length > 25) ? (project.get('description')?.value | slice:0:25) + '...' : (project.get('description')?.value || 'NA') }}
+                      </div>
+                      
+                    </div>
+
+                  </div>
+
+                </div>
+                 </div>
+                
+                
+                 <div class="mobileView">
+                  <div class="d-flex flex-column w-100" style="font-size: 11px;" >
+                    <div class="d-flex align-items-center p-d" >
+                      
+                      <!-- Timesheet Header -->
+                      <div class="flex-grow-1" [ngClass]="!isPanelOpen(i) && project.get('isSaved').value ? 'preview-content ':''">
+                        <mat-label> # {{ i + 1 }}<strong><b class="mx-2 text-muted">|</b> {{'Timesheet'}}</strong>
+                        </mat-label>
+                      </div>
+                      <div class="text-end text-muted" [ngClass]="!isPanelOpen(i) && project.get('isSaved').value ? 'preview-content':''" style="width:20%">
+                        <mat-label class="me-1" ><i class="bi bi-clock"></i> 8 Hours</mat-label>
+                      </div>
+                      <div class="w-24p text-center" [ngClass]="!isPanelOpen(i) && project.get('isSaved').value ? 'preview-content':''"  >
+                        <img src="../../../../assets/images/Delete.svg" class="icon-image toolbar-btn mobi-del" container="body" ngbTooltip="Delete" (click)="$event.stopPropagation(); open(i)" *ngIf="project.get('showSave').value && createdProject.length >1" />
+                      </div>
+                      <div>
+                        <mat-icon  [ngClass]="!isPanelOpen(i) && project.get('isSaved').value ? 'arrow-icon':'t-p'">keyboard_arrow_down</mat-icon>
+                      </div>
+                    </div>
+                
+                  
+                    
+                    <!-- Details Content -->
+                    <div class="d-flex w-100" style="padding-left: 13px;margin-top: 13px;" *ngIf="!isPanelOpen(i) && project.get('isSaved').value">
+                      
+                      <!-- Client Name -->
+                      <div class="flex-grow-1">
+                        <mat-label class="text-muted">Client Name</mat-label>
+                        <div class="preview-label">{{ getClientNameById(project.get('client_id')?.value) }}</div>
+                      </div>
+                      <!-- Project Name -->
+                      <div class="flex-grow-1">
+                        <mat-label class="text-muted">Project Name</mat-label>
+                        <div class="preview-label">{{ getProjectNameById(project.get('project_id')?.value,i) }}</div>
+                      </div>
+                      <!-- Timesheet Date -->
+                      <div class="flex-grow-1">
+                        <mat-label class="text-muted">Created Date</mat-label>
+                        <div class="preview-label">{{ project.get('created_date')?.value | date }}</div>
+                      </div>
+                     
+                      <!-- Number of Tasks -->
+                      <div class="flex-grow-1">
+                        <mat-label class="text-muted">Tasks</mat-label>
+                        <div class="preview-label">{{ getTaskLength(project) }}</div>
+                      </div>
+                       <!-- Description -->
+                       <div class="flex-grow-1">
+                        <mat-label class="text-muted">Description</mat-label>
+                        <div class="preview-label">
+                          {{ (project.get('description')?.value?.length > 25) ? (project.get('description')?.value | slice:0:25) + '...' : (project.get('description')?.value || 'NA') }}
+                        </div>
+                      </div>
+  
+                    </div>
+                  </div>
+                 </div>
+              </div>
+            </mat-expansion-panel-header>
+        
+            <!-- Form Fields -->
+            <div class="row mt-3 mb-1">
+              <!-- Client Selection -->
+              <div class="col-sm-12 col-md-6 col-lg-3 p-2">
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Client <b class="r-star">*</b></mat-label>
+                  <mat-select (selectionChange)="getProject($event.value, i)" placeholder="Select client" formControlName="client_id"
+                  panelClass="custom-select-panel" [disableOptionCentering]="true">
+                  <ng-container *ngIf="allClient && allClient?.length > 0; else noDataTemplate">
+                  <mat-option *ngFor="let item of allClient" [value]="item.id">{{ item.clint_name }}</mat-option>
+                  </ng-container>
+                  
+                    <ng-template #noDataTemplate>
+                      <mat-option disabled>
+                        No data found
+                      </mat-option>
+                    </ng-template>
+                  </mat-select>
+                  <mat-error *ngIf="project.get('client_id').touched && project.get('client_id').invalid">
+                    <span class="error-text" *ngIf="project.get('client_id').hasError('required')">Client name is required.</span>
+                  </mat-error>
+                </mat-form-field>
+              </div>
+              <!-- Project Selection -->
+              <div class="col-sm-12 col-md-6 col-lg-3 p-2">
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Project <b class="r-star">*</b></mat-label>
+                  <mat-select (selectionChange)="getTask($event.value, i)" [ngbTooltip]="!project.get('client_id').value ? 'Please select the client name':''" [disabled]="!project.get('client_id').value" formControlName="project_id"
+                  panelClass="custom-select-panel" [disableOptionCentering]="true" placeholder="Select project">
+                  <ng-container *ngIf="createdProject.value[i]?.projectList && createdProject.value[i]?.projectList?.length > 0; else noDataTemplate">
+                  <mat-option *ngFor="let item of createdProject.value[i]?.projectList" [value]="item.id">{{ item.project_name }}</mat-option>
+                  </ng-container>
+                    <ng-template #noDataTemplate>
+                      <mat-option disabled>
+                        No data found
+                      </mat-option>
+                    </ng-template>
+                  </mat-select>
+                  <mat-error *ngIf="project.get('project_id').touched && project.get('project_id').invalid">
+                    <span class="error-text" *ngIf="project.get('project_id').hasError('required')">Project name is required.</span>
+                  </mat-error>
+                </mat-form-field>
+              </div>
+              <!-- Date Selection -->
+              <div class="col-sm-12 col-md-6 col-lg-3 p-2">
+                <mat-form-field appearance="outline" class="full-width date-picker">
+                  <mat-label>Created Date <b class="r-star">*</b></mat-label>
+                  <input matInput [matDatepicker]="picker" formControlName="created_date" placeholder="Select date"
+                  (dateChange)="onDateChange($event.value,i)" [max]="currentDate">
+                  <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                  <mat-datepicker #picker></mat-datepicker>
+                  <mat-error *ngIf="project.get('created_date').touched && project.get('created_date').invalid">
+                    <span class="error-text" *ngIf="project.get('created_date')?.hasError('required')">Created date is required.</span>
+                    <span class="error-text" *ngIf="project.get('created_date')?.hasError('duplicateDate')">Duplicate date detected.</span>
+                  
+                  </mat-error>
+                  
+                </mat-form-field>
+                <!-- <mat-error *ngIf="duplicateCreatedDate" class="p-r">
+                  <span class="error-text" style="position: absolute;top:-15px;left:15px;">Duplicate dates are not allowed.</span>
+                </mat-error> -->
+               
+              </div>
+              <!-- Description -->
+              <div class="col-sm-12 col-md-6 col-lg-3 p-2">
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Description</mat-label>
+                  <textarea matInput formControlName="description" placeholder="Enter description"></textarea>
+                  <mat-error *ngIf="project.get('description').touched">
+                    <span class="error-text" *ngIf="project.get('description').hasError('pattern') && !project.get('description').hasError('maxlength')">Cannot start with a space.</span>
+                    <span class="error-text" *ngIf="!project.get('description').hasError('pattern') && project.get('description').hasError('maxlength') ">Description cannot exceed more than 200 characters.</span>
+                  </mat-error>
+                
+                  <mat-hint align="end">{{project.get('description')?.value?.length}}/200 characters</mat-hint>
+                </mat-form-field>
+              </div>
+            </div>
+           
+            <div class="row mt-1 mb-2 p-2" class="task-container" [ngbTooltip]="timeSheetForm.invalid && !project.get('isSaved').value ? 'Please complete the above details':''" >
+              <div class="row">
+                <div class="col-10">
+                  <h5 style="font-weight: bold;">Add Task</h5>
+                  <h6 class="mb-0" style="color:black">Create Multiple Task</h6>
+                </div>
+                <!-- <div class="col"></div> -->
+                <div class="col-2 text-end pe-0" *ngIf="!project.get('isTaskForm').value && calculateTotalHoursForDate(project.get('created_date')?.value)  > 0" >
+                  <button type="button" mat-raised-button class="addTask w-100" color="primary"
+                    (click)="openTaskForm(i)">+ Add Task</button>
+                </div>
+              </div>
+
+              <div class="row mt-2" style="padding-right: 40px;" [formGroup]="taskForm" *ngIf="project.get('isTaskForm').value" [ngClass]="{'disabled-div': timeSheetForm.invalid && !project.get('isSaved').value }">
+                <div class="col-11 pe-0">
+                  <div class="row-container editable">
+                    <div class="column column1" style="width: 60%;">
+
+                     
+                    <div class="w-100 select-btn" >
+                      <mat-label class="p-ab task-labels">Task name <b class="r-star">*</b></mat-label>
+                      <mat-select formControlName="task_id"
+                        (selectionChange)="getTimeSpent($event.value, currentIndex)" placeholder="Select task"
+                        panelClass="custom-select-panel" [disableOptionCentering]="true">
+                        <mat-option *ngFor="let item of createdProject.value[i]?.taskList" [value]="item.id">
+                           {{ item.task_name }}
+                         
+                        </mat-option>
+                      </mat-select>
+                    </div>
+                      <div *ngIf="taskForm.get('task_id').touched && taskForm.get('task_id').invalid"
+                        class="error-text">
+                        <span  *ngIf="taskForm.get('task_id').hasError('required')">
+                          Task is required.
+                        </span>
+                      </div>
+
+
+                    </div>
+                    <div class="column">
+                     
+                      <button  type="button" class="w-100 select-btn" >
+                        <mat-label class="p-ab task-labels">Hours <b class="r-star">*</b></mat-label>
+                        <mat-select formControlName="hours_to_complete"
+                          placeholder="Select hours"
+                          panelClass="custom-select-panel" [disableOptionCentering]="true">
+                          <mat-option *ngFor="let item of createdProject.value[i]?.time" [value]="item.hours">
+                             {{ item.hours }}
+                           
+                          </mat-option>
+                        </mat-select>
+                      </button>
+                      <div *ngIf="taskForm.get('hours_to_complete').touched && taskForm.get('hours_to_complete').invalid"
+                        class="error-text">
+                        <span  *ngIf="taskForm.get('hours_to_complete').hasError('required')">
+                          Hours is required.
+                        </span>
+                      
+                      </div>
+                   
+                    </div>
+
+
+                    <div class="column">
+                     
+                      <button  type="button" class="w-100 select-btn" >
+                        <mat-label class="p-ab task-labels"> Minutes<b class="r-star">*</b></mat-label>
+                        <mat-select formControlName="minutes_to_complete"
+                          placeholder="Select minutes"
+                          panelClass="custom-select-panel" [disableOptionCentering]="true">
+                          <mat-option *ngFor="let item of createdProject.value[i]?.minutes" [value]="item">
+                             {{ item }}
+                          </mat-option>
+                        </mat-select>
+                      </button>
+                      <div *ngIf="taskForm.get('minutes_to_complete').touched && taskForm.get('minutes_to_complete').invalid"
+                        class="error-text">
+                        <span  *ngIf="taskForm.get('minutes_to_complete').hasError('required')">
+                          Minutes is required.
+                        </span>
+                      
+                      </div>
+                   
+                    </div>
+
+
+                  </div>
+                </div>
+
+                <div class="col-1 d-flex align-items-center justify-content-left">
+                  <img src="../../../../assets/images/tick.svg"  class="icon-image"  [ngClass]="{'moonPulse': isTaskSubmitted}" container="body" ngbTooltip="Add"
+                    (click)="saveTask(i)" />
+                  <img src="../../../../assets/images/Close.svg" class="icon-image" container="body" ngbTooltip="Cancel"
+                    (click)="resetTaskForm(i)" />
+                </div>
+              </div>
+            
+
+       
+         
+
+                <!-- Task Section -->
+           
+            
+           
+            
+           <div class="p-0" formArrayName="task_list">
+              <div class="row mt-4" style="padding-right: 40px;" *ngFor="let task of getTaskArray(i).controls; let j = index" [formGroupName]="j">
+                <div class="col-11 pe-0">
+                  <div class="row-container2" [ngClass]="{ 'editable': task?.get('isEditing').value }">
+                    
+                    <!-- Task selection with clear icon -->
+                    <div class="column position-relative column1" >
+                      <div class="w-100 select-btn">
+                        <mat-label class="p-ab task-labels">Task name <b class="r-star">*</b></mat-label>
+                        <!-- <mat-select  formControlName="task_id" (selectionChange)="getTimeSpent($event.value, currentIndex);getValue(i,j,task?.get('task_id')?.value)" placeholder="Select task" [disabled]="!task?.get('isEditing').value"
+                        panelClass="custom-select-panel" [disableOptionCentering]="true"> -->
+                        <mat-select  formControlName="task_id" (selectionChange)="getTimeSpent($event.value, currentIndex);getValue(i,j,task?.get('task_id')?.value)" placeholder="Select task" 
+                        panelClass="custom-select-panel" [disableOptionCentering]="true">
+                          <mat-option *ngFor="let item of createdProject.value[i]?.taskList" [value]="item.id">
+                            {{ item.task_name }}
+                          </mat-option>
+                        </mat-select>
+                      </div>
+                     
+                      <mat-error class="error-text" *ngIf="task.get('task_id').hasError('required') && task.get('task_id').touched">
+                        Task is required.
+                      </mat-error>
+                    </div>
+            
+                    <!-- Hours selection with clear icon -->
+                    <div class="column position-relative">
+                      <div class="w-100 select-btn">
+                        <mat-label class="p-ab task-labels">Hours <b class="r-star">*</b></mat-label>
+                        <!-- <mat-select  formControlName="hours_to_complete" placeholder="Select hours" [disabled]="!task?.get('isEditing').value"
+                        panelClass="custom-select-panel" [disableOptionCentering]="true" (selectionChange)="getValue(i,j,task?.get('task_spent')?.value,'time')"> -->
+                        <mat-select  formControlName="hours_to_complete" placeholder="Select hours" 
+                        panelClass="custom-select-panel" [disableOptionCentering]="true" (selectionChange)="getValue(i,j,task?.get('task_spent')?.value,'time')">
+                        <mat-option *ngFor="let item of createdProject.value[i]?.time" [value]="item.hours"
+                          [disabled]="item.time > getRemainingHours(i)">
+                            {{ item.hours }}
+                          </mat-option>
+                        </mat-select>
+                      </div>
+                      <mat-error class="error-text" *ngIf="task.get('hours_to_complete').hasError('required') && task.get('hours_to_complete').touched">
+                        Hours are required.
+                      </mat-error>
+                    </div>
+
+                    <div class="column position-relative">
+                      <div class="w-100 select-btn">
+                        <mat-label class="p-ab task-labels">Minutes <b class="r-star">*</b></mat-label>
+                        <!-- <mat-select  formControlName="hours_to_complete" placeholder="Select hours" [disabled]="!task?.get('isEditing').value"
+                        panelClass="custom-select-panel" [disableOptionCentering]="true" (selectionChange)="getValue(i,j,task?.get('task_spent')?.value,'time')"> -->
+                        <mat-select  formControlName="minutes_to_complete" placeholder="Select minutes" 
+                        panelClass="custom-select-panel" [disableOptionCentering]="true" (selectionChange)="getValue(i,j,task?.get('task_spent')?.value,'time')">
+                        <mat-option *ngFor="let item of createdProject.value[i]?.minutes" [value]="item"
+                          >
+                            {{ item }}
+                          </mat-option>
+                        </mat-select>
+                      </div>
+                      <mat-error class="error-text" *ngIf="task.get('minutes_to_complete').hasError('required') && task.get('minutes_to_complete').touched">
+                        Minutes is required.
+                      </mat-error>
+                    </div>
+                  </div>
+                </div>
+            
+                <!-- Action buttons (Edit, Save, Delete) -->
+                <div class="col-1 d-flex align-items-center" *ngIf="task?.get('isEditing').value">
+                  <img src="../../../../assets/images/tick.svg" class="icon-image" container="body" ngbTooltip="Save" style="color:#50C20D;" (click)="editTask(i, j)" [ngClass]="{'moonPulse': isTaskSubmitted}"/>
+                  <img src="../../../../assets/images/Close.svg" class="icon-image" container="body" ngbTooltip="Cancel" (click)="toggleTaskEditingState(i, j,false)" />
+                  <img src="../../../../assets/images/Delete.svg" class="icon-image" container="body" ngbTooltip="Delete" (click)="deleteTask(i, j)" *ngIf="getTaskArray(i).length > 1" />
+                </div>
+            
+                <div class="col-1 d-flex align-items-center" *ngIf="!task?.get('isEditing').value">
+                  <img src="../../../../assets/images/Edit.svg"  (click)="toggleTaskEditingState(i, j,true)" class="icon-image" container="body" ngbTooltip="Edit" />
+                </div>
+              </div>
+
+              <div class="row w-100 my-3">
+                <div class="col"></div>
+                <!-- <div class="col-4 text-end" ><mat-label>Hours left :{{calculateTotalHoursForDate(project.get('created_date')?.value) >= 0 ? calculateTotalHoursForDate(project.get('created_date')?.value) : 0}}</mat-label></div> -->
+                <div class="col-4 text-end" ><mat-label>Hours left :{{calculateTotalHoursForDate(project.get('created_date')?.value) >= 0 ? calculateTotalHoursForDate(project.get('created_date')?.value) : 0}}</mat-label></div>
+                <div class="col-2"></div>
+              </div>
+            </div> 
+
+          
+
+            </div>
+          
+          </mat-expansion-panel>
+        </div>
+      </mat-accordion>
+    </form>
+    <div class="text-start">
+      <button mat-raised-button type="button" (click)="addProjectDetails()" class="mat-btn-s me-2 proceedbtn" 
+      [disabled]="!isSaved || !timeSheetForm.invalid && !taskForm.invalid ">+ Add More</button>
+      <button mat-raised-button class="mat-btn-s proceedbtn" type="submit" [disabled]="!isSaved||!timeSheetForm.invalid && !taskForm.invalid" (click)="addTimeSheet()">Submit Timesheet</button>
+    </div>
+  </div>
+</div>

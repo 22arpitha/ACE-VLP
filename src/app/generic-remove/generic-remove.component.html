@@ -1,0 +1,13 @@
+<div class="container-fluid">
+    <div class="modal-body custom-modal" >
+        <h4 class="modal-title" *ngIf="!message"><i class="bi bi-exclamation-circle"></i>Remove Teams</h4>
+        <h4 class="modal-title" *ngIf="message"><i class="bi bi-box-arrow-right"></i> {{message}}</h4>
+        <p *ngIf="!title">Are you sure you want to remove?</p>
+        <p *ngIf="title" >{{title}}?</p>
+    </div>
+    <div class="modal-footer" [ngClass]="title ? 'justify-content-center':''">
+        <button mat-button type="button"  class="btn-cancel"  (click)="modalStatus('cancel')">Back</button>
+        <button mat-button type="button" class="btn-yes" [style.backgroundColor]="message ? '' : '#B41212'" (click)="modalStatus('ok')" >{{message || 'Remove'}}</button>
+    </div>
+</div>
+

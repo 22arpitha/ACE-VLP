@@ -1,0 +1,87 @@
+ol{
+    background-color: inherit;
+}
+a{
+    color: #3F51B5;
+    text-decoration: none;
+}
+li{
+    
+    list-style: none;
+    color: grey;
+}
+ul{
+    padding: 0px;
+}
+.bg{
+    background-color: white;
+    height: 23vh !important;
+    width: 100%;
+    padding: 5px !important;
+    border-radius: 5px;
+    width: 100% !important;
+    margin: 0 !important;
+
+}
+.proceedbtn{
+    background-color: #3F51B5;
+    border-radius: 5px;
+    border: none;
+    height: 40px;
+    width: 100%;
+    color: white;
+    margin: 10px 0px;
+}
+.printbtn{
+    background-color: #00BCD4;
+    border-radius: 5px;
+    border: none;
+    height: 40px;
+    width: 100%;
+    color: white;
+    margin: 10px 0px;
+}
+.row{
+    padding: 5px;
+}
+i{
+    padding: 0px 5px 0px 0px;
+}
+.btnicon{
+    display: none;
+}
+button:hover .btnicon{
+    display: block;
+}
+
+select{
+    width: 100% !important;
+    height: 40px;
+    margin-bottom: 4px;
+}
+span{
+    color: red;
+}
+p{
+    color: grey;
+}
+html{
+    position: relative;
+}
+// .createbtn{
+//     background-color: #3F51B5;
+//     border: none;
+//     color: white;
+//     padding: 20px;
+//     text-align: center;
+//     text-decoration: none;
+//     display: inline-block;
+//     font-size: 35px;
+//     margin: 0px 2px;
+//     border-radius: 50%;
+//     position: fixed;
+//     right: 5%;
+//     bottom: 10%;
+
+// }
+

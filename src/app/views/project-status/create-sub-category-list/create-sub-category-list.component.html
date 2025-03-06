@@ -1,0 +1,174 @@
+<div class="container-fluid webView">
+    <!-- <div class="row">
+        <div class="col-sm-6">
+            <h1>Add sub category</h1>
+        </div>
+        <div class="col-sm"></div>
+        <div class="col-sm-3 text-end">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                 <li class="breadcrumb-item"><a routerLink="/dashboards">Home</a></li>
+                  <li class="breadcrumb-item">Add sub category</li>
+                  
+                </ol>
+              </nav>
+        </div>
+        
+    </div> -->
+    <div class="generic-form bg mx-1">
+       <form [formGroup]='subCategoryForm' (ngSubmit)='addSubCategory()'>
+        <div class="row">
+            <div class="col-sm-6">
+                <h4>Sub category details</h4>
+            </div>
+        </div>
+
+ 
+        <div class="row">
+            <div class="col-sm-6">
+                <p>Main category <span >*</span></p>
+                <select class="form-select" [(value)]='mainCategory' aria-label="Default select example" formControlName="psmc_ref_id">
+                    <option value="" selected disabled>Select main category</option>
+                    <option *ngFor="let item of allMainCategoryList" [value]="item.id">
+                        {{item.psmc_name}}
+                    </option>
+                  </select>
+                  <div *ngIf="f['psmc_ref_id'].touched && f['psmc_ref_id'].invalid">
+                    <div *ngIf="f['psmc_ref_id'].errors && f['psmc_ref_id'].errors['required']"><p class="error-msg">Main category name is required</p></div>
+                </div>
+            </div>
+            
+        </div>
+        
+        <div class="row">
+            <div class="col-sm-6">
+                <p>Sub category name <span >*</span></p> 
+                <input type="text" class="form-control p-3 sizeinput" formControlName="pssc_name" placeholder="Enter sub category name" aria-describedby="emailHelp"  autocomplete="off">
+                <div *ngIf="f['pssc_name'].touched && f['pssc_name'].invalid">
+                    <div *ngIf="f['pssc_name'].errors && f['pssc_name'].errors['required']" ><p class="error-msg">Sub category name is required</p></div>
+                </div>
+                <div *ngIf="f['pssc_name'].invalid && f['pssc_name'].hasError('pattern')">
+                    <p class="error-msg">Cannot start with a space.</p>
+                </div>
+            </div>
+        </div>
+        <!-- <div class="row">
+            <div class="col-sm-6">
+                <p>Status <span >*</span></p> 
+                <input type="text" class="form-control p-3 sizeinput" formControlName="pssc_status" placeholder="Enter Status" aria-describedby="emailHelp"  autocomplete="off">
+                <div *ngIf="f['pssc_status'].touched && f['pssc_status'].invalid" >
+                    <div *ngIf="f['pssc_status'].errors && f['pssc_status'].errors['required']" ><p class="error-msg">Status is required</p></div>
+                </div>
+            </div>
+        </div> -->
+        <div class="row">
+            <div class="col-sm-6">
+                <p>Status <span >*</span></p> 
+                <!-- <input type="text" class="form-control p-3 sizeinput" formControlName="pssc_status" placeholder="Enter Status" aria-describedby="emailHelp"  autocomplete="off"> -->
+                <select class="form-select p-3 sizeinput" formControlName="pssc_status">
+                    <option value="" disabled selected>Select status</option>
+                    <option value="Active">Active</option>
+                    <option value="Inactive">Inactive</option>
+                </select>
+                <div *ngIf="f['pssc_status'].touched && f['pssc_status'].invalid" >
+                    <div *ngIf="f['pssc_status'].errors && f['pssc_status'].errors['required']" ><p class="error-msg">Status is required</p></div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <!-- <div class="col-sm-3">
+                <p><i class="bi bi-newspaper"></i>Note: <span>*</span>Mandatory fields</p>
+            </div>
+            <div class="col-sm"></div> -->
+            <div class="col-sm-2">
+                <button mat-raised-button class="mat-btn-s proceedbtn" type="submit">Submit</button>
+            </div>
+        </div>
+       </form>
+       
+    </div>
+   
+</div>
+
+<div class="container-fluid mobileView">
+    <div class="row mx-1 my-2">
+        <div class="col-sm-6">
+            <h1><i  class="bi bi-arrow-left" (click)="goBack($event)
+  
+  "></i>  Add sub category</h1>
+        </div>
+    </div>
+    <div class="generic-form bg mx-1">
+       <form [formGroup]='subCategoryForm' (ngSubmit)='addSubCategory()'>
+        <div class="row">
+            <div class="col-sm-6">
+                <h4>Sub category details</h4>
+            </div>
+        </div>
+
+ 
+        <div class="row">
+            <div class="col-sm-6">
+                <p>Main category <span >*</span></p>
+                <select class="form-select" [(value)]='mainCategory' aria-label="Default select example" formControlName="psmc_ref_id">
+                    <option value="" selected disabled>Select main category</option>
+                    <option *ngFor="let item of allMainCategoryList" [value]="item.id">
+                        {{item.psmc_name}}
+                    </option>
+                  </select>
+                  <div *ngIf="f['psmc_ref_id'].touched && f['psmc_ref_id'].invalid">
+                    <div *ngIf="f['psmc_ref_id'].errors && f['psmc_ref_id'].errors['required']"><p class="error-msg">Main category name is required</p></div>
+                </div>
+            </div>
+            
+        </div>
+        
+        <div class="row">
+            <div class="col-sm-6">
+                <p>Sub category name <span >*</span></p> 
+                <input type="text" class="form-control p-3 sizeinput" formControlName="pssc_name" placeholder="Enter sub category name" aria-describedby="emailHelp"  autocomplete="off">
+                <div *ngIf="f['pssc_name'].touched && f['pssc_name'].invalid">
+                    <div *ngIf="f['pssc_name'].errors && f['pssc_name'].errors['required']" ><p class="error-msg">Sub category name is required</p></div>
+                </div>
+                <div *ngIf="f['pssc_name'].invalid && f['pssc_name'].hasError('pattern')">
+                    <p class="error-msg">Cannot start with a space.</p>
+                </div>
+            </div>
+        </div>
+        <!-- <div class="row">
+            <div class="col-sm-6">
+                <p>Status <span >*</span></p> 
+                <input type="text" class="form-control p-3 sizeinput" formControlName="pssc_status" placeholder="Enter Status" aria-describedby="emailHelp"  autocomplete="off">
+                <div *ngIf="f['pssc_status'].touched && f['pssc_status'].invalid" >
+                    <div *ngIf="f['pssc_status'].errors && f['pssc_status'].errors['required']" ><p class="error-msg">Status is required</p></div>
+                </div>
+            </div>
+        </div> -->
+        <div class="row">
+            <div class="col-sm-6">
+                <p>Status <span >*</span></p> 
+                <!-- <input type="text" class="form-control p-3 sizeinput" formControlName="pssc_status" placeholder="Enter Status" aria-describedby="emailHelp"  autocomplete="off"> -->
+                <select class="form-select p-3 sizeinput" formControlName="pssc_status">
+                    <option value="" disabled selected>Select status</option>
+                    <option value="Active">Active</option>
+                    <option value="Inactive">Inactive</option>
+                </select>
+                <div *ngIf="f['pssc_status'].touched && f['pssc_status'].invalid" >
+                    <div *ngIf="f['pssc_status'].errors && f['pssc_status'].errors['required']" ><p class="error-msg">Status is required</p></div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <!-- <div class="col-sm-3">
+                <p><i class="bi bi-newspaper"></i>Note: <span>*</span>Mandatory fields</p>
+            </div>
+            <div class="col-sm"></div> -->
+            <div class="col-sm-2">
+                <button mat-raised-button class="mat-btn-s proceedbtn" type="submit">Submit</button>
+            </div>
+        </div>
+       </form>
+       
+    </div>
+   
+</div>

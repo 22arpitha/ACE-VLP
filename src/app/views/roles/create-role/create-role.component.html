@@ -1,0 +1,59 @@
+<div class="container-fluid p-3 p-lg-4">
+    <div class="generic-form bg ">
+        <form [formGroup]='roleForm'>
+            <div class="row gx-0 mx-0 create-role">
+                <div class="col-12 mt-lg-2">
+                    <div class="row gx-0 mx-0 mb-3">
+                        <div class="col-sm-12 col-md-6 col-lg-4">
+                            <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+                                <mat-label>Designation name<b class="r-star">*</b></mat-label>
+                                <input matInput placeholder="Enter designation name" formControlName="designation_name"
+                                    autocomplete="off" pattern="^(?!\s)(.*\S)?$">
+                            </mat-form-field>
+                            <div class="px-2" *ngIf="f['designation_name']?.touched && f['designation_name']?.invalid">
+                                <span class="text-errors"
+                                    *ngIf="f['designation_name'].errors && f['designation_name'].errors['required'] ">Designation
+                                    name is
+                                    required</span>
+                                <span class="text-errors"
+                                    *ngIf="f['designation_name'].invalid && f['designation_name'].hasError('pattern')">
+                                    Please remove extra space.
+                                </span>
+                                <span class="text-errors"
+                                    *ngIf="!f['designation_name'].errors?.['required'] && f['designation_name'].errors?.['maxlength']">
+                                    Designation name cannot exceed more than 50 characters.
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row gx-0 mx-0 mb-3">
+                        <div class="col-sm-12 col-md-6 col-lg-4">
+                            <mat-form-field appearance="outline" class="w-100 ">
+                                <mat-label>Description</mat-label>
+                                <textarea matInput placeholder="Enter description" formControlName="description"
+                                    autocomplete="off" pattern="^(?!\s)(.*\S)?$"></textarea>
+                            </mat-form-field>
+                            <div class="text-end"><small>{{f['description'].value.length}}/300 characters</small></div>
+                            <div class="px-2" *ngIf="f['description']?.touched && f['description']?.invalid">
+                                <span class="text-errors"
+                                    *ngIf="f['description'].invalid && f['description'].hasError('pattern')">
+                                    Please remove extra space.</span>
+                                <span class="text-errors"
+                                    *ngIf="!f['description'].errors?.['required'] && f['description'].errors?.['maxlength']">
+                                    Description cannot exceed more than 300 characters.
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row gx-0 mx-0 ">
+                        <div class="col mt-3">
+                            <button mat-button type="button" class="back-button" (click)="BackToRolesList()">Back</button>
+                            <button mat-raised-button class="proceedbtn" type="button" (click)="addRole()">Submit</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+

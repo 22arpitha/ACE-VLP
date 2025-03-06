@@ -1,0 +1,56 @@
+.pagenotfound {
+    background: url('../../../../assets/images/page-not-found.png') no-repeat;
+    height: 95vh;
+    width: 100%;
+    background-size: cover;
+    background-position: 50% 50%;
+    border-radius: 10px;
+    transform: scale(0.8);
+}
+
+.container-fluid {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #ecf5fb;
+}
+
+.col-6 {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end; /* Align content to the bottom */
+    align-items: center; /* Center content horizontally */
+    height: 100%; /* Ensure column takes full height */
+    padding: 1rem; /* Add padding for better spacing */
+    height: 80vh;
+}
+
+.go-back-to-login {
+    background: #4E4E4E;
+    color: white;
+    padding: 0.5rem 1.5rem;
+    border-radius: 5px;
+    text-transform: uppercase;
+    font-weight: bold;
+    transition: background 0.3s;
+}
+
+.go-back-to-login:hover {
+    background: #3b3b3b; /* Slightly darker shade on hover */
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .pagenotfound {
+        zoom:58%;
+    }
+
+    .col-6 {
+        padding: 0.5rem;
+    }
+
+    .go-back-to-login {
+        font-size: 0.9rem;
+    }
+}

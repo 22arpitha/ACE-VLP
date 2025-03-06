@@ -1,0 +1,39 @@
+<div class="container-fluid">
+ 
+    <div class="modal-body custom-modal" > 
+        <h4 class="modal-title">Working Hours</h4>
+        <form  [formGroup]="workingHours" class="pt-3" >
+            <mat-form-field appearance="outline" class="w-100 custom-mat-form-field my-2">
+                <mat-label>Organization Name <b class="r-star">*</b></mat-label>
+                <mat-select formControlName="organization" placeholder="Select organization name"  autocomplete="off" 
+                
+                panelClass="custom-select-panel" [disableOptionCentering]="true" [disabled]="data">
+                  <mat-option *ngFor="let items of organizationData" [value]="items.organization_id">{{items.organization_name | titlecase }}</mat-option>
+                </mat-select>
+                <mat-error *ngIf="f['organization']?.touched && f['organization']?.invalid">
+                  <span *ngIf="f['organization'].errors?.['required']">Organization name is required</span>
+                </mat-error>
+              </mat-form-field>
+        <mat-form-field appearance="outline" class="w-100 custom-mat-form-field my-2">
+        <mat-label>Working Hours <b class="r-star">*</b></mat-label>
+       <input matInput type="tel" formControlName="working_hour" placeholder="Enter working hours" autocomplete="off">
+       
+      <mat-error *ngIf="f['working_hour']?.touched && f['working_hour']?.invalid">
+        <mat-error *ngIf="f['working_hour'].errors?.['required']">
+          Working hours is required
+        </mat-error>
+        <mat-error *ngIf="f['working_hour'].errors?.['pattern']">
+         Invalid working hours
+       </mat-error>
+      </mat-error>
+       
+      </mat-form-field>
+    </form>
+    </div>
+
+    <div class="modal-footer" >
+        <button mat-button type="button"  class="btn-cancel"  (click)="modalStatus('cancel')">Cancel</button>
+        <button mat-button type="button" class="btn-yes"  (click)="modalStatus('ok')" >{{data ? 'Edit Working Hours' : 'Add Working Hours'}}</button>
+    </div>
+</div>
+

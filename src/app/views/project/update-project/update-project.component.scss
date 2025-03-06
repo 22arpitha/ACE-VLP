@@ -1,0 +1,199 @@
+::ng-deep .update-project-details .mat-form-field-wrapper {
+    padding-bottom: 0em;
+}
+
+.update-project-details .proceedbtn {
+    background-color: #126EB4 !important;
+    border-radius: 5px !important;
+    border: none !important;
+    height: 35px !important;
+    width: auto !important;
+    color: white !important;
+    font-size: small !important;
+    padding: 0px 4px;
+
+}
+
+::ng-deep .update-project-details .mat-icon-button .mat-icon {
+    line-height: 22px !important;
+}
+
+::ng-deep .update-project-details .mat-icon {
+    font-size: medium !important;
+}
+
+::ng-deep .update-project-details .mat-icon-button {
+    line-height: 0px !important;
+}
+
+.update-project-details .task-border {
+    border: 1px solid #c1c0c0;
+    border-radius: 5px;
+}
+
+.update-project-details .form-control,
+.form-select {
+    border: none !important;
+    box-shadow: none !important;
+    text-align: left;
+    font-family: "Exo FT" !important;
+    font-size: 14px;
+    // background-color: #f8f9fa !important;
+}
+
+.update-project-details .row.border {
+    border-width: 2px;
+    background-color: #fff;
+}
+
+.update-project-details .icon-bg {
+    background: #f4f4f4;
+    padding: 5px 7px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 18px;
+
+    &:hover {
+        opacity: 0.8;
+    }
+}
+
+.update-project-details .invalid-button .proceedbtn {
+    background-color: #5588af !important;
+    border-radius: 5px !important;
+    border: none !important;
+    height: 35px !important;
+    width: auto !important;
+    color: white !important;
+    font-size: small !important;
+    padding: 0px 4px;
+}
+
+.update-project-details .star {
+    color: red !important;
+}
+
+.update-project-details .p-ab {
+    // position: absolute !important;
+    top: -2px !important;
+}
+.update-project-details .task-labels{
+    font-size: 10px;
+    margin-right: 2px;
+}
+.auto-height {
+    height: auto !important;
+  }
+::ng-deep  .mat-select-panel {
+    margin-left: 20px !important;
+}
+
+.floating-label-container {
+    position: relative;
+    margin-top: 20px;
+  
+    label {
+      position: absolute;
+      top: 10px;
+      left: 15px;
+      color: #aaa;
+      transition: 0.2s ease all;
+      pointer-events: none;
+    }
+  
+    .floating {
+      top: -15px;
+      font-size: 12px;
+      color: #3f51b5;
+    }
+  
+    ng-multiselect-dropdown {
+      width: 100%;
+      padding: 10px 15px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+  
+    ng-multiselect-dropdown:focus + label {
+      top: -15px;
+      font-size: 12px;
+      color: #3f51b5;
+    }
+  }
+
+
+.update-project-details .custom-search input {
+    width: 100%;
+    box-sizing: border-box; /* Ensure padding doesn't increase width */
+}
+.update-project-details .team-border{
+    border: 1px solid rgb(231, 229, 229);
+    border-radius: 5px;
+}
+.update-project-details .tag-item i{
+    text-align: center;
+    cursor: pointer !important;
+
+}
+
+
+.update-project-details .tag-container {
+    display: flex;
+    flex-wrap: wrap;
+    max-height: 150px; /* Adjust this height to set the maximum height */
+    overflow-y: auto; /* Allow vertical scrolling when there is more data */
+    padding: 10px;
+  }
+  
+  .update-project-details .tag-container.collapsed {
+    max-height: 100px; /* Adjust height for collapsed view */
+    overflow-y: hidden; /* Hide scroll in collapsed view */
+  }
+  
+  .update-project-details .tag-item {
+    background-color: lightblue;
+    margin: 4px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    display: inline-flex;
+    align-items: center;
+  }
+  
+  .update-project-details .remove-btn {
+    margin-left: 8px;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .update-project-details .controls {
+    margin-top: 10px;
+    text-align: end;
+  }
+  
+  .update-project-details .toggle-btn {
+    margin-right: 10px;
+    background-color: #418BC3;
+    color: white;
+    border: none;
+    font-family: "Exo FT" !important;
+    border-radius: 5px;
+    cursor: pointer;
+    padding: 8px;
+
+  }
+  .update-project-details .clear-btn {
+    border: none;
+    margin-right: 10px;
+    background-color: #DEDEDE;
+    color: black;
+    border-radius: 5px;
+    font-family: "Exo FT" !important;
+    cursor: pointer;
+    padding: 7px 10px;
+
+  }
+  ::ng-deep .update-project-details .mat-form-field-appearance-outline .mat-form-field-suffix {
+    top: .25em !important;
+}
