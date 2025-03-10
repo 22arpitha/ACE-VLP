@@ -65,7 +65,7 @@ export class LoginComponent implements OnInit {
   login() {
 
     if (this.loginForm.invalid) {
-      this.api.showError('Please enter the mandatory fields')
+      // this.api.showError('Please enter the mandatory fields')
 
       this.loginForm.markAllAsTouched()
 

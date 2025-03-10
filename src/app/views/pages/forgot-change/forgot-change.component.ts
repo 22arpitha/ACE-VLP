@@ -71,7 +71,7 @@ export class ForgotChangeComponent implements OnInit {
 
   sendChangePassword() {
     if (this.changePassword.invalid) {
-      this.api.showError('Invalid!')
+      // this.api.showError('Invalid!')
       this.changePassword.markAllAsTouched()
       console.log(this.changePassword.value)
     }

@@ -1,1 +1,28 @@
-<p>country works!</p>
+<div class="country">
+    <div class="row">
+        <div class="col-12">
+            <form [formGroup]="countryForm">
+                <div class="row">
+                    <div class="col-sm-12 col-md-4 col-lg-3">
+                        <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+                            <mat-label>Country Name <b class="r-star">*</b></mat-label>
+                            <input matInput placeholder="Country name"
+                                formControlName="country_name" autocomplete="off"
+                                pattern="^(?!\s)(.*\S)?$">
+                        </mat-form-field>
+                    </div>
+                    <div class="col-2 mt-2">
+                        <button type="submit" mat-raised-button class="proceedbtn" color="primary">Submit</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- table -->
+     <div class="row table-bg">
+        <div class="col px-0">
+            
+        </div>
+     </div>
+</div>

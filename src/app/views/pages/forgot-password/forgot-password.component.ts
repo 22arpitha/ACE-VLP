@@ -30,7 +30,7 @@ export class ForgotPasswordComponent implements OnInit {
   forgot(){
     if(this.forgotForm.invalid){
       this.forgotForm.markAllAsTouched()
-      this.api.showError('Invalid!')
+      // this.api.showError('Invalid!')
     }
     else{
       this.disableButton = true;

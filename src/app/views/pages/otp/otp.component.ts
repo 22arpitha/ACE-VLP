@@ -86,7 +86,7 @@ export class OtpComponent implements OnInit {
       email: userName
     }
     if (this.otpForm.invalid) {
-      this.api.showError('Invalid')
+      this.api.showError('Please enter the otp')
 
     }
     else {

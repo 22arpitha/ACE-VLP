@@ -11,6 +11,7 @@ import { SourceComponent } from './source/source.component';
 import { StatusGroupComponent } from './status-group/status-group.component';
 import { JobStatusComponent } from './job-status/job-status.component';
 import { LeaveTypeComponent } from './leave-type/leave-type.component';
+import { SharedModule } from '../../shared/shared.module';
 
 
 @NgModule({
@@ -27,7 +28,8 @@ import { LeaveTypeComponent } from './leave-type/leave-type.component';
     CommonModule,
     SettingsRoutingModule,
     FormModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    SharedModule
   ]
 })
 export class SettingsModule { }
