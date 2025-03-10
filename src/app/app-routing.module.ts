@@ -81,10 +81,6 @@ const routes: Routes = [
       {
         path:'leave',loadChildren:()=> import('./views/leave-holiday-list/leave-holiday-list.module').then(m => m.LeaveHolidayListModule)
       },
-
-      {
-        path:'industry',loadChildren:()=> import('./views/industry-sector/industry-sector.module').then(m => m.IndustrySectorModule)
-      },
       {
         path:'client', loadChildren:()=> import('./views/client/client.module').then(m => m.ClientModule)
       },
@@ -114,6 +110,9 @@ const routes: Routes = [
       },
       {
         path:'changePasswords',loadChildren:()=>import('./views/change-passwords/change-passwords.module').then(m => m.ChangePasswordsModule)
+      },
+      {
+        path:'setings', loadChildren:()=>import('./views/settings/settings-routing.module').then(m => m.SettingsRoutingModule)
       },
       {
         path: 'admin',
