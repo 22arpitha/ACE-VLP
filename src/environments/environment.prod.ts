@@ -8,10 +8,19 @@ export const environment = {
   live_url:'https://vlp.thestorywallcafe.com/api-vlp',
   socket_url:'projectacedevelop.thestorywallcafe.com',
 
-  //  vlp
-  login:`login`,
-  forgot_password:`forgot-password`,
-  // vlp
+ //  vlp Auth
+ login:`login`,
+ forgot_password:`forgot-password`,
+ verify_otp:`verify-otp`,
+ set_new_password:`set-new-password`,
+ // vlp settings
+settings_country: `country`,
+settings_source: `source`,
+settings_status_group: `status-group`,
+settings_leave_type: `leave_type`,
+settings_job_status: `job-status`,
+settings_job_type: `job-type`,
+
  
   leave_application: 'leave-application',
   timesheetCalender: 'time-sheets-calender',

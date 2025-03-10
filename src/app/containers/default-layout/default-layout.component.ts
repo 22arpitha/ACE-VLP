@@ -41,6 +41,51 @@ export class DefaultLayoutComponent {
   admin: any;
   permission: any;
   sidebarNavItems: any;
+  sidebarNavItemsStatic:any=[{
+    "name": "Settings",
+    "icon": "bi bi-patch-check",
+    "is_show": true,
+    "children": [
+        {
+            "name": "Country",
+            "url": "/settings/country"
+        },
+        {
+            "name": "Job Type",
+            "url": "/settings/job-type"
+        },
+      {
+            "name": "Source",
+            "url": "/settings/source"
+        },
+      {
+            "name": "Status Group",
+            "url": "/settings/status-group"
+        },
+       {
+            "name": "Job Status",
+            "url": "/settings/job-status"
+        },
+             {
+            "name": "leave Type",
+            "url": "/settings/leave-type"
+        }
+      
+    ],
+    "access": [
+        {
+            "name": "Settings",
+            "operations": [
+                {
+                    "view": false,
+                    "create": false,
+                    "delete": false,
+                    "update": false
+                }
+            ]
+        }
+    ]
+  }];
   config: string;
   access: any = [];
   user_id: any;
@@ -198,6 +243,7 @@ private moveSubscriptionToTop(navigationData: any[]): any[] {
 }
 
 testingFunction() {
+  this.sidebarNavItems = this.sidebarNavItemsStatic;
   this.api.userAccess(sessionStorage.getItem('user_id')).subscribe(
     (res: any) => {
     //  console.log('default layout', res.access_list);
