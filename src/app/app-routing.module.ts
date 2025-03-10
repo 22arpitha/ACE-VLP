@@ -198,6 +198,13 @@ const routes: Routes = [
     }
   },
   {
+    path: 'set-employee-password/:id',
+    component: ForgotChangeComponent,
+    data: {
+      title: 'Set New Password'
+    }
+  },
+  {
     path: 'otp',
     component: OtpComponent,
     data: {

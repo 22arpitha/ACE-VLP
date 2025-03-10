@@ -6,6 +6,7 @@ import { jwtDecode } from "jwt-decode";
 import { WebsocketService } from '../../service/websocket.service';
 import { EmployeeStatusWebsocketService } from 'src/app/service/employee-status-websocket.service';
 import { UserAccessWebsocketService } from 'src/app/service/user-access-websocket.service';
+import { environment } from 'src/environments/environment';
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
@@ -71,42 +72,43 @@ export class LoginComponent implements OnInit {
     }
     else {
 
-      this.api.loginDetails(this.loginForm.value).subscribe(response => {
+      this.api.postData(`${environment.live_url}/${environment.login}/`,this.loginForm.value).subscribe(response => {
         let status = Number(200)
-      //  console.log(response, "RESPONSE CHECK")
+        console.log(response)
         const token = response['token'];
         const decoded:any = jwtDecode(token);
-      //  console.log(decoded,'decoded');
-      sessionStorage.setItem('token', response['token']),
-      sessionStorage.setItem('logged_count', response['logged_in_time']);
+        sessionStorage.setItem('token', response['token']),
+        sessionStorage.setItem('logged_count', response['logged_in_time']);
         sessionStorage.setItem('user_id',decoded.user_id )
-        this.api.userAccess(decoded.user_id).subscribe(
-          (data:any)=>{
-           console.log('user access',data)
-            sessionStorage.setItem('user_role_name', data.user_role);
-            // sessionStorage.setItem('permissionArr', JSON.stringify(data.access_list));
-            sessionStorage.setItem('organization_id', data.organization_id);
-            sessionStorage.setItem('designation', data.designation);
-              let permissionArr: any = []
-              permissionArr = JSON.parse(sessionStorage.getItem('permissionArr'));
-              if(data.access_list.length!=0){
-                this.router.navigate([data.access_list[0].url || data.access_list[0].children[0].url]);
-              } else{
-                this.router.navigate(['profile'])
-              }
-              if(sessionStorage.getItem('user_role_name')!='SuperAdmin'){
-                this.websocketService.connectWebSocket();
-              }
-              if(sessionStorage.getItem('user_role_name')==='Employee'){
-                this.employeeSocket.connectWebSocket();
-                this.useraccessSocket.connectWebSocket();
-              }
-              this.api.showSuccess('Login successful!');
-          },
-          (error:any)=>{
-           // console.log('error',error)
-          }
-        )
+        this.api.showSuccess('Login successful!'); // remove this line once the user access api  is done
+        this.router.navigate(['profile']) // remove this line once the user access api  is done
+        
+        // this.api.userAccess(decoded.user_id).subscribe(
+        //   (data:any)=>{
+        //    console.log('user access',data)
+        //     sessionStorage.setItem('user_role_name', data.user_role);
+        //     sessionStorage.setItem('organization_id', data.organization_id);
+        //     sessionStorage.setItem('designation', data.designation);
+        //       let permissionArr: any = []
+        //       permissionArr = JSON.parse(sessionStorage.getItem('permissionArr'));
+        //       if(data.access_list.length!=0){
+        //         this.router.navigate([data.access_list[0].url || data.access_list[0].children[0].url]);
+        //       } else{
+        //         this.router.navigate(['profile'])
+        //       }
+        //       if(sessionStorage.getItem('user_role_name')!='SuperAdmin'){
+        //         this.websocketService.connectWebSocket();
+        //       }
+        //       if(sessionStorage.getItem('user_role_name')==='Employee'){
+        //         this.employeeSocket.connectWebSocket();
+        //         this.useraccessSocket.connectWebSocket();
+        //       }
+        //       this.api.showSuccess('Login successful!');
+        //   },
+        //   (error:any)=>{
+        //    // console.log('error',error)
+        //   }
+        // )
 
       }, (error: any) => {
        if(error.error.message){

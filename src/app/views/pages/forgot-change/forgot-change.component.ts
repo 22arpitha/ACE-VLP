@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { PlatformLocation } from '@angular/common';
 import { ApiserviceService } from 'src/app/service/apiservice.service';
+import { environment } from 'src/environments/environment';
 @Component({
   selector: 'app-forgot-change',
   templateUrl: './forgot-change.component.html',
@@ -17,12 +18,27 @@ export class ForgotChangeComponent implements OnInit {
   eyeIcon2 = 'visibility_off'
   passwordType2 = "password";
   eyeState2: boolean = false;
-  constructor(private builder: FormBuilder, private platformLocation: PlatformLocation, private api: ApiserviceService, private router: Router) { }
+  urlIdPresent:boolean = false;
+  title:string
+  constructor(private builder: FormBuilder, private platformLocation: PlatformLocation, private api: ApiserviceService, private router: Router,
+    private activeRoute:ActivatedRoute
+  ) {
+    if(this.activeRoute.snapshot.paramMap.get('id')){
+      this.urlIdPresent = true;
+      this.title = 'Set New Password'
+      this.userId= this.activeRoute.snapshot.paramMap.get('id')
+      console.log(this.urlIdPresent,'p')
+    } else{
+      this.urlIdPresent = false;
+      this.title = ''
+      this.userId = sessionStorage.getItem('user_id')
+      console.log(this.urlIdPresent,'n')
+    }
+   }
 
   ngOnInit(): void {
-    const user_id = sessionStorage.getItem('user_id')
     this.changePassword = this.builder.group({
-      user_id: [user_id, [Validators.required]],
+      user_id: [this.userId, [Validators.required]],
       password: ['', [Validators.required, Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[$@$!%*?&])[A-Za-z\d$@$!%*?&].{7,}$/)]],
       confirm_password: ['', [Validators.required, Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[$@$!%*?&])[A-Za-z\d$@$!%*?&].{7,}$/)]]
     }, {
@@ -60,11 +76,16 @@ export class ForgotChangeComponent implements OnInit {
       console.log(this.changePassword.value)
     }
     else {
-      this.api.forgotPassword(this.changePassword.value).subscribe(
+      this.api.postData(`${environment.live_url}/${environment.set_new_password}/`,this.changePassword.value).subscribe(
         (response: any) => {
           if (response) {
-            this.api.showSuccess(response['message']);
-            this.router.navigate(['../login']);
+            if(this.urlIdPresent){
+              this.api.showSuccess('Password added successfully');
+              this.router.navigate(['../../login'])
+            } else{
+              this.api.showSuccess(response['message']);
+              this.router.navigate(['../login'])
+            }
           }
           else {
             this.api.showError(response['message']);
@@ -101,5 +122,13 @@ export class ForgotChangeComponent implements OnInit {
       this.passwordType2 = 'password'
     }
 
+  }
+
+  back(){
+    if(this.urlIdPresent){
+      this.router.navigate(['../../login'])
+    } else{
+      this.router.navigate(['../login'])
+    }
   }
 }

@@ -33,10 +33,6 @@ body {
   font-size: 15px;
 }
 
-.form-control {
-  // margin-right: 12px;
-}
-
 .form-control:focus {
   color: #495057;
   background-color: #fff;
@@ -330,70 +326,15 @@ span {
   margin-top: 20px;
 }
 
-.app-logo-content {
-  // margin-left: -10px;
-}
 
 .login-form-content {
   width: 100% !important;
 }
 
 
-
-
-.input-fieldset {
-  padding: 0px;
-  position: relative;
-  margin: 5px 0px;
-  border: 1px solid #929292;
-  height: 45px;
-}
-
-.input-fieldset:focus-within legend,
-.input-fieldset:active legend,
-.input-fieldset legend:focus {
-  position: absolute;
-  top: -10px;
-  left: 10px;
-  padding: 0 5px;
-  font-size: 12px;
-  color: #666;
-  border: none !important;
-  /* Remove border when focused */
-  outline: none !important;
-}
-
-.input-fieldset legend {
-  font-size: 16px;
-  font-weight: bold;
-  color: #666;
-  display: none;
-  background: #eaf6ff;
-  width: inherit;
-}
-
-.input-fieldset input:active+legend,
-.input-fieldset input:focus+legend {
-  display: block;
-}
-
-.input-fieldset input {
-  border: none !important;
-  outline: none !important;
-  width: 100%;
-  padding: 5px;
-  margin-bottom: 0px !important;
-  -webkit-box-shadow: none;
-  box-shadow: none;
-  background: transparent;
-  height: 45px;
-}
-
-.input-fieldset input:focus {
-  outline: none !important;
-  border: none !important;
-  -webkit-box-shadow: none;
-  box-shadow: none;
+.login-main-bg .logo-section img{
+  background-color: white;
+  border-radius: 60px;
 }
 
 .action-btn-link-content {
@@ -403,9 +344,6 @@ span {
 }
 
 @media all and (min-width: 280px) and (max-width: 767px) {
-  .login-main-bg {
-    background: #f8f8f8;
-  }
 
   .otp_fields .form-control {
     width: 35px !important;
@@ -459,9 +397,6 @@ span {
     width: 70% !important;
   }
 
-  .input-fieldset legend {
-    background: #f8f8f8 !important;
-  }
 }
 
 @media all and (min-width: 768px) and (max-width: 1023px) {
@@ -471,10 +406,6 @@ span {
 
   .app-logo-content {
     margin-left: 0px;
-  }
-
-  .input-fieldset legend {
-    background: #f8f8f8 !important;
   }
 
 }

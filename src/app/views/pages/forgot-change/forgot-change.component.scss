@@ -252,9 +252,6 @@ span {
     margin-top: 20px;
 }
 
-.app-logo-content {
-    // margin-left: 5px;
-}
 
 .login-form-content {
     width: 100% !important;
@@ -331,12 +328,13 @@ span {
     font-size: 14px;
     cursor: pointer;
 }
+.login-main-bg .logo-section img{
+    background-color: white;
+    border-radius: 60px;
+}
 
 @media all and (min-width: 280px) and (max-width: 767px) {
-    .login-main-bg {
-        background: #f8f8f8;
-    }
-
+   
     .login-content-bg {
         margin: 0px 20px;
         box-shadow: none;
@@ -402,9 +400,6 @@ span {
         text-align: center;
     }
 
-    .app-logo-content {
-        // margin-left: -10px !important;
-    }
 
     .pass-visibility {
         position: absolute;

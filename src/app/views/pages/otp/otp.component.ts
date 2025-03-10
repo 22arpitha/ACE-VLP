@@ -2,6 +2,7 @@ import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ApiserviceService } from 'src/app/service/apiservice.service';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-otp',
@@ -89,7 +90,7 @@ export class OtpComponent implements OnInit {
 
     }
     else {
-      this.api.otp(otpdata).subscribe((res: any) => {
+      this.api.postData(`${environment.live_url}/${environment.verify_otp}/`,otpdata).subscribe((res: any) => {
         if (res) {
           this.api.showSuccess(res['message'])
           sessionStorage.setItem('user_id', res['user_id'])

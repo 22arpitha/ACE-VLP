@@ -2,30 +2,17 @@ export const environment = {
   production: true,
   Razorpay_test_key:'rzp_test_GxaJhvoS78ZpIz',
   Razorpay_live_key:'rzp_test_Z6PoT6HRL71TiC',
-  // live_url: 'https://projectacedev.thestorywallcafe.com/api',
-   //media_url: 'https://projectacedev.thestorywallcafe.com/media',
+  
    
   media_url: 'https://projectacedevelop.thestorywallcafe.com',
-  live_url:'https://projectacedevelop.thestorywallcafe.com/api',
+  live_url:'https://vlp.thestorywallcafe.com/api-vlp',
   socket_url:'projectacedevelop.thestorywallcafe.com',
+
+  //  vlp
+  login:`login`,
+  forgot_password:`forgot-password`,
+  // vlp
  
-  // live_url: 'https://projectacetest.thestorywallcafe.com/api',
-  // media_url:'https://projectacetest.thestorywallcafe.com',
-  // socket_url:'projectacetest.thestorywallcafe.com',
- 
-  // live_url: 'https://app.projectace.in/api',
-  // media_url: 'https://app.projectace.in',
-  // socket_url:'app.projectace.in',
-
-  // live_url: 'https://projectaceprod.thestorywallcafe.com/api',
-  // media_url: 'https://projectaceprod.thestorywallcafe.com/media',
-
-  // live_url: 'https://projectaceuat.thestorywallcafe.com/api',
-  // media_url: 'https://projectaceuat.thestorywallcafe.com',
-  // socket_url:'projectaceuat.thestorywallcafe.com',
-
-  // live_url: 'https://projectaceprod.thestorywallcafe.com/api',
-  // media_url: 'https://projectaceprod.thestorywallcafe.com/media',
   leave_application: 'leave-application',
   timesheetCalender: 'time-sheets-calender',
   taskProjectCategories: 'task-project-categories',

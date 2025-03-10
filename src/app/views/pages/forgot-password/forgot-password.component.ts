@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ApiserviceService } from '../../../service/apiservice.service';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-forgot-password',
@@ -33,7 +34,7 @@ export class ForgotPasswordComponent implements OnInit {
     }
     else{
       this.disableButton = true;
-      this.api.ForgotPasswordDetails(this.forgotForm.value).subscribe(
+      this.api.postData(`${environment.live_url}/${environment.forgot_password}/`,this.forgotForm.value).subscribe(
         (response:any)=>{
           if(response){
             //  //console.log(response.result.details,response)
@@ -51,6 +52,7 @@ export class ForgotPasswordComponent implements OnInit {
          
         },(error  =>{
           //console.log(error,"MESSAGE")
+          this.disableButton  = false;
           this.api.showError(error.error.message)
         })
         

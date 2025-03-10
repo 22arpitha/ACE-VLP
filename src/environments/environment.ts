@@ -6,28 +6,19 @@ export const environment = {
   production: false,
   Razorpay_test_key:'rzp_test_GxaJhvoS78ZpIz',
   Razorpay_live_key:'rzp_test_Z6PoT6HRL71TiC',
-   //live_url: 'https://projectacedev.thestorywallcafe.com/api',
-  //media_url: 'https://projectacedev.thestorywallcafe.com/media',
+   
   
   media_url: 'https://projectacedevelop.thestorywallcafe.com',
-  live_url:'https://projectacedevelop.thestorywallcafe.com/api',
+  live_url:'https://vlp.thestorywallcafe.com/api-vlp',
   socket_url:'projectacedevelop.thestorywallcafe.com',
 
-  // live_url: 'https://projectacetest.thestorywallcafe.com/api',
-  // media_url:'https://projectacetest.thestorywallcafe.com',
-  // socket_url:'projectacetest.thestorywallcafe.com',
-  
-  // live_url: 'https://app.projectace.in/api',
-  // media_url: 'https://app.projectace.in',
-  // socket_url:'app.projectace.in',
+  //  vlp
+  login:`login`,
+  forgot_password:`forgot-password`,
+  verify_otp:`verify-otp`,
+  set_new_password:`set-new-password`,
+  // vlp
 
-  // live_url: 'https://projectaceuat.thestorywallcafe.com/api',
-  // media_url: 'https://projectaceuat.thestorywallcafe.com',
-  // socket_url:'projectaceuat.thestorywallcafe.com',
-  
-  // live_url: 'https://projectaceprod.thestorywallcafe.com/api',
-  // media_url: 'https://projectaceprod.thestorywallcafe.com/media',
-  
   leave_application: 'leave-application',
   timesheetCalender: 'time-sheets-calender',
   taskProjectCategories: 'task-project-categories',
@@ -88,7 +79,10 @@ export const environment = {
   my_subscription:`my-subscription`,
   cancel_my_subscription:`cancel-my-subscription`,
   plan_types:`plan-types`,
- working_hour_config: `super-admin-conf-working-hour`
+ working_hour_config: `super-admin-conf-working-hour`,
+
+
+
 };
 
 /*
