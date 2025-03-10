@@ -112,7 +112,7 @@ const routes: Routes = [
         path:'changePasswords',loadChildren:()=>import('./views/change-passwords/change-passwords.module').then(m => m.ChangePasswordsModule)
       },
       {
-        path:'settings', loadChildren:()=>import('./views/settings/settings-routing.module').then(m => m.SettingsRoutingModule)
+        path:'settings', loadChildren:()=>import('./views/settings/settings.module').then(m => m.SettingsModule)
       },
       {
         path: 'admin',
