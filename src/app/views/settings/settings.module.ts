@@ -3,15 +3,31 @@ import { CommonModule } from '@angular/common';
 
 import { SettingsRoutingModule } from './settings-routing.module';
 import { SettingsComponent } from './settings.component';
+import { FormModule } from '@coreui/angular';
+import { ReactiveFormsModule } from '@angular/forms';
+import { CountryComponent } from './country/country.component';
+import { JobTypeComponent } from './job-type/job-type.component';
+import { SourceComponent } from './source/source.component';
+import { StatusGroupComponent } from './status-group/status-group.component';
+import { JobStatusComponent } from './job-status/job-status.component';
+import { LeaveTypeComponent } from './leave-type/leave-type.component';
 
 
 @NgModule({
   declarations: [
-    SettingsComponent
+    SettingsComponent,
+    CountryComponent,
+    JobTypeComponent,
+    SourceComponent,
+    StatusGroupComponent,
+    JobStatusComponent,
+    LeaveTypeComponent
   ],
   imports: [
     CommonModule,
-    SettingsRoutingModule
+    SettingsRoutingModule,
+    FormModule,
+    ReactiveFormsModule
   ]
 })
 export class SettingsModule { }
