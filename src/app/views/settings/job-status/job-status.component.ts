@@ -47,7 +47,7 @@ export class JobStatusComponent implements OnInit {
   public initializeForm(){
       this.jobStatusForm = this.fb.group({
         status_name:['',[Validators.pattern(/^[a-zA-Z0-9]+( [a-zA-Z0-9]+)*$/),Validators.required,Validators.maxLength(20)]],
-        percentage_of_completion:[null,Validators.required],
+        percentage_of_completion:[null,[Validators.required,Validators.maxLength(3),Validators.max(100),Validators.min(0),Validators.minLength(1)]],
         status_group:[null,Validators.required],
       });
   }
@@ -85,10 +85,7 @@ export class JobStatusComponent implements OnInit {
     this.apiService.updateData(`${environment.live_url}/${environment.settings_job_status}/${this.selectedJobStatus}/`,this.jobStatusForm.value).subscribe((respData:any)=>{
       if(respData){
         this.apiService.showSuccess(respData['message']);
-        this.jobStatusForm.reset();
-        this.jobStatusForm.markAsPristine();
-          this.jobStatusForm.markAsUntouched();
-        this.isEditItem=false;
+        this.resetFormState();
         this.getAllJobStatus('?page=1&page_size=5');
       }
     },(error:any)=>{
@@ -98,10 +95,7 @@ export class JobStatusComponent implements OnInit {
     this.apiService.postData(`${environment.live_url}/${environment.settings_job_status}/`,this.jobStatusForm.value).subscribe((respData:any)=>{
   if(respData){
     this.apiService.showSuccess(respData['message']);
-    this.jobStatusForm.reset();
-    this.jobStatusForm.markAsPristine();
-    this.jobStatusForm.markAsUntouched();
-    this.isEditItem=false;
+    this.resetFormState();
     this.getAllJobStatus('?page=1&page_size=5');
   }
   
@@ -110,6 +104,18 @@ export class JobStatusComponent implements OnInit {
     });
   }
       }
+    }
+
+    public resetFormState(){
+      this.jobStatusForm.reset();
+      this.jobStatusForm.markAsPristine();
+      this.jobStatusForm.markAsUntouched();
+      // Object.keys(this.jobStatusForm.controls).forEach(key => {
+      //   const control = this.jobStatusForm.get(key);
+      //   control?.setErrors(null);  // Clear any errors on the control
+      // });
+      this.isEditItem=false;
+      this.jobStatusForm.updateValueAndValidity();
     }
   
     public sort(direction: string, column: string) {
@@ -121,7 +127,8 @@ export class JobStatusComponent implements OnInit {
       this.sortValue = column;
     }
    public  getContinuousIndex(index: number): number {
-      return (this.page - 1) * this.tableSize + index + 1;
+      
+    return (this.page - 1) * this.tableSize + index + 1;
     }
     public  onTableSizeChange(event:any): void {
       if(event){
@@ -134,7 +141,7 @@ export class JobStatusComponent implements OnInit {
       this.getAllJobStatus(query);
       }
     } 
-    confirmDelete(content:any){
+  public confirmDelete(content:any){
       if(content){
         const modelRef =   this.modalService.open(GenericDeleteComponent, {
           size: <any>'sm',
@@ -172,6 +179,7 @@ export class JobStatusComponent implements OnInit {
         this.apiService.showError(error?.error?.message)
       }))
     }
+
     public editContent(item:any){
       this.selectedJobStatus = item?.id;
       this.isEditItem = true;
@@ -186,8 +194,7 @@ export class JobStatusComponent implements OnInit {
     this.apiService.showError(error?.error?.message);
   })
     }
-  
-  public   filterSearch(event){
+  public filterSearch(event){
     const input = event?.target?.value?.trim() || ''; // Fallback to empty string if undefined
     if (input && input.length >= 2) {
       this.term = input;
@@ -198,7 +205,6 @@ export class JobStatusComponent implements OnInit {
       this.getAllJobStatus(query);
     }
   }
-
   public getStatusGroupList(){
     this.allStatusGroupList =[];
     this.apiService.getData(`${environment.live_url}/${environment.settings_status_group}/`).subscribe((respData:any)=>{
@@ -210,7 +216,8 @@ export class JobStatusComponent implements OnInit {
   }
 
   public getStatusGroupName(id:any){
-    const itemStatusGroup = this.allStatusGroupList.find((s:any)=>s?.id === id);
-return itemStatusGroup?.group_name
+  const itemStatusGroup = this.allStatusGroupList.find((s:any)=>s?.id === id);
+
+  return itemStatusGroup?.group_name
   }
 }

@@ -42,8 +42,8 @@ this.getAllJobTypes('?page=1&page_size=5');
 
 public initializeForm(){
     this.jobTypeForm = this.fb.group({
-      job_type_name:['',[Validators.pattern(/^[a-zA-Z0-9]+( [a-zA-Z0-9]+)*$/),Validators.required,Validators.maxLength(20)]],
-      job_price:[null,Validators.required],
+      job_type_name:['',[Validators.required,Validators.pattern(/^[a-zA-Z0-9]+( [a-zA-Z0-9]+)*$/),Validators.maxLength(20)]],
+      job_price:[null,[Validators.required,Validators.maxLength(10),Validators.min(0),Validators.minLength(1)]],
     });
 }
 public get f(){
@@ -80,10 +80,7 @@ if(this.isEditItem){
   this.apiService.updateData(`${environment.live_url}/${environment.settings_job_type}/${this.selectedJobtype}/`,this.jobTypeForm.value).subscribe((respData:any)=>{
     if(respData){
       this.apiService.showSuccess(respData['message']);
-      this.jobTypeForm.reset();
-      this.jobTypeForm.markAsPristine();
-      this.jobTypeForm.markAsUntouched();
-      this.isEditItem=false;
+      this.resetFormState();
       this.getAllJobTypes('?page=1&page_size=5');
     }
   },(error:any)=>{
@@ -93,10 +90,7 @@ if(this.isEditItem){
   this.apiService.postData(`${environment.live_url}/${environment.settings_job_type}/`,this.jobTypeForm.value).subscribe((respData:any)=>{
 if(respData){
   this.apiService.showSuccess(respData['message']);
-  this.jobTypeForm.reset();
-  this.jobTypeForm.markAsPristine();
-  this.jobTypeForm.markAsUntouched();
-  this.isEditItem=false;
+  this.resetFormState();
   this.getAllJobTypes('?page=1&page_size=5');
 }
 
@@ -107,6 +101,18 @@ if(respData){
     }
   }
 
+  public resetFormState(){
+    this.jobTypeForm.reset();
+    this.jobTypeForm.markAsPristine();
+    this.jobTypeForm.markAsUntouched();
+    // Object.keys(this.jobTypeForm.controls).forEach(key => {
+    //   const control = this.jobTypeForm.get(key);
+    //   control?.setErrors(null);  // Clear any errors on the control
+    // });
+    this.isEditItem=false;
+    this.jobTypeForm.updateValueAndValidity();
+  }
+
   public sort(direction: string, column: string) {
     Object.keys(this.arrowState).forEach(key => {
       this.arrowState[key] = false;
@@ -115,9 +121,12 @@ if(respData){
     this.directionValue = direction;
     this.sortValue = column;
   }
- public  getContinuousIndex(index: number): number {
-    return (this.page - 1) * this.tableSize + index + 1;
+
+  public  getContinuousIndex(index: number): number {
+    
+  return (this.page - 1) * this.tableSize + index + 1;
   }
+
   public  onTableSizeChange(event:any): void {
     if(event){
      
@@ -129,7 +138,7 @@ if(respData){
     this.getAllJobTypes(query);
     }
   } 
- confirmDelete(content:any){
+ public confirmDelete(content:any){
       if(content){
         const modelRef =   this.modalService.open(GenericDeleteComponent, {
           size: <any>'sm',
@@ -148,6 +157,7 @@ if(respData){
     
     }
   }
+
   public deleteContent(item:any){
     this.apiService.delete(`${environment.live_url}/${environment.settings_job_type}/${item?.id}/`).subscribe(async(data:any)=>{
       if(data){
@@ -165,11 +175,13 @@ if(respData){
       this.apiService.showError(error?.error?.message)
     }))
   }
+
   public editContent(item:any){
     this.selectedJobtype = item?.id;
     this.isEditItem = true;
     this.getSelectedJobType(this.selectedJobtype);
   }
+
   public getSelectedJobType(id:any){
 this.apiService.getData(`${environment.live_url}/${environment.settings_job_type}/${id}/`).subscribe((respData:any)=>{
 this.jobTypeForm.patchValue({'job_type_name':respData?.job_type_name});
@@ -179,7 +191,7 @@ this.jobTypeForm.patchValue({'job_price':respData?.job_price});
 })
   }
 
-public   filterSearch(event){
+public filterSearch(event){
   const input = event?.target?.value?.trim() || ''; // Fallback to empty string if undefined
   if (input && input.length >= 2) {
     this.term = input;

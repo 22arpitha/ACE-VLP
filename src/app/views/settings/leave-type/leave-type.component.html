@@ -2,7 +2,7 @@
     <section class="settings-form-bg">
         <div class="row mx-0 px-0">
             <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0">
-    <form [formGroup]="leaveTypeForm" (ngSubmit)="saveleaveTypeDetails()">
+    <form [formGroup]="leaveTypeForm">
         <div class="row mx-0 my-0 px-2">
             <div class="col-12 col-sm-12 col-md-6 col-lg-4 my-1 px-0">
                 <mat-form-field appearance="outline" class="w-100 custom-mat-form-field" >
@@ -14,13 +14,13 @@
                         Invalid name. Extra space and special charaters are not allowed
                       </span>
                       <span *ngIf="!f['leave_type_name'].errors?.['required'] && f['leave_type_name'].errors?.['maxlength']">
-                        Leave Type cannot exceed more than 20 characters.
+                        Leave Type cannot exceed 20 characters.
                       </span>
                     </mat-error>
                   </mat-form-field>
             </div>
-            <div class="col-12 col-sm-12 col-md-6 col-lg-3 mb-2 align-content-center">
-                    <button mat-raised-button class="proceedbtn mat-btn-s" type="submit">Submit</button>
+            <div class="col-12 col-sm-12 col-md-6 col-lg-3 align-content-center">
+                    <button mat-raised-button class="proceedbtn mat-btn-s" type="submit" (click)="saveleaveTypeDetails()"><span *ngIf="!isEditItem">Submit</span><span *ngIf="isEditItem">Update</span></button>
                         </div>
         </div>
     </form>

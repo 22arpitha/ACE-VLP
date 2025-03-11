@@ -32,21 +32,22 @@ export class LeaveTypeComponent implements OnInit {
   constructor(private fb:FormBuilder,private modalService:NgbModal,
       private common_service: CommonServiceService,private apiService:ApiserviceService) { 
     this.common_service.setTitle(this.BreadCrumbsTitle)
-
   }
 
   ngOnInit(): void {
-    this.leaveTypeForm = this.fb.group({
-      leave_type_name:['',[Validators.pattern(/^[a-zA-Z0-9]+( [a-zA-Z0-9]+)*$/),Validators.required,Validators.maxLength(20)]],
-    });
+   this.initializeForm();
     this.getAllLeaveTypes('?page=1&page_size=5');
   }
 
+  public initializeForm(){
+    this.leaveTypeForm = this.fb.group({
+      leave_type_name:['',[Validators.required,Validators.pattern(/^[a-zA-Z0-9]+( [a-zA-Z0-9]+)*$/),,Validators.maxLength(20)]],
+    });
+  }  
   public get f(){
     return this.leaveTypeForm?.controls;
   }
 
-  
 public getAllLeaveTypes(pramas:any){
   this.allleavetypeList=[];
   this.apiService.getData(`${environment.live_url}/${environment.settings_leave_type}/${pramas}`).subscribe((respData:any)=>{
@@ -69,10 +70,7 @@ public getAllLeaveTypes(pramas:any){
       this.apiService.updateData(`${environment.live_url}/${environment.settings_leave_type}/${this.selectedleavetype}/`,this.leaveTypeForm.value).subscribe((respData:any)=>{
         if(respData){
           this.apiService.showSuccess(respData['message']);
-          this.leaveTypeForm.reset();
-          this.leaveTypeForm.markAsPristine();
-          this.leaveTypeForm.markAsUntouched();
-          this.isEditItem=false;
+          this.resetFormState();
           this.getAllLeaveTypes('?page=1&page_size=5');
         }
       },(error:any)=>{
@@ -82,10 +80,7 @@ public getAllLeaveTypes(pramas:any){
       this.apiService.postData(`${environment.live_url}/${environment.settings_leave_type}/`,this.leaveTypeForm.value).subscribe((respData:any)=>{
     if(respData){
       this.apiService.showSuccess(respData['message']);
-      this.leaveTypeForm.reset();
-      this.leaveTypeForm.markAsPristine();
-      this.leaveTypeForm.markAsUntouched();
-      this.isEditItem=false;
+      this.resetFormState();
       this.getAllLeaveTypes('?page=1&page_size=5');
     }
     
@@ -96,6 +91,19 @@ public getAllLeaveTypes(pramas:any){
         }
       }
   }
+  
+  public resetFormState(){
+    this.leaveTypeForm.reset();
+    this.leaveTypeForm.markAsPristine();
+    this.leaveTypeForm.markAsUntouched();
+    // Object.keys(this.leaveTypeForm.controls).forEach(key => {
+    //   const control = this.leaveTypeForm.get(key);
+    //   control?.setErrors(null);  // Clear any errors on the control
+    // });
+    this.isEditItem=false;
+    this.leaveTypeForm.updateValueAndValidity();
+  }
+
   public sort(direction: string, column: string) {
     Object.keys(this.arrowState).forEach(key => {
       this.arrowState[key] = false;
@@ -105,7 +113,8 @@ public getAllLeaveTypes(pramas:any){
     this.sortValue = column;
   }
  public  getContinuousIndex(index: number): number {
-    return (this.page - 1) * this.tableSize + index + 1;
+  
+  return (this.page - 1) * this.tableSize + index + 1;
   }
   
 public onTableDataChange(event:any){
@@ -127,7 +136,7 @@ public onTableDataChange(event:any){
     this.getAllLeaveTypes(query);
     }
   } 
-confirmDelete(content:any){
+public confirmDelete(content:any){
       if(content){
         const modelRef =   this.modalService.open(GenericDeleteComponent, {
           size: <any>'sm',
@@ -163,20 +172,22 @@ confirmDelete(content:any){
       this.apiService.showError(error?.error?.message)
     }))
   }
+
   public editContent(item:any){
     this.selectedleavetype = item?.id;
     this.isEditItem = true;
     this.getSelectedJobType(this.selectedleavetype);
   }
+  
   public getSelectedJobType(id:any){
 this.apiService.getData(`${environment.live_url}/${environment.settings_leave_type}/${id}/`).subscribe((respData:any)=>{
-this.leaveTypeForm.patchValue({'job_type_name':respData?.job_type_name});
+this.leaveTypeForm.patchValue({'leave_type_name':respData?.leave_type_name});
 },(error:any)=>{
   this.apiService.showError(error?.error?.message);
 })
   }
 
-public   filterSearch(event){
+public filterSearch(event){
   const input = event?.target?.value?.trim() || ''; // Fallback to empty string if undefined
   if (input && input.length >= 2) {
     this.term = input;

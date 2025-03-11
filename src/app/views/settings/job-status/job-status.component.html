@@ -28,7 +28,7 @@
                         Invalid name. Extra space and special charaters are not allowed
                       </span>
                       <span *ngIf="!f['status_name'].errors?.['required'] && f['status_name'].errors?.['maxlength']">
-                        Status Name cannot exceed more than 20 characters.
+                        Status Name cannot exceed 20 characters.
                       </span>
                     </mat-error>
                   </mat-form-field>
@@ -39,11 +39,23 @@
                     <input matInput placeholder="Enter Percentage Of Completion"  formControlName="percentage_of_completion" autocomplete="off">
                     <mat-error *ngIf="f['percentage_of_completion']?.touched && f['percentage_of_completion']?.invalid">
                       <span *ngIf="f['percentage_of_completion'].errors?.['required']">Percentage Of Completion is required</span>
+                      <span *ngIf="!f['percentage_of_completion'].errors?.['required'] && f['percentage_of_completion'].errors?.['maxlength']">
+                        Percentage of completion cannot exceed 3 characters.
+                      </span>
+                      <span *ngIf="!f['percentage_of_completion'].errors?.['required'] && f['percentage_of_completion'].errors?.['max']">
+                        Percentage of completion cannot exceed 100%.
+                      </span>
+                      <span *ngIf="!f['percentage_of_completion'].errors?.['required'] && f['percentage_of_completion'].errors?.['minlength']">
+                        Percentage of completion must be at least 1 character.
+                      </span>
+                      <span *ngIf="!f['percentage_of_completion'].errors?.['required'] && f['percentage_of_completion'].errors?.['min']">
+                        Percentage of completion must be at least 0%.
+                      </span>
                     </mat-error>
                   </mat-form-field>
             </div>
            
-            <div class="col-12 col-sm-12 col-md-6 col-lg-3 mb-2 align-content-center">
+            <div class="col-12 col-sm-12 col-md-6 col-lg-3  align-content-center">
                     <button mat-raised-button class="proceedbtn mat-btn-s" type="submit" (click)="saveJobTypeDetails()"><span *ngIf="!isEditItem">Submit</span><span *ngIf="isEditItem">Update</span></button>
                         </div>
         </div>
@@ -106,7 +118,9 @@
             <app-generic-norecards></app-generic-norecards>
           </div>
     </section>
-<div class="pagination-container p-0 pt-2" *ngIf="allJobStatusList.length > 0">
+    <div class="row mx-0 my-2 px-2">
+        <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0" *ngIf="allJobStatusList.length > 0">
+<div class="pagination-container p-0 pt-2">
     <!-- Pagination Controls (Center-Aligned) -->
     <pagination-controls previousLabel="Prev" nextLabel="Next" (pageChange)="onTableDataChange($event)">
     </pagination-controls>
@@ -119,4 +133,5 @@
       </mat-select>
     </div>
   </div>
+  </div></div>
 </div>
