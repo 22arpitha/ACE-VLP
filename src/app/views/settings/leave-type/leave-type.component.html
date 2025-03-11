@@ -3,17 +3,23 @@
         <div class="row mx-0 px-0">
             <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0">
     <form [formGroup]="leaveTypeForm" (ngSubmit)="saveleaveTypeDetails()">
-        <div class="row mx-0 my-2 px-2">
-            <div class="col-12 col-sm-12 col-md-6 col-lg-4 my-2 px-0">
+        <div class="row mx-0 my-0 px-2">
+            <div class="col-12 col-sm-12 col-md-6 col-lg-4 my-1 px-0">
                 <mat-form-field appearance="outline" class="w-100 custom-mat-form-field" >
                     <mat-label>Leave Type<b class="r-star">*</b></mat-label>
-                    <input matInput placeholder="Enter Leave Type"  formControlName="leaveTypeForm" autocomplete="off">
-                    <mat-error *ngIf="f['leaveTypeForm']?.touched && f['leaveTypeForm']?.invalid">
-                      <span *ngIf="f['leaveTypeForm'].errors?.['required']">Leave Type is required</span>
+                    <input matInput placeholder="Enter Leave Type"  formControlName="leave_type_name" autocomplete="off">
+                    <mat-error *ngIf="f['leave_type_name']?.touched && f['leave_type_name']?.invalid">
+                      <span *ngIf="f['leave_type_name'].errors?.['required']">Leave Type is required</span>
+                      <span *ngIf="!f['leave_type_name'].errors?.['required'] && f['leave_type_name'].errors?.['pattern'] && !f['leave_type_name'].errors?.['maxlength']">
+                        Invalid name. Extra space and special charaters are not allowed
+                      </span>
+                      <span *ngIf="!f['leave_type_name'].errors?.['required'] && f['leave_type_name'].errors?.['maxlength']">
+                        Leave Type cannot exceed more than 20 characters.
+                      </span>
                     </mat-error>
                   </mat-form-field>
             </div>
-            <div class="col-12 col-sm-12 col-md-6 col-lg-3 mt-0 align-content-center">
+            <div class="col-12 col-sm-12 col-md-6 col-lg-3 mb-2 align-content-center">
                     <button mat-raised-button class="proceedbtn mat-btn-s" type="submit">Submit</button>
                         </div>
         </div>
@@ -21,22 +27,71 @@
             </div>
         </div>
     </section>
-    <div class="settings-table-bg">
-        <div class="row mx-0 px-0">
-            <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0">
+    <section class="settings-table-bg">
+        <div class="row mx-0 my-2 px-0">
+            <div class="col-12 col-sm-12 col-md-6 col-lg-4 search-div px-0">
+                <input type="search" class="form-control p-2 sizeinput" [(ngModel)]="term"
+                  placeholder="Search by Leave type" aria-describedby="emailHelp" autocomplete="off" (input)="filterSearch($event)">
+                <i class="bi bi-search" id="search-icon-tab"></i>
+              </div>
+        </div>
+        <div class="row mx-0 my-2 px-0 table-wrapper">
+            <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0 ">
                 <table class="table table table-hover table-list">
                     <thead>
                       <tr>
                         <th>
+                            Sl no
                       </th>
+                      <th>Leave Type
+                        <i *ngIf="!arrowState['leave_type_name']" (click)="sort('asc','leave_type_name')" class="bi bi-arrow-up"></i>
+                        <i (click)="sort('desc','leave_type_name')" *ngIf="arrowState['leave_type_name']" class="bi bi-arrow-down"></i>
+                      
+                      </th>
+                      <th>Action</th>
                       </tr></thead>
                       <tbody>
-                        <tr>
-                            <td></td>
+                        <tr *ngFor='let type of allleavetypeList | customSort:directionValue:sortValue
+                        |paginate : {
+                                 itemsPerPage: tableSize,
+                                 currentPage: page,
+                                 totalItems: count
+                               }; let i=index'>
+                            <td>{{getContinuousIndex(i)}}</td>
+                            <td>{{type.leave_type_name  || '-'}}</td>
+                            <td>
+                                <ng-container>
+                                    <img src="../../../../assets/images/Edit.svg" class="icon-image" container="body" ngbTooltip="Edit" type="button" (click)="editContent(type)" />
+                                    <img src="../../../../assets/images/Delete.svg" class="icon-image"  container="body" ngbTooltip="Delete" type="button" (click)="confirmDelete(type)"/>
+                                   
+                                </ng-container>
+                            </td>
                         </tr>
                     </tbody>
                 </table>
             </div>
+           
+        </div>
+       
+        <div *ngIf="allleavetypeList.length === 0" >
+            <app-generic-norecards></app-generic-norecards>
+          </div>
+    </section>
+    <div class="row mx-0 my-2 px-2">
+        <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0" *ngIf="allleavetypeList.length > 0">
+            <div class="pagination-container p-0 pt-2">
+                <!-- Pagination Controls (Center-Aligned) -->
+                <pagination-controls previousLabel="Prev" nextLabel="Next" (pageChange)="onTableDataChange($event)">
+                </pagination-controls>
+              
+                <!-- Items Per Page Selector (Right-Aligned) -->
+                <div class="items-per-page-container">
+                  <div>Items per page</div>
+                  <mat-select [(ngModel)]="tableSize" (selectionChange)="onTableSizeChange($event)" placeholder="10" class="page-size">
+                    <mat-option *ngFor="let size of tableSizes" [value]="size">{{size}}</mat-option>
+                  </mat-select>
+                </div>
+              </div>
         </div>
     </div>
 </div>

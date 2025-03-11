@@ -1,5 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonServiceService } from '../../../service/common-service.service';
+import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { ApiserviceService } from 'src/app/service/apiservice.service';
+import { environment } from 'src/environments/environment';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { GenericDeleteComponent } from 'src/app/generic-delete/generic-delete.component';
 
 
 @Component({
@@ -10,12 +15,202 @@ import { CommonServiceService } from '../../../service/common-service.service';
 export class JobStatusComponent implements OnInit {
   BreadCrumbsTitle: any = 'Job Status';
 
-  constructor(private common_service: CommonServiceService
-  ) {
-    this.common_service.setTitle(this.BreadCrumbsTitle)
-   }
+   isEditItem:boolean=false;
+   jobStatusForm:FormGroup;
+    selectedJobStatus:any;
+    allJobStatusList:any=[];
+    allStatusGroupList:any=[];
+    page = 1;
+    count = 0;
+    tableSize = 5;
+    tableSizes = [5, 10, 25, 50, 100];
+    currentIndex: any;
+    sortValue: string = '';
+    directionValue: string = '';
+    arrowState: { [key: string]: boolean } = {
+      status_name: false,
+    };
+    arrow: boolean = false;
+    term:any;
+    constructor(private fb:FormBuilder,private modalService:NgbModal,
+      private common_service: CommonServiceService,private apiService:ApiserviceService
+    ) {
+      this.common_service.setTitle(this.BreadCrumbsTitle);
+     }
+  
+    ngOnInit(): void {
+  this.initializeForm();
+  this.getAllJobStatus('?page=1&page_size=5');
+  this.getStatusGroupList();
+    }
+  
+  public initializeForm(){
+      this.jobStatusForm = this.fb.group({
+        status_name:['',[Validators.pattern(/^[a-zA-Z0-9]+( [a-zA-Z0-9]+)*$/),Validators.required,Validators.maxLength(20)]],
+        percentage_of_completion:[null,Validators.required],
+        status_group:[null,Validators.required],
+      });
+  }
+  public get f(){
+      return this.jobStatusForm.controls;
+  }
+  
+  public getAllJobStatus(pramas:any){
+  this.allJobStatusList=[];
+  this.apiService.getData(`${environment.live_url}/${environment.settings_job_status}/${pramas}`).subscribe((respData:any)=>{
+    this.allJobStatusList = respData.results;
+    const noOfPages:number = respData.total_pages
+    this.count  = noOfPages * this.tableSize;
+    this.page=respData.current_page;
+  },(error:any)=>{
+    this.apiService.showError(error.error.error.message);
+    
+  })
+  }
+  
+  public onTableDataChange(event:any){
+    this.page = event;
+    let query = `?page=${this.page}&page_size=${this.tableSize}`
+  if(this.term){
+    query +=`&search=${this.term}`
+  }
+  this.getAllJobStatus(query);
+  }  
+    public saveJobTypeDetails(){
+      if(this.jobStatusForm.invalid){
+        this.apiService.showError('Invalid!');
+        this.jobStatusForm.markAllAsTouched();
+      }else{
+  if(this.isEditItem){
+    this.apiService.updateData(`${environment.live_url}/${environment.settings_job_status}/${this.selectedJobStatus}/`,this.jobStatusForm.value).subscribe((respData:any)=>{
+      if(respData){
+        this.apiService.showSuccess(respData['message']);
+        this.jobStatusForm.reset();
+        this.jobStatusForm.markAsPristine();
+          this.jobStatusForm.markAsUntouched();
+        this.isEditItem=false;
+        this.getAllJobStatus('?page=1&page_size=5');
+      }
+    },(error:any)=>{
+      this.apiService.showError(error?.error?.message);
+    });
+  }else{
+    this.apiService.postData(`${environment.live_url}/${environment.settings_job_status}/`,this.jobStatusForm.value).subscribe((respData:any)=>{
+  if(respData){
+    this.apiService.showSuccess(respData['message']);
+    this.jobStatusForm.reset();
+    this.jobStatusForm.markAsPristine();
+    this.jobStatusForm.markAsUntouched();
+    this.isEditItem=false;
+    this.getAllJobStatus('?page=1&page_size=5');
+  }
+  
+    },(error:any)=>{
+      this.apiService.showError(error?.error?.message);
+    });
+  }
+      }
+    }
+  
+    public sort(direction: string, column: string) {
+      Object.keys(this.arrowState).forEach(key => {
+        this.arrowState[key] = false;
+      });
+      this.arrowState[column] = direction === 'asc';
+      this.directionValue = direction;
+      this.sortValue = column;
+    }
+   public  getContinuousIndex(index: number): number {
+      return (this.page - 1) * this.tableSize + index + 1;
+    }
+    public  onTableSizeChange(event:any): void {
+      if(event){
+       
+      this.tableSize = Number(event.value);
+      let query = `?page=${1}&page_size=${this.tableSize}`
+      if(this.term){
+        query +=`&search=${this.term}`
+      }
+      this.getAllJobStatus(query);
+      }
+    } 
+    confirmDelete(content:any){
+      if(content){
+        const modelRef =   this.modalService.open(GenericDeleteComponent, {
+          size: <any>'sm',
+          backdrop: true,
+          centered:true
+        });
+        modelRef.componentInstance.status.subscribe(resp => {
+          if(resp == "ok"){
+           this.deleteContent(content);
+           modelRef.close();
+          }
+          else{
+            modelRef.close();
+          }
+      })
+    
+    }
+  }
+    
+    public deleteContent(item){
 
-  ngOnInit(): void {
+      this.apiService.delete(`${environment.live_url}/${environment.settings_job_status}/${item?.id}/`).subscribe(async(data:any)=>{
+        if(data){
+          this.allJobStatusList = []
+          this.apiService.showWarning('Job Status deleted successfully!')
+          let query = `?page=${1}&page_size=${this.tableSize}`
+          if(this.term){
+            query +=`&search=${this.term}`
+          }
+          
+          this.getAllJobStatus(query)
+        }
+        
+      },(error =>{
+        this.apiService.showError(error?.error?.message)
+      }))
+    }
+    public editContent(item:any){
+      this.selectedJobStatus = item?.id;
+      this.isEditItem = true;
+      this.getSelectedJobstatus(this.selectedJobStatus);
+    }
+    public getSelectedJobstatus(id:any){
+  this.apiService.getData(`${environment.live_url}/${environment.settings_job_status}/${id}/`).subscribe((respData:any)=>{
+  this.jobStatusForm.patchValue({'status_name':respData?.status_name});
+  this.jobStatusForm.patchValue({'percentage_of_completion':respData?.percentage_of_completion});
+  this.jobStatusForm.patchValue({'status_group':respData?.status_group});
+  },(error:any)=>{
+    this.apiService.showError(error?.error?.message);
+  })
+    }
+  
+  public   filterSearch(event){
+    const input = event?.target?.value?.trim() || ''; // Fallback to empty string if undefined
+    if (input && input.length >= 2) {
+      this.term = input;
+      const query = `?page=${this.page}&page_size=${this.tableSize}&search=${this.term}`;
+      this.getAllJobStatus(query);
+    } if(!input) {
+      const query = `?page=${this.page}&page_size=${this.tableSize}`;
+      this.getAllJobStatus(query);
+    }
   }
 
+  public getStatusGroupList(){
+    this.allStatusGroupList =[];
+    this.apiService.getData(`${environment.live_url}/${environment.settings_status_group}/`).subscribe((respData:any)=>{
+      this.allStatusGroupList = respData;
+    },(error:any)=>{
+      this.apiService.showError(error.error.error.message);
+      
+    })
+  }
+
+  public getStatusGroupName(id:any){
+    const itemStatusGroup = this.allStatusGroupList.find((s:any)=>s?.id === id);
+return itemStatusGroup?.group_name
+  }
 }

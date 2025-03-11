@@ -581,15 +581,28 @@ input[type='search']::-webkit-search-cancel-button {
   background: #FFF8FF !important;
   box-shadow: 0 4px 12px rgb(197, 237, 254);
   border-radius: 8px;
-  padding: 20px;
-  margin: 10px 10px 0px 10px;
+  padding: 5px 20px 10px 20px;
+  margin: 5px 10px 5px 10px;
+  min-height: auto;
+  max-height: 65vh !important;
+  overflow-x: hidden;
+  overflow-y:hidden;
 }
 .settings-form-bg{
   background: #fff !important;
   overflow-y: auto !important;
   box-shadow: 0 4px 12px rgb(197, 237, 254);
   border-radius: 8px;
-  padding: 10px 20px;
-  margin: 10px 10px 0px 10px;
+  padding: 5px 20px;
+  margin: 5px 10px 0px 10px;
 }
 
+.settings-main-content{
+  height: 80vh;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.table-list > :not(caption) > * > *{
+  padding: 0.5rem 0.5rem !important;
+}

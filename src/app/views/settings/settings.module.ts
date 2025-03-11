@@ -12,6 +12,7 @@ import { StatusGroupComponent } from './status-group/status-group.component';
 import { JobStatusComponent } from './job-status/job-status.component';
 import { LeaveTypeComponent } from './leave-type/leave-type.component';
 import { SharedModule } from '../../shared/shared.module';
+import { ServicesComponent } from './services/services.component';
 
 
 @NgModule({
@@ -22,7 +23,8 @@ import { SharedModule } from '../../shared/shared.module';
     SourceComponent,
     StatusGroupComponent,
     JobStatusComponent,
-    LeaveTypeComponent
+    LeaveTypeComponent,
+    ServicesComponent
   ],
   imports: [
     CommonModule,

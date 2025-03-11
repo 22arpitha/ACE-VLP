@@ -3,6 +3,8 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CommonServiceService } from '../../../service/common-service.service';
 import { ApiserviceService } from '../../../service/apiservice.service';
 import { environment } from '../../../../environments/environment';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { GenericDeleteComponent } from 'src/app/generic-delete/generic-delete.component';
 
 @Component({
   selector: 'app-job-type',
@@ -14,31 +16,75 @@ export class JobTypeComponent implements OnInit {
   isEditItem:boolean=false;
   jobTypeForm:FormGroup;
   selectedJobtype:any;
-  constructor(private fb:FormBuilder,
+  allJobTypesList:any=[];
+  page = 1;
+  count = 0;
+  tableSize = 5;
+  tableSizes = [5, 10, 25, 50, 100];
+  currentIndex: any;
+  sortValue: string = '';
+  directionValue: string = '';
+  arrowState: { [key: string]: boolean } = {
+    job_type_name: false,
+  };
+  arrow: boolean = false;
+  term:any;
+  constructor(private fb:FormBuilder,private modalService:NgbModal,
     private common_service: CommonServiceService,private apiService:ApiserviceService
   ) {
     this.common_service.setTitle(this.BreadCrumbsTitle);
    }
 
   ngOnInit(): void {
-this.jobTypeForm = this.fb.group({
-  job_type_name:['',Validators.required],
-  job_price:[null,Validators.required],
-});
-  }
-  public get f(){
-    return this.jobTypeForm.controls;
+this.initializeForm();
+this.getAllJobTypes('?page=1&page_size=5');
   }
 
+public initializeForm(){
+    this.jobTypeForm = this.fb.group({
+      job_type_name:['',[Validators.pattern(/^[a-zA-Z0-9]+( [a-zA-Z0-9]+)*$/),Validators.required,Validators.maxLength(20)]],
+      job_price:[null,Validators.required],
+    });
+}
+public get f(){
+    return this.jobTypeForm.controls;
+}
+
+public getAllJobTypes(pramas:any){
+this.allJobTypesList=[];
+this.apiService.getData(`${environment.live_url}/${environment.settings_job_type}/${pramas}`).subscribe((respData:any)=>{
+  this.allJobTypesList = respData.results;
+  const noOfPages:number = respData.total_pages
+  this.count  = noOfPages * this.tableSize;
+  this.page=respData.current_page;
+},(error:any)=>{
+  this.apiService.showError(error.error.error.message);
+  
+})
+}
+
+public onTableDataChange(event:any){
+  this.page = event;
+    let query = `?page=${this.page}&page_size=${this.tableSize}`
+    if(this.term){
+      query +=`&search=${this.term}`
+    }
+    this.getAllJobTypes(query);
+}  
   public saveJobTypeDetails(){
     if(this.jobTypeForm.invalid){
       this.apiService.showError('Invalid!');
       this.jobTypeForm.markAllAsTouched();
     }else{
 if(this.isEditItem){
-  this.apiService.updateData(`${environment.live_url}/${environment.settings_job_type}/${this.selectedJobtype}`,this.jobTypeForm.value).subscribe((respData:any)=>{
+  this.apiService.updateData(`${environment.live_url}/${environment.settings_job_type}/${this.selectedJobtype}/`,this.jobTypeForm.value).subscribe((respData:any)=>{
     if(respData){
       this.apiService.showSuccess(respData['message']);
+      this.jobTypeForm.reset();
+      this.jobTypeForm.markAsPristine();
+      this.jobTypeForm.markAsUntouched();
+      this.isEditItem=false;
+      this.getAllJobTypes('?page=1&page_size=5');
     }
   },(error:any)=>{
     this.apiService.showError(error?.error?.message);
@@ -47,7 +93,13 @@ if(this.isEditItem){
   this.apiService.postData(`${environment.live_url}/${environment.settings_job_type}/`,this.jobTypeForm.value).subscribe((respData:any)=>{
 if(respData){
   this.apiService.showSuccess(respData['message']);
+  this.jobTypeForm.reset();
+  this.jobTypeForm.markAsPristine();
+  this.jobTypeForm.markAsUntouched();
+  this.isEditItem=false;
+  this.getAllJobTypes('?page=1&page_size=5');
 }
+
   },(error:any)=>{
     this.apiService.showError(error?.error?.message);
   });
@@ -55,4 +107,87 @@ if(respData){
     }
   }
 
+  public sort(direction: string, column: string) {
+    Object.keys(this.arrowState).forEach(key => {
+      this.arrowState[key] = false;
+    });
+    this.arrowState[column] = direction === 'asc';
+    this.directionValue = direction;
+    this.sortValue = column;
+  }
+ public  getContinuousIndex(index: number): number {
+    return (this.page - 1) * this.tableSize + index + 1;
+  }
+  public  onTableSizeChange(event:any): void {
+    if(event){
+     
+    this.tableSize = Number(event.value);
+    let query = `?page=${1}&page_size=${this.tableSize}`
+    if(this.term){
+      query +=`&search=${this.term}`
+    }
+    this.getAllJobTypes(query);
+    }
+  } 
+ confirmDelete(content:any){
+      if(content){
+        const modelRef =   this.modalService.open(GenericDeleteComponent, {
+          size: <any>'sm',
+          backdrop: true,
+          centered:true
+        });
+        modelRef.componentInstance.status.subscribe(resp => {
+          if(resp == "ok"){
+           this.deleteContent(content);
+           modelRef.close();
+          }
+          else{
+            modelRef.close();
+          }
+      })
+    
+    }
+  }
+  public deleteContent(item:any){
+    this.apiService.delete(`${environment.live_url}/${environment.settings_job_type}/${item?.id}/`).subscribe(async(data:any)=>{
+      if(data){
+        this.allJobTypesList = []
+        this.apiService.showWarning('Job Type deleted successfully!')
+        let query = `?page=${1}&page_size=${this.tableSize}`
+        if(this.term){
+          query +=`&search=${this.term}`
+        }
+        
+        this.getAllJobTypes(query)
+      }
+      
+    },(error =>{
+      this.apiService.showError(error?.error?.message)
+    }))
+  }
+  public editContent(item:any){
+    this.selectedJobtype = item?.id;
+    this.isEditItem = true;
+    this.getSelectedJobType(this.selectedJobtype);
+  }
+  public getSelectedJobType(id:any){
+this.apiService.getData(`${environment.live_url}/${environment.settings_job_type}/${id}/`).subscribe((respData:any)=>{
+this.jobTypeForm.patchValue({'job_type_name':respData?.job_type_name});
+this.jobTypeForm.patchValue({'job_price':respData?.job_price});
+},(error:any)=>{
+  this.apiService.showError(error?.error?.message);
+})
+  }
+
+public   filterSearch(event){
+  const input = event?.target?.value?.trim() || ''; // Fallback to empty string if undefined
+  if (input && input.length >= 2) {
+    this.term = input;
+    const query = `?page=${this.page}&page_size=${this.tableSize}&search=${this.term}`;
+    this.getAllJobTypes(query);
+  } if(!input) {
+    const query = `?page=${this.page}&page_size=${this.tableSize}`;
+    this.getAllJobTypes(query);
+  }
+}
 }

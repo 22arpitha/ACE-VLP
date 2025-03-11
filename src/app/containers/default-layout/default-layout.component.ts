@@ -69,8 +69,11 @@ export class DefaultLayoutComponent {
              {
             "name": "leave Type",
             "url": "/settings/leave-type"
-        }
-      
+        },
+        {
+          "name": "Services",
+          "url": "/settings/services"
+      }    
     ],
     "access": [
         {

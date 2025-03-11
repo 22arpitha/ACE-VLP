@@ -1,10 +1,7 @@
-
-
-::ng-deep .settings-form-bg .mat-form-field-wrapper{
-    padding-bottom: 0em;
+::ng-deep .mat-form-field-infix{
+    padding: 0.5em 0 !important;
+    padding-bottom: 1em !important;
 }
-@media only screen and (min-width: 280px) and (max-width: 767px)  {
-    .no-padding{
-        padding-left: 0px;
-    }
+::ng-deep .mat-form-field-wrapper{
+    padding: 15px 0 !important;
 }

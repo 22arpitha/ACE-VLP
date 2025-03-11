@@ -7,6 +7,7 @@ import { SourceComponent } from './source/source.component';
 import { StatusGroupComponent } from './status-group/status-group.component';
 import { LeaveTypeComponent } from './leave-type/leave-type.component';
 import { JobStatusComponent } from './job-status/job-status.component';
+import { ServicesComponent } from './services/services.component';
 
 
 const routes: Routes = [
@@ -37,6 +38,10 @@ const routes: Routes = [
         {
           path: 'leave-type',
           component: LeaveTypeComponent,
+        },
+        {
+          path: 'services',
+          component: ServicesComponent,
         },
       ]
     },
