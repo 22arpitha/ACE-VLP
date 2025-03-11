@@ -578,12 +578,18 @@ input[type='search']::-webkit-search-cancel-button {
 }
 // vpl
 .settings-table-bg{
-  background: #C5EDFE !important;
-  overflow-y: auto !important;
-  box-shadow: 0 4px 12px rgba(197, 237, 254, 0.6);
+  background: #FFF8FF !important;
+  box-shadow: 0 4px 12px rgb(197, 237, 254);
   border-radius: 8px;
   padding: 20px;
   margin: 10px 10px 0px 10px;
 }
-
+.settings-form-bg{
+  background: #fff !important;
+  overflow-y: auto !important;
+  box-shadow: 0 4px 12px rgb(197, 237, 254);
+  border-radius: 8px;
+  padding: 10px 20px;
+  margin: 10px 10px 0px 10px;
+}
 

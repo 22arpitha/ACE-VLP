@@ -1,9 +1,26 @@
-<div class="bg">
-    <div class="row mx-0 px-0">
-        <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0">
-
+<div class="container-wrapper px-0">
+    <section class="settings-form-bg">
+        <div class="row mx-0 px-0">
+            <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0">
+    <form [formGroup]="leaveTypeForm" (ngSubmit)="saveleaveTypeDetails()">
+        <div class="row mx-0 my-2 px-2">
+            <div class="col-12 col-sm-12 col-md-6 col-lg-4 my-2 px-0">
+                <mat-form-field appearance="outline" class="w-100 custom-mat-form-field" >
+                    <mat-label>Leave Type<b class="r-star">*</b></mat-label>
+                    <input matInput placeholder="Enter Leave Type"  formControlName="leaveTypeForm" autocomplete="off">
+                    <mat-error *ngIf="f['leaveTypeForm']?.touched && f['leaveTypeForm']?.invalid">
+                      <span *ngIf="f['leaveTypeForm'].errors?.['required']">Leave Type is required</span>
+                    </mat-error>
+                  </mat-form-field>
+            </div>
+            <div class="col-12 col-sm-12 col-md-6 col-lg-3 mt-0 align-content-center">
+                    <button mat-raised-button class="proceedbtn mat-btn-s" type="submit">Submit</button>
+                        </div>
         </div>
-    </div>
+    </form>
+            </div>
+        </div>
+    </section>
     <div class="settings-table-bg">
         <div class="row mx-0 px-0">
             <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0">
