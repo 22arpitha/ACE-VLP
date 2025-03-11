@@ -1,28 +1,107 @@
-<div class="country">
-    <div class="row">
-        <div class="col-12">
-            <form [formGroup]="countryForm">
-                <div class="row">
-                    <div class="col-sm-12 col-md-4 col-lg-3">
-                        <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
-                            <mat-label>Country Name <b class="r-star">*</b></mat-label>
-                            <input matInput placeholder="Country name"
-                                formControlName="country_name" autocomplete="off"
-                                pattern="^(?!\s)(.*\S)?$">
-                        </mat-form-field>
-                    </div>
-                    <div class="col-2 mt-2">
-                        <button type="submit" mat-raised-button class="proceedbtn" color="primary">Submit</button>
-                    </div>
-                </div>
-            </form>
-        </div>
+<div class="container-wrapper settings-main-content px-0">
+  <section class="settings-form-bg">
+    <div class="row mx-0 px-0">
+      <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0">
+        <form [formGroup]="countryForm">
+          <div class="row mx-0 my-0 px-2">
+            <div class="col-sm-12 col-md-4 col-lg-3 my-1 px-0">
+              <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+                <mat-label>Country Name <b class="r-star">*</b></mat-label>
+                <input matInput placeholder="Country name" formControlName="country_name" autocomplete="off"
+                  pattern="^(?!\s)(.*\S)?$">
+                  <mat-error *ngIf="f['country_name']?.touched && f['country_name']?.invalid">
+                    <span *ngIf="f['country_name'].errors?.['required']">Country name is required</span>
+                  </mat-error>
+              </mat-form-field>
+              <!-- <div class="px-2" *ngIf="f['country_name']?.touched && f['country_name']?.invalid">
+                <span class="text-errors"
+                *ngIf="f['country_name'].errors && f['country_name'].errors['required'] ">Country name is
+                required</span>
+              </div> -->
+            </div>
+            <div class="col-12 col-sm-12 col-md-6 col-lg-3 align-content-center">
+              <button mat-raised-button class="proceedbtn mat-btn-s" type="submit" (click)="saveCountryDetails()">
+                {{isEditItem? 'Update' : 'Submit'}}</button>
+            </div>
+          </div>
+        </form>
+      </div>
     </div>
+  </section>
 
-    <!-- table -->
-     <div class="row table-bg">
-        <div class="col px-0">
-            
-        </div>
-     </div>
+  <!-- table -->
+  <section class="settings-table-bg">
+    <div class="row mx-0 my-0 px-0 py-2">
+      <div class="col-sm-12 col-md-4 col-lg-4 search-div px-0">
+        <input type="search" (input)="filterSearch($event)" class="form-control p-2 sizeinput" [(ngModel)]="term"
+          placeholder="Search by country name" aria-describedby="emailHelp" autocomplete="off">
+        <i class="bi bi-search" id="search-icon-tab"></i>
+      </div>
+    </div>
+    <div class="row mx-0 my-2 px-0 table-wrapper">
+      <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0 ">
+        <table class="table table table-hover table-list">
+          <thead>
+            <tr>
+              <th scope="col"> S.No</th>
+              <th scope="col">Country Name
+                <i *ngIf="!arrowState['country_name']" (click)="sort('asc','country_name')"
+                  class="bi bi-arrow-up"></i>
+                <i (click)="sort('desc','country_name')" *ngIf="arrowState['country_name']"
+                  class="bi bi-arrow-down"></i>
+              </th>
+              <th scope="col">Action </th>
+            </tr>
+          </thead>
+          <tbody>
+
+            <ng-container *ngIf="(allCountry) as result">
+              <tr *ngFor='let item of result | customSort:directionValue:sortValue
+                         |paginate : {
+                                  itemsPerPage: tableSize,
+                                  currentPage: page,
+                                  totalItems: count
+                                }; let i=index'>
+                <td>{{getContinuousIndex(i)}}</td>
+                <td>{{item.country_name|titlecase }}</td>
+                <td>
+                  <ng-container>
+                    <img src="../../../../assets/images/Edit.svg" class="icon-image" type="button"
+                      container="body" ngbTooltip="Edit" (click)="edit(item)"/>
+                    <img src="../../../../assets/images/Delete.svg" class="icon-image" type="button" container="body"
+                      ngbTooltip="Delete" (click)="delete(item.id)"/>
+                    <!-- (click)="open(item.id)" -->
+                    <!-- <span  *ngIf="userRole ==='Employee' && !accessPermissions[0]?.update && !accessPermissions[0]?.delete">-</span> -->
+                    <!-- *ngIf="userRole ==='Employee' && accessPermissions[0]?.delete || userRole === 'Admin'" -->
+                    <!-- *ngIf="userRole ==='Employee' && accessPermissions[0]?.update || userRole === 'Admin'" -->
+                  </ng-container>
+                </td>
+
+              </tr>
+
+            </ng-container>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="col-12" *ngIf="allCountry.length === 0">
+      <app-generic-norecards></app-generic-norecards>
+    </div>
+  </section>
+  <div class="row mx-0 my-2 px-2">
+    <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0" *ngIf="allCountry.length > 0">
+    <div class="pagination-container p-0 pt-2">
+      <pagination-controls previousLabel="Prev" nextLabel="Next" (pageChange)="onTableDataChange($event)">
+      </pagination-controls>
+      <div class="items-per-page-container">
+        <div>Items per page</div>
+        <mat-select [(ngModel)]="tableSize" (selectionChange)="onTableSizeChange($event)" placeholder="10"
+          class="page-size">
+          <mat-option *ngFor="let size of tableSizes" [value]="size">{{size}}</mat-option>
+        </mat-select>
+      </div>
+    </div>
+    </div>
+  </div>
+  
 </div>

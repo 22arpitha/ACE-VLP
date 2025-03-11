@@ -2,7 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Location } from '@angular/common';
-import { ApiserviceService } from 'src/app/service/apiservice.service';
+import { ApiserviceService } from '../../../service/apiservice.service';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-change-password',
@@ -77,7 +78,7 @@ export class ChangePasswordComponent implements OnInit {
       }
       else {
         console.log(this.changePassword.value)
-        this.api.addChangePassword(this.changePassword.value).subscribe(
+        this.api.postData(`${environment.live_url}/${environment.set_new_password}/`,this.changePassword.value).subscribe(
           (response: any) => {
             if (response) {
               //console.log(response)

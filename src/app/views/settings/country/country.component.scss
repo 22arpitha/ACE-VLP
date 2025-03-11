@@ -1,6 +1,7 @@
-.country{
-    padding: 20px;
+::ng-deep .mat-form-field-infix{
+    padding: 0.5em 0 !important;
+    padding-bottom: 1em !important;
 }
-.country .table-bg{
-    background: #EFF8FF;
+::ng-deep .mat-form-field-wrapper{
+    padding: 15px 0 !important;
 }

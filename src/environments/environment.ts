@@ -17,6 +17,7 @@ export const environment = {
   forgot_password:`forgot-password`,
   verify_otp:`verify-otp`,
   set_new_password:`set-new-password`,
+  change_password:`change-password`,
   // vlp settings
 settings_country: `country`,
 settings_source: `source`,
@@ -24,6 +25,9 @@ settings_status_group: `status-group`,
 settings_leave_type: `leave-type`,
 settings_job_status: `job-status`,
 settings_job_type: `job-type`,
+
+
+// project ace 
   leave_application: 'leave-application',
   timesheetCalender: 'time-sheets-calender',
   taskProjectCategories: 'task-project-categories',
