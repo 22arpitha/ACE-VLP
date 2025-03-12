@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, FormGroupDirective, Validators } from '@angular/forms';
 import { CommonServiceService } from '../../../service/common-service.service';
 import { ApiserviceService } from '../../../service/apiservice.service';
@@ -13,7 +13,7 @@ import { GenericEditComponent } from 'src/app/generic-edit/generic-edit.componen
   styleUrls: ['./job-type.component.scss']
 })
 export class JobTypeComponent implements OnInit {
-    @ViewChild(FormGroupDirective) formGroupDirective!: FormGroupDirective;
+  @ViewChild(FormGroupDirective) formGroupDirective!: FormGroupDirective;
   
   BreadCrumbsTitle: any = 'Job Type';
   isEditItem:boolean=false;
@@ -216,8 +216,5 @@ public filterSearch(event){
     this.getAllJobTypes(query);
   }
 }
-}
-function ViewChild(FormGroupDirective: any): (target: JobTypeComponent, propertyKey: "formGroupDirective") => void {
-  throw new Error('Function not implemented.');
 }
 

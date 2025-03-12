@@ -25,6 +25,7 @@ settings_status_group: `status-group`,
 settings_leave_type: `leave-type`,
 settings_job_status: `job-status`,
 settings_job_type: `job-type`,
+settings_service: `service`,
 
 
 // project ace 

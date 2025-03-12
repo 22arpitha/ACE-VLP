@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { CommonServiceService } from '../../../service/common-service.service';
 import { FormGroup, FormBuilder, Validators, FormGroupDirective } from '@angular/forms';
 import { ApiserviceService } from 'src/app/service/apiservice.service';
@@ -231,8 +231,5 @@ export class JobStatusComponent implements OnInit {
 
   return itemStatusGroup?.group_name
   }
-}
-function ViewChild(FormGroupDirective: any): (target: JobStatusComponent, propertyKey: "formGroupDirective") => void {
-  throw new Error('Function not implemented.');
 }
 

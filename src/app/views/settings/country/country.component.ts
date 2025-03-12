@@ -1,6 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { CommonServiceService } from '../../../service/common-service.service';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, FormGroupDirective, Validators } from '@angular/forms';
 import { ApiserviceService } from '../../../service/apiservice.service';
 import { environment } from '../../../../environments/environment';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -13,6 +13,7 @@ import { GenericEditComponent } from 'src/app/generic-edit/generic-edit.componen
   styleUrls: ['./country.component.scss']
 })
 export class CountryComponent implements OnInit {
+  @ViewChild(FormGroupDirective) formGroupDirective!: FormGroupDirective;
   BreadCrumbsTitle: any = 'Country';
   countryForm: FormGroup;
   isEditItem:boolean=false;
@@ -128,7 +129,7 @@ export class CountryComponent implements OnInit {
         this.api.updateData(`${environment.live_url}/${environment.settings_country}/${this.selectedItemId}/`, this.countryForm.value).subscribe((respData: any) => {
           if (respData) {
             this.api.showSuccess(respData['message']);
-            this.reset();
+            this.resetFormState();
           }
         }, (error: any) => {
           this.api.showError(error?.error?.message);
@@ -137,7 +138,7 @@ export class CountryComponent implements OnInit {
         this.api.postData(`${environment.live_url}/${environment.settings_country}/`, this.countryForm.value).subscribe((respData: any) => {
           if (respData) {
             this.api.showSuccess(respData['message']);
-            this.reset();
+            this.resetFormState();
           }
         }, (error: any) => {
           this.api.showError(error?.error?.message);
@@ -145,7 +146,10 @@ export class CountryComponent implements OnInit {
       }
     }
   }
-
+  public resetFormState(){
+    this.formGroupDirective.resetForm();
+    this.isEditItem=false;
+  }
   async edit(item:any){
     this.selectedItemId = item?.id;
     this.isEditItem = true;
@@ -215,10 +219,7 @@ export class CountryComponent implements OnInit {
   }
 
   reset(){
-    this.countryForm.reset();
-    this.isEditItem=false;
-    this.countryForm.markAsPristine();
-    this.countryForm.markAsUntouched();
+    this.resetFormState();
     this.getAllCountryList(`?page=${1}&page_size=${5}`);
   }
 }
