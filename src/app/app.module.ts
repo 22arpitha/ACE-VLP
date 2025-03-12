@@ -78,6 +78,7 @@ import { UserWelcomeMsgComponent } from './views/user-welcome-msg/user-welcome-m
 import { RazorpayService } from './service/razorpay.service';
 import { UseraccessInfoPopupComponent } from './views/useraccess-info-popup/useraccess-info-popup.component';
 
+
 const APP_CONTAINERS = [
   DefaultFooterComponent,
   DefaultHeaderComponent,

@@ -40,9 +40,13 @@ thead th {
   }
    
   .table-list > :not(caption) > * > *{
-    padding: 0.5rem 0.5rem !important;
+    padding: 0.6rem 0.6rem !important;
   }
-
+  .icon-image{
+    cursor: pointer;
+    height: 27px;
+    margin: 0 5px;
+}
 @media only screen and (min-width: 280px) and (max-width: 767px)  {
     .no-padding{
         padding-left: 0px;

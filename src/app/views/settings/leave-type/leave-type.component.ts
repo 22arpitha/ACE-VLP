@@ -5,6 +5,7 @@ import { ApiserviceService } from 'src/app/service/apiservice.service';
 import { environment } from 'src/environments/environment';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { GenericDeleteComponent } from 'src/app/generic-delete/generic-delete.component';
+import { GenericEditComponent } from 'src/app/generic-edit/generic-edit.component';
 
 @Component({
   selector: 'app-leave-type',
@@ -173,10 +174,27 @@ public confirmDelete(content:any){
     }))
   }
 
-  public editContent(item:any){
-    this.selectedleavetype = item?.id;
-    this.isEditItem = true;
-    this.getSelectedJobType(this.selectedleavetype);
+   async editContent(item:any){
+    try {
+                        const modalRef = await this.modalService.open(GenericEditComponent, {
+                          size: 'sm',
+                          backdrop: 'static',
+                          centered: true
+                        });
+                  
+                        modalRef.componentInstance.status.subscribe(resp => {
+                          if (resp === 'ok') {
+                            this.selectedleavetype = item?.id;
+                            this.isEditItem = true;
+                            modalRef.dismiss();
+                            this.getSelectedJobType(this.selectedleavetype);
+                          } else {
+                            modalRef.dismiss();
+                          }
+                        });
+                      } catch (error) {
+                        console.error('Error opening modal:', error);
+                      }
   }
   
   public getSelectedJobType(id:any){

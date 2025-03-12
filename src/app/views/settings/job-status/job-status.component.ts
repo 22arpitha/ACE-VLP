@@ -5,6 +5,7 @@ import { ApiserviceService } from 'src/app/service/apiservice.service';
 import { environment } from 'src/environments/environment';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { GenericDeleteComponent } from 'src/app/generic-delete/generic-delete.component';
+import { GenericEditComponent } from 'src/app/generic-edit/generic-edit.component';
 
 
 @Component({
@@ -180,10 +181,27 @@ export class JobStatusComponent implements OnInit {
       }))
     }
 
-    public editContent(item:any){
-      this.selectedJobStatus = item?.id;
-      this.isEditItem = true;
-      this.getSelectedJobstatus(this.selectedJobStatus);
+     async editContent(item:any){
+       try {
+                const modalRef = await this.modalService.open(GenericEditComponent, {
+                  size: 'sm',
+                  backdrop: 'static',
+                  centered: true
+                });
+          
+                modalRef.componentInstance.status.subscribe(resp => {
+                  if (resp === 'ok') {
+                    this.selectedJobStatus = item?.id;
+                    this.isEditItem = true;
+                    modalRef.dismiss();
+                    this.getSelectedJobstatus(this.selectedJobStatus);
+                  } else {
+                    modalRef.dismiss();
+                  }
+                });
+              } catch (error) {
+                console.error('Error opening modal:', error);
+              }
     }
     public getSelectedJobstatus(id:any){
   this.apiService.getData(`${environment.live_url}/${environment.settings_job_status}/${id}/`).subscribe((respData:any)=>{

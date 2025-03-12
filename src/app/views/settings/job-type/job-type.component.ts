@@ -5,6 +5,7 @@ import { ApiserviceService } from '../../../service/apiservice.service';
 import { environment } from '../../../../environments/environment';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { GenericDeleteComponent } from 'src/app/generic-delete/generic-delete.component';
+import { GenericEditComponent } from 'src/app/generic-edit/generic-edit.component';
 
 @Component({
   selector: 'app-job-type',
@@ -176,10 +177,28 @@ if(respData){
     }))
   }
 
-  public editContent(item:any){
-    this.selectedJobtype = item?.id;
-    this.isEditItem = true;
-    this.getSelectedJobType(this.selectedJobtype);
+   async editContent(item:any){
+     try {
+                    const modalRef = await this.modalService.open(GenericEditComponent, {
+                      size: 'sm',
+                      backdrop: 'static',
+                      centered: true
+                    });
+              
+                    modalRef.componentInstance.status.subscribe(resp => {
+                      if (resp === 'ok') {
+                        this.selectedJobtype = item?.id;
+                        this.isEditItem = true;
+                        modalRef.dismiss();
+                        this.getSelectedJobType(this.selectedJobtype);
+                      } else {
+                        modalRef.dismiss();
+                      }
+                    });
+                  } catch (error) {
+                    console.error('Error opening modal:', error);
+                  }
+    
   }
 
   public getSelectedJobType(id:any){

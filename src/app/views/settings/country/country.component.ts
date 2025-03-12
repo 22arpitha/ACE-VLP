@@ -5,6 +5,7 @@ import { ApiserviceService } from '../../../service/apiservice.service';
 import { environment } from '../../../../environments/environment';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { GenericDeleteComponent } from 'src/app/generic-delete/generic-delete.component';
+import { GenericEditComponent } from 'src/app/generic-edit/generic-edit.component';
 
 @Component({
   selector: 'app-country',
@@ -145,10 +146,27 @@ export class CountryComponent implements OnInit {
     }
   }
 
-  edit(item:any){
+  async edit(item:any){
     this.selectedItemId = item?.id;
     this.isEditItem = true;
-    this.getSelectedItemData(this.selectedItemId)
+    try {
+          const modalRef = await this.modalService.open(GenericEditComponent, {
+            size: 'sm',
+            backdrop: 'static',
+            centered: true
+          });
+    
+          modalRef.componentInstance.status.subscribe(resp => {
+            if (resp === 'ok') {
+              modalRef.dismiss();
+              this.getSelectedItemData(this.selectedItemId)
+            } else {
+              modalRef.dismiss();
+            }
+          });
+        } catch (error) {
+          console.error('Error opening modal:', error);
+        }
   }
 
   getSelectedItemData(id:any){
