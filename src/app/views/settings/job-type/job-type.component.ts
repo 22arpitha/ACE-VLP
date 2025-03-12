@@ -158,7 +158,7 @@ export class JobTypeComponent implements OnInit {
     this.apiService.delete(`${environment.live_url}/${environment.settings_job_type}/${item?.id}/`).subscribe(async (data: any) => {
       if (data) {
         this.allJobTypesList = []
-        this.apiService.showWarning('Job Type deleted successfully!')
+        this.apiService.showSuccess(data.message);
         let query = `?page=${1}&page_size=${this.tableSize}`
         if (this.term) {
           query += `&search=${this.term}`

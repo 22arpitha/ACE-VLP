@@ -8,6 +8,8 @@ import { StatusGroupComponent } from './status-group/status-group.component';
 import { LeaveTypeComponent } from './leave-type/leave-type.component';
 import { JobStatusComponent } from './job-status/job-status.component';
 import { ServicesComponent } from './services/services.component';
+import { AllEmployeeComponent } from '../employee/all-employee/all-employee.component';
+import { CreateUpdateEmployeeComponent } from '../employee/create-update-employee/create-update-employee.component';
 
 
 const routes: Routes = [
@@ -42,6 +44,18 @@ const routes: Routes = [
         {
           path: 'services',
           component: ServicesComponent,
+        },
+        {
+          path: 'all-employee',
+          component: AllEmployeeComponent,
+        },
+        {
+          path: 'create-employee',
+          component: CreateUpdateEmployeeComponent,
+        },
+        {
+          path: 'update-employee:id',
+          component: CreateUpdateEmployeeComponent,
         },
       ]
     },
