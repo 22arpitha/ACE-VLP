@@ -20,6 +20,7 @@ import { NoInternetComponent } from './views/pages/no-internet/no-internet.compo
 import { Page504Component } from './views/pages/page504/page504.component';
 import { Page503Component } from './views/pages/page503/page503.component';
 import { TimesheetConfiguartionComponent } from './views/organization/timesheet-configuartion/timesheet-configuartion.component';
+import { TemplatesComponent } from './views/templates/templates.component';
 
 
 
@@ -124,6 +125,9 @@ const routes: Routes = [
       },
       {
         path:'working-hour-configuration',component:TimesheetConfiguartionComponent
+      },
+      {
+        path:'templates',component:TemplatesComponent
       },
       {
         path: 'pages',

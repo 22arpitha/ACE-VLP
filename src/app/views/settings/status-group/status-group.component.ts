@@ -156,7 +156,7 @@ export class StatusGroupComponent implements OnInit {
     this.apiService.delete(`${environment.live_url}/${environment.settings_status_group}/${item?.id}/`).subscribe(async (data: any) => {
       if (data) {
         this.allStatusGroupList = []
-        this.apiService.showWarning('Source deleted successfully!')
+        this.apiService.showSuccess(data.message);
         let query = `?page=${1}&page_size=${this.tableSize}`
         if (this.term) {
           query += `&search=${this.term}`

@@ -157,7 +157,7 @@ export class SourceComponent implements OnInit {
     this.apiService.delete(`${environment.live_url}/${environment.settings_source}/${item?.id}/`).subscribe(async (data: any) => {
       if (data) {
         this.allSourceList = []
-        this.apiService.showWarning('Source deleted successfully!')
+        this.apiService.showSuccess(data.message);
         let query = `?page=${1}&page_size=${this.tableSize}`
         if (this.term) {
           query += `&search=${this.term}`

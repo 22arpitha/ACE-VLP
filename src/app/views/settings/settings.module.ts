@@ -13,6 +13,8 @@ import { JobStatusComponent } from './job-status/job-status.component';
 import { LeaveTypeComponent } from './leave-type/leave-type.component';
 import { SharedModule } from '../../shared/shared.module';
 import { ServicesComponent } from './services/services.component';
+import { EmployeeModule } from '../employee/employee.module';
+import { AllEmployeeComponent } from '../employee/all-employee/all-employee.component';
 
 
 @NgModule({
@@ -24,14 +26,15 @@ import { ServicesComponent } from './services/services.component';
     StatusGroupComponent,
     JobStatusComponent,
     LeaveTypeComponent,
-    ServicesComponent
+    ServicesComponent,
   ],
   imports: [
     CommonModule,
     SettingsRoutingModule,
     FormModule,
     ReactiveFormsModule,
-    SharedModule
+    SharedModule,
+    EmployeeModule
   ]
 })
 export class SettingsModule { }

@@ -154,7 +154,7 @@ public confirmDelete(content:any){
     this.apiService.delete(`${environment.live_url}/${environment.settings_service}/${item?.id}/`).subscribe(async(data:any)=>{
       if(data){
         this.allServiceList = []
-        this.apiService.showWarning('leave Type deleted successfully!')
+        this.apiService.showSuccess(data.message);
         let query = `?page=${1}&page_size=${this.tableSize}`
         if(this.term){
           query +=`&search=${this.term}`

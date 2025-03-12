@@ -41,11 +41,55 @@ export class DefaultLayoutComponent {
   admin: any;
   permission: any;
   sidebarNavItems: any;
-  sidebarNavItemsStatic:any=[{
+  sidebarNavItemsStatic:any=[
+    {
+      "name": "Templates",
+      "icon": "bi bi-check-circle",
+      "is_show": true,
+      "url": '/templates',
+      "access": [
+          {
+              "name": "Templates",
+              "operations": [
+                  {
+                      "view": false,
+                      "create": false,
+                      "delete": false,
+                      "update": false
+                  }
+              ]
+          }
+      ]
+    },
+    {
+      "name": "Componay Policy",
+      "icon": "bi bi-check-circle",
+      "is_show": true,
+      "access": [
+          {
+              "name": "Componay Policy",
+              "operations": [
+                  {
+                      "view": false,
+                      "create": false,
+                      "delete": false,
+                      "update": false
+                  }
+              ]
+          }
+      ]
+    },{
     "name": "Settings",
-    "icon": "bi bi-patch-check",
+    "icon": "bi bi-sliders2",
     "is_show": true,
     "children": [
+      {
+        "name": "Services",
+        "url": "/settings/services"
+    }, {
+      "name": "Empolyee",
+      "url": "/settings/all-employee"
+  },
         {
             "name": "Country",
             "url": "/settings/country"
@@ -70,10 +114,6 @@ export class DefaultLayoutComponent {
             "name": "leave Type",
             "url": "/settings/leave-type"
         },
-        {
-          "name": "Services",
-          "url": "/settings/services"
-      }    
     ],
     "access": [
         {
