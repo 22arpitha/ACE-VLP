@@ -54,7 +54,7 @@ export class OtpComponent implements OnInit {
     let data = {
       email: sessionStorage.getItem('email_id')
     }
-    this.api.ForgotPasswordDetails(data).subscribe(
+    this.api.postData(`${environment.live_url}/${environment.forgot_password}/`,data).subscribe(
       (response: any) => {
         if (response) {
           //  //console.log(response.result.details,response)

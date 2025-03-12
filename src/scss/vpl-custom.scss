@@ -47,6 +47,14 @@ thead th {
     height: 27px;
     margin: 0 5px;
 }
+.cancel-button{
+  margin-right: 15px !important;
+  background-color: aliceblue;
+}
+.disabled-section {
+  pointer-events: none;
+  opacity: 0.6; /* Optional: makes it visually clear that it's disabled */
+}
 @media only screen and (min-width: 280px) and (max-width: 767px)  {
     .no-padding{
         padding-left: 0px;

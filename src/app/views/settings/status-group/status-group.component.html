@@ -1,97 +1,106 @@
 <div class="container-wrapper settings-main-content px-0">
-    <section class="settings-form-bg">
-        <div class="row mx-0 px-0">
-            <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0">
-    <form [formGroup]="statusGroupForm">
-        <div class="row mx-0 my-0 px-2">
+  <section class="settings-form-bg">
+    <div class="row mx-0 px-0">
+      <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0">
+        <form [formGroup]="statusGroupForm">
+          <div class="row mx-0 my-0 px-2">
             <div class="col-12 col-sm-12 col-md-6 col-lg-4 my-1 px-0">
-                <mat-form-field appearance="outline" class="w-100 custom-mat-form-field" >
-                    <mat-label>Status Group<b class="r-star">*</b></mat-label>
-                    <input matInput placeholder="Enter Status Group"  formControlName="group_name" autocomplete="off">
-                    <mat-error *ngIf="f['group_name']?.invalid && f['group_name']?.touched || f['group_name']?.dirty">
-                      <span *ngIf="f['group_name'].errors?.['required']">Status Group is required</span>
-                      <span *ngIf="!f['group_name'].errors?.['required'] && f['group_name'].errors?.['pattern'] && !f['group_name'].errors?.['maxlength']">
-                        Invalid name. Extra space and special charaters are not allowed
-                      </span>
-                      <span *ngIf="!f['group_name'].errors?.['required'] && f['group_name'].errors?.['maxlength']">
-                        Status Group cannot exceed 20 characters.
-                      </span>
-                    </mat-error>
-                  </mat-form-field>
+              <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+                <mat-label>Status Group<b class="r-star">*</b></mat-label>
+                <input matInput placeholder="Enter Status Group" formControlName="group_name" autocomplete="off">
+                <mat-error *ngIf="f['group_name']?.invalid && f['group_name']?.touched || f['group_name']?.dirty">
+                  <span *ngIf="f['group_name'].errors?.['required']">Status Group is required</span>
+                  <span
+                    *ngIf="!f['group_name'].errors?.['required'] && f['group_name'].errors?.['pattern'] && !f['group_name'].errors?.['maxlength']">
+                    Invalid name. Extra space and special charaters are not allowed
+                  </span>
+                  <span *ngIf="!f['group_name'].errors?.['required'] && f['group_name'].errors?.['maxlength']">
+                    Status Group cannot exceed 20 characters.
+                  </span>
+                </mat-error>
+              </mat-form-field>
             </div>
             <div class="col-12 col-sm-12 col-md-6 col-lg-3 align-content-center">
-                    <button mat-raised-button class="proceedbtn mat-btn-s" type="submit" (click)="saveStatusGroupDetails()"><span *ngIf="!isEditItem">Submit</span><span *ngIf="isEditItem">Update</span></button>
-                        </div>
-        </div>
-    </form>
+              <button mat-raised-button class="cancel-button mat-btn-s" type="button" (click)="resetFormState()">
+                Cancel</button>
+              <button mat-raised-button class="proceedbtn mat-btn-s" type="submit"
+                (click)="saveStatusGroupDetails()"><span *ngIf="!isEditItem">Submit</span><span
+                  *ngIf="isEditItem">Update</span></button>
             </div>
-        </div>
-    </section>
-    <section class="settings-table-bg">
-        <div class="row mx-0 my-2 px-0">
-            <div class="col-12 col-sm-12 col-md-6 col-lg-4 search-div px-0">
-                <input type="search" class="form-control p-2 sizeinput" [(ngModel)]="term"
-                  placeholder="Search by Status Group" aria-describedby="emailHelp" autocomplete="off" (input)="filterSearch($event)">
-                <i class="bi bi-search" id="search-icon-tab"></i>
-              </div>
-        </div>
-        <div class="row mx-0 my-2 px-0 table-wrapper">
-            <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0 ">
-                <table class="table table table-hover table-list">
-                    <thead>
-                      <tr>
-                        <th>
-                            Sl no
-                      </th>
-                      <th>Status Group
-                        <i *ngIf="!arrowState['group_name']" (click)="sort('asc','group_name')" class="bi bi-arrow-up"></i>
-                        <i (click)="sort('desc','group_name')" *ngIf="arrowState['group_name']" class="bi bi-arrow-down"></i>
-                      
-                      </th>
-                      <th>Action</th>
-                      </tr></thead>
-                      <tbody>
-                        <tr *ngFor='let type of allStatusGroupList | customSort:directionValue:sortValue
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+  <section class="settings-table-bg" [ngClass]="{'disabled-section': isEditItem}">
+    <div class="row mx-0 my-2 px-0">
+      <div class="col-12 col-sm-12 col-md-6 col-lg-4 search-div px-0">
+        <input type="search" class="form-control p-2 sizeinput" [(ngModel)]="term" placeholder="Search by Status Group"
+          aria-describedby="emailHelp" autocomplete="off" (input)="filterSearch($event)">
+        <i class="bi bi-search" id="search-icon-tab"></i>
+      </div>
+    </div>
+    <div class="row mx-0 my-2 px-0 table-wrapper">
+      <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0 ">
+        <table class="table table table-hover table-list">
+          <thead>
+            <tr>
+              <th>
+                Sl no
+              </th>
+              <th>Status Group
+                <i *ngIf="!arrowState['group_name']" (click)="sort('asc','group_name')" class="bi bi-arrow-up"></i>
+                <i (click)="sort('desc','group_name')" *ngIf="arrowState['group_name']" class="bi bi-arrow-down"></i>
+
+              </th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor='let type of allStatusGroupList | customSort:directionValue:sortValue
                         |paginate : {
                                  itemsPerPage: tableSize,
                                  currentPage: page,
                                  totalItems: count
                                }; let i=index'>
-                            <td>{{getContinuousIndex(i)}}</td>
-                            <td>{{type.group_name  || '-'}}</td>
-                            <td>
-                                <ng-container>
-                                    <img src="../../../../assets/images/Edit.svg" class="icon-image" container="body" ngbTooltip="Edit" type="button" (click)="editContent(type)" />
-                                    <img src="../../../../assets/images/Delete.svg" class="icon-image"  container="body" ngbTooltip="Delete" type="button" (click)="confirmDelete(type)"/>
-                                   
-                                </ng-container>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-           
-        </div>
-       
-        <div *ngIf="allStatusGroupList.length === 0" >
-            <app-generic-norecards></app-generic-norecards>
-          </div>
-    </section>
-    <div class="row mx-0 my-2 px-2">
-        <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0" *ngIf="allStatusGroupList.length > 0">
-            <div class="pagination-container p-0 pt-2">
-                <!-- Pagination Controls (Center-Aligned) -->
-                <pagination-controls previousLabel="Prev" nextLabel="Next" (pageChange)="onTableDataChange($event)">
-                </pagination-controls>
-              
-                <!-- Items Per Page Selector (Right-Aligned) -->
-                <div class="items-per-page-container">
-                  <div>Items per page</div>
-                  <mat-select [(ngModel)]="tableSize" (selectionChange)="onTableSizeChange($event)" placeholder="10" class="page-size">
-                    <mat-option *ngFor="let size of tableSizes" [value]="size">{{size}}</mat-option>
-                  </mat-select>
-                </div>
-              </div>
-        </div>
+              <td>{{getContinuousIndex(i)}}</td>
+              <td>{{type.group_name || '-'}}</td>
+              <td>
+                <ng-container>
+                  <img src="../../../../assets/images/Edit.svg" class="icon-image" container="body" ngbTooltip="Edit"
+                    type="button" (click)="editContent(type)" />
+                  <img src="../../../../assets/images/Delete.svg" class="icon-image" container="body"
+                    ngbTooltip="Delete" type="button" (click)="confirmDelete(type)" />
+
+                </ng-container>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
     </div>
+
+    <div *ngIf="allStatusGroupList.length === 0">
+      <app-generic-norecards></app-generic-norecards>
+    </div>
+  </section>
+  <div class="row mx-0 my-2 px-2" [ngClass]="{'disabled-section': isEditItem}">
+    <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0" *ngIf="allStatusGroupList.length > 0">
+      <div class="pagination-container p-0 pt-2">
+        <!-- Pagination Controls (Center-Aligned) -->
+        <pagination-controls previousLabel="Prev" nextLabel="Next" (pageChange)="onTableDataChange($event)">
+        </pagination-controls>
+
+        <!-- Items Per Page Selector (Right-Aligned) -->
+        <div class="items-per-page-container">
+          <div>Items per page</div>
+          <mat-select [(ngModel)]="tableSize" (selectionChange)="onTableSizeChange($event)" placeholder="10"
+            class="page-size">
+            <mat-option *ngFor="let size of tableSizes" [value]="size">{{size}}</mat-option>
+          </mat-select>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>

@@ -16,8 +16,8 @@ export class CountryComponent implements OnInit {
   @ViewChild(FormGroupDirective) formGroupDirective!: FormGroupDirective;
   BreadCrumbsTitle: any = 'Country';
   countryForm: FormGroup;
-  isEditItem:boolean=false;
-  selectedItemId:any
+  isEditItem: boolean = false;
+  selectedItemId: any
   allCountry = []
   sortValue: string = '';
   directionValue: string = '';
@@ -34,7 +34,7 @@ export class CountryComponent implements OnInit {
 
   constructor(
     private common_service: CommonServiceService, private fb: FormBuilder, private api: ApiserviceService,
-    private modalService:NgbModal,
+    private modalService: NgbModal,
   ) { }
 
   ngOnInit(): void {
@@ -130,6 +130,7 @@ export class CountryComponent implements OnInit {
           if (respData) {
             this.api.showSuccess(respData['message']);
             this.resetFormState();
+            this.getAllCountryList('?page=1&page_size=5');
           }
         }, (error: any) => {
           this.api.showError(error?.error?.message);
@@ -139,6 +140,7 @@ export class CountryComponent implements OnInit {
           if (respData) {
             this.api.showSuccess(respData['message']);
             this.resetFormState();
+            this.getAllCountryList('?page=1&page_size=5');
           }
         }, (error: any) => {
           this.api.showError(error?.error?.message);
@@ -146,79 +148,79 @@ export class CountryComponent implements OnInit {
       }
     }
   }
-  public resetFormState(){
+  public resetFormState() {
     this.formGroupDirective.resetForm();
-    this.isEditItem=false;
+    this.isEditItem = false;
   }
-  async edit(item:any){
+  async edit(item: any) {
     this.selectedItemId = item?.id;
     this.isEditItem = true;
     try {
-          const modalRef = await this.modalService.open(GenericEditComponent, {
-            size: 'sm',
-            backdrop: 'static',
-            centered: true
-          });
-    
-          modalRef.componentInstance.status.subscribe(resp => {
-            if (resp === 'ok') {
-              modalRef.dismiss();
-              this.getSelectedItemData(this.selectedItemId)
-            } else {
-              modalRef.dismiss();
-            }
-          });
-        } catch (error) {
-          console.error('Error opening modal:', error);
+      const modalRef = await this.modalService.open(GenericEditComponent, {
+        size: 'sm',
+        backdrop: 'static',
+        centered: true
+      });
+
+      modalRef.componentInstance.status.subscribe(resp => {
+        if (resp === 'ok') {
+          modalRef.dismiss();
+          this.getSelectedItemData(this.selectedItemId)
+        } else {
+          modalRef.dismiss();
         }
-  }
-
-  getSelectedItemData(id:any){
-    this.api.getData(`${environment.live_url}/${environment.settings_country}/${id}/`).subscribe((respData:any)=>{
-      this.countryForm.patchValue({'country_name':respData?.country_name});
-      },(error:any)=>{
-        this.api.showError(error?.error?.message);
-      })
-  }
-
-  delete(id:any){
-      if(id){
-        const modelRef =   this.modalService.open(GenericDeleteComponent, {
-          size: <any>'sm',
-          backdrop: true,
-          centered:true
-        });
-        modelRef.componentInstance.status.subscribe(resp => {
-          if(resp == "ok"){
-           this.deleteContent(id);
-           modelRef.close();
-          }
-          else{
-            modelRef.close();
-          }
-      })
-    
+      });
+    } catch (error) {
+      console.error('Error opening modal:', error);
     }
   }
-  public deleteContent(id:any){
-    this.api.delete(`${environment.live_url}/${environment.settings_country}/${id}/`).subscribe(async(data:any)=>{
-      if(data){
+
+  getSelectedItemData(id: any) {
+    this.api.getData(`${environment.live_url}/${environment.settings_country}/${id}/`).subscribe((respData: any) => {
+      this.countryForm.patchValue({ 'country_name': respData?.country_name });
+    }, (error: any) => {
+      this.api.showError(error?.error?.message);
+    })
+  }
+
+  delete(id: any) {
+    if (id) {
+      const modelRef = this.modalService.open(GenericDeleteComponent, {
+        size: <any>'sm',
+        backdrop: true,
+        centered: true
+      });
+      modelRef.componentInstance.status.subscribe(resp => {
+        if (resp == "ok") {
+          this.deleteContent(id);
+          modelRef.close();
+        }
+        else {
+          modelRef.close();
+        }
+      })
+
+    }
+  }
+  public deleteContent(id: any) {
+    this.api.delete(`${environment.live_url}/${environment.settings_country}/${id}/`).subscribe(async (data: any) => {
+      if (data) {
         this.allCountry = []
         this.api.showSuccess(data.message)
         let query = `?page=${1}&page_size=${this.tableSize}`
-        if(this.term){
-          query +=`&search=${this.term}`
+        if (this.term) {
+          query += `&search=${this.term}`
         }
-        
+
         this.getAllCountryList(query)
       }
-      
-    },(error =>{
+
+    }, (error => {
       this.api.showError(error?.error?.message)
     }))
   }
 
-  reset(){
+  reset() {
     this.resetFormState();
     this.getAllCountryList(`?page=${1}&page_size=${5}`);
   }

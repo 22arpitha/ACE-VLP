@@ -1,137 +1,153 @@
 <div class="container-wrapper settings-main-content px-0">
-    <section class="settings-form-bg">
-        <div class="row mx-0 px-0">
-            <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0">
-    <form [formGroup]="jobStatusForm">
-        <div class="row mx-0 my-0 px-2">
+  <section class="settings-form-bg">
+    <div class="row mx-0 px-0">
+      <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0">
+        <form [formGroup]="jobStatusForm">
+          <div class="row mx-0 my-0 px-2">
             <div class="col-12 col-sm-12 col-md-6 col-lg-4 my-1 px-0">
-                <mat-form-field appearance="outline" class="w-100 custom-mat-form-field" >
-                    <mat-label>Select Status Group <b class="r-star">*</b></mat-label>
-                    <mat-select formControlName="status_group" placeholder="Select Status Group"  autocomplete="off"
-                    panelClass="custom-select-panel" [disableOptionCentering]="true">
-                      <mat-option *ngFor="let status of allStatusGroupList" [value]="status.id">
-                        {{status.group_name | titlecase}}
-                      </mat-option>
-                    </mat-select>
-                    <mat-error *ngIf="f['status_group']?.invalid && f['status_group']?.touched || f['status_group']?.dirty">
-                      <span *ngIf="f['status_group'].errors?.['required']">Status Group is required</span>
-                    </mat-error>
-                  </mat-form-field>
+              <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+                <mat-label>Select Status Group <b class="r-star">*</b></mat-label>
+                <mat-select formControlName="status_group" placeholder="Select Status Group" autocomplete="off"
+                  panelClass="custom-select-panel" [disableOptionCentering]="true">
+                  <mat-option *ngFor="let status of allStatusGroupList" [value]="status.id">
+                    {{status.group_name | titlecase}}
+                  </mat-option>
+                </mat-select>
+                <mat-error *ngIf="f['status_group']?.invalid && f['status_group']?.touched || f['status_group']?.dirty">
+                  <span *ngIf="f['status_group'].errors?.['required']">Status Group is required</span>
+                </mat-error>
+              </mat-form-field>
             </div>
             <div class="col-12 col-sm-12 col-md-6 col-lg-4 my-1 no-padding pl-5 pr-0">
-                <mat-form-field appearance="outline" class="w-100 custom-mat-form-field" >
-                    <mat-label>Status Name <b class="r-star">*</b></mat-label>
-                    <input matInput placeholder="Enter Status Name"  formControlName="status_name" autocomplete="off">
-                    <mat-error *ngIf="f['status_name']?.invalid && f['status_name']?.touched || f['status_name']?.dirty">
-                      <span *ngIf="f['status_name'].errors?.['required']">Status Name is required</span>
-                      <span *ngIf="!f['status_name'].errors?.['required'] && f['status_name'].errors?.['pattern'] && !f['status_name'].errors?.['maxlength']">
-                        Invalid name. Extra space and special charaters are not allowed
-                      </span>
-                      <span *ngIf="!f['status_name'].errors?.['required'] && f['status_name'].errors?.['maxlength']">
-                        Status Name cannot exceed 20 characters.
-                      </span>
-                    </mat-error>
-                  </mat-form-field>
-                        </div>
-            <div class="col-12 col-sm-12 col-md-6 col-lg-4 my-1 no-padding pl-5 pr-0">
-                <mat-form-field appearance="outline" class="w-100 custom-mat-form-field" >
-                    <mat-label>Percentage Of Completion<b class="r-star">*</b></mat-label>
-                    <input matInput placeholder="Enter Percentage Of Completion"  formControlName="percentage_of_completion" autocomplete="off">
-                    <mat-error *ngIf="f['percentage_of_completion']?.invalid && f['percentage_of_completion']?.touched || f['percentage_of_completion']?.dirty">
-                      <span *ngIf="f['percentage_of_completion'].errors?.['required']">Percentage Of Completion is required</span>
-                      <span *ngIf="!f['percentage_of_completion'].errors?.['required'] && f['percentage_of_completion'].errors?.['maxlength']">
-                        Percentage of completion cannot exceed 3 characters.
-                      </span>
-                      <span *ngIf="!f['percentage_of_completion'].errors?.['required'] && f['percentage_of_completion'].errors?.['max']">
-                        Percentage of completion cannot exceed 100%.
-                      </span>
-                      <span *ngIf="!f['percentage_of_completion'].errors?.['required'] && f['percentage_of_completion'].errors?.['minlength']">
-                        Percentage of completion must be at least 1 character.
-                      </span>
-                      <span *ngIf="!f['percentage_of_completion'].errors?.['required'] && f['percentage_of_completion'].errors?.['min']">
-                        Percentage of completion must be at least 0%.
-                      </span>
-                    </mat-error>
-                  </mat-form-field>
+              <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+                <mat-label>Status Name <b class="r-star">*</b></mat-label>
+                <input matInput placeholder="Enter Status Name" formControlName="status_name" autocomplete="off">
+                <mat-error *ngIf="f['status_name']?.invalid && f['status_name']?.touched || f['status_name']?.dirty">
+                  <span *ngIf="f['status_name'].errors?.['required']">Status Name is required</span>
+                  <span
+                    *ngIf="!f['status_name'].errors?.['required'] && f['status_name'].errors?.['pattern'] && !f['status_name'].errors?.['maxlength']">
+                    Invalid name. Extra space and special charaters are not allowed
+                  </span>
+                  <span *ngIf="!f['status_name'].errors?.['required'] && f['status_name'].errors?.['maxlength']">
+                    Status Name cannot exceed 20 characters.
+                  </span>
+                </mat-error>
+              </mat-form-field>
             </div>
-           
+            <div class="col-12 col-sm-12 col-md-6 col-lg-4 my-1 no-padding pl-5 pr-0">
+              <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+                <mat-label>Percentage Of Completion<b class="r-star">*</b></mat-label>
+                <input matInput placeholder="Enter Percentage Of Completion" formControlName="percentage_of_completion"
+                  autocomplete="off">
+                <mat-error
+                  *ngIf="f['percentage_of_completion']?.invalid && f['percentage_of_completion']?.touched || f['percentage_of_completion']?.dirty">
+                  <span *ngIf="f['percentage_of_completion'].errors?.['required']">Percentage Of Completion is
+                    required</span>
+                  <span
+                    *ngIf="!f['percentage_of_completion'].errors?.['required'] && f['percentage_of_completion'].errors?.['maxlength']">
+                    Percentage of completion cannot exceed 3 characters.
+                  </span>
+                  <span
+                    *ngIf="!f['percentage_of_completion'].errors?.['required'] && f['percentage_of_completion'].errors?.['max']">
+                    Percentage of completion cannot exceed 100%.
+                  </span>
+                  <span
+                    *ngIf="!f['percentage_of_completion'].errors?.['required'] && f['percentage_of_completion'].errors?.['minlength']">
+                    Percentage of completion must be at least 1 character.
+                  </span>
+                  <span
+                    *ngIf="!f['percentage_of_completion'].errors?.['required'] && f['percentage_of_completion'].errors?.['min']">
+                    Percentage of completion must be at least 0%.
+                  </span>
+                </mat-error>
+              </mat-form-field>
+            </div>
+
             <div class="col-12 col-sm-12 col-md-6 col-lg-3  align-content-center">
-                    <button mat-raised-button class="proceedbtn mat-btn-s" type="submit" (click)="saveJobTypeDetails()"><span *ngIf="!isEditItem">Submit</span><span *ngIf="isEditItem">Update</span></button>
-                        </div>
-        </div>
-    </form>
+              <button mat-raised-button class="cancel-button mat-btn-s" type="button" (click)="resetFormState()">
+                Cancel</button>
+              <button mat-raised-button class="proceedbtn mat-btn-s" type="submit" (click)="saveJobTypeDetails()"><span
+                  *ngIf="!isEditItem">Submit</span><span *ngIf="isEditItem">Update</span></button>
             </div>
-        </div>
-    </section>
-    <section class="settings-table-bg">
-        <div class="row mx-0 my-0 px-0 py-2">
-            <div class="col-12 col-sm-12 col-md-6 col-lg-4 search-div px-0">
-                <input type="search" class="form-control p-2 sizeinput" [(ngModel)]="term"
-                  placeholder="Search by job Status" aria-describedby="emailHelp" autocomplete="off" (input)="filterSearch($event)">
-                <i class="bi bi-search" id="search-icon-tab"></i>
-              </div>
-        </div>
-        <div class="row mx-0 my-2 px-0 table-wrapper">
-            <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0 ">
-                <table class="table table table-hover table-list">
-                    <thead>
-                      <tr>
-                        <th>
-                            Sl no
-                      </th>
-                      <th>
-                        Status Group
-                  </th>
-                      <th>Status Name
-                        <i *ngIf="!arrowState['status_name']" (click)="sort('asc','status_name')" class="bi bi-arrow-up"></i>
-                        <i (click)="sort('desc','status_name')" *ngIf="arrowState['status_name']" class="bi bi-arrow-down"></i>
-                      
-                      </th>
-                      <th>Percentage Of Completion</th>
-                      <th>Action</th>
-                      </tr></thead>
-                      <tbody>
-                        <tr *ngFor='let status_item of allJobStatusList | customSort:directionValue:sortValue
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+  <section class="settings-table-bg" [ngClass]="{'disabled-section': isEditItem}">
+    <div class="row mx-0 my-0 px-0 py-2">
+      <div class="col-12 col-sm-12 col-md-6 col-lg-4 search-div px-0">
+        <input type="search" class="form-control p-2 sizeinput" [(ngModel)]="term" placeholder="Search by job Status"
+          aria-describedby="emailHelp" autocomplete="off" (input)="filterSearch($event)">
+        <i class="bi bi-search" id="search-icon-tab"></i>
+      </div>
+    </div>
+    <div class="row mx-0 my-2 px-0 table-wrapper">
+      <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0 ">
+        <table class="table table table-hover table-list">
+          <thead>
+            <tr>
+              <th>
+                Sl no
+              </th>
+              <th>
+                Status Group
+              </th>
+              <th>Status Name
+                <i *ngIf="!arrowState['status_name']" (click)="sort('asc','status_name')" class="bi bi-arrow-up"></i>
+                <i (click)="sort('desc','status_name')" *ngIf="arrowState['status_name']" class="bi bi-arrow-down"></i>
+
+              </th>
+              <th>Percentage Of Completion</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor='let status_item of allJobStatusList | customSort:directionValue:sortValue
                         |paginate : {
                                  itemsPerPage: tableSize,
                                  currentPage: page,
                                  totalItems: count
                                }; let i=index'>
-                            <td>{{getContinuousIndex(i)}}</td>
-                            <td>{{getStatusGroupName(status_item?.status_group)  || '-'}}</td>
-                            <td>{{status_item?.status_name  || '-'}}</td>
-                            <td>{{status_item?.percentage_of_completion || '-'}}</td>
-                            <td>
-                                <ng-container>
-                                    <img src="../../../../assets/images/Edit.svg" class="icon-image" container="body" ngbTooltip="Edit" type="button" (click)="editContent(status_item)" />
-                                    <img src="../../../../assets/images/Delete.svg" class="icon-image"  container="body" ngbTooltip="Delete" type="button" (click)="confirmDelete(status_item)"/>
-                                   
-                                </ng-container>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-           
+              <td>{{getContinuousIndex(i)}}</td>
+              <td>{{getStatusGroupName(status_item?.status_group) || '-'}}</td>
+              <td>{{status_item?.status_name || '-'}}</td>
+              <td>{{status_item?.percentage_of_completion || '-'}}</td>
+              <td>
+                <ng-container>
+                  <img src="../../../../assets/images/Edit.svg" class="icon-image" container="body" ngbTooltip="Edit"
+                    type="button" (click)="editContent(status_item)" />
+                  <img src="../../../../assets/images/Delete.svg" class="icon-image" container="body"
+                    ngbTooltip="Delete" type="button" (click)="confirmDelete(status_item)" />
+
+                </ng-container>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+    <div *ngIf="allJobStatusList.length === 0">
+      <app-generic-norecards></app-generic-norecards>
+    </div>
+  </section>
+  <div class="row mx-0 my-2 px-2" [ngClass]="{'disabled-section': isEditItem}">
+    <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0" *ngIf="allJobStatusList.length > 0">
+      <div class="pagination-container p-0 pt-2">
+        <!-- Pagination Controls (Center-Aligned) -->
+        <pagination-controls previousLabel="Prev" nextLabel="Next" (pageChange)="onTableDataChange($event)">
+        </pagination-controls>
+
+        <!-- Items Per Page Selector (Right-Aligned) -->
+        <div class="items-per-page-container">
+          <div>Items per page</div>
+          <mat-select [(ngModel)]="tableSize" (selectionChange)="onTableSizeChange($event)" placeholder="10"
+            class="page-size">
+            <mat-option *ngFor="let size of tableSizes" [value]="size">{{size}}</mat-option>
+          </mat-select>
         </div>
-        <div *ngIf="allJobStatusList.length === 0" >
-            <app-generic-norecards></app-generic-norecards>
-          </div>
-    </section>
-    <div class="row mx-0 my-2 px-2">
-        <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0" *ngIf="allJobStatusList.length > 0">
-<div class="pagination-container p-0 pt-2">
-    <!-- Pagination Controls (Center-Aligned) -->
-    <pagination-controls previousLabel="Prev" nextLabel="Next" (pageChange)="onTableDataChange($event)">
-    </pagination-controls>
-  
-    <!-- Items Per Page Selector (Right-Aligned) -->
-    <div class="items-per-page-container">
-      <div>Items per page</div>
-      <mat-select [(ngModel)]="tableSize" (selectionChange)="onTableSizeChange($event)" placeholder="10" class="page-size">
-        <mat-option *ngFor="let size of tableSizes" [value]="size">{{size}}</mat-option>
-      </mat-select>
+      </div>
     </div>
   </div>
-  </div></div>
 </div>

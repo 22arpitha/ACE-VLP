@@ -171,26 +171,26 @@ export class StatusGroupComponent implements OnInit {
   }
 
   public async editContent(item: any) {
-     try {
-          const modalRef = await this.modalService.open(GenericEditComponent, {
-            size: 'sm',
-            backdrop: 'static',
-            centered: true
-          });
-    
-          modalRef.componentInstance.status.subscribe(resp => {
-            if (resp === 'ok') {
-              this.selectedStatusGroup = item?.id;
-              this.isEditItem = true;
-              modalRef.dismiss();
-              this.getSelectedStatusGroupDetails(this.selectedStatusGroup);
-            } else {
-              modalRef.dismiss();
-            }
-          });
-        } catch (error) {
-          console.error('Error opening modal:', error);
+    try {
+      const modalRef = await this.modalService.open(GenericEditComponent, {
+        size: 'sm',
+        backdrop: 'static',
+        centered: true
+      });
+
+      modalRef.componentInstance.status.subscribe(resp => {
+        if (resp === 'ok') {
+          this.selectedStatusGroup = item?.id;
+          this.isEditItem = true;
+          modalRef.dismiss();
+          this.getSelectedStatusGroupDetails(this.selectedStatusGroup);
+        } else {
+          modalRef.dismiss();
         }
+      });
+    } catch (error) {
+      console.error('Error opening modal:', error);
+    }
   }
   public getSelectedStatusGroupDetails(id: any) {
     this.apiService.getData(`${environment.live_url}/${environment.settings_status_group}/${id}/`).subscribe((respData: any) => {
@@ -203,6 +203,7 @@ export class StatusGroupComponent implements OnInit {
     const input = event?.target?.value?.trim() || ''; // Fallback to empty string if undefined
     if (input && input.length >= 2) {
       this.term = input;
+      this.page = 1;
       const query = `?page=1&page_size=${this.tableSize}&search=${this.term}`;
       this.getAllStatusGroup(query);
     } if (!input) {

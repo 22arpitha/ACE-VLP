@@ -13,8 +13,8 @@ import { GenericEditComponent } from '../../../generic-edit/generic-edit.compone
   styleUrls: ['./source.component.scss']
 })
 export class SourceComponent implements OnInit {
-   @ViewChild(FormGroupDirective) formGroupDirective!: FormGroupDirective;
-  
+  @ViewChild(FormGroupDirective) formGroupDirective!: FormGroupDirective;
+
   BreadCrumbsTitle: any = 'Source';
   isEditItem: boolean = false;
   sourceForm: FormGroup;
@@ -204,6 +204,7 @@ export class SourceComponent implements OnInit {
     const input = event?.target?.value?.trim() || ''; // Fallback to empty string if undefined
     if (input && input.length >= 2) {
       this.term = input;
+      this.page = 1;
       const query = `?page=1&page_size=${this.tableSize}&search=${this.term}`;
       this.getAllSource(query);
     } if (!input) {
