@@ -1,11 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { CommonServiceService } from '../../../service/common-service.service';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, FormGroupDirective, Validators } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { GenericDeleteComponent } from 'src/app/generic-delete/generic-delete.component';
-import { ApiserviceService } from 'src/app/service/apiservice.service';
-import { environment } from 'src/environments/environment';
-import { GenericEditComponent } from 'src/app/generic-edit/generic-edit.component';
+import { GenericDeleteComponent } from '../../../generic-delete/generic-delete.component';
+import { ApiserviceService } from '../../../service/apiservice.service';
+import { environment } from '../../../../environments/environment';
+import { GenericEditComponent } from '../../../generic-edit/generic-edit.component';
 
 @Component({
   selector: 'app-source',
@@ -13,6 +13,8 @@ import { GenericEditComponent } from 'src/app/generic-edit/generic-edit.componen
   styleUrls: ['./source.component.scss']
 })
 export class SourceComponent implements OnInit {
+   @ViewChild(FormGroupDirective) formGroupDirective!: FormGroupDirective;
+  
   BreadCrumbsTitle: any = 'Source';
   isEditItem: boolean = false;
   sourceForm: FormGroup;
@@ -96,15 +98,8 @@ export class SourceComponent implements OnInit {
   }
 
   public resetFormState() {
-    this.sourceForm.reset();
-    this.sourceForm.markAsPristine();
-    this.sourceForm.markAsUntouched();
-    // Object.keys(this.sourceForm.controls).forEach(key => {
-    //   const control = this.sourceForm.get(key);
-    //   control?.setErrors(null);  // Clear any errors on the control
-    // });
+    this.formGroupDirective.resetForm();
     this.isEditItem = false;
-    this.sourceForm.updateValueAndValidity();
   }
 
   public sort(direction: string, column: string) {

@@ -13,7 +13,7 @@
                         {{status.group_name | titlecase}}
                       </mat-option>
                     </mat-select>
-                    <mat-error *ngIf="f['status_group']?.touched && f['status_group']?.invalid">
+                    <mat-error *ngIf="f['status_group']?.invalid && f['status_group']?.touched || f['status_group']?.dirty">
                       <span *ngIf="f['status_group'].errors?.['required']">Status Group is required</span>
                     </mat-error>
                   </mat-form-field>
@@ -22,7 +22,7 @@
                 <mat-form-field appearance="outline" class="w-100 custom-mat-form-field" >
                     <mat-label>Status Name <b class="r-star">*</b></mat-label>
                     <input matInput placeholder="Enter Status Name"  formControlName="status_name" autocomplete="off">
-                    <mat-error *ngIf="f['status_name']?.touched && f['status_name']?.invalid">
+                    <mat-error *ngIf="f['status_name']?.invalid && f['status_name']?.touched || f['status_name']?.dirty">
                       <span *ngIf="f['status_name'].errors?.['required']">Status Name is required</span>
                       <span *ngIf="!f['status_name'].errors?.['required'] && f['status_name'].errors?.['pattern'] && !f['status_name'].errors?.['maxlength']">
                         Invalid name. Extra space and special charaters are not allowed
@@ -37,7 +37,7 @@
                 <mat-form-field appearance="outline" class="w-100 custom-mat-form-field" >
                     <mat-label>Percentage Of Completion<b class="r-star">*</b></mat-label>
                     <input matInput placeholder="Enter Percentage Of Completion"  formControlName="percentage_of_completion" autocomplete="off">
-                    <mat-error *ngIf="f['percentage_of_completion']?.touched && f['percentage_of_completion']?.invalid">
+                    <mat-error *ngIf="f['percentage_of_completion']?.invalid && f['percentage_of_completion']?.touched || f['percentage_of_completion']?.dirty">
                       <span *ngIf="f['percentage_of_completion'].errors?.['required']">Percentage Of Completion is required</span>
                       <span *ngIf="!f['percentage_of_completion'].errors?.['required'] && f['percentage_of_completion'].errors?.['maxlength']">
                         Percentage of completion cannot exceed 3 characters.

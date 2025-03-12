@@ -8,7 +8,7 @@
                 <mat-form-field appearance="outline" class="w-100 custom-mat-form-field" >
                     <mat-label>Job Type<b class="r-star">*</b></mat-label>
                     <input matInput placeholder="Enter Job Type"  formControlName="job_type_name" autocomplete="off">
-                    <mat-error *ngIf="f['job_type_name']?.touched && f['job_type_name']?.invalid">
+                    <mat-error *ngIf="f['job_type_name']?.invalid && f['job_type_name']?.touched || f['job_type_name']?.dirty">
                       <span *ngIf="f['job_type_name'].errors?.['required']">Job Type is required</span>
                       <span *ngIf="!f['job_type_name'].errors?.['required'] && f['job_type_name'].errors?.['pattern'] && !f['job_type_name'].errors?.['maxlength']">
                         Invalid name. Extra space and special charaters are not allowed
@@ -23,7 +23,7 @@
                 <mat-form-field appearance="outline" class="w-100 custom-mat-form-field" >
                     <mat-label>Job Price <b class="r-star">*</b></mat-label>
                     <input matInput placeholder="Enter Job Price"  formControlName="job_price" autocomplete="off">
-                    <mat-error *ngIf="f['job_price']?.touched && f['job_type_name']?.invalid">
+                    <mat-error *ngIf="f['job_price']?.invalid && f['job_price']?.touched || f['job_price']?.dirty">
                       <span *ngIf="f['job_price'].errors?.['required']">Job Price is required</span>
                       <span *ngIf="!f['job_price'].errors?.['required'] && f['job_price'].errors?.['maxlength']">
                         Job price cannot exceed 10 characters.

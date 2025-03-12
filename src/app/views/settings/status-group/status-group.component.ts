@@ -1,6 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { CommonServiceService } from '../../../service/common-service.service';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { FormGroup, FormBuilder, Validators, FormGroupDirective } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { GenericDeleteComponent } from 'src/app/generic-delete/generic-delete.component';
 import { ApiserviceService } from 'src/app/service/apiservice.service';
@@ -13,6 +13,7 @@ import { GenericEditComponent } from 'src/app/generic-edit/generic-edit.componen
   styleUrls: ['./status-group.component.scss']
 })
 export class StatusGroupComponent implements OnInit {
+  @ViewChild(FormGroupDirective) formGroupDirective!: FormGroupDirective;
   BreadCrumbsTitle: any = 'Source Group';
   isEditItem: boolean = false;
   statusGroupForm: FormGroup;
@@ -96,15 +97,8 @@ export class StatusGroupComponent implements OnInit {
   }
 
   public resetFormState() {
-    this.statusGroupForm.reset();
-    this.statusGroupForm.markAsPristine();
-    this.statusGroupForm.markAsUntouched();
-    // Object.keys(this.statusGroupForm.controls).forEach(key => {
-    //   const control = this.statusGroupForm.get(key);
-    //   control?.setErrors(null);  // Clear any errors on the control
-    // });
+    this.formGroupDirective.resetForm();
     this.isEditItem = false;
-    this.statusGroupForm.updateValueAndValidity();
   }
 
   public sort(direction: string, column: string) {

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, FormGroupDirective, Validators } from '@angular/forms';
 import { CommonServiceService } from '../../../service/common-service.service';
 import { ApiserviceService } from '../../../service/apiservice.service';
 import { environment } from '../../../../environments/environment';
@@ -13,6 +13,8 @@ import { GenericEditComponent } from 'src/app/generic-edit/generic-edit.componen
   styleUrls: ['./job-type.component.scss']
 })
 export class JobTypeComponent implements OnInit {
+    @ViewChild(FormGroupDirective) formGroupDirective!: FormGroupDirective;
+  
   BreadCrumbsTitle: any = 'Job Type';
   isEditItem:boolean=false;
   jobTypeForm:FormGroup;
@@ -103,15 +105,8 @@ if(respData){
   }
 
   public resetFormState(){
-    this.jobTypeForm.reset();
-    this.jobTypeForm.markAsPristine();
-    this.jobTypeForm.markAsUntouched();
-    // Object.keys(this.jobTypeForm.controls).forEach(key => {
-    //   const control = this.jobTypeForm.get(key);
-    //   control?.setErrors(null);  // Clear any errors on the control
-    // });
+    this.formGroupDirective.resetForm();
     this.isEditItem=false;
-    this.jobTypeForm.updateValueAndValidity();
   }
 
   public sort(direction: string, column: string) {
@@ -222,3 +217,7 @@ public filterSearch(event){
   }
 }
 }
+function ViewChild(FormGroupDirective: any): (target: JobTypeComponent, propertyKey: "formGroupDirective") => void {
+  throw new Error('Function not implemented.');
+}
+

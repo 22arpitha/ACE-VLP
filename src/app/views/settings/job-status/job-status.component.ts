@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonServiceService } from '../../../service/common-service.service';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { FormGroup, FormBuilder, Validators, FormGroupDirective } from '@angular/forms';
 import { ApiserviceService } from 'src/app/service/apiservice.service';
 import { environment } from 'src/environments/environment';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -15,7 +15,7 @@ import { GenericEditComponent } from 'src/app/generic-edit/generic-edit.componen
 })
 export class JobStatusComponent implements OnInit {
   BreadCrumbsTitle: any = 'Job Status';
-
+@ViewChild(FormGroupDirective) formGroupDirective!: FormGroupDirective;
    isEditItem:boolean=false;
    jobStatusForm:FormGroup;
     selectedJobStatus:any;
@@ -108,15 +108,8 @@ export class JobStatusComponent implements OnInit {
     }
 
     public resetFormState(){
-      this.jobStatusForm.reset();
-      this.jobStatusForm.markAsPristine();
-      this.jobStatusForm.markAsUntouched();
-      // Object.keys(this.jobStatusForm.controls).forEach(key => {
-      //   const control = this.jobStatusForm.get(key);
-      //   control?.setErrors(null);  // Clear any errors on the control
-      // });
+      this.formGroupDirective.resetForm();
       this.isEditItem=false;
-      this.jobStatusForm.updateValueAndValidity();
     }
   
     public sort(direction: string, column: string) {
@@ -239,3 +232,7 @@ export class JobStatusComponent implements OnInit {
   return itemStatusGroup?.group_name
   }
 }
+function ViewChild(FormGroupDirective: any): (target: JobStatusComponent, propertyKey: "formGroupDirective") => void {
+  throw new Error('Function not implemented.');
+}
+

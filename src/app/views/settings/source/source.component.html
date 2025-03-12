@@ -1,4 +1,4 @@
-<div class="container-wrapper px-0">
+<div class="container-wrapper settings-main-content px-0">
     <section class="settings-form-bg">
         <div class="row mx-0 px-0">
             <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0">
@@ -8,7 +8,7 @@
                 <mat-form-field appearance="outline" class="w-100 custom-mat-form-field" >
                     <mat-label>Source<b class="r-star">*</b></mat-label>
                     <input matInput placeholder="Enter Source"  formControlName="source_name" autocomplete="off">
-                    <mat-error *ngIf="f['source_name']?.touched && f['source_name']?.invalid">
+                    <mat-error *ngIf="f['source_name']?.invalid && f['source_name']?.touched || f['source_name']?.dirty">
                       <span *ngIf="f['source_name'].errors?.['required']">Source is required</span>
                       <span *ngIf="!f['source_name'].errors?.['required'] && f['source_name'].errors?.['pattern'] && !f['source_name'].errors?.['maxlength']">
                         Invalid name. Extra space and special charaters are not allowed

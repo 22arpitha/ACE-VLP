@@ -1,6 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { CommonServiceService } from '../../../service/common-service.service';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, FormGroupDirective, Validators } from '@angular/forms';
 import { ApiserviceService } from 'src/app/service/apiservice.service';
 import { environment } from 'src/environments/environment';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -13,6 +13,8 @@ import { GenericEditComponent } from 'src/app/generic-edit/generic-edit.componen
   styleUrls: ['./leave-type.component.scss']
 })
 export class LeaveTypeComponent implements OnInit {
+  @ViewChild(FormGroupDirective) formGroupDirective!: FormGroupDirective;
+
   BreadCrumbsTitle: any = 'Leave Type';
   isEditItem:boolean=false;
   leaveTypeForm:FormGroup;
@@ -93,18 +95,11 @@ public getAllLeaveTypes(pramas:any){
       }
   }
   
-  public resetFormState(){
-    this.leaveTypeForm.reset();
-    this.leaveTypeForm.markAsPristine();
-    this.leaveTypeForm.markAsUntouched();
-    // Object.keys(this.leaveTypeForm.controls).forEach(key => {
-    //   const control = this.leaveTypeForm.get(key);
-    //   control?.setErrors(null);  // Clear any errors on the control
-    // });
-    this.isEditItem=false;
-    this.leaveTypeForm.updateValueAndValidity();
+  public resetFormState() {
+    this.formGroupDirective.resetForm();
+    this.isEditItem = false;
   }
-
+  
   public sort(direction: string, column: string) {
     Object.keys(this.arrowState).forEach(key => {
       this.arrowState[key] = false;
