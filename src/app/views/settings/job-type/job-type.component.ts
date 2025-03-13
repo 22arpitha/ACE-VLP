@@ -45,13 +45,22 @@ export class JobTypeComponent implements OnInit {
   public initializeForm() {
     this.jobTypeForm = this.fb.group({
       job_type_name: ['', [Validators.required, Validators.pattern(/^[a-zA-Z0-9]+( [a-zA-Z0-9]+)*$/), Validators.maxLength(20)]],
-      job_price: [null, [Validators.required, Validators.maxLength(10), Validators.min(0), Validators.minLength(1)]],
+      job_price: [null, [Validators.required,Validators.pattern(/^[0-9]+(\.[0-9]{1,2})?$/), Validators.maxLength(10), Validators.min(0), Validators.minLength(1)]],
     });
   }
   public get f() {
     return this.jobTypeForm.controls;
   }
 
+  public validateKeyPress(event: KeyboardEvent) {
+    // Get the key code of the pressed key
+    const keyCode = event.which || event.keyCode;
+
+    // Allow only digits (0-9), backspace, and arrow keys
+    if ((keyCode < 48 || keyCode > 57) && keyCode !== 8 && keyCode !== 37 && keyCode !== 39 && keyCode !== 46) {
+      event.preventDefault(); // Prevent the default action (i.e., entering the character)
+    }
+  }
   public getAllJobTypes(pramas: any) {
     this.allJobTypesList = [];
     this.apiService.getData(`${environment.live_url}/${environment.settings_job_type}/${pramas}`).subscribe((respData: any) => {

@@ -287,20 +287,20 @@ private moveSubscriptionToTop(navigationData: any[]): any[] {
 
 testingFunction() {
   this.sidebarNavItems = this.sidebarNavItemsStatic;
-  this.api.userAccess(sessionStorage.getItem('user_id')).subscribe(
-    (res: any) => {
-    //  console.log('default layout', res.access_list);
+  // this.api.userAccess(sessionStorage.getItem('user_id')).subscribe(
+  //   (res: any) => {
+  //   //  console.log('default layout', res.access_list);
       
-      if (res.user_role == 'Employee') {
-        this.user_role_Name = res.designation;
-      } else {
-        this.user_role_Name = res.user_role;
-      }
+  //     if (res.user_role == 'Employee') {
+  //       this.user_role_Name = res.designation;
+  //     } else {
+  //       this.user_role_Name = res.user_role;
+  //     }
       
-      // Move subscription to top before assigning to sidebarNavItems
-      this.sidebarNavItems = this.moveSubscriptionToTop(res.access_list);
-    }
-  );
+  //     // Move subscription to top before assigning to sidebarNavItems
+  //     this.sidebarNavItems = this.moveSubscriptionToTop(res.access_list);
+  //   }
+  // );
 }
   getUserControls(role_id) {
     this.org_id = sessionStorage.getItem('org_id')

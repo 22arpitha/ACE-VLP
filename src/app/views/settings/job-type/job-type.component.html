@@ -24,15 +24,15 @@
             <div class="col-12 col-sm-12 col-md-6 col-lg-4 my-1 no-padding pl-5 pr-0">
               <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
                 <mat-label>Job Price <b class="r-star">*</b></mat-label>
-                <input matInput placeholder="Enter Job Price" formControlName="job_price" autocomplete="off">
+                <input matInput type="number" placeholder="Enter Job Price" formControlName="job_price" autocomplete="off" (keypress)="validateKeyPress($event)">
                 <mat-error *ngIf="f['job_price']?.invalid && f['job_price']?.touched || f['job_price']?.dirty">
                   <span *ngIf="f['job_price'].errors?.['required']">Job Price is required</span>
                   <span *ngIf="!f['job_price'].errors?.['required'] && f['job_price'].errors?.['maxlength']">
                     Job price cannot exceed 10 characters.
                   </span>
-                  <!-- <span *ngIf="!f['job_price'].errors?.['required'] && f['job_price'].errors?.['max']">
-                        Job price cannot exceed the maximum allowed value.
-                      </span> -->
+                  <span *ngIf="!f['job_price'].errors?.['required'] && f['job_price'].errors?.['pattern']">
+                    Please enter a number with up to 2 decimal places.
+                      </span>
                   <span *ngIf="!f['job_price'].errors?.['required'] && f['job_price'].errors?.['minlength']">
                     Job price must be at least 1 character.
                   </span>

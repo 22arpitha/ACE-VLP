@@ -37,8 +37,8 @@
             <div class="col-12 col-sm-12 col-md-6 col-lg-4 my-1 no-padding pl-5 pr-0">
               <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
                 <mat-label>Percentage Of Completion<b class="r-star">*</b></mat-label>
-                <input matInput placeholder="Enter Percentage Of Completion" formControlName="percentage_of_completion"
-                  autocomplete="off">
+                <input matInput type="number" placeholder="Enter Percentage Of Completion" formControlName="percentage_of_completion"
+                  autocomplete="off" (keypress)="validateKeyPress($event)">
                 <mat-error
                   *ngIf="f['percentage_of_completion']?.invalid && f['percentage_of_completion']?.touched || f['percentage_of_completion']?.dirty">
                   <span *ngIf="f['percentage_of_completion'].errors?.['required']">Percentage Of Completion is
@@ -47,6 +47,10 @@
                     *ngIf="!f['percentage_of_completion'].errors?.['required'] && f['percentage_of_completion'].errors?.['maxlength']">
                     Percentage of completion cannot exceed 3 characters.
                   </span>
+                  <span
+                  *ngIf="!f['percentage_of_completion'].errors?.['required'] && f['percentage_of_completion'].errors?.['pattern']">
+                  Please enter a number between 0 and 100.
+                </span>
                   <span
                     *ngIf="!f['percentage_of_completion'].errors?.['required'] && f['percentage_of_completion'].errors?.['max']">
                     Percentage of completion cannot exceed 100%.
