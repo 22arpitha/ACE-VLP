@@ -7,17 +7,20 @@
             <div class="col-sm-12 col-md-4 col-lg-3 my-1 px-0">
               <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
                 <mat-label>Country Name <b class="r-star">*</b></mat-label>
-                <input matInput placeholder="Country name" formControlName="country_name" autocomplete="off"
+                <input matInput placeholder="Country name" appAlphabetOnly formControlName="country_name" autocomplete="off"
                   pattern="^(?!\s)(.*\S)?$">
-                <mat-error *ngIf="f['country_name']?.touched && f['country_name']?.invalid">
-                  <span *ngIf="f['country_name'].errors?.['required']">Country name is required</span>
+                  <mat-error *ngIf="f['country_name']?.invalid && f['country_name']?.touched || f['country_name']?.dirty">
+                  <span *ngIf="f['country_name'].errors?.['required']">Leave Type is required</span>
+                  <span
+                    *ngIf="f['country_name'].errors?.['required'] && f['country_name'].errors?.['pattern'] && !f['country_name'].errors?.['maxlength']">
+                    Invalid name. Extra space, numbers and special charaters are not allowed
+                  </span>
+                  <span
+                    *ngIf="f['country_name'].errors?.['required'] && f['country_name'].errors?.['maxlength']">
+                    Leave Type cannot exceed 20 characters.
+                  </span>
                 </mat-error>
               </mat-form-field>
-              <!-- <div class="px-2" *ngIf="f['country_name']?.touched && f['country_name']?.invalid">
-                <span class="text-errors"
-                *ngIf="f['country_name'].errors && f['country_name'].errors['required'] ">Country name is
-                required</span>
-              </div> -->
             </div>
             <div class="col-12 col-sm-12 col-md-6 col-lg-3 align-content-center">
               <button mat-raised-button class="cancel-button mat-btn-s" type="button" (click)="resetFormState()">

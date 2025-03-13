@@ -44,7 +44,7 @@ export class SourceComponent implements OnInit {
 
   public initializeForm() {
     this.sourceForm = this.fb.group({
-      source_name: ['', [Validators.required, Validators.pattern(/^[a-zA-Z0-9]+( [a-zA-Z0-9]+)*$/), Validators.maxLength(20)]],
+      source_name: ['', [Validators.required, Validators.pattern(/^[a-zA-Z]+( [a-zA-Z]+)*$/), Validators.maxLength(20)]],
     });
   }
 

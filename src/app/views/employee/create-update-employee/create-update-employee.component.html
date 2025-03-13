@@ -1,1 +1,178 @@
-<p>create-update-employee works!</p>
+<div class="container-wrapper settings-main-content px-0">
+    <section class="settings-form-bg">
+      <div class="row mx-0 px-0">
+        <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0">
+            <h4><span
+                *ngIf="!isEditItem">Create</span><span *ngIf="isEditItem">Update</span> Employee</h4>
+        </div>
+        <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0">
+            <form [formGroup]="employeeFormGroup">
+                <div class="row mx-0 my-0 px-2">
+                    <div class="col-12 col-sm-12 col-md-6 col-lg-4 my-1 px-0">
+                    <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+                        <mat-label>Employee Number <b class="r-star">*</b></mat-label>
+                        <input matInput type="number" placeholder="Enter Employee Number" formControlName="employee_number" autocomplete="off" >
+                        <mat-error *ngIf="f['employee_number']?.invalid && f['employee_number']?.touched || f['employee_number']?.dirty">
+                          <span *ngIf="f['employee_number'].errors?.['required']">Employee Number is required</span>
+                          <span *ngIf="f['employee_number'].errors?.['required'] && f['employee_number'].errors?.['maxlength']">
+                            Employee Number cannot exceed 10 characters.
+                          </span>
+                          <span *ngIf="f['employee_number'].errors?.['required'] && f['employee_number'].errors?.['minlength']">
+                            Employee Number must be at least 1 character.
+                          </span>
+                        </mat-error>
+                      </mat-form-field>  
+                    </div>
+<!-- First name -->
+<div class="col-12 col-sm-12 col-md-6 col-lg-4 my-1 no-padding pl-5 pr-0">
+
+<mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+    <mat-label>First Name <b class="r-star">*</b></mat-label>
+    <input matInput placeholder="Enter first name" formControlName="first_name" autocomplete="off"
+    pattern="^[a-zA-Z]+( [a-zA-Z]+)*$">
+    <mat-error *ngIf="f['first_name']?.invalid && f['first_name']?.touched || f['first_name']?.dirty">
+        <span  *ngIf="f['first_name']?.errors?.['required']">First name is required
+        </span>
+        <span  *ngIf="f['first_name']?.errors?.['pattern']">
+            Invalid name. Only letters are allowed, and the name must start with a letter.
+        </span>
+        <span 
+            *ngIf="f['first_name']?.errors?.['maxlength']">
+            First name cannot exceed more than 50 characters.
+        </span>
+        <!-- <span 
+            *ngIf="f['contact_person_name'].invalid && f['contact_person_name'].hasError('pattern')">
+            Invalid Contact person name
+        </span>
+        <span 
+            *ngIf="f['contact_person_name'].errors?.['required'] && f['contact_person_name'].errors?.['maxlength']">
+            Contact person name cannot exceed more than 50 characters.
+        </span> -->
+    </mat-error>
+</mat-form-field>
+
+</div>
+<!-- Last name -->
+<div class="col-12 col-sm-12 col-md-6 col-lg-4 my-1 px-0">
+
+<mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+    <mat-label>Last Name <b class="r-star">*</b></mat-label>
+    <input matInput placeholder="Enter last name" formControlName="last_name" autocomplete="off"
+    pattern="^[a-zA-Z]+( [a-zA-Z]+)*$">
+    <mat-error *ngIf="f['last_name']?.invalid && f['last_name']?.touched || f['last_name']?.dirty">
+        <span  *ngIf="f['last_name']?.errors?.['required']">Last name is required
+        </span>
+        <span  *ngIf="f['last_name']?.errors?.['pattern']">
+            Invalid name. Only letters are allowed, and the name must start with a letter.
+        </span>
+        <span 
+            *ngIf="f['last_name']?.errors?.['maxlength']">
+            Last name cannot exceed more than 50 characters.
+        </span>
+    </mat-error>
+</mat-form-field>
+
+</div>
+
+<!-- Email Address -->
+<div class="col-12 col-sm-12 col-md-6 col-lg-4 my-1 px-0">
+<mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+    <mat-label>Email Id <b class="r-star">*</b></mat-label>
+    <input matInput type="email" placeholder="Enter email" formControlName="email"
+        autocomplete="off" oninput="this.value = this.value.toLowerCase()">
+        <mat-error *ngIf="f['email']?.invalid && f['email']?.touched || f['email']?.dirty">
+            <span  *ngIf="f['email']?.errors?.['required']">Email is required</span>
+            <span  *ngIf="f['email']?.errors?.['email']">Invalid email Id</span>
+        </mat-error>
+</mat-form-field>
+
+</div>
+<div class="col-12 col-sm-12 col-md-6 col-lg-4 my-1 no-padding pl-5 pr-0">
+    <mat-form-field appearance="outline" class="w-100 p-0 custom-mat-form-field">
+        <mat-label>Date of Joining <b class="r-star">*</b></mat-label>
+        <input matInput [matDatepicker]="picker1" placeholder="Enter start date" readonly
+            formControlName="date_of_joining" autocomplete="off" (dateInput)="joiningDateFun($event)">
+            <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+             <mat-datepicker #picker1></mat-datepicker>
+             <mat-error *ngIf="f['date_of_joining']?.invalid && f['date_of_joining']?.touched || f['date_of_joining']?.dirty">
+                <span  *ngIf="f['date_of_joining']?.errors?.['required']">Date of Joining is required</span>
+          </mat-error>
+    </mat-form-field>
+  
+</div>
+<div class="col-12 col-sm-12 col-md-6 col-lg-4 my-1 px-0">
+    <mat-form-field appearance="outline" class="w-100 p-0 custom-mat-form-field">
+        <mat-label>Exit Date <b class="r-star">*</b></mat-label>
+        <input matInput [matDatepicker]="picker2" placeholder="Enter start date" readonly
+            formControlName="exit_date" autocomplete="off" (dateInput)="joiningDateFun($event)">
+            <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+             <mat-datepicker #picker2></mat-datepicker>
+             <mat-error *ngIf="f['exit_date']?.invalid && f['exit_date']?.touched || f['exit_date']?.dirty">
+                <span  *ngIf="f['exit_date']?.errors?.['required']">Exit date is required</span>
+          </mat-error>
+    </mat-form-field>
+  
+</div>
+<div class="col-12 col-sm-12 col-md-6 col-lg-4 my-1 px-0">
+    <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+        <mat-label>Select Role</mat-label>
+        <mat-select formControlName="role" autocomplete="off"
+                placeholder="Select" panelClass="custom-select-panel"
+                [disableOptionCentering]="true">
+                <mat-option *ngFor="let item of allDesignation" [value]="item.id">
+                    {{item.designation_name}}
+                </mat-option>
+        </mat-select>
+        <mat-error *ngIf="f['role']?.invalid && f['role']?.touched || f['role']?.dirty">
+            <span  *ngIf="f['role']?.errors?.['required']">Role is required</span>
+      </mat-error>
+    </mat-form-field>
+
+</div>
+<div class="col-12 col-sm-12 col-md-6 col-lg-4 my-1 no-padding pl-5 pr-0">
+    <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+        <mat-label>Select Designation</mat-label>
+        <mat-select formControlName="designation" autocomplete="off"
+                placeholder="Select" panelClass="custom-select-panel"
+                [disableOptionCentering]="true">
+                <mat-option *ngFor="let item of allDesignation" [value]="item.id">
+                    {{item.designation_name}}
+                </mat-option>
+        </mat-select>
+        <mat-error *ngIf="f['designation']?.invalid && f['designation']?.touched || f['designation']?.dirty">
+            <span  *ngIf="f['designation']?.errors?.['required']">Designation is required</span>
+      </mat-error>
+    </mat-form-field>
+ 
+</div>
+
+<div class="col-12 col-sm-12 col-md-6 col-lg-4 my-1 px-0">
+    <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+        <mat-label>Select Reporting Manager</mat-label>
+        <mat-select formControlName="reporting_manager_id" autocomplete="off"
+                placeholder="Select" panelClass="custom-select-panel"
+                [disableOptionCentering]="true">
+                <mat-option disabled *ngFor="let rmId of reportingManagerId" [value]="rmId.id">
+                    {{rmId.first_name}}
+                </mat-option>
+        </mat-select>
+        <mat-error *ngIf="f['reporting_manager_id']?.invalid && f['reporting_manager_id']?.touched || f['reporting_manager_id']?.dirty">
+            <span  *ngIf="f['reporting_manager_id']?.errors?.['required']">Reporting Manager is required</span>
+      </mat-error>
+    </mat-form-field>
+
+</div>
+</div>
+<div class="row mx-0 my-2 px-2">
+    <div class="col-12 col-sm-12 col-md-6 col-lg-3 align-content-center">
+        <button mat-button class="cancel-button mat-btn-s" type="button" >
+          Back</button>
+        <button mat-raised-button class="proceedbtn mat-btn-s" type="submit"><span
+            *ngIf="!isEditItem">Submit</span><span *ngIf="isEditItem">Update</span></button>
+      </div>
+</div>
+            </form>
+        </div>
+        </div>
+    </section>
+</div>

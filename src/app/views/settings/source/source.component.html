@@ -7,12 +7,12 @@
             <div class="col-12 col-sm-12 col-md-6 col-lg-4 my-1 px-0">
               <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
                 <mat-label>Source<b class="r-star">*</b></mat-label>
-                <input matInput placeholder="Enter Source" formControlName="source_name" autocomplete="off">
+                <input matInput placeholder="Enter Source" appAlphabetOnly formControlName="source_name" autocomplete="off">
                 <mat-error *ngIf="f['source_name']?.invalid && f['source_name']?.touched || f['source_name']?.dirty">
                   <span *ngIf="f['source_name'].errors?.['required']">Source is required</span>
                   <span
                     *ngIf="!f['source_name'].errors?.['required'] && f['source_name'].errors?.['pattern'] && !f['source_name'].errors?.['maxlength']">
-                    Invalid name. Extra space and special charaters are not allowed
+                    Invalid name. Extra space, numbers and special charaters are not allowed
                   </span>
                   <span *ngIf="!f['source_name'].errors?.['required'] && f['source_name'].errors?.['maxlength']">
                     Source cannot exceed 20 characters.

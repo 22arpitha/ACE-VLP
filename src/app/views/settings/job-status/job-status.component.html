@@ -21,12 +21,12 @@
             <div class="col-12 col-sm-12 col-md-6 col-lg-4 my-1 no-padding pl-5 pr-0">
               <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
                 <mat-label>Status Name <b class="r-star">*</b></mat-label>
-                <input matInput placeholder="Enter Status Name" formControlName="status_name" autocomplete="off">
+                <input matInput placeholder="Enter Status Name" appAlphabetOnly formControlName="status_name" autocomplete="off">
                 <mat-error *ngIf="f['status_name']?.invalid && f['status_name']?.touched || f['status_name']?.dirty">
                   <span *ngIf="f['status_name'].errors?.['required']">Status Name is required</span>
                   <span
                     *ngIf="!f['status_name'].errors?.['required'] && f['status_name'].errors?.['pattern'] && !f['status_name'].errors?.['maxlength']">
-                    Invalid name. Extra space and special charaters are not allowed
+                    Invalid name. Extra space, numbers and special charaters are not allowed
                   </span>
                   <span *ngIf="!f['status_name'].errors?.['required'] && f['status_name'].errors?.['maxlength']">
                     Status Name cannot exceed 20 characters.
@@ -96,13 +96,19 @@
               </th>
               <th>
                 Status Group
+                <i *ngIf="!arrowState['status_group']" (click)="sort('asc','status_group')" class="bi bi-arrow-up"></i>
+                <i (click)="sort('desc','status_group')" *ngIf="arrowState['status_group']" class="bi bi-arrow-down"></i>
               </th>
               <th>Status Name
                 <i *ngIf="!arrowState['status_name']" (click)="sort('asc','status_name')" class="bi bi-arrow-up"></i>
                 <i (click)="sort('desc','status_name')" *ngIf="arrowState['status_name']" class="bi bi-arrow-down"></i>
 
               </th>
-              <th>Percentage Of Completion</th>
+              <th>Percentage Of Completion
+                <i *ngIf="!arrowState['percentage_of_completion']" (click)="sort('asc','percentage_of_completion')" class="bi bi-arrow-up"></i>
+                <i (click)="sort('desc','percentage_of_completion')" *ngIf="arrowState['percentage_of_completion']" class="bi bi-arrow-down"></i>
+
+              </th>
               <th>Action</th>
             </tr>
           </thead>

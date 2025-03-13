@@ -75,9 +75,6 @@ formData:any;
   }
   public saveTemplateDetails() {
     console.log(this.templateForm.controls)
-    if(this.isEditItem){
-      this.templateForm.patchValue({ 'template_file': this.file});
-    }
     if (!this.templateForm.dirty || !this.templateForm.valid) {
       this.apiService.showError('Invalid!');
       this.templateForm.markAllAsTouched();
@@ -225,16 +222,19 @@ public createFromData(){
   public getSelectedTemplateDetails(id: any) {
     this.apiService.getData(`${environment.live_url}/${environment.templates}/${id}/`).subscribe((respData: any) => {
       this.templateForm.patchValue({ 'template_name': respData?.template_name });
+      this.templateForm.patchValue({ 'template_file': respData?.template_file });
       this.templateForm.patchValue({ 'password': respData?.password });
       this.templateForm.patchValue({ 'when_to_use': respData?.when_to_use });
+
+      console.error('Controls:', this.templateForm.controls);
       urlToFile(respData?.template_file, this.getFileName(respData?.template_file))
     .then(file => {
       this.file = file;
       this.selectedFile = this.file;
     }
-    
     )
     .catch(error => console.error('Error:', error));
+
     }, (error: any) => {
       this.apiService.showError(error?.error?.message);
     })

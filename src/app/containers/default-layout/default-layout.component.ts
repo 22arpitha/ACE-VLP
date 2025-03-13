@@ -84,12 +84,13 @@ export class DefaultLayoutComponent {
     "is_show": true,
     "children": [
       {
+        "name": "Empolyee",
+        "url": "/settings/all-employee"
+    },
+      {
         "name": "Services",
         "url": "/settings/services"
-    }, {
-      "name": "Empolyee",
-      "url": "/settings/all-employee"
-  },
+    },
         {
             "name": "Country",
             "url": "/settings/country"

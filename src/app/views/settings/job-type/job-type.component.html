@@ -7,13 +7,13 @@
             <div class="col-12 col-sm-12 col-md-6 col-lg-4 my-1 px-0">
               <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
                 <mat-label>Job Type<b class="r-star">*</b></mat-label>
-                <input matInput placeholder="Enter Job Type" formControlName="job_type_name" autocomplete="off">
+                <input matInput placeholder="Enter Job Type" appAlphabetOnly formControlName="job_type_name" autocomplete="off">
                 <mat-error
                   *ngIf="f['job_type_name']?.invalid && f['job_type_name']?.touched || f['job_type_name']?.dirty">
                   <span *ngIf="f['job_type_name'].errors?.['required']">Job Type is required</span>
                   <span
                     *ngIf="!f['job_type_name'].errors?.['required'] && f['job_type_name'].errors?.['pattern'] && !f['job_type_name'].errors?.['maxlength']">
-                    Invalid name. Extra space and special charaters are not allowed
+                    Invalid name. Extra space, numbers and special charaters are not allowed
                   </span>
                   <span *ngIf="!f['job_type_name'].errors?.['required'] && f['job_type_name'].errors?.['maxlength']">
                     Job Type cannot exceed 20 characters.
@@ -76,7 +76,12 @@
                   class="bi bi-arrow-down"></i>
 
               </th>
-              <th>Job Price</th>
+              <th>Job Price
+                <i *ngIf="!arrowState['job_price']" (click)="sort('asc','job_price')"
+                  class="bi bi-arrow-up"></i>
+                <i (click)="sort('desc','job_price')" *ngIf="arrowState['job_price']"
+                  class="bi bi-arrow-down"></i>
+              </th>
               <th>Action</th>
             </tr>
           </thead>

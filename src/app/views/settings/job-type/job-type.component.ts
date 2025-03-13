@@ -28,6 +28,7 @@ export class JobTypeComponent implements OnInit {
   directionValue: string = '';
   arrowState: { [key: string]: boolean } = {
     job_type_name: false,
+    job_price:false,
   };
   arrow: boolean = false;
   term: any;
@@ -44,7 +45,7 @@ export class JobTypeComponent implements OnInit {
 
   public initializeForm() {
     this.jobTypeForm = this.fb.group({
-      job_type_name: ['', [Validators.required, Validators.pattern(/^[a-zA-Z0-9]+( [a-zA-Z0-9]+)*$/), Validators.maxLength(20)]],
+      job_type_name: ['', [Validators.required, Validators.pattern(/^[a-zA-Z]+( [a-zA-Z]+)*$/), Validators.maxLength(20)]],
       job_price: [null, [Validators.required,Validators.pattern(/^[0-9]+(\.[0-9]{1,2})?$/), Validators.maxLength(10), Validators.min(0), Validators.minLength(1)]],
     });
   }

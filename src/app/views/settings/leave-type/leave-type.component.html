@@ -7,13 +7,13 @@
             <div class="col-12 col-sm-12 col-md-6 col-lg-4 my-1 px-0">
               <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
                 <mat-label>Leave Type<b class="r-star">*</b></mat-label>
-                <input matInput placeholder="Enter Leave Type" formControlName="leave_type_name" autocomplete="off">
+                <input matInput placeholder="Enter Leave Type" appAlphabetOnly formControlName="leave_type_name" autocomplete="off">
                 <mat-error
                   *ngIf="f['leave_type_name']?.invalid && f['leave_type_name']?.touched || f['leave_type_name']?.dirty">
                   <span *ngIf="f['leave_type_name'].errors?.['required']">Leave Type is required</span>
                   <span
                     *ngIf="!f['leave_type_name'].errors?.['required'] && f['leave_type_name'].errors?.['pattern'] && !f['leave_type_name'].errors?.['maxlength']">
-                    Invalid name. Extra space and special charaters are not allowed
+                    Invalid name. Extra space, numbers and special charaters are not allowed
                   </span>
                   <span
                     *ngIf="!f['leave_type_name'].errors?.['required'] && f['leave_type_name'].errors?.['maxlength']">

@@ -29,6 +29,9 @@ export class JobStatusComponent implements OnInit {
   directionValue: string = '';
   arrowState: { [key: string]: boolean } = {
     status_name: false,
+    status_group:false,
+    percentage_of_completion:false,
+
   };
   arrow: boolean = false;
   term: any;
@@ -46,7 +49,7 @@ export class JobStatusComponent implements OnInit {
 
   public initializeForm() {
     this.jobStatusForm = this.fb.group({
-      status_name: ['', [Validators.pattern(/^[a-zA-Z0-9]+( [a-zA-Z0-9]+)*$/), Validators.required, Validators.maxLength(20)]],
+      status_name: ['', [Validators.pattern(/^[a-zA-Z]+( [a-zA-Z]+)*$/), Validators.required, Validators.maxLength(20)]],
       percentage_of_completion: [null, [Validators.required,Validators.pattern(/^(100|[1-9]?\d)$/), Validators.maxLength(3), Validators.max(100), Validators.min(0), Validators.minLength(1)]],
       status_group: [null, Validators.required],
     });

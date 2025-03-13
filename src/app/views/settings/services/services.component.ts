@@ -43,7 +43,7 @@ export class ServicesComponent implements OnInit {
 
   public initializeForm() {
     this.serviceForm = this.fb.group({
-      service_name: ['', [Validators.required, Validators.pattern(/^[a-zA-Z0-9]+( [a-zA-Z0-9]+)*$/), , Validators.maxLength(20)]],
+      service_name: ['', [Validators.required, Validators.pattern(/^[a-zA-Z]+( [a-zA-Z]+)*$/), , Validators.maxLength(20)]],
     });
   }
   public get f() {

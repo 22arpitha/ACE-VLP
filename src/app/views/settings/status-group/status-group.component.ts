@@ -43,7 +43,7 @@ export class StatusGroupComponent implements OnInit {
 
   public initializeForm() {
     this.statusGroupForm = this.fb.group({
-      group_name: ['', [Validators.required, Validators.pattern(/^[a-zA-Z0-9]+( [a-zA-Z0-9]+)*$/), , Validators.maxLength(20)]],
+      group_name: ['', [Validators.required, Validators.pattern(/^[a-zA-Z]+( [a-zA-Z]+)*$/), , Validators.maxLength(20)]],
     });
   }
 

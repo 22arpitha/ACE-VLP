@@ -44,7 +44,7 @@ export class LeaveTypeComponent implements OnInit {
 
   public initializeForm() {
     this.leaveTypeForm = this.fb.group({
-      leave_type_name: ['', [Validators.required, Validators.pattern(/^[a-zA-Z0-9]+( [a-zA-Z0-9]+)*$/), , Validators.maxLength(20)]],
+      leave_type_name: ['', [Validators.required, Validators.pattern(/^[a-zA-Z]+( [a-zA-Z]+)*$/), , Validators.maxLength(20)]],
     });
   }
   public get f() {

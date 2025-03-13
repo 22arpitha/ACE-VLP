@@ -33,11 +33,13 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgxPaginationModule } from 'ngx-pagination';
 import { NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 import {MatDialogModule} from '@angular/material/dialog';
+import { AlphabetOnlyDirective } from './alphabet-only.directive';
 @NgModule({
   declarations: [
     SortPipe,
     GenericNorecardsComponent,
     HypenDirective,
+    AlphabetOnlyDirective,
 
   ],
   imports: [
@@ -73,6 +75,7 @@ import {MatDialogModule} from '@angular/material/dialog';
     MatDialogModule
   ],
   exports:[
+    AlphabetOnlyDirective,
     SortPipe,
     MatTableModule,
     MatPaginatorModule,

@@ -7,12 +7,12 @@
             <div class="col-12 col-sm-12 col-md-6 col-lg-4 my-1 px-0">
               <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
                 <mat-label>Service<b class="r-star">*</b></mat-label>
-                <input matInput placeholder="Enter Service" formControlName="service_name" autocomplete="off">
+                <input matInput placeholder="Enter Service" appAlphabetOnly formControlName="service_name" autocomplete="off">
                 <mat-error *ngIf="f['service_name']?.invalid && f['service_name']?.touched || f['service_name']?.dirty">
                   <span *ngIf="f['service_name'].errors?.['required']">Service is required</span>
                   <span
                     *ngIf="!f['service_name'].errors?.['required'] && f['service_name'].errors?.['pattern'] && !f['service_name'].errors?.['maxlength']">
-                    Invalid name. Extra space and special charaters are not allowed
+                    Invalid name. Extra space, numbers and special charaters are not allowed
                   </span>
                   <span *ngIf="!f['service_name'].errors?.['required'] && f['service_name'].errors?.['maxlength']">
                     Service cannot exceed 20 characters.

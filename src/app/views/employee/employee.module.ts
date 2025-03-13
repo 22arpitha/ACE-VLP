@@ -2,12 +2,14 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AllEmployeeComponent } from './all-employee/all-employee.component';
 import { CreateUpdateEmployeeComponent } from './create-update-employee/create-update-employee.component';
-import { SettingsRoutingModule } from '../settings/settings-routing.module';
 import { ReactiveFormsModule } from '@angular/forms';
-import { FormModule, SharedModule } from '@coreui/angular';
+import { FormModule } from '@coreui/angular';
 import { HttpClientModule } from '@angular/common/http';
 import { MatButtonModule } from '@angular/material/button';
-import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { SharedModule } from '../../shared/shared.module';
 
 
 
@@ -19,10 +21,13 @@ import { MatTooltipModule } from '@angular/material/tooltip';
   imports: [
     CommonModule,
     HttpClientModule,
-      SettingsRoutingModule,
-      FormModule,
-      ReactiveFormsModule,
-      SharedModule,
+        FormModule,
+        ReactiveFormsModule,
+        MatInputModule,
+        MatSelectModule,
+        MatDatepickerModule,
+        MatButtonModule,
+        SharedModule,
   ],
   exports:[AllEmployeeComponent,CreateUpdateEmployeeComponent]
 })
