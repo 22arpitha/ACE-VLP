@@ -1,11 +1,11 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { CommonServiceService } from '../../../service/common-service.service';
 import { FormBuilder, FormGroup, FormGroupDirective, Validators } from '@angular/forms';
-import { ApiserviceService } from 'src/app/service/apiservice.service';
-import { environment } from 'src/environments/environment';
+import { ApiserviceService } from '../../../service/apiservice.service';
+import { environment } from '../../../../environments/environment';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { GenericDeleteComponent } from 'src/app/generic-delete/generic-delete.component';
-import { GenericEditComponent } from 'src/app/generic-edit/generic-edit.component';
+import { GenericDeleteComponent } from '../../../generic-delete/generic-delete.component';
+import { GenericEditComponent } from '../../../generic-edit/generic-edit.component';
 
 @Component({
   selector: 'app-leave-type',
@@ -59,7 +59,7 @@ export class LeaveTypeComponent implements OnInit {
       this.count = noOfPages * this.tableSize;
       this.page = respData?.current_page;
     }, (error: any) => {
-      this.apiService.showError(error?.error?.error?.message);
+      this.apiService.showError(error?.error?.detail);
 
     })
   }
@@ -77,7 +77,7 @@ export class LeaveTypeComponent implements OnInit {
               this.getAllLeaveTypes('?page=1&page_size=5');
             }
           }, (error: any) => {
-            this.apiService.showError(error?.error?.message);
+            this.apiService.showError(error?.error?.detail);
           });
         } else {
           this.apiService.postData(`${environment.live_url}/${environment.settings_leave_type}/`, this.leaveTypeForm.value).subscribe((respData: any) => {
@@ -88,7 +88,7 @@ export class LeaveTypeComponent implements OnInit {
             }
 
           }, (error: any) => {
-            this.apiService.showError(error?.error?.message);
+            this.apiService.showError(error?.error?.detail);
           });
         }
       }
@@ -165,7 +165,7 @@ export class LeaveTypeComponent implements OnInit {
       }
 
     }, (error => {
-      this.apiService.showError(error?.error?.message)
+      this.apiService.showError(error?.error?.detail)
     }))
   }
 
@@ -196,7 +196,7 @@ export class LeaveTypeComponent implements OnInit {
     this.apiService.getData(`${environment.live_url}/${environment.settings_leave_type}/${id}/`).subscribe((respData: any) => {
       this.leaveTypeForm.patchValue({ 'leave_type_name': respData?.leave_type_name });
     }, (error: any) => {
-      this.apiService.showError(error?.error?.message);
+      this.apiService.showError(error?.error?.detail);
     })
   }
 

@@ -1,12 +1,11 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { CommonServiceService } from '../../../service/common-service.service';
 import { FormGroup, FormBuilder, Validators, FormGroupDirective } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { GenericDeleteComponent } from 'src/app/generic-delete/generic-delete.component';
-import { ApiserviceService } from 'src/app/service/apiservice.service';
-import { environment } from 'src/environments/environment';
-import { GenericEditComponent } from 'src/app/generic-edit/generic-edit.component';
-
+import { CommonServiceService } from '../../../service/common-service.service';
+import { ApiserviceService } from '../../../service/apiservice.service';
+import { GenericDeleteComponent } from '../../../generic-delete/generic-delete.component';
+import { GenericEditComponent } from '../../../generic-edit/generic-edit.component';
+import { environment } from '../../../../environments/environment';
 @Component({
   selector: 'app-status-group',
   templateUrl: './status-group.component.html',
@@ -60,7 +59,7 @@ export class StatusGroupComponent implements OnInit {
       this.count = noOfPages * this.tableSize;
       this.page = respData?.current_page;
     }, (error: any) => {
-      this.apiService.showError(error?.error?.error?.message);
+      this.apiService.showError(error?.error?.detail);
 
     })
   }
@@ -78,7 +77,7 @@ export class StatusGroupComponent implements OnInit {
               this.getAllStatusGroup('?page=1&page_size=5');
             }
           }, (error: any) => {
-            this.apiService.showError(error?.error?.message);
+            this.apiService.showError(error?.error?.detail);
           });
         } else {
           this.apiService.postData(`${environment.live_url}/${environment.settings_status_group}/`, this.statusGroupForm.value).subscribe((respData: any) => {
@@ -89,7 +88,7 @@ export class StatusGroupComponent implements OnInit {
             }
 
           }, (error: any) => {
-            this.apiService.showError(error?.error?.message);
+            this.apiService.showError(error?.error?.detail);
           });
         }
       }
@@ -166,7 +165,7 @@ export class StatusGroupComponent implements OnInit {
       }
 
     }, (error => {
-      this.apiService.showError(error?.error?.message)
+      this.apiService.showError(error?.error?.detail)
     }))
   }
 
@@ -196,7 +195,7 @@ export class StatusGroupComponent implements OnInit {
     this.apiService.getData(`${environment.live_url}/${environment.settings_status_group}/${id}/`).subscribe((respData: any) => {
       this.statusGroupForm.patchValue({ 'group_name': respData?.group_name });
     }, (error: any) => {
-      this.apiService.showError(error?.error?.message);
+      this.apiService.showError(error?.error?.detail);
     })
   }
   public filterSearch(event) {

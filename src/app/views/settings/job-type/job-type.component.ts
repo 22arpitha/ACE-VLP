@@ -1,12 +1,11 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, FormGroupDirective, Validators } from '@angular/forms';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { CommonServiceService } from '../../../service/common-service.service';
 import { ApiserviceService } from '../../../service/apiservice.service';
+import { GenericDeleteComponent } from '../../../generic-delete/generic-delete.component';
+import { GenericEditComponent } from '../../../generic-edit/generic-edit.component';
 import { environment } from '../../../../environments/environment';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { GenericDeleteComponent } from 'src/app/generic-delete/generic-delete.component';
-import { GenericEditComponent } from 'src/app/generic-edit/generic-edit.component';
-
 @Component({
   selector: 'app-job-type',
   templateUrl: './job-type.component.html',
@@ -61,7 +60,7 @@ export class JobTypeComponent implements OnInit {
       this.count = noOfPages * this.tableSize;
       this.page = respData.current_page;
     }, (error: any) => {
-      this.apiService.showError(error.error.error.message);
+      this.apiService.showError(error.detail);
 
     })
   }
@@ -87,7 +86,7 @@ export class JobTypeComponent implements OnInit {
             this.getAllJobTypes('?page=1&page_size=5');
           }
         }, (error: any) => {
-          this.apiService.showError(error?.error?.message);
+          this.apiService.showError(error?.error?.detail);
         });
       } else {
         this.apiService.postData(`${environment.live_url}/${environment.settings_job_type}/`, this.jobTypeForm.value).subscribe((respData: any) => {
@@ -98,7 +97,7 @@ export class JobTypeComponent implements OnInit {
           }
 
         }, (error: any) => {
-          this.apiService.showError(error?.error?.message);
+          this.apiService.showError(error?.error?.detail);
         });
       }
     }
@@ -168,7 +167,7 @@ export class JobTypeComponent implements OnInit {
       }
 
     }, (error => {
-      this.apiService.showError(error?.error?.message)
+      this.apiService.showError(error?.error?.detail)
     }))
   }
 
@@ -201,7 +200,7 @@ export class JobTypeComponent implements OnInit {
       this.jobTypeForm.patchValue({ 'job_type_name': respData?.job_type_name });
       this.jobTypeForm.patchValue({ 'job_price': respData?.job_price });
     }, (error: any) => {
-      this.apiService.showError(error?.error?.message);
+      this.apiService.showError(error?.error?.detail);
     })
   }
 

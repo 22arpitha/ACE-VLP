@@ -1,12 +1,11 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { CommonServiceService } from '../../../service/common-service.service';
 import { FormBuilder, FormGroup, FormGroupDirective, Validators } from '@angular/forms';
 import { ApiserviceService } from '../../../service/apiservice.service';
-import { environment } from '../../../../environments/environment';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { GenericDeleteComponent } from 'src/app/generic-delete/generic-delete.component';
-import { GenericEditComponent } from 'src/app/generic-edit/generic-edit.component';
-
+import { CommonServiceService } from '../../../service/common-service.service';
+import { GenericDeleteComponent } from '../../../generic-delete/generic-delete.component';
+import { GenericEditComponent } from '../../../generic-edit/generic-edit.component';
+import { environment } from '../../../../environments/environment';
 @Component({
   selector: 'app-country',
   templateUrl: './country.component.html',
@@ -133,7 +132,7 @@ export class CountryComponent implements OnInit {
             this.getAllCountryList('?page=1&page_size=5');
           }
         }, (error: any) => {
-          this.api.showError(error?.error?.message);
+          this.api.showError(error?.error?.detail);
         });
       } else {
         this.api.postData(`${environment.live_url}/${environment.settings_country}/`, this.countryForm.value).subscribe((respData: any) => {
@@ -143,7 +142,7 @@ export class CountryComponent implements OnInit {
             this.getAllCountryList('?page=1&page_size=5');
           }
         }, (error: any) => {
-          this.api.showError(error?.error?.message);
+          this.api.showError(error?.error?.detail);
         });
       }
     }
@@ -179,7 +178,7 @@ export class CountryComponent implements OnInit {
     this.api.getData(`${environment.live_url}/${environment.settings_country}/${id}/`).subscribe((respData: any) => {
       this.countryForm.patchValue({ 'country_name': respData?.country_name });
     }, (error: any) => {
-      this.api.showError(error?.error?.message);
+      this.api.showError(error?.error?.detail);
     })
   }
 
@@ -216,7 +215,7 @@ export class CountryComponent implements OnInit {
       }
 
     }, (error => {
-      this.api.showError(error?.error?.message)
+      this.api.showError(error?.error?.detail)
     }))
   }
 

@@ -1,12 +1,11 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { CommonServiceService } from '../../../service/common-service.service';
 import { FormGroup, FormBuilder, Validators, FormGroupDirective } from '@angular/forms';
-import { ApiserviceService } from 'src/app/service/apiservice.service';
-import { environment } from 'src/environments/environment';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { GenericDeleteComponent } from 'src/app/generic-delete/generic-delete.component';
-import { GenericEditComponent } from 'src/app/generic-edit/generic-edit.component';
-
+import { CommonServiceService } from '../../../service/common-service.service';
+import { ApiserviceService } from '../../../service/apiservice.service';
+import { GenericDeleteComponent } from '../../../generic-delete/generic-delete.component';
+import { GenericEditComponent } from '../../../generic-edit/generic-edit.component';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-job-status',
@@ -64,7 +63,7 @@ export class JobStatusComponent implements OnInit {
       this.count = noOfPages * this.tableSize;
       this.page = respData.current_page;
     }, (error: any) => {
-      this.apiService.showError(error.error.error.message);
+      this.apiService.showError(error.detail);
 
     })
   }
@@ -90,7 +89,7 @@ export class JobStatusComponent implements OnInit {
             this.getAllJobStatus('?page=1&page_size=5');
           }
         }, (error: any) => {
-          this.apiService.showError(error?.error?.message);
+          this.apiService.showError(error?.error?.detail);
         });
       } else {
         this.apiService.postData(`${environment.live_url}/${environment.settings_job_status}/`, this.jobStatusForm.value).subscribe((respData: any) => {
@@ -101,7 +100,7 @@ export class JobStatusComponent implements OnInit {
           }
 
         }, (error: any) => {
-          this.apiService.showError(error?.error?.message);
+          this.apiService.showError(error?.error?.detail);
         });
       }
     }
@@ -170,7 +169,7 @@ export class JobStatusComponent implements OnInit {
       }
 
     }, (error => {
-      this.apiService.showError(error?.error?.message)
+      this.apiService.showError(error?.error?.detail)
     }))
   }
 
@@ -202,7 +201,7 @@ export class JobStatusComponent implements OnInit {
       this.jobStatusForm.patchValue({ 'percentage_of_completion': respData?.percentage_of_completion });
       this.jobStatusForm.patchValue({ 'status_group': respData?.status_group });
     }, (error: any) => {
-      this.apiService.showError(error?.error?.message);
+      this.apiService.showError(error?.error?.detail);
     })
   }
   public filterSearch(event) {
@@ -222,7 +221,7 @@ export class JobStatusComponent implements OnInit {
     this.apiService.getData(`${environment.live_url}/${environment.settings_status_group}/`).subscribe((respData: any) => {
       this.allStatusGroupList = respData;
     }, (error: any) => {
-      this.apiService.showError(error.error.error.message);
+      this.apiService.showError(error.detail);
 
     })
   }

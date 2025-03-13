@@ -1,12 +1,12 @@
-import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
-import { CommonServiceService } from '../../../service/common-service.service';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, FormGroupDirective, Validators } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { GenericDeleteComponent } from '../../../generic-delete/generic-delete.component';
+import { CommonServiceService } from '../../../service/common-service.service';
 import { ApiserviceService } from '../../../service/apiservice.service';
-import { environment } from '../../../../environments/environment';
+import { GenericDeleteComponent } from '../../../generic-delete/generic-delete.component';
 import { GenericEditComponent } from '../../../generic-edit/generic-edit.component';
-
+import { environment } from '../../../../environments/environment';
+import { log } from 'console';
 @Component({
   selector: 'app-source',
   templateUrl: './source.component.html',
@@ -61,7 +61,7 @@ export class SourceComponent implements OnInit {
       this.count = noOfPages * this.tableSize;
       this.page = respData?.current_page;
     }, (error: any) => {
-      this.apiService.showError(error?.error?.error?.message);
+      this.apiService.showError(error?.error?.detail);
 
     })
   }
@@ -79,7 +79,7 @@ export class SourceComponent implements OnInit {
               this.getAllSource('?page=1&page_size=5');
             }
           }, (error: any) => {
-            this.apiService.showError(error?.error?.message);
+            this.apiService.showError(error?.error?.detail);
           });
         } else {
           this.apiService.postData(`${environment.live_url}/${environment.settings_source}/`, this.sourceForm.value).subscribe((respData: any) => {
@@ -90,7 +90,7 @@ export class SourceComponent implements OnInit {
             }
 
           }, (error: any) => {
-            this.apiService.showError(error?.error?.message);
+            this.apiService.showError(error?.error?.detail);
           });
         }
       }
@@ -167,7 +167,7 @@ export class SourceComponent implements OnInit {
       }
 
     }, (error => {
-      this.apiService.showError(error?.error?.message)
+      this.apiService.showError(error?.error?.detail)
     }))
   }
   async editContent(item: any) {
@@ -196,7 +196,7 @@ export class SourceComponent implements OnInit {
     this.apiService.getData(`${environment.live_url}/${environment.settings_source}/${id}/`).subscribe((respData: any) => {
       this.sourceForm.patchValue({ 'source_name': respData?.source_name });
     }, (error: any) => {
-      this.apiService.showError(error?.error?.message);
+      this.apiService.showError(error?.error?.detail);
     })
   }
 
