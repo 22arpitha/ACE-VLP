@@ -29,7 +29,8 @@ settings_service: `service`,
 settings_designation:`designation`,
 // vlp Templates
 templates:'templates',
-
+// vlp Employee
+employee:'user',
 
 // project ace 
   leave_application: 'leave-application',

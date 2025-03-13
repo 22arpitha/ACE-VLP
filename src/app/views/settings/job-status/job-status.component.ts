@@ -47,12 +47,22 @@ export class JobStatusComponent implements OnInit {
   public initializeForm() {
     this.jobStatusForm = this.fb.group({
       status_name: ['', [Validators.pattern(/^[a-zA-Z0-9]+( [a-zA-Z0-9]+)*$/), Validators.required, Validators.maxLength(20)]],
-      percentage_of_completion: [null, [Validators.required, Validators.maxLength(3), Validators.max(100), Validators.min(0), Validators.minLength(1)]],
+      percentage_of_completion: [null, [Validators.required,Validators.pattern(/^(100|[1-9]?\d)$/), Validators.maxLength(3), Validators.max(100), Validators.min(0), Validators.minLength(1)]],
       status_group: [null, Validators.required],
     });
   }
   public get f() {
     return this.jobStatusForm.controls;
+  }
+
+  public validateKeyPress(event: KeyboardEvent) {
+    // Get the key code of the pressed key
+    const keyCode = event.which || event.keyCode;
+
+    // Allow only digits (0-9), backspace, and arrow keys
+    if ((keyCode < 48 || keyCode > 57) && keyCode !== 8 && keyCode !== 37 && keyCode !== 39) {
+      event.preventDefault(); // Prevent the default action (i.e., entering the character)
+    }
   }
 
   public getAllJobStatus(pramas: any) {

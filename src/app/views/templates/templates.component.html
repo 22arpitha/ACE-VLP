@@ -21,7 +21,7 @@
                 </mat-form-field>
               </div>
               <div class="col-12 col-sm-12 col-md-6 col-lg-3 mb-0 mt-3 no-padding pl-0 pr-0">
-                <input type="file" accept=".xlsx,.xls,.csv" formControlName="template_file" #fileInput (change)="onFileSelected($event)" hidden>
+                <input type="file" accept=".xlsx,.xls" formControlName="template_file" #fileInput (change)="onFileSelected($event)" hidden>
           <div class="image-container w-100 d-flex justify-content-between align-items-center" style="padding: 3px 15px;" [ngClass]="{'is-invalid': f['template_file']?.touched && f['template_file']?.invalid}">
              
               <mat-label >{{selectedFile ? selectedFile.name : 'Template File'}}<b class="r-star">*</b></mat-label>
@@ -31,8 +31,9 @@
           </div>
           <div  *ngIf="f['template_file']?.touched && f['template_file']?.invalid" style="font-size: 11px;padding-left: 10px;color:red">
             <span *ngIf="f['template_file'].errors?.['required']">Template File is required</span>
-            <span *ngIf="f['template_file'].errors?.['accept']">Invalid file format. Only .xlsx, .xls and csv formats are allowed.</span>
-        </div>
+            <span *ngIf="f['template_file'].errors?.['accept']">Invalid file type. Please upload .xls or .xlsx file.</span>
+            <span *ngIf="f['template_file'].errors?.['maxSize']">File size exceeds 10MB.</span>
+          </div>
 
               </div>
               <div class="col-12 col-sm-12 col-md-6 col-lg-3 my-1 no-padding">
@@ -95,11 +96,12 @@
                 <th>
                   Sl no
                 </th>
-                <th>Template
+                <th>Template Name
                   <i *ngIf="!arrowState['template_name']" (click)="sort('asc','template_name')" class="bi bi-arrow-up"></i>
                   <i (click)="sort('desc','template_name')" *ngIf="arrowState['template_name']" class="bi bi-arrow-down"></i>
   
                 </th>
+                <th>Template File</th>
                 <th>Password</th>
                 <th>When To Use</th>
                 <th>Access</th>
@@ -115,14 +117,13 @@
                                  }; let i=index'>
                 <td>{{getContinuousIndex(i)}}</td>
                 <td>{{item?.template_name || '-'}}</td>
+                <td>{{getFileName(item?.template_file)|| '-'}}</td>
                 <td>{{item?.password || '-'}}</td>
                 <td>{{item?.when_to_use || '-'}}</td>
                 <td>
                     <ng-container>
-                      <img src="../../../../assets/images/Edit.svg" class="icon-image" container="body" ngbTooltip="View"
-                        type="button" (click)="editContent(item)" />
-                      <img src="../../../../assets/images/Delete.svg" class="icon-image" container="body"
-                        ngbTooltip="Download" type="button" (click)="confirmDelete(item)" />
+                     <img src="../../../../assets/images/download.svg" class="icon-image" container="body"
+                      ngbTooltip="Download" type="button" (click)="downloadFile(item)" /> 
     
                     </ng-container>
                   </td>

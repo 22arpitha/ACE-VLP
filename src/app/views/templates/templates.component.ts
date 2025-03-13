@@ -6,6 +6,7 @@ import { GenericEditComponent } from '../../generic-edit/generic-edit.component'
 import { ApiserviceService } from '../../service/apiservice.service';
 import { CommonServiceService } from '../../service/common-service.service';
 import { environment } from '../../../environments/environment';
+import { Observable, of } from 'rxjs';
 
 @Component({
   selector: 'app-templates',
@@ -49,8 +50,8 @@ formData:any;
   public initializeForm() {
     this.templateForm = this.fb.group({
       template_name: ['', [Validators.required, Validators.pattern(/^[a-zA-Z0-9]+( [a-zA-Z0-9]+)*$/),Validators.maxLength(20)]],
-      template_file: ['', Validators.required,this.fileFormatValidator],
-      password: ['', [Validators.required, Validators.pattern(/^[a-zA-Z0-9]+( [a-zA-Z0-9]+)*$/),Validators.maxLength(20)]],
+      template_file: ['',Validators.required,this.fileFormatValidator],
+      password: ['', [Validators.required, Validators.pattern(/^[a-zA-Z0-9!@#$%^&*()_+{}\[\]:;"'<>,.?/\\|`~\-]+( [a-zA-Z0-9!@#$%^&*()_+{}\[\]:;"'<>,.?/\\|`~\-]+)*$/),Validators.maxLength(20)]],
       when_to_use: ['', [Validators.required, Validators.pattern(/^[a-zA-Z0-9]+( [a-zA-Z0-9]+)*$/),Validators.maxLength(20)]],
     
     });
@@ -73,44 +74,51 @@ formData:any;
     })
   }
   public saveTemplateDetails() {
-    {
-      if (!this.templateForm.dirty || !this.templateForm.valid) {
-        this.apiService.showError('Invalid!');
-        this.templateForm.markAllAsTouched();
+    console.log(this.templateForm.controls)
+    if(this.isEditItem){
+      this.templateForm.patchValue({ 'template_file': this.file});
+    }
+    if (!this.templateForm.dirty || !this.templateForm.valid) {
+      this.apiService.showError('Invalid!');
+      this.templateForm.markAllAsTouched();
+    } else {
+      if (this.isEditItem) {
+        this.formData = this.createFromData();
+        this.apiService.updateData(`${environment.live_url}/${environment.templates}/${this.selectedTemplate}/`, this.templateForm.value).subscribe((respData: any) => {
+          if (respData) {
+            this.apiService.showSuccess(respData['message']);
+            this.resetFormState();
+            this.getAllTemplates('?page=1&page_size=5');
+          }
+        }, (error: any) => {
+          this.apiService.showError(error?.error?.message);
+        });
       } else {
-        if (this.isEditItem) {
-          this.apiService.updateData(`${environment.live_url}/${environment.templates}/${this.selectedTemplate}/`, this.templateForm.value).subscribe((respData: any) => {
-            if (respData) {
-              this.apiService.showSuccess(respData['message']);
-              this.resetFormState();
-              this.getAllTemplates('?page=1&page_size=5');
-            }
-          }, (error: any) => {
-            this.apiService.showError(error?.error?.message);
-          });
-        } else {
-          this.formData = new FormData();
-  
-      if (this.file) {
-        this.formData.set("template_file", this.file);
-        this.formData.set("template_name", this.templateForm.get('template_name').value);
-        this.formData.set("password", this.templateForm.get('password').value);
-        this.formData.set("when_to_use", this.templateForm.get('when_to_use').value);
-      }
-          this.apiService.postData(`${environment.live_url}/${environment.templates}/`, this.formData).subscribe((respData: any) => {
-            if (respData) {
-              this.apiService.showSuccess(respData['message']);
-              this.resetFormState();
-              this.getAllTemplates('?page=1&page_size=5');
-            }
+        this.formData = this.createFromData();
+        this.apiService.postData(`${environment.live_url}/${environment.templates}/`, this.formData).subscribe((respData: any) => {
+          if (respData) {
+            this.apiService.showSuccess(respData['message']);
+            this.resetFormState();
+            this.getAllTemplates('?page=1&page_size=5');
+          }
 
-          }, (error: any) => {
-            this.apiService.showError(error?.error?.message);
-          });
-        }
+        }, (error: any) => {
+          this.apiService.showError(error?.error?.message);
+        });
       }
     }
   }
+
+public createFromData(){
+  this.formData = new FormData();
+  if (this.file) {
+    this.formData.set("template_file", this.file);
+    this.formData.set("template_name", this.templateForm.get('template_name').value);
+    this.formData.set("password", this.templateForm.get('password').value);
+    this.formData.set("when_to_use", this.templateForm.get('when_to_use').value);
+  }
+  return this.formData;
+}
 
   public resetFormState() {
     this.formGroupDirective.resetForm();
@@ -216,10 +224,17 @@ formData:any;
   }
   public getSelectedTemplateDetails(id: any) {
     this.apiService.getData(`${environment.live_url}/${environment.templates}/${id}/`).subscribe((respData: any) => {
-      this.templateForm.patchValue({ 'group_name': respData?.group_name });
-      this.templateForm.patchValue({ 'template_file': respData?.template_file });
-      this.templateForm.patchValue({ 'group_name': respData?.group_name });
+      this.templateForm.patchValue({ 'template_name': respData?.template_name });
+      this.templateForm.patchValue({ 'password': respData?.password });
       this.templateForm.patchValue({ 'when_to_use': respData?.when_to_use });
+      urlToFile(respData?.template_file, this.getFileName(respData?.template_file))
+    .then(file => {
+      this.file = file;
+      this.selectedFile = this.file;
+    }
+    
+    )
+    .catch(error => console.error('Error:', error));
     }, (error: any) => {
       this.apiService.showError(error?.error?.message);
     })
@@ -265,15 +280,50 @@ formData:any;
   public triggerFileInput() {
     this.fileInput?.nativeElement?.click();
   }
-  public  fileFormatValidator(control: AbstractControl): ValidationErrors | null {
-      const allowedFormats = ['.xlsx','.xls','.csv'];
-      const file = control.value;
-      if (file) {
-        const fileExtension = file.substr(file.lastIndexOf('.')).toLowerCase();
-        if (!allowedFormats.includes(fileExtension)) {
-          return { accept: true };
+  public fileFormatValidator(control: AbstractControl): Observable<ValidationErrors | null> {
+    const allowedFormats = ['.xlsx','.xls'];
+    const maxSize = 10 * 1024 * 1024; // 10 MB in bytes
+    const file = control.value;
+
+    if (file) {
+      console.log('file',file);
+      const fileExtension = (/[.]/.exec(file)) ? file.split('.').pop()?.toLowerCase() : '';
+      console.log('fileExtension',fileExtension);
+      const fileSize = file.size;
+
+        if (allowedFormats.includes(fileExtension)) {
+            return of({ accept: false }); // Invalid file format
         }
-      }
-      return null;
+
+        if (fileSize > maxSize) {
+            return of({ maxSize: true }); // File size exceeds the limit
+        }
     }
+
+    return of(null);
+}
+
+  public getFileName(url:any){
+    return url.split('/').pop(); 
   }
+  
+  public downloadFile(url:any){
+    const link = document.createElement('a');
+    link.href = url.template_file;
+    link.download = this.getFileName(url.template_file);
+    link.target = '_blank'; // Opens the download in a new tab (optional)
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+
+ 
+  }
+  async function urlToFile(url: string, fileName: string): Promise<File> {
+    const response = await fetch(url);
+    const blob = await response.blob();
+    const mimeType = blob.type || 'application/octet-stream';
+
+    return new File([blob], fileName, { type: mimeType });
+}
+
