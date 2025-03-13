@@ -26,6 +26,7 @@ settings_leave_type: `leave-type`,
 settings_job_status: `job-status`,
 settings_job_type: `job-type`,
 settings_service: `service`,
+settings_designation:`designation`,
 // vlp Templates
 templates:'templates',
 

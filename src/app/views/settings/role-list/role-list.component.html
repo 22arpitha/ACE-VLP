@@ -1,4 +1,83 @@
-<div class="container-wrapper webView">
+<div class="container-wrapper settings-main-content px-0">
+  <!-- table -->
+  <section class="settings-table-bg" [ngClass]="{'disabled-section': isEditItem}">
+    <div class="row mx-0 my-0 px-0 py-2">
+      <div class="col-sm-12 col-md-4 col-lg-4 search-div px-0">
+        <input type="search" (input)="filterSearch($event)" class="form-control p-2 sizeinput" [(ngModel)]="term"
+          placeholder="Search by role name" aria-describedby="emailHelp" autocomplete="off">
+        <i class="bi bi-search" id="search-icon-tab"></i>
+      </div>
+    </div>
+    <div class="row mx-0 my-2 px-0 table-wrapper">
+      <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0 ">
+        <table class="table table table-hover table-list">
+          <thead>
+            <tr>
+              <th scope="col"> S.No</th>
+              <th scope="col">Role Name
+                <i *ngIf="!arrowState['country_name']" (click)="sort('asc','country_name')" class="bi bi-arrow-up"></i>
+                <i (click)="sort('desc','country_name')" *ngIf="arrowState['country_name']"
+                  class="bi bi-arrow-down"></i>
+              </th>
+              <th scope="col">Accessibilty</th>
+              <th scope="col">Action </th>
+            </tr>
+          </thead>
+          <tbody>
+
+            <ng-container *ngIf="(allRoles) as result">
+              <tr *ngFor='let item of result | customSort:directionValue:sortValue
+                         |paginate : {
+                                  itemsPerPage: tableSize,
+                                  currentPage: page,
+                                  totalItems: count
+                                }; let i=index'>
+                <td>{{getContinuousIndex(i)}}</td>
+                <td>{{item.country_name|titlecase }}</td>
+                <td><a routerLink="/designation/roles-access/{{item.id}}">
+                  <img src="../../../../assets/images/Group.svg" alt="">
+                    </a></td>
+                <td>
+                  <ng-container>
+                    <img src="../../../../assets/images/Edit.svg" class="icon-image" type="button" container="body"
+                      ngbTooltip="Edit" (click)="edit(item)" />
+                    <img src="../../../../assets/images/Delete.svg" class="icon-image" type="button" container="body"
+                      ngbTooltip="Delete" (click)="delete(item.id)" />
+                    <!-- (click)="open(item.id)" -->
+                    <!-- <span  *ngIf="userRole ==='Employee' && !accessPermissions[0]?.update && !accessPermissions[0]?.delete">-</span> -->
+                    <!-- *ngIf="userRole ==='Employee' && accessPermissions[0]?.delete || userRole === 'Admin'" -->
+                    <!-- *ngIf="userRole ==='Employee' && accessPermissions[0]?.update || userRole === 'Admin'" -->
+                  </ng-container>
+                </td>
+
+              </tr>
+
+            </ng-container>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="col-12" *ngIf="allRoles.length === 0">
+      <app-generic-norecards></app-generic-norecards>
+    </div>
+  </section>
+  <div class="row mx-0 my-2 px-2" [ngClass]="{'disabled-section': isEditItem}">
+    <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0" *ngIf="allRoles.length > 0">
+      <div class="pagination-container p-0 pt-2">
+        <pagination-controls previousLabel="Prev" nextLabel="Next" (pageChange)="onTableDataChange($event)">
+        </pagination-controls>
+        <div class="items-per-page-container">
+          <div>Items per page</div>
+          <mat-select [(ngModel)]="tableSize" (selectionChange)="onTableSizeChange($event)" placeholder="10"
+            class="page-size">
+            <mat-option *ngFor="let size of tableSizes" [value]="size">{{size}}</mat-option>
+          </mat-select>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- <div class="container-wrapper webView">
   <div class="row pb-3">
     <div class="col-sm-4 search-div">
       <input type="search" (input)="filterSearch($event)" class="form-control p-2 sizeinput" [(ngModel)]="term"
@@ -34,7 +113,6 @@
                   <i (click)="sort('desc','created_datetime')" *ngIf="arrowState['created_datetime']"
                     class="bi bi-arrow-down"></i>
                 </th>
-                <!-- <th scope="col"> Status <i  *ngIf="!arrow" (click)="sort('asc','role_status')" class="bi bi-arrow-up"></i><i (click)="sort('desc','role_status')" *ngIf="arrow" class="bi bi-arrow-down"></i></th> -->
                 <th scope="col" class="text-center"
                   *ngIf="userRole ==='Employee' && accessPermissions[0]?.update || userRole === 'Admin'">Accessibilty</th>
                 <th scope="col">Action</th>
@@ -51,9 +129,7 @@
                        }; let i=index'>
                   <td>{{getContinuousIndex(i)}}</td>
                   <td>{{item.designation_name}}</td>
-                  <!-- <td>{{item.description | titlecase}}</td> -->
                   <td>{{item.created_datetime | date : 'dd-MM-yyyy'}}</td>
-                  <!-- <td>{{item.role_status | titlecase}}</td> -->
                   <td class="text-center" *ngIf="userRole ==='Employee' && accessPermissions[0]?.update || userRole === 'Admin'">
                     <a routerLink="/designation/roles-access/{{item.id}}">
                     <img src="../../../../assets/images/Group.svg" alt="">
@@ -70,17 +146,7 @@
                         <span  *ngIf="userRole ==='Employee' && !accessPermissions[0]?.update && !accessPermissions[0]?.delete">-</span>
                     </ng-container>
                   </td>
-                  <!-- <td  *ngIf="role == 'ADMIN'">
-                     
-                      <ng-container *ngFor="let access of permissions">
-                        <button mat-mini-fab  routerLink="/role/update/{{item.id}}/{{page}}/{{tableSize}}" *ngIf="access === 'UPDATE'">
-                          <i class="bi bi-pencil-square"  container="body" ngbTooltip="Edit" style="color: #000; font-size: 24px;"></i>
-                        </button>
-                        <button mat-mini-fab (click)="open(item.id)" *ngIf="access === 'DELETE'">
-                          <i class="bi bi-trash" style="color: red;" container="body" ngbTooltip="Delete"></i>
-                        </button>
-                      </ng-container>  
-                    </td> -->
+                  
                 </tr>
                 <tr style="width: 100%;" *cdkDragPlaceholder class="example-custom-placeholder">Drop here!</tr>
                 
@@ -112,7 +178,6 @@
 <div class="mobileView">
   <div class="row mx-1 my-2">
     <div class="col-sm-6">
-      <!-- <h1> Role List</h1> -->
     </div>
     <div class="col-sm-6 col-md-6">
       <div class="mb-1 search-div px-0">
@@ -249,4 +314,4 @@
     </div>
   </div>
 
-</div>
+</div> -->

@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 
 import { RolesRoutingModule } from './roles-routing.module';
 import { RolesComponent } from './roles.component';
-import { RoleListComponent } from './role-list/role-list.component';
 import { CreateRoleComponent } from './create-role/create-role.component';
 import { HttpClientModule } from '@angular/common/http';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
@@ -14,7 +13,6 @@ import { Ng2SearchPipeModule } from 'ng2-search-filter';
 import { NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 import { SharedModule } from '../../shared/shared.module';
 import { DragDropModule } from '@angular/cdk/drag-drop';
-import { RolesAccessComponent } from './roles-access/roles-access.component';
 import { RolesConfigComponent } from './roles-config/roles-config.component';
 import { AccountsConfigComponent } from './accounts-config/accounts-config.component';
 import { DepartmentConfigComponent } from './department-config/department-config.component';
@@ -28,7 +26,7 @@ import { ProjectTaskConfigComponent } from './project-task-config/project-task-c
 import { ProjectsComponent } from './projects/projects.component';
 import { ReviewConfigComponent } from './review-config/review-config.component';
 import { OrganizationConfigComponent } from './organization-config/organization-config.component';
-import { AccessToModulesComponent } from './access-to-modules/access-to-modules.component';
+// import { AccessToModulesComponent } from '../settings/access-to-modules/access-to-modules.component';
 
 
 
@@ -36,10 +34,8 @@ import { AccessToModulesComponent } from './access-to-modules/access-to-modules.
 @NgModule({
   declarations: [
     RolesComponent,
-    RoleListComponent,
     CreateRoleComponent,
     UpdateRoleComponent,
-    RolesAccessComponent,
     RolesConfigComponent,
     AccountsConfigComponent,
     DepartmentConfigComponent,
@@ -53,7 +49,7 @@ import { AccessToModulesComponent } from './access-to-modules/access-to-modules.
     ProjectsComponent,
     ReviewConfigComponent,
     OrganizationConfigComponent,
-    AccessToModulesComponent
+    // AccessToModulesComponent
     ],
   imports: [
     CommonModule,
@@ -67,6 +63,6 @@ import { AccessToModulesComponent } from './access-to-modules/access-to-modules.
     NgbTooltipModule,
     SharedModule,
     DragDropModule
-  ]
+  ],
 })
 export class RolesModule { }

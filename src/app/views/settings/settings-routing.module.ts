@@ -10,6 +10,10 @@ import { JobStatusComponent } from './job-status/job-status.component';
 import { ServicesComponent } from './services/services.component';
 import { AllEmployeeComponent } from '../employee/all-employee/all-employee.component';
 import { CreateUpdateEmployeeComponent } from '../employee/create-update-employee/create-update-employee.component';
+import { RoleListComponent } from './role-list/role-list.component';
+import { DesignationsComponent } from './designations/designations.component';
+import { RolesAccessComponent } from './roles-access/roles-access.component';
+
 
 
 const routes: Routes = [
@@ -56,6 +60,15 @@ const routes: Routes = [
         {
           path: 'update-employee:id',
           component: CreateUpdateEmployeeComponent,
+        },
+        {
+          path: 'roles',
+          component: RoleListComponent,
+        },
+         {path:'roles-access/:id', component:RolesAccessComponent},
+        {
+          path: 'designation',
+          component: DesignationsComponent,
         },
       ]
     },

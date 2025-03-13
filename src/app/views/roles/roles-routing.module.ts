@@ -1,10 +1,9 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { CreateRoleComponent } from './create-role/create-role.component';
-import { RoleListComponent } from './role-list/role-list.component';
 import { RolesComponent } from './roles.component';
 import { UpdateRoleComponent } from './update-role/update-role.component';
-import { RolesAccessComponent } from './roles-access/roles-access.component';
+import { RolesAccessComponent } from '../settings/roles-access/roles-access.component';
 import { AccountsConfigComponent } from './accounts-config/accounts-config.component';
 import { RolesConfigComponent } from './roles-config/roles-config.component';
 import { DepartmentConfigComponent } from './department-config/department-config.component';
@@ -22,9 +21,7 @@ import { ReviewConfigComponent } from './review-config/review-config.component';
 const routes: Routes = [
   {
     path:'', component:RolesComponent, children:[
-      {
-        path:'list', component:RoleListComponent
-      },
+      
       {
         path:'create', component:CreateRoleComponent
       },

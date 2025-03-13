@@ -14,8 +14,10 @@ import { LeaveTypeComponent } from './leave-type/leave-type.component';
 import { SharedModule } from '../../shared/shared.module';
 import { ServicesComponent } from './services/services.component';
 import { EmployeeModule } from '../employee/employee.module';
-
-
+import { RoleListComponent } from './role-list/role-list.component';
+import { DesignationsComponent } from './designations/designations.component';
+import { RolesAccessComponent } from './roles-access/roles-access.component';
+import { AccessToModulesComponent } from './access-to-modules/access-to-modules.component';
 @NgModule({
   declarations: [
     SettingsComponent,
@@ -26,6 +28,10 @@ import { EmployeeModule } from '../employee/employee.module';
     JobStatusComponent,
     LeaveTypeComponent,
     ServicesComponent,
+    RoleListComponent,
+    DesignationsComponent,
+    RolesAccessComponent,
+    AccessToModulesComponent
   ],
   imports: [
     CommonModule,
@@ -33,7 +39,7 @@ import { EmployeeModule } from '../employee/employee.module';
     FormModule,
     ReactiveFormsModule,
     SharedModule,
-    EmployeeModule
+    EmployeeModule,
   ]
 })
 export class SettingsModule { }
