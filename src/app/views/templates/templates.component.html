@@ -3,8 +3,8 @@
       <div class="row mx-0 px-0">
         <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0">
           <form [formGroup]="templateForm">
-            <div class="row mx-0 my-0 px-2">
-              <div class="col-12 col-sm-12 col-md-6 col-lg-3 my-1 px-0">
+            <div class="row mx-0 my-0 p-0">
+              <div class="col-12 col-sm-12 col-md-6 col-lg-3 px-2">
                 <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
                   <mat-label>Template<b class="r-star">*</b></mat-label>
                   <input matInput placeholder="Enter Template" formControlName="template_name" autocomplete="off">
@@ -20,9 +20,9 @@
                   </mat-error>
                 </mat-form-field>
               </div>
-              <div class="col-12 col-sm-12 col-md-6 col-lg-3 mb-0 mt-3 no-padding pl-0 pr-0">
+              <div class="col-12 col-sm-12 col-md-6 col-lg-3 px-2 mt-3">
                 <input type="file" accept=".xlsx,.xls" formControlName="template_file" #fileInput (change)="onFileSelected($event)" hidden>
-          <div class="image-container w-100 d-flex justify-content-between align-items-center" style="padding: 3px 15px;" [ngClass]="{'is-invalid': f['template_file']?.touched && f['template_file']?.invalid}">
+          <div class="image-container w-100 d-flex justify-content-between align-items-center" style="padding: 2px 15px;" [ngClass]="{'is-invalid': f['template_file']?.touched && f['template_file']?.invalid}">
              
               <mat-label >{{selectedFile ? selectedFile.name : 'Template File'}}<b class="r-star">*</b></mat-label>
               <button type="button" mat-icon-button (click)="triggerFileInput()">
@@ -36,7 +36,7 @@
           </div>
 
               </div>
-              <div class="col-12 col-sm-12 col-md-6 col-lg-3 my-1 no-padding">
+              <div class="col-12 col-sm-12 col-md-6 col-lg-3 px-2">
                 <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
                   <mat-label>Password<b class="r-star">*</b></mat-label>
                   <input matInput placeholder="Enter Password" formControlName="password" autocomplete="off">
@@ -52,7 +52,7 @@
                   </mat-error>
                 </mat-form-field>
               </div>
-              <div class="col-12 col-sm-12 col-md-6 col-lg-3 my-1 px-0">
+              <div class="col-12 col-sm-12 col-md-6 col-lg-3 px-2">
                 <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
                   <mat-label>When To Use<b class="r-star">*</b></mat-label>
                   <input matInput placeholder="Enter When To Use" formControlName="when_to_use" autocomplete="off">

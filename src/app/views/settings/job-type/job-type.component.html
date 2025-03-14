@@ -3,8 +3,8 @@
     <div class="row mx-0 px-0">
       <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0">
         <form [formGroup]="jobTypeForm">
-          <div class="row mx-0 my-0 px-2">
-            <div class="col-12 col-sm-12 col-md-6 col-lg-4 my-1 px-0">
+          <div class="row mx-0 my-0 p-0">
+            <div class="col-12 col-sm-12 col-md-6 col-lg-4 px-2">
               <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
                 <mat-label>Job Type<b class="r-star">*</b></mat-label>
                 <input matInput placeholder="Enter Job Type" appAlphabetOnly formControlName="job_type_name" autocomplete="off">
@@ -21,7 +21,7 @@
                 </mat-error>
               </mat-form-field>
             </div>
-            <div class="col-12 col-sm-12 col-md-6 col-lg-4 my-1 no-padding pl-5 pr-0">
+            <div class="col-12 col-sm-12 col-md-6 col-lg-4 px-2">
               <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
                 <mat-label>Job Price <b class="r-star">*</b></mat-label>
                 <input matInput type="number" placeholder="Enter Job Price" formControlName="job_price" autocomplete="off" (keypress)="validateKeyPress($event)">

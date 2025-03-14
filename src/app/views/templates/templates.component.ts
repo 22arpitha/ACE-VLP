@@ -75,13 +75,13 @@ formData:any;
   }
   public saveTemplateDetails() {
     console.log(this.templateForm.controls)
-    if (!this.templateForm.dirty || !this.templateForm.valid) {
+    if (this.templateForm.invalid) {
       this.apiService.showError('Invalid!');
       this.templateForm.markAllAsTouched();
     } else {
       if (this.isEditItem) {
         this.formData = this.createFromData();
-        this.apiService.updateData(`${environment.live_url}/${environment.templates}/${this.selectedTemplate}/`, this.templateForm.value).subscribe((respData: any) => {
+        this.apiService.updateData(`${environment.live_url}/${environment.templates}/${this.selectedTemplate}/`, this.formData).subscribe((respData: any) => {
           if (respData) {
             this.apiService.showSuccess(respData['message']);
             this.resetFormState();
@@ -118,6 +118,7 @@ public createFromData(){
 }
 
   public resetFormState() {
+    this.templateForm.controls['template_file'].setValidators([Validators.required]);
     this.formGroupDirective.resetForm();
     this.selectedFile =null;
     this.file =null;
@@ -222,9 +223,11 @@ public createFromData(){
   public getSelectedTemplateDetails(id: any) {
     this.apiService.getData(`${environment.live_url}/${environment.templates}/${id}/`).subscribe((respData: any) => {
       this.templateForm.patchValue({ 'template_name': respData?.template_name });
-      this.templateForm.patchValue({ 'template_file': respData?.template_file });
+      // this.templateForm.patchValue({ 'template_file': respData?.template_file });
       this.templateForm.patchValue({ 'password': respData?.password });
       this.templateForm.patchValue({ 'when_to_use': respData?.when_to_use });
+      this.templateForm.get('template_file')?.setValidators(null); 
+      this.templateForm.get('template_file')?.setErrors(null);
 
       console.error('Controls:', this.templateForm.controls);
       urlToFile(respData?.template_file, this.getFileName(respData?.template_file))
