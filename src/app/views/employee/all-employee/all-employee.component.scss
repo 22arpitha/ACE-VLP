@@ -1,0 +1,27 @@
+.isActive{
+    background-color: #EBEBEB !important;
+    color: #000;
+    font-weight: 500;
+    font-size: 16px;
+}
+.tab-button-content{
+    background-color: #fff;
+    width: 120px;
+    outline: none;
+    border: none;
+}
+.settings-table-bg{
+    max-height: 70vh !important;
+}
+.table-wrapper{
+    max-height: 48vh !important;
+    overflow-x: auto;
+    margin-bottom: 20px;
+}
+
+.position-bottom-content{
+    position: absolute;
+    bottom: 0px;
+    left: 0px;
+    width: 100%;
+}

@@ -123,6 +123,7 @@ export class CountryComponent implements OnInit {
   saveCountryDetails() {
     if (this.countryForm.invalid) {
       this.countryForm.markAllAsTouched();
+      this.api.showError('Invalid Form!');
     } else {
       if (this.isEditItem) {
         this.api.updateData(`${environment.live_url}/${environment.settings_country}/${this.selectedItemId}/`, this.countryForm.value).subscribe((respData: any) => {

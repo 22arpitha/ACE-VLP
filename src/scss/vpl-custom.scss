@@ -51,6 +51,10 @@ thead th {
   margin-right: 15px !important;
   background-color: aliceblue;
 }
+.delete-item-button{
+  background-color: red;
+  color:#fff;
+}
 .disabled-section {
   pointer-events: none;
   opacity: 0.6; /* Optional: makes it visually clear that it's disabled */

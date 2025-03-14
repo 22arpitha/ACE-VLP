@@ -91,7 +91,7 @@ export class JobStatusComponent implements OnInit {
   }
   public saveJobTypeDetails() {
     if (this.jobStatusForm.invalid) {
-      this.apiService.showError('Invalid!');
+      this.apiService.showError('Invalid Form!');
       this.jobStatusForm.markAllAsTouched();
     } else {
       if (this.isEditItem) {

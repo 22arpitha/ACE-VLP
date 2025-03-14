@@ -134,7 +134,7 @@
         <mat-label>Select Designation</mat-label>
         <mat-select formControlName="designation" autocomplete="off"
                 placeholder="Select" panelClass="custom-select-panel"
-                [disableOptionCentering]="true">
+                [disableOptionCentering]="true" >
                 <mat-option *ngFor="let item of allDesignation" [value]="item.id">
                     {{item.designation_name}}
                 </mat-option>
@@ -162,13 +162,35 @@
     </mat-form-field>
 
 </div>
+<div class="col-12 col-sm-12 col-md-6 col-lg-4 my-1 px-0">
+    <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+        <mat-label>Employee Status</mat-label>
+        <mat-select formControlName="status" autocomplete="off"
+                placeholder="Select" panelClass="custom-select-panel"
+                [disableOptionCentering]="true">
+                <mat-option disabled *ngFor="let rmId of reportingManagerId" [value]="rmId.id">
+                    {{rmId.first_name}}
+                </mat-option>
+        </mat-select>
+        <mat-error *ngIf="f['status']?.invalid && f['status']?.touched || f['status']?.dirty">
+            <span  *ngIf="f['status']?.errors?.['required']">Employee Status is required</span>
+      </mat-error>
+    </mat-form-field>
+
+</div>
 </div>
 <div class="row mx-0 my-2 px-2">
     <div class="col-12 col-sm-12 col-md-6 col-lg-3 align-content-center">
-        <button mat-button class="cancel-button mat-btn-s" type="button" >
-          Back</button>
+        <button mat-button class="cancel-button mat-btn-s" type="button" (click)="backBtnFunc()" >
+            Back</button>
         <button mat-raised-button class="proceedbtn mat-btn-s" type="submit"><span
-            *ngIf="!isEditItem">Submit</span><span *ngIf="isEditItem">Update</span></button>
+            *ngIf="!isEditItem">Submit</span><span *ngIf="isEditItem" (click)="saveEmployeeDetails()">Update</span></button>
+      </div>
+      <div class="col-lg-3"></div>
+      <div class="col-lg-3"></div>
+      <div class="col-12 col-sm-12 col-md-6 col-lg-3 justify-content-end text-end align-content-end">
+        <button mat-button class="mat-btn-s delete-item-button" type="button" *ngIf="isEditItem" (click)="deleteEmployee()">
+          Delete</button>
       </div>
 </div>
             </form>

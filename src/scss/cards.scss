@@ -1,14 +1,14 @@
 
-@font-face {
-    font-family: 'Exo FT';
-    src: url('/assets/fonts/Exo/Exo-VariableFont_wght.ttf');
-  }
+// @font-face {
+//     font-family: 'Exo FT';
+//     src: url('/assets/fonts/Exo/Exo-VariableFont_wght.ttf');
+//   }
 .card-subtitle,.value-container{
     margin-bottom: 0 !important;
     color: #0a69b1 !important;
     font-weight: 500 !important;
     font-size: 14px !important;
-    font-family: 'Exo FT' !important;
+   font-family: 'Helvetica', sans-serif !important;
 }
 .card{
     line-height: 15px !important;

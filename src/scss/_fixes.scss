@@ -3,7 +3,7 @@ $secondary-color:#FFFFFF4D;
 h4 {
   font-size: 20px !important;
   margin: 0 !important;
-  font-family: 'Exo FT' !important;
+ font-family: 'Helvetica', sans-serif !important;
 
 }
 
@@ -12,7 +12,7 @@ h1 {
     padding: 0 !important;
     font-size: 18px;
     vertical-align: bottom;
-    font-family: 'Exo FT' !important;
+   font-family: 'Helvetica', sans-serif !important;
 
   }
 }
@@ -40,7 +40,7 @@ app-yet-to-approve {
 
 h1 {
   font-size: 2rem !important;
-  font-family: 'Exo FT' !important;
+ font-family: 'Helvetica', sans-serif !important;
 
 }
 
@@ -104,7 +104,7 @@ body {
   overflow-x: hidden !important;
   overflow-y: hidden !important;
   width: 100% !important;
-  font-family: 'Exo FT' !important;
+ font-family: 'Helvetica', sans-serif !important;
 
   .container,
   .container-fluid,
@@ -156,7 +156,7 @@ body {
   text-decoration: none;
   display: inline-block;
   font-size: 20px;
-  font-family: 'Exo FT' !important;
+ font-family: 'Helvetica', sans-serif !important;
 
   border-radius: 50%;
   position: fixed;
@@ -173,7 +173,7 @@ body {
   text-decoration: none;
   display: inline-block;
   font-size: 20px;
-  font-family: 'Exo FT' !important;
+ font-family: 'Helvetica', sans-serif !important;
 
   border-radius: 50%;
   position: fixed;
@@ -288,7 +288,7 @@ body {
   .createbtn-new span i {
    // font-size: 24px !important;
     font-style: normal !important;
-    font-family: 'Exo FT' !important;
+   font-family: 'Helvetica', sans-serif !important;
 
   }
 
@@ -441,7 +441,7 @@ body {
     // font-size: 11px !important;
     font-size: 1.05vw !important;
     border: 0.5px solid #dddddd !important;
-    font-family: 'Exo FT' !important;
+   font-family: 'Helvetica', sans-serif !important;
     font-weight: 600;
   }
 
@@ -575,12 +575,12 @@ form{
     select,
     textarea {
       height: 17px !important;
-      font-family: 'Exo FT' !important;
+     font-family: 'Helvetica', sans-serif !important;
       width: 100%;
     }
     input[type="file"] {
       height: 30px !important;
-      font-family: 'Exo FT' !important;
+     font-family: 'Helvetica', sans-serif !important;
     }
   }
   
@@ -620,7 +620,7 @@ input,
 select,
 textarea {
   font-size: 14px;
-  font-family: 'Exo FT' !important;
+ font-family: 'Helvetica', sans-serif !important;
 }
 
 .table-list>:not(caption)>*>* {
@@ -715,13 +715,13 @@ app-organization-list{
 }
 .mat-tab-body-content {
     overflow: hidden !important;
-    font-family: 'Exo FT' !important;
+   font-family: 'Helvetica', sans-serif !important;
 }
 .mat-tab-label .mat-tab-label-content {
-  font-family: 'Exo FT' !important;
+ font-family: 'Helvetica', sans-serif !important;
 }
 mat-label{
-  font-family: 'Exo FT' !important;
+ font-family: 'Helvetica', sans-serif !important;
 }
 .create-buttons .mat-icon{
   font-size: medium;

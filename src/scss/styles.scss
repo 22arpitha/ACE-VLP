@@ -31,11 +31,58 @@
  @import "cards.scss";
  @import "_material_input.scss";
  // @import 'ngx-toastr/toastr';
- @font-face {
-   font-family: 'Exo FT';
-   src: url('/assets/fonts/Exo/Exo-VariableFont_wght.ttf');
- }
+//  @font-face {
+//    font-family: 'Exo FT';
+//    src: url('/assets/fonts/Exo/Exo-VariableFont_wght.ttf');
+//  } 
 
+@font-face {
+  font-family: 'Helvetica';
+  src: url('/assets/fonts/Helvetica.ttf') format('truetype'),
+       url('/assets/fonts/helvetica.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Helvetica';
+  src: url('/assets/fonts/Helvetica-Bold.ttf') format('truetype');
+  font-weight: bold;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Helvetica';
+  src: url('/assets/fonts/Helvetica-BoldOblique.ttf') format('truetype');
+  font-weight: bold;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: 'Helvetica';
+  src: url('/assets/fonts/helvetica-light.ttf') format('truetype');
+  font-weight: 300;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Helvetica';
+  src: url('/assets/fonts/Helvetica-Oblique.ttf') format('truetype');
+  font-weight: normal;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: 'Helvetica';
+  src: url('/assets/fonts/helvetica-rounded-bold.otf') format('opentype');
+  font-weight: bold;
+  font-style: normal;
+}
+
+/* Apply the font globally */
+body {
+  font-family: 'Helvetica', sans-serif !important;
+}
  .p-error {
    color: red;
    font-size: 8px;
@@ -50,14 +97,14 @@
    margin: 0;
  }
  body,html{
-  font-family: 'Exo FT' !important;
+ font-family: 'Helvetica', sans-serif !important;
  }
 
  .mat-h6,
 
  .mat-typography {
    //  font: 400 calc(22px * 0.67)/20px Roboto, "Helvetica Neue", sans-serif;
-   font-family: 'Exo FT' !important;
+  font-family: 'Helvetica', sans-serif !important;
    margin: 0 0 12px;
  }
 
@@ -67,12 +114,12 @@
  h4,
  h5,
  h6 {
-   font-family: 'Exo FT' !important;
+  font-family: 'Helvetica', sans-serif !important;
  }
   .body{
     background-color: #f6f6f6;
     height: 100vh;
-    font-family: 'Exo FT' !important;
+   font-family: 'Helvetica', sans-serif !important;
   }
  /* based on angular-toastr css https://github.com/Foxandxss/angular-toastr/blob/cb508fe6801d6b288d3afc525bb40fee1b101650/dist/angular-toastr.css */
  .default-header-card{
@@ -467,7 +514,7 @@
 
  table thead tr>th,
  table thead tr>td {
-   font-family: "Exo FT" !important;
+   font-family: 'Helvetica', sans-serif !important;
    font-size: 14px;
    font-weight: 600;
    text-align: center;
@@ -494,7 +541,7 @@
  button,
  .title,
  input.form-control[type=text]::placeholder {
-   font-family: "Exo FT" !important;
+   font-family: 'Helvetica', sans-serif !important;
  }
 
  table tr>th {

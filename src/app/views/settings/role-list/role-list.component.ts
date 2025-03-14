@@ -122,6 +122,7 @@ export class RoleListComponent implements OnInit {
   saveCountryDetails() {
     if (this.rolesForm.invalid) {
       this.rolesForm.markAllAsTouched();
+      this.api.showError('Invalid Form!');
     } else {
       if (this.isEditItem) {
         this.api.updateData(`${environment.live_url}/${environment.settings_country}/${this.selectedItemId}/`, this.rolesForm.value).subscribe((respData: any) => {

@@ -66,7 +66,7 @@ export class StatusGroupComponent implements OnInit {
   public saveStatusGroupDetails() {
     {
       if (!this.statusGroupForm.dirty || !this.statusGroupForm.valid) {
-        this.apiService.showError('Invalid!');
+        this.apiService.showError('Invalid Form!');
         this.statusGroupForm.markAllAsTouched();
       } else {
         if (this.isEditItem) {
