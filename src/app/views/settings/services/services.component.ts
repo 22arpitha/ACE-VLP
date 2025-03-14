@@ -65,7 +65,6 @@ export class ServicesComponent implements OnInit {
   public saveServiceDetails() {
     {
       if (this.serviceForm.invalid) {
-        this.apiService.showError('Invalid Form!');
         this.serviceForm.markAllAsTouched();
       } else {
         if (this.isEditItem) {

@@ -75,9 +75,6 @@ export class CompanyPolicyComponent implements OnInit {
   }
   public savePolicyDetails() {
     if (this.companyPolicyForm.invalid) {
-      console.log(this.companyPolicyForm.value)
-      // !this.companyPolicyForm.dirty || !this.companyPolicyForm.valid
-      this.apiService.showError('Invalid!');
       this.companyPolicyForm.markAllAsTouched();
     } else {
       if (this.isEditItem) {

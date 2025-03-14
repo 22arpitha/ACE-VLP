@@ -85,7 +85,6 @@ export class JobTypeComponent implements OnInit {
   }
   public saveJobTypeDetails() {
     if (this.jobTypeForm.invalid) {
-      this.apiService.showError('Invalid Form!');
       this.jobTypeForm.markAllAsTouched();
     } else {
       if (this.isEditItem) {

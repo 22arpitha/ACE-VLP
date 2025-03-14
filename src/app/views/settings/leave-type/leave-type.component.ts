@@ -66,7 +66,6 @@ export class LeaveTypeComponent implements OnInit {
   public saveleaveTypeDetails() {
     {
       if (this.leaveTypeForm.invalid) {
-        this.apiService.showError('Invalid Form!');
         this.leaveTypeForm.markAllAsTouched();
       } else {
         if (this.isEditItem) {
