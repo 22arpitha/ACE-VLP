@@ -21,6 +21,7 @@ import { Page504Component } from './views/pages/page504/page504.component';
 import { Page503Component } from './views/pages/page503/page503.component';
 import { TimesheetConfiguartionComponent } from './views/organization/timesheet-configuartion/timesheet-configuartion.component';
 import { TemplatesComponent } from './views/templates/templates.component';
+import { CompanyPolicyComponent } from './views/company-policy/company-policy.component';
 
 
 
@@ -129,6 +130,10 @@ const routes: Routes = [
       {
         path:'templates',component:TemplatesComponent
       },
+      {
+        path:'company-policy',component:CompanyPolicyComponent
+      },
+     
       {
         path: 'pages',
         loadChildren: () =>

@@ -78,6 +78,7 @@ import { UserWelcomeMsgComponent } from './views/user-welcome-msg/user-welcome-m
 import { RazorpayService } from './service/razorpay.service';
 import { UseraccessInfoPopupComponent } from './views/useraccess-info-popup/useraccess-info-popup.component';
 import { TemplatesComponent } from './views/templates/templates.component';
+import { CompanyPolicyComponent } from './views/company-policy/company-policy.component';
 
 
 const APP_CONTAINERS = [
@@ -97,6 +98,7 @@ const APP_CONTAINERS = [
     UserWelcomeMsgComponent,
     UseraccessInfoPopupComponent,
     TemplatesComponent,
+    CompanyPolicyComponent,
   ],
   imports: [
     // ChartsModule,

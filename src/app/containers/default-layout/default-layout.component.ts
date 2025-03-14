@@ -62,12 +62,13 @@ export class DefaultLayoutComponent {
       ]
     },
     {
-      "name": "Componay Policy",
+      "name": "Company Policy",
       "icon": "bi bi-check-circle",
       "is_show": true,
+      "url": '/company-policy',
       "access": [
           {
-              "name": "Componay Policy",
+              "name": "Company Policy",
               "operations": [
                   {
                       "view": false,
@@ -78,7 +79,8 @@ export class DefaultLayoutComponent {
               ]
           }
       ]
-    },{
+    },
+    {
     "name": "Settings",
     "icon": "bi bi-sliders2",
     "is_show": true,

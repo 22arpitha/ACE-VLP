@@ -1,0 +1,168 @@
+<div class="container-wrapper settings-main-content px-0">
+    <section class="settings-form-bg">
+      <div class="row mx-0 px-0">
+        <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0">
+          <form [formGroup]="companyPolicyForm">
+            <div class="row mx-0 my-0 p-0">
+              <div class="col-12 col-sm-12 col-md-6 col-lg-3 px-2">
+                <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+                  <mat-label>Policy Name<b class="r-star">*</b></mat-label>
+                  <input matInput placeholder="Enter Policy Name" formControlName="policy_name" autocomplete="off">
+                  <mat-error *ngIf="f['policy_name']?.invalid && f['policy_name']?.touched || f['policy_name']?.dirty">
+                    <span *ngIf="f['policy_name'].errors?.['required']">Policy name is required</span>
+                    <span
+                      *ngIf="!f['policy_name'].errors?.['required'] && f['policy_name'].errors?.['pattern'] && !f['policy_name'].errors?.['maxlength']">
+                      Invalid name. Extra space and special charaters are not allowed
+                    </span>
+                    <span *ngIf="!f['policy_name'].errors?.['required'] && f['policy_name'].errors?.['maxlength']">
+                        Policy name cannot exceed 20 characters.
+                    </span>
+                  </mat-error>
+                </mat-form-field>
+              </div>
+              <div class="col-12 col-sm-12 col-md-6 col-lg-3 px-2 mt-3">
+                <input type="file"  accept=".doc,.docx,.pdf" formControlName="policy_file" #fileInput (change)="onFileSelected($event)" hidden>
+          <div class="image-container w-100 d-flex justify-content-between align-items-center" style="padding: 2px 15px;" [ngClass]="{'is-invalid': f['policy_file']?.touched && f['policy_file']?.invalid}">
+             
+              <mat-label >{{selectedFile ? selectedFile.name : 'Policy File'}}<b class="r-star">*</b></mat-label>
+              <button type="button" mat-icon-button (click)="triggerFileInput()">
+                  <i matTooltip="{{selectedFile ? 'Edit' : 'Upload File'}}" class="{{selectedFile ? 'bi bi-pencil-fill' : 'bi bi-file-earmark-spreadsheet'}}" id="edit-or-upload-icon"></i>
+                </button>
+          </div>
+          <div  *ngIf="f['policy_file']?.touched && f['policy_file']?.invalid" style="font-size: 11px;padding-left: 10px;color:red">
+            <span *ngIf="f['policy_file'].errors?.['required']">Policy File is required</span>
+            <span *ngIf="f['policy_file'].errors?.['accept']">Invalid file type. Please upload .doc or .docx or .pdf.</span>
+            <span *ngIf="f['policy_file'].errors?.['maxSize']">File size exceeds 10MB.</span>
+          </div>
+
+              </div>
+              <div class="col-12 col-sm-12 col-md-6 col-lg-3 px-2">
+                <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+                  <mat-label>Password<b class="r-star">*</b></mat-label>
+                  <input matInput placeholder="Enter Password" formControlName="password" autocomplete="off">
+                  <mat-error *ngIf="f['password']?.invalid && f['password']?.touched || f['password']?.dirty">
+                    <span *ngIf="f['password'].errors?.['required']">Password is required</span>
+                    <span
+                      *ngIf="!f['password'].errors?.['required'] && f['password'].errors?.['pattern'] && !f['password'].errors?.['maxlength']">
+                      Invalid name. Extra space and special charaters are not allowed
+                    </span>
+                    <span *ngIf="!f['password'].errors?.['required'] && f['password'].errors?.['maxlength']">
+                        Password cannot exceed 20 characters.
+                    </span>
+                  </mat-error>
+                </mat-form-field>
+              </div>
+              <div class="col-12 col-sm-12 col-md-6 col-lg-3 px-2">
+                <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+                  <mat-label>When To Use<b class="r-star">*</b></mat-label>
+                  <input matInput placeholder="Enter When To Use" formControlName="when_to_use" autocomplete="off">
+                  <mat-error *ngIf="f['when_to_use']?.invalid && f['when_to_use']?.touched || f['when_to_use']?.dirty">
+                    <span *ngIf="f['when_to_use'].errors?.['required']">When To Use is required</span>
+                    <span
+                      *ngIf="!f['when_to_use'].errors?.['required'] && f['when_to_use'].errors?.['pattern'] && !f['when_to_use'].errors?.['maxlength']">
+                      Invalid name. Extra space and special charaters are not allowed
+                    </span>
+                    <span *ngIf="!f['when_to_use'].errors?.['required'] && f['when_to_use'].errors?.['maxlength']">
+                        When To Use cannot exceed 20 characters.
+                    </span>
+                  </mat-error>
+                </mat-form-field>
+              </div>
+              <div class="col-12 col-sm-12 col-md-6 col-lg-3 align-content-center">
+                <button mat-raised-button class="cancel-button mat-btn-s" type="button" (click)="resetFormState()">
+                  Cancel</button>
+                <button mat-raised-button class="proceedbtn mat-btn-s" type="submit"
+                  (click)="savePolicyDetails()"><span *ngIf="!isEditItem">Submit</span><span
+                    *ngIf="isEditItem">Update</span></button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </section>
+    <section class="settings-table-bg" [ngClass]="{'disabled-section': isEditItem}">
+      <div class="row mx-0 my-2 px-0">
+        <div class="col-12 col-sm-12 col-md-6 col-lg-4 search-div px-0">
+          <input type="search" class="form-control p-2 sizeinput" [(ngModel)]="term" placeholder="Search by policy name"
+            aria-describedby="emailHelp" autocomplete="off" (input)="filterSearch($event)">
+          <i class="bi bi-search" id="search-icon-tab"></i>
+        </div>
+      </div>
+      <div class="row mx-0 my-2 px-0 table-wrapper">
+        <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0 ">
+          <table class="table table table-hover table-list">
+            <thead>
+              <tr>
+                <th>
+                  Sl no
+                </th>
+                <th>Policy Name
+                  <i *ngIf="!arrowState['policy_name']" (click)="sort('asc','policy_name')" class="bi bi-arrow-up"></i>
+                  <i (click)="sort('desc','policy_name')" *ngIf="arrowState['policy_name']" class="bi bi-arrow-down"></i>
+  
+                </th>
+                <th>Policy File</th>
+                <th>Password</th>
+                <th>When To Use</th>
+                <th>Access</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor='let item of allCompanyPolicyList | customSort:directionValue:sortValue
+                          |paginate : {
+                                   itemsPerPage: tableSize,
+                                   currentPage: page,
+                                   totalItems: count
+                                 }; let i=index'>
+                <td>{{getContinuousIndex(i)}}</td>
+                <td>{{item?.policy_name || '-'}}</td>
+                <td>{{getFileName(item?.policy_file)|| '-'}}</td>
+                <td>{{item?.password || '-'}}</td>
+                <td>{{item?.when_to_use || '-'}}</td>
+                <td>
+                    <ng-container>
+                     <img src="../../../../assets/images/download.svg" class="icon-image" container="body"
+                      ngbTooltip="Download" type="button" (click)="downloadFile(item)" /> 
+    
+                    </ng-container>
+                  </td>
+                <td>
+                  <ng-container>
+                    <img src="../../../../assets/images/Edit.svg" class="icon-image" container="body" ngbTooltip="Edit"
+                      type="button" (click)="editContent(item)" />
+                    <img src="../../../../assets/images/Delete.svg" class="icon-image" container="body"
+                      ngbTooltip="Delete" type="button" (click)="confirmDelete(item)" />
+  
+                  </ng-container>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+  
+      </div>
+  
+      <div *ngIf="allCompanyPolicyList.length === 0">
+        <app-generic-norecards></app-generic-norecards>
+      </div>
+    </section>
+    <div class="row mx-0 my-2 px-2" [ngClass]="{'disabled-section': isEditItem}">
+      <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0" *ngIf="allCompanyPolicyList.length > 0">
+        <div class="pagination-container p-0 pt-2">
+          <!-- Pagination Controls (Center-Aligned) -->
+          <pagination-controls previousLabel="Prev" nextLabel="Next" (pageChange)="onTableDataChange($event)">
+          </pagination-controls>
+  
+          <!-- Items Per Page Selector (Right-Aligned) -->
+          <div class="items-per-page-container">
+            <div>Items per page</div>
+            <mat-select [(ngModel)]="tableSize" (selectionChange)="onTableSizeChange($event)" placeholder="10"
+              class="page-size">
+              <mat-option *ngFor="let size of tableSizes" [value]="size">{{size}}</mat-option>
+            </mat-select>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>

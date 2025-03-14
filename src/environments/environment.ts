@@ -28,9 +28,11 @@ settings_job_type: `job-type`,
 settings_service: `service`,
 settings_designation:`designation`,
 // vlp Templates
-templates:'templates',
+templates:`templates`,
 // vlp Employee
-employee:'user',
+employee:`user`,
+// vlp company policy
+company_policy:`company-policy`,
 
 // project ace 
   leave_application: 'leave-application',
