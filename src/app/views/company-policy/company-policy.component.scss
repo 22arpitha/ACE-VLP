@@ -19,3 +19,7 @@
 .is-invalid{
     border: 2px solid red !important; 
 }
+
+::ng-deep mat-label{
+    text-overflow: ellipsis !important;
+}

@@ -68,7 +68,7 @@ export class SourceComponent implements OnInit {
   public saveSourceDetails() {
     {
       if (this.sourceForm.invalid) {
-        this.apiService.showError('Invalid Form!');
+        // this.apiService.showError('Invalid Form!');
         this.sourceForm.markAllAsTouched();
       } else {
         if (this.isEditItem) {

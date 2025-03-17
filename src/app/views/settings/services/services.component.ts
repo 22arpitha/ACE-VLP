@@ -65,7 +65,7 @@ export class ServicesComponent implements OnInit {
   public saveServiceDetails() {
     {
       if (this.serviceForm.invalid) {
-        this.apiService.showError('Invalid Form!');
+        // this.apiService.showError('Invalid Form!');
         this.serviceForm.markAllAsTouched();
       } else {
         if (this.isEditItem) {
@@ -100,6 +100,7 @@ export class ServicesComponent implements OnInit {
   }
 
   public sort(direction: string, column: string) {
+    console.log('direction',direction)
     Object.keys(this.arrowState).forEach(key => {
       this.arrowState[key] = false;
     });

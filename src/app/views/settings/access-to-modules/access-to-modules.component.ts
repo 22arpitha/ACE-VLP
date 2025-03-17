@@ -3,6 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ApiserviceService } from '../../../service/apiservice.service';
 import { concat } from 'rxjs';
 import { NgxUiLoaderService } from 'ngx-ui-loader';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-access-to-modules',
@@ -45,20 +46,20 @@ export class AccessToModulesComponent implements OnInit {
 
 
   getAccessForDesignation(id: any) {
-    this.api.getAccessByDesignationId(`?designation=${this.designation_id}&organization=${this.organization_id}`).subscribe(
+     this.api.getData(`${environment.live_url}/${environment.roles_access}/${this.designation_id}/`).subscribe(
       (res: any) => {
         console.log(res, 'designation id');
-        this.buttonName = res[0]?.id ? 'Update' : 'Add';
-        this.storeAssessGivenData = JSON.parse(JSON.stringify(res[0]?.access_list || []));
+        this.buttonName = res?.id ? 'Update' : 'Add';
+        this.storeAssessGivenData = JSON.parse(JSON.stringify(res?.access_list || []));
         // console.log('access_given_name_name',this.storeAssessGivenData)
-        this.itemId = res[0]?.id;
+        this.itemId = res?.id;
         this.mergeAccessData();
-        if (res.length > 0) {
-          this.dataEmitter.emit(res[0]);
-          if (res?.[0]?.access_list?.length > 0) {
+        // if (res.length > 0) {
+          this.dataEmitter.emit(res);
+          if (res?.access_list?.length > 0) {
             this.showBackButton = false;
             this.accessibility = [];
-            const accessList = res[0].access_list;
+            const accessList = res.access_list;
             accessList.forEach((element_list) => {
               let isMatched = false;
               element_list.access.forEach((accessItem: any) => {
@@ -77,10 +78,11 @@ export class AccessToModulesComponent implements OnInit {
             this.showBackButton = true;
             this.checkSubModuleAccess(this.data, this.storeAssessGivenData);
           }
-        } else {
-          this.showBackButton = true;
-          this.checkSubModuleAccess(this.data, this.storeAssessGivenData);
-        }
+        // } 
+        // else {
+        //   this.showBackButton = true;
+        //   this.checkSubModuleAccess(this.data, this.storeAssessGivenData);
+        // }
       }
     );
   }
@@ -138,43 +140,7 @@ export class AccessToModulesComponent implements OnInit {
       this.showBackButton = false;
       this.disableAddOrUpdateBtn = true;
       this.oneAccessValidation(data, api_data)
-      // const hasMatchingModule = api_data.some((given_access) => {
-      //   if (data.name === given_access.name) {
-      //     console.log("Module Name Matched:", data.name);
-
-      //     if (!data.access || !given_access.access) {
-      //       console.log("Access list missing for:", data.name);
-      //       this.disableAddOrUpdateBtn = false;
-      //       return true; // Stop iteration
-      //     }
-
-      //     let allOperationsMatch = data.access.every((selected_sub_access) =>
-      //       given_access.access.some(
-      //         (given_sub_access) =>
-      //           given_sub_access.name === selected_sub_access.name &&
-      //           JSON.stringify(given_sub_access.operations || []) === JSON.stringify(selected_sub_access.operations || [])
-      //       )
-      //     );
-
-      //     if (!allOperationsMatch) {
-      //       console.log("Operations do not fully match in:", given_access.name);
-      //       this.disableAddOrUpdateBtn = false;
-      //     }
-
-      //     return true;
-      //   }
-      //   return false;
-      // });
-      // if (!hasMatchingModule) {
-      //   console.log("No matching module found.");
-
-      //   let hasTrueValue = data.access.some((access) =>
-      //     access.operations.some((operation) => Object.values(operation).includes(true))
-      //   );
-
-      //   this.disableAddOrUpdateBtn = !hasTrueValue;
-      // }
-
+  
     } else if (api_data?.length === 0) {
       console.log('4')
       // this.disableAddOrUpdateBtn = false;
@@ -298,7 +264,7 @@ export class AccessToModulesComponent implements OnInit {
     const combinedData = this.accessibility.concat(this.data);
     let updated_access = {
       'designation': this.designation_id,
-      'organization': this.organization_id,
+      // 'organization': this.organization_id,
       'access_list': this.filterAccessList(combinedData)
     }
     console.log('updated code', updated_access);
@@ -333,7 +299,7 @@ export class AccessToModulesComponent implements OnInit {
 
   addSubModuleAccess(updated_access: any) {
     this.ngxService.stop();
-    this.api.postdesignationRoleAccess(updated_access).subscribe(
+    this.api.postData(`${environment.live_url}/${environment.roles_access}/`, updated_access).subscribe(
       (res) => {
         this.api.showSuccess(res['message']);
         setTimeout(() => {
@@ -347,7 +313,7 @@ export class AccessToModulesComponent implements OnInit {
   }
   updateSubModuleAccess(updated_access: any) {
     this.ngxService.stop();
-    this.api.putdesignationRoleAccess(updated_access, this.itemId).subscribe(
+    this.api.updateData(`${environment.live_url}/${environment.roles_access}/${this.itemId}/`,updated_access).subscribe(
       (res) => {
         this.api.showSuccess(res['message']);
         setTimeout(() => {
@@ -360,7 +326,7 @@ export class AccessToModulesComponent implements OnInit {
     )
   }
   backToAllDesignations() {
-    this.router.navigate(['/designation/list'])
+    this.router.navigate(['/settings/roles'])
   }
 
 }

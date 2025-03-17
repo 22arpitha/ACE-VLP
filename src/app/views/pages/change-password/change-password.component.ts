@@ -35,7 +35,7 @@ export class ChangePasswordComponent implements OnInit {
     this.changePassword = this.builder.group({
       old_password: ['', [Validators.required]],
       new_password: ['', [Validators.required, Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[$@$!%*?&])[A-Za-z\d$@$!%*?&].{7,}$/)]],
-      confirm_password: ['', [Validators.required, Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[$@$!%*?&])[A-Za-z\d$@$!%*?&].{7,}$/)]],
+      confirm_password: ['', [Validators.required]],
       user_id: [this.userId, [Validators.required]]
     },
     {

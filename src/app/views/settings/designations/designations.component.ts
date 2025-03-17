@@ -21,7 +21,7 @@ export class DesignationsComponent implements OnInit {
   designationForm: FormGroup;
   selectedDesignationStatus: any;
   allDesignationStatusList: any = [];
-  allDesignationGroupList: any = [];
+  RolesList: any = [];
   page = 1;
   count = 0;
   tableSize = 5;
@@ -30,7 +30,7 @@ export class DesignationsComponent implements OnInit {
   sortValue: string = '';
   directionValue: string = '';
   arrowState: { [key: string]: boolean } = {
-    status_name: false,
+    sub_designation_name: false,
   };
   arrow: boolean = false;
   term: any;
@@ -42,24 +42,25 @@ export class DesignationsComponent implements OnInit {
 
   ngOnInit(): void {
     this.initializeForm();
-    this.getAllJobStatus('?page=1&page_size=5');
-    this.getStatusGroupList();
+    this.getAllDesignation('?page=1&page_size=5');
+    this.getAllRolesList();
   }
 
   public initializeForm() {
     this.designationForm = this.fb.group({
-      status_name: ['', [Validators.pattern(/^[a-zA-Z0-9]+( [a-zA-Z0-9]+)*$/), Validators.required, Validators.maxLength(20)]],
-      status_group: [null, Validators.required],
+      sub_designation_name: ['', [Validators.pattern(/^[a-zA-Z0-9]+( [a-zA-Z0-9]+)*$/), Validators.required, Validators.maxLength(20)]],
+      designation: [null, Validators.required],
     });
   }
   public get f() {
     return this.designationForm.controls;
   }
 
-  public getAllJobStatus(pramas: any) {
+  public getAllDesignation(pramas: any) {
     this.allDesignationStatusList = [];
-    this.apiService.getData(`${environment.live_url}/${environment.settings_job_status}/${pramas}`).subscribe((respData: any) => {
+    this.apiService.getData(`${environment.live_url}/${environment.settings_designation}/${pramas}`).subscribe((respData: any) => {
       this.allDesignationStatusList = respData.results;
+      console.log( this.allDesignationStatusList)
       const noOfPages: number = respData.total_pages
       this.count = noOfPages * this.tableSize;
       this.page = respData.current_page;
@@ -75,29 +76,29 @@ export class DesignationsComponent implements OnInit {
     if (this.term) {
       query += `&search=${this.term}`
     }
-    this.getAllJobStatus(query);
+    this.getAllDesignation(query);
   }
   public saveJobTypeDetails() {
     if (this.designationForm.invalid) {
-      this.apiService.showError('Invalid!');
+      // this.apiService.showError('Invalid!');
       this.designationForm.markAllAsTouched();
     } else {
       if (this.isEditItem) {
-        this.apiService.updateData(`${environment.live_url}/${environment.settings_job_status}/${this.selectedDesignationStatus}/`, this.designationForm.value).subscribe((respData: any) => {
+        this.apiService.updateData(`${environment.live_url}/${environment.settings_designation}/${this.selectedDesignationStatus}/`, this.designationForm.value).subscribe((respData: any) => {
           if (respData) {
             this.apiService.showSuccess(respData['message']);
             this.resetFormState();
-            this.getAllJobStatus('?page=1&page_size=5');
+            this.getAllDesignation('?page=1&page_size=5');
           }
         }, (error: any) => {
           this.apiService.showError(error?.error?.detail);
         });
       } else {
-        this.apiService.postData(`${environment.live_url}/${environment.settings_job_status}/`, this.designationForm.value).subscribe((respData: any) => {
+        this.apiService.postData(`${environment.live_url}/${environment.settings_designation}/`, this.designationForm.value).subscribe((respData: any) => {
           if (respData) {
             this.apiService.showSuccess(respData['message']);
             this.resetFormState();
-            this.getAllJobStatus('?page=1&page_size=5');
+            this.getAllDesignation('?page=1&page_size=5');
           }
 
         }, (error: any) => {
@@ -132,7 +133,7 @@ export class DesignationsComponent implements OnInit {
       if (this.term) {
         query += `&search=${this.term}`
       }
-      this.getAllJobStatus(query);
+      this.getAllDesignation(query);
     }
   }
   public confirmDelete(content: any) {
@@ -157,7 +158,7 @@ export class DesignationsComponent implements OnInit {
 
   public deleteContent(item) {
 
-    this.apiService.delete(`${environment.live_url}/${environment.settings_job_status}/${item?.id}/`).subscribe(async (data: any) => {
+    this.apiService.delete(`${environment.live_url}/${environment.settings_designation}/${item?.id}/`).subscribe(async (data: any) => {
       if (data) {
         this.allDesignationStatusList = []
         this.apiService.showWarning('Job Status deleted successfully!')
@@ -166,7 +167,7 @@ export class DesignationsComponent implements OnInit {
           query += `&search=${this.term}`
         }
 
-        this.getAllJobStatus(query)
+        this.getAllDesignation(query)
       }
 
     }, (error => {
@@ -187,7 +188,7 @@ export class DesignationsComponent implements OnInit {
           this.selectedDesignationStatus = item?.id;
           this.isEditItem = true;
           modalRef.dismiss();
-          this.getSelectedDesignationstatus(this.selectedDesignationStatus);
+          this.getSelectedDesignation(this.selectedDesignationStatus);
         } else {
           modalRef.dismiss();
         }
@@ -196,10 +197,10 @@ export class DesignationsComponent implements OnInit {
       console.error('Error opening modal:', error);
     }
   }
-  public getSelectedDesignationstatus(id: any) {
-    this.apiService.getData(`${environment.live_url}/${environment.settings_job_status}/${id}/`).subscribe((respData: any) => {
-      this.designationForm.patchValue({ 'status_name': respData?.status_name });
-      this.designationForm.patchValue({ 'status_group': respData?.status_group });
+  public getSelectedDesignation(id: any) {
+    this.apiService.getData(`${environment.live_url}/${environment.settings_designation}/${id}/`).subscribe((respData: any) => {
+      this.designationForm.patchValue({ 'sub_designation_name': respData?.sub_designation_name });
+      this.designationForm.patchValue({ 'designation': respData?.designation });
     }, (error: any) => {
       this.apiService.showError(error?.error?.detail);
     })
@@ -210,16 +211,16 @@ export class DesignationsComponent implements OnInit {
       this.term = input;
       this.page = 1;
       const query = `?page=${this.page}&page_size=${this.tableSize}&search=${this.term}`;
-      this.getAllJobStatus(query);
+      this.getAllDesignation(query);
     } if (!input) {
       const query = `?page=${this.page}&page_size=${this.tableSize}`;
-      this.getAllJobStatus(query);
+      this.getAllDesignation(query);
     }
   }
-  public getStatusGroupList() {
-    this.allDesignationGroupList = [];
-    this.apiService.getData(`${environment.live_url}/${environment.settings_status_group}/`).subscribe((respData: any) => {
-      this.allDesignationGroupList = respData;
+  public getAllRolesList() {
+    this.RolesList = [];
+    this.apiService.getData(`${environment.live_url}/${environment.settings_roles}/`).subscribe((respData: any) => {
+      this.RolesList = respData;
     }, (error: any) => {
       this.apiService.showError(error.detail);
 
@@ -227,7 +228,7 @@ export class DesignationsComponent implements OnInit {
   }
 
   public getStatusGroupName(id: any) {
-    const itemStatusGroup = this.allDesignationGroupList.find((s: any) => s?.id === id);
+    const itemStatusGroup = this.RolesList.find((s: any) => s?.id === id);
 
     return itemStatusGroup?.group_name
   }

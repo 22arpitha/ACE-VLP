@@ -76,7 +76,7 @@ formData:any;
   public saveTemplateDetails() {
     console.log(this.templateForm.controls)
     if (this.templateForm.invalid) {
-      this.apiService.showError('Invalid!');
+      // this.apiService.showError('Invalid!');
       this.templateForm.markAllAsTouched();
     } else {
       if (this.isEditItem) {

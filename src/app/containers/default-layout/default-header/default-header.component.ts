@@ -83,27 +83,27 @@ export class DefaultHeaderComponent extends HeaderComponent implements OnInit {
     this.user_id = sessionStorage.getItem('user_id') || '';
     this.orgId = sessionStorage.getItem('organization_id')
     this.user_role_Name = sessionStorage.getItem('user_role_name');
-    this.getNotification()
+    // this.getNotification()
     this.permissionArr = JSON.parse(sessionStorage.getItem('permissionArr')|| '[]');
     // this.welcomeMsg();
-    this.getProfiledata()
+    // this.getProfiledata()
     this.common_service.title$.subscribe(title => {
       this.pageName = title;
-      this.cdref.detectChanges();
+      // this.cdref.detectChanges();
     });
     this.common_service.subTitle$.subscribe(subtitle =>{
       this.previousPage = subtitle
     })
-    this.getaccessDetails()
-    this.common_service.subsctiptionState$.subscribe(status =>{
-      if(status){
-        // debugger;
-        this.getMySubscription()
-      }
-    })
-    if(this.user_role_Name !== 'SuperAdmin'){
-      this.getMySubscription()
-    }
+    // this.getaccessDetails()
+    // this.common_service.subsctiptionState$.subscribe(status =>{
+    //   if(status){
+    //     // debugger;
+    //     this.getMySubscription()
+    //   }
+    // })
+    // if(this.user_role_Name !== 'SuperAdmin'){
+    //   this.getMySubscription()
+    // }
 
   }
   getMySubscription(){

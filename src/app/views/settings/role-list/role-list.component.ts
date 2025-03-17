@@ -63,7 +63,7 @@ export class RoleListComponent implements OnInit {
   }
 
   getAllRolesList(params: any) {
-    this.api.getData(`${environment.live_url}/${environment.settings_country}/${params}`).subscribe(
+    this.api.getData(`${environment.live_url}/${environment.settings_roles}/${params}`).subscribe(
       (res: any) => {
         console.log(res.results)
         this.allRoles = res.results;
@@ -122,10 +122,10 @@ export class RoleListComponent implements OnInit {
   saveCountryDetails() {
     if (this.rolesForm.invalid) {
       this.rolesForm.markAllAsTouched();
-      this.api.showError('Invalid Form!');
+      // this.api.showError('Invalid Form!');
     } else {
       if (this.isEditItem) {
-        this.api.updateData(`${environment.live_url}/${environment.settings_country}/${this.selectedItemId}/`, this.rolesForm.value).subscribe((respData: any) => {
+        this.api.updateData(`${environment.live_url}/${environment.settings_roles}/${this.selectedItemId}/`, this.rolesForm.value).subscribe((respData: any) => {
           if (respData) {
             this.api.showSuccess(respData['message']);
             this.resetFormState();
@@ -135,7 +135,7 @@ export class RoleListComponent implements OnInit {
           this.api.showError(error?.error?.detail);
         });
       } else {
-        this.api.postData(`${environment.live_url}/${environment.settings_country}/`, this.rolesForm.value).subscribe((respData: any) => {
+        this.api.postData(`${environment.live_url}/${environment.settings_roles}/`, this.rolesForm.value).subscribe((respData: any) => {
           if (respData) {
             this.api.showSuccess(respData['message']);
             this.resetFormState();
@@ -175,7 +175,7 @@ export class RoleListComponent implements OnInit {
   }
 
   getSelectedItemData(id: any) {
-    this.api.getData(`${environment.live_url}/${environment.settings_country}/${id}/`).subscribe((respData: any) => {
+    this.api.getData(`${environment.live_url}/${environment.settings_roles}/${id}/`).subscribe((respData: any) => {
       this.rolesForm.patchValue({ 'country_name': respData?.country_name });
     }, (error: any) => {
       this.api.showError(error?.error?.detail);
@@ -202,7 +202,7 @@ export class RoleListComponent implements OnInit {
     }
   }
   public deleteContent(id: any) {
-    this.api.delete(`${environment.live_url}/${environment.settings_country}/${id}/`).subscribe(async (data: any) => {
+    this.api.delete(`${environment.live_url}/${environment.settings_roles}/${id}/`).subscribe(async (data: any) => {
       if (data) {
         this.allRoles = []
         this.api.showSuccess(data.message)

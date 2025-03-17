@@ -15,7 +15,7 @@ import { UserAccessWebsocketService } from './service/user-access-websocket.serv
   templateUrl: 'app.component.html',
 })
 export class AppComponent implements OnInit {
-  title = 'Projectace';
+  title = 'VLP';
  
 
   connectionStatusMessage!: string;
