@@ -43,9 +43,9 @@ export class ProfileComponent implements OnInit {
     this.user_id = sessionStorage.getItem('user_id')
     this.user_role = sessionStorage.getItem('user_role_name');
     // console.log('this.user_role',this.user_role)
-    this.getCountry();
+    // this.getCountry();
     this.initform()
-    this.getProfiledata()
+    // this.getProfiledata()
   }
   goBack(event) {
     event.preventDefault(); // Prevent default back button behavior

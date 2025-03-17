@@ -55,6 +55,7 @@ button.btn-yes {
    
     // text-align: center;
     padding: 30px 18px 0px !important;
+    text-align: center;
 
     .modal-title {
         padding-bottom: 15px;
@@ -76,7 +77,7 @@ button.btn-yes {
         }
     }
     .modal-footer {
-        padding-bottom: 20px !important;
+        padding: 0px 18px 30px !important;
         border-top: 0 !important;
         justify-content: center !important;
     }

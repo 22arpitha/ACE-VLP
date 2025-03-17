@@ -9,15 +9,15 @@
                 <mat-label>Country Name <b class="r-star">*</b></mat-label>
                 <input matInput placeholder="Country name" appAlphabetOnly formControlName="country_name" autocomplete="off"
                   pattern="^(?!\s)(.*\S)?$">
-                  <mat-error *ngIf="f['country_name']?.invalid && f['country_name']?.touched || f['country_name']?.dirty">
-                  <span *ngIf="f['country_name'].errors?.['required']">Leave Type is required</span>
+                  <mat-error
+                  *ngIf="f['country_name']?.invalid && f['country_name']?.touched || f['country_name']?.dirty">
+                  <span *ngIf="f['country_name'].errors?.['required']">Country Name  is required</span>
                   <span
-                    *ngIf="f['country_name'].errors?.['required'] && f['country_name'].errors?.['pattern'] && !f['country_name'].errors?.['maxlength']">
+                    *ngIf="!f['country_name'].errors?.['required'] && f['country_name'].errors?.['pattern'] && !f['country_name'].errors?.['maxlength']">
                     Invalid name. Extra space, numbers and special charaters are not allowed
                   </span>
-                  <span
-                    *ngIf="f['country_name'].errors?.['required'] && f['country_name'].errors?.['maxlength']">
-                    Leave Type cannot exceed 20 characters.
+                  <span *ngIf="!f['country_name'].errors?.['required'] && f['country_name'].errors?.['maxlength']">
+                    Country Name  cannot exceed 20 characters.
                   </span>
                 </mat-error>
               </mat-form-field>
@@ -40,7 +40,7 @@
       <div class="col-sm-12 col-md-4 col-lg-4 search-div px-0">
         <input type="search" (input)="filterSearch($event)" class="form-control p-2 sizeinput" [(ngModel)]="term"
           placeholder="Search by country name" aria-describedby="emailHelp" autocomplete="off">
-        <i class="bi bi-search" id="search-icon-tab"></i>
+        <i *ngIf="!term" class="bi bi-search" id="search-icon-tab"></i>
       </div>
     </div>
     <div class="row mx-0 my-2 px-0 table-wrapper">

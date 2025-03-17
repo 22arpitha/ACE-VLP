@@ -33,7 +33,7 @@
                                             <mat-icon matSuffix>mail_outline</mat-icon>
                                             <mat-error *ngIf="f['email'].touched && f['email'].invalid">
                                               <span *ngIf="f['email'].errors && f['email'].errors['required']">Email Id is required.</span>
-                                              <span *ngIf="f['email'].errors && f['email'].errors['email']">Email Id is invalid.</span>
+                                              <span *ngIf="f['email'].errors && f['email'].errors['pattern']">Email Id is invalid.</span>
                                             </mat-error>
                                           </mat-form-field>
                                     </div>

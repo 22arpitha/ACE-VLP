@@ -13,7 +13,7 @@ import { environment } from '../../../../environments/environment';
 })
 export class StatusGroupComponent implements OnInit {
   @ViewChild(FormGroupDirective) formGroupDirective!: FormGroupDirective;
-  BreadCrumbsTitle: any = 'Source Group';
+  BreadCrumbsTitle: any = 'Status Group';
   isEditItem: boolean = false;
   statusGroupForm: FormGroup;
   selectedStatusGroup: any;

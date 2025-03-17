@@ -39,7 +39,7 @@
       <div class="col-12 col-sm-12 col-md-6 col-lg-4 search-div px-0">
         <input type="search" class="form-control p-2 sizeinput" [(ngModel)]="term" placeholder="Search by Leave type"
           aria-describedby="emailHelp" autocomplete="off" (input)="filterSearch($event)">
-        <i class="bi bi-search" id="search-icon-tab"></i>
+        <i *ngIf="!term" class="bi bi-search" id="search-icon-tab"></i>
       </div>
     </div>
     <div class="row mx-0 my-2 px-0 table-wrapper">

@@ -7,14 +7,14 @@
                 <div class="col-12 col-sm-12 col-md-6 col-lg-4 my-1 px-0">
                     <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
                       <mat-label>Designation Name <b class="r-star">*</b></mat-label>
-                      <input matInput placeholder="Enter Designation Name" formControlName="status_name" autocomplete="off">
-                      <mat-error *ngIf="f['status_name']?.invalid && f['status_name']?.touched || f['status_name']?.dirty">
-                        <span *ngIf="f['status_name'].errors?.['required']">Designation Name is required</span>
+                      <input matInput placeholder="Enter Designation Name" formControlName="sub_designation_name" autocomplete="off">
+                      <mat-error *ngIf="f['sub_designation_name']?.invalid && f['sub_designation_name']?.touched || f['sub_designation_name']?.dirty">
+                        <span *ngIf="f['sub_designation_name'].errors?.['required']">Designation Name is required</span>
                         <span
-                          *ngIf="!f['status_name'].errors?.['required'] && f['status_name'].errors?.['pattern'] && !f['status_name'].errors?.['maxlength']">
+                          *ngIf="!f['sub_designation_name'].errors?.['required'] && f['sub_designation_name'].errors?.['pattern'] && !f['sub_designation_name'].errors?.['maxlength']">
                           Invalid name. Extra space and special charaters are not allowed
                         </span>
-                        <span *ngIf="!f['status_name'].errors?.['required'] && f['status_name'].errors?.['maxlength']">
+                        <span *ngIf="!f['sub_designation_name'].errors?.['required'] && f['sub_designation_name'].errors?.['maxlength']">
                           Status Name cannot exceed 20 characters.
                         </span>
                       </mat-error>
@@ -23,14 +23,14 @@
               <div class="col-12 col-sm-12 col-md-6 col-lg-4 my-1 no-padding pl-5 pr-0">
                 <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
                   <mat-label>Select Role <b class="r-star">*</b></mat-label>
-                  <mat-select formControlName="status_group" placeholder="Select Role" autocomplete="off"
+                  <mat-select formControlName="designation" placeholder="Select Role" autocomplete="off"
                     panelClass="custom-select-panel" [disableOptionCentering]="true">
-                    <mat-option *ngFor="let status of allDesignationGroupList" [value]="status.id">
-                      {{status.group_name | titlecase}}
+                    <mat-option *ngFor="let item of RolesList" [value]="item.id">
+                      {{item.designation_name | titlecase}}
                     </mat-option>
                   </mat-select>
-                  <mat-error *ngIf="f['status_group']?.invalid && f['status_group']?.touched || f['status_group']?.dirty">
-                    <span *ngIf="f['status_group'].errors?.['required']">Role is required</span>
+                  <mat-error *ngIf="f['designation']?.invalid && f['designation']?.touched || f['designation']?.dirty">
+                    <span *ngIf="f['designation'].errors?.['required']">Role is required</span>
                   </mat-error>
                 </mat-form-field>
               </div>
@@ -51,7 +51,7 @@
         <div class="col-12 col-sm-12 col-md-6 col-lg-4 search-div px-0">
           <input type="search" class="form-control p-2 sizeinput" [(ngModel)]="term" placeholder="Search by designation name"
             aria-describedby="emailHelp" autocomplete="off" (input)="filterSearch($event)">
-          <i class="bi bi-search" id="search-icon-tab"></i>
+          <i *ngIf="!term" class="bi bi-search" id="search-icon-tab"></i>
         </div>
       </div>
       <div class="row mx-0 my-2 px-0 table-wrapper">
@@ -64,31 +64,34 @@
                 </th>
                 <th>
                   Designation Name
+                  <i *ngIf="!arrowState['sub_designation_name']" (click)="sort('asc','sub_designation_name')" class="bi bi-arrow-up"></i>
+                  <i (click)="sort('desc','sub_designation_name')" *ngIf="arrowState['sub_designation_name']" class="bi bi-arrow-down"></i>
+  
                 </th>
                 <th>Role Name
-                  <i *ngIf="!arrowState['status_name']" (click)="sort('asc','status_name')" class="bi bi-arrow-up"></i>
-                  <i (click)="sort('desc','status_name')" *ngIf="arrowState['status_name']" class="bi bi-arrow-down"></i>
+                  <!-- <i *ngIf="!arrowState['sub_designation_name']" (click)="sort('asc','sub_designation_name')" class="bi bi-arrow-up"></i>
+                  <i (click)="sort('desc','sub_designation_name')" *ngIf="arrowState['sub_designation_name']" class="bi bi-arrow-down"></i> -->
   
                 </th>
                 <th>Action</th>
               </tr>
             </thead>
             <tbody>
-              <tr *ngFor='let status_item of allDesignationStatusList | customSort:directionValue:sortValue
+              <tr *ngFor='let item of allDesignationStatusList | customSort:directionValue:sortValue
                           |paginate : {
                                    itemsPerPage: tableSize,
                                    currentPage: page,
                                    totalItems: count
                                  }; let i=index'>
                 <td>{{getContinuousIndex(i)}}</td>
-                <td>{{getStatusGroupName(status_item?.status_group) || '-'}}</td>
-                <td>{{status_item?.status_name || '-'}}</td>
+                <td>{{item?.sub_designation_name || '-'}}</td>
+                <td>{{item?.designation || '-'}}</td>
                 <td>
                   <ng-container>
                     <img src="../../../../assets/images/Edit.svg" class="icon-image" container="body" ngbTooltip="Edit"
-                      type="button" (click)="editContent(status_item)" />
+                      type="button" (click)="editContent(item)" />
                     <img src="../../../../assets/images/Delete.svg" class="icon-image" container="body"
-                      ngbTooltip="Delete" type="button" (click)="confirmDelete(status_item)" />
+                      ngbTooltip="Delete" type="button" (click)="confirmDelete(item)" />
   
                   </ng-container>
                 </td>

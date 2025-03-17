@@ -44,7 +44,7 @@ export class CountryComponent implements OnInit {
 
   intialForm() {
     this.countryForm = this.fb.group({
-      country_name: ['',[Validators.required, Validators.pattern(/^[a-zA-Z]+( [a-zA-Z]+)*$/),Validators.maxLength(20)]]
+      country_name: ['', [Validators.required, Validators.pattern(/^[a-zA-Z]+( [a-zA-Z]+)*$/), Validators.maxLength(20)]],
     })
   }
   get f() {
@@ -122,6 +122,7 @@ export class CountryComponent implements OnInit {
 
   saveCountryDetails() {
     if (this.countryForm.invalid) {
+      console.log(this.countryForm.value)
       this.countryForm.markAllAsTouched();
     } else {
       if (this.isEditItem) {

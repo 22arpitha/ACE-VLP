@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ApiserviceService } from '../../../service/apiservice.service';
 import { CommonServiceService } from '../../../service/common-service.service';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-roles-access',
@@ -31,143 +32,8 @@ export class RolesAccessComponent implements OnInit {
   ) {
     this.user_id = sessionStorage.getItem('user_id')
     this.designation_id = this.routes.snapshot.paramMap.get('id')
-    this.organization_id = sessionStorage.getItem('organization_id');
     this.user_role = sessionStorage.getItem('user_role_name')
-    // this.mainMenu = [
-    //   {
-    //     label: 'Accounts',
-    //     icon: 'fa fa-key',
-    //     type: 'radio',
-    //     class: 'form-check-input',
-    //     labelClass: 'form-check-label',
-    //     checked: false,
-    //     containerClass: 'form-check',
-    //     controlName: 'accounts',
-    //     path: 'accounts-config'
-    //   },
-    //   {
-    //     label: 'Roles',
-    //     icon: 'fa fa-handshake',
-    //     type: 'radio',
-    //     class: 'form-check-input',
-    //     labelClass: 'form-check-label',
-    //     checked: false,
-    //     containerClass: 'form-check',
-    //     controlName: 'roles',
-    //     path: 'roles-config'
-    //   },
-    //   {
-    //     label: 'Department',
-    //     icon: 'fa fa-th-large',
-    //     type: 'radio',
-    //     class: 'form-check-input',
-    //     labelClass: 'form-check-label',
-    //     checked: false,
-    //     containerClass: 'form-check',
-    //     controlName: 'department',
-    //     path: 'department-config'
-    //   },
-    //   {
-    //     label: 'People',
-    //     icon: 'fa fa-user-plus',
-    //     type: 'radio',
-    //     class: 'form-check-input',
-    //     labelClass: 'form-check-label',
-    //     checked: false,
-    //     containerClass: 'form-check',
-    //     controlName: 'people',
-    //     path: 'people-config'
-    //   },
-    //   {
-    //     label: 'Leave/Holiday List',
-    //     icon: 'fa fa-calendar',
-    //     type: 'radio',
-    //     class: 'form-check-input',
-    //     labelClass: 'form-check-label',
-    //     checked: false,
-    //     containerClass: 'form-check',
-    //     controlName: 'leave/holiday',
-    //     path: `leave/holiday-config`
-    //   },
-    //   {
-    //     label: 'Timesheet',
-    //     icon: 'fa fa-clock',
-    //     type: 'radio',
-    //     class: 'form-check-input',
-    //     labelClass: 'form-check-label',
-    //     checked: false,
-    //     containerClass: 'form-check',
-    //     controlName: 'timesheet',
-    //     path: 'timesheet-config'
-    //   },
-    //   {
-    //     label: 'Industry/Sector',
-    //     icon: 'fa fa-building',
-    //     type: 'radio',
-    //     class: 'form-check-input',
-    //     labelClass: 'form-check-label',
-    //     checked: false,
-    //     containerClass: 'form-check',
-    //     controlName: 'industry/sector',
-    //     path: 'industry-config'
-    //   },
-    //   {
-    //     label: 'Review',
-    //     icon: 'fa fa-sitemap',
-    //     type: 'radio',
-    //     class: 'form-check-input',
-    //     labelClass: 'form-check-label',
-    //     checked: false,
-    //     containerClass: 'form-check',
-    //     controlName: 'review',
-    //     path: 'review'
-    //   },
-    //   {
-    //     label: 'Clients',
-    //     icon: 'fa fa-building',
-    //     type: 'radio',
-    //     class: 'form-check-input',
-    //     labelClass: 'form-check-label',
-    //     checked: false,
-    //     containerClass: 'form-check',
-    //     controlName: 'clients',
-    //     path: 'clients-config'
-    //   },
-    //   // {
-    //   //   label:'Project Status',
-    //   //   icon:'fa fa-list',
-    //   //   type:'radio',
-    //   //   class:'form-check-input',
-    //   //   labelClass:'form-check-label',
-    //   //   checked:false,
-    //   //   containerClass:'form-check',
-    //   //   controlName:'projectStatus',
-    //   //   path:'project-status-config'
-    //   // },
-    //   {
-    //     label: 'Project Task Categories',
-    //     icon: 'fa fa-tags',
-    //     type: 'radio',
-    //     class: 'form-check-input',
-    //     labelClass: 'form-check-label',
-    //     checked: false,
-    //     containerClass: 'form-check',
-    //     controlName: 'projectTaskCategories',
-    //     path: 'project-task-config'
-    //   },
-    //   {
-    //     label: 'Projects',
-    //     icon: 'fa fa-folder-open',
-    //     type: 'radio',
-    //     class: 'form-check-input',
-    //     labelClass: 'form-check-label',
-    //     checked: false,
-    //     containerClass: 'form-check',
-    //     controlName: 'projects',
-    //     path: 'projects'
-    //   },
-    // ]
-
+    
   }
 
 
@@ -182,14 +48,14 @@ export class RolesAccessComponent implements OnInit {
 
 
   getDesignationNameFromDesignationId() {
-    this.api.getDesignationListById(this.designation_id).subscribe((res: any) => {
+    this.api.getData(`${environment.live_url}/${environment.settings_roles}/${this.designation_id}/`).subscribe((res: any) => {
       this.role = res.designation_name;
     })
   }
 
   // side bar module list
   allrolesList() {
-    this.api.userAccess(this.user_id).subscribe(
+    this.api.getData(`${environment.live_url}/${environment.user_access}/${this.user_id}/`).subscribe(
       (data: any) => {
         console.log('all list', data,)
         this.mainMenu = data.access_list.filter((module_name) => module_name.name != 'Subscription');
@@ -203,22 +69,23 @@ export class RolesAccessComponent implements OnInit {
 
   // get access given data
   getAccessbilitiesByDesignationId() {
-    this.api.getAccessByDesignationId(`?designation=${this.designation_id}&organization=${this.organization_id}`).subscribe(
+    this.api.getData(`${environment.live_url}/${environment.roles_access}/${this.designation_id}/`).subscribe(
       (res: any) => {
         console.log(res, 'sub modules')
-        if (res.length == 0 || res[0].access_list.length == 0) {
+        if (res.access_list.length == 0) {
           if (this.user_role === 'Admin') {
             let temp = this.mainMenu.find((module_name: any) => module_name.name === 'Dashboard');
             temp.access[0].operations[0].view = true;
             console.log(temp)
             this.passingChildrenToTabel(temp)
-          } else {
+          } 
+          else {
             this.manualFuction();
           }
-        } else if (res.length != 0 && res[0].access_list.length != 0) {
+        } else if (res.access_list.length != 0) {
           let temp_dataa: any = [];
           let menuMap = new Map(this.mainMenu.map((item: any) => [item.name, item]));
-          res[0].access_list.forEach((res_data: any) => {
+          res.access_list.forEach((res_data: any) => {
             let matchedItem:any = menuMap.get(res_data.name);
 
             if (matchedItem) {
@@ -234,22 +101,8 @@ export class RolesAccessComponent implements OnInit {
             }
           });
 
-          // this.mainMenu.forEach((element1: any) => {  
-            // let matchingAccess = res[0].access_list.find((accessItem: any) => accessItem.name === element1.name);
-            // console.log('match',matchingAccess)
-            // if (matchingAccess) {
-            //   console.log('matched',matchingAccess)
-            //   element1.access.forEach((element1_1: any) => {
-            //     // push the remaining access to the array
-            //     if (!matchingAccess.access.some((item: any) => item.name === element1_1.name)) {
-            //       matchingAccess.access.push(element1_1);
-            //       // console.log('not match',matchingAccess)
-            //     }
-            //   });
-            // } 
-          // });
           if(temp_dataa.length>0){
-            this.passingChildrenToTabel(res[0].access_list[0])
+            this.passingChildrenToTabel(res.access_list[0])
           } else{
             this.passingChildrenToTabel(this.mainMenu[0])
           }

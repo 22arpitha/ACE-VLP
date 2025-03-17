@@ -23,13 +23,15 @@ settings_job_status: `job-status`,
 settings_job_type: `job-type`,
 settings_service: `service`,
 settings_designation:`designation`,
-settings_roles:'roles',
+settings_roles:`roles`,
+roles_access:`roles-access`,
 // vlp Templates
 templates:`templates`,
 // vlp Employee
 employee:`user`,
 // vlp company policy
 company_policy:`company-policy`,
+
 
  
   leave_application: 'leave-application',

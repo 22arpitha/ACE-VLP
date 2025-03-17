@@ -33,7 +33,7 @@ export class LoginComponent implements OnInit {
     this.loginForm = this.builder.group({
       // username: ['', [Validators.required, Validators.email]],
       // password: ['', [Validators.required]],
-      email: ['', [Validators.required, Validators.email]],
+      email: ['', [Validators.required, Validators.pattern('^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$')]],
       password: ['', [Validators.required]],
     })
   }
@@ -77,16 +77,17 @@ export class LoginComponent implements OnInit {
         console.log(response)
         const token = response['token'];
         const decoded:any = jwtDecode(token);
+        console.log(decoded)
         sessionStorage.setItem('token', response['token']),
         sessionStorage.setItem('logged_count', response['logged_in_time']);
         sessionStorage.setItem('user_id',decoded.user_id )
         this.api.showSuccess('Login successful!'); // remove this line once the user access api  is done
-        this.router.navigate(['profile']) // remove this line once the user access api  is done
         
-        // this.api.userAccess(decoded.user_id).subscribe(
-        //   (data:any)=>{
-        //    console.log('user access',data)
-        //     sessionStorage.setItem('user_role_name', data.user_role);
+        this.api.getData(`${environment.live_url}/${environment.user_access}/${decoded.user_id}/`).subscribe(
+          (data:any)=>{
+            console.log('user access',data)
+            sessionStorage.setItem('user_role_name', data.user_role);
+            this.router.navigate(['profile']) // remove this line once the user access api  is done
         //     sessionStorage.setItem('organization_id', data.organization_id);
         //     sessionStorage.setItem('designation', data.designation);
         //       let permissionArr: any = []
@@ -104,11 +105,11 @@ export class LoginComponent implements OnInit {
         //         this.useraccessSocket.connectWebSocket();
         //       }
         //       this.api.showSuccess('Login successful!');
-        //   },
-        //   (error:any)=>{
-        //    // console.log('error',error)
-        //   }
-        // )
+          },
+          (error:any)=>{
+           // console.log('error',error)
+          }
+        )
 
       }, (error: any) => {
        if(error.error.message){

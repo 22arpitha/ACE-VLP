@@ -51,9 +51,9 @@
                                             </mat-form-field>
                                             <div class="px-2" *ngIf="f['confirm_password'].touched && f['confirm_password'].invalid">
                                                 <span class="text-errors" *ngIf="f['confirm_password'].errors && f['confirm_password'].errors['required']">Confirm password is required.</span>
-                                                <span class="text-errors" *ngIf="f['confirm_password'].errors && f['confirm_password'].hasError('pattern')"> Password should
+                                                <!-- <span class="text-errors" *ngIf="f['confirm_password'].errors && f['confirm_password'].hasError('pattern')"> Password should
                                                       contain at least one special character,one number,one uppercase and one
-                                                      lowercase, and be at least 8 characters long</span>
+                                                      lowercase, and be at least 8 characters long</span> -->
                                             </div>
                                             <div class="px-2" *ngIf="f['confirm_password'].valid">
                                                 <span class="text-errors" *ngIf="f['confirm_password'].valid && changePassword.hasError('passwordMismatch') && (changePassword.get('confirm_password').dirty || changePassword.get('confirm_password').touched)">

@@ -99,6 +99,7 @@ export class ServicesComponent implements OnInit {
   }
 
   public sort(direction: string, column: string) {
+    console.log('direction',direction)
     Object.keys(this.arrowState).forEach(key => {
       this.arrowState[key] = false;
     });
