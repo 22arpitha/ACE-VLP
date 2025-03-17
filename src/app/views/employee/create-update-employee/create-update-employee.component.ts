@@ -22,6 +22,7 @@ reportingManagerId:any=[];
 selectedEmployeeList:any=[];
 isEditItem:boolean=false;
 employee_id:any;
+isActivelist:any=[{name:'In Active',is_active:false},{name:'Active',is_active:true}]
 
   constructor(private fb:FormBuilder,private activeRoute:ActivatedRoute,
     private common_service: CommonServiceService,private router:Router,
@@ -39,28 +40,28 @@ employee_id:any;
   ngOnInit(): void {
     this.intialForm();
     this.getUserRoleList();
-    this.getUserRoleBasedDesignation();
     this.getReportingManagerList();
   }
 
   public intialForm(){
 this.employeeFormGroup = this.fb.group({
-      employee_number: ['', [Validators.required, Validators.maxLength(10), Validators.minLength(1)]],
+      employee_number: ['',Validators.required],
       first_name: ['', [Validators.required, Validators.maxLength(50)]],
       last_name: ['', [Validators.required, Validators.maxLength(50)]],
       email: ['', [Validators.required, Validators.email]],
       date_of_joining: ['', Validators.required],
-      exit_date: ['', Validators.required],
+      // exit_date: ['', Validators.required],
       reporting_manager_id:['', Validators.required],
-      designation: ['', [Validators.pattern(/^\S.*$/), Validators.required]],
-      role: ['', Validators.required],
-      status:['',Validators.required],
+      designation: ['', Validators.required],
+      sub_designation:['', Validators.required],
+      role: 2,
+      is_active:[true,Validators.required],
     });
   }
   // To Get Unique Employee Number
   public getEmployeeUniqueNumber(){
-    this.apiService.getData(`${environment.live_url}/${environment.employee}/`).subscribe((respData: any) => {
-      this.employeeFormGroup.patchValue({'employee_number': respData?.employee_number});
+    this.apiService.getData(`${environment.live_url}/${environment.employee}/?get-unique-number=true`).subscribe((respData: any) => {
+      this.employeeFormGroup.patchValue({'employee_number': respData?.unique_id});
           },(error => {
             this.apiService.showError(error?.error?.detail)
           }));
@@ -69,7 +70,7 @@ this.employeeFormGroup = this.fb.group({
   // Get All User Role 
   public getUserRoleList(){
     this.allUserRoleList=[];
-    this.apiService.getData(`${environment.live_url}/${environment.employee}/`).subscribe((respData: any) => {
+    this.apiService.getData(`${environment.live_url}/${environment.settings_roles}/`).subscribe((respData: any) => {
       this.allUserRoleList = respData;
           },(error => {
             this.apiService.showError(error?.error?.detail)
@@ -77,10 +78,11 @@ this.employeeFormGroup = this.fb.group({
   }
 
   // Get Role Based Designation
-  public getUserRoleBasedDesignation(){
+  public getUserRoleBasedDesignation(event:any){
+    const role_id = event.value;
     this.allDesignation =[];
-    this.apiService.getData(`${environment.live_url}/${environment.employee}/`).subscribe((respData: any) => {
-this.allDesignation = respData;
+    this.apiService.getData(`${environment.live_url}/${environment.settings_designation}/?designation_id=${role_id}`).subscribe((respData: any) => {
+    this.allDesignation = respData;
     },(error => {
       this.apiService.showError(error?.error?.detail)
     }));
@@ -104,10 +106,13 @@ this.apiService.getData(`${environment.live_url}/${environment.employee}/${id}/`
     last_name:respData?.last_name,
     email:respData?.email,
     date_of_joining:respData?.date_of_joining,
-    exit_date:respData?.exit_date,
+    // exit_date:respData?.exit_date,
     reporting_manager_id:respData?.reporting_manager_id,
     designation:respData?.designation,
+    sub_designation:respData?.sub_designation,
     role:respData?.role,
+    is_active:respData?.is_active,
+
       });
     }, (error: any) => {
       this.apiService.showError(error?.error?.detail);
@@ -160,9 +165,32 @@ this.apiService.getData(`${environment.live_url}/${environment.employee}/${id}/`
       if (this.employeeFormGroup.invalid) {
         this.employeeFormGroup.markAllAsTouched();
       } else {
-        if (this.isEditItem) {}else{
-
+        if (this.isEditItem) {
+          this.apiService.updateData(`${environment.live_url}/${environment.settings_country}/${this.employee_id}/`, this.employeeFormGroup.value).subscribe((respData: any) => {
+            if (respData) {
+              this.apiService.showSuccess(respData['message']);
+              this.resetFormState();
+              this.router.navigate(['/settings/all-employee']);
+            }
+          }, (error: any) => {
+            this.apiService.showError(error?.error?.detail);
+          });
+        }else{
+          this.apiService.postData(`${environment.live_url}/${environment.employee}/`, this.employeeFormGroup.value).subscribe((respData: any) => {
+            if (respData) {
+              this.apiService.showSuccess(respData['message']);
+              this.resetFormState();
+              this.router.navigate(['/settings/all-employee']);
+            }
+          }, (error: any) => {
+            this.apiService.showError(error?.error?.detail);
+          });
         }
     }
+}
+
+public resetFormState() {
+  this.formGroupDirective.resetForm();
+  this.isEditItem = false;
 }
 }

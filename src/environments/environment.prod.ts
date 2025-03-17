@@ -23,6 +23,7 @@ settings_job_status: `job-status`,
 settings_job_type: `job-type`,
 settings_service: `service`,
 settings_designation:`designation`,
+settings_roles:'roles',
 // vlp Templates
 templates:`templates`,
 // vlp Employee

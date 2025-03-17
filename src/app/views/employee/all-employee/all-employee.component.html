@@ -69,14 +69,19 @@
                              totalItems: count
                            }; let i=index'>
                       <td>{{getContinuousIndex(i)}}</td>
-                      <td>{{item?.employee_number}}</td>
-                      <td>{{item?.first_name}}</td>
-                      <td>{{item?.email}}</td>
-                      <td>{{item?.role}}</td>
-                      <td>{{item?.status}}</td>
+                      <td>{{item?.employee_number || '-'}}</td>
+                      <td>{{item?.first_name || '-'}}</td>
+                      <td>{{item?.email  || '-'}}</td>
+                      <td>{{item?.designation  || '-'}}</td>
+                      <td class="text-center">
+                        <div style="display: block;">{{ item?.is_active === true ? 'Active' : 'Inactive'   || 'NA' }}</div>
+                        <button mat-raised-button class="org-status-btn small-btn" [ngClass]="item?.is_active === true ? 'deactivate' : ''">
+                          {{ item?.is_active === true ? 'Deactivate' : 'Activate' }}
+                        </button>
+                      </td>
                       <td> <ng-container>
                         <img src="../../../../assets/images/Edit.svg" class="icon-image" type="button" container="body"
-                          ngbTooltip="Edit"/>
+                          ngbTooltip="Edit" (click)="edit(item)"/>
                      </ng-container></td>
                     </tr>
                   </ng-container>

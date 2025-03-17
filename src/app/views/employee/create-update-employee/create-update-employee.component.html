@@ -11,15 +11,9 @@
                     <div class="col-12 col-sm-12 col-md-6 col-lg-4 my-1 px-0">
                     <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
                         <mat-label>Employee Number <b class="r-star">*</b></mat-label>
-                        <input matInput type="number" placeholder="Enter Employee Number" formControlName="employee_number" autocomplete="off" >
+                        <input matInput type="text" placeholder="Enter Employee Number" formControlName="employee_number" autocomplete="off" readonly>
                         <mat-error *ngIf="f['employee_number']?.invalid && f['employee_number']?.touched || f['employee_number']?.dirty">
                           <span *ngIf="f['employee_number'].errors?.['required']">Employee Number is required</span>
-                          <span *ngIf="f['employee_number'].errors?.['required'] && f['employee_number'].errors?.['maxlength']">
-                            Employee Number cannot exceed 10 characters.
-                          </span>
-                          <span *ngIf="f['employee_number'].errors?.['required'] && f['employee_number'].errors?.['minlength']">
-                            Employee Number must be at least 1 character.
-                          </span>
                         </mat-error>
                       </mat-form-field>  
                     </div>
@@ -33,13 +27,13 @@
     <mat-error *ngIf="f['first_name']?.invalid && f['first_name']?.touched || f['first_name']?.dirty">
         <span  *ngIf="f['first_name']?.errors?.['required']">First name is required
         </span>
-        <span  *ngIf="f['first_name']?.errors?.['pattern']">
+        <!-- <span  *ngIf="f['first_name']?.errors?.['pattern']">
             Invalid name. Only letters are allowed, and the name must start with a letter.
         </span>
         <span 
             *ngIf="f['first_name']?.errors?.['maxlength']">
             First name cannot exceed more than 50 characters.
-        </span>
+        </span> -->
         <!-- <span 
             *ngIf="f['contact_person_name'].invalid && f['contact_person_name'].hasError('pattern')">
             Invalid Contact person name
@@ -62,13 +56,13 @@
     <mat-error *ngIf="f['last_name']?.invalid && f['last_name']?.touched || f['last_name']?.dirty">
         <span  *ngIf="f['last_name']?.errors?.['required']">Last name is required
         </span>
-        <span  *ngIf="f['last_name']?.errors?.['pattern']">
+        <!-- <span  *ngIf="f['last_name']?.errors?.['pattern']">
             Invalid name. Only letters are allowed, and the name must start with a letter.
         </span>
         <span 
             *ngIf="f['last_name']?.errors?.['maxlength']">
             Last name cannot exceed more than 50 characters.
-        </span>
+        </span> -->
     </mat-error>
 </mat-form-field>
 
@@ -100,7 +94,7 @@
     </mat-form-field>
   
 </div>
-<div class="col-12 col-sm-12 col-md-6 col-lg-4 my-1 px-0">
+<!-- <div class="col-12 col-sm-12 col-md-6 col-lg-4 my-1 px-0">
     <mat-form-field appearance="outline" class="w-100 p-0 custom-mat-form-field">
         <mat-label>Exit Date <b class="r-star">*</b></mat-label>
         <input matInput [matDatepicker]="picker2" placeholder="Enter start date" readonly
@@ -112,47 +106,47 @@
           </mat-error>
     </mat-form-field>
   
-</div>
+</div> -->
 <div class="col-12 col-sm-12 col-md-6 col-lg-4 my-1 px-0">
     <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
         <mat-label>Select Role</mat-label>
-        <mat-select formControlName="role" autocomplete="off"
+        <mat-select formControlName="designation" autocomplete="off"
                 placeholder="Select" panelClass="custom-select-panel"
-                [disableOptionCentering]="true">
-                <mat-option *ngFor="let item of allDesignation" [value]="item.id">
-                    {{item.designation_name}}
+                [disableOptionCentering]="true" (selectionChange)="getUserRoleBasedDesignation($event)">
+                <mat-option *ngFor="let item of allUserRoleList" [value]="item?.id">
+                    {{item?.designation_name}}
                 </mat-option>
         </mat-select>
-        <mat-error *ngIf="f['role']?.invalid && f['role']?.touched || f['role']?.dirty">
-            <span  *ngIf="f['role']?.errors?.['required']">Role is required</span>
+        <mat-error *ngIf="f['designation']?.invalid && f['designation']?.touched || f['role']?.dirty">
+            <span  *ngIf="f['designation']?.errors?.['required']">Role is required</span>
       </mat-error>
     </mat-form-field>
 
 </div>
-<div class="col-12 col-sm-12 col-md-6 col-lg-4 my-1 no-padding pl-5 pr-0">
+<div class="col-12 col-sm-12 col-md-6 col-lg-4 my-1 px-0">
     <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
         <mat-label>Select Designation</mat-label>
-        <mat-select formControlName="designation" autocomplete="off"
+        <mat-select formControlName="sub_designation" autocomplete="off"
                 placeholder="Select" panelClass="custom-select-panel"
-                [disableOptionCentering]="true" >
-                <mat-option *ngFor="let item of allDesignation" [value]="item.id">
-                    {{item.designation_name}}
+                [disableOptionCentering]="true" [disabled]="!employeeFormGroup?.get('designation')?.value">
+                <mat-option *ngFor="let item of allDesignation" [value]="item?.id">
+                    {{item.sub_designation_name}}
                 </mat-option>
         </mat-select>
-        <mat-error *ngIf="f['designation']?.invalid && f['designation']?.touched || f['designation']?.dirty">
-            <span  *ngIf="f['designation']?.errors?.['required']">Designation is required</span>
+        <mat-error *ngIf="f['sub_designation']?.invalid && f['sub_designation']?.touched || f['sub_designation']?.dirty">
+            <span  *ngIf="f['sub_designation']?.errors?.['required']">Designation is required</span>
       </mat-error>
     </mat-form-field>
  
 </div>
 
-<div class="col-12 col-sm-12 col-md-6 col-lg-4 my-1 px-0">
+<div class="col-12 col-sm-12 col-md-6 col-lg-4 my-1 no-padding pl-5 pr-0 ">
     <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
         <mat-label>Select Reporting Manager</mat-label>
         <mat-select formControlName="reporting_manager_id" autocomplete="off"
                 placeholder="Select" panelClass="custom-select-panel"
                 [disableOptionCentering]="true">
-                <mat-option disabled *ngFor="let rmId of reportingManagerId" [value]="rmId.id">
+                <mat-option *ngFor="let rmId of reportingManagerId" [value]="rmId.id">
                     {{rmId.first_name}}
                 </mat-option>
         </mat-select>
@@ -165,15 +159,15 @@
 <div class="col-12 col-sm-12 col-md-6 col-lg-4 my-1 px-0">
     <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
         <mat-label>Employee Status</mat-label>
-        <mat-select formControlName="status" autocomplete="off"
+        <mat-select formControlName="is_active" autocomplete="off"
                 placeholder="Select" panelClass="custom-select-panel"
-                [disableOptionCentering]="true">
-                <mat-option disabled *ngFor="let rmId of reportingManagerId" [value]="rmId.id">
-                    {{rmId.first_name}}
+                >
+                <mat-option *ngFor="let status of isActivelist" [value]="status?.is_active">
+                    {{status?.name}}
                 </mat-option>
         </mat-select>
-        <mat-error *ngIf="f['status']?.invalid && f['status']?.touched || f['status']?.dirty">
-            <span  *ngIf="f['status']?.errors?.['required']">Employee Status is required</span>
+        <mat-error *ngIf="f['is_active']?.invalid && f['status']?.touched || f['is_active']?.dirty">
+            <span  *ngIf="f['is_active']?.errors?.['required']">Employee Status is required</span>
       </mat-error>
     </mat-form-field>
 
@@ -183,8 +177,8 @@
     <div class="col-12 col-sm-12 col-md-6 col-lg-3 align-content-center">
         <button mat-button class="cancel-button mat-btn-s" type="button" (click)="backBtnFunc()" >
             Back</button>
-        <button mat-raised-button class="proceedbtn mat-btn-s" type="submit"><span
-            *ngIf="!isEditItem">Submit</span><span *ngIf="isEditItem" (click)="saveEmployeeDetails()">Update</span></button>
+        <button mat-raised-button class="proceedbtn mat-btn-s" type="submit" (click)="saveEmployeeDetails()"><span
+            *ngIf="!isEditItem">Submit</span><span *ngIf="isEditItem" >Update</span></button>
       </div>
       <div class="col-lg-3"></div>
       <div class="col-lg-3"></div>
