@@ -130,10 +130,10 @@ export class CompanyPolicyComponent implements OnInit {
   }
 
   public sort(direction: string, column: string) {
-    Object.keys(this.arrowState).forEach(key => {
-      this.arrowState[key] = false;
-    });
-    this.arrowState[column] = direction === 'asc';
+    // Object.keys(this.arrowState).forEach(key => {
+    //   this.arrowState[key] = false;
+    // });
+    this.arrowState[column] = direction === 'asc' ? true : false;
     this.directionValue = direction;
     this.sortValue = column;
   }

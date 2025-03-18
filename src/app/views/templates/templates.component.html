@@ -97,9 +97,8 @@
                   Sl no
                 </th>
                 <th>Template Name
-                  <i *ngIf="!arrowState['template_name']" (click)="sort('asc','template_name')" class="bi bi-arrow-up"></i>
-                  <i (click)="sort('desc','template_name')" *ngIf="arrowState['template_name']" class="bi bi-arrow-down"></i>
-  
+                  <i *ngIf="!arrowState['template_name']" (click)="sort('asc', 'template_name')" class="bi bi-arrow-up"></i>
+                  <i *ngIf="arrowState['template_name']" (click)="sort('desc', 'template_name')" class="bi bi-arrow-down"></i>                    
                 </th>
                 <th>Template File</th>
                 <th>Password</th>

@@ -70,17 +70,12 @@
                 Sl no
               </th>
               <th>Job Type
-                <i *ngIf="!arrowState['job_type_name']" (click)="sort('asc','job_type_name')"
-                  class="bi bi-arrow-up"></i>
-                <i (click)="sort('desc','job_type_name')" *ngIf="arrowState['job_type_name']"
-                  class="bi bi-arrow-down"></i>
-
+                <i *ngIf="!arrowState['job_type_name']" (click)="sort('asc', 'job_type_name')" class="bi bi-arrow-up"></i>
+                <i *ngIf="arrowState['job_type_name']" (click)="sort('desc', 'job_type_name')" class="bi bi-arrow-down"></i>
               </th>
               <th>Job Price
-                <i *ngIf="!arrowState['job_price']" (click)="sort('asc','job_price')"
-                  class="bi bi-arrow-up"></i>
-                <i (click)="sort('desc','job_price')" *ngIf="arrowState['job_price']"
-                  class="bi bi-arrow-down"></i>
+                <i *ngIf="!arrowState['job_price']" (click)="sort('asc', 'job_price')" class="bi bi-arrow-up"></i>
+                <i *ngIf="arrowState['job_price']" (click)="sort('desc', 'job_price')" class="bi bi-arrow-down"></i>
               </th>
               <th>Action</th>
             </tr>
@@ -93,8 +88,8 @@
                                  totalItems: count
                                }; let i=index'>
               <td>{{getContinuousIndex(i)}}</td>
-              <td>{{type.job_type_name || '-'}}</td>
-              <td>{{type.job_price || '-'}}</td>
+              <td>{{type?.job_type_name || '-'}}</td>
+              <td>{{type?.job_price || '-'}}</td>
               <td>
                 <ng-container>
                   <img src="../../../../assets/images/Edit.svg" class="icon-image" container="body" ngbTooltip="Edit"

@@ -24,8 +24,8 @@ export class JobTypeComponent implements OnInit {
   tableSize = 5;
   tableSizes = [5, 10, 25, 50, 100];
   currentIndex: any;
-  sortValue: string = '';
-  directionValue: string = '';
+  sortValue: string = 'job_type_name';
+  directionValue: string = 'asc';
   arrowState: { [key: string]: boolean } = {
     job_type_name: false,
     job_price:false,
@@ -41,6 +41,7 @@ export class JobTypeComponent implements OnInit {
   ngOnInit(): void {
     this.initializeForm();
     this.getAllJobTypes('?page=1&page_size=5');
+    this.sort(this.directionValue,this.sortValue);
   }
 
   public initializeForm() {
@@ -121,7 +122,7 @@ export class JobTypeComponent implements OnInit {
     Object.keys(this.arrowState).forEach(key => {
       this.arrowState[key] = false;
     });
-    this.arrowState[column] = direction === 'asc';
+    this.arrowState[column] = direction === 'asc' ? true : false;
     this.directionValue = direction;
     this.sortValue = column;
   }

@@ -75,8 +75,7 @@ this.isCurrent = true;
       query += `&is_active=true`;
 this.apiService.getData(`${environment.live_url}/${environment.employee}/${query}`).subscribe(
       (res: any) => {
-        console.log(res.results)
-        this.allEmployeeList = res.results;
+        this.allEmployeeList = res?.results;
         const noOfPages: number = res?.['total_pages']
         this.count = noOfPages * this.tableSize;
         this.count = res?.['total_no_of_record']
@@ -170,7 +169,7 @@ this.apiService.getData(`${environment.live_url}/${environment.employee}/${query
     Object.keys(this.arrowState).forEach(key => {
       this.arrowState[key] = false;
     });
-    this.arrowState[column] = direction === 'asc';
+    this.arrowState[column] = direction === 'asc' ? true : false;
     this.directionValue = direction;
     this.sortValue = column;
   }

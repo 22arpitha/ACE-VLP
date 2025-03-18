@@ -96,18 +96,16 @@
               </th>
               <th>
                 Status Group
-                <i *ngIf="!arrowState['status_group']" (click)="sort('asc','status_group')" class="bi bi-arrow-up"></i>
-                <i (click)="sort('desc','status_group')" *ngIf="arrowState['status_group']" class="bi bi-arrow-down"></i>
+                <i *ngIf="!arrowState['status_group']" (click)="sort('asc', 'status_group')" class="bi bi-arrow-up"></i>
+                <i *ngIf="arrowState['status_group']" (click)="sort('desc', 'status_group')" class="bi bi-arrow-down"></i>
               </th>
               <th>Status Name
-                <i *ngIf="!arrowState['status_name']" (click)="sort('asc','status_name')" class="bi bi-arrow-up"></i>
-                <i (click)="sort('desc','status_name')" *ngIf="arrowState['status_name']" class="bi bi-arrow-down"></i>
-
+                <i *ngIf="!arrowState['status_name']" (click)="sort('asc', 'status_name')" class="bi bi-arrow-up"></i>
+                <i *ngIf="arrowState['status_name']" (click)="sort('desc', 'status_name')" class="bi bi-arrow-down"></i>
               </th>
               <th>Percentage Of Completion
-                <i *ngIf="!arrowState['percentage_of_completion']" (click)="sort('asc','percentage_of_completion')" class="bi bi-arrow-up"></i>
-                <i (click)="sort('desc','percentage_of_completion')" *ngIf="arrowState['percentage_of_completion']" class="bi bi-arrow-down"></i>
-
+                <i *ngIf="!arrowState['percentage_of_completion']" (click)="sort('asc', 'percentage_of_completion')" class="bi bi-arrow-up"></i>
+                <i *ngIf="arrowState['percentage_of_completion']" (click)="sort('desc', 'percentage_of_completion')" class="bi bi-arrow-down"></i>
               </th>
               <th>Action</th>
             </tr>

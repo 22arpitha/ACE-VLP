@@ -2,8 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PlatformLocation } from '@angular/common';
-import { ApiserviceService } from 'src/app/service/apiservice.service';
-import { environment } from 'src/environments/environment';
+import { ApiserviceService } from '../../../service/apiservice.service';
+import { environment } from '../../../../environments/environment';
 @Component({
   selector: 'app-forgot-change',
   templateUrl: './forgot-change.component.html',
@@ -53,7 +53,7 @@ export class ForgotChangeComponent implements OnInit {
     const newPassword = control.get('password');
     const confirmPassword = control.get('confirm_password');
 
-    if (newPassword.value !== confirmPassword.value) {
+    if (newPassword?.value !== confirmPassword?.value) {
       return { 'passwordMismatch': true };
     }
 

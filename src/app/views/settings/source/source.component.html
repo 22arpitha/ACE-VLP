@@ -48,9 +48,8 @@
                 Sl no
               </th>
               <th>Source
-                <i *ngIf="!arrowState['source_name']" (click)="sort('asc','source_name')" class="bi bi-arrow-up"></i>
-                <i (click)="sort('desc','source_name')" *ngIf="arrowState['source_name']" class="bi bi-arrow-down"></i>
-
+                <i *ngIf="!arrowState['source_name']" (click)="sort('asc', 'source_name')" class="bi bi-arrow-up"></i>
+                <i *ngIf="arrowState['source_name']" (click)="sort('desc', 'source_name')" class="bi bi-arrow-down"></i>
               </th>
               <th>Action</th>
             </tr>
@@ -63,7 +62,7 @@
                                  totalItems: count
                                }; let i=index'>
               <td>{{getContinuousIndex(i)}}</td>
-              <td>{{type.source_name || '-'}}</td>
+              <td>{{type?.source_name || '-'}}</td>
               <td>
                 <ng-container>
                   <img src="../../../../assets/images/Edit.svg" class="icon-image" container="body" ngbTooltip="Edit"

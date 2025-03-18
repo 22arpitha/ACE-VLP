@@ -25,8 +25,8 @@ export class JobStatusComponent implements OnInit {
   tableSize = 5;
   tableSizes = [5, 10, 25, 50, 100];
   currentIndex: any;
-  sortValue: string = '';
-  directionValue: string = '';
+  sortValue: string = 'status_group';
+  directionValue: string = 'asc';
   arrowState: { [key: string]: boolean } = {
     status_name: false,
     status_group:false,
@@ -45,6 +45,8 @@ export class JobStatusComponent implements OnInit {
     this.initializeForm();
     this.getAllJobStatus('?page=1&page_size=5');
     this.getStatusGroupList();
+    this.sort(this.directionValue,this.sortValue);
+
   }
 
   public initializeForm() {
@@ -127,7 +129,7 @@ export class JobStatusComponent implements OnInit {
     Object.keys(this.arrowState).forEach(key => {
       this.arrowState[key] = false;
     });
-    this.arrowState[column] = direction === 'asc';
+    this.arrowState[column] = direction === 'asc' ? true : false;
     this.directionValue = direction;
     this.sortValue = column;
   }

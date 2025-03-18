@@ -27,10 +27,11 @@ export class DesignationsComponent implements OnInit {
   tableSize = 5;
   tableSizes = [5, 10, 25, 50, 100];
   currentIndex: any;
-  sortValue: string = '';
-  directionValue: string = '';
+  sortValue: string = 'sub_designation_name';
+  directionValue: string = 'asc';
   arrowState: { [key: string]: boolean } = {
     sub_designation_name: false,
+    designation:false,
   };
   arrow: boolean = false;
   term: any;
@@ -117,7 +118,7 @@ export class DesignationsComponent implements OnInit {
     Object.keys(this.arrowState).forEach(key => {
       this.arrowState[key] = false;
     });
-    this.arrowState[column] = direction === 'asc';
+    this.arrowState[column] = direction === 'asc' ? true : false;
     this.directionValue = direction;
     this.sortValue = column;
   }

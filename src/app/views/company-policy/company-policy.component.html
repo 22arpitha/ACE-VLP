@@ -97,9 +97,9 @@
                   Sl no
                 </th>
                 <th>Policy Name
-                  <i *ngIf="!arrowState['policy_name']" (click)="sort('asc','policy_name')" class="bi bi-arrow-up"></i>
-                  <i (click)="sort('desc','policy_name')" *ngIf="arrowState['policy_name']" class="bi bi-arrow-down"></i>
-  
+                  <i *ngIf="!arrowState['policy_name']" (click)="sort('asc', 'policy_name')" class="bi bi-arrow-up"></i>
+                  <i *ngIf="arrowState['policy_name']" (click)="sort('desc', 'policy_name')" class="bi bi-arrow-down"></i>                    
+               
                 </th>
                 <th>Policy File</th>
                 <th>Password</th>

@@ -51,11 +51,8 @@
                 Sl no
               </th>
               <th>Leave Type
-                <i *ngIf="!arrowState['leave_type_name']" (click)="sort('asc','leave_type_name')"
-                  class="bi bi-arrow-up"></i>
-                <i (click)="sort('desc','leave_type_name')" *ngIf="arrowState['leave_type_name']"
-                  class="bi bi-arrow-down"></i>
-
+                <i *ngIf="!arrowState['leave_type_name']" (click)="sort('asc', 'leave_type_name')" class="bi bi-arrow-up"></i>
+                <i *ngIf="arrowState['leave_type_name']" (click)="sort('desc', 'leave_type_name')" class="bi bi-arrow-down"></i>
               </th>
               <th>Action</th>
             </tr>
@@ -68,7 +65,7 @@
                                  totalItems: count
                                }; let i=index'>
               <td>{{getContinuousIndex(i)}}</td>
-              <td>{{type.leave_type_name || '-'}}</td>
+              <td>{{type?.leave_type_name || '-'}}</td>
               <td>
                 <ng-container>
                   <img src="../../../../assets/images/Edit.svg" class="icon-image" container="body" ngbTooltip="Edit"
