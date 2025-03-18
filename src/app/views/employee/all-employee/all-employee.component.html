@@ -15,15 +15,12 @@
                 placeholder="Search by Employee" aria-describedby="emailHelp" autocomplete="off">
               <i *ngIf="!term" class="bi bi-search" id="search-icon-tab"></i>
             </div>
-            <div class="col-12 mt-2 col-sm-12 col-md-4 col-lg-4"></div>
+            <div class="col-12 mt-2 col-sm-12 col-md-4 col-lg-5"></div>
             <div class="col-12 mt-2 col-sm-12 col-md-4 col-lg-4 text-end px-0">
                 <button mat-raised-button class="mat-btn-s tab-button-content" [ngClass]="{'isActive': isCurrent}" type="button" (click)="getActiveEmployeeList()">Current</button> 
                 <button mat-raised-button class="mat-btn-s tab-button-content" [ngClass]="{'isActive': isHistory}" type="button" (click)="getInActiveEmployeeList()">History</button> 
-            </div>
-            <div class="col-12 mt-2 col-sm-12 col-md-1 col-lg-1 text-end px-0">
-                <button mat-raised-button class="proceedbtn mat-btn-s" type="button"><i class="fa fa-download"></i></button>
+                <button mat-raised-button class="proceedbtn mat-btn-s download-btn" type="button"><i class="fa fa-download"></i></button>
               </div>
-
           </div>
           <div class="row mx-1 my-2 px-0 table-wrapper">
             <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0 ">
@@ -31,17 +28,17 @@
                 <thead>
                   <tr>
                     <th scope="col"> S.No</th>
-                    <th scope="col">Employee Number
+                    <th scope="col">Emp No
                       <i *ngIf="!arrowState['employee_number']" (click)="sort('asc','employee_number')" class="bi bi-arrow-up"></i>
                 <i (click)="sort('desc','employee_number')" *ngIf="arrowState['employee_number']"
                   class="bi bi-arrow-down"></i>
                     </th>
-                    <th scope="col">Employee Name
+                    <th scope="col">Emp Name
                       <i *ngIf="!arrowState['first_name']" (click)="sort('asc','first_name')" class="bi bi-arrow-up"></i>
                       <i (click)="sort('desc','first_name')" *ngIf="arrowState['first_name']"
                         class="bi bi-arrow-down"></i>
                     </th>
-                    <th scope="col">Email
+                    <th scope="col">Emp Email
                       <i *ngIf="!arrowState['email']" (click)="sort('asc','email')" class="bi bi-arrow-up"></i>
                       <i (click)="sort('desc','email')" *ngIf="arrowState['email']"
                         class="bi bi-arrow-down"></i>
@@ -51,7 +48,7 @@
                       <i (click)="sort('desc','role')" *ngIf="arrowState['role']"
                         class="bi bi-arrow-down"></i>
                     </th>
-                    <th scope="col">Employee Status
+                    <th scope="col">Emp Status
                       <i *ngIf="!arrowState['status']" (click)="sort('asc','status')" class="bi bi-arrow-up"></i>
                       <i (click)="sort('desc','status')" *ngIf="arrowState['status']"
                         class="bi bi-arrow-down"></i>
