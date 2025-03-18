@@ -347,7 +347,7 @@ export class CompanyPolicyComponent implements OnInit {
   }
 
   previewFile(data:any){
-
+    console.log(data)
   }
 
 

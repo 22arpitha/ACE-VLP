@@ -108,16 +108,16 @@
     </mat-nav-list>
   </perfect-scrollbar>
   <mat-card class="profile-settings-card">
-    <div class="d-flex">
-      <c-avatar cTextColor="primary" shape="rounded-1" size="md"  [src]="profileImage? profileImage: '../assets/images/no-profile-pic.png'" >
-      </c-avatar>
+    <div class="d-flex justify-content-between align-items-center">
+      <!-- <c-avatar cTextColor="primary" shape="rounded-1" size="md"  [src]="profileImage? profileImage: '../assets/images/no-profile-pic.png'" >
+      </c-avatar> -->
       <p class="mx-2" [ngClass]="user_role_Name !== 'EMPLOYEE' ? 'nonemployee' : 'employee'">
         <small class="user-name" *ngIf="user_role_Name !== 'EMPLOYEE'">{{user_name |titlecase}} {{last_name}}</small><br />
         <mat-label class="user-role">{{user_role_Name}}</mat-label>
       </p>
-
+      <ng-container *ngTemplateOutlet="userDropdown"></ng-container>
+      <!-- <i class="bi bi-gear"></i> -->
     </div>
-    <ng-container *ngTemplateOutlet="userDropdown"></ng-container>
   </mat-card>
 
 </c-sidebar>
@@ -144,13 +144,10 @@
 <ng-template #userDropdown>
   <c-dropdown alignment="end" variant="nav-item" >
     <button mat-stroked-button [caret]="false" cDropdownToggle class="py-1" style="
-    text-align: left;
-    width: 100%;
-    background-color: #ebedef;
-    height: 50px;
-    line-height: 0px;"><i class="bi bi-gear pe-1"></i> Settings
+    border:none">
+    <img src="../../../assets/images/Settings.png" alt="">
       <!-- <i class="bi bi-gear" style="position: absolute;right: 5px;"></i> -->
-      <i class="bi bi-chevron-down" style="position: absolute;right: 5px;"></i>
+      <!-- <i class="bi bi-chevron-down" style="position: absolute;right: 5px;"></i> -->
     </button>
     <ul cDropdownMenu class="py-2 pr-5 w-auto c-dropClass" 
     style="padding: 11px !important;background: rgb(255 255 255) !important;

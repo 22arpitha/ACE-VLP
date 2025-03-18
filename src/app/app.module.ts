@@ -79,6 +79,8 @@ import { RazorpayService } from './service/razorpay.service';
 import { UseraccessInfoPopupComponent } from './views/useraccess-info-popup/useraccess-info-popup.component';
 import { TemplatesComponent } from './views/templates/templates.component';
 import { CompanyPolicyComponent } from './views/company-policy/company-policy.component';
+import { PdfViewerModule } from 'ng2-pdf-viewer';
+import { NgxDocViewerModule } from 'ngx-doc-viewer';
 
 
 const APP_CONTAINERS = [
@@ -141,6 +143,8 @@ const APP_CONTAINERS = [
     SharedModule,
     DragDropModule,
     MatDialogModule,
+    PdfViewerModule,
+    NgxDocViewerModule,
     CarouselModule.forRoot(),
     ModalModule.forRoot(),
     ToastrModule.forRoot({

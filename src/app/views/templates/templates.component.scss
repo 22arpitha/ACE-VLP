@@ -19,3 +19,8 @@
 .is-invalid{
     border: 2px solid red !important; 
 }
+::ng-deep .image-container mat-label{
+    white-space: nowrap; 
+    overflow: hidden; 
+    text-overflow: ellipsis;
+}

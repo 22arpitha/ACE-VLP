@@ -167,21 +167,22 @@ export class DefaultLayoutComponent {
     private common_service: CommonServiceService,
     private router: Router,  private webSocket: WebsocketService, private employeeSocket:EmployeeStatusWebsocketService,
     private useraccessSocket:UserAccessWebsocketService) {
-      this.common_service.profilePhoto$.subscribe(
-        (data:any)=>{
-          if(data){
-            this.profileImage = data.profile_pic;
-            this.user_name  = data.name;
-            this.last_name  = data.last_name;
-          }
-        }
-      )
+      // this.common_service.profilePhoto$.subscribe(
+      //   (data:any)=>{
+      //     if(data){
+      //       this.profileImage = data.profile_pic;
+      //       this.user_name  = data.name;
+      //       this.last_name  = data.last_name;
+      //     }
+      //   }
+      // )
     
 }
 
   async ngOnInit() {
     this.user_role_Name = sessionStorage.getItem('user_role_name');
     this.orgId = sessionStorage.getItem('organization_id');
+    this.user_name = sessionStorage.getItem('user_name');
     
     this.testingFunction();
    

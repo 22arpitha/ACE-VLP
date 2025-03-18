@@ -87,6 +87,7 @@ export class LoginComponent implements OnInit {
           (data:any)=>{
             console.log('user access',data)
             sessionStorage.setItem('user_role_name', data.user_role);
+            sessionStorage.setItem('user_name', data.user_info[0].first_name);
             this.router.navigate(['profile']) // remove this line once the user access api  is done
         //     sessionStorage.setItem('organization_id', data.organization_id);
         //     sessionStorage.setItem('designation', data.designation);
