@@ -124,7 +124,9 @@
                                  }; let i=index'>
               <td>{{getContinuousIndex(i)}}</td>
               <td>{{item?.template_name || '-'}}</td>
-              <td>{{getFileName(item?.template_file)|| '-'}}</td>
+              <td>
+                <span class="over-floww" [ngbTooltip]="getFileName(item?.template_file)">{{getFileName(item?.template_file)|| '-'}}</span>
+              </td>
               <td>{{item?.password || '-'}}</td>
               <td>{{item?.when_to_use || '-'}}</td>
               <td>

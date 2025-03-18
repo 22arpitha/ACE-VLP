@@ -1,26 +1,30 @@
-::ng-deep .mat-form-field-infix{
-    padding: 0.5em 0 !important;
-    padding-bottom: 1em !important;
+::ng-deep .mat-form-field-infix {
+  padding: 0.5em 0 !important;
+  padding-bottom: 1em !important;
 }
-::ng-deep .mat-form-field-wrapper{
-    padding: 15px 0 !important;
+::ng-deep .mat-form-field-wrapper {
+  padding: 15px 0 !important;
 }
-.settings-table-bg{
-    max-height: 70vh !important;
+
+.file {
+  border: 1px solid #ebedef;
+  padding: 5px;
+  border-radius: 5px;
 }
-.table-wrapper{
-    max-height: 60vh !important;
+.is-invalid {
+  border: 2px solid red !important;
 }
-.file{
-    border: 1px solid #ebedef;
-    padding: 5px;
-    border-radius: 5px;
+::ng-deep .image-container mat-label {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
-.is-invalid{
-    border: 2px solid red !important; 
-}
-::ng-deep .image-container mat-label{
-    white-space: nowrap; 
-    overflow: hidden; 
-    text-overflow: ellipsis;
+
+.over-floww {
+  display: inline-block;  
+  max-width: 150px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  vertical-align: middle;
 }

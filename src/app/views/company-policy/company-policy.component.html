@@ -116,7 +116,9 @@
                                  }; let i=index'>
                 <td>{{getContinuousIndex(i)}}</td>
                 <td>{{item?.policy_name || '-'}}</td>
-                <td>{{getFileName(item?.policy_file)|| '-'}}</td>
+                <td>
+                  <span class="over-floww" [ngbTooltip]="getFileName(item?.policy_file)">{{getFileName(item?.policy_file)|| '-'}}</span>
+                  </td>
                 <td>{{item?.password || '-'}}</td>
                 <!-- <td>{{item?.when_to_use || '-'}}</td> -->
                 <td>

@@ -5,12 +5,12 @@
 ::ng-deep .mat-form-field-wrapper{
     padding: 15px 0 !important;
 }
-.settings-table-bg{
-    max-height: 70vh !important;
-}
-.table-wrapper{
-    max-height: 60vh !important;
-}
+// .settings-table-bg{
+//     max-height: 70vh !important;
+// }
+// .table-wrapper{
+//     max-height: 60vh !important;
+// }
 .file{
     border: 1px solid #ebedef;
     padding: 5px;
@@ -25,3 +25,11 @@
     overflow: hidden; 
     text-overflow: ellipsis;
 }
+.over-floww {
+    display: inline-block;  
+    max-width: 150px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    vertical-align: middle;
+  }

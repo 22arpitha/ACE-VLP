@@ -75,7 +75,7 @@ formData:any;
   }
   public saveTemplateDetails() {
     console.log(this.templateForm.controls)
-    if (!this.templateForm.dirty || !this.templateForm.valid) {
+    if (this.templateForm.invalid) {
       this.templateForm.markAllAsTouched();
     } else {
       if (this.isEditItem) {

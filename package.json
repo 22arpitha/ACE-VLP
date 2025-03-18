@@ -49,6 +49,7 @@
     "font-awesome": "^4.7.0",
     "is-online": "^11.0.0",
     "jwt-decode": "^4.0.0",
+    "mammoth": "^1.9.0",
     "mat-timepicker": "^5.1.4",
     "ng-multiselect-dropdown": "^0.3.9",
     "ng2-charts": "^2.4.2",

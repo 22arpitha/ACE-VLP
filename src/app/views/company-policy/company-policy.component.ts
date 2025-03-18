@@ -7,7 +7,8 @@ import { ApiserviceService } from '../../service/apiservice.service';
 import { CommonServiceService } from '../../service/common-service.service';
 import { environment } from '../../../environments/environment';
 import { Observable, of } from 'rxjs';
-import { DomSanitizer } from '@angular/platform-browser';
+import { MatDialog } from '@angular/material/dialog';
+import {PdfViewComponent} from '../pdf-view/pdf-view.component'
 
 @Component({
   selector: 'app-company-policy',
@@ -39,7 +40,7 @@ export class CompanyPolicyComponent implements OnInit {
   formData: any;
   constructor(private fb: FormBuilder, private modalService: NgbModal,
     private common_service: CommonServiceService, private apiService: ApiserviceService,
-    private sanitizer: DomSanitizer) {
+    private dialog: MatDialog) {
     this.common_service.setTitle(this.BreadCrumbsTitle)
   }
 
@@ -348,8 +349,17 @@ export class CompanyPolicyComponent implements OnInit {
 
   previewFile(data:any){
     console.log(data)
+    const fileExtension = data.policy_file.split('.').pop()?.toLowerCase() || 'unknown';
+    console.log(fileExtension)
+    this.openFileViewer(data.policy_file,fileExtension)
   }
 
+  openFileViewer(fileUrl: string, fileType: string) {
+    this.dialog.open(PdfViewComponent, {
+      width: '700px',
+      data: { url: fileUrl, type: fileType }
+    });
+  }
 
 }
 async function urlToFile(url: string, fileName: string): Promise<File> {

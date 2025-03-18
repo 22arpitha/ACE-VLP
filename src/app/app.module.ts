@@ -81,7 +81,8 @@ import { TemplatesComponent } from './views/templates/templates.component';
 import { CompanyPolicyComponent } from './views/company-policy/company-policy.component';
 import { PdfViewerModule } from 'ng2-pdf-viewer';
 import { NgxDocViewerModule } from 'ngx-doc-viewer';
-
+import { MatButtonModule } from '@angular/material/button';
+import { PdfViewComponent } from './views/pdf-view/pdf-view.component';
 
 const APP_CONTAINERS = [
   DefaultFooterComponent,
@@ -101,6 +102,7 @@ const APP_CONTAINERS = [
     UseraccessInfoPopupComponent,
     TemplatesComponent,
     CompanyPolicyComponent,
+    PdfViewComponent
   ],
   imports: [
     // ChartsModule,
@@ -145,6 +147,7 @@ const APP_CONTAINERS = [
     MatDialogModule,
     PdfViewerModule,
     NgxDocViewerModule,
+    MatButtonModule,
     CarouselModule.forRoot(),
     ModalModule.forRoot(),
     ToastrModule.forRoot({
