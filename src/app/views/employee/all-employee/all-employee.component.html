@@ -51,7 +51,7 @@
                       <i (click)="sort('desc','role')" *ngIf="arrowState['role']"
                         class="bi bi-arrow-down"></i>
                     </th>
-                    <th scope="col">Status
+                    <th scope="col">Employee Status
                       <i *ngIf="!arrowState['status']" (click)="sort('asc','status')" class="bi bi-arrow-up"></i>
                       <i (click)="sort('desc','status')" *ngIf="arrowState['status']"
                         class="bi bi-arrow-down"></i>
@@ -74,10 +74,7 @@
                       <td>{{item?.email  || '-'}}</td>
                       <td>{{item?.designation  || '-'}}</td>
                       <td class="text-center">
-                        <div style="display: block;">{{ item?.is_active === true ? 'Active' : 'Inactive'   || 'NA' }}</div>
-                        <button mat-raised-button class="org-status-btn small-btn" [ngClass]="item?.is_active === true ? 'deactivate' : ''">
-                          {{ item?.is_active === true ? 'Deactivate' : 'Activate' }}
-                        </button>
+                        <div style="display: block;"><span [ngStyle]="{ 'color': item?.is_active === true ? 'green' : 'red' }">{{ item?.is_active === true ? 'Active' : 'Inactive'   || 'NA' }}</span></div>
                       </td>
                       <td> <ng-container>
                         <img src="../../../../assets/images/Edit.svg" class="icon-image" type="button" container="body"
