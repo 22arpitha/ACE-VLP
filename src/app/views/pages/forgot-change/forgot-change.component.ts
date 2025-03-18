@@ -23,11 +23,11 @@ export class ForgotChangeComponent implements OnInit {
   constructor(private builder: FormBuilder, private platformLocation: PlatformLocation, private api: ApiserviceService, private router: Router,
     private activeRoute:ActivatedRoute
   ) {
-    if(this.activeRoute.snapshot.paramMap.get('id')){
+    if(this.activeRoute.snapshot.queryParamMap.get('employee-id')){
       this.urlIdPresent = true;
       this.title = 'Set New Password'
-      this.userId= this.activeRoute.snapshot.paramMap.get('id')
-      console.log(this.urlIdPresent,'p')
+      this.userId= Number(this.activeRoute.snapshot.queryParamMap.get('employee-id'));
+      console.log(this.urlIdPresent, this.userId,'p')
     } else{
       this.urlIdPresent = false;
       this.title = ''

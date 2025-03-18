@@ -207,7 +207,7 @@ const routes: Routes = [
     }
   },
   {
-    path: 'set-employee-password/:id',
+    path: 'set-password',
     component: ForgotChangeComponent,
     data: {
       title: 'Set New Password'
