@@ -84,7 +84,7 @@
 <div class="col-12 col-sm-12 col-md-6 col-lg-4 my-1 no-padding pl-5 pr-0">
     <mat-form-field appearance="outline" class="w-100 p-0 custom-mat-form-field">
         <mat-label>Date of Joining <b class="r-star">*</b></mat-label>
-        <input matInput [matDatepicker]="picker1" placeholder="Enter start date" readonly
+        <input matInput [matDatepicker]="picker1" placeholder="Enter start date"
             formControlName="date_of_joining" autocomplete="off" (dateInput)="joiningDateFun($event)">
             <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
              <mat-datepicker #picker1></mat-datepicker>

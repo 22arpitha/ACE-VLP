@@ -12,7 +12,7 @@ const routes: Routes = [
         path:'create', component:CreateClientComponent
       },
       {
-        path:'list', component:ClientListComponent
+        path:'all-client', component:ClientListComponent
       },
       {
         path:'update/:id/:page/:tableSize', component:UpdateClientComponent

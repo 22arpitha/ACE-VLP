@@ -27,8 +27,8 @@ export class DesignationsComponent implements OnInit {
   tableSize = 5;
   tableSizes = [5, 10, 25, 50, 100];
   currentIndex: any;
-  sortValue: string = 'sub_designation_name';
-  directionValue: string = 'asc';
+  sortValue: string = '';
+  directionValue: string = '';
   arrowState: { [key: string]: boolean } = {
     sub_designation_name: false,
     designation:false,

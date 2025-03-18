@@ -21,7 +21,7 @@ export class CountryComponent implements OnInit {
   sortValue: string = '';
   directionValue: string = '';
   arrowState: { [key: string]: boolean } = {
-    department_name: false,
+    country_name: false,
     created_datetime: false,
   };
   page = 1;

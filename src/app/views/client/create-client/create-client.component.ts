@@ -1,117 +1,206 @@
-import { Component, OnInit } from '@angular/core';
-import {  Validators, FormBuilder,FormGroup } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import {  Validators, FormBuilder,FormGroup, FormGroupDirective } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ApiserviceService } from '../../../service/apiservice.service';
-import { Location } from '@angular/common';
-import { CommonServiceService } from 'src/app/service/common-service.service';
+import { CommonServiceService } from '../../../service/common-service.service';
+import { GenericDeleteComponent } from 'src/app/generic-delete/generic-delete.component';
+import { environment } from 'src/environments/environment';
 @Component({
   selector: 'app-create-client',
   templateUrl: './create-client.component.html',
   styleUrls: ['./create-client.component.scss']
 })
 export class CreateClientComponent implements OnInit {
-  BreadCrumbsTitle:any='Create client';
-  clientForm! : FormGroup
-  user_id:any;
-  allClient:any=[];
-  client:any;
-
-  allIndustry:any=[];
-  industry:any;
-  orgId: any;
-
-  constructor(
-    private builder:FormBuilder, 
-    private api: ApiserviceService,
-    private router:Router,
-    private location:Location,private common_service:CommonServiceService
-    ) { }
-
-  ngOnInit(): void {
-    this.common_service.setTitle(this.BreadCrumbsTitle);
-    this.orgId = sessionStorage.getItem('organization_id');
-    this.user_id = sessionStorage.getItem('user_id');
-    // this.getIndustry();
-    this.initForm();
-  }
-  goBack(event)
-  {
-    event.preventDefault(); // Prevent default back button behavior
-  this.location.back();
   
-  }
-  initForm(){
-    this.clientForm= this.builder.group({
-      clint_name:['',[Validators.required,Validators.maxLength(50)]],
-      contact_person_name:['',[Validators.required,Validators.maxLength(50)]],
-      // is_billable:[true,[Validators.required]],
-      address:['',[Validators.required,Validators.maxLength(200)]] ,
-      email:['',[Validators.required, Validators.pattern('^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$')]],
-      phone_number:['',[Validators.required, Validators.pattern("^((\\+91-?)|0)?[0-9]{10}$")]],
-      created_by:this.user_id,
-      organization: this.orgId
-      // c_code:['',[Validators.pattern(/^\S.*$/),Validators.required]],
-      // c_address:['',[Validators.pattern(/^\S.*$/),Validators.required]],
-      // c_satus:['',Validators.required],
-      // toi_ref_id:['',[Validators.required]],
-    })
-  }
-  get f(){
-    return this.clientForm.controls;
-  }
-  getIndustry(){
-    let params = {
-      pagination:"FALSE",
-      org_ref_id:this.orgId
-    }
-    this.api.getIndustryDetails(params).subscribe((data:any)=>{
-      this.allIndustry= data.result.data;
-    },(error =>{
-      this.api.showError(error.error.error.message)
-    })
-      //console.log(error);
-      
-   
+  @ViewChild(FormGroupDirective) formGroupDirective!: FormGroupDirective;
+  BreadCrumbsTitle: any = 'Employee';
+  clientFormGroup:FormGroup;
+  allCountry:any=[];
+  allSource:any=[];
+  allUserRoleList:any=[];
+  allEmployeeList:any=[];
+  selectedClient:any=[];
+  isEditItem:boolean=false;
+  employee_id:any;
+  isActivelist:any=[{name:'In Active',is_active:false},{name:'Active',is_active:true}]
+  editorContent:any;
+  toolbarOptions = [
+    ['bold', 'italic', 'underline', 'strike'],      // Toggle buttons
+    ['blockquote', 'code-block'],                   // Block style
 
-    )
-  }
-  addClient(){
-    if(this.clientForm.invalid){
-      this.api.showError('Invalid!');
-    //  console.log(this.clientForm.value)
-      this.clientForm.markAllAsTouched();
-    }
-    else{
-     // console.log(this.clientForm.value)
-      this.api.addClientDetails(this.clientForm.value).subscribe(response=>{
-        if(response){
-          this.api.showSuccess(response['message']);
-         this.ngOnInit();
-        }
-        else{
-          this.api.showError('Error!')
-        } 
-        },(error =>{
-          this.api.showError(error.error.message)
-        })
-      )
-    }
-  }
+    [{ 'header': 1 }, { 'header': 2 }],              // Headers
+    [{ 'list': 'ordered' }, { 'list': 'bullet' }],   // Lists
+    [{ 'script': 'sub' }, { 'script': 'super' }],    // Subscript/Superscript
+    [{ 'indent': '-1' }, { 'indent': '+1' }],        // Indent
+    [{ 'direction': 'rtl' }],                        // Text direction
 
+    [{ 'size': ['small', false, 'large', 'huge'] }],  // Text size
+    [{ 'header': [1, 2, 3, 4, 5, 6, false] }],        // Header levels
 
-  preventSpace(event: KeyboardEvent): void {
-    if (event.key === ' ') {
-      event.preventDefault();
+    [{ 'color': [] }, { 'background': [] }],          // Text color and background color
+    [{ 'font': [] }],                                // Font family
+    [{ 'align': [] }],                               // Text alignment
+
+    ['link', 'image', 'video'],                       // Media
+    ['clean']                                        // Clear formatting
+  ];
+    constructor(private fb:FormBuilder,private activeRoute:ActivatedRoute,
+      private common_service: CommonServiceService,private router:Router,
+      private apiService: ApiserviceService,private modalService: NgbModal) { 
+      this.common_service.setTitle(this.BreadCrumbsTitle)
+      if(this.activeRoute.snapshot.paramMap.get('id')){
+        this.employee_id= this.activeRoute.snapshot.paramMap.get('id')
+        this.isEditItem = true;
+        this.getEmployeeDetails(this.employee_id);
+      }else{
+        this.getClientUniqueNumber();
+      }
     }
-  }
-
-  validateKeyPress(event: KeyboardEvent) {
-    // Get the key code of the pressed key
-    const keyCode = event.which || event.keyCode;
-
-    // Allow only digits (0-9), backspace, and arrow keys
-    if ((keyCode < 48 || keyCode > 57) && keyCode !== 8 && keyCode !== 37 && keyCode !== 39) {
-      event.preventDefault(); // Prevent the default action (i.e., entering the character)
+  
+    ngOnInit(): void {
+      this.intialForm();
+      this.getCountryList();
+      this.getSourceList();
+      this.getAllEmployeeList();
     }
-  }
+  
+    public intialForm(){
+  this.clientFormGroup = this.fb.group({
+        client_number: ['',Validators.required],
+        client_name: ['', [Validators.required, Validators.maxLength(50)]],
+        email: ['', [Validators.required, Validators.email]],
+        country: ['', Validators.required],
+        address: ['', [Validators.required, Validators.maxLength(50)]],
+        start_date: ['', Validators.required],
+        end_date: ['', Validators.required],
+      });
+    }
+    // To Get Unique Employee Number
+    public getClientUniqueNumber(){
+      this.apiService.getData(`${environment.live_url}/${environment.client}/?get-unique-number=true`).subscribe((respData: any) => {
+        this.clientFormGroup.patchValue({'client_number': respData?.unique_id});
+            },(error => {
+              this.apiService.showError(error?.error?.detail)
+            }));
+    }
+    
+    // Get All Country List 
+    public getCountryList(){
+      this.allCountry=[];
+      this.apiService.getData(`${environment.live_url}/${environment.settings_country}/`).subscribe((respData: any) => {
+        this.allCountry = respData;
+            },(error => {
+              this.apiService.showError(error?.error?.detail)
+            }));
+    }
+    // Get Role Based Designation
+    public getSourceList(){
+      this.apiService.getData(`${environment.live_url}/${environment.settings_source}`).subscribe((respData: any) => {
+      this.allSource = respData;
+      },(error => {
+        this.apiService.showError(error?.error?.detail)
+      }));
+    }
+// Get Reporting Manager 
+public getAllEmployeeList(){
+  this.allEmployeeList =[];
+  this.apiService.getData(`${environment.live_url}/${environment.employee}/`).subscribe((respData: any) => {
+this.allEmployeeList = respData;
+  },(error => {
+    this.apiService.showError(error?.error?.detail)
+  }));
 }
+    // Get Employee Detials 
+    public getEmployeeDetails(id:any){
+  this.apiService.getData(`${environment.live_url}/${environment.client}/${id}/`).subscribe((respData: any) => {
+      this.clientFormGroup.patchValue({
+      client_number:respData?.client_number,
+      client_name:respData?.client_name,
+      email:respData?.email,
+      country:respData?.country,
+      address:respData?.address,
+      start_date:respData?.start_date,
+      end_date:respData?.end_date,
+      source:respData?.source,
+        });
+      }, (error: any) => {
+        this.apiService.showError(error?.error?.detail);
+      })
+    }
+    public get f() {
+      return this.clientFormGroup.controls;
+    }
+  
+    public joiningDateFun(event: any) {
+  
+    }
+  
+    public backBtnFunc(){
+      this.router.navigate(['/client/all-client']);
+    }
+  
+    public deleteEmployee(){
+      if (this.employee_id) {
+        const modelRef = this.modalService.open(GenericDeleteComponent, {
+          size: <any>'sm',
+          backdrop: true,
+          centered: true
+        });
+        modelRef.componentInstance.status.subscribe(resp => {
+          if (resp == "ok") {
+            this.deleteContent(this.employee_id);
+            modelRef.close();
+          }
+          else {
+            modelRef.close();
+          }
+        })
+  
+      }
+    }
+      public deleteContent(id: any) {
+        this.apiService.delete(`${environment.live_url}/${environment.client}/${id}/`).subscribe(async (data: any) => {
+          if (data) {
+            this.selectedClient = [];
+            this.apiService.showSuccess(data.message);
+            this.router.navigate(['/client/all-client']);
+          }
+        }, (error => {
+          this.apiService.showError(error?.error?.detail)
+        }))
+      }
+  
+      public saveEmployeeDetails(){
+        if (this.clientFormGroup.invalid) {
+          this.clientFormGroup.markAllAsTouched();
+        } else {
+          if (this.isEditItem) {
+            this.apiService.updateData(`${environment.live_url}/${environment.settings_country}/${this.employee_id}/`, this.clientFormGroup.value).subscribe((respData: any) => {
+              if (respData) {
+                this.apiService.showSuccess(respData['message']);
+                this.resetFormState();
+                this.router.navigate(['/client/all-client']);
+              }
+            }, (error: any) => {
+              this.apiService.showError(error?.error?.detail);
+            });
+          }else{
+            this.apiService.postData(`${environment.live_url}/${environment.client}/`, this.clientFormGroup.value).subscribe((respData: any) => {
+              if (respData) {
+                this.apiService.showSuccess(respData['message']);
+                this.resetFormState();
+                this.router.navigate(['/client/all-client']);
+              }
+            }, (error: any) => {
+              this.apiService.showError(error?.error?.detail);
+            });
+          }
+      }
+  }
+  
+  public resetFormState() {
+    this.formGroupDirective.resetForm();
+    this.isEditItem = false;
+  }
+  }

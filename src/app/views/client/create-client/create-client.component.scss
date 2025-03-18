@@ -1,94 +1,31 @@
-
-.create-client ::ng-deep .mat-form-field-wrapper{
-    padding-bottom: 0em;
+::ng-deep .mat-form-field-infix{
+  padding: 0.5em 0 !important;
+  padding-bottom: 1em !important;
+}
+::ng-deep .mat-form-field-wrapper{
+  padding: 15px 0 !important;
+}
+::ng-deep .mat-form-field-appearance-outline .mat-form-field-prefix,
+::ng-deep .mat-form-field-appearance-outline .mat-form-field-suffix {
+  top: .25em !important;
+}
+// Rich editor css
+.editor-container {
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin: 10px 0;
 }
 
-.checkbox {
-    appearance: none;
-    width: 26px;
-    aspect-ratio: 1;
-    border-radius: 3px;
-    border: 2px solid black;
-    position: relative;
-    transition: all 0.2s ease-in-out;
-  }
-  
-  .checkbox::before {
-    font-family: "Quicksand", sans-serif;
-    position: absolute;
-    bottom: 3px;
-    left: 3px;
-    content: "✔";
-    font-size: 30px;
-    color: #126EB4;
-    transform: scale(0);
-    transition: all 0.2s ease-in-out;
-  }
-  
-  .checkbox:checked::before {
-    animation: zoom 0.5s ease-in-out;
-    transform: scale(1);
-  }
-  
-  @keyframes zoom {
-    0% {
-      transform: scale(0);
-    }
-  
-    20% {
-      transform: scale(1.5);
-    }
-  
-    40% {
-      transform: scale(0.5);
-    }
-  
-    50% {
-      transform: scale(1);
-    }
-  
-    70% {
-      transform: scale(1.2);
-    }
-  
-    90% {
-      transform: scale(0.8);
-    }
-  
-    100% {
-      transform: scale(1);
-    }
-  }
-  .create-client .billable-checkbox input{
-    height: 24px !important;
-  }
-  // .create-client .billable-checkbox{
-  //   display: flex;
-  //   justify-content: center;
-  //   align-items: center;
-  // }
-
-  @media only screen and (min-width: 480px) and (max-width: 1024px)  {
-    .create-client .billable-checkbox{
-      display: flex !important;
-      justify-content: start !important;
-      align-items: center !important;
-    }
-  }
-
-  @media only screen and (min-width: 1024px)  {
-    .create-client .billable-checkbox{
-      display: flex !important;
-      justify-content: center !important;
-      align-items: center !important;
-    }
-  }
-  .bg {
-    background-color: white;
-    height: 100%;
-    width: 100%;
+.ql-toolbar.ql-snow {
+  background-color: #f3f3f3;
+  border-radius: 4px 4px 0 0;
 }
 
-// .create-client textarea {
-//   height: auto !important;
-// }
+.ql-container.ql-snow {
+  border-radius: 0 0 4px 4px;
+  min-height: 200px;
+}
+
+.settings-table-bg ::ng-deep .mat-form-field-appearance-outline .mat-form-field-outline{
+background: #fff;
+}
