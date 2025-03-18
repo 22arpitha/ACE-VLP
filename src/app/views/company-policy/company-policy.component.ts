@@ -7,6 +7,7 @@ import { ApiserviceService } from '../../service/apiservice.service';
 import { CommonServiceService } from '../../service/common-service.service';
 import { environment } from '../../../environments/environment';
 import { Observable, of } from 'rxjs';
+import { DomSanitizer } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-company-policy',
@@ -37,7 +38,8 @@ export class CompanyPolicyComponent implements OnInit {
   selectedFile: File | null = null;
   formData: any;
   constructor(private fb: FormBuilder, private modalService: NgbModal,
-    private common_service: CommonServiceService, private apiService: ApiserviceService) {
+    private common_service: CommonServiceService, private apiService: ApiserviceService,
+    private sanitizer: DomSanitizer) {
     this.common_service.setTitle(this.BreadCrumbsTitle)
   }
 
@@ -51,8 +53,8 @@ export class CompanyPolicyComponent implements OnInit {
     this.companyPolicyForm = this.fb.group({
       policy_name: ['', [Validators.required, Validators.pattern(/^[a-zA-Z0-9]+( [a-zA-Z0-9]+)*$/), Validators.maxLength(20)]],
       policy_file: ['', Validators.required, this.fileFormatValidator],
-      password: ['', [Validators.required, Validators.pattern(/^[a-zA-Z0-9!@#$%^&*()_+{}\[\]:;"'<>,.?/\\|`~\-]+( [a-zA-Z0-9!@#$%^&*()_+{}\[\]:;"'<>,.?/\\|`~\-]+)*$/), Validators.maxLength(20)]],
-      when_to_use: ['', [Validators.required, Validators.pattern(/^[a-zA-Z0-9]+( [a-zA-Z0-9]+)*$/), Validators.maxLength(20)]],
+      password: ['', [Validators.pattern(/^[a-zA-Z0-9!@#$%^&*()_+{}\[\]:;"'<>,.?/\\|`~\-]+( [a-zA-Z0-9!@#$%^&*()_+{}\[\]:;"'<>,.?/\\|`~\-]+)*$/), Validators.maxLength(20)]],
+      when_to_use: ['', [ Validators.pattern(/^[a-zA-Z0-9]+( [a-zA-Z0-9]+)*$/), Validators.maxLength(20)]],
 
     });
   }
@@ -342,6 +344,10 @@ export class CompanyPolicyComponent implements OnInit {
         link.click();
         URL.revokeObjectURL(link.href);
     });
+  }
+
+  previewFile(data:any){
+
   }
 
 

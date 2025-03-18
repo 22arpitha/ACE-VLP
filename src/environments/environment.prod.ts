@@ -25,6 +25,7 @@ settings_service: `service`,
 settings_designation:`designation`,
 settings_roles:`roles`,
 roles_access:`roles-access`,
+user_access:`user-access`,
 // vlp Templates
 templates:`templates`,
 // vlp Employee

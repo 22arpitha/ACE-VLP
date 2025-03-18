@@ -69,8 +69,8 @@
   
                 </th>
                 <th>Role Name
-                  <!-- <i *ngIf="!arrowState['sub_designation_name']" (click)="sort('asc','sub_designation_name')" class="bi bi-arrow-up"></i>
-                  <i (click)="sort('desc','sub_designation_name')" *ngIf="arrowState['sub_designation_name']" class="bi bi-arrow-down"></i> -->
+                  <i *ngIf="!arrowState['designation']" (click)="sort('asc','designation')" class="bi bi-arrow-up"></i>
+                  <i (click)="sort('desc','designation')" *ngIf="arrowState['designation']" class="bi bi-arrow-down"></i>
   
                 </th>
                 <th>Action</th>
@@ -85,7 +85,8 @@
                                  }; let i=index'>
                 <td>{{getContinuousIndex(i)}}</td>
                 <td>{{item?.sub_designation_name || '-'}}</td>
-                <td>{{item?.designation || '-'}}</td>
+                <td>{{getRoleName(item?.designation) || '-'}}</td>
+                <!-- <td>{{item?.designation || '-'}}</td> -->
                 <td>
                   <ng-container>
                     <img src="../../../../assets/images/Edit.svg" class="icon-image" container="body" ngbTooltip="Edit"

@@ -52,7 +52,7 @@
                   </mat-error>
                 </mat-form-field>
               </div>
-              <div class="col-12 col-sm-12 col-md-6 col-lg-3 px-2">
+              <!-- <div class="col-12 col-sm-12 col-md-6 col-lg-3 px-2">
                 <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
                   <mat-label>When To Use<b class="r-star">*</b></mat-label>
                   <input matInput placeholder="Enter When To Use" formControlName="when_to_use" autocomplete="off">
@@ -67,7 +67,7 @@
                     </span>
                   </mat-error>
                 </mat-form-field>
-              </div>
+              </div> -->
               <div class="col-12 col-sm-12 col-md-6 col-lg-3 align-content-center">
                 <button mat-raised-button class="cancel-button mat-btn-s" type="button" (click)="resetFormState()">
                   Cancel</button>
@@ -103,7 +103,7 @@
                 </th>
                 <th>Policy File</th>
                 <th>Password</th>
-                <th>When To Use</th>
+                <!-- <th>When To Use</th> -->
                 <th>Access</th>
                 <th>Action</th>
               </tr>
@@ -119,12 +119,13 @@
                 <td>{{item?.policy_name || '-'}}</td>
                 <td>{{getFileName(item?.policy_file)|| '-'}}</td>
                 <td>{{item?.password || '-'}}</td>
-                <td>{{item?.when_to_use || '-'}}</td>
+                <!-- <td>{{item?.when_to_use || '-'}}</td> -->
                 <td>
                     <ng-container>
                      <img src="../../../../assets/images/download.svg" class="icon-image" container="body"
                       ngbTooltip="Download" type="button" (click)="downloadFile(item)" /> 
-    
+                      <img src="../../../assets/images/eye icon.svg" class="icon-image" container="body"
+                      ngbTooltip="View" type="button" (click)="previewFile(item)" /> 
                     </ng-container>
                   </td>
                 <td>

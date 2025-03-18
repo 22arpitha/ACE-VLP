@@ -227,10 +227,10 @@ export class DesignationsComponent implements OnInit {
     })
   }
 
-  public getStatusGroupName(id: any) {
+  public getRoleName(id: any) {
     const itemStatusGroup = this.RolesList.find((s: any) => s?.id === id);
 
-    return itemStatusGroup?.group_name
+    return itemStatusGroup?.designation_name
   }
 }
 
