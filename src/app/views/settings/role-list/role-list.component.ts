@@ -5,7 +5,8 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { CommonServiceService } from '../../../service/common-service.service';
 import { GenericDeleteComponent } from '../../../generic-delete/generic-delete.component';
 import { GenericEditComponent } from '../../../generic-edit/generic-edit.component';
-import { environment } from '../../../../environments/environment';@Component({
+import { environment } from '../../../../environments/environment';import { Router } from '@angular/router';
+@Component({
   selector: 'app-role-list',
   templateUrl: './role-list.component.html',
   styleUrls: ['./role-list.component.scss']
@@ -20,8 +21,7 @@ export class RoleListComponent implements OnInit {
   sortValue: string = '';
   directionValue: string = '';
   arrowState: { [key: string]: boolean } = {
-    department_name: false,
-    created_datetime: false,
+    designation_name: false,
   };
   page = 1;
   count = 0;
@@ -32,7 +32,7 @@ export class RoleListComponent implements OnInit {
 
   constructor(
     private common_service: CommonServiceService, private fb: FormBuilder, private api: ApiserviceService,
-    private modalService: NgbModal,
+    private modalService: NgbModal, private router:Router
   ) { }
 
   ngOnInit(): void {
@@ -43,7 +43,7 @@ export class RoleListComponent implements OnInit {
 
   intialForm() {
     this.rolesForm = this.fb.group({
-      country_name: ['', Validators.required]
+      designation_name: ['', Validators.required]
     })
   }
   get f() {
@@ -65,6 +65,7 @@ export class RoleListComponent implements OnInit {
   getAllRolesList(params: any) {
     this.api.getData(`${environment.live_url}/${environment.settings_roles}/${params}`).subscribe(
       (res: any) => {
+        this.allRoles = [];
         console.log(res.results)
         this.allRoles = res.results;
         const noOfPages: number = res?.['total_pages']
@@ -132,17 +133,18 @@ export class RoleListComponent implements OnInit {
             this.getAllRolesList('?page=1&page_size=5');
           }
         }, (error: any) => {
-          this.api.showError(error?.error?.detail);
+          this.api.showError(error?.error?.message);
         });
       } else {
         this.api.postData(`${environment.live_url}/${environment.settings_roles}/`, this.rolesForm.value).subscribe((respData: any) => {
           if (respData) {
             this.api.showSuccess(respData['message']);
             this.resetFormState();
-            this.getAllRolesList('?page=1&page_size=5');
+            // this.getAllRolesList('?page=1&page_size=5');
+            this.router.navigate([`/settings/roles-access/${respData.result.id}`])
           }
         }, (error: any) => {
-          this.api.showError(error?.error?.detail);
+          this.api.showError(error?.error?.message);   
         });
       }
     }
@@ -176,7 +178,7 @@ export class RoleListComponent implements OnInit {
 
   getSelectedItemData(id: any) {
     this.api.getData(`${environment.live_url}/${environment.settings_roles}/${id}/`).subscribe((respData: any) => {
-      this.rolesForm.patchValue({ 'country_name': respData?.country_name });
+      this.rolesForm.patchValue({ 'designation_name': respData?.designation_name });
     }, (error: any) => {
       this.api.showError(error?.error?.detail);
     })
@@ -222,5 +224,9 @@ export class RoleListComponent implements OnInit {
   reset() {
     this.resetFormState();
     this.getAllRolesList(`?page=${1}&page_size=${5}`);
+  }
+  roleAccess(id:any){
+    console.log(id)
+    this.router.navigate([`/settings/roles-access/${id}`])
   }
 }

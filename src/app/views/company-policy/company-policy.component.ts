@@ -110,10 +110,10 @@ export class CompanyPolicyComponent implements OnInit {
   public createFromData() {
     this.formData = new FormData();
     if (this.file) {
-      this.formData.set("policy_file", this.file);
-      this.formData.set("policy_name", this.companyPolicyForm.get('policy_name').value);
-      this.formData.set("password", this.companyPolicyForm.get('password').value);
-      this.formData.set("when_to_use", this.companyPolicyForm.get('when_to_use').value);
+      this.formData.set("policy_file", this.file || '');
+      this.formData.set("policy_name", this.companyPolicyForm.get('policy_name').value || '');
+      this.formData.set("password", this.companyPolicyForm.get('password').value || '');
+      this.formData.set("when_to_use", this.companyPolicyForm.get('when_to_use').value || '');
     }
     return this.formData;
   }

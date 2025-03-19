@@ -12,8 +12,9 @@
   border-radius: 5px;
 }
 .is-invalid {
-  border: 2px solid red !important;
+  border: 2px solid #f44336 !important; 
 }
+ 
 ::ng-deep .image-container mat-label {
   white-space: nowrap;
   overflow: hidden;

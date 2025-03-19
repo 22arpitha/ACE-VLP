@@ -1,4 +1,39 @@
 <div class="container-wrapper settings-main-content px-0">
+  <section class="settings-form-bg">
+    <div class="row mx-0 px-0">
+      <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0">
+        <form [formGroup]="rolesForm">
+          <div class="row mx-0 my-0 px-2">
+            <div class="col-sm-12 col-md-4 col-lg-3 my-1 px-0">
+              <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+                <mat-label>Role Name <b class="r-star">*</b></mat-label>
+                <input matInput placeholder="Role name" appAlphabetOnly formControlName="designation_name" autocomplete="off"
+                  pattern="^(?!\s)(.*\S)?$">
+                  <mat-error
+                  *ngIf="f['designation_name']?.invalid && f['designation_name']?.touched || f['designation_name']?.dirty">
+                  <span *ngIf="f['designation_name'].errors?.['required']">Role Name  is required</span>
+                  <span
+                    *ngIf="!f['designation_name'].errors?.['required'] && f['designation_name'].errors?.['pattern'] && !f['designation_name'].errors?.['maxlength']">
+                    Invalid name. Extra space, numbers and special charaters are not allowed
+                  </span>
+                  <span *ngIf="!f['designation_name'].errors?.['required'] && f['designation_name'].errors?.['maxlength']">
+                    Role Name  cannot exceed 20 characters.
+                  </span>
+                </mat-error>
+              </mat-form-field>
+            </div>
+            <div class="col-12 col-sm-12 col-md-6 col-lg-3 align-content-center">
+              <button mat-raised-button class="cancel-button mat-btn-s" type="button" (click)="resetFormState()">
+                Cancel</button>
+              <button mat-raised-button class="proceedbtn mat-btn-s" type="submit" (click)="saveCountryDetails()">
+                {{isEditItem? 'Update' : 'Submit'}}</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+
   <!-- table -->
   <section class="settings-table-bg" [ngClass]="{'disabled-section': isEditItem}">
     <div class="row mx-0 my-0 px-0 py-2">
@@ -15,12 +50,12 @@
             <tr>
               <th scope="col"> S.No</th>
               <th scope="col">Role Name
-                <i *ngIf="!arrowState['country_name']" (click)="sort('asc','country_name')" class="bi bi-arrow-up"></i>
-                <i (click)="sort('desc','country_name')" *ngIf="arrowState['country_name']"
+                <i *ngIf="!arrowState['designation_name']" (click)="sort('asc','designation_name')" class="bi bi-arrow-up"></i>
+                <i (click)="sort('desc','designation_name')" *ngIf="arrowState['designation_name']"
                   class="bi bi-arrow-down"></i>
               </th>
               <th scope="col">Accessibilty</th>
-              <!-- <th scope="col">Action </th> -->
+              <th scope="col">Action </th>
             </tr>
           </thead>
           <tbody>
@@ -34,17 +69,19 @@
                                 }; let i=index'>
                 <td>{{getContinuousIndex(i)}}</td>
                 <td>{{item.designation_name|titlecase }}</td>
-                <td><a routerLink="/designation/roles-access/{{item.id}}">
-                  <img src="../../../../assets/images/Group.svg" alt="">
-                    </a></td>
-                <!-- <td>
+                <td>
+                  <ng-container>
+                    <img src="../../../../assets/images/Group.svg" alt="" type="button" (click)="roleAccess(item.id)">
+                  </ng-container>
+                </td>
+                <td>
                   <ng-container>
                     <img src="../../../../assets/images/Edit.svg" class="icon-image" type="button" container="body"
                       ngbTooltip="Edit" (click)="edit(item)" />
                     <img src="../../../../assets/images/Delete.svg" class="icon-image" type="button" container="body"
                       ngbTooltip="Delete" (click)="delete(item.id)" />
                     </ng-container>
-                </td> -->
+                </td>
 
               </tr>
 

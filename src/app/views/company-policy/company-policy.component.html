@@ -22,13 +22,13 @@
               </div>
               <div class="col-12 col-sm-12 col-md-6 col-lg-3 px-2 mt-3">
                 <input type="file"  accept=".doc,.docx,.pdf" formControlName="policy_file" #fileInput (change)="onFileSelected($event)" hidden>
-          <div class="image-container w-100 d-flex justify-content-between align-items-center" style="padding: 2px 15px;" [ngClass]="{'is-invalid': f['policy_file']?.touched && f['policy_file']?.invalid}">
+          <div class="image-container w-100 d-flex justify-content-between align-items-center" style="padding: 1px 15px;" [ngClass]="{'is-invalid': f['policy_file']?.touched && f['policy_file']?.invalid}">
               <mat-label >{{selectedFile ? selectedFile.name : 'Policy File'}}<b class="r-star">{{selectedFile ? '': '*'}}</b></mat-label>
               <button type="button" mat-icon-button (click)="triggerFileInput()">
                   <i matTooltip="{{selectedFile ? 'Edit' : 'Upload File'}}" class="{{selectedFile ? 'bi bi-pencil-fill' : 'bi bi-file-earmark-spreadsheet'}}" id="edit-or-upload-icon"></i>
                 </button>
           </div>
-          <div  *ngIf="f['policy_file']?.touched && f['policy_file']?.invalid" style="font-size: 11px;padding-left: 10px;color:red">
+          <div  *ngIf="f['policy_file']?.touched && f['policy_file']?.invalid" style="font-size: 11px;padding-left: 10px;color:#f44336">
             <span *ngIf="f['policy_file'].errors?.['required']">Policy File is required</span>
             <span *ngIf="f['policy_file'].errors?.['accept']">Invalid file type. Please upload .doc or .docx or .pdf.</span>
             <span *ngIf="f['policy_file'].errors?.['maxSize']">File size exceeds 10MB.</span>
@@ -122,13 +122,13 @@
                 <td>{{item?.password || '-'}}</td>
                 <!-- <td>{{item?.when_to_use || '-'}}</td> -->
                 <td>
-                    <ng-container>
-                     <img src="../../../../assets/images/download.svg" class="icon-image" container="body"
-                      ngbTooltip="Download" type="button" (click)="downloadFile(item)" /> 
-                      <img src="../../../assets/images/eye icon.svg" class="icon-image" container="body"
-                      ngbTooltip="View" type="button" (click)="previewFile(item)" /> 
-                    </ng-container>
-                  </td>
+                  <ng-container>
+                    <img src="../../../assets/images/eye icon.svg" class="icon-image" container="body"
+                    ngbTooltip="View" type="button" (click)="previewFile(item)" /> 
+                  </ng-container>
+                    <img src="../../../../assets/images/download.svg" class="icon-image" container="body"
+                    ngbTooltip="Download" type="button" (click)="downloadFile(item)" /> 
+                    </td>
                 <td>
                   <ng-container>
                     <img src="../../../../assets/images/Edit.svg" class="icon-image" container="body" ngbTooltip="Edit"

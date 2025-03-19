@@ -18,60 +18,63 @@ import { RolesAccessComponent } from './roles-access/roles-access.component';
 
 const routes: Routes = [
   {
-      path: '',
-      component: SettingsComponent,
-      children:[
-        {
-          path: 'country',
-          component: CountryComponent,
-        },
-        {
-          path: 'job-type',
-          component: JobTypeComponent,
-        },
-        {
-          path: 'source',
-          component: SourceComponent,
-        },
-        {
-          path: 'status-group',
-          component: StatusGroupComponent,
-        },
-        {
-          path: 'job-status',
-          component: JobStatusComponent,
-        },
-        {
-          path: 'leave-type',
-          component: LeaveTypeComponent,
-        },
-        {
-          path: 'services',
-          component: ServicesComponent,
-        },
-        {
-          path: 'all-employee',
-          component: AllEmployeeComponent,
-        },
-        {
-          path: 'create-employee',
-          component: CreateUpdateEmployeeComponent,
-        },
-        {
-          path: 'update-employee/:id',
-          component: CreateUpdateEmployeeComponent,
-        },
-        {
-          path: 'roles',
-          component: RoleListComponent,
-        },
-         {path:'roles-access/:id', component:RolesAccessComponent},
-        {
-          path: 'designation',
-          component: DesignationsComponent,
-        },
-      ]
-    },
+    path: '',
+    component: SettingsComponent,
+    children: [
+      {
+        path: 'country',
+        component: CountryComponent,
+      },
+      {
+        path: 'job-type',
+        component: JobTypeComponent,
+      },
+      {
+        path: 'source',
+        component: SourceComponent,
+      },
+      {
+        path: 'status-group',
+        component: StatusGroupComponent,
+      },
+      {
+        path: 'job-status',
+        component: JobStatusComponent,
+      },
+      {
+        path: 'leave-type',
+        component: LeaveTypeComponent,
+      },
+      {
+        path: 'services',
+        component: ServicesComponent,
+      },
+      {
+        path: 'all-employee',
+        component: AllEmployeeComponent,
+      },
+      {
+        path: 'create-employee',
+        component: CreateUpdateEmployeeComponent,
+      },
+      {
+        path: 'update-employee/:id',
+        component: CreateUpdateEmployeeComponent,
+      },
+      {
+        path: 'roles',
+        component: RoleListComponent,
+
+      },
+      { path: 'roles-access/:id', 
+        component: RolesAccessComponent 
+      },
+      {
+        path: 'designation',
+        component: DesignationsComponent,
+      },
+    ]
+  },
 ];
 
 @NgModule({

@@ -1,8 +1,5 @@
 import { Component, OnInit,Inject } from '@angular/core';
 import { MAT_DIALOG_DATA,MatDialogRef } from '@angular/material/dialog';
-import * as pdfjsLib from 'pdfjs-dist/build/pdf';
-
-(pdfjsLib as any).GlobalWorkerOptions.workerSrc = 'assets/pdfjs/pdf.worker.min.js';
 @Component({
   selector: 'app-pdf-view',
   templateUrl: './pdf-view.component.html',

@@ -3,7 +3,7 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ApiserviceService } from '../../../service/apiservice.service';
 import { CommonServiceService } from '../../../service/common-service.service';
-import { environment } from 'src/environments/environment';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-roles-access',
@@ -69,23 +69,23 @@ export class RolesAccessComponent implements OnInit {
 
   // get access given data
   getAccessbilitiesByDesignationId() {
-    this.api.getData(`${environment.live_url}/${environment.roles_access}/${this.designation_id}/`).subscribe(
+    this.api.getData(`${environment.live_url}/${environment.roles_access}/?designation=${this.designation_id}`).subscribe(
       (res: any) => {
         console.log(res, 'sub modules')
-        if (res.access_list.length == 0) {
+        if (res.length == 0 || res[0].access_list.length == 0) {
           if (this.user_role === 'Admin') {
-            let temp = this.mainMenu.find((module_name: any) => module_name.name === 'Dashboard');
+            let temp = this.mainMenu.find((module_name: any) => module_name.name === 'Company Policy');
             temp.access[0].operations[0].view = true;
-            console.log(temp)
             this.passingChildrenToTabel(temp)
+            console.log(' this.passingChildrenToTabel')
           } 
           else {
             this.manualFuction();
           }
-        } else if (res.access_list.length != 0) {
+        } else if (res.length != 0 && res[0].access_list.length != 0){
           let temp_dataa: any = [];
           let menuMap = new Map(this.mainMenu.map((item: any) => [item.name, item]));
-          res.access_list.forEach((res_data: any) => {
+          res[0].access_list.forEach((res_data: any) => {
             let matchedItem:any = menuMap.get(res_data.name);
 
             if (matchedItem) {
@@ -102,8 +102,10 @@ export class RolesAccessComponent implements OnInit {
           });
 
           if(temp_dataa.length>0){
-            this.passingChildrenToTabel(res.access_list[0])
+            console.log('ccccccccc')
+            this.passingChildrenToTabel(res[0].access_list[0])
           } else{
+            console.log('nooooooooo')
             this.passingChildrenToTabel(this.mainMenu[0])
           }
         }
@@ -137,7 +139,7 @@ export class RolesAccessComponent implements OnInit {
 
   // getting data from child
   receiveDataFromChild(data: any) {
-    // console.log('from child', data)
+    console.log('from child', data)
     if (data) {
       this.mainMenu.forEach((access: any) => {
         const moduleMatch = data.access_list.find((module_name: any) => module_name.name === access.name);
@@ -165,7 +167,7 @@ export class RolesAccessComponent implements OnInit {
   }
 
   toggleAllTrueToFalse(data: any) {
-    if (data.name !== 'Dashboard') {
+    if (data.name != 'Company Policy') {
       data?.access?.forEach(item => {
         if (item?.operations?.length) {
           Object.keys(item.operations[0]).forEach(key => {

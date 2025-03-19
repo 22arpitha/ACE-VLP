@@ -24,7 +24,6 @@ import { TemplatesComponent } from './views/templates/templates.component';
 import { CompanyPolicyComponent } from './views/company-policy/company-policy.component';
 
 
-
 const routes: Routes = [
   {
     path: 'login',
@@ -72,10 +71,6 @@ const routes: Routes = [
       ,
       {
         path:'generic-remove',loadChildren:() => import('./generic-remove/generic-remove.module').then(m =>m.GenericRemoveModule)
-      },
-      {
-        path: 'designation',
-        loadChildren: () => import('./views/roles/roles.module').then(m => m.RolesModule)
       },
       {
         path:'people', loadChildren:() => import ('./views/people/people.module').then( m => m.PeopleModule)

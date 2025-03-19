@@ -108,10 +108,10 @@ formData:any;
 public createFromData(){
   this.formData = new FormData();
   if (this.file) {
-    this.formData.set("template_file", this.file);
-    this.formData.set("template_name", this.templateForm.get('template_name').value);
-    this.formData.set("password", this.templateForm.get('password').value);
-    this.formData.set("when_to_use", this.templateForm.get('when_to_use').value);
+    this.formData.set("template_file", this.file || '');
+    this.formData.set("template_name", this.templateForm.get('template_name').value || '');
+    this.formData.set("password", this.templateForm.get('password').value || '');
+    this.formData.set("when_to_use", this.templateForm.get('when_to_use').value || '');
   }
   return this.formData;
 }

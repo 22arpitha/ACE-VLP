@@ -6,11 +6,11 @@
           <div class="row mx-0 my-0 p-0">
             <div class="col-12 col-sm-12 col-md-6 col-lg-3 px-2">
               <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
-                <mat-label>Template<b class="r-star">*</b></mat-label>
-                <input matInput placeholder="Enter Template" formControlName="template_name" autocomplete="off">
+                <mat-label>Template Name<b class="r-star">*</b></mat-label>
+                <input matInput placeholder="Enter Template Name" formControlName="template_name" autocomplete="off">
                 <mat-error
                   *ngIf="f['template_name']?.invalid && f['template_name']?.touched || f['template_name']?.dirty">
-                  <span *ngIf="f['template_name'].errors?.['required']">Template is required</span>
+                  <span *ngIf="f['template_name'].errors?.['required']">Template Name is required</span>
                   <span
                     *ngIf="!f['template_name'].errors?.['required'] && f['template_name'].errors?.['pattern'] && !f['template_name'].errors?.['maxlength']">
                     Invalid name. Extra space and special charaters are not allowed
@@ -25,7 +25,7 @@
               <input type="file" accept=".xlsx,.xls" formControlName="template_file" #fileInput
                 (change)="onFileSelected($event)" hidden>
               <div class="image-container w-100 d-flex justify-content-between align-items-center"
-                style="padding: 2px 15px;"
+                style="padding: 1px 15px;"
                 [ngClass]="{'is-invalid': f['template_file']?.touched && f['template_file']?.invalid}">
                 <mat-label >{{selectedFile ? selectedFile.name : 'Template File'}}<b class="r-star">{{selectedFile ?'' : '*'}}</b></mat-label>
                 <button type="button" mat-icon-button (click)="triggerFileInput()">
@@ -35,7 +35,7 @@
                 </button>
               </div>
               <div *ngIf="f['template_file']?.touched && f['template_file']?.invalid"
-                style="font-size: 11px;padding-left: 10px;color:red">
+                style="font-size: 11px;padding-left: 10px;color:#f44336">
                 <span *ngIf="f['template_file'].errors?.['required']">Template File is required</span>
                 <span *ngIf="f['template_file'].errors?.['accept']">Invalid file type. Please upload .xls or .xlsx
                   file.</span>

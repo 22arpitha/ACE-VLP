@@ -46,20 +46,21 @@ export class AccessToModulesComponent implements OnInit {
 
 
   getAccessForDesignation(id: any) {
-     this.api.getData(`${environment.live_url}/${environment.roles_access}/${this.designation_id}/`).subscribe(
+     this.api.getData(`${environment.live_url}/${environment.roles_access}/?designation=${this.designation_id}`).subscribe(
       (res: any) => {
         console.log(res, 'designation id');
-        this.buttonName = res?.id ? 'Update' : 'Add';
-        this.storeAssessGivenData = JSON.parse(JSON.stringify(res?.access_list || []));
+        this.buttonName =  res[0]?.id ? 'Update' : 'Add';
+        
+        this.storeAssessGivenData = JSON.parse(JSON.stringify( res[0]?.access_list || []));
         // console.log('access_given_name_name',this.storeAssessGivenData)
-        this.itemId = res?.id;
+        this.itemId =  res[0]?.id;
         this.mergeAccessData();
-        // if (res.length > 0) {
-          this.dataEmitter.emit(res);
-          if (res?.access_list?.length > 0) {
+        if (res.length > 0) {
+          this.dataEmitter.emit( res[0]);
+          if (res?.[0]?.access_list?.length > 0) {
             this.showBackButton = false;
             this.accessibility = [];
-            const accessList = res.access_list;
+            const accessList =  res[0].access_list;
             accessList.forEach((element_list) => {
               let isMatched = false;
               element_list.access.forEach((accessItem: any) => {
@@ -78,11 +79,11 @@ export class AccessToModulesComponent implements OnInit {
             this.showBackButton = true;
             this.checkSubModuleAccess(this.data, this.storeAssessGivenData);
           }
-        // } 
-        // else {
-        //   this.showBackButton = true;
-        //   this.checkSubModuleAccess(this.data, this.storeAssessGivenData);
-        // }
+        } 
+        else {
+          this.showBackButton = true;
+          this.checkSubModuleAccess(this.data, this.storeAssessGivenData);
+        }
       }
     );
   }
@@ -111,6 +112,7 @@ export class AccessToModulesComponent implements OnInit {
 
 
   checkSubModuleAccess(data, api_data) {
+    console.log(data)
     if (api_data?.length === 1 && data?.name === api_data[0]?.name) {
       console.log('data is there aor not')
       this.disableAddOrUpdateBtn = true;
