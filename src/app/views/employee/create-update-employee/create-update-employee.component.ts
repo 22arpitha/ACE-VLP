@@ -49,7 +49,7 @@ this.employeeFormGroup = this.fb.group({
       first_name: ['', [Validators.required, Validators.maxLength(50)]],
       last_name: ['', [Validators.required, Validators.maxLength(50)]],
       email: ['', [Validators.required, Validators.email]],
-      date_of_joining: ['', Validators.required],
+      date_joined: ['', Validators.required],
       // exit_date: ['', Validators.required],
       reporting_manager_id:['', Validators.required],
       designation: ['', Validators.required],
@@ -80,6 +80,9 @@ this.employeeFormGroup = this.fb.group({
   // Get Role Based Designation
   public getUserRoleBasedDesignation(event:any){
     const role_id = event.value;
+    this.getDesignationList(role_id);
+  }
+  private getDesignationList(role_id:any){
     this.allDesignation =[];
     this.apiService.getData(`${environment.live_url}/${environment.settings_designation}/?designation_id=${role_id}`).subscribe((respData: any) => {
     this.allDesignation = respData;
@@ -91,7 +94,7 @@ this.employeeFormGroup = this.fb.group({
   // Get Reporting Manager 
   public getReportingManagerList(){
     this.reportingManagerId =[];
-    this.apiService.getData(`${environment.live_url}/${environment.employee}/`).subscribe((respData: any) => {
+    this.apiService.getData(`${environment.live_url}/${environment.employee}/?is_active=True&employee=True&designation=manager`).subscribe((respData: any) => {
 this.reportingManagerId = respData;
     },(error => {
       this.apiService.showError(error?.error?.detail)
@@ -100,20 +103,20 @@ this.reportingManagerId = respData;
   // Get Employee Detials 
   public getEmployeeDetails(id:any){
 this.apiService.getData(`${environment.live_url}/${environment.employee}/${id}/`).subscribe((respData: any) => {
-    this.employeeFormGroup.patchValue({
+  this.getDesignationList(respData?.designation_id);  
+  this.employeeFormGroup.patchValue({
     employee_number:respData?.employee_number,
-    first_name:respData?.first_name,
-    last_name:respData?.last_name,
-    email:respData?.email,
-    date_of_joining:respData?.date_of_joining,
+    first_name:respData?.user__first_name,
+    last_name:respData?.user__last_name,
+    email:respData?.user__email,
+    date_joined:respData?.user__date_joined,
     // exit_date:respData?.exit_date,
     reporting_manager_id:respData?.reporting_manager_id,
-    designation:respData?.designation,
-    sub_designation:respData?.sub_designation,
-    role:respData?.role,
+    designation:respData?.designation_id,
+    sub_designation:respData?.sub_designation_id,
     is_active:respData?.is_active,
-
       });
+      
     }, (error: any) => {
       this.apiService.showError(error?.error?.detail);
     })
@@ -166,7 +169,7 @@ this.apiService.getData(`${environment.live_url}/${environment.employee}/${id}/`
         this.employeeFormGroup.markAllAsTouched();
       } else {
         if (this.isEditItem) {
-          this.apiService.updateData(`${environment.live_url}/${environment.settings_country}/${this.employee_id}/`, this.employeeFormGroup.value).subscribe((respData: any) => {
+          this.apiService.updateData(`${environment.live_url}/${environment.employee}/${this.employee_id}/`, this.employeeFormGroup.value).subscribe((respData: any) => {
             if (respData) {
               this.apiService.showSuccess(respData['message']);
               this.resetFormState();

@@ -19,7 +19,7 @@
             <div class="col-12 mt-2 col-sm-12 col-md-4 col-lg-4 text-end px-0">
                 <button mat-raised-button class="mat-btn-s tab-button-content" [ngClass]="{'isActive': isCurrent}" type="button" (click)="getActiveEmployeeList()">Current</button> 
                 <button mat-raised-button class="mat-btn-s tab-button-content" [ngClass]="{'isActive': isHistory}" type="button" (click)="getInActiveEmployeeList()">History</button> 
-                <button mat-raised-button class="proceedbtn mat-btn-s download-btn" type="button"><i class="fa fa-download"></i></button>
+                <!-- <button mat-raised-button class="proceedbtn mat-btn-s download-btn" type="button"><i class="fa fa-download"></i></button> -->
               </div>
           </div>
           <div class="row mx-1 my-2 px-0 table-wrapper">
@@ -34,23 +34,23 @@
                   class="bi bi-arrow-down"></i>
                     </th>
                     <th scope="col">Emp Name
-                      <i *ngIf="!arrowState['first_name']" (click)="sort('asc','first_name')" class="bi bi-arrow-up"></i>
-                      <i (click)="sort('desc','first_name')" *ngIf="arrowState['first_name']"
+                      <i *ngIf="!arrowState['full_name']" (click)="sort('asc','full_name')" class="bi bi-arrow-up"></i>
+                      <i (click)="sort('desc','full_name')" *ngIf="arrowState['full_name']"
                         class="bi bi-arrow-down"></i>
                     </th>
                     <th scope="col">Emp Email
-                      <i *ngIf="!arrowState['email']" (click)="sort('asc','email')" class="bi bi-arrow-up"></i>
-                      <i (click)="sort('desc','email')" *ngIf="arrowState['email']"
+                      <i *ngIf="!arrowState['user__email']" (click)="sort('asc','user__email')" class="bi bi-arrow-up"></i>
+                      <i (click)="sort('desc','user__email')" *ngIf="arrowState['user__email']"
                         class="bi bi-arrow-down"></i>
                     </th>
                     <th scope="col">Role
-                      <i *ngIf="!arrowState['role']" (click)="sort('asc','role')" class="bi bi-arrow-up"></i>
-                      <i (click)="sort('desc','role')" *ngIf="arrowState['role']"
+                      <i *ngIf="!arrowState['designation__designation_name']" (click)="sort('asc','designation__designation_name')" class="bi bi-arrow-up"></i>
+                      <i (click)="sort('desc','designation__designation_name')" *ngIf="arrowState['designation__designation_name']"
                         class="bi bi-arrow-down"></i>
                     </th>
                     <th scope="col">Emp Status
-                      <i *ngIf="!arrowState['status']" (click)="sort('asc','status')" class="bi bi-arrow-up"></i>
-                      <i (click)="sort('desc','status')" *ngIf="arrowState['status']"
+                      <i *ngIf="!arrowState['is_active']" (click)="sort('asc','is_active')" class="bi bi-arrow-up"></i>
+                      <i (click)="sort('desc','is_active')" *ngIf="arrowState['is_active']"
                         class="bi bi-arrow-down"></i>
                     </th>
                     <th scope="col">Action </th>
@@ -67,9 +67,9 @@
                            }; let i=index'>
                       <td>{{getContinuousIndex(i)}}</td>
                       <td>{{item?.employee_number || '-'}}</td>
-                      <td>{{item?.first_name || '-'}}</td>
-                      <td>{{item?.email  || '-'}}</td>
-                      <td>{{item?.designation  || '-'}}</td>
+                      <td>{{item?.full_name || '-'}}</td>
+                      <td>{{item?.user__email  || '-'}}</td>
+                      <td>{{item?.designation__designation_name  || '-'}}</td>
                       <td class="text-center">
                         <div style="display: block;"><span [ngStyle]="{ 'color': item?.is_active === true ? 'green' : 'red' }">{{ item?.is_active === true ? 'Active' : 'Inactive'   || 'NA' }}</span></div>
                       </td>

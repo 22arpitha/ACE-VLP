@@ -13,7 +13,7 @@ import { environment } from '../../../../environments/environment';
 })
 export class AllEmployeeComponent implements OnInit {
   BreadCrumbsTitle: any = 'Employee';
-  term:any;
+  term:any='';
   isCurrent:boolean=true;
   isHistory:boolean=false;
   sortValue: string = '';
@@ -21,9 +21,9 @@ export class AllEmployeeComponent implements OnInit {
   selectedItemId:any;
   arrowState: { [key: string]: boolean } = {
 employee_number:false,
-first_name:false,
-email:false,
-designation:false,
+full_name:false,
+user__email:false,
+designation__designation_name:false,
 is_active:false,
   };
   page = 1;
@@ -47,7 +47,7 @@ is_active:false,
 
   }
   async edit(item: any) {
-    this.selectedItemId = item?.id;
+    this.selectedItemId = item?.user_id;
     try {
       const modalRef = await this.modalService.open(GenericEditComponent, {
         size: 'sm',
@@ -72,7 +72,7 @@ public getActiveEmployeeList(){
 this.isHistory=false;
 this.isCurrent = true;
  let query = this.getFilterBaseUrl()
-      query += `&is_active=true`;
+      query += `&is_active=True`;
 this.apiService.getData(`${environment.live_url}/${environment.employee}/${query}`).subscribe(
       (res: any) => {
         this.allEmployeeList = res?.results;
@@ -88,7 +88,7 @@ this.apiService.getData(`${environment.live_url}/${environment.employee}/${query
     this.isCurrent = false;
     this.isHistory=true;
     let query = this.getFilterBaseUrl()
-    query += `&is_active=false`;
+    query += `&is_active=False`;
     this.apiService.getData(`${environment.live_url}/${environment.employee}/${query}`).subscribe(
       (res: any) => {
         this.allEmployeeList = res.results;
@@ -103,49 +103,26 @@ this.apiService.getData(`${environment.live_url}/${environment.employee}/${query
     if (event) {
       this.page = 1;
       this.tableSize = Number(event.value);
-      if (this.term) {
-        let query = this.getFilterBaseUrl()
-        query += `&search=${this.term}`
-        // console.log(this.term)
-        if(this.isCurrent){
-          this.getActiveEmployeeList()
-        }else{
-          this.getInActiveEmployeeList();
-        }
-      } else {
-        if(this.isCurrent){
-          this.getActiveEmployeeList()
-        }else{
-          this.getInActiveEmployeeList();
-        }
+      if(this.isCurrent){
+        this.getActiveEmployeeList()
+      }else{
+        this.getInActiveEmployeeList();
       }
     }
   }
   public onTableDataChange(event: any) {
     this.page = event;
-    if (this.term) {
-      let query = this.getFilterBaseUrl()
-      query += `&search=${this.term}`
-      // console.log(this.term)
       if(this.isCurrent){
         this.getActiveEmployeeList()
       }else{
         this.getInActiveEmployeeList();
       }
-    } else {
-      if(this.isCurrent){
-        this.getActiveEmployeeList()
-      }else{
-        this.getInActiveEmployeeList();
-      }
-    }
+
   }
   public filterSearch(event: any) {
     this.term = event.target.value?.trim();
     if (this.term && this.term.length >= 2) {
       this.page = 1;
-      let query = this.getFilterBaseUrl()
-      query += `&search=${this.term}`
       if(this.isCurrent){
         this.getActiveEmployeeList()
       }else{
@@ -162,7 +139,7 @@ this.apiService.getData(`${environment.live_url}/${environment.employee}/${query
   }
 
   public getFilterBaseUrl(): string {
-    return `?page=${this.page}&page_size=${this.tableSize}`;
+    return `?page=${this.page}&page_size=${this.tableSize}&search=${this.term}&employee=True`;
   }
 
   public sort(direction: string, column: string) {
