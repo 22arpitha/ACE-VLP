@@ -69,9 +69,9 @@ export class ClientListComponent implements OnInit {
     this.orgId = sessionStorage.getItem('organization_id')
     this.userRole =  sessionStorage.getItem('user_role_name');
     this.user_id = sessionStorage.getItem('user_id');
-    this.getNewClients(`?organization_id=${this.orgId}&page=${1}&page_size=${5}`);
+    // this.getNewClients(`?organization_id=${this.orgId}&page=${1}&page_size=${5}`);
     this.enabled = true;
-    this.getModuleAccess()
+    // this.getModuleAccess()
   }
 
   getModuleAccess(){

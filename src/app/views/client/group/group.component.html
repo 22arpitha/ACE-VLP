@@ -1,0 +1,111 @@
+<div class="container-wrapper settings-main-content px-0">
+  <section class="settings-form-bg">
+    <div class="row mx-0 px-0">
+      <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0">
+        <form [formGroup]="groupForm">
+          <div class="row mx-0 my-0">
+            <div class="col-sm-12 col-md-4 col-lg-3 my-1 px-0">
+              <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+                <mat-label>Group Name <b class="r-star">*</b></mat-label>
+                <input matInput placeholder="Group name" appAlphabetOnly formControlName="group_name" autocomplete="off"
+                  pattern="^(?!\s)(.*\S)?$">
+                  <mat-error
+                  *ngIf="f['group_name']?.invalid && f['group_name']?.touched || f['group_name']?.dirty">
+                  <span *ngIf="f['group_name'].errors?.['required']">Group Name is required</span>
+                  <span
+                    *ngIf="!f['group_name'].errors?.['required'] && f['group_name'].errors?.['pattern'] && !f['group_name'].errors?.['maxlength']">
+                    Invalid name. Extra space, numbers and special charaters are not allowed
+                  </span>
+                  <span *ngIf="!f['group_name'].errors?.['required'] && f['group_name'].errors?.['maxlength']">
+                    Group Name cannot exceed 20 characters.
+                  </span>
+                </mat-error>
+              </mat-form-field>
+            </div>
+            <div class="col-12 col-sm-12 col-md-6 col-lg-3 align-content-center">
+              <button mat-raised-button class="cancel-button mat-btn-s" type="button" (click)="resetFormState()">
+                Cancel</button>
+              <button mat-raised-button class="proceedbtn mat-btn-s" type="submit" (click)="saveCountryDetails()">
+                {{isEditItem? 'Update' : 'Submit'}}</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- table -->
+  <section class="group-table" [ngClass]="{'disabled-section': isEditItem}">
+    <div class="row mx-0 my-0 px-0 py-2">
+      <div class="col-sm-12 col-md-4 col-lg-4 search-div px-0">
+        <input type="search" (input)="filterSearch($event)" class="form-control p-2 sizeinput" [(ngModel)]="term"
+          placeholder="Search by group name" aria-describedby="emailHelp" autocomplete="off">
+        <i *ngIf="!term" class="bi bi-search" id="search-icon-tab"></i>
+      </div>
+    </div>
+    <div class="row mx-0 my-2 px-0 table-wrapper">
+      <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0 ">
+        <table class="table table table-hover table-list">
+          <thead>
+            <tr>
+              <th scope="col"> S.No</th>
+              <th scope="col">Group Name
+                <i *ngIf="!arrowState['group_name']" (click)="sort('asc', 'group_name')" class="bi bi-arrow-up"></i>
+                <i *ngIf="arrowState['group_name']" (click)="sort('desc', 'group_name')" class="bi bi-arrow-down"></i>  
+              </th>
+              <th scope="col">Action </th>
+            </tr>
+          </thead>
+          <tbody>
+
+            <ng-container *ngIf="(allGroups) as result">
+              <tr *ngFor='let item of result | customSort:directionValue:sortValue
+                         |paginate : {
+                                  itemsPerPage: tableSize,
+                                  currentPage: page,
+                                  totalItems: count
+                                }; let i=index'>
+                <td>{{getContinuousIndex(i)}}</td>
+                <td><span style="cursor: pointer; color:#0978C8; text-decoration: underline;" (click)="viewClientsOfGrpup('xxxx')">yyyy</span></td>
+                <!-- <td>{{item.group_name|titlecase }}</td> -->
+                <td>
+                  <ng-container>
+                    <img src="../../../../assets/images/Edit.svg" class="icon-image" type="button" container="body"
+                      ngbTooltip="Edit" (click)="edit(item)" />
+                    <img src="../../../../assets/images/Delete.svg" class="icon-image" type="button" container="body"
+                      ngbTooltip="Delete" (click)="delete(item.id)" />
+                    <!-- (click)="open(item.id)" -->
+                    <!-- <span  *ngIf="userRole ==='Employee' && !accessPermissions[0]?.update && !accessPermissions[0]?.delete">-</span> -->
+                    <!-- *ngIf="userRole ==='Employee' && accessPermissions[0]?.delete || userRole === 'Admin'" -->
+                    <!-- *ngIf="userRole ==='Employee' && accessPermissions[0]?.update || userRole === 'Admin'" -->
+                  </ng-container>
+                </td>
+
+              </tr>
+
+            </ng-container>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="col-12" *ngIf="allGroups.length === 0">
+      <app-generic-norecards></app-generic-norecards>
+    </div>
+  </section>
+  <div class="row mx-0 my-2 px-2" [ngClass]="{'disabled-section': isEditItem}">
+    <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0" *ngIf="allGroups.length > 0">
+      <div class="pagination-container p-0 pt-2">
+        <pagination-controls previousLabel="Prev" nextLabel="Next" (pageChange)="onTableDataChange($event)">
+        </pagination-controls>
+        <div class="items-per-page-container">
+          <div>Items per page</div>
+          <mat-select [(ngModel)]="tableSize" (selectionChange)="onTableSizeChange($event)" placeholder="10"
+            class="page-size">
+            <mat-option *ngFor="let size of tableSizes" [value]="size">{{size}}</mat-option>
+          </mat-select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>

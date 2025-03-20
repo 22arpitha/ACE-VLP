@@ -13,13 +13,24 @@ import { CreateClientComponent } from './create-client/create-client.component';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { UpdateClientComponent } from './update-client/update-client.component';
 import { SharedModule } from '../../shared/shared.module';
+import {MatTabsModule} from '@angular/material/tabs';
+import { TabsListComponent } from './tabs-list/tabs-list.component';
+import { EditClientComponent } from './edit-client/edit-client.component';
+import { GroupComponent } from './group/group.component';
+import { JobsOfEndclientComponent } from './jobs-of-endclient/jobs-of-endclient.component';
+import { ClientsOfGroupComponent } from './clients-of-group/clients-of-group.component';
 
 @NgModule({
   declarations: [
     ClientComponent,
     ClientListComponent,
     CreateClientComponent,
-    UpdateClientComponent
+    UpdateClientComponent,
+    GroupComponent,
+    TabsListComponent,
+    EditClientComponent,
+    JobsOfEndclientComponent,
+    ClientsOfGroupComponent
   ],
   imports: [
     CommonModule,
@@ -32,7 +43,8 @@ import { SharedModule } from '../../shared/shared.module';
     Ng2SearchPipeModule,
     NgbTooltipModule,
     SharedModule,
-    QuillModule.forRoot()
+    QuillModule.forRoot(),
+    MatTabsModule
   ]
 })
 export class ClientModule { }

@@ -1,0 +1,112 @@
+import { Component, Input, OnInit } from '@angular/core';
+import { CommonServiceService } from '../../../service/common-service.service';
+import { ActivatedRoute, Router } from '@angular/router';
+import { ApiserviceService } from '../../../service/apiservice.service';
+import { environment } from '../../../../environments/environment';
+
+@Component({
+  selector: 'app-clients-of-group',
+  templateUrl: './clients-of-group.component.html',
+  styleUrls: ['./clients-of-group.component.scss']
+})
+export class ClientsOfGroupComponent implements OnInit {
+  endClientData: any;
+  BreadCrumbsTitle: any
+  allClients = []
+  sortValue: string = '';
+  directionValue: string = '';
+  arrowState: { [key: string]: boolean } = {
+    end_client_name: false,
+  };
+  page = 1;
+  count = 0;
+  tableSize = 5;
+  tableSizes = [5, 10, 25, 50, 100];
+  currentIndex: any;
+  term: any = '';
+
+  constructor(private common_service: CommonServiceService,private activateRoute:ActivatedRoute,private router: Router,
+    private api: ApiserviceService,
+  ) {
+     this.endClientData = this.activateRoute.snapshot.paramMap.get('group-client-name')
+     this.BreadCrumbsTitle = 'Group - ' + this.endClientData
+     this.common_service.setTitle(this.BreadCrumbsTitle);
+  }
+
+  ngOnInit(): void {
+    this.getAllClientOfGroup(`?page=${1}&page_size=${5}`);
+   
+  }
+
+  getContinuousIndex(index: number): number {
+    return (this.page - 1) * this.tableSize + index + 1;
+  }
+  arrow: boolean = false
+  sort(direction: string, column: string) {
+    this.arrowState[column] = direction === 'asc' ? true : false;
+    this.directionValue = direction;
+    this.sortValue = column;
+  }
+
+  getAllClientOfGroup(params: any) {
+      this.api.getData(`${environment.live_url}/${environment.settings_country}/${params}`).subscribe(
+        (res: any) => {
+          console.log(res.results)
+          this.allClients = res.results;
+          const noOfPages: number = res?.['total_pages']
+          this.count = noOfPages * this.tableSize;
+          this.count = res?.['total_no_of_record']
+          this.page = res?.['current_page'];
+        }
+      )
+    }
+    filterSearch(event: any) {
+      this.term = event.target.value?.trim();
+      if (this.term && this.term.length >= 2) {
+        this.page = 1;
+        let query = this.getFilterBaseUrl()
+        query += `&search=${this.term}`
+        this.getAllClientOfGroup(query);
+      }
+      else if (!this.term) {
+        this.getAllClientOfGroup(this.getFilterBaseUrl());
+      }
+    }
+    getFilterBaseUrl(): string {
+      return `?page=${this.page}&page_size=${this.tableSize}`;
+    }
+  
+    onTableSizeChange(event: any): void {
+      if (event) {
+        this.page = 1;
+        this.tableSize = Number(event.value);
+        if (this.term) {
+          let query = this.getFilterBaseUrl()
+          query += `&search=${this.term}`
+          // console.log(this.term)
+          this.getAllClientOfGroup(query);
+        } else {
+          // console.log(this.term,'no')
+          this.getAllClientOfGroup(this.getFilterBaseUrl());
+        }
+      }
+    }
+  
+    onTableDataChange(event: any) {
+      this.page = event;
+      if (this.term) {
+        let query = this.getFilterBaseUrl()
+        query += `&search=${this.term}`
+        // console.log(this.term)
+        this.getAllClientOfGroup(query);
+      } else {
+        // console.log(this.term,'no')
+        this.getAllClientOfGroup(this.getFilterBaseUrl());
+      }
+    }
+
+    backToEndClients(id){
+      this.router.navigate([`/client/update-client/${12}`])
+    }
+
+}

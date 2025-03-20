@@ -89,7 +89,7 @@
   <section class="settings-table-bg" [ngClass]="{'disabled-section': isEditItem}">
     <div class="row mx-0 my-2 px-0">
       <div class="col-12 col-sm-12 col-md-6 col-lg-4 search-div px-0">
-        <input type="search" class="form-control p-2 sizeinput" [(ngModel)]="term" placeholder="Search by Template"
+        <input type="search" class="form-control p-2 sizeinput" [(ngModel)]="term" placeholder="Search by template"
           aria-describedby="emailHelp" autocomplete="off" (input)="filterSearch($event)">
         <i *ngIf="!term" class="bi bi-search" id="search-icon-tab"></i>
       </div>

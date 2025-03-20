@@ -57,9 +57,9 @@ export class UpdateClientComponent implements OnInit {
   ngOnInit(): void {
     this.common_service.setTitle(this.BreadCrumbsTitle);
     this.orgId = sessionStorage.getItem('organization_id')
-    this.initForm()
+    // this.initForm()
     // this.getIndustry();
-    this.edit();
+    // this.edit();
   }
   get f(){
     return this.updateForm.controls;

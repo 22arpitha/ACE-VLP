@@ -4,6 +4,9 @@ import { ClientListComponent } from './client-list/client-list.component';
 import { ClientComponent } from './client.component';
 import { CreateClientComponent } from './create-client/create-client.component';
 import { UpdateClientComponent } from './update-client/update-client.component';
+import { TabsListComponent } from './tabs-list/tabs-list.component';
+import {JobsOfEndclientComponent} from './jobs-of-endclient/jobs-of-endclient.component'
+import { ClientsOfGroupComponent } from './clients-of-group/clients-of-group.component';
 
 const routes: Routes = [
   {
@@ -13,6 +16,18 @@ const routes: Routes = [
       },
       {
         path:'all-client', component:ClientListComponent
+      },
+      {
+        path:'update-client/12', component:TabsListComponent
+      },
+      {
+        path:'end-client-jobs/:end-client-name/:id', component: JobsOfEndclientComponent
+      },
+      {
+        path:'end-client-jobs/:end-client-name/:id', component: JobsOfEndclientComponent
+      },
+      {
+        path:'client-groups/:group-client-name/:id', component: ClientsOfGroupComponent
       },
       {
         path:'update/:id/:page/:tableSize', component:UpdateClientComponent

@@ -16,7 +16,7 @@ export class PdfViewComponent implements OnInit {
     this.fileType = data.type;
     console.log(this.fileUrl,this.fileType)
   }
-
+  src = 'https://vadimdez.github.io/ng2-pdf-viewer/assets/pdf-test.pdf';
   ngOnInit(): void {
   }
 
