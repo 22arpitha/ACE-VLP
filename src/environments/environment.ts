@@ -33,7 +33,8 @@ templates:`templates`,
 employee:`user`,
 // vlp company policy
 company_policy:`company-policy`,
-
+// vlp clients 
+clients:'clients',
 // project ace 
   leave_application: 'leave-application',
   timesheetCalender: 'time-sheets-calender',

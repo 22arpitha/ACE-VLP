@@ -1,11 +1,11 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { FormBuilder, FormGroup, FormGroupDirective, Validators } from '@angular/forms';
 import { CommonServiceService } from '../../../service/common-service.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ApiserviceService } from 'src/app/service/apiservice.service';
-import { environment } from 'src/environments/environment';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { GenericDeleteComponent } from 'src/app/generic-delete/generic-delete.component';
+import { ApiserviceService } from '../../../service/apiservice.service';
+import { environment } from '../../../../environments/environment';
+import { GenericDeleteComponent } from '../../../generic-delete/generic-delete.component';
 
 @Component({
   selector: 'app-create-update-employee',
@@ -48,7 +48,7 @@ this.employeeFormGroup = this.fb.group({
       employee_number: ['',Validators.required],
       first_name: ['', [Validators.required, Validators.maxLength(50)]],
       last_name: ['', [Validators.required, Validators.maxLength(50)]],
-      email: ['', [Validators.required, Validators.email]],
+      email:['',[Validators.required,Validators.pattern('^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$')]],
       date_joined: ['', Validators.required],
       // exit_date: ['', Validators.required],
       reporting_manager_id:['', Validators.required],
@@ -171,6 +171,7 @@ this.apiService.getData(`${environment.live_url}/${environment.employee}/${id}/`
         if (this.isEditItem) {
           this.apiService.updateData(`${environment.live_url}/${environment.employee}/${this.employee_id}/`, this.employeeFormGroup.value).subscribe((respData: any) => {
             if (respData) {
+              this.common_service.setEmployeeStatusState(this.employeeFormGroup.get('is_active')?.value)
               this.apiService.showSuccess(respData['message']);
               this.resetFormState();
               this.router.navigate(['/settings/all-employee']);

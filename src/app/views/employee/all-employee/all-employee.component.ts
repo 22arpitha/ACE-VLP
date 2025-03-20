@@ -36,10 +36,17 @@ is_active:false,
     private router:Router,private modalService: NgbModal,
     private apiService: ApiserviceService) {
     this.common_service.setTitle(this.BreadCrumbsTitle)
+    this.common_service.empolyeeStatus$.subscribe((status:boolean)=>{
+      if(status){
+        this.getActiveEmployeeList();
+      }else{
+        this.getInActiveEmployeeList();        
+      }
+    })
    }
 
   ngOnInit(): void {
-    this.getActiveEmployeeList()
+    
   }
 
   public openCreateEmployeePage(){

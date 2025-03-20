@@ -15,6 +15,7 @@ export class CommonServiceService {
    private titleSubject = new BehaviorSubject<string>('Dashboard');
    title$ = this.titleSubject.asObservable();
    subsctiptionState$ = new BehaviorSubject(false);
+   empolyeeStatus$ = new BehaviorSubject(true);
    profileSubject = new BehaviorSubject<any>(null);
    profilePhoto$ = this.profileSubject.asObservable()
    private previousPage = new BehaviorSubject<string>('')
@@ -32,5 +33,9 @@ export class CommonServiceService {
    }
    setProfilePhoto(data:string){
     this.profileSubject.next(data);
+   }
+
+   setEmployeeStatusState(status:boolean){
+    this.empolyeeStatus$.next(status);
    }
 }

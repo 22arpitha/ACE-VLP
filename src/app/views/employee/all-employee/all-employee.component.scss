@@ -10,14 +10,14 @@
     outline: none;
     border: none;
     margin: 0px 5px;
-    height: 30px;
-    line-height: 30px;
 }
 .download-btn{
     min-width: 45px !important;
-    margin: 0px 5px;
     height: 30px;
     line-height: 30px;
+}
+.mat-btn-s{
+    margin: 0px 5px;
 }
 // .settings-table-bg{
 //     max-height: 70vh !important;
@@ -28,12 +28,6 @@
 //     margin-bottom: 20px;
 // }
 
-.position-bottom-content{
-    position: absolute;
-    bottom: 0px;
-    left: 0px;
-    width: 100%;
-}
 .deactivate{
     background: #f9b115;
     color: #fff;
