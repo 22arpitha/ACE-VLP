@@ -75,6 +75,20 @@ is_active:false,
       console.error('Error opening modal:', error);
     }
   }
+
+  // Current Btn event
+  getCurrentEmployeeList(){
+    this.page = 1;
+    this.tableSize = 5;
+  this.getActiveEmployeeList();    
+  }
+// History btn event 
+  getEmployeeHistoryList(){
+    this.page = 1;
+    this.tableSize = 5;
+    this.getInActiveEmployeeList();
+  }
+
 public getActiveEmployeeList(){
 this.isHistory=false;
 this.isCurrent = true;

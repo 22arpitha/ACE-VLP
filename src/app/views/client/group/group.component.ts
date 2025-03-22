@@ -6,7 +6,7 @@ import { CommonServiceService } from '../../../service/common-service.service';
 import { GenericDeleteComponent } from '../../../generic-delete/generic-delete.component';
 import { GenericEditComponent } from '../../../generic-edit/generic-edit.component';
 import { environment } from '../../../../environments/environment';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-group',
@@ -30,20 +30,27 @@ export class GroupComponent implements OnInit {
   tableSizes = [5, 10, 25, 50, 100];
   currentIndex: any;
   term: any = '';
-
+  client_id:any;
   constructor(
-    private common_service: CommonServiceService, private fb: FormBuilder, private api: ApiserviceService,
+    private common_service: CommonServiceService,
+    private activeRoute:ActivatedRoute,
+    private fb: FormBuilder, private api: ApiserviceService,
     private modalService: NgbModal, private router:Router
-  ) { }
+  ) {
+    if(this.activeRoute.snapshot.paramMap.get('id')){
+      this.client_id= this.activeRoute.snapshot.paramMap.get('id')}
+
+   }
 
   ngOnInit(): void {
     this.intialForm();
-    this.getAllGroupList(`?page=${1}&page_size=${5}`);
+    this.getAllGroupList(`?page=${1}&page_size=${5}&client=${this.client_id}`);
   }
 
   intialForm() {
     this.groupForm = this.fb.group({
       group_name: ['', [Validators.required, Validators.pattern(/^[a-zA-Z]+( [a-zA-Z]+)*$/), Validators.maxLength(20)]],
+      client:this.client_id
     })
   }
   get f() {
@@ -60,7 +67,7 @@ export class GroupComponent implements OnInit {
   }
 
   getAllGroupList(params: any) {
-    this.api.getData(`${environment.live_url}/${environment.settings_country}/${params}`).subscribe(
+    this.api.getData(`${environment.live_url}/${environment.clients_group}/${params}`).subscribe(
       (res: any) => {
         console.log(res.results)
         this.allGroups = res.results;
@@ -84,7 +91,7 @@ export class GroupComponent implements OnInit {
     }
   }
   getFilterBaseUrl(): string {
-    return `?page=${this.page}&page_size=${this.tableSize}`;
+    return `?page=${this.page}&page_size=${this.tableSize}&client=${this.client_id}`;
   }
 
   onTableSizeChange(event: any): void {
@@ -122,30 +129,31 @@ export class GroupComponent implements OnInit {
       this.groupForm.markAllAsTouched();
     } else {
       if (this.isEditItem) {
-        // this.api.updateData(`${environment.live_url}/${environment.settings_country}/${this.selectedItemId}/`, this.groupForm.value).subscribe((respData: any) => {
-        //   if (respData) {
-        //     this.api.showSuccess(respData['message']);
-        //     this.resetFormState();
-        //     this.getAllGroupList('?page=1&page_size=5');
-        //   }
-        // }, (error: any) => {
-        //   this.api.showError(error?.error?.detail);
-        // });
+        this.api.updateData(`${environment.live_url}/${environment.clients_group}/${this.selectedItemId}/`, this.groupForm.value).subscribe((respData: any) => {
+          if (respData) {
+            this.api.showSuccess(respData['message']);
+            this.resetFormState();
+            this.getAllGroupList(`?page=${1}&page_size=${5}&client=${this.client_id}`);
+          }
+        }, (error: any) => {
+          this.api.showError(error?.error?.detail);
+        });
       } else {
-        // this.api.postData(`${environment.live_url}/${environment.settings_country}/`, this.groupForm.value).subscribe((respData: any) => {
-        //   if (respData) {
-        //     this.api.showSuccess(respData['message']);
-        //     this.resetFormState();
-        //     this.getAllGroupList('?page=1&page_size=5');
-        //   }
-        // }, (error: any) => {
-        //   this.api.showError(error?.error?.detail);
-        // });
+        this.api.postData(`${environment.live_url}/${environment.clients_group}/`, this.groupForm.value).subscribe((respData: any) => {
+          if (respData) {
+            this.api.showSuccess(respData['message']);
+            this.resetFormState();
+            this.getAllGroupList(`?page=${1}&page_size=${5}&client=${this.client_id}`);
+          }
+        }, (error: any) => {
+          this.api.showError(error?.error?.detail);
+        });
       }
     }
   }
   public resetFormState() {
     this.formGroupDirective.resetForm();
+    this.groupForm.patchValue({"client":this.client_id});
     this.isEditItem = false;
   }
   async edit(item: any) {
@@ -172,11 +180,11 @@ export class GroupComponent implements OnInit {
   }
 
   getSelectedItemData(id: any) {
-    // this.api.getData(`${environment.live_url}/${environment.settings_country}/${id}/`).subscribe((respData: any) => {
-    //   this.groupForm.patchValue({ 'group_name': respData?.group_name });
-    // }, (error: any) => {
-    //   this.api.showError(error?.error?.detail);
-    // })
+    this.api.getData(`${environment.live_url}/${environment.clients_group}/${id}/`).subscribe((respData: any) => {
+      this.groupForm.patchValue({ 'group_name': respData?.group_name });
+    }, (error: any) => {
+      this.api.showError(error?.error?.detail);
+    })
   }
 
   delete(id: any) {
@@ -188,7 +196,7 @@ export class GroupComponent implements OnInit {
       });
       modelRef.componentInstance.status.subscribe(resp => {
         if (resp == "ok") {
-          // this.deleteContent(id);
+          this.deleteContent(id);
           modelRef.close();
         }
         else {
@@ -199,11 +207,11 @@ export class GroupComponent implements OnInit {
     }
   }
   public deleteContent(id: any) {
-    this.api.delete(`${environment.live_url}/${environment.settings_country}/${id}/`).subscribe(async (data: any) => {
+    this.api.delete(`${environment.live_url}/${environment.clients_group}/${id}/`).subscribe(async (data: any) => {
       if (data) {
         this.allGroups = []
         this.api.showSuccess(data.message)
-        let query = `?page=${1}&page_size=${this.tableSize}`
+        let query = this.getFilterBaseUrl();
         if (this.term) {
           query += `&search=${this.term}`
         }
@@ -218,10 +226,10 @@ export class GroupComponent implements OnInit {
 
   reset() {
     this.resetFormState();
-    this.getAllGroupList(`?page=${1}&page_size=${5}`);
+    this.getAllGroupList(`?page=${1}&page_size=${5}&client=${this.client_id}`);
   }
 
   viewClientsOfGrpup(data){
-    this.router.navigate([`/client/client-groups/${'Alpa'}/${12}`])
+    this.router.navigate([`/client/client-groups/${data?.group_name}/${this.client_id}`])
   }
 }

@@ -4,7 +4,7 @@ export const environment = {
   Razorpay_live_key:'rzp_test_Z6PoT6HRL71TiC',
    
   
-  media_url: 'https://projectacedevelop.thestorywallcafe.com',
+  media_url: 'https://vlp.thestorywallcafe.com/api-vlp',
   live_url:'https://vlp.thestorywallcafe.com/api-vlp',
   socket_url:'projectacedevelop.thestorywallcafe.com',
 
@@ -35,6 +35,9 @@ employee:`user`,
 company_policy:`company-policy`,
 // vlp clients 
 clients:'clients',
+clients_group:'group',
+end_clients:'end-clients',
+
 // project ace 
   leave_application: 'leave-application',
   timesheetCalender: 'time-sheets-calender',

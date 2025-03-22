@@ -1,10 +1,6 @@
 <div class="container-wrapper settings-main-content px-0">
-    <section class="settings-form-bg">
+    <section class="settings-form-bg px-0">
       <div class="row mx-0 px-0">
-        <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0">
-            <h4><span
-                *ngIf="!isEditItem">Create</span><span *ngIf="isEditItem">Update</span> Client</h4>
-        </div>
         <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0">
             <form [formGroup]="clientFormGroup">
                 <div class="row mx-0 my-0 px-2">
@@ -13,7 +9,7 @@
                         <mat-label>Client Number <b class="r-star">*</b></mat-label>
                         <input matInput type="text" placeholder="Enter Client Number" formControlName="client_number" autocomplete="off" readonly>
                         <mat-error *ngIf="f['client_number']?.invalid && f['client_number']?.touched || f['client_number']?.dirty">
-                          <span *ngIf="f['client_number'].errors?.['required']">Client Number is required</span>
+                          <span *ngIf="f['client_number']?.errors?.['required']">Client Number is required</span>
                         </mat-error>
                       </mat-form-field>  
                     </div>
@@ -27,21 +23,13 @@
     <mat-error *ngIf="f['client_name']?.invalid && f['client_name']?.touched || f['client_name']?.dirty">
         <span  *ngIf="f['client_name']?.errors?.['required']">Client name is required
         </span>
-        <!-- <span  *ngIf="f['client_name']?.errors?.['pattern']">
+        <span  *ngIf="f['client_name']?.errors?.['pattern']">
             Invalid name. Only letters are allowed, and the name must start with a letter.
         </span>
         <span 
             *ngIf="f['client_name']?.errors?.['maxlength']">
             Client name cannot exceed more than 50 characters.
-        </span> -->
-        <!-- <span 
-            *ngIf="f['contact_person_name'].invalid && f['contact_person_name'].hasError('pattern')">
-            Invalid Contact person name
         </span>
-        <span 
-            *ngIf="f['contact_person_name'].errors?.['required'] && f['contact_person_name'].errors?.['maxlength']">
-            Contact person name cannot exceed more than 50 characters.
-        </span> -->
     </mat-error>
 </mat-form-field>
 
@@ -63,11 +51,16 @@
 <!-- Country Field -->
 <div class="col-12 col-sm-12 col-md-6 col-lg-3 my-1 px-0">
     <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
-        <mat-label>Select Country</mat-label>
+        <mat-label>Select Country <b class="r-star">*</b></mat-label>
         <mat-select formControlName="country" autocomplete="off"
                 placeholder="Select" panelClass="custom-select-panel"
                 [disableOptionCentering]="true" >
-                <mat-option *ngFor="let item of allCountry" [value]="item?.id">
+                <div class="mat-select-search-wrapper d-flex">
+                  <input matInput [(ngModel)]="searchCountryText" autofocus [ngModelOptions]="{standalone: true}" placeholder="Search Country" class="mat-select-search">
+                  <mat-icon class="search-icon" *ngIf="!searchCountryText">search</mat-icon>
+                  <mat-icon class="search-icon" *ngIf="searchCountryText" type="button" (click)="clearSearch('con')">close</mat-icon>
+                </div>
+                <mat-option *ngFor="let item of filteredCountryList()" [value]="item?.id">
                     {{item?.country_name}}
                 </mat-option>
         </mat-select>
@@ -94,12 +87,17 @@
     <!-- Source Field -->
     <div class="col-12 col-sm-12 col-md-6 col-lg-3 my-1 px-0">
         <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
-            <mat-label>Select Source</mat-label>
+            <mat-label>Select Source <b class="r-star">*</b></mat-label>
             <mat-select formControlName="source" autocomplete="off"
                     placeholder="Select" panelClass="custom-select-panel"
                     [disableOptionCentering]="true">
-                    <mat-option *ngFor="let item of allSource" [value]="item?.id">
-                        {{item.source_name}}
+                    <div class="mat-select-search-wrapper d-flex">
+                      <input matInput [(ngModel)]="searchSourceText" autofocus [ngModelOptions]="{standalone: true}" placeholder="Search Source" class="mat-select-search">
+                      <mat-icon class="search-icon" *ngIf="!searchSourceText">search</mat-icon>
+                      <mat-icon class="search-icon" *ngIf="searchSourceText" type="button" (click)="clearSearch('sou')">close</mat-icon>
+                    </div>
+                    <mat-option *ngFor="let item of filteredSourceList()" [value]="item?.id">
+                        {{item?.source_name}}
                     </mat-option>
             </mat-select>
             <mat-error *ngIf="f['source']?.invalid && f['source']?.touched || f['source']?.dirty">
@@ -114,11 +112,11 @@
     <mat-form-field appearance="outline" class="w-100 p-0 custom-mat-form-field">
         <mat-label>Start Date <b class="r-star">*</b></mat-label>
         <input matInput [matDatepicker]="picker1" placeholder="Enter Start date"
-            formControlName="start_date" autocomplete="off" (dateInput)="joiningDateFun($event)">
+            formControlName="service_start_date" autocomplete="off" (dateInput)="joiningDateFun($event)">
             <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
              <mat-datepicker #picker1></mat-datepicker>
-             <mat-error *ngIf="f['start_date']?.invalid && f['start_date']?.touched || f['start_date']?.dirty">
-                <span  *ngIf="f['start_date']?.errors?.['required']">Start Date is required</span>
+             <mat-error *ngIf="f['service_start_date']?.invalid && f['service_start_date']?.touched || f['service_start_date']?.dirty">
+                <span  *ngIf="f['service_start_date']?.errors?.['required']">Start Date is required</span>
           </mat-error>
     </mat-form-field>
   
@@ -126,158 +124,202 @@
   <!-- End Date -->
 <div class="col-12 col-sm-12 col-md-6 col-lg-3 my-1 no-padding pl-0 pr-5">
     <mat-form-field appearance="outline" class="w-100 p-0 custom-mat-form-field">
-        <mat-label>End Date <b class="r-star">*</b></mat-label>
+        <mat-label>End Date</mat-label>
         <input matInput [matDatepicker]="picker2" placeholder="Enter End date" 
-            formControlName="end_date" autocomplete="off" (dateInput)="joiningDateFun($event)">
+            formControlName="service_end_date" autocomplete="off" (dateInput)="joiningDateFun($event)">
             <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
              <mat-datepicker #picker2></mat-datepicker>
-             <mat-error *ngIf="f['end_date']?.invalid && f['end_date']?.touched || f['end_date']?.dirty">
-                <span  *ngIf="f['end_date']?.errors?.['required']">End date is required</span>
+             <mat-error *ngIf="f['service_end_date']?.invalid && f['service_end_date']?.touched || f['service_end_date']?.dirty">
+                <span  *ngIf="f['service_end_date']?.errors?.['required']">End date is required</span>
           </mat-error>
     </mat-form-field>
   
 </div>
   <!-- Upload File -->
-<div class="col-12 col-sm-12 col-md-12 col-lg-12 my-1 px-0"></div>
+<div class="ccol-12 col-sm-12 col-md-6 col-lg-3 my-1 px-0 align-content-center">
+    <input type="file" accept=".xlsx,.xls" formControlName="client_file" #fileInput
+                (change)="onFileSelected($event)" hidden>
+              <div class="image-container w-100 d-flex justify-content-between align-items-center"
+                style="padding: 1px 15px;"
+                [ngClass]="{'is-invalid': f['client_file']?.touched && f['client_file']?.invalid}">
+                <mat-label >{{selectedFile ? selectedFile.name : 'Upload File'}}</mat-label>
+                <button type="button" mat-icon-button (click)="triggerFileInput()">
+                  <i matTooltip="{{selectedFile ? 'Edit' : 'Upload File'}}"
+                    class="{{selectedFile ? 'bi bi-pencil-fill' : 'bi bi-file-earmark-spreadsheet'}}"
+                    id="edit-or-upload-icon"></i>
+                </button>
+              </div>
+              <div *ngIf="f['client_file']?.touched && f['client_file']?.invalid"
+                style="font-size: 11px;padding-left: 10px;color:#f44336">
+                <span *ngIf="f['client_file']?.errors?.['accept']">Invalid file type. Please upload .xlsx, .xls, .doc, .docx, .pdf file.</span>
+                <span *ngIf="f['client_file']?.errors?.['maxSize']">File size exceeds 10MB.</span>
+              </div>
 </div>
-<section class="settings-table-bg mx-0 my-3 px-2" >
-    <div class="row mx-1 my-2 px-0">
-        <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0 ">
-            <h4>Contact Details</h4>
-        </div>
+</div>
+<section class="settings-table-bg">
+<div class="row mx-0 my-1 px-0">
+    <div class="col-12 col-sm-12 col-md-12 col-lg-12 py-1 px-0">
+        <h4>Contact Details</h4>
     </div>
-    <div class="row mx-1 my-2 px-0">
-        <div class="col-12 col-sm-12 col-md-6 col-lg-3 my-1 px-0">
-            <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
-                <mat-label>Name <b class="r-star">*</b></mat-label>
-                <input matInput type="text" placeholder="Enter Name"  autocomplete="off">
-                <!-- <mat-error *ngIf="f['client_number']?.invalid && f['client_number']?.touched || f['client_number']?.dirty">
-                  <span *ngIf="f['client_number'].errors?.['required']">Client Number is required</span>
-                </mat-error> -->
-              </mat-form-field>  
-            </div>
-            <div class="col-12 col-sm-12 col-md-6 col-lg-3 my-1 no-padding pl-0 pr-5">
-                <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
-                    <mat-label>Email Address <b class="r-star">*</b></mat-label>
-                    <input matInput type="email" placeholder="Enter email address"
+</div>
+<div class="row mx-0 my-1 px-0">
+    <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0 table-responsive table-responsive-sm table-responsive-md">
+        <table class="table table table-hover table-list">
+            <thead>
+                <tr>
+                  <th>S No</th>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Phone Number</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+             
+              <tbody formArrayName="contact_details" class="contact-form-content">
+                <tr *ngFor="let contact of contactDetails.controls; let i = index" [formGroupName]="i">
+                  <td>{{i+1}}</td>
+                  <td><mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+                    <mat-label>Name<b class="r-star">*</b></mat-label>
+                    <input matInput type="text" placeholder="Enter Name" formControlName="name" autocomplete="off" >
+                  </mat-form-field>
+                  <div class="px-2" *ngIf="contact?.get('name')?.invalid && contact?.get('name')?.touched || contact?.get('name')?.dirty">
+                    <span class="text-errors" *ngIf="contact?.get('name')?.errors?.['required']">Name is required</span>
+                  </div>
+                </td>
+                  <td><mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+                    <mat-label>Email Id <b class="r-star">*</b></mat-label>
+                    <input matInput type="email" placeholder="Enter email" formControlName="email"
                         autocomplete="off" oninput="this.value = this.value.toLowerCase()">
-                        <!-- <mat-error *ngIf="f['email']?.invalid && f['email']?.touched || f['email']?.dirty">
-                            <span  *ngIf="f['email']?.errors?.['required']">Email is required</span>
-                            <span  *ngIf="f['email']?.errors?.['email']">Invalid email Id</span>
-                        </mat-error> -->
+                       
                 </mat-form-field>
-                
+                <div class="px-2" *ngIf="contact?.get('email')?.invalid && contact?.get('email')?.touched || contact?.get('email')?.dirty">
+                  <span class="text-errors"  *ngIf="contact?.get('email')?.errors?.['required']">Email is required</span>
+                  <span class="text-errors" *ngIf="contact?.get('email')?.errors?.['pattern']">Email Id is invalid.</span>
+              </div>
+              </td>
+                  <td> <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+                    <mat-label>Phone No <b class="r-star">*</b></mat-label>
+                    <input matInput type="number" placeholder="Enter phone no"
+                        formControlName="phone_number" autocomplete="off" maxlength="10" pattern="\d{10}"
+                        onKeyPress="if(this.value.length==10) return false;"
+                        (keypress)="validateKeyPress($event)">
+                </mat-form-field>
+                <div class="px-2" *ngIf="contact?.get('phone_number')?.touched && contact?.get('phone_number')?.invalid">
+                    <span class="text-errors" *ngIf="contact?.get('phone_number')?.errors?.['pattern']">Please enter 10
+                        digits
+                        phone number.</span>
+                    <span class="text-errors" *ngIf="contact?.get('phone_number')?.errors?.['required']">Phone number is
+                        required.</span>
                 </div>
-                <div class="col-12 col-sm-12 col-md-6 col-lg-3 my-1 px-0">
-                    <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
-                        <mat-label>Phone Number <b class="r-star">*</b></mat-label>
-                        <input matInput type="number" placeholder="Enter Phone Number"  autocomplete="off">
-                        <!-- <mat-error *ngIf="f['client_number']?.invalid && f['client_number']?.touched || f['client_number']?.dirty">
-                          <span *ngIf="f['client_number'].errors?.['required']">Client Number is required</span>
-                        </mat-error> -->
-                      </mat-form-field>  
-                    </div>
-                    <div class="col-12 col-sm-12 col-md-6 col-lg-3 my-1 px-0 text-end align-content-center">
-                        <button mat-raised-button class="proceedbtn mat-btn-s" type="button" >Add</button>
-                    </div>
-    </div>
-    <div class="row mx-1 my-2 px-0 table-wrapper">
-        <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0 ">
-          <table class="table table table-hover table-list">
-            <thead>
-              <tr>
-                <th scope="col"> S.No</th>
-                <th scope="col">Name</th>
-                <th scope="col">Email Address</th>
-                <th scope="col">Phone Number</th>
-                <th scope="col">Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>-</td>
-                        <td>-</td>
-                        <td>-</td>
-                        <td>-</td>
-                        <td>-</td>
-                    </tr>
-                </tbody>
-                    </table>
-                    </div>
-                </div>
-</section>
-<section class="settings-table-bg mx-0 my-3 px-2" >
-    <div class="row mx-1 my-2 px-0 ">
-        <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0 ">
-            <h4>Employee Details</h4>
+              </td>
+                  <td>
+                    <ng-container>
+                      <img src="../../../../assets/images/Edit.svg" class="icon-image" type="button" container="body"
+                        ngbTooltip="Edit" (click)="editContact(i)" *ngIf="contact?.get('name')?.enabled && i < contactDetails?.length - 1"/>
+                        <img src="../../../../assets/images/Delete.svg" class="icon-image" type="button" container="body"
+                        ngbTooltip="delete" (click)="deleteContact(i)" *ngIf="contact?.get('name')?.enabled && i < contactDetails?.length - 1" />
+                        <img src="../../../../assets/images/addnew.svg" class="icon-image" type="button" container="body"
+                        ngbTooltip="add" (click)="addContact()" *ngIf="i === contactDetails?.length - 1 && contactDetails?.length < 5"/>
+                   </ng-container>
+                   
+                  </td>
+                </tr>
+              </tbody>
+            </table>
         </div>
-    </div>
-    <div class="row mx-1 my-2 px-0">
-        <div class="col-12 col-sm-12 col-md-6 col-lg-3 my-1 px-0">
-            <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
-                <mat-label>Select Employee</mat-label>
-                <mat-select  autocomplete="off"
-                        placeholder="Select" panelClass="custom-select-panel"
-                        [disableOptionCentering]="true">
-                        <mat-option *ngFor="let item of allEmployeeList" [value]="item?.id">
-                            {{item.first_name + item.last_name}}
-                        </mat-option>
-                </mat-select>
-                <!-- <mat-error *ngIf="f['source']?.invalid && f['source']?.touched || f['source']?.dirty">
-                    <span  *ngIf="f['source']?.errors?.['required']">Source is required</span>
-              </mat-error> -->
-            </mat-form-field>
-         
-        </div>
-        <div class="col-12 col-sm-12 col-md-6 col-lg-3 my-1 pl-3 pr-0 text-start align-self-center">
-            <button mat-raised-button class="proceedbtn mat-btn-s" type="button" >Add</button>
-        </div> 
-    </div>
-    <div class="row mx-1 my-2 px-0 table-wrapper">
-        <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0 ">
-          <table class="table table table-hover table-list">
-            <thead>
-              <tr>
-                <th scope="col"> S.No</th>
-                <th scope="col">Employee</th>
-                <th scope="col">Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>-</td>
-                        <td>-</td>
-                        <td>-</td>
-                    </tr>
-                </tbody>
-                    </table>
-                    </div>
-                </div>
+</div>
 </section>
+<section class="settings-table-bg">
+  <div class="row mx-0 my-1 px-0">
+      <div class="col-12 col-sm-12 col-md-12 col-lg-12 py-1 px-0">
+          <h4>Employee Details</h4>
+      </div>
+  </div>
+  <div class="row mx-0 my-1 px-0">
+    <div class="col-12 col-sm-12 col-md-12 col-lg-5 px-0 align-content-lg-start">
+      <div class="d-flex justify-content-between">
+        <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+          <mat-label>Select Employee</mat-label>
+          <mat-select [(ngModel)]="selectedEmployee" autofocus [ngModelOptions]="{standalone: true}" autocomplete="off" placeholder="Select" panelClass="custom-select-panel">
+            
+            <!-- Search input field inside the panel -->
+            <div class="mat-select-search-wrapper d-flex">
+              <input matInput [(ngModel)]="searchEmployeeText" [ngModelOptions]="{standalone: true}" placeholder="Search Employee" class="mat-select-search">
+              <mat-icon class="search-icon" *ngIf="!searchEmployeeText">search</mat-icon>
+              <mat-icon class="search-icon" *ngIf="searchEmployeeText" type="button" (click)="clearSearch('emp')">close</mat-icon>
+            </div>
+        
+            <!-- Filtered options -->
+            <mat-option *ngFor="let emp of filteredEmployeeList()" [value]="emp?.user_id">
+              {{ emp?.user__full_name }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+        
+        
+        <button  mat-raised-button class="proceedbtn mat-btn-s emp-add-btn" type="button" (click)="addEmployee()">Add</button>
+      </div>
+    </div>
+    <div class="col-12 col-sm-12 col-md-12 col-lg-7 no-padding pl-2 pr-0 table-responsive table-responsive-sm table-responsive-md" *ngIf="employeeFormArray.controls.length >= 1">
+      <table class="table table-hover table-list">
+        <thead>
+          <tr>
+            <th>S No</th>
+            <th>Employee</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody formArrayName="employee_ids" class="contact-form-content">
+          <tr *ngFor="let control of employeeFormArray.controls; let i = index" >
+            <td>{{getContinuousIndex(i)}}</td>
+            <td>
+              {{ getEmployeeName(control.value) }}
+            </td>
+            <td>
+              <ng-container>
+                <img src="../../../../assets/images/Delete.svg" class="icon-image" type="button" container="body" ngbTooltip="Delete" (click)="removeEmployee(i)" *ngIf="employeeFormArray.length >= 1" />
+              </ng-container>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    </div>
+    <div class="row mx-0 my-1 px-0" *ngIf="employeeFormArray.controls.length >= 1">
+      <div class="col-lg-5 px-0">
+      </div>
+      <div class="col-12 col-sm-12 col-md-12 col-lg-7 no-padding pl-2 pr-0">
+        <mat-paginator [length]="employeeFormArray.length"
+      [pageSize]="pageSize"
+      [pageIndex]="currentPage - 1"
+      (page)="onPageChanged($event)"
+      showFirstLastButtons>
+    </mat-paginator>
+      </div>
+    </div>
+  </section>  
 <section class="rich-editor-bg mx-0 my-3 px-2">
     <div class="editor-container px-0">
-        <quill-editor 
-          [(ngModel)]="editorContent" 
+        <quill-editor  
           [styles]="{height: '100px'}"
-          [modules]="{ toolbar: toolbarOptions }">
+          [modules]="{ toolbar: toolbarOptions }" formControlName="practice_notes">
         </quill-editor>
       </div>
-      
 </section>
 <section class="d-flex align-items-center mx-0 my-3 px-2">
-    <mat-checkbox color="primary" class="example-margin" ><h5 class="c-header">Allow sending the status report to client</h5></mat-checkbox>
+    <mat-checkbox color="primary" class="example-margin" formControlName="allow_sending_status_report_to_client" ><h5 class="c-header">Allow sending the status report to client</h5></mat-checkbox>
   </section>
 <div class="row mx-0 my-3 px-2">
     <div class="col-12 col-sm-12 col-md-6 col-lg-3 align-content-center px-0">
         <button mat-button class="cancel-button mat-btn-s" type="button" (click)="backBtnFunc()" >
             Back</button>
-        <button mat-raised-button class="proceedbtn mat-btn-s" type="submit" (click)="saveEmployeeDetails()"><span
+        <button mat-raised-button class="proceedbtn mat-btn-s" type="submit" (click)="saveClientDetails()"><span
             *ngIf="!isEditItem">Submit</span><span *ngIf="isEditItem" >Update</span></button>
       </div>
       <div class="col-lg-3"></div>
       <div class="col-lg-3"></div>
       <div class="col-12 col-sm-12 col-md-6 col-lg-3 justify-content-end text-end align-content-end">
-        <button mat-button class="mat-btn-s delete-item-button" type="button" *ngIf="isEditItem" (click)="deleteEmployee()">
+        <button mat-button class="mat-btn-s delete-item-button" type="button" *ngIf="isEditItem" (click)="deleteClient()">
           Delete</button>
       </div>
 </div>
@@ -285,4 +327,4 @@
         </div>
         </div>
     </section>
-</div>2
+</div>

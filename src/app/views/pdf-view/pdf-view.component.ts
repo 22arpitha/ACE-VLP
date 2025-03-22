@@ -1,5 +1,8 @@
 import { Component, OnInit,Inject } from '@angular/core';
 import { MAT_DIALOG_DATA,MatDialogRef } from '@angular/material/dialog';
+import { GlobalWorkerOptions } from 'pdfjs-dist';
+import * as mammoth from 'mammoth';
+
 @Component({
   selector: 'app-pdf-view',
   templateUrl: './pdf-view.component.html',
@@ -12,11 +15,11 @@ export class PdfViewComponent implements OnInit {
     public dialogRef: MatDialogRef<PdfViewComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any,
   ) {
+    GlobalWorkerOptions.workerSrc = 'pdf.worker.min.js';
     this.fileUrl = data.url;
     this.fileType = data.type;
     console.log(this.fileUrl,this.fileType)
   }
-  src = 'https://vadimdez.github.io/ng2-pdf-viewer/assets/pdf-test.pdf';
   ngOnInit(): void {
   }
 

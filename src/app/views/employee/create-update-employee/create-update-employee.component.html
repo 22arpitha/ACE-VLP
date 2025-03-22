@@ -2,10 +2,6 @@
     <section class="settings-form-bg">
       <div class="row mx-0 px-0">
         <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0">
-            <h4><span
-                *ngIf="!employee_id">Create</span><span *ngIf="employee_id">Update</span> Employee</h4>
-        </div>
-        <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0">
             <form [formGroup]="employeeFormGroup">
                 <div class="row mx-0 my-0 px-2">
                     <div class="col-12 col-sm-12 col-md-6 col-lg-4 my-1 px-0">
@@ -113,7 +109,12 @@
         <mat-select formControlName="designation" autocomplete="off"
                 placeholder="Select" panelClass="custom-select-panel"
                 [disableOptionCentering]="true" (selectionChange)="getUserRoleBasedDesignation($event)">
-                <mat-option *ngFor="let item of allUserRoleList" [value]="item?.id">
+                <div class="mat-select-search-wrapper d-flex">
+                    <input matInput [(ngModel)]="searchRoleText" autofocus [ngModelOptions]="{standalone: true}" placeholder="Search Role" class="mat-select-search">
+                    <mat-icon class="search-icon" *ngIf="!searchRoleText">search</mat-icon>
+                    <mat-icon class="search-icon" *ngIf="searchRoleText" type="button" (click)="clearSearch('role')">close</mat-icon>
+                  </div>
+                <mat-option *ngFor="let item of filteredUserRoleList()" [value]="item?.id">
                     {{item?.designation_name}}
                 </mat-option>
         </mat-select>
@@ -129,7 +130,12 @@
         <mat-select formControlName="sub_designation" autocomplete="off"
                 placeholder="Select" panelClass="custom-select-panel"
                 [disableOptionCentering]="true" [disabled]="!employeeFormGroup?.get('designation')?.value">
-                <mat-option *ngFor="let item of allDesignation" [value]="item?.id">
+                <div class="mat-select-search-wrapper d-flex">
+                    <input matInput [(ngModel)]="searchDesignationText" autofocus [ngModelOptions]="{standalone: true}" placeholder="Search Designation" class="mat-select-search">
+                    <mat-icon class="search-icon" *ngIf="!searchDesignationText">search</mat-icon>
+                    <mat-icon class="search-icon" *ngIf="searchDesignationText" type="button" (click)="clearSearch('des')">close</mat-icon>
+                  </div>
+                <mat-option *ngFor="let item of filteredDesignationList()" [value]="item?.id">
                     {{item.sub_designation_name}}
                 </mat-option>
         </mat-select>
@@ -146,8 +152,13 @@
         <mat-select formControlName="reporting_manager_id" autocomplete="off"
                 placeholder="Select" panelClass="custom-select-panel"
                 [disableOptionCentering]="true">
-                <mat-option *ngFor="let rmId of reportingManagerId" [value]="rmId?.user_id">
-                    {{rmId.full_name}}
+                <div class="mat-select-search-wrapper d-flex">
+                    <input matInput [(ngModel)]="searchReportingManagerText" autofocus [ngModelOptions]="{standalone: true}" placeholder="Search Reporting Manager" class="mat-select-search">
+                    <mat-icon class="search-icon" *ngIf="!searchReportingManagerText">search</mat-icon>
+                    <mat-icon class="search-icon" *ngIf="searchReportingManagerText" type="button" (click)="clearSearch('rpm')">close</mat-icon>
+                  </div>
+                <mat-option *ngFor="let rmId of filteredReportingManagerList()" [value]="rmId?.user_id">
+                    {{rmId?.first_name + rmId?.last_name || rmId?.user__full_name}}
                 </mat-option>
         </mat-select>
         <mat-error *ngIf="f['reporting_manager_id']?.invalid && f['reporting_manager_id']?.touched || f['reporting_manager_id']?.dirty">

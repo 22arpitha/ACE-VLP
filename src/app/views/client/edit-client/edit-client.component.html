@@ -7,14 +7,14 @@
               <div class="col-12 col-sm-12 col-md-6 col-lg-4 my-1 px-0">
                 <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
                     <mat-label>End Client Name  <b class="r-star">*</b></mat-label>
-                    <input matInput placeholder="Enter End Client Name " appAlphabetOnly formControlName="end_client_name" autocomplete="off">
-                    <mat-error *ngIf="f['end_client_name']?.invalid && f['end_client_name']?.touched || f['end_client_name']?.dirty">
-                      <span *ngIf="f['end_client_name'].errors?.['required']">End Client Name is required</span>
+                    <input matInput placeholder="Enter End Client Name " appAlphabetOnly formControlName="client_name" autocomplete="off">
+                    <mat-error *ngIf="f['client_name']?.invalid && f['client_name']?.touched || f['client_name']?.dirty">
+                      <span *ngIf="f['client_name'].errors?.['required']">End Client Name is required</span>
                       <span
-                        *ngIf="!f['end_client_name'].errors?.['required'] && f['end_client_name'].errors?.['pattern'] && !f['end_client_name'].errors?.['maxlength']">
+                        *ngIf="!f['client_name'].errors?.['required'] && f['client_name'].errors?.['pattern'] && !f['client_name'].errors?.['maxlength']">
                         Invalid name. Extra space, numbers and special charaters are not allowed
                       </span>
-                      <span *ngIf="!f['end_client_name'].errors?.['required'] && f['end_client_name'].errors?.['maxlength']">
+                      <span *ngIf="!f['client_name'].errors?.['required'] && f['client_name'].errors?.['maxlength']">
                         End Client Name  cannot exceed 20 characters.
                       </span>
                     </mat-error>
@@ -24,14 +24,19 @@
               <div class="col-12 col-sm-12 col-md-6 col-lg-4 my-1 no-padding pl-5 pr-0">
                 <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
                     <mat-label>Select Group <b class="r-star">*</b></mat-label>
-                    <mat-select formControlName="group_name" placeholder="Select Group" autocomplete="off"
+                    <mat-select formControlName="group" placeholder="Select Group" autocomplete="off"
                       panelClass="custom-select-panel" [disableOptionCentering]="true">
-                      <mat-option *ngFor="let status of allGroupList" [value]="status.id">
-                        {{status.group_name | titlecase}}
+                      <div class="mat-select-search-wrapper d-flex">
+                        <input matInput [(ngModel)]="searchGroupText" autofocus [ngModelOptions]="{standalone: true}" placeholder="Search Group" class="mat-select-search">
+                        <mat-icon class="search-icon" *ngIf="!searchGroupText">search</mat-icon>
+                        <mat-icon class="search-icon" *ngIf="searchGroupText" type="button" (click)="clearSearch()">close</mat-icon>
+                      </div>
+                      <mat-option *ngFor="let group_item of filteredGroupList()" [value]="group_item?.id">
+                        {{group_item?.group_name | titlecase}}
                       </mat-option>
                     </mat-select>
-                    <mat-error *ngIf="f['group_name']?.invalid && f['group_name']?.touched || f['group_name']?.dirty">
-                      <span *ngIf="f['group_name'].errors?.['required']">Group is required</span>
+                    <mat-error *ngIf="f['group']?.invalid && f['group']?.touched || f['group']?.dirty">
+                      <span *ngIf="f['group'].errors?.['required']">Group is required</span>
                     </mat-error>
                   </mat-form-field>
               </div>
@@ -39,7 +44,7 @@
               <div class="col-12 col-sm-12 col-md-6 col-lg-3  align-content-center">
                 <button mat-raised-button class="cancel-button mat-btn-s" type="button" (click)="resetFormState()">
                   Cancel</button>
-                <button mat-raised-button class="proceedbtn mat-btn-s" type="submit" (click)="saveJobTypeDetails()"><span
+                <button mat-raised-button class="proceedbtn mat-btn-s" type="submit" (click)="saveEndClientDetails()"><span
                     *ngIf="!isEditItem">Submit</span><span *ngIf="isEditItem">Update</span></button>
               </div>
             </div>
@@ -76,22 +81,21 @@
               </tr>
             </thead>
             <tbody>
-              <tr *ngFor='let status_item of allJobStatusList | customSort:directionValue:sortValue
+              <tr *ngFor='let item of allEndClients | customSort:directionValue:sortValue
                           |paginate : {
                                    itemsPerPage: tableSize,
                                    currentPage: page,
                                    totalItems: count
                                  }; let i=index'>
                 <td>{{getContinuousIndex(i)}}</td>
-                <td><span style="cursor: pointer; color:#0978C8; text-decoration: underline;" (click)="viewJobsOfEndClient('xxxx')">yyyy</span></td>
-                <!-- <td>{{getGroupName(status_item?.group_name) || '-'}}</td> -->
-                <td>{{status_item?.end_client_name || '-'}}</td>
+                <td>{{item?.client_name || '-'}}</td>
+               <td>{{getGroupName(item?.group) || '-'}}</td>
                 <td>
                   <ng-container>
                     <img src="../../../../assets/images/Edit.svg" class="icon-image" container="body" ngbTooltip="Edit"
-                      type="button" (click)="editContent(status_item)" />
+                      type="button" (click)="editContent(item)" />
                     <img src="../../../../assets/images/Delete.svg" class="icon-image" container="body"
-                      ngbTooltip="Delete" type="button" (click)="confirmDelete(status_item)" />
+                      ngbTooltip="Delete" type="button" (click)="confirmDelete(item)" />
   
                   </ng-container>
                 </td>
@@ -101,12 +105,12 @@
         </div>
   
       </div>
-      <div *ngIf="allJobStatusList.length === 0">
+      <div *ngIf="allEndClients.length === 0">
         <app-generic-norecards></app-generic-norecards>
       </div>
     </section>
     <div class="row mx-0 my-2 px-2" [ngClass]="{'disabled-section': isEditItem}">
-      <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0" *ngIf="allJobStatusList.length > 0">
+      <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0" *ngIf="allEndClients.length > 0">
         <div class="pagination-container p-0 pt-2">
           <!-- Pagination Controls (Center-Aligned) -->
           <pagination-controls previousLabel="Prev" nextLabel="Next" (pageChange)="onTableDataChange($event)">

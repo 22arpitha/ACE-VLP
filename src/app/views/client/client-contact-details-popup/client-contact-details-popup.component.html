@@ -1,0 +1,40 @@
+<div class="row mx-0 my-1 px-0">
+    <div class="col-12 col-sm-12 col-md-12 col-lg-12 py-1 pl-2 pr-0">
+        <h4 mat-dialog-title><b>Contacts Details</b></h4>
+    </div>
+</div>
+<div mat-dialog-content>
+    <section class="settings-table-bg">
+        <div class="row mx-0 my-1 px-0" *ngIf="contact_details?.length >=1">
+            <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0 table-responsive table-responsive-sm table-responsive-md">
+                <table class="table table table-hover table-list">
+                    <thead>
+                        <tr>
+                            <th>S No</th>
+                          <th>Name</th>
+                          <th>Email</th>
+                          <th>Phone Number</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr *ngFor="let contact of contact_details;let i=index">
+                            <td>{{i+1}}</td>
+                            <td>{{contact?.name}}</td>
+                            <td>{{contact?.email}}</td>
+                            <td>{{contact?.phone_number}}</td>
+                        </tr>
+                      </tbody>
+                      </table>
+                      </div>
+                    </div>
+
+                    <div class="row mx-1 my-2 px-0" *ngIf="contact_details?.length === 0" >
+          <app-generic-norecards></app-generic-norecards>
+        </div>
+    </section>
+    
+    
+</div>
+<div mat-dialog-actions align="end">
+    <button mat-button mat-dialog-close>Close</button>
+  </div>

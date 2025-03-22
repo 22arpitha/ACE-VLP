@@ -18,10 +18,7 @@ const routes: Routes = [
         path:'all-client', component:ClientListComponent
       },
       {
-        path:'update-client/12', component:TabsListComponent
-      },
-      {
-        path:'end-client-jobs/:end-client-name/:id', component: JobsOfEndclientComponent
+        path:'update-client/:id', component:TabsListComponent
       },
       {
         path:'end-client-jobs/:end-client-name/:id', component: JobsOfEndclientComponent
@@ -29,9 +26,9 @@ const routes: Routes = [
       {
         path:'client-groups/:group-client-name/:id', component: ClientsOfGroupComponent
       },
-      {
-        path:'update/:id/:page/:tableSize', component:UpdateClientComponent
-      }
+      // {
+      //   path:'update/:id', component:UpdateClientComponent
+      // }
     ]
   }
 ];

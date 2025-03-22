@@ -9,7 +9,12 @@
                 <mat-label>Select Status Group <b class="r-star">*</b></mat-label>
                 <mat-select formControlName="status_group" placeholder="Select Status Group" autocomplete="off"
                   panelClass="custom-select-panel" [disableOptionCentering]="true">
-                  <mat-option *ngFor="let status of allStatusGroupList" [value]="status.id">
+                  <div class="mat-select-search-wrapper d-flex">
+                    <input matInput [(ngModel)]="searchStatusGroupText" autofocus [ngModelOptions]="{standalone: true}" placeholder="Search Status Group" class="mat-select-search">
+                    <mat-icon class="search-icon" *ngIf="!searchStatusGroupText">search</mat-icon>
+                    <mat-icon class="search-icon" *ngIf="searchStatusGroupText" type="button" (click)="clearSearch()">close</mat-icon>
+                  </div>
+                  <mat-option *ngFor="let status of filteredStatusGroupList()" [value]="status.id">
                     {{status.group_name | titlecase}}
                   </mat-option>
                 </mat-select>

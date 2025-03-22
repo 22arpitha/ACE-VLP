@@ -22,25 +22,29 @@ reportingManagerId:any=[];
 selectedEmployeeList:any=[];
 isEditItem:boolean=false;
 employee_id:any;
+searchReportingManagerText:any
+searchRoleText:any;
+searchDesignationText:any;
 isActivelist:any=[{name:'In Active',is_active:false},{name:'Active',is_active:true}]
 
   constructor(private fb:FormBuilder,private activeRoute:ActivatedRoute,
     private common_service: CommonServiceService,private router:Router,
     private apiService: ApiserviceService,private modalService: NgbModal) { 
-    this.common_service.setTitle(this.BreadCrumbsTitle)
     if(this.activeRoute.snapshot.paramMap.get('id')){
       this.employee_id= this.activeRoute.snapshot.paramMap.get('id')
       this.isEditItem = true;
+      this.common_service.setTitle('Update ' + this.BreadCrumbsTitle)
+      this.getUserRoleList();
+      this.getReportingManagerList();
       this.getEmployeeDetails(this.employee_id);
     }else{
+      this.common_service.setTitle('Create ' + this.BreadCrumbsTitle)
       this.getEmployeeUniqueNumber();
     }
   }
 
   ngOnInit(): void {
     this.intialForm();
-    this.getUserRoleList();
-    this.getReportingManagerList();
   }
 
   public intialForm(){
@@ -80,6 +84,7 @@ this.employeeFormGroup = this.fb.group({
   // Get Role Based Designation
   public getUserRoleBasedDesignation(event:any){
     const role_id = event.value;
+    this.employeeFormGroup.get('sub_designation').reset();
     this.getDesignationList(role_id);
   }
   private getDesignationList(role_id:any){
@@ -95,7 +100,11 @@ this.employeeFormGroup = this.fb.group({
   public getReportingManagerList(){
     this.reportingManagerId =[];
     this.apiService.getData(`${environment.live_url}/${environment.employee}/?is_active=True&employee=True&designation=manager`).subscribe((respData: any) => {
-this.reportingManagerId = respData;
+    if(respData && respData.length>=1){
+      this.reportingManagerId = respData;
+    }else{
+this.adminData();
+    }
     },(error => {
       this.apiService.showError(error?.error?.detail)
     }));
@@ -130,9 +139,66 @@ this.apiService.getData(`${environment.live_url}/${environment.employee}/${id}/`
   }
 
   public backBtnFunc(){
+    this.common_service.setEmployeeStatusState(this.employeeFormGroup.get('is_active')?.value);
     this.router.navigate(['/settings/all-employee']);
   }
 
+  adminData() {
+    this.apiService.getProfileDetails(`?role_id=${1}`).subscribe(
+      (res: any) => {
+        // console.log('admin',res);
+        let data = [];
+        // data.push({ 'first_name': res.first_name, 'id': res.id });
+        res.forEach((element:any) => {
+          data.push({ 'first_name': element?.first_name, 'last_name': element?.last_name || '', 'user_id': element.id }); 
+        });
+        this.reportingManagerId = data;
+      },
+      (error: any) => {
+        console.log('admin data error', error)
+      }
+    )
+  }
+
+// search Reporting Manager   
+public filteredReportingManagerList() {
+  if (!this.searchReportingManagerText) {
+    return this.reportingManagerId;
+  }
+  return this.reportingManagerId.filter((emp:any) => 
+    emp?.user__full_name?.toLowerCase()?.includes(this.searchReportingManagerText?.toLowerCase())
+  );
+}
+
+// search User Role   
+public filteredUserRoleList() {
+  if (!this.searchRoleText) {
+    return this.allUserRoleList;
+  }
+  return this.allUserRoleList.filter((role:any) => 
+    role?.designation_name?.toLowerCase()?.includes(this.searchRoleText?.toLowerCase())
+  );
+}
+
+// search Designation   
+public filteredDesignationList() {
+  if (!this.searchDesignationText) {
+    return this.allDesignation;
+  }
+  return this.allDesignation.filter((role:any) => 
+    role?.sub_designation_name?.toLowerCase()?.includes(this.searchDesignationText?.toLowerCase())
+  );
+}
+
+public clearSearch(key:any){
+if(key==='role'){
+this.searchRoleText ='';
+}else if(key==='des'){
+  this.searchDesignationText ='';
+}else{
+  this.searchReportingManagerText ='';
+}
+}
   public deleteEmployee(){
     if (this.employee_id) {
       const modelRef = this.modalService.open(GenericDeleteComponent, {
@@ -182,6 +248,7 @@ this.apiService.getData(`${environment.live_url}/${environment.employee}/${id}/`
         }else{
           this.apiService.postData(`${environment.live_url}/${environment.employee}/`, this.employeeFormGroup.value).subscribe((respData: any) => {
             if (respData) {
+              // this.common_service.setEmployeeStatusState(this.employeeFormGroup.get('is_active')?.value);
               this.apiService.showSuccess(respData['message']);
               this.resetFormState();
               this.router.navigate(['/settings/all-employee']);

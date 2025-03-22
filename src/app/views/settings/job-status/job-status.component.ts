@@ -35,6 +35,7 @@ export class JobStatusComponent implements OnInit {
   };
   arrow: boolean = false;
   term: any;
+  searchStatusGroupText:any;
   constructor(private fb: FormBuilder, private modalService: NgbModal,
     private common_service: CommonServiceService, private apiService: ApiserviceService
   ) {
@@ -57,6 +58,19 @@ export class JobStatusComponent implements OnInit {
   }
   public get f() {
     return this.jobStatusForm.controls;
+  }
+
+  filteredStatusGroupList() {
+    if (!this.searchStatusGroupText) {
+      return this.allStatusGroupList;
+    }
+    return this.allStatusGroupList.filter((status:any) => 
+      status?.group_name?.toLowerCase()?.includes(this.searchStatusGroupText?.toLowerCase())
+    );
+  }
+
+  clearSearch(){
+    this.searchStatusGroupText ='';
   }
 
   public validateKeyPress(event: KeyboardEvent) {

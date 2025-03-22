@@ -1,5 +1,6 @@
 .client-tabs{
-    padding: 20px 0;
+    padding: 5px 0;
+    max-height: max-content;
 }
 ::ng-deep .client-tabs .mat-tab-group {
   margin-bottom: 48px;

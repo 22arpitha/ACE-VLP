@@ -63,7 +63,7 @@
     "ngx-quill": "^14.3.0",
     "ngx-toastr": "^14.3.0",
     "ngx-ui-loader": "^13.0.0",
-    "pdfjs-dist": "^2.16.105",
+    "pdfjs-dist": "^2.11.338",
     "quill": "^2.0.3",
     "rxjs": "~7.5.0",
     "tslib": "^2.7.0",

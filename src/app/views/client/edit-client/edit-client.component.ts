@@ -6,7 +6,7 @@ import { ApiserviceService } from '../../../service/apiservice.service';
 import { GenericDeleteComponent } from '../../../generic-delete/generic-delete.component';
 import { GenericEditComponent } from '../../../generic-edit/generic-edit.component';
 import { environment } from '../../../../environments/environment';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-edit-client',
@@ -18,7 +18,7 @@ export class EditClientComponent implements OnInit {
   isEditItem: boolean = false;
   endClientForm: FormGroup;
   selectedJobStatus: any;
-  allJobStatusList: any = [];
+  allEndClients: any = [];
   allGroupList: any = [];
   page = 1;
   count = 0;
@@ -34,23 +34,29 @@ export class EditClientComponent implements OnInit {
   };
   arrow: boolean = false;
   term: any;
-  constructor(private fb: FormBuilder, private modalService: NgbModal, private router:Router,
+  client_id:any;
+  searchGroupText:any;
+  constructor(private fb: FormBuilder,
+     private modalService: NgbModal,
+    private router:Router,private activeRoute:ActivatedRoute,
     private common_service: CommonServiceService, private apiService: ApiserviceService
   ) {
-   
+    if(this.activeRoute.snapshot.paramMap.get('id')){
+      this.client_id= this.activeRoute.snapshot.paramMap.get('id')}   
   }
 
   ngOnInit(): void {
     this.initializeForm();
-    this.getAllEndClients('?page=1&page_size=5');
+    this.getAllEndClients(`?page=1&page_size=5&client=${this.client_id}`);
     this.getGroupList();
 
   }
 
   public initializeForm() {
     this.endClientForm = this.fb.group({
-      end_client_name: ['', [Validators.pattern(/^[a-zA-Z]+( [a-zA-Z]+)*$/), Validators.required, Validators.maxLength(20)]],
-      group_name: [null, Validators.required],
+      client_name: ['', [Validators.pattern(/^[a-zA-Z]+( [a-zA-Z]+)*$/), Validators.required, Validators.maxLength(20)]],
+      group: [null, Validators.required],
+      client:this.client_id
     });
   }
   public get f() {
@@ -68,9 +74,9 @@ export class EditClientComponent implements OnInit {
   }
 
   public getAllEndClients(pramas: any) {
-    this.allJobStatusList = [];
-    this.apiService.getData(`${environment.live_url}/${environment.settings_job_status}/${pramas}`).subscribe((respData: any) => {
-      this.allJobStatusList = respData.results;
+    this.allEndClients = [];
+    this.apiService.getData(`${environment.live_url}/${environment.end_clients}/${pramas}`).subscribe((respData: any) => {
+      this.allEndClients = respData.results;
       const noOfPages: number = respData.total_pages
       this.count = noOfPages * this.tableSize;
       this.page = respData.current_page;
@@ -80,34 +86,48 @@ export class EditClientComponent implements OnInit {
     })
   }
 
+  // Search Group
+  public filteredGroupList() {
+    if (!this.searchGroupText) {
+      return this.allGroupList;
+    }
+    return this.allGroupList.filter((group:any) => 
+      group?.group_name?.toLowerCase()?.includes(this.searchGroupText?.toLowerCase())
+    );
+  }
+public clearSearch(){
+  this.searchGroupText='';
+}
+
+
   public onTableDataChange(event: any) {
     this.page = event;
-    let query = `?page=${this.page}&page_size=${this.tableSize}`
+    let query = this.getFilterBaseUrl();
     if (this.term) {
       query += `&search=${this.term}`
     }
     this.getAllEndClients(query);
   }
-  public saveJobTypeDetails() {
+  public saveEndClientDetails() {
     if (this.endClientForm.invalid) {
       this.endClientForm.markAllAsTouched();
     } else {
       if (this.isEditItem) {
-        this.apiService.updateData(`${environment.live_url}/${environment.settings_job_status}/${this.selectedJobStatus}/`, this.endClientForm.value).subscribe((respData: any) => {
+        this.apiService.updateData(`${environment.live_url}/${environment.end_clients}/${this.selectedJobStatus}/`, this.endClientForm.value).subscribe((respData: any) => {
           if (respData) {
             this.apiService.showSuccess(respData['message']);
             this.resetFormState();
-            this.getAllEndClients('?page=1&page_size=5');
+            this.getAllEndClients(`?page=1&page_size=5&client=${this.client_id}`);
           }
         }, (error: any) => {
           this.apiService.showError(error?.error?.detail);
         });
       } else {
-        this.apiService.postData(`${environment.live_url}/${environment.settings_job_status}/`, this.endClientForm.value).subscribe((respData: any) => {
+        this.apiService.postData(`${environment.live_url}/${environment.end_clients}/`, this.endClientForm.value).subscribe((respData: any) => {
           if (respData) {
             this.apiService.showSuccess(respData['message']);
             this.resetFormState();
-            this.getAllEndClients('?page=1&page_size=5');
+            this.getAllEndClients(`?page=1&page_size=5&client=${this.client_id}`);
           }
 
         }, (error: any) => {
@@ -119,6 +139,7 @@ export class EditClientComponent implements OnInit {
 
   public resetFormState() {
     this.formGroupDirective.resetForm();
+    this.endClientForm.patchValue({"client":this.client_id});
     this.isEditItem = false;
   }
 
@@ -138,7 +159,7 @@ export class EditClientComponent implements OnInit {
     if (event) {
 
       this.tableSize = Number(event.value);
-      let query = `?page=${1}&page_size=${this.tableSize}`
+      let query = this.getFilterBaseUrl();
       if (this.term) {
         query += `&search=${this.term}`
       }
@@ -167,11 +188,11 @@ export class EditClientComponent implements OnInit {
 
   public deleteContent(item) {
 
-    this.apiService.delete(`${environment.live_url}/${environment.settings_job_status}/${item?.id}/`).subscribe(async (data: any) => {
+    this.apiService.delete(`${environment.live_url}/${environment.end_clients}/${item?.id}/`).subscribe(async (data: any) => {
       if (data) {
-        this.allJobStatusList = []
-        this.apiService.showWarning('Job Status deleted successfully!')
-        let query = `?page=${1}&page_size=${this.tableSize}`
+        this.allEndClients = []
+        this.apiService.showWarning('End Client deleted successfully!')
+        let query = this.getFilterBaseUrl();
         if (this.term) {
           query += `&search=${this.term}`
         }
@@ -197,7 +218,7 @@ export class EditClientComponent implements OnInit {
           this.selectedJobStatus = item?.id;
           this.isEditItem = true;
           modalRef.dismiss();
-          this.getSelectedJobstatus(this.selectedJobStatus);
+          this.getSelectedEndClient(this.selectedJobStatus);
         } else {
           modalRef.dismiss();
         }
@@ -206,10 +227,10 @@ export class EditClientComponent implements OnInit {
       console.error('Error opening modal:', error);
     }
   }
-  public getSelectedJobstatus(id: any) {
-    this.apiService.getData(`${environment.live_url}/${environment.settings_job_status}/${id}/`).subscribe((respData: any) => {
-      this.endClientForm.patchValue({ 'end_client_name': respData?.end_client_name });
-      this.endClientForm.patchValue({ 'group_name': respData?.group_name });
+  public getSelectedEndClient(id: any) {
+    this.apiService.getData(`${environment.live_url}/${environment.end_clients}/${id}/`).subscribe((respData: any) => {
+      this.endClientForm.patchValue({ 'client_name': respData?.client_name });
+      this.endClientForm.patchValue({ 'group': respData?.group });
     }, (error: any) => {
       this.apiService.showError(error?.error?.detail);
     })
@@ -219,21 +240,22 @@ export class EditClientComponent implements OnInit {
     if (input && input.length >= 2) {
       this.term = input;
       this.page = 1;
-      const query = `?page=${this.page}&page_size=${this.tableSize}&search=${this.term}`;
+      let query = this.getFilterBaseUrl();
+      query += `&search=${this.term}`
       this.getAllEndClients(query);
     } if (!input) {
-      const query = `?page=${this.page}&page_size=${this.tableSize}`;
+      let query = this.getFilterBaseUrl();
       this.getAllEndClients(query);
     }
   }
   public getGroupList() {
-    // this.allGroupList = [];
-    // this.apiService.getData(`${environment.live_url}/${environment.settings_job_status}/`).subscribe((respData: any) => {
-    //   this.allGroupList = respData;
-    // }, (error: any) => {
-    //   this.apiService.showError(error.detail);
+    this.allGroupList = [];
+    this.apiService.getData(`${environment.live_url}/${environment.clients_group}/?client=${this.client_id}`).subscribe((respData: any) => {
+      this.allGroupList = respData;
+    }, (error: any) => {
+      this.apiService.showError(error.detail);
 
-    // })
+    })
   }
 
   public getGroupName(id: any) {
@@ -242,10 +264,12 @@ export class EditClientComponent implements OnInit {
     return itemGroup?.group_name
   }
   viewJobsOfEndClient(data){
-    this.router.navigate([`/client/end-client-jobs/${'anu'}/${12}`])
+    this.router.navigate([`/client/end-client-jobs/${data?.client_name}/${this.client_id}`])
   }
 
-
+  getFilterBaseUrl(): string {
+    return `?page=${this.page}&page_size=${this.tableSize}&client=${this.client_id}`;
+  }
   
 }
 

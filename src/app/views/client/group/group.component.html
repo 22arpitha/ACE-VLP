@@ -66,8 +66,7 @@
                                   totalItems: count
                                 }; let i=index'>
                 <td>{{getContinuousIndex(i)}}</td>
-                <td><span style="cursor: pointer; color:#0978C8; text-decoration: underline;" (click)="viewClientsOfGrpup('xxxx')">yyyy</span></td>
-                <!-- <td>{{item.group_name|titlecase }}</td> -->
+                <td>{{item?.group_name|titlecase }}</td>
                 <td>
                   <ng-container>
                     <img src="../../../../assets/images/Edit.svg" class="icon-image" type="button" container="body"

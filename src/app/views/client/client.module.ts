@@ -19,6 +19,7 @@ import { EditClientComponent } from './edit-client/edit-client.component';
 import { GroupComponent } from './group/group.component';
 import { JobsOfEndclientComponent } from './jobs-of-endclient/jobs-of-endclient.component';
 import { ClientsOfGroupComponent } from './clients-of-group/clients-of-group.component';
+import { ClientContactDetailsPopupComponent } from './client-contact-details-popup/client-contact-details-popup.component';
 
 @NgModule({
   declarations: [
@@ -30,7 +31,8 @@ import { ClientsOfGroupComponent } from './clients-of-group/clients-of-group.com
     TabsListComponent,
     EditClientComponent,
     JobsOfEndclientComponent,
-    ClientsOfGroupComponent
+    ClientsOfGroupComponent,
+    ClientContactDetailsPopupComponent
   ],
   imports: [
     CommonModule,
