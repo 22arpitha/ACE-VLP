@@ -18,6 +18,8 @@ import { RoleListComponent } from './role-list/role-list.component';
 import { DesignationsComponent } from './designations/designations.component';
 import { RolesAccessComponent } from './roles-access/roles-access.component';
 import { AccessToModulesComponent } from './access-to-modules/access-to-modules.component';
+import { PeriodicityComponent } from './periodicity/periodicity.component';
+import { PeriodComponent } from './period/period.component';
 @NgModule({
   declarations: [
     SettingsComponent,
@@ -31,7 +33,9 @@ import { AccessToModulesComponent } from './access-to-modules/access-to-modules.
     RoleListComponent,
     DesignationsComponent,
     RolesAccessComponent,
-    AccessToModulesComponent
+    AccessToModulesComponent,
+    PeriodicityComponent,
+    PeriodComponent
   ],
   imports: [
     CommonModule,

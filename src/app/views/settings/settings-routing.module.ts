@@ -13,6 +13,8 @@ import { CreateUpdateEmployeeComponent } from '../employee/create-update-employe
 import { RoleListComponent } from './role-list/role-list.component';
 import { DesignationsComponent } from './designations/designations.component';
 import { RolesAccessComponent } from './roles-access/roles-access.component';
+import { PeriodicityComponent } from './periodicity/periodicity.component';
+import { PeriodComponent } from './period/period.component';
 
 
 
@@ -72,6 +74,14 @@ const routes: Routes = [
       {
         path: 'designation',
         component: DesignationsComponent,
+      },
+      {
+        path: 'periodicity',
+        component: PeriodicityComponent,
+      },
+      {
+        path: 'period',
+        component: PeriodComponent,
       },
     ]
   },

@@ -196,7 +196,7 @@ export class LeaveTypeComponent implements OnInit {
           this.selectedleavetype = item?.id;
           this.isEditItem = true;
           modalRef.dismiss();
-          this.getSelectedJobType(this.selectedleavetype);
+          this.getSelectedleaveType(this.selectedleavetype);
         } else {
           modalRef.dismiss();
         }
@@ -206,7 +206,7 @@ export class LeaveTypeComponent implements OnInit {
     }
   }
 
-  public getSelectedJobType(id: any) {
+  public getSelectedleaveType(id: any) {
     this.apiService.getData(`${environment.live_url}/${environment.settings_leave_type}/${id}/`).subscribe((respData: any) => {
       this.leaveTypeForm.patchValue({ 'leave_type_name': respData?.leave_type_name });
     }, (error: any) => {
