@@ -6,6 +6,7 @@ import { CommonServiceService } from '../../../service/common-service.service';
 import { GenericDeleteComponent } from '../../../generic-delete/generic-delete.component';
 import { GenericEditComponent } from '../../../generic-edit/generic-edit.component';
 import { environment } from '../../../../environments/environment';
+import { SubModuleService } from 'src/app/service/sub-module.service';
 @Component({
   selector: 'app-country',
   templateUrl: './country.component.html',
@@ -30,16 +31,32 @@ export class CountryComponent implements OnInit {
   tableSizes = [5, 10, 25, 50, 100];
   currentIndex: any;
   term: any = '';
-
+  accessPermissions = []
+  user_id: any;
+  userRole: any;
   constructor(
     private common_service: CommonServiceService, private fb: FormBuilder, private api: ApiserviceService,
-    private modalService: NgbModal,
+    private modalService: NgbModal,private accessControlService:SubModuleService
   ) { }
 
   ngOnInit(): void {
     this.common_service.setTitle(this.BreadCrumbsTitle);
+    this.user_id = sessionStorage.getItem('user_id');
+    this.userRole = sessionStorage.getItem('user_role_name');
+    this.getModuleAccess();
     this.intialForm();
     this.getAllCountryList(`?page=${1}&page_size=${5}`);
+  }
+
+  getModuleAccess(){
+    this.accessControlService.getAccessForActiveUrl(this.user_id).subscribe((access) => {
+      if (access) {
+        this.accessPermissions = access[0].operations;
+        console.log('Access Permissions:', this.accessPermissions);
+      } else {
+        console.log('No matching access found.');
+      }
+    });
   }
 
   intialForm() {

@@ -16,7 +16,7 @@ export class ClientsOfGroupComponent implements OnInit {
   sortValue: string = '';
   directionValue: string = '';
   arrowState: { [key: string]: boolean } = {
-    end_client_name: false,
+    client_name: false,
   };
   page = 1;
   count = 0;
@@ -24,17 +24,21 @@ export class ClientsOfGroupComponent implements OnInit {
   tableSizes = [5, 10, 25, 50, 100];
   currentIndex: any;
   term: any = '';
+  client_id:any;
+  group_id:any
 
   constructor(private common_service: CommonServiceService,private activateRoute:ActivatedRoute,private router: Router,
     private api: ApiserviceService,
   ) {
      this.endClientData = this.activateRoute.snapshot.paramMap.get('group-client-name')
+     this.client_id = this.activateRoute.snapshot.paramMap.get('client-id')
+     this.group_id = this.activateRoute.snapshot.paramMap.get('id')
      this.BreadCrumbsTitle = 'Group - ' + this.endClientData
      this.common_service.setTitle(this.BreadCrumbsTitle);
   }
 
   ngOnInit(): void {
-    this.getAllClientOfGroup(`?page=${1}&page_size=${5}`);
+    this.getAllClientOfGroup(`?page=${1}&page_size=${5}&client=${this.client_id}&group=${this.group_id}`);
    
   }
 
@@ -49,7 +53,7 @@ export class ClientsOfGroupComponent implements OnInit {
   }
 
   getAllClientOfGroup(params: any) {
-      this.api.getData(`${environment.live_url}/${environment.settings_country}/${params}`).subscribe(
+      this.api.getData(`${environment.live_url}/${environment.end_clients}/${params}`).subscribe(
         (res: any) => {
           console.log(res.results)
           this.allClients = res.results;
@@ -73,7 +77,7 @@ export class ClientsOfGroupComponent implements OnInit {
       }
     }
     getFilterBaseUrl(): string {
-      return `?page=${this.page}&page_size=${this.tableSize}`;
+      return `?page=${this.page}&page_size=${this.tableSize}client=${this.client_id}&group=${this.group_id}`
     }
   
     onTableSizeChange(event: any): void {

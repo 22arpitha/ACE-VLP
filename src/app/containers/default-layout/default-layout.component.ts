@@ -299,7 +299,7 @@ private moveSubscriptionToTop(navigationData: any[]): any[] {
 
 testingFunction() {
   // this.sidebarNavItems = this.sidebarNavItemsStatic;
-  this.api.userAccess(sessionStorage.getItem('user_id')).subscribe(
+  this.api.getData(`${environment.live_url}/${environment.user_access}/${sessionStorage.getItem('user_id')}/`).subscribe(
     (res: any) => {
     //  console.log('default layout', res.access_list);
       

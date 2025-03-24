@@ -71,7 +71,7 @@
                     </td>
                     <td> <ng-container>
                       <img src="../../../../assets/images/Edit.svg" class="icon-image" type="button" container="body"
-                        ngbTooltip="Edit" (click)="edit(item)"/>
+                        ngbTooltip="Edit" (click)="edit(item)" *ngIf="userRole !='Admin' && accessPermissions[0]?.update || userRole === 'Admin'"/>
                    </ng-container></td>
                   </tr>
                 </ng-container>

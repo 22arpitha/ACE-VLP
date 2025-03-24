@@ -51,7 +51,7 @@ export class JobsOfEndclientComponent implements OnInit {
   }
 
   getJobsOfEndClient(params: any) {
-      this.api.getData(`${environment.live_url}/${environment.settings_country}/${params}`).subscribe(
+      this.api.getData(`${environment.live_url}/${environment.end_client_jobs}/${params}`).subscribe(
         (res: any) => {
           console.log(res.results)
           this.allJobs = res.results;

@@ -42,14 +42,33 @@ export class ClientListComponent implements OnInit {
     tableSizes = [5, 10, 25, 50, 100];
     currentIndex: any;
     allClientList:any=[];
-    constructor(private common_service: CommonServiceService,
+    accessPermissions = []
+    user_id: any;
+    userRole: any;
+
+    constructor(private common_service: CommonServiceService,private accessControlService:SubModuleService,
       private router:Router,private modalService: NgbModal,private dialog:MatDialog,
       private apiService: ApiserviceService) {
       this.common_service.setTitle(this.BreadCrumbsTitle)
      }
   
     ngOnInit(): void {
+      this.user_id = sessionStorage.getItem('user_id');
+      this.userRole = sessionStorage.getItem('user_role_name');
+      this.getModuleAccess();
+
       this.getCurrentClientList()
+    }
+
+    getModuleAccess(){
+      this.accessControlService.getAccessForActiveUrl(this.user_id).subscribe((access) => {
+        if (access) {
+          this.accessPermissions = access[0].operations;
+          console.log('Access Permissions:', this.accessPermissions);
+        } else {
+          console.log('No matching access found.');
+        }
+      });
     }
   
     public openCreateClientPage(){

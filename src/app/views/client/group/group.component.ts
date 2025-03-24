@@ -230,6 +230,6 @@ export class GroupComponent implements OnInit {
   }
 
   viewClientsOfGrpup(data){
-    this.router.navigate([`/client/client-groups/${data?.group_name}/${this.client_id}`])
+    this.router.navigate([`/client/client-groups/${data?.group_name}/${this.client_id}/${data.id}`])
   }
 }

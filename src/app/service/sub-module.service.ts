@@ -12,7 +12,7 @@ export class SubModuleService {
   constructor(private http: HttpClient, private router: Router) {}
 
   getAccessList(user_id): Observable<any> {
-    return this.http.get(`${this.baseurl}/user-access/${user_id}/`);
+    return this.http.get(`${this.baseurl}/${environment.user_access}/${user_id}/`);
   }
 
   getAccessForActiveUrl(id: number,url?:string): Observable<any> {

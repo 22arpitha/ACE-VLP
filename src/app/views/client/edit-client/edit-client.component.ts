@@ -264,7 +264,7 @@ public clearSearch(){
     return itemGroup?.group_name
   }
   viewJobsOfEndClient(data){
-    this.router.navigate([`/client/end-client-jobs/${data?.client_name}/${this.client_id}`])
+    this.router.navigate([`/client/end-client-jobs/${data?.client_name}/${this.client_id}/${data.id}`])
   }
 
   getFilterBaseUrl(): string {

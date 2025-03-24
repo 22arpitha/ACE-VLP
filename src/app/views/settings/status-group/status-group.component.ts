@@ -6,6 +6,7 @@ import { ApiserviceService } from '../../../service/apiservice.service';
 import { GenericDeleteComponent } from '../../../generic-delete/generic-delete.component';
 import { GenericEditComponent } from '../../../generic-edit/generic-edit.component';
 import { environment } from '../../../../environments/environment';
+import { SubModuleService } from 'src/app/service/sub-module.service';
 @Component({
   selector: 'app-status-group',
   templateUrl: './status-group.component.html',
@@ -30,15 +31,32 @@ export class StatusGroupComponent implements OnInit {
   };
   arrow: boolean = false;
   term: any;
-  constructor(private fb: FormBuilder, private modalService: NgbModal,
+  accessPermissions = []
+  user_id: any;
+  userRole: any;
+
+  constructor(private fb: FormBuilder, private modalService: NgbModal,private accessControlService:SubModuleService,
     private common_service: CommonServiceService, private apiService: ApiserviceService) {
     this.common_service.setTitle(this.BreadCrumbsTitle)
 
   }
 
   ngOnInit(): void {
+    this.user_id = sessionStorage.getItem('user_id');
+    this.userRole = sessionStorage.getItem('user_role_name');
+    this.getModuleAccess();
     this.initializeForm();
     this.getAllStatusGroup('?page=1&page_size=5');
+  }
+  getModuleAccess(){
+    this.accessControlService.getAccessForActiveUrl(this.user_id).subscribe((access) => {
+      if (access) {
+        this.accessPermissions = access[0].operations;
+        console.log('Access Permissions:', this.accessPermissions);
+      } else {
+        console.log('No matching access found.');
+      }
+    });
   }
 
   public initializeForm() {

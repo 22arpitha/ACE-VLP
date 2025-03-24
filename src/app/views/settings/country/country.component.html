@@ -1,5 +1,5 @@
 <div class="container-wrapper settings-main-content px-0">
-  <section class="settings-form-bg">
+  <section class="settings-form-bg" *ngIf="userRole !='Admin' && accessPermissions[0]?.create || userRole === 'Admin'">
     <div class="row mx-0 px-0">
       <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0">
         <form [formGroup]="countryForm">
@@ -70,10 +70,11 @@
                 <td>
                   <ng-container>
                     <img src="../../../../assets/images/Edit.svg" class="icon-image" type="button" container="body"
-                      ngbTooltip="Edit" (click)="edit(item)" />
+                      ngbTooltip="Edit" (click)="edit(item)" *ngIf="userRole !='Admin' && accessPermissions[0]?.update || userRole === 'Admin'"/>
                     <img src="../../../../assets/images/Delete.svg" class="icon-image" type="button" container="body"
-                      ngbTooltip="Delete" (click)="delete(item.id)" />
-                    <!-- (click)="open(item.id)" -->
+                      ngbTooltip="Delete" (click)="delete(item.id)" *ngIf="userRole !='Admin' && accessPermissions[0]?.delete || userRole === 'Admin'" />
+                      <span  *ngIf="userRole !='Admin' && !accessPermissions[0]?.update && !accessPermissions[0]?.delete">-</span>
+                      <!-- (click)="open(item.id)" -->
                     <!-- <span  *ngIf="userRole ==='Employee' && !accessPermissions[0]?.update && !accessPermissions[0]?.delete">-</span> -->
                     <!-- *ngIf="userRole ==='Employee' && accessPermissions[0]?.delete || userRole === 'Admin'" -->
                     <!-- *ngIf="userRole ==='Employee' && accessPermissions[0]?.update || userRole === 'Admin'" -->

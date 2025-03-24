@@ -17,8 +17,8 @@
                 <tr>
                   <th scope="col"> S.No</th>
                   <th scope="col">End Clients
-                    <i *ngIf="!arrowState['end_client_name']" (click)="sort('asc', 'end_client_name')" class="bi bi-arrow-up"></i>
-                    <i *ngIf="arrowState['end_client_name']" (click)="sort('desc', 'end_client_name')" class="bi bi-arrow-down"></i>  
+                    <i *ngIf="!arrowState['client_name']" (click)="sort('asc', 'client_name')" class="bi bi-arrow-up"></i>
+                    <i *ngIf="arrowState['client_name']" (click)="sort('desc', 'client_name')" class="bi bi-arrow-down"></i>  
                   </th>
                   <!-- <th scope="col">Action </th> -->
                 </tr>
@@ -33,7 +33,7 @@
                                       totalItems: count
                                     }; let i=index'>
                     <td>{{getContinuousIndex(i)}}</td>
-                    <td>xxxxx</td>
+                    <td>{{item.client_name|titlecase }}</td>
                     <!-- <td>
                       <ng-container>
                         <img src="../../../../assets/images/Edit.svg" class="icon-image" type="button" container="body"

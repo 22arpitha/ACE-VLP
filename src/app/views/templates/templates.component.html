@@ -1,5 +1,5 @@
 <div class="container-wrapper settings-main-content px-0">
-  <section class="settings-form-bg">
+  <section class="settings-form-bg" *ngIf="userRole !='Admin' && accessPermissions[0]?.create || userRole === 'Admin'">
     <div class="row mx-0 px-0">
       <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0">
         <form [formGroup]="templateForm">
@@ -139,9 +139,9 @@
               <td>
                 <ng-container>
                   <img src="../../../../assets/images/Edit.svg" class="icon-image" container="body" ngbTooltip="Edit"
-                    type="button" (click)="editContent(item)" />
+                    type="button" (click)="editContent(item)" *ngIf="userRole !='Admin' && accessPermissions[0]?.update || userRole === 'Admin'"/>
                   <img src="../../../../assets/images/Delete.svg" class="icon-image" container="body"
-                    ngbTooltip="Delete" type="button" (click)="confirmDelete(item)" />
+                    ngbTooltip="Delete" type="button" (click)="confirmDelete(item)" *ngIf="userRole !='Admin' && accessPermissions[0]?.delete || userRole === 'Admin'"/>
 
                 </ng-container>
               </td>

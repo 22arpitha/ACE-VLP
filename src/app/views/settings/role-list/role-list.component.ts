@@ -5,7 +5,9 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { CommonServiceService } from '../../../service/common-service.service';
 import { GenericDeleteComponent } from '../../../generic-delete/generic-delete.component';
 import { GenericEditComponent } from '../../../generic-edit/generic-edit.component';
-import { environment } from '../../../../environments/environment';import { Router } from '@angular/router';
+import { environment } from '../../../../environments/environment';
+import { Router } from '@angular/router';
+import{SubModuleService} from '../../../service/sub-module.service'
 @Component({
   selector: 'app-role-list',
   templateUrl: './role-list.component.html',
@@ -29,15 +31,20 @@ export class RoleListComponent implements OnInit {
   tableSizes = [5, 10, 25, 50, 100];
   currentIndex: any;
   term: any = '';
-
+  accessPermissions = []
+  user_id: any;
+  userRole: any;
   constructor(
     private common_service: CommonServiceService, private fb: FormBuilder, private api: ApiserviceService,
-    private modalService: NgbModal, private router:Router
+    private modalService: NgbModal, private router:Router,private accessControlService:SubModuleService
   ) { }
 
   ngOnInit(): void {
     this.common_service.setTitle(this.BreadCrumbsTitle);
+    this.user_id = sessionStorage.getItem('user_id');
+    this.userRole = sessionStorage.getItem('user_role_name');
     this.intialForm();
+    this.getModuleAccess();
     this.getAllRolesList(`?page=${1}&page_size=${5}`);
   }
 
@@ -60,6 +67,17 @@ export class RoleListComponent implements OnInit {
     this.arrowState[column] = direction === 'asc';
     this.directionValue = direction;
     this.sortValue = column;
+  }
+
+  getModuleAccess(){
+    this.accessControlService.getAccessForActiveUrl(this.user_id).subscribe((access) => {
+      if (access) {
+        this.accessPermissions = access[0].operations;
+        console.log('Access Permissions:', this.accessPermissions);
+      } else {
+        console.log('No matching access found.');
+      }
+    });
   }
 
   getAllRolesList(params: any) {
@@ -217,7 +235,7 @@ export class RoleListComponent implements OnInit {
       }
 
     }, (error => {
-      this.api.showError(error?.error?.detail)
+      this.api.showError(error?.error?.error)
     }))
   }
 

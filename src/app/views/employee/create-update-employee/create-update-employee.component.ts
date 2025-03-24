@@ -6,6 +6,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ApiserviceService } from '../../../service/apiservice.service';
 import { environment } from '../../../../environments/environment';
 import { GenericDeleteComponent } from '../../../generic-delete/generic-delete.component';
+import { SubModuleService } from 'src/app/service/sub-module.service';
 
 @Component({
   selector: 'app-create-update-employee',
@@ -26,10 +27,16 @@ searchReportingManagerText:any
 searchRoleText:any;
 searchDesignationText:any;
 isActivelist:any=[{name:'In Active',is_active:false},{name:'Active',is_active:true}]
+accessPermissions = []
+user_id: any;
+userRole: any;
 
   constructor(private fb:FormBuilder,private activeRoute:ActivatedRoute,
     private common_service: CommonServiceService,private router:Router,
-    private apiService: ApiserviceService,private modalService: NgbModal) { 
+    private apiService: ApiserviceService,private modalService: NgbModal,
+    private accessControlService:SubModuleService) { 
+      this.user_id = sessionStorage.getItem('user_id');
+    this.userRole = sessionStorage.getItem('user_role_name');
     if(this.activeRoute.snapshot.paramMap.get('id')){
       this.employee_id= this.activeRoute.snapshot.paramMap.get('id')
       this.isEditItem = true;
@@ -44,7 +51,24 @@ isActivelist:any=[{name:'In Active',is_active:false},{name:'Active',is_active:tr
   }
 
   ngOnInit(): void {
+    this.getModuleAccess();
     this.intialForm();
+  }
+
+  getModuleAccess(){
+    this.apiService.getData(`${environment.live_url}/${environment.user_access}/${sessionStorage.getItem('user_id')}/`).subscribe(
+      (res:any)=>{
+       res.access_list.forEach((access:any)=>{
+          access.access.forEach((access_name:any)=>{
+              if(access_name.name===sessionStorage.getItem('access-name')){
+                // console.log(access_name)
+                this.accessPermissions = access_name.operations;
+              }
+            })
+       })
+      }
+    )
+    console.log(this.accessPermissions)
   }
 
   public intialForm(){

@@ -1,5 +1,5 @@
 <div class="container-wrapper settings-main-content px-0">
-    <section class="settings-table-bg px-3">
+    <section class="settings-table-bg px-3" *ngIf="userRole !='Admin' && accessPermissions[0]?.create || userRole === 'Admin'">
         <div class="row mx-0 my-1 px-0 py-2">
             <div class="col-12 mt-2 col-sm-12 col-md-4 col-lg-3 search-div px-0">
               <input type="search" (input)="filterSearch($event)" class="form-control p-2 sizeinput" [(ngModel)]="term"
@@ -68,8 +68,9 @@
                       </td>
                       <td> <ng-container>
                         <img src="../../../../assets/images/Edit.svg" class="icon-image" type="button" container="body"
-                          ngbTooltip="Edit" (click)="edit(item)"/>
-                     </ng-container></td>
+                          ngbTooltip="Edit" (click)="edit(item)" *ngIf="userRole !='Admin' && accessPermissions[0]?.update || userRole === 'Admin'"/>
+                          <span  *ngIf="userRole !='Admin' && !accessPermissions[0]?.update && !accessPermissions[0]?.delete">-</span>
+                        </ng-container></td>
                     </tr>
                   </ng-container>
                 </tbody>

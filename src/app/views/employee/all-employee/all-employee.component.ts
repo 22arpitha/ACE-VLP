@@ -5,6 +5,7 @@ import { GenericEditComponent } from '../../../generic-edit/generic-edit.compone
 import { ApiserviceService } from '../../../service/apiservice.service';
 import { CommonServiceService } from '../../../service/common-service.service';
 import { environment } from '../../../../environments/environment';
+import { SubModuleService } from 'src/app/service/sub-module.service';
 
 @Component({
   selector: 'app-all-employee',
@@ -32,8 +33,11 @@ is_active:false,
   tableSizes = [5, 10, 25, 50, 100];
   currentIndex: any;
   allEmployeeList:any=[];
+  accessPermissions = []
+  user_id: any;
+  userRole: any;
   constructor(private common_service: CommonServiceService,
-    private router:Router,private modalService: NgbModal,
+    private router:Router,private modalService: NgbModal,private accessControlService:SubModuleService,
     private apiService: ApiserviceService) {
     this.common_service.setTitle(this.BreadCrumbsTitle)
     this.common_service.empolyeeStatus$.subscribe((status:boolean)=>{
@@ -46,7 +50,23 @@ is_active:false,
    }
 
   ngOnInit(): void {
-    
+    this.user_id = sessionStorage.getItem('user_id');
+    this.userRole = sessionStorage.getItem('user_role_name');
+    this.getModuleAccess();
+
+  }
+
+  access_name:any ;
+  getModuleAccess(){
+    this.accessControlService.getAccessForActiveUrl(this.user_id).subscribe((access) => {
+      if (access) {
+        this.access_name=access[0]
+        this.accessPermissions = access[0].operations;
+        console.log('Access Permissions:', access);
+      } else {
+        console.log('No matching access found.');
+      }
+    });
   }
 
   public openCreateEmployeePage(){
@@ -65,6 +85,7 @@ is_active:false,
       modalRef.componentInstance.status.subscribe(resp => {
         if (resp === 'ok') {
           modalRef.dismiss();
+          sessionStorage.setItem('access-name', this.access_name.name)
           this.router.navigate(['/settings/update-employee/',this.selectedItemId]);
 
         } else {

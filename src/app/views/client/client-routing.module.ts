@@ -21,10 +21,10 @@ const routes: Routes = [
         path:'update-client/:id', component:TabsListComponent
       },
       {
-        path:'end-client-jobs/:end-client-name/:id', component: JobsOfEndclientComponent
+        path:'end-client-jobs/:end-client-name/:client-id/:id', component: JobsOfEndclientComponent
       },
       {
-        path:'client-groups/:group-client-name/:id', component: ClientsOfGroupComponent
+        path:'client-groups/:group-client-name/:client-id/:id', component: ClientsOfGroupComponent
       },
       // {
       //   path:'update/:id', component:UpdateClientComponent

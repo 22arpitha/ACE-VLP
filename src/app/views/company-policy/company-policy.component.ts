@@ -9,6 +9,7 @@ import { environment } from '../../../environments/environment';
 import { Observable, of } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 import {PdfViewComponent} from '../pdf-view/pdf-view.component'
+import { SubModuleService } from 'src/app/service/sub-module.service';
 
 @Component({
   selector: 'app-company-policy',
@@ -38,7 +39,10 @@ export class CompanyPolicyComponent implements OnInit {
   file: any;
   selectedFile: File | null = null;
   formData: any;
-  constructor(private fb: FormBuilder, private modalService: NgbModal,
+  accessPermissions = []
+  user_id: any;
+  userRole: any;
+  constructor(private fb: FormBuilder, private modalService: NgbModal,private accessControlService:SubModuleService,
     private common_service: CommonServiceService, private apiService: ApiserviceService,
     private dialog: MatDialog) {
     this.common_service.setTitle(this.BreadCrumbsTitle)
@@ -46,8 +50,22 @@ export class CompanyPolicyComponent implements OnInit {
 
 
   ngOnInit(): void {
+    this.user_id = sessionStorage.getItem('user_id');
+    this.userRole = sessionStorage.getItem('user_role_name');
+    this.getModuleAccess();
     this.initializeForm();
     this.getAllCompanyPolicy('?page=1&page_size=5');
+  }
+
+  getModuleAccess(){
+    this.accessControlService.getAccessForActiveUrl(this.user_id).subscribe((access) => {
+      if (access) {
+        this.accessPermissions = access[0].operations;
+        console.log('Access Permissions:', this.accessPermissions);
+      } else {
+        console.log('No matching access found.');
+      }
+    });
   }
 
   public initializeForm() {
