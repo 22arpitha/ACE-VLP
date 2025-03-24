@@ -15,16 +15,13 @@
   border-radius: 4px;
   margin: 10px 0;
 }
-
-.ql-toolbar.ql-snow {
-  background-color: #f3f3f3;
-  border-radius: 4px 4px 0 0;
+.ck-editor__editable_inline {
+  min-height: 300px;
+  border: 1px solid #ccc;
+  padding: 10px;
+  border-radius: 5px;
 }
 
-.ql-container.ql-snow {
-  border-radius: 0 0 4px 4px;
-  min-height: 200px;
-}
 .settings-table-bg{
   max-height: max-content !important;
 }
@@ -63,4 +60,7 @@ padding: 0 !important;
 .search-icon{
   font-size:x-large;
   color: #ccc;
+}
+::ng-deep .mat-paginator-page-size{
+  display: none !important;
 }

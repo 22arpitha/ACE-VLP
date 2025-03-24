@@ -1,15 +1,16 @@
-import { ChangeDetectionStrategy, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import {  Validators, FormBuilder,FormGroup, FormGroupDirective, AbstractControl, ValidationErrors, FormArray, FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable, of } from 'rxjs';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { Editor, Toolbar } from 'ngx-editor';
 import { ApiserviceService } from '../../../service/apiservice.service';
 import { CommonServiceService } from '../../../service/common-service.service';
 import { GenericDeleteComponent } from '../../../generic-delete/generic-delete.component';
 import { environment } from '../../../../environments/environment';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { DatePipe } from '@angular/common';
-import { QuillEditorComponent } from 'ngx-quill';
+
 
 
 @Component({
@@ -18,12 +19,26 @@ import { QuillEditorComponent } from 'ngx-quill';
   styleUrls: ['./create-client.component.scss'],
   changeDetection:ChangeDetectionStrategy.OnPush
 })
-export class CreateClientComponent implements OnInit {
+export class CreateClientComponent implements OnInit, OnDestroy {
   @ViewChild(FormGroupDirective) formGroupDirective!: FormGroupDirective;
   @ViewChild('fileInput') fileInput: ElementRef;
   @ViewChild(MatPaginator) paginator: MatPaginator | undefined;
-  @ViewChild(QuillEditorComponent) quillEditor: QuillEditorComponent;
-
+  editor!: Editor;
+  toolbar: Toolbar = [
+    // default value
+    ['bold', 'italic'],
+    ['underline', 'strike'],
+    ['code', 'blockquote'],
+    ['ordered_list', 'bullet_list'],
+    [{ heading: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'] }],
+    ['link', 'image'],
+    // or, set options for link:
+    //[{ link: { showOpenInNewTab: false } }, 'image'],
+    ['text_color', 'background_color'],
+    ['align_left', 'align_center', 'align_right', 'align_justify'],
+    ['horizontal_rule', 'format_clear', ],
+  ];
+  colorPresets = ['red', '#FF0000', 'rgb(255, 0, 0)'];
   file: any;
 selectedFile: File | null = null;
   BreadCrumbsTitle: any = 'Client';
@@ -36,7 +51,6 @@ selectedFile: File | null = null;
   selectedClient:any=[];
   isEditItem:boolean=false;
   client_id:any;
-  editorContent:any;
   user_role_name:any;
   isAdmin:boolean=false;
   pageSize = 5;
@@ -46,26 +60,6 @@ selectedFile: File | null = null;
   searchEmployeeText:any;
   searchCountryText:any;
   searchSourceText:any;
-  toolbarOptions = [
-    ['bold', 'italic', 'underline', 'strike'],      // Toggle buttons
-    ['blockquote', 'code-block'],                   // Block style
-
-    [{ 'header': 1 }, { 'header': 2 }],              // Headers
-    [{ 'list': 'ordered' }, { 'list': 'bullet' }],   // Lists
-    [{ 'script': 'sub' }, { 'script': 'super' }],    // Subscript/Superscript
-    [{ 'indent': '-1' }, { 'indent': '+1' }],        // Indent
-    [{ 'direction': 'rtl' }],                        // Text direction
-
-    [{ 'size': ['small', false, 'large', 'huge'] }],  // Text size
-    [{ 'header': [1, 2, 3, 4, 5, 6, false] }],        // Header levels
-
-    [{ 'color': [] }, { 'background': [] }],          // Text color and background color
-    [{ 'font': [] }],                                // Font family
-    [{ 'align': [] }],                               // Text alignment
-
-    ['link', 'image', 'video'],                       // Media
-    ['clean']                                        // Clear formatting
-  ];
     constructor(private fb:FormBuilder,private activeRoute:ActivatedRoute,
       private common_service: CommonServiceService,private router:Router,private datepipe:DatePipe,
       private apiService: ApiserviceService,private modalService: NgbModal) { 
@@ -89,7 +83,13 @@ selectedFile: File | null = null;
     }
   
     ngOnInit(): void {
+      this.editor = new Editor();
       this.intialForm();
+    }
+
+    ngOnDestroy(): void {
+      // Destroy the editor to prevent memory leaks
+      this.editor.destroy();
     }
   
     public intialForm(){
@@ -103,7 +103,7 @@ selectedFile: File | null = null;
         service_start_date: ['', Validators.required],
         service_end_date: [null],
         client_file:[null],
-        contact_details:this.fb.array([this.createContactGroup()]),
+        contact_details:this.fb.array([this.createContactGroup()],this.duplicateNameValidator),
         employee_ids: this.fb.array([]),
         allow_sending_status_report_to_client:[false],
         practice_notes:[''],
@@ -193,11 +193,9 @@ filteredSourceList() {
       service_start_date:respData?.service_start_date ? new Date(respData?.service_start_date)?.toISOString(): null,
       service_end_date:respData?.service_start_date ? new Date(respData?.service_start_date)?.toISOString():null,
       source:respData?.source_id,
-      contact_details:respData?.contact_details,
       allow_sending_status_report_to_client:respData?.allow_sending_status_report_to_client,
       practice_notes:respData?.practice_notes,
         });
-this.patchQuillEditorValue(respData?.practice_notes);
 this.clientFormGroup?.get('client_file')?.setErrors(null);
 if(respData?.client_file){
   urlToFile(respData?.client_file, this.getFileName(respData?.client_file))
@@ -216,6 +214,19 @@ if(respData?.employee_details && respData?.employee_details?.length >=1){
   });
 }else{
   this.clientFormGroup?.patchValue({'employee_ids':[]});
+}
+if (respData?.contact_details && Array.isArray(respData.contact_details) && respData.employee_details?.length >= 1) {
+  const contactDetailsArray = this.clientFormGroup.get('contact_details') as FormArray;
+  contactDetailsArray.clear();
+respData.contact_details.forEach(({ name, email, phone_number }, index, array) => {
+  const isLastItem = index === array.length - 1;
+  const contactForm = this.fb.group({
+    name: [{ value: name, disabled: !isLastItem }],
+    email: [{ value: email, disabled: !isLastItem }],
+    phone_number: [{ value: phone_number, disabled: !isLastItem }]
+  });
+  contactDetailsArray.push(contactForm);
+});
 }
       }, (error: any) => {
         this.apiService.showError(error?.error?.detail);
@@ -251,14 +262,28 @@ if(respData?.employee_details && respData?.employee_details?.length >=1){
     }
  
     public addContact() {
-      if (this.contactDetails.length < 5) {
+      let lastItemIndex = this.contactDetails.length - 1;
+    
+      // Disable the previous contact group before adding a new one
+      if (this.contactDetails?.at(lastItemIndex)?.valid && this.contactDetails.length < 5) {
+        const contact = this.contactDetails.at(lastItemIndex);
+        ['name', 'email', 'phone_number'].forEach(field => contact?.get(field)?.disable());
+    
+        // Add the new contact group after disabling the previous one
         this.contactDetails.push(this.createContactGroup());
       }
     }
+    
+    
   
     public deleteContact(index: number) {
       if (this.contactDetails.length > 1) {
-        this.contactDetails.removeAt(index);
+      this.contactDetails.removeAt(index);
+    const lastItemIndex = this.contactDetails.length - 1;
+    const lastItem = this.contactDetails.at(lastItemIndex);
+    if (lastItem) {
+      ['name', 'email', 'phone_number'].forEach(field => lastItem.get(field)?.enable());
+    }
       }
     }
 
@@ -267,6 +292,13 @@ if(respData?.employee_details && respData?.employee_details?.length >=1){
       contact?.get('name')?.enable();
       contact?.get('email')?.enable();
       contact?.get('phone_number')?.enable();
+    }
+
+    saveChanges(index: number) {
+      const contact = this.contactDetails.at(index);
+      contact?.get('name')?.disable();
+      contact?.get('email')?.disable();
+      contact?.get('phone_number')?.disable();
     }
 
     validateKeyPress(event: KeyboardEvent) {
@@ -370,6 +402,7 @@ if(respData?.employee_details && respData?.employee_details?.length >=1){
   
       public saveClientDetails(){
         console.log(this.clientFormGroup.value)
+
         if (this.clientFormGroup.invalid) {
           this.clientFormGroup.markAllAsTouched();
         } else {
@@ -436,12 +469,20 @@ if(respData?.employee_details && respData?.employee_details?.length >=1){
 
   addEmployee() {
     if (this.selectedEmployee) {
-      this.employeeFormArray.push(this.createEmployeeControl());
-      // Optionally, set the value for the newly added control
-      this.employeeFormArray.at(this.employeeFormArray.length - 1).setValue(this.selectedEmployee);
-      this.selectedEmployee = null; // Reset the selected employee after adding
+      console.log(this.selectedEmployee);
+      // Check if the selected employee already exists in the employeeFormArray
+      const isEmployeeExists = this.employeeFormArray.controls.some(control => 
+        control.value === this.selectedEmployee
+      );
+  
+      if (!isEmployeeExists) {
+        this.employeeFormArray.push(this.createEmployeeControl());
+        this.employeeFormArray.at(this.employeeFormArray.length - 1).setValue(this.selectedEmployee);
+      }
+      this.selectedEmployee = null;
     }
   }
+  
 
   removeEmployee(index: number) {
     if (this.employeeFormArray.length > 1) {
@@ -472,12 +513,24 @@ if(respData?.employee_details && respData?.employee_details?.length >=1){
     return url?.split('/')?.pop(); 
   }
 
-  public patchQuillEditorValue(value: string) {
-    // Ensure Quill editor is ready and then set the value
-    if (this.quillEditor) {
-      this.quillEditor.writeValue(value); // Ensure it writes the value properly to Quill
+ private duplicateNameValidator(control: AbstractControl) {
+    const formArray = control as FormArray;
+    const nameSet = new Set<string>();
+
+    for (let i = 0; i < formArray.controls.length; i++) {
+      const name = formArray.at(i).get('name')?.value?.trim().toLowerCase();
+      if (name && nameSet.has(name)) {
+        formArray.at(i).get('name')?.setErrors({ duplicate: true });
+      } else {
+        nameSet.add(name);
+        formArray.at(i).get('name')?.setErrors(null);
+      }
     }
+
+    return null;
   }
+  
+  
   }
   async function urlToFile(url: string, fileName: string): Promise<File> {
     let fullurl = environment.media_url+url;

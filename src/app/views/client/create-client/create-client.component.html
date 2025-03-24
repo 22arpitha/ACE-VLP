@@ -184,6 +184,7 @@
                   </mat-form-field>
                   <div class="px-2" *ngIf="contact?.get('name')?.invalid && contact?.get('name')?.touched || contact?.get('name')?.dirty">
                     <span class="text-errors" *ngIf="contact?.get('name')?.errors?.['required']">Name is required</span>
+                    <span class="text-errors" *ngIf="contact?.get('name')?.errors?.['duplicate']">Name must be unique</span>
                   </div>
                 </td>
                   <td><mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
@@ -195,7 +196,7 @@
                 <div class="px-2" *ngIf="contact?.get('email')?.invalid && contact?.get('email')?.touched || contact?.get('email')?.dirty">
                   <span class="text-errors"  *ngIf="contact?.get('email')?.errors?.['required']">Email is required</span>
                   <span class="text-errors" *ngIf="contact?.get('email')?.errors?.['pattern']">Email Id is invalid.</span>
-              </div>
+               </div>
               </td>
                   <td> <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
                     <mat-label>Phone No <b class="r-star">*</b></mat-label>
@@ -210,14 +211,16 @@
                         phone number.</span>
                     <span class="text-errors" *ngIf="contact?.get('phone_number')?.errors?.['required']">Phone number is
                         required.</span>
-                </div>
+                   </div>
               </td>
                   <td>
                     <ng-container>
                       <img src="../../../../assets/images/Edit.svg" class="icon-image" type="button" container="body"
-                        ngbTooltip="Edit" (click)="editContact(i)" *ngIf="contact?.get('name')?.enabled && i < contactDetails?.length - 1"/>
+                        ngbTooltip="Edit" (click)="editContact(i)" *ngIf="contact?.get('name')?.disabled && i < contactDetails?.length - 1"/>
+                        <img src="../../../../assets/images/tick.svg" class="icon-image" type="button" container="body"
+                        ngbTooltip="save" (click)="saveChanges(i)" *ngIf="contact?.get('name')?.enabled  && i < contactDetails?.length - 1"/>
                         <img src="../../../../assets/images/Delete.svg" class="icon-image" type="button" container="body"
-                        ngbTooltip="delete" (click)="deleteContact(i)" *ngIf="contact?.get('name')?.enabled && i < contactDetails?.length - 1" />
+                        ngbTooltip="delete" (click)="deleteContact(i)" *ngIf="i<= contactDetails?.length - 1" />
                         <img src="../../../../assets/images/addnew.svg" class="icon-image" type="button" container="body"
                         ngbTooltip="add" (click)="addContact()" *ngIf="i === contactDetails?.length - 1 && contactDetails?.length < 5"/>
                    </ng-container>
@@ -292,18 +295,18 @@
         <mat-paginator [length]="employeeFormArray.length"
       [pageSize]="pageSize"
       [pageIndex]="currentPage - 1"
-      (page)="onPageChanged($event)"
-      showFirstLastButtons>
+      (page)="onPageChanged($event)">
     </mat-paginator>
       </div>
     </div>
   </section>  
 <section class="rich-editor-bg mx-0 my-3 px-2">
-    <div class="editor-container px-0">
-        <quill-editor  
-          [styles]="{height: '100px'}"
-          [modules]="{ toolbar: toolbarOptions }" formControlName="practice_notes">
-        </quill-editor>
+    <div class="editor-container NgxEditor__Wrapper px-0">
+      <ngx-editor-menu [editor]="editor" [toolbar]="toolbar"> </ngx-editor-menu>
+      <ngx-editor
+      [editor]="editor"
+      formControlName="practice_notes"
+    ></ngx-editor>
       </div>
 </section>
 <section class="d-flex align-items-center mx-0 my-3 px-2">
