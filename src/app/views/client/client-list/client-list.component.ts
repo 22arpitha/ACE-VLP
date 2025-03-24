@@ -109,6 +109,17 @@ export class ClientListComponent implements OnInit {
         }
       )
     }
+    public getCurrentClients(){
+      this.page = 1;
+      this.tableSize = 5;
+    this.getCurrentClientList();  
+    }
+    public getClientsHistory(){
+      this.page = 1;
+      this.tableSize = 5;
+    this.getClientHistoryList();  
+    }
+
     public onTableSizeChange(event: any): void {
       if (event) {
         this.page = 1;

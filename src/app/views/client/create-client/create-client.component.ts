@@ -9,6 +9,8 @@ import { GenericDeleteComponent } from '../../../generic-delete/generic-delete.c
 import { environment } from '../../../../environments/environment';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { DatePipe } from '@angular/common';
+import { QuillEditorComponent } from 'ngx-quill';
+
 
 @Component({
   selector: 'app-create-client',
@@ -20,6 +22,8 @@ export class CreateClientComponent implements OnInit {
   @ViewChild(FormGroupDirective) formGroupDirective!: FormGroupDirective;
   @ViewChild('fileInput') fileInput: ElementRef;
   @ViewChild(MatPaginator) paginator: MatPaginator | undefined;
+  @ViewChild(QuillEditorComponent) quillEditor: QuillEditorComponent;
+
   file: any;
 selectedFile: File | null = null;
   BreadCrumbsTitle: any = 'Client';
@@ -104,7 +108,6 @@ selectedFile: File | null = null;
         allow_sending_status_report_to_client:[false],
         practice_notes:[''],
       });
-      this.addEmployee();
     }
     // To Get Unique Employee Number
     public getClientUniqueNumber(){
@@ -194,6 +197,7 @@ filteredSourceList() {
       allow_sending_status_report_to_client:respData?.allow_sending_status_report_to_client,
       practice_notes:respData?.practice_notes,
         });
+this.patchQuillEditorValue(respData?.practice_notes);
 this.clientFormGroup?.get('client_file')?.setErrors(null);
 if(respData?.client_file){
   urlToFile(respData?.client_file, this.getFileName(respData?.client_file))
@@ -260,9 +264,9 @@ if(respData?.employee_details && respData?.employee_details?.length >=1){
 
     public editContact(index: number) {
       const contact = this.contactDetails.at(index);
-      contact.get('name').enable();
-      contact.get('email').enable();
-      contact.get('phone_number').enable();
+      contact?.get('name')?.enable();
+      contact?.get('email')?.enable();
+      contact?.get('phone_number')?.enable();
     }
 
     validateKeyPress(event: KeyboardEvent) {
@@ -374,7 +378,7 @@ if(respData?.employee_details && respData?.employee_details?.length >=1){
               this.apiService.updateData(`${environment.live_url}/${environment.clients}/${this.client_id}/`, this.formData).subscribe((respData: any) => {
               if (respData) {
                 this.apiService.showSuccess(respData['message']);
-                this.resetFormState();
+                // this.resetFormState();
                 this.router.navigate(['/client/all-client']);
               }
             }, (error: any) => {
@@ -385,7 +389,7 @@ if(respData?.employee_details && respData?.employee_details?.length >=1){
             this.apiService.postData(`${environment.live_url}/${environment.clients}/`, this.formData).subscribe((respData: any) => {
               if (respData) {
                 this.apiService.showSuccess(respData['message']);
-                this.resetFormState();
+                // this.resetFormState();
                 this.router.navigate(['/client/all-client']);
               }
             }, (error: any) => {
@@ -418,12 +422,12 @@ if(respData?.employee_details && respData?.employee_details?.length >=1){
       this.formData.set("service_end_date", updatedEndDateValue || null);
       this.formData.set("source", this.clientFormGroup?.get('source')?.value);
       this.formData.set("employee_ids",JSON.stringify(this.clientFormGroup.get('employee_ids')?.value) || []);
-      this.formData.set("practice_notes", this.clientFormGroup?.get('practice_notes')?.value || null);
+      this.formData.set("practice_notes", this.clientFormGroup?.get('practice_notes')?.value || '');
       this.formData.set("allow_sending_status_report_to_client", this.clientFormGroup?.get('allow_sending_status_report_to_client')?.value || false);
       const result = this.clientFormGroup?.get('contact_details')?.value.map((item:any) => {
         return { 
           ...item, 
-          phone_number: item?.phone_number.toString()
+          phone_number: item?.phone_number?.toString()
         };
       });
       this.formData.set("contact_details", JSON.stringify(result) || []);
@@ -466,6 +470,13 @@ if(respData?.employee_details && respData?.employee_details?.length >=1){
   }
   public getFileName(url:any){
     return url?.split('/')?.pop(); 
+  }
+
+  public patchQuillEditorValue(value: string) {
+    // Ensure Quill editor is ready and then set the value
+    if (this.quillEditor) {
+      this.quillEditor.writeValue(value); // Ensure it writes the value properly to Quill
+    }
   }
   }
   async function urlToFile(url: string, fileName: string): Promise<File> {
