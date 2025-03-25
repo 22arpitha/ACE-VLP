@@ -40,6 +40,8 @@ clients:'clients',
 clients_group:'group',
 end_clients:'end-clients',
 end_client_jobs:`end-client-jobs`,
+// jobs
+jobs:`jobs`,
  
   leave_application: 'leave-application',
   timesheetCalender: 'time-sheets-calender',

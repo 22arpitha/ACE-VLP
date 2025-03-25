@@ -26,11 +26,15 @@ export class JobsOfEndclientComponent implements OnInit {
   tableSizes = [5, 10, 25, 50, 100];
   currentIndex: any;
   term: any = '';
+  client_id:any;
+  end_client_id:any
 
   constructor(private common_service: CommonServiceService,private activateRoute:ActivatedRoute,private router: Router,
     private api: ApiserviceService,
   ) {
-     this.endClientData = this.activateRoute.snapshot.paramMap.get('end-client-name')
+     this.endClientData = this.activateRoute.snapshot.paramMap.get('end-client-name');
+     this.client_id = this.activateRoute.snapshot.paramMap.get('client-id')
+     this.end_client_id = this.activateRoute.snapshot.paramMap.get('id')
      this.BreadCrumbsTitle = this.endClientData + ' - Jobs';
      this.common_service.setTitle(this.BreadCrumbsTitle);
   }
@@ -108,7 +112,7 @@ export class JobsOfEndclientComponent implements OnInit {
     }
 
     backToEndClients(id){
-      this.router.navigate([`/client/update-client/${12}`])
+      this.router.navigate([`/client/update-client/${this.client_id}`])
     }
 
 }
