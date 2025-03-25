@@ -191,7 +191,7 @@ filteredSourceList() {
       country:respData?.country_id,
       address:respData?.address,
       service_start_date:respData?.service_start_date ? new Date(respData?.service_start_date)?.toISOString(): null,
-      service_end_date:respData?.service_start_date ? new Date(respData?.service_start_date)?.toISOString():null,
+      service_end_date:respData?.service_end_date ? new Date(respData?.service_end_date)?.toISOString():null,
       source:respData?.source_id,
       allow_sending_status_report_to_client:respData?.allow_sending_status_report_to_client,
       practice_notes:respData?.practice_notes,
