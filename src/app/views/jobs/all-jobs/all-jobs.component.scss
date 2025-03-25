@@ -1,0 +1,43 @@
+.isActive {
+  background-color: #ebebeb !important;
+  color: #000;
+  font-weight: 500;
+  font-size: 14px;
+}
+.tab-button-content {
+  background-color: #fff;
+  width: 75px;
+  outline: none;
+  border: none;
+  // height: 30px;
+  // line-height: 30px;
+}
+.mat-btn-s {
+  margin: 0px 5px;
+}
+.download-btn {
+  min-width: 45px !important;
+  background-color: #6c757d !important;
+  // height: 30px;
+  // line-height: 30px;
+}
+.settings-table-bg {
+  max-height: 75vh !important;
+}
+.table-wrapper {
+  max-height: 55vh !important;
+  overflow-x: auto;
+  margin-bottom: 20px;
+}
+::ng-deep .jobs mat-select {
+  border: 1px solid #929292 !important;
+  border-radius: 8px !important;
+  padding: 4px 0px !important;
+}
+::ng-deep .jobs input.mat-input-element {
+  margin-top: 0;
+  border-radius: 8px;
+  border: 1px solid #929292;
+  padding: 4px 9px;
+  width: 70px;
+}

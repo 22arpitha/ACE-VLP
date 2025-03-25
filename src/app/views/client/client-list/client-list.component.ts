@@ -59,10 +59,11 @@ export class ClientListComponent implements OnInit {
 
       this.getCurrentClientList()
     }
-
+    access_name:any ;
     getModuleAccess(){
       this.accessControlService.getAccessForActiveUrl(this.user_id).subscribe((access) => {
         if (access) {
+          this.access_name=access[0]
           this.accessPermissions = access[0].operations;
           console.log('Access Permissions:', this.accessPermissions);
         } else {
@@ -87,6 +88,7 @@ export class ClientListComponent implements OnInit {
         modalRef.componentInstance.status.subscribe(resp => {
           if (resp === 'ok') {
             modalRef.dismiss();
+            sessionStorage.setItem('access-name', this.access_name.name)
             this.router.navigate(['/client/update-client/',this.selectedItemId]);
   
           } else {

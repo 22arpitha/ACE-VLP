@@ -60,6 +60,8 @@ selectedFile: File | null = null;
   searchEmployeeText:any;
   searchCountryText:any;
   searchSourceText:any;
+  accessPermissions = []
+userRole: any;
     constructor(private fb:FormBuilder,private activeRoute:ActivatedRoute,
       private common_service: CommonServiceService,private router:Router,private datepipe:DatePipe,
       private apiService: ApiserviceService,private modalService: NgbModal) { 
@@ -84,12 +86,30 @@ selectedFile: File | null = null;
   
     ngOnInit(): void {
       this.editor = new Editor();
+      this.getModuleAccess()
       this.intialForm();
     }
 
     ngOnDestroy(): void {
       // Destroy the editor to prevent memory leaks
       this.editor.destroy();
+    }
+
+    getModuleAccess(){
+      this.apiService.getData(`${environment.live_url}/${environment.user_access}/${sessionStorage.getItem('user_id')}/`).subscribe(
+        (res:any)=>{
+          console.log(res)
+         res.access_list.forEach((access:any)=>{
+            access.access.forEach((access_name:any)=>{
+                if(access_name.name===sessionStorage.getItem('access-name')){
+                  console.log(access_name)
+                  this.accessPermissions = access_name.operations;
+                  // console.log('this.accessPermissions', this.accessPermissions);
+                }
+              })
+         })
+        }
+      )
     }
   
     public intialForm(){

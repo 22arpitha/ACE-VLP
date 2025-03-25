@@ -1,1 +1,125 @@
-<p>all-jobs works!</p>
+<div class="container-wrapper settings-main-content jobs px-0">
+    <section class="settings-table-bg px-3">
+        <div class="row mx-0 my-1 px-0 py-2">
+            <div class="col-12 mt-2 col-sm-12 col-md-4 col-lg-3 search-div px-0">
+              <input type="search" (input)="filterSearch($event)" class="form-control p-2 sizeinput" [(ngModel)]="term"
+                placeholder="Search" aria-describedby="emailHelp" autocomplete="off">
+              <i *ngIf="!term" class="bi bi-search" id="search-icon-tab"></i>
+            </div>
+            <div class="col-12 mt-2 col-sm-12 col-md-4 col-lg-3"></div>
+            <div class="col-12 mt-2 col-sm-12 col-md-4 col-lg-6 text-end px-0">
+                <button mat-raised-button class="mat-btn-s tab-button-content" [ngClass]="{'isActive': isCurrent}" type="button" (click)="getCurrentJobs()">Current</button> 
+                <button mat-raised-button class="mat-btn-s tab-button-content" [ngClass]="{'isActive': isHistory}" type="button" (click)="getJobsHistory()">History</button> 
+                <button mat-raised-button class="proceedbtn mat-btn-s download-btn" type="button"><i class="fa fa-download"></i></button>
+                <button mat-raised-button class="proceedbtn mat-btn-s" type="button" (click)="openCreateClientPage()">Create
+                  Jobs</button>
+              </div>
+          </div>
+          <div class="row mx-1 my-2 px-0 table-wrapper">
+            <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0 ">
+              <table class="table table table-hover table-list">
+                <thead>
+                  <tr>
+                    <th scope="col"> S.No</th>
+                    <th scope="col">Job Number
+                      <i *ngIf="!arrowState['job_number']" (click)="sort('asc','job_number')" class="bi bi-arrow-up"></i>
+                <i (click)="sort('desc','job_number')" *ngIf="arrowState['job_number']"
+                  class="bi bi-arrow-down"></i>
+                    </th>
+                    <th scope="col">Job Name
+                      <i *ngIf="!arrowState['job_name']" (click)="sort('asc','job_name')" class="bi bi-arrow-up"></i>
+                      <i (click)="sort('desc','job_name')" *ngIf="arrowState['job_name']"
+                        class="bi bi-arrow-down"></i>
+                    </th>
+                    <th scope="col">Job Type
+                      <i *ngIf="!arrowState['job_type_name']" (click)="sort('asc','job_type_name')" class="bi bi-arrow-up"></i>
+                      <i (click)="sort('desc','job_type_name')" *ngIf="arrowState['job_type_name']"
+                        class="bi bi-arrow-down"></i>
+                    </th>
+                    <th scope="col">Client
+                      <i *ngIf="!arrowState['client_name']" (click)="sort('asc','client_name')" class="bi bi-arrow-up"></i>
+                      <i (click)="sort('desc','client_name')" *ngIf="arrowState['client_name']"
+                        class="bi bi-arrow-down"></i>
+                    </th>
+                    <th scope="col">Job Allocation Date</th>
+                    <th scope="col">Employee</th>
+                    <th scope="col">Manager</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">% of Completion</th>
+                    <th scope="col">Status Date</th>
+                    <th scope="col">Action </th>
+                  </tr>
+                </thead>
+                <tbody>
+      
+                  <ng-container *ngIf="(allJobsList) as result">
+                    <tr *ngFor='let item of result | customSort:directionValue:sortValue
+                    |paginate : {
+                             itemsPerPage: tableSize,
+                             currentPage: page,
+                             totalItems: count
+                           }; let i=index'>
+                      <td>{{getContinuousIndex(i)}}</td>
+                      <td>{{item?.job_number || '-'}}</td>
+                      <td>{{item?.job_name || '-'}}</td>
+                      <td>{{item?.job_type_name  || '-'}}</td>
+                      <td>{{item?.client_name  || '-'}}</td>
+                      <td>{{item?.job_allocation_date}}</td>
+                      <td>{{item?.employee || '-'}}</td>
+                      <td>{{item?.manager || '-'}}</td>
+                          <td>
+                            <mat-select [ngModel]="item?.job_status" (selectionChange)="onStatusChange(item, $event)">
+                                <mat-option *ngFor="let status of allJobStatus" [value]="status?.id">
+                                  {{ status?.status_name }}
+                                </mat-option>
+                              </mat-select>
+                          </td>
+                          <td>
+                           <div class="d-flex justify-content-around">
+                            <div>
+                                <input matInput type="number" [(ngModel)]="item.percentage_of_completion" (ngModelChange)="validatePercentage(item)"  (keypress)="validateKeyPress($event)" [class.is-invalid]="item.isInvalid"
+                                maxlength="3" >
+                                <div *ngIf="item.isInvalid" class="text-danger">
+                                    <small *ngIf="item.errorType === 'required'">Percentage is required.</small>
+                                    <small *ngIf="item.errorType === 'pattern'">Invalid percentage format.</small>
+                                    <small *ngIf="item.errorType === 'max'">Percentage cannot be more than 100.</small>
+                                    <small *ngIf="item.errorType === 'min'">Percentage cannot be less than 1.</small>
+                                  </div>
+                            </div>
+                            <div><img src="../../../../assets/images/tick.svg"  (click)="saveJobStausPercentage(item)" alt="" height="20" width="20"></div>
+                           </div>
+                          </td>
+                      <td>{{item?.job_status_date}}</td>
+                      <td> <ng-container>
+                        <img src="../../../../assets/images/Edit.svg" class="icon-image" type="button" container="body"
+                          ngbTooltip="Edit" (click)="edit(item)" *ngIf="userRole !='Admin' && accessPermissions[0]?.update || userRole === 'Admin'"/>
+                     </ng-container></td>
+                    </tr>
+                  </ng-container>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          
+          <div class="row mx-1 my-2 px-0" *ngIf="allJobsList?.length === 0" >
+            <app-generic-norecards></app-generic-norecards>
+          </div>
+        
+    </section>
+    <div class="row mx-0 px-3" *ngIf="allJobsList?.length > 0">
+        <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0">
+          <div class="pagination-container p-0">
+            <pagination-controls previousLabel="Prev" nextLabel="Next" (pageChange)="onTableDataChange($event)">
+            </pagination-controls>
+            <div class="items-per-page-container">
+              <div>Items per page</div>
+              <mat-select [(ngModel)]="tableSize" (selectionChange)="onTableSizeChange($event)" placeholder="10"
+                class="page-size">
+                <mat-option *ngFor="let size of tableSizes" [value]="size">{{size}}</mat-option>
+              </mat-select>
+            </div>
+          </div>
+        </div>
+      </div>
+  </div>
+  
