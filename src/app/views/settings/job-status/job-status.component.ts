@@ -268,7 +268,7 @@ export class JobStatusComponent implements OnInit {
     }, (error: any) => {
       this.apiService.showError(error.detail);
 
-    })
+    });
   }
 
   public getStatusGroupName(id: any) {

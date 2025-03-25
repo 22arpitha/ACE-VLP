@@ -62,7 +62,7 @@
                                  totalItems: count
                                }; let i=index'>
               <td>{{getContinuousIndex(i)}}</td>
-              <td>{{type.service_name || '-'}}</td>
+              <td>{{type?.service_name || '-'}}</td>
               <td>
                 <ng-container>
                   <img src="../../../../assets/images/Edit.svg" class="icon-image" container="body" ngbTooltip="Edit"

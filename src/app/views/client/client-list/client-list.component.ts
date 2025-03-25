@@ -109,8 +109,9 @@ export class ClientListComponent implements OnInit {
           this.count = noOfPages * this.tableSize;
           this.count = res?.['total_no_of_record']
           this.page = res?.['current_page'];
-        }
-      )
+        },(error: any) => {
+          this.apiService.showError(error?.error?.detail);
+        });
     }
   
     public getClientHistoryList(){
@@ -125,8 +126,10 @@ export class ClientListComponent implements OnInit {
           this.count = noOfPages * this.tableSize;
           this.count = res?.['total_no_of_record']
           this.page = res?.['current_page'];
-        }
-      )
+        },(error: any) => {
+          this.apiService.showError(error.detail);
+    
+        });
     }
     public getCurrentClients(){
       this.page = 1;
