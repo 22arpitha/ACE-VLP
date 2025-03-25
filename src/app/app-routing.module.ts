@@ -82,6 +82,9 @@ const routes: Routes = [
         path:'client', loadChildren:()=> import('./views/client/client.module').then(m => m.ClientModule)
       },
       {
+        path:'jobs', loadChildren:()=> import('./views/jobs/jobs.module').then(m => m.JobsModule)
+      },
+      {
         path:'status',loadChildren:()=>import('./views/project-status/project-status.module').then( m => m.ProjectStatusModule)
       },
       {
