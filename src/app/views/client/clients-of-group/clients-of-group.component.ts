@@ -110,7 +110,7 @@ export class ClientsOfGroupComponent implements OnInit {
     }
 
     backToEndClients(id){
-      this.router.navigate([`/client/update-client/${12}`])
+      this.router.navigate([`/client/update-client/${this.client_id}`])
     }
 
 }

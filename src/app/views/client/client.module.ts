@@ -16,12 +16,11 @@ import { UpdateClientComponent } from './update-client/update-client.component';
 import { SharedModule } from '../../shared/shared.module';
 import {MatTabsModule} from '@angular/material/tabs';
 import { TabsListComponent } from './tabs-list/tabs-list.component';
-import { EditClientComponent } from './edit-client/edit-client.component';
 import { GroupComponent } from './group/group.component';
 import { JobsOfEndclientComponent } from './jobs-of-endclient/jobs-of-endclient.component';
 import { ClientsOfGroupComponent } from './clients-of-group/clients-of-group.component';
 import { ClientContactDetailsPopupComponent } from './client-contact-details-popup/client-contact-details-popup.component';
-
+import {EditClientComponent} from './edit-client/edit-client.component'
 @NgModule({
   declarations: [
     ClientComponent,
@@ -29,8 +28,8 @@ import { ClientContactDetailsPopupComponent } from './client-contact-details-pop
     CreateClientComponent,
     UpdateClientComponent,
     GroupComponent,
-    TabsListComponent,
     EditClientComponent,
+    TabsListComponent,
     JobsOfEndclientComponent,
     ClientsOfGroupComponent,
     ClientContactDetailsPopupComponent
