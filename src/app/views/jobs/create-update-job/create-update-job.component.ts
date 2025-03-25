@@ -16,7 +16,7 @@ export class CreateUpdateJobComponent implements OnInit {
 BreadCrumbsTitle: any = 'Job';
 @ViewChild(FormGroupDirective) formGroupDirective!: FormGroupDirective;
   @ViewChild(MatPaginator) paginator: MatPaginator | undefined;
-jobFormGroup:FormGroup;
+  jobFormGroup:FormGroup;
 allClientslist:any=[];
 endClientslists:any=[];
 groupslists:any=[];

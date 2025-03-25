@@ -7,6 +7,7 @@ import { CreateUpdateJobComponent } from './create-update-job/create-update-job.
 import { AllJobsComponent } from './all-jobs/all-jobs.component';
 import { HttpClientModule } from '@angular/common/http';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
+import { SharedModule } from '../../shared/shared.module';
 
 
 @NgModule({
@@ -21,6 +22,7 @@ import { ReactiveFormsModule, FormsModule } from '@angular/forms';
     HttpClientModule,
     ReactiveFormsModule,
     FormsModule,
+    SharedModule,
   ]
 })
 export class JobsModule { }
