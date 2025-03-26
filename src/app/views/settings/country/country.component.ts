@@ -166,10 +166,10 @@ export class CountryComponent implements OnInit {
   public resetFormState() {
     this.formGroupDirective.resetForm();
     this.isEditItem = false;
+    this.term='';
   }
   async edit(item: any) {
-    this.selectedItemId = item?.id;
-    this.isEditItem = true;
+
     try {
       const modalRef = await this.modalService.open(GenericEditComponent, {
         size: 'sm',
@@ -179,6 +179,8 @@ export class CountryComponent implements OnInit {
 
       modalRef.componentInstance.status.subscribe(resp => {
         if (resp === 'ok') {
+          this.selectedItemId = item?.id;
+          this.isEditItem = true;
           modalRef.dismiss();
           this.getSelectedItemData(this.selectedItemId)
         } else {

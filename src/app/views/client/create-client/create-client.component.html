@@ -43,7 +43,7 @@
         autocomplete="off" oninput="this.value = this.value.toLowerCase()">
         <mat-error *ngIf="f['email']?.invalid && f['email']?.touched || f['email']?.dirty">
             <span  *ngIf="f['email']?.errors?.['required']">Email is required</span>
-            <span  *ngIf="f['email']?.errors?.['email']">Invalid email Id</span>
+            <span  *ngIf="f['email']?.errors?.['pattern']">Invalid email Id</span>
         </mat-error>
 </mat-form-field>
 
@@ -76,7 +76,7 @@
     <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
         <mat-label>Address <b class="r-star">*</b></mat-label>
         <textarea matInput placeholder="Enter Address" formControlName="address" autocomplete="off"
-        pattern="^[a-zA-Z]+( [a-zA-Z]+)*$"></textarea>
+        pattern="^[a-zA-Z0-9]+( [a-zA-Z0-9]+)*$"></textarea>
         <mat-error *ngIf="f['address']?.invalid && f['address']?.touched || f['address']?.dirty">
             <span  *ngIf="f['address']?.errors?.['required']">Address is required
             </span>
@@ -136,7 +136,7 @@
   
 </div>
   <!-- Upload File -->
-<div class="ccol-12 col-sm-12 col-md-6 col-lg-3 my-1 px-0 align-content-center">
+<div class="ccol-12 col-sm-12 col-md-6 col-lg-3 my-1 px-0 align-content-center" *ngIf="user_role_name === 'Admin'">
     <input type="file" accept=".xlsx,.xls" formControlName="client_file" #fileInput
                 (change)="onFileSelected($event)" hidden>
               <div class="image-container w-100 d-flex justify-content-between align-items-center"
@@ -164,7 +164,7 @@
 </div>
 <div class="row mx-0 my-1 px-0">
     <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0 table-responsive table-responsive-sm table-responsive-md">
-        <table class="table table table-hover table-list">
+        <table class="table table table-hover table-list contact-details-table">
             <thead>
                 <tr>
                   <th>S No</th>
@@ -184,7 +184,6 @@
                   </mat-form-field>
                   <div class="px-2" *ngIf="contact?.get('name')?.invalid && contact?.get('name')?.touched || contact?.get('name')?.dirty">
                     <span class="text-errors" *ngIf="contact?.get('name')?.errors?.['required']">Name is required</span>
-                    <span class="text-errors" *ngIf="contact?.get('name')?.errors?.['duplicate']">Name must be unique</span>
                   </div>
                 </td>
                   <td><mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
@@ -194,31 +193,31 @@
                        
                 </mat-form-field>
                 <div class="px-2" *ngIf="contact?.get('email')?.invalid && contact?.get('email')?.touched || contact?.get('email')?.dirty">
-                  <span class="text-errors"  *ngIf="contact?.get('email')?.errors?.['required']">Email is required</span>
+                  <span class="text-errors"  *ngIf="contact?.get('email').errors?.['required']">Email is required</span>
                   <span class="text-errors" *ngIf="contact?.get('email')?.errors?.['pattern']">Email Id is invalid.</span>
-               </div>
+                  <span class="text-errors" *ngIf="contact?.get('email')?.hasError('duplicateEmail')">Email must be unique</span>
+                  
+                </div>
               </td>
                   <td> <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
                     <mat-label>Phone No <b class="r-star">*</b></mat-label>
                     <input matInput type="number" placeholder="Enter phone no"
-                        formControlName="phone_number" autocomplete="off" maxlength="10" pattern="\d{10}"
-                        onKeyPress="if(this.value.length==10) return false;"
+                        formControlName="phone_number" autocomplete="off"
                         (keypress)="validateKeyPress($event)">
                 </mat-form-field>
-                <div class="px-2" *ngIf="contact?.get('phone_number')?.touched && contact?.get('phone_number')?.invalid">
-                    <span class="text-errors" *ngIf="contact?.get('phone_number')?.errors?.['pattern']">Please enter 10
-                        digits
-                        phone number.</span>
+                <div class="px-2" *ngIf="contact?.get('phone_number')?.invalid && contact?.get('phone_number')?.touched || contact?.get('phone_number')?.dirty">
                     <span class="text-errors" *ngIf="contact?.get('phone_number')?.errors?.['required']">Phone number is
                         required.</span>
-                   </div>
+                        <span class="text-errors" *ngIf="contact?.get('phone_number')?.hasError('duplicatePhoneNo')">Phone number must be unique</span>
+
+                  </div>
               </td>
                   <td>
                     <ng-container>
                       <img src="../../../../assets/images/Edit.svg" class="icon-image" type="button" container="body"
-                        ngbTooltip="Edit" (click)="editContact(i)" *ngIf="contact?.get('name')?.disabled && i < contactDetails?.length - 1"/>
+                        ngbTooltip="Edit" (click)="editContact(i)" *ngIf="contact?.get('name')?.disabled && i < contactDetails?.length - 1 || (contact?.get('name')?.disabled && i === 4)"/>
                         <img src="../../../../assets/images/tick.svg" class="icon-image" type="button" container="body"
-                        ngbTooltip="save" (click)="saveChanges(i)" *ngIf="contact?.get('name')?.enabled  && i < contactDetails?.length - 1"/>
+                        ngbTooltip="save" (click)="saveChanges(i)" *ngIf="contact?.get('name')?.enabled  && i < contactDetails?.length - 1 || (contact?.get('name')?.enabled && i === 4)"/>
                         <img src="../../../../assets/images/Delete.svg" class="icon-image" type="button" container="body"
                         ngbTooltip="delete" (click)="deleteContact(i)" *ngIf="i<= contactDetails?.length - 1" />
                         <img src="../../../../assets/images/addnew.svg" class="icon-image" type="button" container="body"
@@ -305,11 +304,11 @@
       <ngx-editor-menu [editor]="editor" [toolbar]="toolbar"> </ngx-editor-menu>
       <ngx-editor
       [editor]="editor"
-      formControlName="practice_notes"
+      formControlName="practice_notes" [style.height.px]="200" [style.overflow]="'auto'"
     ></ngx-editor>
       </div>
 </section>
-<section class="d-flex align-items-center mx-0 my-3 px-2">
+<section class="d-flex align-items-center mx-0 my-3 px-2" *ngIf="user_role_name === 'Admin'">
     <mat-checkbox color="primary" class="example-margin" formControlName="allow_sending_status_report_to_client" ><h5 class="c-header">Allow sending the status report to client</h5></mat-checkbox>
   </section>
 <div class="row mx-0 my-3 px-2">

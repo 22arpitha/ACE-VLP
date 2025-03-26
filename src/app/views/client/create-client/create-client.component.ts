@@ -8,7 +8,7 @@ import { ApiserviceService } from '../../../service/apiservice.service';
 import { CommonServiceService } from '../../../service/common-service.service';
 import { GenericDeleteComponent } from '../../../generic-delete/generic-delete.component';
 import { environment } from '../../../../environments/environment';
-import { MatPaginator, PageEvent } from '@angular/material/paginator';
+import { MatPaginator } from '@angular/material/paginator';
 import { DatePipe } from '@angular/common';
 
 
@@ -74,7 +74,7 @@ userRole: any;
         this.getCountryList();
         this.getSourceList();
         this.getAllEmployeeList();
-        this.getEmployeeDetails(this.client_id);
+        this.getClientDetails(this.client_id);
       }else{
         this.common_service.setTitle('Create ' + this.BreadCrumbsTitle)
         this.getClientUniqueNumber();
@@ -202,7 +202,7 @@ filteredSourceList() {
   );
 }
     // Get Employee Detials 
-    public getEmployeeDetails(id:any){
+    public getClientDetails(id:any){
   this.apiService.getData(`${environment.live_url}/${environment.clients}/${id}/`).subscribe((respData: any) => {
       this.clientFormGroup.patchValue({
       client_number:respData?.client_number,
@@ -273,7 +273,7 @@ respData.contact_details.forEach(({ name, email, phone_number }, index, array) =
       return this.fb.group({
         name: ['', Validators.required],
         email:['',[Validators.required,Validators.pattern('^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$')]],
-        phone_number:['',[Validators.required ,Validators.pattern("^((\\+91-?)|0)?[0-9]{10}$")]],
+        phone_number:['',Validators.required],
       });
     }
   
@@ -282,15 +282,16 @@ respData.contact_details.forEach(({ name, email, phone_number }, index, array) =
     }
  
     public addContact() {
+      console.log(this.contactDetails.controls);
       let lastItemIndex = this.contactDetails.length - 1;
-    
       // Disable the previous contact group before adding a new one
       if (this.contactDetails?.at(lastItemIndex)?.valid && this.contactDetails.length < 5) {
         const contact = this.contactDetails.at(lastItemIndex);
         ['name', 'email', 'phone_number'].forEach(field => contact?.get(field)?.disable());
-    
         // Add the new contact group after disabling the previous one
         this.contactDetails.push(this.createContactGroup());
+        this.contactDetails.markAllAsTouched();
+
       }
     }
     
@@ -316,9 +317,12 @@ respData.contact_details.forEach(({ name, email, phone_number }, index, array) =
 
     saveChanges(index: number) {
       const contact = this.contactDetails.at(index);
-      contact?.get('name')?.disable();
-      contact?.get('email')?.disable();
-      contact?.get('phone_number')?.disable();
+      if(index <=4 && contact.valid){
+        contact?.get('name')?.disable();
+        contact?.get('email')?.disable();
+        contact?.get('phone_number')?.disable();
+      }
+
     }
 
     validateKeyPress(event: KeyboardEvent) {
@@ -421,8 +425,6 @@ respData.contact_details.forEach(({ name, email, phone_number }, index, array) =
       }
   
       public saveClientDetails(){
-        console.log(this.clientFormGroup.value)
-
         if (this.clientFormGroup.invalid) {
           this.clientFormGroup.markAllAsTouched();
         } else {
@@ -477,7 +479,7 @@ respData.contact_details.forEach(({ name, email, phone_number }, index, array) =
       this.formData.set("employee_ids",JSON.stringify(this.clientFormGroup.get('employee_ids')?.value) || []);
       this.formData.set("practice_notes", this.clientFormGroup?.get('practice_notes')?.value || '');
       this.formData.set("allow_sending_status_report_to_client", this.clientFormGroup?.get('allow_sending_status_report_to_client')?.value || false);
-      const result = this.clientFormGroup?.get('contact_details')?.value.map((item:any) => {
+      const result = this.clientFormGroup?.get('contact_details')?.getRawValue().map((item:any) => {
         return { 
           ...item, 
           phone_number: item?.phone_number?.toString()
@@ -533,24 +535,49 @@ respData.contact_details.forEach(({ name, email, phone_number }, index, array) =
     return url?.split('/')?.pop(); 
   }
 
- private duplicateNameValidator(control: AbstractControl) {
+  private duplicateNameValidator(control: AbstractControl) {
     const formArray = control as FormArray;
-    const nameSet = new Set<string>();
-
-    for (let i = 0; i < formArray.controls.length; i++) {
-      const name = formArray.at(i).get('name')?.value?.trim().toLowerCase();
-      if (name && nameSet.has(name)) {
-        formArray.at(i).get('name')?.setErrors({ duplicate: true });
+    const emailset = new Set<string>();
+    const phoneset = new Set<number>();
+  
+    for (let i = 0; i < formArray?.controls?.length; i++) {
+      const emailControl = formArray?.at(i)?.get('email');
+      const phoneNumberControl = formArray?.at(i)?.get('phone_number');
+  
+      if (!emailControl || !phoneNumberControl) continue;
+  
+      const email = emailControl.value?.trim()?.toLowerCase();
+      const value = phoneNumberControl?.value;
+  
+      const emailErrors = emailControl.errors || {};
+      const phoneErrors = phoneNumberControl.errors || {};
+  
+      // Check for duplicate name
+      if (email && emailset.has(email)) {
+        emailControl?.setErrors({ ...emailErrors, duplicateEmail: true });
       } else {
-        nameSet.add(name);
-        formArray.at(i).get('name')?.setErrors(null);
+        emailset.add(email);
+        if (emailErrors['duplicateEmail']) {
+          delete emailErrors['duplicateEmail'];
+          emailControl?.setErrors(Object.keys(emailErrors)?.length ? emailErrors : null);
+        }
+      }
+  
+      // Check for duplicate value
+      if (value && phoneset.has(value)) {
+        phoneNumberControl?.setErrors({ ...phoneErrors, duplicatePhoneNo: true });
+      } else {
+        phoneset.add(value);
+        if (phoneErrors['duplicatePhoneNo']) {
+          delete phoneErrors['duplicatePhoneNo'];
+          phoneNumberControl?.setErrors(Object.keys(phoneErrors)?.length ? phoneErrors : null);
+        }
       }
     }
-
+  
     return null;
   }
-  
-  
+
   }
   async function urlToFile(url: string, fileName: string): Promise<File> {
     let fullurl = environment.media_url+url;

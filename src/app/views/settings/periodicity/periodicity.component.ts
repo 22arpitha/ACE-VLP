@@ -65,32 +65,30 @@ export class PeriodicityComponent implements OnInit {
       })
     }
     public savePeriodicityDetails() {
-      {
-        if (this.periodicityForm.invalid) {
-          this.periodicityForm.markAllAsTouched();
+      if (this.periodicityForm.invalid) {
+        this.periodicityForm.markAllAsTouched();
+      } else {
+        if (this.isEditItem) {
+          this.apiService.updateData(`${environment.live_url}/${environment.settings_periodicty}/${this.selectedPeriodicity}/`, this.periodicityForm.value).subscribe((respData: any) => {
+            if (respData) {
+              this.apiService.showSuccess(respData['message']);
+              this.resetFormState();
+              this.getAllPeriodicity('?page=1&page_size=5');
+            }
+          }, (error: any) => {
+            this.apiService.showError(error?.error?.detail);
+          });
         } else {
-          if (this.isEditItem) {
-            this.apiService.updateData(`${environment.live_url}/${environment.settings_periodicty}/${this.selectedPeriodicity}/`, this.periodicityForm.value).subscribe((respData: any) => {
-              if (respData) {
-                this.apiService.showSuccess(respData['message']);
-                this.resetFormState();
-                this.getAllPeriodicity('?page=1&page_size=5');
-              }
-            }, (error: any) => {
-              this.apiService.showError(error?.error?.detail);
-            });
-          } else {
-            this.apiService.postData(`${environment.live_url}/${environment.settings_periodicty}/`, this.periodicityForm.value).subscribe((respData: any) => {
-              if (respData) {
-                this.apiService.showSuccess(respData['message']);
-                this.resetFormState();
-                this.getAllPeriodicity('?page=1&page_size=5');
-              }
-  
-            }, (error: any) => {
-              this.apiService.showError(error?.error?.detail);
-            });
-          }
+          this.apiService.postData(`${environment.live_url}/${environment.settings_periodicty}/`, this.periodicityForm.value).subscribe((respData: any) => {
+            if (respData) {
+              this.apiService.showSuccess(respData['message']);
+              this.resetFormState();
+              this.getAllPeriodicity('?page=1&page_size=5');
+            }
+
+          }, (error: any) => {
+            this.apiService.showError(error?.error?.detail);
+          });
         }
       }
     }
@@ -98,6 +96,7 @@ export class PeriodicityComponent implements OnInit {
     public resetFormState() {
       this.formGroupDirective.resetForm();
       this.isEditItem = false;
+      this.term='';
     }
   
     sort(direction: string, column: string) {

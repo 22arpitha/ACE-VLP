@@ -1,12 +1,12 @@
 <div class="container-wrapper settings-main-content px-0">
     <section class="settings-table-bg" >
         <div class="py-2">
-            <img src="../../../../assets/images/left-arrow.png" (click)="backToEndClients(2)" alt="" class="back-btn" ngbTooltip="Back">
+            <img src="../../../../assets/images/left-arrow.png" (click)="backToEndClients(1)" alt="" class="back-btn" ngbTooltip="Back">
         </div>
         <div class="row mx-0 my-0 px-0 py-2">
           <div class="col-sm-12 col-md-4 col-lg-4 search-div px-0">
             <input type="search" (input)="filterSearch($event)" class="form-control p-2 sizeinput" [(ngModel)]="term"
-              placeholder="Search" aria-describedby="emailHelp" autocomplete="off">
+              placeholder="Search End Client Name" aria-describedby="emailHelp" autocomplete="off">
             <i *ngIf="!term" class="bi bi-search" id="search-icon-tab"></i>
           </div>
         </div>
@@ -17,8 +17,8 @@
                 <tr>
                   <th scope="col"> S.No</th>
                   <th scope="col">End Clients
-                    <i *ngIf="!arrowState['client_name']" (click)="sort('asc', 'client_name')" class="bi bi-arrow-up"></i>
-                    <i *ngIf="arrowState['client_name']" (click)="sort('desc', 'client_name')" class="bi bi-arrow-down"></i>  
+                    <i *ngIf="!arrowState['client_name']" (click)="sort('asc', 'client_name')" class="bi bi-arrow-down"></i>
+                    <i *ngIf="arrowState['client_name']" (click)="sort('desc', 'client_name')" class="bi bi-arrow-up"></i>  
                   </th>
                   <!-- <th scope="col">Action </th> -->
                 </tr>

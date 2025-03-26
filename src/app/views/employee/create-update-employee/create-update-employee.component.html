@@ -105,9 +105,9 @@
 </div> -->
 <div class="col-12 col-sm-12 col-md-6 col-lg-4 my-1 px-0">
     <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
-        <mat-label>Select Role <b class="r-star">*</b></mat-label>
+        <mat-label>Role <b class="r-star">*</b></mat-label>
         <mat-select formControlName="designation" autocomplete="off"
-                placeholder="Select" panelClass="custom-select-panel"
+                placeholder="" panelClass="custom-select-panel"
                 [disableOptionCentering]="true" (selectionChange)="getUserRoleBasedDesignation($event)">
                 <div class="mat-select-search-wrapper d-flex">
                     <input matInput [(ngModel)]="searchRoleText" autofocus [ngModelOptions]="{standalone: true}" placeholder="Search Role" class="mat-select-search">
@@ -126,9 +126,9 @@
 </div>
 <div class="col-12 col-sm-12 col-md-6 col-lg-4 my-1 px-0">
     <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
-        <mat-label>Select Designation <b class="r-star">*</b></mat-label>
+        <mat-label>Designation <b class="r-star">*</b></mat-label>
         <mat-select formControlName="sub_designation" autocomplete="off"
-                placeholder="Select" panelClass="custom-select-panel"
+                placeholder="Designation" panelClass="custom-select-panel"
                 [disableOptionCentering]="true" [disabled]="!employeeFormGroup?.get('designation')?.value">
                 <div class="mat-select-search-wrapper d-flex">
                     <input matInput [(ngModel)]="searchDesignationText" autofocus [ngModelOptions]="{standalone: true}" placeholder="Search Designation" class="mat-select-search">
@@ -148,9 +148,9 @@
 
 <div class="col-12 col-sm-12 col-md-6 col-lg-4 my-1 no-padding pl-5 pr-0 ">
     <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
-        <mat-label>Select Reporting Manager <b class="r-star">*</b></mat-label>
+        <mat-label>Reporting Manager <b class="r-star">*</b></mat-label>
         <mat-select formControlName="reporting_manager_id" autocomplete="off"
-                placeholder="Select" panelClass="custom-select-panel"
+                placeholder="Reporting Manager" panelClass="custom-select-panel"
                 [disableOptionCentering]="true">
                 <div class="mat-select-search-wrapper d-flex">
                     <input matInput [(ngModel)]="searchReportingManagerText" autofocus [ngModelOptions]="{standalone: true}" placeholder="Search Reporting Manager" class="mat-select-search">

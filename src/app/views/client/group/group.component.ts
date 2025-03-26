@@ -39,7 +39,11 @@ export class GroupComponent implements OnInit {
   ) {
     if(this.activeRoute.snapshot.paramMap.get('id')){
       this.client_id= this.activeRoute.snapshot.paramMap.get('id')}
-
+      this.common_service.clientEndClientCreationstatus$.subscribe((resp)=>{
+        if(resp){
+          this.getAllGroupList(`?page=${1}&page_size=${5}&client=${this.client_id}`);
+        }
+      });   
    }
 
   ngOnInit(): void {
@@ -69,7 +73,6 @@ export class GroupComponent implements OnInit {
   getAllGroupList(params: any) {
     this.api.getData(`${environment.live_url}/${environment.clients_group}/${params}`).subscribe(
       (res: any) => {
-        console.log(res.results)
         this.allGroups = res.results;
         const noOfPages: number = res?.['total_pages']
         this.count = noOfPages * this.tableSize;
@@ -134,6 +137,7 @@ export class GroupComponent implements OnInit {
           if (respData) {
             this.api.showSuccess(respData['message']);
             this.resetFormState();
+            this.common_service.setGroupCreationState(true);
             this.getAllGroupList(`?page=${1}&page_size=${5}&client=${this.client_id}`);
           }
         }, (error: any) => {
@@ -144,6 +148,7 @@ export class GroupComponent implements OnInit {
           if (respData) {
             this.api.showSuccess(respData['message']);
             this.resetFormState();
+            this.common_service.setGroupCreationState(true);
             this.getAllGroupList(`?page=${1}&page_size=${5}&client=${this.client_id}`);
           }
         }, (error: any) => {
@@ -156,6 +161,7 @@ export class GroupComponent implements OnInit {
     this.formGroupDirective.resetForm();
     this.groupForm.patchValue({"client":this.client_id});
     this.isEditItem = false;
+    this.term='';
   }
   async edit(item: any) {
     this.selectedItemId = item?.id;
@@ -210,8 +216,9 @@ export class GroupComponent implements OnInit {
   public deleteContent(id: any) {
     this.api.delete(`${environment.live_url}/${environment.clients_group}/${id}/`).subscribe(async (data: any) => {
       if (data) {
-        this.allGroups = []
+        this.allGroups = [];
         this.api.showSuccess(data.message)
+        this.common_service.setGroupCreationState(true);
         let query = this.getFilterBaseUrl();
         if (this.term) {
           query += `&search=${this.term}`

@@ -82,32 +82,30 @@ export class StatusGroupComponent implements OnInit {
     })
   }
   public saveStatusGroupDetails() {
-    {
-      if (!this.statusGroupForm.dirty || !this.statusGroupForm.valid) {
-        this.statusGroupForm.markAllAsTouched();
+    if (this.statusGroupForm.invalid) {
+      this.statusGroupForm.markAllAsTouched();
+    } else {
+      if (this.isEditItem) {
+        this.apiService.updateData(`${environment.live_url}/${environment.settings_status_group}/${this.selectedStatusGroup}/`, this.statusGroupForm.value).subscribe((respData: any) => {
+          if (respData) {
+            this.apiService.showSuccess(respData['message']);
+            this.resetFormState();
+            this.getAllStatusGroup('?page=1&page_size=5');
+          }
+        }, (error: any) => {
+          this.apiService.showError(error?.error?.detail);
+        });
       } else {
-        if (this.isEditItem) {
-          this.apiService.updateData(`${environment.live_url}/${environment.settings_status_group}/${this.selectedStatusGroup}/`, this.statusGroupForm.value).subscribe((respData: any) => {
-            if (respData) {
-              this.apiService.showSuccess(respData['message']);
-              this.resetFormState();
-              this.getAllStatusGroup('?page=1&page_size=5');
-            }
-          }, (error: any) => {
-            this.apiService.showError(error?.error?.detail);
-          });
-        } else {
-          this.apiService.postData(`${environment.live_url}/${environment.settings_status_group}/`, this.statusGroupForm.value).subscribe((respData: any) => {
-            if (respData) {
-              this.apiService.showSuccess(respData['message']);
-              this.resetFormState();
-              this.getAllStatusGroup('?page=1&page_size=5');
-            }
+        this.apiService.postData(`${environment.live_url}/${environment.settings_status_group}/`, this.statusGroupForm.value).subscribe((respData: any) => {
+          if (respData) {
+            this.apiService.showSuccess(respData['message']);
+            this.resetFormState();
+            this.getAllStatusGroup('?page=1&page_size=5');
+          }
 
-          }, (error: any) => {
-            this.apiService.showError(error?.error?.detail);
-          });
-        }
+        }, (error: any) => {
+          this.apiService.showError(error?.error?.detail);
+        });
       }
     }
   }
@@ -115,6 +113,7 @@ export class StatusGroupComponent implements OnInit {
   public resetFormState() {
     this.formGroupDirective.resetForm();
     this.isEditItem = false;
+    this.term='';
   }
 
   sort(direction: string, column: string) {

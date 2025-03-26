@@ -161,7 +161,7 @@ const APP_CONTAINERS = [
     // FullCalendarModule
     NgxUiLoaderModule,
     NgxUiLoaderHttpModule.forRoot({
-      showForeground: true
+      showForeground: false
     })
   ],
   exports: [

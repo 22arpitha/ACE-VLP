@@ -74,6 +74,10 @@ thead th {
   pointer-events: none;
   opacity: 0.6; /* Optional: makes it visually clear that it's disabled */
 }
+.NgxEditor__Wrapper .NgxEditor .NgxEditor__Content{
+height: 100px !important;
+overflow: auto !important;
+}
 @media only screen and (min-width: 280px) and (max-width: 767px)  {
     .no-padding{
         padding-left: 0px;

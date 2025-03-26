@@ -70,7 +70,7 @@ export class CompanyPolicyComponent implements OnInit {
 
   public initializeForm() {
     this.companyPolicyForm = this.fb.group({
-      policy_name: ['', [Validators.required, Validators.pattern(/^[a-zA-Z0-9]+( [a-zA-Z0-9]+)*$/), Validators.maxLength(20)]],
+      policy_name: ['', [Validators.required, Validators.pattern(/^[a-zA-Z0-9]+( [a-zA-Z0-9]+)*$/)]],
       policy_file: ['', Validators.required, this.fileFormatValidator],
       password: ['', [Validators.pattern(/^[a-zA-Z0-9!@#$%^&*()_+{}\[\]:;"'<>,.?/\\|`~\-]+( [a-zA-Z0-9!@#$%^&*()_+{}\[\]:;"'<>,.?/\\|`~\-]+)*$/), Validators.maxLength(20)]],
       when_to_use: ['', [ Validators.pattern(/^[a-zA-Z0-9]+( [a-zA-Z0-9]+)*$/), Validators.maxLength(20)]],
@@ -142,6 +142,7 @@ export class CompanyPolicyComponent implements OnInit {
     this.selectedFile = null;
     this.file = null;
     this.isEditItem = false;
+    this.term='';
     const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
     if (fileInput) {
       fileInput.value = "";

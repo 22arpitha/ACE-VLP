@@ -1,9 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { Location } from '@angular/common';
 import { Router } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { MatDialog } from '@angular/material/dialog';
-import { GenericDeleteComponent } from '../../../generic-delete/generic-delete.component';
 import { GenericEditComponent } from '../../../generic-edit/generic-edit.component';
 import { SortPipe } from '../../../sort/sort.pipe';
 import { ApiserviceService } from '../../../service/apiservice.service';
@@ -11,6 +10,7 @@ import { CommonServiceService } from '../../../service/common-service.service';
 import { SubModuleService } from '../../../service/sub-module.service';
 import { environment } from '../../../../environments/environment';
 import { ClientContactDetailsPopupComponent } from '../client-contact-details-popup/client-contact-details-popup.component';
+
 
 
 @Component({
@@ -48,7 +48,7 @@ export class ClientListComponent implements OnInit {
 
     constructor(private common_service: CommonServiceService,private accessControlService:SubModuleService,
       private router:Router,private modalService: NgbModal,private dialog:MatDialog,
-      private apiService: ApiserviceService) {
+      private apiService: ApiserviceService,private http: HttpClient) {
       this.common_service.setTitle(this.BreadCrumbsTitle)
      }
   
@@ -129,7 +129,7 @@ export class ClientListComponent implements OnInit {
           this.count = res?.['total_no_of_record']
           this.page = res?.['current_page'];
         },(error: any) => {
-          this.apiService.showError(error.detail);
+          this.apiService.showError(error?.error?.detail);
     
         });
     }
@@ -204,6 +204,21 @@ export class ClientListComponent implements OnInit {
       this.dialog.open(ClientContactDetailsPopupComponent, {
       width: '700px',
       data: { contact_details: item?.contact_details }
+    });
+    }
+
+
+    public downloadOption(type:any){
+      let query = `?page=${this.page}&page_size=${this.tableSize}&file-type=${type}`
+      let apiUrl = `${environment.live_url}/${environment.clients_details}/${query}`;
+      fetch(apiUrl)
+    .then(res => res.blob())
+    .then(blob => {
+      console.log('blob',blob);
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `client_details.${type}`;
+      a.click();
     });
     }
   }

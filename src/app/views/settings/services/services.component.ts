@@ -81,32 +81,30 @@ export class ServicesComponent implements OnInit {
     })
   }
   public saveServiceDetails() {
-    {
-      if (this.serviceForm.invalid) {
-        this.serviceForm.markAllAsTouched();
+    if (this.serviceForm.invalid) {
+      this.serviceForm.markAllAsTouched();
+    } else {
+      if (this.isEditItem) {
+        this.apiService.updateData(`${environment.live_url}/${environment.settings_service}/${this.selectedService}/`, this.serviceForm.value).subscribe((respData: any) => {
+          if (respData) {
+            this.apiService.showSuccess(respData['message']);
+            this.resetFormState();
+            this.getAllServices('?page=1&page_size=5');
+          }
+        }, (error: any) => {
+          this.apiService.showError(error?.error?.detail);
+        });
       } else {
-        if (this.isEditItem) {
-          this.apiService.updateData(`${environment.live_url}/${environment.settings_service}/${this.selectedService}/`, this.serviceForm.value).subscribe((respData: any) => {
-            if (respData) {
-              this.apiService.showSuccess(respData['message']);
-              this.resetFormState();
-              this.getAllServices('?page=1&page_size=5');
-            }
-          }, (error: any) => {
-            this.apiService.showError(error?.error?.detail);
-          });
-        } else {
-          this.apiService.postData(`${environment.live_url}/${environment.settings_service}/`, this.serviceForm.value).subscribe((respData: any) => {
-            if (respData) {
-              this.apiService.showSuccess(respData['message']);
-              this.resetFormState();
-              this.getAllServices('?page=1&page_size=5');
-            }
+        this.apiService.postData(`${environment.live_url}/${environment.settings_service}/`, this.serviceForm.value).subscribe((respData: any) => {
+          if (respData) {
+            this.apiService.showSuccess(respData['message']);
+            this.resetFormState();
+            this.getAllServices('?page=1&page_size=5');
+          }
 
-          }, (error: any) => {
-            this.apiService.showError(error?.error?.detail);
-          });
-        }
+        }, (error: any) => {
+          this.apiService.showError(error?.error?.detail);
+        });
       }
     }
   }

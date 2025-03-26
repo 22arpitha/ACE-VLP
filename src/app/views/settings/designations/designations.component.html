@@ -64,12 +64,12 @@
                 </th>
                 <th>
                   Designation Name
-                  <i *ngIf="!arrowState['sub_designation_name']" (click)="sort('asc', 'sub_designation_name')" class="bi bi-arrow-up"></i>
-                  <i *ngIf="arrowState['sub_designation_name']" (click)="sort('desc', 'sub_designation_name')" class="bi bi-arrow-down"></i>
+                  <i *ngIf="!arrowState['sub_designation_name']" (click)="sort('asc', 'sub_designation_name')" class="bi bi-arrow-down"></i>
+                  <i *ngIf="arrowState['sub_designation_name']" (click)="sort('desc', 'sub_designation_name')" class="bi bi-arrow-up"></i>
                 </th>
                 <th>Role Name
-                  <i *ngIf="!arrowState['designation']" (click)="sort('asc', 'designation')" class="bi bi-arrow-up"></i>
-                <i *ngIf="arrowState['designation']" (click)="sort('desc', 'designation')" class="bi bi-arrow-down"></i>
+                  <i *ngIf="!arrowState['designation']" (click)="sort('asc', 'designation')" class="bi bi-arrow-down"></i>
+                <i *ngIf="arrowState['designation']" (click)="sort('desc', 'designation')" class="bi bi-arrow-up"></i>
                 </th>
                 <th>Action</th>
               </tr>

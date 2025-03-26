@@ -65,8 +65,8 @@
                       <td>{{item?.job_type_name  || '-'}}</td>
                       <td>{{item?.client_name  || '-'}}</td>
                       <td>{{item?.job_allocation_date}}</td>
-                      <td>{{item?.employee || '-'}}</td>
-                      <td>{{item?.manager || '-'}}</td>
+                      <td>{{getEmployeeName(item?.employees) || '-'}}</td>
+                      <td>{{getManagerName(item?.employees) || '-'}}</td>
                           <td>
                             <mat-select [ngModel]="item?.job_status" (selectionChange)="onStatusChange(item, $event)">
                                 <mat-option *ngFor="let status of allJobStatus" [value]="status?.id">

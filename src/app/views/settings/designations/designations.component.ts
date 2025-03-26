@@ -129,6 +129,7 @@ export class DesignationsComponent implements OnInit {
   public resetFormState() {
     this.formGroupDirective.resetForm();
     this.isEditItem = false;
+    this.term='';
   }
 
   public sort(direction: string, column: string) {

@@ -7,7 +7,7 @@
             <div class="col-sm-12 col-md-4 col-lg-3 my-1 px-0">
               <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
                 <mat-label>Country Name <b class="r-star">*</b></mat-label>
-                <input matInput placeholder="Country name" appAlphabetOnly formControlName="country_name" autocomplete="off"
+                <input matInput placeholder="Enter Country Name" appAlphabetOnly formControlName="country_name" autocomplete="off"
                   pattern="^(?!\s)(.*\S)?$">
                   <mat-error
                   *ngIf="f['country_name']?.invalid && f['country_name']?.touched || f['country_name']?.dirty">
@@ -39,7 +39,7 @@
     <div class="row mx-0 my-0 px-0 py-2">
       <div class="col-sm-12 col-md-4 col-lg-4 search-div px-0">
         <input type="search" (input)="filterSearch($event)" class="form-control p-2 sizeinput" [(ngModel)]="term"
-          placeholder="Search by country name" aria-describedby="emailHelp" autocomplete="off">
+          placeholder="Search by Country Name" aria-describedby="emailHelp" autocomplete="off">
         <i *ngIf="!term" class="bi bi-search" id="search-icon-tab"></i>
       </div>
     </div>
@@ -50,8 +50,8 @@
             <tr>
               <th scope="col"> S.No</th>
               <th scope="col">Country Name
-                <i *ngIf="!arrowState['country_name']" (click)="sort('asc', 'country_name')" class="bi bi-arrow-up"></i>
-                <i *ngIf="arrowState['country_name']" (click)="sort('desc', 'country_name')" class="bi bi-arrow-down"></i>  
+                <i *ngIf="!arrowState['country_name']" (click)="sort('asc', 'country_name')" class="bi bi-arrow-down"></i>
+                <i *ngIf="arrowState['country_name']" (click)="sort('desc', 'country_name')" class="bi bi-arrow-up"></i>  
               </th>
               <th scope="col">Action </th>
             </tr>

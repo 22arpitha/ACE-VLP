@@ -3,7 +3,383 @@
       <div class="row mx-0 px-0">
         <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0">
             <form [formGroup]="jobFormGroup">
+                <div class="row mx-0 my-0 px-2">
+                    <!-- Job Number -->
+                    <div class="col-12 col-sm-12 col-md-6 col-lg-3 my-1 px-0">
+                    <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+                        <mat-label>Job Number <b class="r-star">*</b></mat-label>
+                        <input matInput type="text" placeholder="Enter Job Number" formControlName="job_number" autocomplete="off" readonly>
+                        <mat-error *ngIf="f['job_number']?.invalid && f['job_number']?.touched || f['job_number']?.dirty">
+                          <span *ngIf="f['job_number']?.errors?.['required']">Job Number is required</span>
+                        </mat-error>
+                      </mat-form-field>  
+                    </div>
+<!-- Job name -->
+<div class="col-12 col-sm-12 col-md-6 col-lg-3 my-1 no-padding pl-5 pr-0">
 
+<mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+    <mat-label>Job Name <b class="r-star">*</b></mat-label>
+    <input matInput type="text" pattern="^[a-zA-Z0-9]+( [a-zA-Z0-9]+)*$" placeholder="Enter Job name" formControlName="job_name"  autocomplete="off" readonly>
+</mat-form-field>
+
+</div>
+<!-- Client Dropdown -->
+<div class="col-12 col-sm-12 col-md-6 col-lg-3 my-1 no-padding pl-0 pr-5">
+    <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+        <mat-label>Client <b class="r-star">*</b></mat-label>
+        <mat-select formControlName="client" autocomplete="off"
+                placeholder="Client" panelClass="custom-select-panel"
+                [disableOptionCentering]="true" (selectionChange)="onClientChange($event)">
+                <div class="mat-select-search-wrapper d-flex">
+                  <input matInput [(ngModel)]="searchClientText" autofocus [ngModelOptions]="{standalone: true}" placeholder="Search Client" class="mat-select-search">
+                  <mat-icon class="search-icon" *ngIf="!searchClientText">search</mat-icon>
+                  <mat-icon class="search-icon" *ngIf="searchClientText" type="button" (click)="clearSearch('client')">close</mat-icon>
+                </div>
+                <mat-option *ngFor="let item of filteredClientList()" [value]="item?.id">
+                    {{item?.client_name}}
+                </mat-option>
+        </mat-select>
+        <mat-error *ngIf="f['client']?.invalid && f['client']?.touched || f['client']?.dirty">
+            <span  *ngIf="f['client']?.errors?.['required']">Client is required</span>
+      </mat-error>
+    </mat-form-field>
+ 
+</div> 
+<!-- End Client Dropdown -->
+<div class="col-12 col-sm-12 col-md-6 col-lg-3 my-1 px-0">
+  <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+      <mat-label>End Client <b class="r-star">*</b></mat-label>
+      <mat-select formControlName="end_client" autocomplete="off"
+              placeholder="End Client" panelClass="custom-select-panel"
+              [disableOptionCentering]="true" (selectionChange)="onEndClientChange($event)">
+              <div class="mat-select-search-wrapper d-flex">
+                <input matInput [(ngModel)]="searchEndClientText" autofocus [ngModelOptions]="{standalone: true}" placeholder="Search End Client" class="mat-select-search" >
+                <mat-icon class="search-icon" *ngIf="!searchEndClientText">search</mat-icon>
+                <mat-icon class="search-icon" *ngIf="searchEndClientText" type="button" (click)="clearSearch('endClient')">close</mat-icon>
+              </div>
+              <mat-option *ngFor="let item of filteredEndClientList()" [value]="item?.id">
+                  {{item?.client_name}}
+              </mat-option>
+      </mat-select>
+      <mat-error *ngIf="f['end_client']?.invalid && f['end_client']?.touched || f['end_client']?.dirty">
+          <span  *ngIf="f['end_client']?.errors?.['required']">End Client is required</span>
+    </mat-error>
+  </mat-form-field>
+
+</div> 
+<!-- Group -->
+<div class="col-12 col-sm-12 col-md-6 col-lg-3 my-1 px-0">
+    <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+        <mat-label>Group</mat-label>
+        <mat-select formControlName="group" autocomplete="off"
+                placeholder="Group" panelClass="custom-select-panel"
+                [disableOptionCentering]="true" readonly>
+                <div class="mat-select-search-wrapper d-flex">
+                  <input matInput [(ngModel)]="searchGroupText" autofocus [ngModelOptions]="{standalone: true}" placeholder="Search Group" class="mat-select-search">
+                  <mat-icon class="search-icon" *ngIf="!searchGroupText">search</mat-icon>
+                  <mat-icon class="search-icon" *ngIf="searchGroupText" type="button" (click)="clearSearch('group')">close</mat-icon>
+                </div>
+                <mat-option *ngFor="let item of filteredGrpupList()" [value]="item?.id">
+                    {{item?.group_name}}
+                </mat-option>
+        </mat-select>
+    </mat-form-field>
+ 
+</div> 
+
+
+<!-- Services -->
+<div class="col-12 col-sm-12 col-md-6 col-lg-3 my-1 no-padding pl-5 pr-0">
+    <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+        <mat-label>Service <b class="r-star">*</b></mat-label>
+        <mat-select formControlName="service" autocomplete="off"
+                placeholder="Service" panelClass="custom-select-panel"
+                [disableOptionCentering]="true" (selectionChange)="onServiceChange($event)">
+                <div class="mat-select-search-wrapper d-flex">
+                  <input matInput [(ngModel)]="searchServicesText" autofocus [ngModelOptions]="{standalone: true}" placeholder="Search Service" class="mat-select-search">
+                  <mat-icon class="search-icon" *ngIf="!searchServicesText">search</mat-icon>
+                  <mat-icon class="search-icon" *ngIf="searchServicesText" type="button" (click)="clearSearch('service')">close</mat-icon>
+                </div>
+                <mat-option *ngFor="let item of filteredServiceList()" [value]="item?.id">
+                    {{item?.service_name}}
+                </mat-option>
+        </mat-select>
+        <mat-error *ngIf="f['service']?.invalid && f['service']?.touched || f['client']?.dirty">
+            <span  *ngIf="f['service']?.errors?.['required']">Service is required</span>
+      </mat-error>
+    </mat-form-field>
+ 
+</div> 
+<!-- periodicity -->
+<div class="col-12 col-sm-12 col-md-6 col-lg-3 my-1 no-padding pl-0 pr-5">
+    <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+        <mat-label>Periodicity <b class="r-star">*</b></mat-label>
+        <mat-select formControlName="periodicity" autocomplete="off"
+                placeholder="Periodicity" panelClass="custom-select-panel"
+                [disableOptionCentering]="true" (selectionChange)="onPeroidicityChange($event)">
+                <div class="mat-select-search-wrapper d-flex">
+                  <input matInput [(ngModel)]="searchPeroidicityText" autofocus [ngModelOptions]="{standalone: true}" placeholder="Search Periodicity" class="mat-select-search">
+                  <mat-icon class="search-icon" *ngIf="!searchPeroidicityText">search</mat-icon>
+                  <mat-icon class="search-icon" *ngIf="searchPeroidicityText" type="button" (click)="clearSearch('periodicity')">close</mat-icon>
+                </div>
+                <mat-option *ngFor="let item of filteredPeriodicityList()" [value]="item?.id">
+                    {{item?.periodicty_name}}
+                </mat-option>
+        </mat-select>
+        <mat-error *ngIf="f['periodicity']?.invalid && f['periodicity']?.touched || f['periodicity']?.dirty">
+            <span  *ngIf="f['periodicity']?.errors?.['required']">Periodicity is required</span>
+      </mat-error>
+    </mat-form-field>
+ 
+</div> 
+<!-- period -->
+<div class="col-12 col-sm-12 col-md-6 col-lg-3 my-1 px-0">
+    <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+        <mat-label>Period <b class="r-star">*</b></mat-label>
+        <mat-select formControlName="period" autocomplete="off"
+                placeholder="Period" panelClass="custom-select-panel"
+                [disableOptionCentering]="true" (selectionChange)="onPeroidChange($event)">
+                <div class="mat-select-search-wrapper d-flex">
+                  <input matInput [(ngModel)]="searchPeroidText" autofocus [ngModelOptions]="{standalone: true}" placeholder="Search Period" class="mat-select-search" >
+                  <mat-icon class="search-icon" *ngIf="!searchPeroidText">search</mat-icon>
+                  <mat-icon class="search-icon" *ngIf="searchPeroidText" type="button" (click)="clearSearch('period')">close</mat-icon>
+                </div>
+                <mat-option *ngFor="let item of filteredPeriodList()" [value]="item?.id">
+                    {{item?.period_name}}
+                </mat-option>
+        </mat-select>
+        <mat-error *ngIf="f['period']?.invalid && f['period']?.touched || f['period']?.dirty">
+            <span  *ngIf="f['period']?.errors?.['required']">Period is required</span>
+      </mat-error>
+    </mat-form-field>
+ 
+</div> 
+<!-- Job Type -->
+<div class="col-12 col-sm-12 col-md-6 col-lg-3 my-1 px-0">
+    <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+        <mat-label>Job Type <b class="r-star">*</b></mat-label>
+        <mat-select formControlName="job_type" autocomplete="off"
+                placeholder="Job Type" panelClass="custom-select-panel"
+                [disableOptionCentering]="true">
+                <div class="mat-select-search-wrapper d-flex">
+                  <input matInput [(ngModel)]="searchJobTypeText" autofocus [ngModelOptions]="{standalone: true}" placeholder="Search Job Type" class="mat-select-search">
+                  <mat-icon class="search-icon" *ngIf="!searchJobTypeText">search</mat-icon>
+                  <mat-icon class="search-icon" *ngIf="searchJobTypeText" type="button" (click)="clearSearch('job_type')">close</mat-icon>
+                </div>
+                <mat-option *ngFor="let item of filteredJobTypeList()" [value]="item?.id">
+                    {{item?.job_type_name}}
+                </mat-option>
+        </mat-select>
+        <mat-error *ngIf="f['job_type']?.invalid && f['job_type']?.touched || f['job_type']?.dirty">
+            <span  *ngIf="f['job_type']?.errors?.['required']">Job Type is required</span>
+      </mat-error>
+    </mat-form-field>
+ 
+</div>
+ <!-- Allocation Date -->
+ <div class="col-12 col-sm-12 col-md-6 col-lg-3 my-1 no-padding pl-5 pr-0">
+    <mat-form-field appearance="outline" class="w-100 p-0 custom-mat-form-field">
+        <mat-label>Job Allocation Date <b class="r-star">*</b></mat-label>
+        <input matInput [matDatepicker]="picker1" placeholder="Enter Job Allocation Date"
+            formControlName="job_allocation_date" autocomplete="off" (dateInput)="joiningDateFun($event)">
+            <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+             <mat-datepicker #picker1></mat-datepicker>
+             <mat-error *ngIf="f['job_allocation_date']?.invalid && f['job_allocation_date']?.touched || f['job_allocation_date']?.dirty">
+                <span  *ngIf="f['job_allocation_date']?.errors?.['required']">Job Allocation Date is required</span>
+          </mat-error>
+    </mat-form-field>
+  
+</div>
+<!-- Budget -->
+<div class="col-12 col-sm-12 col-md-6 col-lg-3 my-1 no-padding pl-0 pr-5">
+    <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+        <mat-label>Budget <b class="r-star">*</b></mat-label>
+        <input matInput type="text" placeholder="Enter Budget" formControlName="budget_time" autocomplete="off" >
+        <mat-error *ngIf="f['budget_time']?.invalid && f['budget_time']?.touched || f['budget_time']?.dirty">
+          <span *ngIf="f['budget_time']?.errors?.['required']">Budget is required</span>
+          <span *ngIf="f['budget_time']?.errors?.['pattern']">Invalid time format. Please use HHH:MM.</span>
+        </mat-error>
+      </mat-form-field>  
+    </div>
+
+    <!-- Job Status -->
+<div class="col-12 col-sm-12 col-md-6 col-lg-3 my-1 px-0">
+    <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+        <mat-label>Job Status <b class="r-star">*</b></mat-label>
+        <mat-select formControlName="job_status" autocomplete="off"
+                placeholder="Select Job Status" panelClass="custom-select-panel"
+                [disableOptionCentering]="true">
+                <div class="mat-select-search-wrapper d-flex">
+                  <input matInput [(ngModel)]="searchJobStatusText" autofocus [ngModelOptions]="{standalone: true}" placeholder="Search Job Status" class="mat-select-search">
+                  <mat-icon class="search-icon" *ngIf="!searchJobStatusText">search</mat-icon>
+                  <mat-icon class="search-icon" *ngIf="searchJobStatusText" type="button" (click)="clearSearch('job_type')">close</mat-icon>
+                </div>
+                <mat-option *ngFor="let item of filteredJobStatusList()" [value]="item?.id">
+                    {{item?.status_name}}
+                </mat-option>
+        </mat-select>
+        <mat-error *ngIf="f['job_status']?.invalid && f['job_status']?.touched || f['job_status']?.dirty">
+            <span  *ngIf="f['job_status']?.errors?.['required']">Job Status is required</span>
+      </mat-error>
+    </mat-form-field>
+ 
+</div>
+
+<!-- Job status Date -->
+<div class="col-12 col-sm-12 col-md-6 col-lg-3 my-1 px-0">
+    <mat-form-field appearance="outline" class="w-100 p-0 custom-mat-form-field">
+        <mat-label>Status Date <b class="r-star">*</b></mat-label>
+        <input matInput [matDatepicker]="picker2" placeholder="Enter Status Date"
+            formControlName="job_status_date" autocomplete="off" (dateInput)="joiningDateFun($event)">
+            <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+             <mat-datepicker #picker2></mat-datepicker>
+             <mat-error *ngIf="f['job_status_date']?.invalid && f['job_status_date']?.touched || f['job_status_date']?.dirty">
+                <span  *ngIf="f['job_status_date']?.errors?.['required']">Status Date is required</span>
+          </mat-error>
+    </mat-form-field>
+  
+</div>
+
+<div class="col-12 col-sm-12 col-md-6 col-lg-6 my-1 no-padding pl-5 pr-0 align-self-center">
+    <mat-radio-group formControlName="option">
+        <mat-radio-button class="radio-button" *ngFor="let key of objectKeys(jobBillingOption)" [value]="key">
+            {{ jobBillingOption[key] }}
+          </mat-radio-button>
+       </mat-radio-group>
+       <mat-error *ngIf="f['option']?.invalid && f['option']?.touched || f['job_status_date']?.dirty">
+        <span  *ngIf="f['option']?.errors?.['required']">Job Billing option is required</span>
+  </mat-error>
+
+</div>
+</div>
+<section class="settings-table-bg">
+  <div class="row mx-0 my-1 px-0">
+      <div class="col-12 col-sm-12 col-md-6 col-lg-10 py-1 px-0">
+          <h4>Employee Details</h4>
+      </div>
+      <div class="col-12 col-sm-12 col-md-6 col-lg-2 no-padding py-1 pl-0 pr-2" *ngIf="user_role_name === 'Admin'">
+        <mat-checkbox color="primary" class="example-margin" [(ngModel)]="selectAllEmpFlag" [ngModelOptions]="{standalone: true}" (change)="onSelectionAllEmployee($event)" ><h5 class="c-header">All Employee</h5></mat-checkbox>
+    
+      </div>
+      <div class="col-12 col-sm-12 col-md-6 col-lg-2 no-padding py-1 pl-0 pr-2" *ngIf="user_role_name === 'Manager'">
+        <mat-checkbox color="primary" class="example-margin" (change)="onSelectOtherEmployee($event)" ><h5 class="c-header">Allocate to another employee</h5></mat-checkbox>
+    
+      </div>
+    </div>
+  <div class="row mx-0 my-1 px-0">
+    <div class="col-12 col-sm-12 col-md-12 col-lg-12 no-padding pl-2 pr-0 table-responsive table-responsive-sm table-responsive-md" *ngIf="employeeFormArray.controls.length >= 1">
+      <table class="table table-hover table-list">
+        <thead>
+          <tr>
+            <th>S No</th>
+            <th>Employee</th>
+            <th>Manager</th>
+            <th>Primary</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody formArrayName="employees" class="contact-form-content">
+          <tr *ngFor="let emp of employeeFormArray.controls; let i = index" [formGroupName]="i" >
+            <td>{{getContinuousIndex(i)}}</td>
+            <td>
+              <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+                <mat-label>Select Employee <b class="r-star">*</b></mat-label>
+                <mat-select formControlName="employee"  autocomplete="off" placeholder="Select" panelClass="custom-select-panel" (selectionChange)="onEmployeeChange($event,i)">
+                  
+                  <!-- Search input field inside the panel -->
+                  <div class="mat-select-search-wrapper d-flex">
+                    <input matInput [(ngModel)]="searchEmployeeText" [ngModelOptions]="{standalone: true}" placeholder="Search Employee" class="mat-select-search">
+                    <mat-icon class="search-icon" *ngIf="!searchEmployeeText">search</mat-icon>
+                    <mat-icon class="search-icon" *ngIf="searchEmployeeText" type="button" (click)="clearSearch('emp')">close</mat-icon>
+                  </div>
+              
+                  <!-- Filtered options -->
+                  <mat-option *ngFor="let emp of filteredEmployeeList()" [value]="emp?.user_id">
+                    {{ emp?.user__full_name }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+              <div class="px-2" *ngIf="emp?.get('employee')?.invalid && emp?.get('employee')?.touched || emp?.get('employee')?.dirty">
+                <span class="text-errors" *ngIf="emp?.get('employee')?.errors?.['required']">Employee is required</span>
+              </div>
+            </td>
+            <td>
+              <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+                <mat-label>Select Manager <b class="r-star">*</b></mat-label>
+                <mat-select formControlName="manager"  autocomplete="off" placeholder="Select" panelClass="custom-select-panel">
+                  
+                  <!-- Search input field inside the panel -->
+                  <div class="mat-select-search-wrapper d-flex">
+                    <input matInput [(ngModel)]="searchManagerText" [ngModelOptions]="{standalone: true}" placeholder="Search Manager" class="mat-select-search">
+                    <mat-icon class="search-icon" *ngIf="!searchManagerText">search</mat-icon>
+                    <mat-icon class="search-icon" *ngIf="searchManagerText" type="button" (click)="clearSearch('emp')">close</mat-icon>
+                  </div>
+              
+                  <!-- Filtered options -->
+                  <mat-option *ngFor="let emp of filteredManagerList()" [value]="emp?.user_id">
+                    {{ emp?.user__full_name }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+              <div class="px-2" *ngIf="emp?.get('manager')?.invalid && emp?.get('manager')?.touched || emp?.get('manager')?.dirty">
+                <span class="text-errors" *ngIf="emp?.get('manager')?.errors?.['required']">Manager is required</span>
+              </div>      
+            </td>
+            <td>
+              <mat-checkbox color="primary" class="example-margin" formControlName="is_primary" (change)="isPrimarySelection($event,i)" ></mat-checkbox>
+            </td>
+            <td>
+              <ng-container *ngIf="user_role_name != 'Employee'">
+                <img src="../../../../assets/images/Edit.svg" class="icon-image" type="button" container="body"
+                        ngbTooltip="Edit" (click)="editContact(i)" *ngIf="emp?.get('employee')?.disabled && i < employeeFormArray?.length - 1 || (emp?.get('employee')?.disabled && i === allEmployeeList?.length-1)"/>
+                        <img src="../../../../assets/images/tick.svg" class="icon-image" type="button" container="body"
+                        ngbTooltip="save" (click)="saveChanges(i)" *ngIf="emp?.get('employee')?.enabled  && i < employeeFormArray?.length - 1 || (emp?.get('employee')?.enabled && i === allEmployeeList?.length-1)"/>
+                        
+                <img src="../../../../assets/images/Delete.svg" class="icon-image" type="button" container="body" ngbTooltip="Delete" (click)="removeEmployee(i)" *ngIf="employeeFormArray.length >= 1" />
+                <img src="../../../../assets/images/addnew.svg" class="icon-image" type="button" container="body"
+                ngbTooltip="add" (click)="addEmployee()" *ngIf="i === employeeFormArray?.length - 1 && employeeFormArray?.length != allEmployeeList?.length"/>
+              </ng-container>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    </div>
+    <div class="row mx-0 my-1 px-0" *ngIf="employeeFormArray.controls.length >= 1">
+      <div class="col-lg-5 px-0">
+      </div>
+      <div class="col-12 col-sm-12 col-md-12 col-lg-12 no-padding pl-2 pr-0">
+        <mat-paginator [length]="employeeFormArray.length"
+      [pageSize]="10"
+      [pageIndex]="currentPage - 1"
+      (page)="onPageChanged($event)">
+    </mat-paginator>
+      </div>
+    </div>
+  </section> 
+<section class="rich-editor-bg mx-0 my-3 px-2">
+    <div class="editor-container NgxEditor__Wrapper px-0">
+      <ngx-editor-menu [editor]="editor" [toolbar]="toolbar"> </ngx-editor-menu>
+      <ngx-editor
+      [editor]="editor"
+      formControlName="job_notes" [style.height.px]="200" [style.overflow]="'auto'"
+    ></ngx-editor>
+      </div>
+</section>
+<div class="row mx-0 my-3 px-2">
+    <div class="col-12 col-sm-12 col-md-6 col-lg-3 align-content-center px-0">
+        <button mat-button class="cancel-button mat-btn-s" type="button" (click)="backBtnFunc()" >
+            Back</button>
+        <button mat-raised-button class="proceedbtn mat-btn-s" type="submit" (click)="saveJobDetails()"><span
+            *ngIf="!isEditItem">Submit</span><span *ngIf="isEditItem" >Update</span></button>
+      </div>
+      <div class="col-lg-3"></div>
+      <div class="col-lg-3"></div>
+      <div class="col-12 col-sm-12 col-md-6 col-lg-3 justify-content-end text-end align-content-end"  *ngIf="user_role_name !='Admin' && accessPermissions[0]?.delete || user_role_name === 'Admin'">
+        <button mat-button class="mat-btn-s delete-item-button" type="button" *ngIf="isEditItem" (click)="deleteJobs()">
+          Delete</button>
+      </div>
+</div>
             </form>
         </div>
     </div>

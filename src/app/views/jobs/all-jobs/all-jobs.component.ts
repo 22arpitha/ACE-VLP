@@ -43,6 +43,8 @@ export class AllJobsComponent implements OnInit {
   accessPermissions = []
   user_id: any;
   userRole: any;
+allEmployeelist:any=[];
+allManagerlist:any=[];
 
   constructor(private common_service: CommonServiceService, private accessControlService: SubModuleService,
     private router: Router, private modalService: NgbModal, private dialog: MatDialog,
@@ -56,6 +58,8 @@ export class AllJobsComponent implements OnInit {
     this.getModuleAccess();
     this.getCurrentJobsList();
     this.getJobStatusList();
+    this.getAllEmployeeList();
+    this.getAllActiveManagerList();
     this.initialForm();
   }
 
@@ -78,6 +82,25 @@ export class AllJobsComponent implements OnInit {
       }
     )
   }
+
+  public getAllEmployeeList(){
+    this.allEmployeelist =[];
+    this.apiService.getData(`${environment.live_url}/${environment.employee}/?is_active=True&employee=True`).subscribe((respData: any) => {
+  this.allEmployeelist = respData;
+    },(error => {
+      this.apiService.showError(error?.error?.detail)
+    }));
+  }
+  
+  public getAllActiveManagerList(){
+    this.allManagerlist =[];
+    this.apiService.getData(`${environment.live_url}/${environment.employee}/?is_active=True&employee=True&designation=manager`).subscribe((respData: any) => {
+  this.allManagerlist = respData;
+    },(error => {
+      this.apiService.showError(error?.error?.detail)
+    }));
+  }
+
   initialForm() {
     this.jobStatusForm = this.fb.group({
       status_name: [''],
@@ -216,6 +239,7 @@ export class AllJobsComponent implements OnInit {
     const selectedStatus = this.allJobStatus.find(status => status.id == selectedStatusId);
     console.log(selectedStatus)
     if (selectedStatus) {
+      item.job_status = event.value;
       item.percentage_of_completion = selectedStatus.percentage_of_completion;
       item.isInvalid = false;
         // Update the percentage dynamically
@@ -232,7 +256,6 @@ export class AllJobsComponent implements OnInit {
 
   validatePercentage(item: any) {
     const percentage = item.percentage_of_completion; // Ensure you use the correct key
-  
     if (percentage === null || percentage === undefined || percentage === '') {
       item.isInvalid = true;
       item.errorType = 'required';
@@ -254,8 +277,41 @@ export class AllJobsComponent implements OnInit {
 
   saveJobStausPercentage(item: any) {
     if(!item.isInvalid){
-      console.log(item)
-    }
-    //  trigger the the api to upadate the job status percentage
+      let formData:any= {'job_status':item?.job_status,'percentage_of_completion':item.percentage_of_completion}
+      this.apiService.updateData(`${environment.live_url}/${environment.jobs_percetage}/${item.id}/`,formData).subscribe((respData: any) => {
+        if (respData) {
+          this.apiService.showSuccess(respData['message']);
+          if (this.isCurrent) {
+            this.getCurrentJobsList()
+          } else {
+            this.getJobsHistoryList();
+          }
+    }},(error: any) => {
+      this.apiService.showError(error?.error?.detail);
+    });
+  }
+  }
+  getEmployeeName(employees: any): string {
+    const employee = employees.find((emp:any) => emp?.is_primary === true);
+    return employee ? employee?.employee_name : '';
+  }
+
+  getManagerName(employees: any): string {
+    const manager = employees.find((man:any) => man?.is_primary === true);
+    return manager ? manager?.manager_name : '';
+  }
+
+  public downloadOption(type:any){
+    let query = `?page=${this.page}&page_size=${this.tableSize}&file-type=${type}`
+    let apiUrl = `${environment.live_url}/${environment.clients_details}/${query}`;
+    fetch(apiUrl)
+  .then(res => res.blob())
+  .then(blob => {
+    console.log('blob',blob);
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `job_details.${type}`;
+    a.click();
+  });
   }
 } 

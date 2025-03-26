@@ -243,7 +243,7 @@ const routes: Routes = [
       anchorScrolling: 'enabled',
       initialNavigation: 'enabledBlocking',
       relativeLinkResolution: 'legacy',
-      useHash: true
+      useHash: false
     })
   ],
   exports: [RouterModule]

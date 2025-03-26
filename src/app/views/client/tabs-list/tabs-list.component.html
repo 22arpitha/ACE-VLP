@@ -1,6 +1,6 @@
 <div class="row mx-0 px-0 client-tabs">
     <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0">
-        <mat-tab-group mat-stretch-tabs="false" mat-align-tabs="start">
+        <mat-tab-group mat-stretch-tabs="false" mat-align-tabs="start" (selectedTabChange)="onTabChange($event)" [(selectedIndex)]="selectedIndex">
             <mat-tab label="Client Details">
                 <app-create-client></app-create-client>  
             </mat-tab>

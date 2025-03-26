@@ -67,7 +67,7 @@ userRole: any;
 
   public initializeForm() {
     this.templateForm = this.fb.group({
-      template_name: ['', [Validators.required, Validators.pattern(/^[a-zA-Z0-9]+( [a-zA-Z0-9]+)*$/),Validators.maxLength(20)]],
+      template_name: ['', [Validators.required, Validators.pattern(/^[a-zA-Z0-9]+( [a-zA-Z0-9]+)*$/)]],
       template_file: ['',Validators.required,this.fileFormatValidator],
       password: ['', [Validators.pattern(/^[a-zA-Z0-9!@#$%^&*()_+{}\[\]:;"'<>,.?/\\|`~\-]+( [a-zA-Z0-9!@#$%^&*()_+{}\[\]:;"'<>,.?/\\|`~\-]+)*$/),Validators.maxLength(20)]],
       when_to_use: ['', [Validators.pattern(/^[a-zA-Z0-9]+( [a-zA-Z0-9]+)*$/),Validators.maxLength(20)]],
@@ -140,6 +140,7 @@ public createFromData(){
     this.selectedFile =null;
     this.file =null;
     this.isEditItem = false;
+    this.term='';
     const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
     if (fileInput) {
     fileInput.value = "";

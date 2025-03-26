@@ -111,6 +111,7 @@ export class ClientsOfGroupComponent implements OnInit {
     }
 
     backToEndClients(id){
+      this.common_service.setClientActiveTabindex(id);
       this.router.navigate([`/client/update-client/${this.client_id}`])
     }
 

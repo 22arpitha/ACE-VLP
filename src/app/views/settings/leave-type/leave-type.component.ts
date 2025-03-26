@@ -6,7 +6,7 @@ import { environment } from '../../../../environments/environment';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { GenericDeleteComponent } from '../../../generic-delete/generic-delete.component';
 import { GenericEditComponent } from '../../../generic-edit/generic-edit.component';
-import { SubModuleService } from 'src/app/service/sub-module.service';
+import { SubModuleService } from '../../../service/sub-module.service';
 
 @Component({
   selector: 'app-leave-type',
@@ -82,32 +82,30 @@ export class LeaveTypeComponent implements OnInit {
     })
   }
   public saveleaveTypeDetails() {
-    {
-      if (this.leaveTypeForm.invalid) {
-        this.leaveTypeForm.markAllAsTouched();
+    if (this.leaveTypeForm.invalid) {
+      this.leaveTypeForm.markAllAsTouched();
+    } else {
+      if (this.isEditItem) {
+        this.apiService.updateData(`${environment.live_url}/${environment.settings_leave_type}/${this.selectedleavetype}/`, this.leaveTypeForm.value).subscribe((respData: any) => {
+          if (respData) {
+            this.apiService.showSuccess(respData['message']);
+            this.resetFormState();
+            this.getAllLeaveTypes('?page=1&page_size=5');
+          }
+        }, (error: any) => {
+          this.apiService.showError(error?.error?.detail);
+        });
       } else {
-        if (this.isEditItem) {
-          this.apiService.updateData(`${environment.live_url}/${environment.settings_leave_type}/${this.selectedleavetype}/`, this.leaveTypeForm.value).subscribe((respData: any) => {
-            if (respData) {
-              this.apiService.showSuccess(respData['message']);
-              this.resetFormState();
-              this.getAllLeaveTypes('?page=1&page_size=5');
-            }
-          }, (error: any) => {
-            this.apiService.showError(error?.error?.detail);
-          });
-        } else {
-          this.apiService.postData(`${environment.live_url}/${environment.settings_leave_type}/`, this.leaveTypeForm.value).subscribe((respData: any) => {
-            if (respData) {
-              this.apiService.showSuccess(respData['message']);
-              this.resetFormState();
-              this.getAllLeaveTypes('?page=1&page_size=5');
-            }
+        this.apiService.postData(`${environment.live_url}/${environment.settings_leave_type}/`, this.leaveTypeForm.value).subscribe((respData: any) => {
+          if (respData) {
+            this.apiService.showSuccess(respData['message']);
+            this.resetFormState();
+            this.getAllLeaveTypes('?page=1&page_size=5');
+          }
 
-          }, (error: any) => {
-            this.apiService.showError(error?.error?.detail);
-          });
-        }
+        }, (error: any) => {
+          this.apiService.showError(error?.error?.detail);
+        });
       }
     }
   }
@@ -115,6 +113,7 @@ export class LeaveTypeComponent implements OnInit {
   public resetFormState() {
     this.formGroupDirective.resetForm();
     this.isEditItem = false;
+    this.term='';
   }
 
   sort(direction: string, column: string) {

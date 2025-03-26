@@ -42,7 +42,12 @@ export class EditClientComponent implements OnInit {
     private common_service: CommonServiceService, private apiService: ApiserviceService
   ) {
     if(this.activeRoute.snapshot.paramMap.get('id')){
-      this.client_id= this.activeRoute.snapshot.paramMap.get('id')}   
+      this.client_id= this.activeRoute.snapshot.paramMap.get('id')}
+      this.common_service.clientGroupCreationstatus$.subscribe((resp)=>{
+        if(resp){
+          this.getGroupList();
+        }
+      });   
   }
 
   ngOnInit(): void {
@@ -55,7 +60,7 @@ export class EditClientComponent implements OnInit {
   public initializeForm() {
     this.endClientForm = this.fb.group({
       client_name: ['', [Validators.pattern(/^[a-zA-Z]+( [a-zA-Z]+)*$/), Validators.required, Validators.maxLength(20)]],
-      group: [null, Validators.required],
+      group: [null],
       client:this.client_id
     });
   }
@@ -81,8 +86,7 @@ export class EditClientComponent implements OnInit {
       this.count = noOfPages * this.tableSize;
       this.page = respData.current_page;
     }, (error: any) => {
-      this.apiService.showError(error.detail);
-
+      this.apiService.showError(error?.error?.detail);
     })
   }
 
@@ -117,6 +121,7 @@ public clearSearch(){
           if (respData) {
             this.apiService.showSuccess(respData['message']);
             this.resetFormState();
+            this.common_service.setEndClientCreationState(true);
             this.getAllEndClients(`?page=1&page_size=5&client=${this.client_id}`);
           }
         }, (error: any) => {
@@ -127,6 +132,7 @@ public clearSearch(){
           if (respData) {
             this.apiService.showSuccess(respData['message']);
             this.resetFormState();
+            this.common_service.setEndClientCreationState(true);
             this.getAllEndClients(`?page=1&page_size=5&client=${this.client_id}`);
           }
 
@@ -141,6 +147,7 @@ public clearSearch(){
     this.formGroupDirective.resetForm();
     this.endClientForm.patchValue({"client":this.client_id});
     this.isEditItem = false;
+    this.term='';
   }
 
   public sort(direction: string, column: string) {
@@ -191,7 +198,8 @@ public clearSearch(){
     this.apiService.delete(`${environment.live_url}/${environment.end_clients}/${item?.id}/`).subscribe(async (data: any) => {
       if (data) {
         this.allEndClients = []
-        this.apiService.showWarning('End Client deleted successfully!')
+        this.apiService.showWarning(data['message']);
+        this.common_service.setEndClientCreationState(true);
         let query = this.getFilterBaseUrl();
         if (this.term) {
           query += `&search=${this.term}`
@@ -253,7 +261,7 @@ public clearSearch(){
     this.apiService.getData(`${environment.live_url}/${environment.clients_group}/?client=${this.client_id}`).subscribe((respData: any) => {
       this.allGroupList = respData;
     }, (error: any) => {
-      this.apiService.showError(error.detail);
+      this.apiService.showError(error?.error?.detail);
 
     })
   }

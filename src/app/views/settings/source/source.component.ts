@@ -83,32 +83,30 @@ export class SourceComponent implements OnInit {
     })
   }
   public saveSourceDetails() {
-    {
-      if (this.sourceForm.invalid) {
-        this.sourceForm.markAllAsTouched();
+    if (this.sourceForm.invalid) {
+      this.sourceForm.markAllAsTouched();
+    } else {
+      if (this.isEditItem) {
+        this.apiService.updateData(`${environment.live_url}/${environment.settings_source}/${this.selectedSource}/`, this.sourceForm.value).subscribe((respData: any) => {
+          if (respData) {
+            this.apiService.showSuccess(respData['message']);
+            this.resetFormState();
+            this.getAllSource('?page=1&page_size=5');
+          }
+        }, (error: any) => {
+          this.apiService.showError(error?.error?.detail);
+        });
       } else {
-        if (this.isEditItem) {
-          this.apiService.updateData(`${environment.live_url}/${environment.settings_source}/${this.selectedSource}/`, this.sourceForm.value).subscribe((respData: any) => {
-            if (respData) {
-              this.apiService.showSuccess(respData['message']);
-              this.resetFormState();
-              this.getAllSource('?page=1&page_size=5');
-            }
-          }, (error: any) => {
-            this.apiService.showError(error?.error?.detail);
-          });
-        } else {
-          this.apiService.postData(`${environment.live_url}/${environment.settings_source}/`, this.sourceForm.value).subscribe((respData: any) => {
-            if (respData) {
-              this.apiService.showSuccess(respData['message']);
-              this.resetFormState();
-              this.getAllSource('?page=1&page_size=5');
-            }
+        this.apiService.postData(`${environment.live_url}/${environment.settings_source}/`, this.sourceForm.value).subscribe((respData: any) => {
+          if (respData) {
+            this.apiService.showSuccess(respData['message']);
+            this.resetFormState();
+            this.getAllSource('?page=1&page_size=5');
+          }
 
-          }, (error: any) => {
-            this.apiService.showError(error?.error?.detail);
-          });
-        }
+        }, (error: any) => {
+          this.apiService.showError(error?.error?.detail);
+        });
       }
     }
   }
@@ -116,6 +114,7 @@ export class SourceComponent implements OnInit {
   public resetFormState() {
     this.formGroupDirective.resetForm();
     this.isEditItem = false;
+    this.term='';
   }
 
   sort(direction: string, column: string) {

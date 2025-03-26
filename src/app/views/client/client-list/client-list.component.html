@@ -10,36 +10,43 @@
           <div class="col-12 mt-2 col-sm-12 col-md-4 col-lg-6 text-end px-0">
               <button mat-raised-button class="mat-btn-s tab-button-content" [ngClass]="{'isActive': isCurrent}" type="button" (click)="getCurrentClients()">Current</button> 
               <button mat-raised-button class="mat-btn-s tab-button-content" [ngClass]="{'isActive': isHistory}" type="button" (click)="getClientsHistory()">History</button> 
-              <button mat-raised-button class="proceedbtn mat-btn-s download-btn" type="button"><i class="fa fa-download"></i></button>
+              <button mat-raised-button class="proceedbtn mat-btn-s download-btn" type="button" [matMenuTriggerFor]="downloadMenu"><i class="fa fa-download"></i></button>
               <button mat-raised-button class="proceedbtn mat-btn-s" type="button" (click)="openCreateClientPage()">Create
                 Client</button>
             </div>
+            <mat-menu #downloadMenu="matMenu">
+              <button mat-menu-item (click)="downloadOption('pdf')">
+                <i class="fa fa-file-pdf"></i> PDF
+              </button>
+              <button mat-menu-item (click)="downloadOption('csv')">
+                <i class="fa fa-file-excel"></i> CSV
+              </button>
+            </mat-menu>          
         </div>
         <div class="row mx-1 my-2 px-0 table-wrapper">
           <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0 ">
             <table class="table table table-hover table-list">
               <thead>
                 <tr>
-                  <th scope="col"> S.No</th>
                   <th scope="col">Client Number
-                    <i *ngIf="!arrowState['client_number']" (click)="sort('asc','client_number')" class="bi bi-arrow-up"></i>
+                    <i *ngIf="!arrowState['client_number']" (click)="sort('asc','client_number')" class="bi bi-arrow-down"></i>
               <i (click)="sort('desc','client_number')" *ngIf="arrowState['client_number']"
-                class="bi bi-arrow-down"></i>
+                class="bi bi-arrow-up"></i>
                   </th>
                   <th scope="col">Client Name
-                    <i *ngIf="!arrowState['client_name']" (click)="sort('asc','client_name')" class="bi bi-arrow-up"></i>
+                    <i *ngIf="!arrowState['client_name']" (click)="sort('asc','client_name')" class="bi bi-arrow-down"></i>
                     <i (click)="sort('desc','client_name')" *ngIf="arrowState['client_name']"
-                      class="bi bi-arrow-down"></i>
+                      class="bi bi-arrow-up"></i>
                   </th>
                   <th scope="col">Country
-                    <i *ngIf="!arrowState['country']" (click)="sort('asc','country')" class="bi bi-arrow-up"></i>
+                    <i *ngIf="!arrowState['country']" (click)="sort('asc','country')" class="bi bi-arrow-down"></i>
                     <i (click)="sort('desc','country')" *ngIf="arrowState['country']"
-                      class="bi bi-arrow-down"></i>
+                      class="bi bi-arrow-up"></i>
                   </th>
                   <th scope="col">Source
-                    <i *ngIf="!arrowState['source']" (click)="sort('asc','source')" class="bi bi-arrow-up"></i>
+                    <i *ngIf="!arrowState['source']" (click)="sort('asc','source')" class="bi bi-arrow-down"></i>
                     <i (click)="sort('desc','source')" *ngIf="arrowState['source']"
-                      class="bi bi-arrow-down"></i>
+                      class="bi bi-arrow-up"></i>
                   </th>
                   <th scope="col">Status</th>
                   <th scope="col">Contact Person</th>
@@ -55,7 +62,6 @@
                            currentPage: page,
                            totalItems: count
                          }; let i=index'>
-                    <td>{{getContinuousIndex(i)}}</td>
                     <td>{{item?.client_number || '-'}}</td>
                     <td>{{item?.client_name || '-'}}</td>
                     <td>{{item?.country  || '-'}}</td>

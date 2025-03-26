@@ -51,8 +51,8 @@
                 Sl no
               </th>
               <th>Leave Type
-                <i *ngIf="!arrowState['leave_type_name']" (click)="sort('asc', 'leave_type_name')" class="bi bi-arrow-up"></i>
-                <i *ngIf="arrowState['leave_type_name']" (click)="sort('desc', 'leave_type_name')" class="bi bi-arrow-down"></i>
+                <i *ngIf="!arrowState['leave_type_name']" (click)="sort('asc', 'leave_type_name')" class="bi bi-arrow-down"></i>
+                <i *ngIf="arrowState['leave_type_name']" (click)="sort('desc', 'leave_type_name')" class="bi bi-arrow-up"></i>
               </th>
               <th>Action</th>
             </tr>

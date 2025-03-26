@@ -92,39 +92,38 @@ export class PeriodComponent implements OnInit {
     this.searchPeriodicityText ='';
   }
    public saveleaveTypeDetails() {
-     {
-       if (this.periodForm.invalid) {
-         this.periodForm.markAllAsTouched();
-       } else {
-         if (this.isEditItem) {
-           this.apiService.updateData(`${environment.live_url}/${environment.settings_period}/${this.selectedperiod}/`, this.periodForm.value).subscribe((respData: any) => {
-             if (respData) {
-               this.apiService.showSuccess(respData['message']);
-               this.resetFormState();
-               this.getAllPeriod('?page=1&page_size=5');
-             }
-           }, (error: any) => {
-             this.apiService.showError(error?.error?.detail);
-           });
-         } else {
-           this.apiService.postData(`${environment.live_url}/${environment.settings_period}/`, this.periodForm.value).subscribe((respData: any) => {
-             if (respData) {
-               this.apiService.showSuccess(respData['message']);
-               this.resetFormState();
-               this.getAllPeriod('?page=1&page_size=5');
-             }
- 
-           }, (error: any) => {
-             this.apiService.showError(error?.error?.detail);
-           });
-         }
-       }
-     }
+    if (this.periodForm.invalid) {
+      this.periodForm.markAllAsTouched();
+    } else {
+      if (this.isEditItem) {
+        this.apiService.updateData(`${environment.live_url}/${environment.settings_period}/${this.selectedperiod}/`, this.periodForm.value).subscribe((respData: any) => {
+          if (respData) {
+            this.apiService.showSuccess(respData['message']);
+            this.resetFormState();
+            this.getAllPeriod('?page=1&page_size=5');
+          }
+        }, (error: any) => {
+          this.apiService.showError(error?.error?.detail);
+        });
+      } else {
+        this.apiService.postData(`${environment.live_url}/${environment.settings_period}/`, this.periodForm.value).subscribe((respData: any) => {
+          if (respData) {
+            this.apiService.showSuccess(respData['message']);
+            this.resetFormState();
+            this.getAllPeriod('?page=1&page_size=5');
+          }
+
+        }, (error: any) => {
+          this.apiService.showError(error?.error?.detail);
+        });
+      }
+    }
    }
  
    public resetFormState() {
      this.formGroupDirective.resetForm();
      this.isEditItem = false;
+     this.term='';
    }
  
    sort(direction: string, column: string) {

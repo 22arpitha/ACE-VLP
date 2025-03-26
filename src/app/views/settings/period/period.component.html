@@ -7,7 +7,7 @@
               <div class="col-12 col-sm-12 col-md-6 col-lg-4 my-1 px-0">
                 <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
                   <mat-label>Period<b class="r-star">*</b></mat-label>
-                  <input matInput placeholder="Enter Period" appAlphabetOnly formControlName="period_name" autocomplete="off">
+                  <input matInput placeholder="Enter Period" formControlName="period_name" autocomplete="off">
                   <mat-error
                     *ngIf="f['period_name']?.invalid && f['period_name']?.touched || f['period_name']?.dirty">
                     <span *ngIf="f['period_name'].errors?.['required']">Period is required</span>
@@ -24,8 +24,8 @@
               </div>
               <div class="col-12 col-sm-12 col-md-6 col-lg-4 my-1 no-padding pl-5 pr-0">
                 <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
-                  <mat-label>Select Periodicity <b class="r-star">*</b></mat-label>
-                  <mat-select formControlName="periodicity" placeholder="Select Periodicity" autocomplete="off"
+                  <mat-label>Periodicity <b class="r-star">*</b></mat-label>
+                  <mat-select formControlName="periodicity" placeholder="Periodicity" autocomplete="off"
                     panelClass="custom-select-panel" [disableOptionCentering]="true">
                     <div class="mat-select-search-wrapper d-flex">
                       <input matInput [(ngModel)]="searchPeriodicityText" autofocus [ngModelOptions]="{standalone: true}" placeholder="Search Periodicity" class="mat-select-search">
@@ -70,12 +70,12 @@
                   Sl no
                 </th>
                 <th>Period
-                  <i *ngIf="!arrowState['period_name']" (click)="sort('asc', 'period_name')" class="bi bi-arrow-up"></i>
-                  <i *ngIf="arrowState['period_name']" (click)="sort('desc', 'period_name')" class="bi bi-arrow-down"></i>
+                  <i *ngIf="!arrowState['period_name']" (click)="sort('asc', 'period_name')" class="bi bi-arrow-down"></i>
+                  <i *ngIf="arrowState['period_name']" (click)="sort('desc', 'period_name')" class="bi bi-arrow-up"></i>
                 </th>
                 <th>Periodicty
-                    <i *ngIf="!arrowState['periodicity']" (click)="sort('asc', 'periodicity')" class="bi bi-arrow-up"></i>
-                    <i *ngIf="arrowState['periodicity']" (click)="sort('desc', 'periodicity')" class="bi bi-arrow-down"></i>
+                    <i *ngIf="!arrowState['periodicity']" (click)="sort('asc', 'periodicity')" class="bi bi-arrow-down"></i>
+                    <i *ngIf="arrowState['periodicity']" (click)="sort('desc', 'periodicity')" class="bi bi-arrow-up"></i>
                 </th>
                 <th>Action</th>
               </tr>

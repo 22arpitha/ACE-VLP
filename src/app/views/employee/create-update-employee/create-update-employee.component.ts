@@ -20,7 +20,6 @@ employeeFormGroup:FormGroup;
 allDesignation:any=[];
 allUserRoleList:any=[];
 reportingManagerId:any=[];
-selectedEmployeeList:any=[];
 isEditItem:boolean=false;
 employee_id:any;
 searchReportingManagerText:any
@@ -47,6 +46,8 @@ userRole: any;
     }else{
       this.common_service.setTitle('Create ' + this.BreadCrumbsTitle)
       this.getEmployeeUniqueNumber();
+      this.getUserRoleList();
+      this.getReportingManagerList();
     }
   }
 
@@ -245,7 +246,6 @@ this.searchRoleText ='';
     public deleteContent(id: any) {
       this.apiService.delete(`${environment.live_url}/${environment.employee}/${id}/`).subscribe(async (data: any) => {
         if (data) {
-          this.selectedEmployeeList = [];
           this.apiService.showSuccess(data.message);
           this.router.navigate(['/settings/all-employee']);
         }

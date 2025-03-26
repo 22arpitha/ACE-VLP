@@ -23,8 +23,8 @@
               </div>
               <div class="col-12 col-sm-12 col-md-6 col-lg-4 my-1 no-padding pl-5 pr-0">
                 <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
-                    <mat-label>Select Group <b class="r-star">*</b></mat-label>
-                    <mat-select formControlName="group" placeholder="Select Group" autocomplete="off"
+                    <mat-label>Group</mat-label>
+                    <mat-select formControlName="group" placeholder="Group" autocomplete="off"
                       panelClass="custom-select-panel" [disableOptionCentering]="true">
                       <div class="mat-select-search-wrapper d-flex">
                         <input matInput [(ngModel)]="searchGroupText" autofocus [ngModelOptions]="{standalone: true}" placeholder="Search Group" class="mat-select-search">
@@ -35,9 +35,6 @@
                         {{group_item?.group_name | titlecase}}
                       </mat-option>
                     </mat-select>
-                    <mat-error *ngIf="f['group']?.invalid && f['group']?.touched || f['group']?.dirty">
-                      <span *ngIf="f['group'].errors?.['required']">Group is required</span>
-                    </mat-error>
                   </mat-form-field>
               </div>
   
@@ -55,7 +52,7 @@
     <section class="group-table" [ngClass]="{'disabled-section': isEditItem}">
       <div class="row mx-0 my-0 px-0 py-2">
         <div class="col-12 col-sm-12 col-md-6 col-lg-4 search-div px-0">
-          <input type="search" class="form-control p-2 sizeinput" [(ngModel)]="term" placeholder="Search by end client"
+          <input type="search" class="form-control p-2 sizeinput" [(ngModel)]="term" placeholder="Search by End Client Name"
             aria-describedby="emailHelp" autocomplete="off" (input)="filterSearch($event)">
           <i *ngIf="!term" class="bi bi-search" id="search-icon-tab"></i>
         </div>
@@ -88,8 +85,9 @@
                                    totalItems: count
                                  }; let i=index'>
                 <td>{{getContinuousIndex(i)}}</td>
-                <td>{{item?.client_name || '-'}}</td>
-               <td>{{(item?.group) || '-'}}</td>
+                <td><span style="cursor: pointer; color:#0978C8; text-decoration: underline;" (click)="viewJobsOfEndClient(item)">
+                  {{item?.client_name|titlecase }}</span></td>
+               <td>{{getGroupName(item?.group) || '-'}}</td>
                 <td>
                   <ng-container>
                     <img src="../../../../assets/images/Edit.svg" class="icon-image" container="body" ngbTooltip="Edit"
