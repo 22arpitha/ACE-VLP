@@ -22,7 +22,7 @@ export class AllEmployeeComponent implements OnInit {
   selectedItemId:any;
   arrowState: { [key: string]: boolean } = {
 employee_number:false,
-full_name:false,
+user__full_name:false,
 user__email:false,
 designation__designation_name:false,
 is_active:false,

@@ -22,13 +22,13 @@
                   <tr>
                     <th scope="col"> S.No</th>
                     <th scope="col">Emp No
-                      <i *ngIf="!arrowState['employee_number']" (click)="sort('asc','employee_number')" class="bi bi-arrow-up"></i>
+                      <i *ngIf="!arrowState['employee_number']" (click)="sort('asc','employee_number')" class="bi bi-arrow-down"></i>
                 <i (click)="sort('desc','employee_number')" *ngIf="arrowState['employee_number']"
-                  class="bi bi-arrow-down"></i>
+                  class="bi bi-arrow-up"></i>
                     </th>
                     <th scope="col">Emp Name
-                      <i *ngIf="!arrowState['full_name']" (click)="sort('asc','full_name')" class="bi bi-arrow-down"></i>
-                      <i (click)="sort('desc','full_name')" *ngIf="arrowState['full_name']"
+                      <i *ngIf="!arrowState['user__full_name']" (click)="sort('asc','user__full_name')" class="bi bi-arrow-down"></i>
+                      <i (click)="sort('desc','user__full_name')" *ngIf="arrowState['user__full_name']"
                         class="bi bi-arrow-up"></i>
                     </th>
                     <th scope="col">Emp Email

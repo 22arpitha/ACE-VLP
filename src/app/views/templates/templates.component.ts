@@ -7,7 +7,7 @@ import { ApiserviceService } from '../../service/apiservice.service';
 import { CommonServiceService } from '../../service/common-service.service';
 import { environment } from '../../../environments/environment';
 import { Observable, of } from 'rxjs';
-import { SubModuleService } from 'src/app/service/sub-module.service';
+import { SubModuleService } from '../../../app/service/sub-module.service';
 
 @Component({
   selector: 'app-templates',
@@ -127,9 +127,9 @@ public createFromData(){
   this.formData = new FormData();
   if (this.file) {
     this.formData.set("template_file", this.file || '');
-    this.formData.set("template_name", this.templateForm.get('template_name').value || '');
-    this.formData.set("password", this.templateForm.get('password').value || '');
-    this.formData.set("when_to_use", this.templateForm.get('when_to_use').value || '');
+    this.formData.set("template_name", this.templateForm?.get('template_name')?.value || '');
+    this.formData.set("password", this.templateForm?.get('password')?.value || '');
+    this.formData.set("when_to_use", this.templateForm?.get('when_to_use')?.value || '');
   }
   return this.formData;
 }
@@ -281,9 +281,11 @@ public createFromData(){
   
       // Validate file type
       if (
-        selectedFile.type === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" ||
-        selectedFile.type === "application/vnd.ms-excel"
-      ) {
+        selectedFile.type === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" || // Excel
+        selectedFile.type === "application/vnd.ms-excel" || // Excel (older format)
+        selectedFile.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document" || // Word
+        selectedFile.type === "application/msword" // Word (older format)
+      )  {
         this.file = selectedFile;
         this.selectedFile = this.file;
   
@@ -302,7 +304,7 @@ public createFromData(){
     this.fileInput?.nativeElement?.click();
   }
   public fileFormatValidator(control: AbstractControl): Observable<ValidationErrors | null> {
-    const allowedFormats = ['.xlsx','.xls'];
+    const allowedFormats = ['.xlsx','.xls','.doc','.docx'];
     const maxSize = 10 * 1024 * 1024; // 10 MB in bytes
     const file = control.value;
 

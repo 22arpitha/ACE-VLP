@@ -19,14 +19,14 @@
               </mat-form-field>
             </div>
             <div class="col-12 col-sm-12 col-md-6 col-lg-3 px-2 mt-3">
-              <input type="file" accept=".xlsx,.xls" formControlName="template_file" #fileInput
+              <input type="file" accept=".xlsx,.xls,.doc,.docx" formControlName="template_file" #fileInput
                 (change)="onFileSelected($event)" hidden>
               <div class="image-container w-100 d-flex justify-content-between align-items-center"
                 style="padding: 1px 15px;"
                 [ngClass]="{'is-invalid': f['template_file']?.touched && f['template_file']?.invalid}">
                 <mat-label >{{selectedFile ? selectedFile.name : 'Template File'}}<b class="r-star">{{selectedFile ?'' : '*'}}</b></mat-label>
                 <button type="button" mat-icon-button (click)="triggerFileInput()">
-                  <i matTooltip="{{selectedFile ? 'Edit' : 'Upload Excel'}}"
+                  <i matTooltip="{{selectedFile ? 'Edit' : 'Upload Excel or Word'}}"
                     class="{{selectedFile ? 'bi bi-pencil-fill' : 'bi bi-file-earmark-spreadsheet'}}"
                     id="edit-or-upload-icon"></i>
                 </button>
@@ -34,7 +34,7 @@
               <div *ngIf="f['template_file']?.touched && f['template_file']?.invalid"
                 style="font-size: 11px;padding-left: 10px;color:#f44336">
                 <span *ngIf="f['template_file'].errors?.['required']">Template File is required</span>
-                <span *ngIf="f['template_file'].errors?.['accept']">Invalid file type. Please upload .xls or .xlsx
+                <span *ngIf="f['template_file'].errors?.['accept']">Invalid file type. Please upload .doc, .docx,.xls or .xlsx
                   file.</span>
                 <span *ngIf="f['template_file'].errors?.['maxSize']">File size exceeds 10MB.</span>
               </div>
