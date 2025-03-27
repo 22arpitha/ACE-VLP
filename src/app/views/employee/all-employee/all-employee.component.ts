@@ -5,7 +5,7 @@ import { GenericEditComponent } from '../../../generic-edit/generic-edit.compone
 import { ApiserviceService } from '../../../service/apiservice.service';
 import { CommonServiceService } from '../../../service/common-service.service';
 import { environment } from '../../../../environments/environment';
-import { SubModuleService } from 'src/app/service/sub-module.service';
+import { SubModuleService } from '../../../service/sub-module.service';
 
 @Component({
   selector: 'app-all-employee',
@@ -85,7 +85,7 @@ is_active:false,
       modalRef.componentInstance.status.subscribe(resp => {
         if (resp === 'ok') {
           modalRef.dismiss();
-          sessionStorage.setItem('access-name', this.access_name.name)
+          sessionStorage.setItem('access-name', this.access_name?.name)
           this.router.navigate(['/settings/update-employee/',this.selectedItemId]);
 
         } else {

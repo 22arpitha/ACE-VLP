@@ -40,7 +40,7 @@ export class JobsOfEndclientComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.getJobsOfEndClient(`?page=${1}&page_size=${5}`);
+    this.getJobsOfEndClient(`?page=${1}&page_size=${5}&client=${this.client_id}&`);
    
   }
 

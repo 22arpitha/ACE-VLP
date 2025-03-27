@@ -6,7 +6,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ApiserviceService } from '../../../service/apiservice.service';
 import { environment } from '../../../../environments/environment';
 import { GenericDeleteComponent } from '../../../generic-delete/generic-delete.component';
-import { SubModuleService } from 'src/app/service/sub-module.service';
+import { SubModuleService } from '../../../service/sub-module.service';
 
 @Component({
   selector: 'app-create-update-employee',
@@ -109,7 +109,7 @@ this.employeeFormGroup = this.fb.group({
   // Get Role Based Designation
   public getUserRoleBasedDesignation(event:any){
     const role_id = event.value;
-    this.employeeFormGroup.get('sub_designation').reset();
+    this.employeeFormGroup?.get('sub_designation')?.reset();
     this.getDesignationList(role_id);
   }
   private getDesignationList(role_id:any){

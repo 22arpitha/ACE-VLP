@@ -557,7 +557,7 @@ this.formData.set('job_notes',this.jobFormGroup?.get('job_notes')?.value ||'');
 this.formData.set('updated_by',this.jobFormGroup?.get('updated_by')?.value);
 this.formData.set("employees", JSON.stringify(this.jobFormGroup?.get('employees')?.getRawValue()) || []);
 const json = this.formDataToJson(this.formData);
-console.log(json);
+
 return json;
 }
 
@@ -717,13 +717,23 @@ return json;
         const peroid = this.peroidslist.find((period:any)=>period?.id===id)
       return peroid?.period_name || '';
       }
-    public formDataToJson(formData) {
+      public formDataToJson(formData) {
         let obj = {};
         
         formData.forEach((value, key) => {
-          obj[key] = value;
+            // Check if the key is 'employees' and the value is a string that looks like a JSON
+            if (key === 'employees' && typeof value === 'string') {
+                try {
+                    obj[key] = JSON.parse(value);
+                } catch (e) {
+                    obj[key] = value;
+                }
+            } else {
+                obj[key] = value;
+            }
         });
-      
-        return JSON.stringify(obj);
-      }
+    
+        return obj;
+    }
+    
 }
