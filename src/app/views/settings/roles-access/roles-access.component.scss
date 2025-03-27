@@ -64,10 +64,9 @@
 }
 
 .content-page {
-  height: 80vh !important;
+  height: 70vh !important;
   overflow-y: auto !important;
-  width: 100% !important;
-  overflow-x: hidden;
+  overflow-x: hidden !important;
 }
 .list-group {
   box-shadow: 0px 0px 4px 0px #00000040;
