@@ -40,8 +40,7 @@ export class JobsOfEndclientComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.getJobsOfEndClient(`?page=${1}&page_size=${5}&client=${this.client_id}&`);
-   
+    this.getJobsOfEndClient(`?page=${1}&page_size=${5}&end-client=${this.end_client_id}`);
   }
 
   getContinuousIndex(index: number): number {
@@ -55,7 +54,7 @@ export class JobsOfEndclientComponent implements OnInit {
   }
 
   getJobsOfEndClient(params: any) {
-      this.api.getData(`${environment.live_url}/${environment.end_client_jobs}/${params}`).subscribe(
+      this.api.getData(`${environment.live_url}/${environment.jobs}/${params}`).subscribe(
         (res: any) => {
           console.log(res.results)
           this.allJobs = res.results;
