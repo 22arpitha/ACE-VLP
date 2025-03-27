@@ -179,11 +179,21 @@ selectAllEmpFlag:boolean=false;
       }
       public getAllEmployeeList(){
         this.allEmployeeList =[];
-        this.apiService.getData(`${environment.live_url}/${environment.employee}/?is_active=True&employee=True`).subscribe((respData: any) => {
-      this.allEmployeeList = respData;
-        },(error => {
-          this.apiService.showError(error?.error?.detail)
-        }));
+        let queryparams:any;
+        if(this.user_role_name ==='Admin'){
+          queryparams = `?is_active=True&employee=True`;
+        }else{
+          queryparams = `?is_active=True&employee=True&employee_id=${this.user_id}`;
+        }
+        this.getEmployees(queryparams);
+      }
+
+      public getEmployees(params){
+        this.apiService.getData(`${environment.live_url}/${environment.employee}/${params}`).subscribe((respData: any) => {
+          this.allEmployeeList = respData;
+          },(error => {
+            this.apiService.showError(error?.error?.detail)
+          }));
       }
       
       public getAllActiveManagerList(){
@@ -542,7 +552,7 @@ this.formData.set('job_number',this.jobFormGroup?.get('job_number')?.value.toStr
 this.formData.set('job_name',this.jobFormGroup?.get('job_name')?.value.toString());
 this.formData.set('client',this.jobFormGroup?.get('client')?.value);
 this.formData.set('end_client',this.jobFormGroup?.get('end_client')?.value);
-this.formData.set('group',this.jobFormGroup?.get('group')?.value);
+this.formData.set('group',this.jobFormGroup?.get('group')?.value || null);
 this.formData.set('service',this.jobFormGroup?.get('service')?.value);
 this.formData.set('periodicity',this.jobFormGroup?.get('periodicity')?.value);
 this.formData.set('period',this.jobFormGroup?.get('period')?.value);
@@ -601,7 +611,13 @@ return json;
       }
 
       public onSelectOtherEmployee(event:any){
-
+        let queryparams;
+         if(event.cheked===true){
+          queryparams = `?is_active=True&employee=True`;
+         }else{
+          queryparams = `?is_active=True&employee=True&employee_id=${this.user_id}`;
+         }
+        this.getEmployees(queryparams);
       }
 
       public onSelectionAllEmployee(event:any){
@@ -682,19 +698,19 @@ return json;
       }
 
       get currentPageRows() {
-        const startIndex = this.currentPage * 10;
-        const endIndex = startIndex + 10;
+        const startIndex = (this.currentPage - 1) * this.pageSize;
+        const endIndex = startIndex + this.pageSize;
         return this.employeeFormArray.controls.slice(startIndex, endIndex);
-      }
+    }
     
       onPageChanged(event: any) {
         this.currentPage = event.pageIndex + 1;  // `pageIndex` is 0-based, so we add 1
-        this.pageSize = 10;
+        this.pageSize = event.pageSize;
       }
     
       public getContinuousIndex(index: number): number {
-        return (this.currentPage - 1) * 10 + index + 1;
-      }
+        return (this.currentPage - 1) * this.pageSize + index + 1;
+    }
 
       public getCombinationJobName(){
         let endClientName = this.getSelectedEndClient(this.jobFormGroup?.get('end_client')?.value);
@@ -728,9 +744,11 @@ return json;
                 } catch (e) {
                     obj[key] = value;
                 }
-            } else {
-                obj[key] = value;
-            }
+            } else if (value === 'null') {
+              obj[key] = null;
+          } else {
+              obj[key] = value;
+          }
         });
     
         return obj;

@@ -303,7 +303,7 @@ allManagerlist:any=[];
 
   public downloadOption(type:any){
     let query = `?page=${this.page}&page_size=${this.tableSize}&file-type=${type}`
-    let apiUrl = `${environment.live_url}/${environment.clients_details}/${query}`;
+    let apiUrl = `${environment.live_url}/${environment.job_details}/${query}`;
     fetch(apiUrl)
   .then(res => res.blob())
   .then(blob => {

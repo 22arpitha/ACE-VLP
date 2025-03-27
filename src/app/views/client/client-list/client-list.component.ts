@@ -88,7 +88,8 @@ export class ClientListComponent implements OnInit {
         modalRef.componentInstance.status.subscribe(resp => {
           if (resp === 'ok') {
             modalRef.dismiss();
-            sessionStorage.setItem('access-name', this.access_name.name)
+            sessionStorage.setItem('access-name', this.access_name?.name)
+            this.common_service.setClientActiveTabindex(0);
             this.router.navigate(['/client/update-client/',this.selectedItemId]);
   
           } else {

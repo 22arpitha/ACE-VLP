@@ -56,7 +56,7 @@
                 placeholder="Select" panelClass="custom-select-panel"
                 [disableOptionCentering]="true" >
                 <div class="mat-select-search-wrapper d-flex">
-                  <input matInput [(ngModel)]="searchCountryText" autofocus [ngModelOptions]="{standalone: true}" placeholder="Search Country" class="mat-select-search">
+                  <input matInput [(ngModel)]="searchCountryText"  [ngModelOptions]="{standalone: true}" placeholder="Search Country" class="mat-select-search">
                   <mat-icon class="search-icon" *ngIf="!searchCountryText">search</mat-icon>
                   <mat-icon class="search-icon" *ngIf="searchCountryText" type="button" (click)="clearSearch('con')">close</mat-icon>
                 </div>
@@ -80,6 +80,10 @@
         <mat-error *ngIf="f['address']?.invalid && f['address']?.touched || f['address']?.dirty">
             <span  *ngIf="f['address']?.errors?.['required']">Address is required
             </span>
+            <span 
+            *ngIf="f['address']?.errors?.['maxlength']">
+            Sddress cannot exceed more than 200 characters.
+        </span>
         </mat-error>
     </mat-form-field>
     
@@ -92,7 +96,7 @@
                     placeholder="Select" panelClass="custom-select-panel"
                     [disableOptionCentering]="true">
                     <div class="mat-select-search-wrapper d-flex">
-                      <input matInput [(ngModel)]="searchSourceText" autofocus [ngModelOptions]="{standalone: true}" placeholder="Search Source" class="mat-select-search">
+                      <input matInput [(ngModel)]="searchSourceText"  [ngModelOptions]="{standalone: true}" placeholder="Search Source" class="mat-select-search">
                       <mat-icon class="search-icon" *ngIf="!searchSourceText">search</mat-icon>
                       <mat-icon class="search-icon" *ngIf="searchSourceText" type="button" (click)="clearSearch('sou')">close</mat-icon>
                     </div>
@@ -137,7 +141,7 @@
 </div>
   <!-- Upload File -->
 <div class="ccol-12 col-sm-12 col-md-6 col-lg-3 my-1 px-0 align-content-center" *ngIf="user_role_name === 'Admin'">
-    <input type="file" accept=".xlsx,.xls" formControlName="client_file" #fileInput
+    <input type="file" accept=".xlsx,.xls,.doc,.docx,.pdf" formControlName="client_file" #fileInput
                 (change)="onFileSelected($event)" hidden>
               <div class="image-container w-100 d-flex justify-content-between align-items-center"
                 style="padding: 1px 15px;"
@@ -242,7 +246,7 @@
       <div class="d-flex justify-content-between">
         <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
           <mat-label>Select Employee</mat-label>
-          <mat-select [(ngModel)]="selectedEmployee" autofocus [ngModelOptions]="{standalone: true}" autocomplete="off" placeholder="Select" panelClass="custom-select-panel">
+          <mat-select [(ngModel)]="selectedEmployee"  [ngModelOptions]="{standalone: true}" autocomplete="off" placeholder="Select" panelClass="custom-select-panel">
             
             <!-- Search input field inside the panel -->
             <div class="mat-select-search-wrapper d-flex">
@@ -272,7 +276,11 @@
           </tr>
         </thead>
         <tbody formArrayName="employee_ids" class="contact-form-content">
-          <tr *ngFor="let control of employeeFormArray.controls; let i = index" >
+          <tr *ngFor="let control of employeeFormArray.controls|paginate : {
+            itemsPerPage: pageSize,
+            currentPage: currentPage,
+            totalItems: employeeFormArray?.length
+          }; let i = index" >
             <td>{{getContinuousIndex(i)}}</td>
             <td>
               {{ getEmployeeName(control.value) }}
@@ -299,7 +307,7 @@
       </div>
     </div>
   </section>  
-<section class="rich-editor-bg mx-0 my-3 px-2">
+<section class="rich-editor-bg mx-2 my-3 px-2">
     <div class="editor-container NgxEditor__Wrapper px-0">
       <ngx-editor-menu [editor]="editor" [toolbar]="toolbar"> </ngx-editor-menu>
       <ngx-editor

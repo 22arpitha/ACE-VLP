@@ -279,7 +279,11 @@
           </tr>
         </thead>
         <tbody formArrayName="employees" class="contact-form-content">
-          <tr *ngFor="let emp of employeeFormArray.controls; let i = index" [formGroupName]="i" >
+          <tr *ngFor="let emp of employeeFormArray.controls |paginate : {
+            itemsPerPage: pageSize,
+            currentPage: currentPage,
+            totalItems: employeeFormArray?.length
+          }; let i = index" [formGroupName]="i" >
             <td>{{getContinuousIndex(i)}}</td>
             <td>
               <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
@@ -294,6 +298,9 @@
                   </div>
               
                   <!-- Filtered options -->
+                  <mat-option *ngFor="let emp of filteredEmployeeList()" [value]="emp?.user_id">
+                    {{ emp?.user__full_name }}
+                  </mat-option>
                   <mat-option *ngFor="let emp of filteredEmployeeList()" [value]="emp?.user_id">
                     {{ emp?.user__full_name }}
                   </mat-option>
