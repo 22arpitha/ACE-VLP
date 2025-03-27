@@ -11,7 +11,8 @@
                 <button mat-raised-button class="mat-btn-s tab-button-content" [ngClass]="{'isActive': isCurrent}" type="button" (click)="getCurrentJobs()">Current</button> 
                 <button mat-raised-button class="mat-btn-s tab-button-content" [ngClass]="{'isActive': isHistory}" type="button" (click)="getJobsHistory()">History</button> 
                 <button mat-raised-button class="proceedbtn mat-btn-s download-btn" type="button"><i class="fa fa-download"></i></button>
-                <button mat-raised-button class="proceedbtn mat-btn-s" type="button" (click)="openCreateClientPage()">Create
+                <button mat-raised-button class="proceedbtn mat-btn-s" type="button" (click)="openCreateClientPage()"
+                *ngIf="userRole !='Admin' && accessPermissions[0]?.create || userRole === 'Admin'">Create
                   Jobs</button>
               </div>
           </div>
@@ -44,7 +45,7 @@
                     <th scope="col">Job Allocation Date</th>
                     <th scope="col">Employee</th>
                     <th scope="col">Manager</th>
-                    <th scope="col">Status</th>
+                    <th scope="col" class="status-col">Status</th>
                     <th scope="col">% of Completion</th>
                     <th scope="col">Status Date</th>
                     <th scope="col">Action </th>
@@ -86,7 +87,7 @@
                                     <small *ngIf="item.errorType === 'min'">Percentage cannot be less than 1.</small>
                                   </div>
                             </div>
-                            <div><img src="../../../../assets/images/tick.svg"  (click)="saveJobStausPercentage(item)" alt="" height="20" width="20"></div>
+                            <div *ngIf="userRole !='Admin' && accessPermissions[0]?.update || userRole === 'Admin'"><img src="../../../../assets/images/tick.svg"  (click)="saveJobStausPercentage(item)" alt="" height="20" width="20"></div>
                            </div>
                           </td>
                       <td>{{item?.job_status_date}}</td>
