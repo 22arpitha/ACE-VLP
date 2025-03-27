@@ -230,8 +230,7 @@ export class RoleListComponent implements OnInit {
         if (this.term) {
           query += `&search=${this.term}`
         }
-
-        this.getAllRolesList(query)
+        this.getAllRolesList(query);
       }
 
     }, (error => {

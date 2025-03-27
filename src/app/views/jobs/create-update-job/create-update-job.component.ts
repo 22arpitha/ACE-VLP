@@ -8,7 +8,7 @@ import { Editor, Toolbar } from 'ngx-editor';
 import { ApiserviceService } from '../../../service/apiservice.service';
 import { CommonServiceService } from '../../../service/common-service.service';
 import { environment } from '../../../../environments/environment';
-import { GenericDeleteComponent } from 'src/app/generic-delete/generic-delete.component';
+import { GenericDeleteComponent } from './../../../generic-delete/generic-delete.component';
 
 @Component({
   selector: 'app-create-update-job',
@@ -538,8 +538,8 @@ if(respData){
 
       public createFromData(){
 this.formData = new FormData();
-this.formData.set('job_number',this.jobFormGroup?.get('job_number')?.value);
-this.formData.set('job_name',this.jobFormGroup?.get('job_name')?.value);
+this.formData.set('job_number',this.jobFormGroup?.get('job_number')?.value.toString());
+this.formData.set('job_name',this.jobFormGroup?.get('job_name')?.value.toString());
 this.formData.set('client',this.jobFormGroup?.get('client')?.value);
 this.formData.set('end_client',this.jobFormGroup?.get('end_client')?.value);
 this.formData.set('group',this.jobFormGroup?.get('group')?.value);
@@ -551,12 +551,14 @@ this.formData.set('job_allocation_date',this.datepipe.transform(this.jobFormGrou
 this.formData.set('budget_time',this.jobFormGroup?.get('budget_time')?.value + ":00");
 this.formData.set('job_status',this.jobFormGroup?.get('job_status')?.value);
 this.formData.set('job_status_date',this.datepipe.transform(this.jobFormGroup?.get('job_status_date')?.value,'YYYY-MM-dd'));
-this.formData.set('option',this.jobFormGroup?.get('option')?.value);
+this.formData.set('option',this.jobFormGroup?.get('option')?.value.toString());
 this.formData.set('created_by',this.jobFormGroup?.get('created_by')?.value);
 this.formData.set('job_notes',this.jobFormGroup?.get('job_notes')?.value ||'');
 this.formData.set('updated_by',this.jobFormGroup?.get('updated_by')?.value);
 this.formData.set("employees", JSON.stringify(this.jobFormGroup?.get('employees')?.getRawValue()) || []);
-return this.formData;
+const json = this.formDataToJson(this.formData);
+console.log(json);
+return json;
 }
 
       public resetFormState() {
@@ -715,5 +717,13 @@ return this.formData;
         const peroid = this.peroidslist.find((period:any)=>period?.id===id)
       return peroid?.period_name || '';
       }
-
+    public formDataToJson(formData) {
+        let obj = {};
+        
+        formData.forEach((value, key) => {
+          obj[key] = value;
+        });
+      
+        return JSON.stringify(obj);
+      }
 }

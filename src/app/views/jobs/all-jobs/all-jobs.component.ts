@@ -56,10 +56,10 @@ allManagerlist:any=[];
     this.user_id = sessionStorage.getItem('user_id');
     this.userRole = sessionStorage.getItem('user_role_name');
     this.getModuleAccess();
-    this.getCurrentJobsList();
-    this.getJobStatusList();
     this.getAllEmployeeList();
     this.getAllActiveManagerList();
+    this.getCurrentJobsList();
+    this.getJobStatusList();
     this.initialForm();
   }
 
