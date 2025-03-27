@@ -34,21 +34,6 @@ const routes: Routes = [
     redirectTo: 'login',
     pathMatch: 'full'
   },
-  // {
-  //   path:'role',
-  //   component:CreateRoleComponent
-  // },
-  // {
-  //   path: '',
-  //   redirectTo: 'role',
-  //   pathMatch: 'full'
-  // },
- 
-  // {
-  //   path: 'dashboards',
-  //   loadChildren: () => import('./views/dashboard/dashboard.module').then(m => m.DashboardModule)
-  // },
-
   {
     path: '',
     component: DefaultLayoutComponent,
@@ -197,13 +182,7 @@ const routes: Routes = [
     },
     
   },
-  {
-    path: 'forgotChange',
-    component: ForgotChangeComponent,
-    data: {
-      title: 'Forgot Change Page'
-    }
-  },
+  
   {
     path: 'set-password',
     component: ForgotChangeComponent,
@@ -218,21 +197,7 @@ const routes: Routes = [
       title: 'Otp Page'
     }
   },
-  // {
-  //   path: 'notification',canActivate:[AuthGuard],
-  //   component: NotificationComponent,
-  //   data: {
-  //     title: 'Notification Page'
-  //   }
- // },
-  // {
-  //   path: 'changePassword',canActivate:[AuthGuard],
-  //   component: ChangePasswordComponent,
-  //   data: {
-  //     title: 'Change Password Page'
-  //   },
-    
-  // }
+  
     { path: '**', redirectTo: '404' }
 ];
 
