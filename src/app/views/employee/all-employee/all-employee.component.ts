@@ -36,6 +36,7 @@ is_active:false,
   accessPermissions = []
   user_id: any;
   userRole: any;
+
   constructor(private common_service: CommonServiceService,
     private router:Router,private modalService: NgbModal,private accessControlService:SubModuleService,
     private apiService: ApiserviceService) {

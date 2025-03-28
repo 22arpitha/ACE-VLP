@@ -50,6 +50,7 @@ user_role_name:any;
 editor!: Editor;
 formData:any;
 selectAllEmpFlag:boolean=false;
+selectOtherEmpFlag:boolean=false;
   toolbar: Toolbar = [
     // default value
     ['bold', 'italic'],
@@ -64,7 +65,8 @@ selectAllEmpFlag:boolean=false;
     ['align_left', 'align_center', 'align_right', 'align_justify'],
     ['horizontal_rule', 'format_clear', ],
   ];
-  user_id:any;
+user_id:any;
+currentDate:any = new Date().toISOString();
   constructor(private fb:FormBuilder,private activeRoute:ActivatedRoute,
         private common_service: CommonServiceService,private router:Router,private datepipe:DatePipe,
         private apiService: ApiserviceService,private modalService: NgbModal) { 
@@ -107,7 +109,7 @@ selectAllEmpFlag:boolean=false;
       job_allocation_date:['',Validators.required],
       budget_time:['',[Validators.required,Validators.pattern('^([0-9]{1,3}):([0-5]?[0-9])$')]],
       job_status:['',Validators.required],
-      job_status_date:['',Validators.required],
+      job_status_date:[this.currentDate,Validators.required],
       option:['1',Validators.required],
       job_notes:[''],
       created_by: Number(this.user_id),
@@ -157,7 +159,7 @@ selectAllEmpFlag:boolean=false;
             return this.fb.group({
               employee: ['', Validators.required],
               manager:['',Validators.required],
-              is_primary:[false],
+              is_primary:[this.user_role_name === 'Employee' ? true : false],
             });
           }
       
@@ -178,17 +180,26 @@ selectAllEmpFlag:boolean=false;
             });
       }
       public getAllEmployeeList(){
-        this.allEmployeeList =[];
         let queryparams:any;
         if(this.user_role_name ==='Admin'){
           queryparams = `?is_active=True&employee=True`;
         }else{
-          queryparams = `?is_active=True&employee=True&employee_id=${this.user_id}`;
+          if((this.job_id && this.selectOtherEmpFlag )|| (this.job_id && this.user_role_name ==='Employee') ){
+            queryparams = `?is_active=True&employee=True`;
+          }else{
+            if(this.user_role_name ==='Employee'){
+              queryparams = `?is_active=True&employee=True&employee_id=${this.user_id}`;
+
+            }else{
+              queryparams = `?is_active=True&employee=True&employee_id=${this.user_id}&is_manager=True`;
+            }
+          }
         }
         this.getEmployees(queryparams);
       }
 
       public getEmployees(params){
+        this.allEmployeeList =[];
         this.apiService.getData(`${environment.live_url}/${environment.employee}/${params}`).subscribe((respData: any) => {
           this.allEmployeeList = respData;
           },(error => {
@@ -199,7 +210,18 @@ selectAllEmpFlag:boolean=false;
       public getAllActiveManagerList(){
         this.allManagerList =[];
         this.apiService.getData(`${environment.live_url}/${environment.employee}/?is_active=True&employee=True&designation=manager`).subscribe((respData: any) => {
-      this.allManagerList = respData;
+        this.allManagerList = respData;
+        if(this.user_role_name ==='Employee' && !this.job_id){
+          const employeesDetailsArray = this.jobFormGroup.get('employees') as FormArray;
+          employeesDetailsArray?.at(0)?.patchValue({'employee':this.allEmployeeList[0]?.user_id});
+          if(this.allManagerList.length>=1){
+            employeesDetailsArray?.at(0)?.patchValue({'manager':this.allEmployeeList[0]?.reporting_manager_id});
+          }
+          employeesDetailsArray?.at(0)?.patchValue({'is_primary':true});
+          employeesDetailsArray?.at(0)?.get('employee').disable();
+          employeesDetailsArray?.at(0)?.get('manager').disable();
+          employeesDetailsArray?.at(0)?.get('is_primary').disable();
+        }
         },(error => {
           this.apiService.showError(error?.error?.detail)
         }));
@@ -470,9 +492,9 @@ if(respData){
     respData?.employees.forEach(({ employee, manager, is_primary }, index, array) => {
       const isLastItem = index === array.length - 1;
       const employeeForm = this.fb.group({
-        employee: [{ value: employee, disabled: !isLastItem }],
-        manager: [{ value: manager, disabled: !isLastItem }],
-        is_primary: [{ value: is_primary, disabled: !isLastItem }]
+        employee: [{ value: employee, disabled: this.user_role_name ==='Employee'? true:!isLastItem }],
+        manager: [{ value: manager, disabled:this.user_role_name ==='Employee'? true:!isLastItem }],
+        is_primary: [{ value: is_primary, disabled: this.user_role_name ==='Employee'? true:!isLastItem }]
       });
       employeesDetailsArray.push(employeeForm);
     });
@@ -486,7 +508,12 @@ if(respData){
       }
 
       public joiningDateFun(event: any) {
-  
+        if(this.user_role_name === 'Admin'){
+          this.jobFormGroup.patchValue({'job_status_date':event.value});
+        }else{
+          this.jobFormGroup.patchValue({'job_status_date':this.currentDate});
+        }
+        
       }
 
       addEmployee() {
@@ -613,9 +640,11 @@ return json;
       public onSelectOtherEmployee(event:any){
         let queryparams;
          if(event.cheked===true){
+          this.selectOtherEmpFlag=event.cheked;
           queryparams = `?is_active=True&employee=True`;
          }else{
-          queryparams = `?is_active=True&employee=True&employee_id=${this.user_id}`;
+          this.selectOtherEmpFlag=event.cheked;
+          queryparams = `?is_active=True&employee=True&employee_id=${this.user_id}&is_manager=True`;
          }
         this.getEmployees(queryparams);
       }
@@ -628,7 +657,7 @@ return json;
             let empData = this.fb.group({
               'employee': element?.user_id,
               'manager': element?.reporting_manager_id,
-              'is_primary': false
+              'is_primary': this.user_role_name === 'Employee' ? true : false
             });
             this.employeeFormArray.push(empData)
           });
@@ -674,7 +703,7 @@ return json;
           const selectedEmp = this.allManagerList.find((emp:any)=>emp.user_id === event.value);
           this.employeeFormArray.at(i).patchValue({'employee':event.value});
           this.employeeFormArray.at(i).patchValue({'manager':selectedEmp?.reporting_manager_id});
-          this.employeeFormArray.at(i).patchValue({'is_primary':false});
+          this.employeeFormArray.at(i).patchValue({'is_primary':this.user_role_name === 'Employee' ? true : false});
         }
 
       }
