@@ -215,7 +215,7 @@ export class AllJobsComponent implements OnInit {
   }
 
   public getFilterBaseUrl(): string {
-    return `?page=${this.page}&page_size=${this.tableSize}&search=${this.term}`;
+    return `?page=${this.page}&page_size=${this.tableSize}&search=${this.term}&employee-id=${this.user_id}`;
   }
 
   public sort(direction: string, column: string) {

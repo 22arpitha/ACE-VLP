@@ -262,7 +262,7 @@
     
       </div>
       <div class="col-12 col-sm-12 col-md-6 col-lg-2 no-padding py-1 pl-0 pr-2" *ngIf="user_role_name === 'Manager'">
-        <mat-checkbox color="primary" class="example-margin" (change)="onSelectOtherEmployee($event)" ><h5 class="c-header">Allocate to another employee</h5></mat-checkbox>
+        <mat-checkbox color="primary" class="example-margin" (change)="onSelectOtherEmployee($event)" [(ngModel)]="selectOtherEmpFlag" [ngModelOptions]="{standalone: true}" ><h5 class="c-header">Allocate to another employee</h5></mat-checkbox>
     
       </div>
     </div>
@@ -301,9 +301,6 @@
                   <mat-option *ngFor="let emp of filteredEmployeeList()" [value]="emp?.user_id">
                     {{ emp?.user__full_name }}
                   </mat-option>
-                  <mat-option *ngFor="let emp of filteredEmployeeList()" [value]="emp?.user_id">
-                    {{ emp?.user__full_name }}
-                  </mat-option>
                 </mat-select>
               </mat-form-field>
               <div class="px-2" *ngIf="emp?.get('employee')?.invalid && emp?.get('employee')?.touched || emp?.get('employee')?.dirty">
@@ -333,7 +330,7 @@
               </div>      
             </td>
             <td>
-              <mat-checkbox color="primary" class="example-margin" formControlName="is_primary" (change)="isPrimarySelection($event,i)" ></mat-checkbox>
+              <mat-checkbox color="primary" class="example-margin" [disabled]="user_role_name != 'Admin' ? true : false"  formControlName="is_primary" (change)="isPrimarySelection($event,i)" ></mat-checkbox>
             </td>
             <td>
               <ng-container *ngIf="user_role_name != 'Employee'">
@@ -345,6 +342,9 @@
                 <img src="../../../../assets/images/Delete.svg" class="icon-image" type="button" container="body" ngbTooltip="Delete" (click)="removeEmployee(i)" *ngIf="employeeFormArray.length >= 1" />
                 <img src="../../../../assets/images/addnew.svg" class="icon-image" type="button" container="body"
                 ngbTooltip="add" (click)="addEmployee()" *ngIf="i === employeeFormArray?.length - 1 && employeeFormArray?.length != allEmployeeList?.length"/>
+              </ng-container>
+              <ng-container *ngIf="user_role_name === 'Employee'">
+                  -
               </ng-container>
             </td>
           </tr>
