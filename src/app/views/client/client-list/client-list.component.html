@@ -11,7 +11,7 @@
               <button mat-raised-button class="mat-btn-s tab-button-content" [ngClass]="{'isActive': isCurrent}" type="button" (click)="getCurrentClients()">Current</button> 
               <button mat-raised-button class="mat-btn-s tab-button-content" [ngClass]="{'isActive': isHistory}" type="button" (click)="getClientsHistory()">History</button> 
               <button mat-raised-button class="proceedbtn mat-btn-s download-btn" type="button" [matMenuTriggerFor]="downloadMenu"><i class="fa fa-download"></i></button>
-              <button mat-raised-button class="proceedbtn mat-btn-s" type="button" (click)="openCreateClientPage()">Create
+              <button mat-raised-button class="proceedbtn mat-btn-s" type="button" (click)="openCreateClientPage()" *ngIf="userRole !='Admin' && accessPermissions[0]?.create || userRole === 'Admin'">Create
                 Client</button>
             </div>
             <mat-menu #downloadMenu="matMenu">
@@ -77,7 +77,7 @@
                     </td>
                     <td> <ng-container>
                       <img src="../../../../assets/images/Edit.svg" class="icon-image" type="button" container="body"
-                        ngbTooltip="Edit" (click)="edit(item)" *ngIf="userRole !='Admin' && accessPermissions[0]?.update || userRole === 'Admin'"/>
+                        ngbTooltip="Edit" (click)="edit(item)" *ngIf="userRole !='Admin' && (accessPermissions[0]?.update || accessPermissions[0]?.view) || userRole === 'Admin'"/>
                    </ng-container></td>
                   </tr>
                 </ng-container>

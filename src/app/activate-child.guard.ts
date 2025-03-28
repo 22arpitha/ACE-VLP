@@ -38,7 +38,7 @@ export class ActivateChildGuard implements CanActivateChild {
           map((access: any[]) => {
             if (access && access.length > 0) {
               const hasViewPermission = Boolean(
-                access[0].operations?.some((op: any) => op.view === true)
+                access[0].operations?.some((op: any) => op?.view === true)
               );
 
               if (hasViewPermission) {

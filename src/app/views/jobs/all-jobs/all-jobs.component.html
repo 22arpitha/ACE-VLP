@@ -101,7 +101,7 @@
                       <td>{{item?.job_status_date}}</td>
                       <td> <ng-container>
                         <img src="../../../../assets/images/Edit.svg" class="icon-image" type="button" container="body"
-                          ngbTooltip="Edit" (click)="edit(item)" *ngIf="userRole !='Admin' && accessPermissions[0]?.update || userRole === 'Admin'"/>
+                          ngbTooltip="Edit" (click)="edit(item)" *ngIf="userRole !='Admin' && (accessPermissions[0]?.update || accessPermissions[0]?.view) || userRole === 'Admin'"/>
                      </ng-container></td>
                     </tr>
                   </ng-container>

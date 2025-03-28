@@ -69,7 +69,7 @@
                 <button mat-raised-button class="cancel-button mat-btn-s" type="button" (click)="resetFormState()">
                   Cancel</button>
                 <button mat-raised-button class="proceedbtn mat-btn-s" type="submit"
-                  (click)="savePolicyDetails()"><span *ngIf="!isEditItem">Submit</span><span
+                  (click)="savePolicyDetails()" *ngIf="userRole !='Admin' && (accessPermissions[0]?.create ||accessPermissions[0]?.update) || userRole === 'Admin'"><span *ngIf="!isEditItem">Submit</span><span
                     *ngIf="isEditItem">Update</span></button>
               </div>
             </div>

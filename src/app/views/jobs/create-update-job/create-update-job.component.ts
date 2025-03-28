@@ -218,9 +218,9 @@ currentDate:any = new Date().toISOString();
             employeesDetailsArray?.at(0)?.patchValue({'manager':this.allEmployeeList[0]?.reporting_manager_id});
           }
           employeesDetailsArray?.at(0)?.patchValue({'is_primary':true});
-          employeesDetailsArray?.at(0)?.get('employee').disable();
-          employeesDetailsArray?.at(0)?.get('manager').disable();
-          employeesDetailsArray?.at(0)?.get('is_primary').disable();
+          employeesDetailsArray?.at(0)?.get('employee')?.disable();
+          employeesDetailsArray?.at(0)?.get('manager')?.disable();
+          employeesDetailsArray?.at(0)?.get('is_primary')?.disable();
         }
         },(error => {
           this.apiService.showError(error?.error?.detail)
