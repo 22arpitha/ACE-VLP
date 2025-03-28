@@ -30,7 +30,7 @@
   overflow-x: auto;
   margin-bottom: 20px;
 }
-::ng-deep .jobs mat-select {
+.jobs mat-select.mat-select-table {
   border: 1px solid #929292 !important;
   border-radius: 8px !important;
   padding: 4px 0px !important;

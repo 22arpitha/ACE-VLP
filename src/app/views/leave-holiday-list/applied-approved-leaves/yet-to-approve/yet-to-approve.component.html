@@ -67,7 +67,7 @@
   <!-- Items Per Page Selector (Right-Aligned) -->
   <div class="items-per-page-container pe-2">
     <div>Items per page</div>
-    <mat-select [(ngModel)]="tableSize" (selectionChange)="onTableSizeChange($event)" placeholder="10" class="page-size">
+    <mat-select [(ngModel)]="tableSize" (selectionChange)="onTableSizeChange($event)" placeholder="10" disableOptionCentering panelClass="paginationPanelClass" class="page-size">
       <mat-option *ngFor="let size of tableSizes" [value]="size">{{size}}</mat-option>
     </mat-select>
   </div>
@@ -202,7 +202,7 @@
       <!-- Items Per Page Selector (Center-Aligned) -->
       <div class="d-flex justify-content-center align-items-center">
         <div>Items per page</div>
-        <mat-select [(ngModel)]="tableSize" (selectionChange)="onTableSizeChange($event)" placeholder="10" class="page-size">
+        <mat-select [(ngModel)]="tableSize" (selectionChange)="onTableSizeChange($event)" placeholder="10" disableOptionCentering panelClass="paginationPanelClass" class="page-size">
           <mat-option *ngFor="let size of tableSizes" [value]="size">{{size}}</mat-option>
         </mat-select>
       </div>

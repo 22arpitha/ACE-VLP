@@ -91,7 +91,7 @@
     </pagination-controls>
     <div class="items-per-page-container">
       <div>Items per page</div>
-      <mat-select [(ngModel)]="tableSize" (selectionChange)="onTableSizeChange($event)" placeholder="10"
+      <mat-select [(ngModel)]="tableSize" (selectionChange)="onTableSizeChange($event)" placeholder="10" disableOptionCentering panelClass="paginationPanelClass"
         class="page-size">
         <mat-option *ngFor="let size of tableSizes" [value]="size">{{size}}</mat-option>
       </mat-select>
@@ -192,7 +192,7 @@
       <!-- Items Per Page Selector (Right-Aligned) -->
       <div class="items-per-page-container">
         <div>Items per page</div>
-        <mat-select [(ngModel)]="tableSize" (selectionChange)="onTableSizeChange($event)" placeholder="10"
+        <mat-select [(ngModel)]="tableSize" (selectionChange)="onTableSizeChange($event)" placeholder="10" disableOptionCentering panelClass="paginationPanelClass"
           class="page-size">
           <mat-option *ngFor="let size of tableSizes" [value]="size">{{size}}</mat-option>
         </mat-select>

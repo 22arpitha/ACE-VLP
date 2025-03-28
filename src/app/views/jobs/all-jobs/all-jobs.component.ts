@@ -43,8 +43,8 @@ export class AllJobsComponent implements OnInit {
   accessPermissions = []
   user_id: any;
   userRole: any;
-allEmployeelist:any=[];
-allManagerlist:any=[];
+  allEmployeelist:any=[];
+  allManagerlist:any=[];
 
   constructor(private common_service: CommonServiceService, private accessControlService: SubModuleService,
     private router: Router, private modalService: NgbModal, private dialog: MatDialog,
@@ -67,9 +67,9 @@ allManagerlist:any=[];
     this.accessControlService.getAccessForActiveUrl(this.user_id).subscribe((access) => {
       if (access) {
         this.accessPermissions = access[0].operations;
-        console.log('Access Permissions:', this.accessPermissions);
+       // console.log('Access Permissions:', this.accessPermissions);
       } else {
-        console.log('No matching access found.');
+      //  console.log('No matching access found.');
       }
     });
   }
@@ -130,7 +130,7 @@ allManagerlist:any=[];
         }
       });
     } catch (error) {
-      console.error('Error opening modal:', error);
+    //  console.error('Error opening modal:', error);
     }
   }
   public getCurrentJobsList() {
@@ -232,12 +232,12 @@ allManagerlist:any=[];
   }
 
   onStatusChange(item: any, event: any) {
-    console.log(event)
+    //console.log(event)
     const selectedStatusId = event.value;
 
     // Find the percentage associated with the selected status
     const selectedStatus = this.allJobStatus.find(status => status.id == selectedStatusId);
-    console.log(selectedStatus)
+    //console.log(selectedStatus)
     if (selectedStatus) {
       item.job_status = event.value;
       item.percentage_of_completion = selectedStatus.percentage_of_completion;
@@ -307,7 +307,7 @@ allManagerlist:any=[];
     fetch(apiUrl)
   .then(res => res.blob())
   .then(blob => {
-    console.log('blob',blob);
+    //console.log('blob',blob);
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
     a.download = `job_details.${type}`;

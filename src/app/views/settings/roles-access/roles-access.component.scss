@@ -67,7 +67,15 @@
   height: 70vh !important;
   overflow-y: auto !important;
   overflow-x: hidden !important;
+  padding-right: 10px;
 }
+.sm-content-page {
+  height: 60vh !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  padding-right: 10px;
+}
+
 .list-group {
   box-shadow: 0px 0px 4px 0px #00000040;
   border-radius: 10px;

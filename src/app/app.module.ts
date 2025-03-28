@@ -73,7 +73,7 @@ import { CommonModule } from '@angular/common';
 import { ModalModule, BsModalService } from 'ngx-bootstrap/modal';
 import { CarouselModule } from 'ngx-bootstrap/carousel';
 import { UserGuideModalComponent } from './views/user-guide-modal/user-guide-modal.component';
-import {MatDialogModule} from '@angular/material/dialog';
+import { MatDialogModule} from '@angular/material/dialog';
 import { UserWelcomeMsgComponent } from './views/user-welcome-msg/user-welcome-msg.component';
 import { RazorpayService } from './service/razorpay.service';
 import { UseraccessInfoPopupComponent } from './views/useraccess-info-popup/useraccess-info-popup.component';
@@ -161,7 +161,7 @@ const APP_CONTAINERS = [
     // FullCalendarModule
     NgxUiLoaderModule,
     NgxUiLoaderHttpModule.forRoot({
-      showForeground: false
+      showForeground: true
     })
   ],
   exports: [

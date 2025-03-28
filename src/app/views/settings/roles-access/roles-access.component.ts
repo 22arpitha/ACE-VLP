@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, HostListener, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ApiserviceService } from '../../../service/apiservice.service';
@@ -27,6 +27,7 @@ export class RolesAccessComponent implements OnInit {
   buttonName: any;
   selectedTab: any = null;
   user_role: any
+  isSmallScreen: boolean = false; 
   constructor(private _fb: FormBuilder, private router: Router, private routes: ActivatedRoute, private common_service: CommonServiceService,
     private api: ApiserviceService,
   ) {
@@ -42,9 +43,17 @@ export class RolesAccessComponent implements OnInit {
     this.common_service.setTitle(this.BreadCrumbsTitle);
     this.getDesignationNameFromDesignationId();
     this.allrolesList();
+    this.checkScreenSize(); 
   }
 
+  @HostListener('window:resize', ['$event'])
+  onResize(event?: Event) {
+    this.checkScreenSize();
+  }
 
+  checkScreenSize() {
+    this.isSmallScreen = window.innerWidth < 768; // Adjust breakpoint as needed
+  }
 
 
   getDesignationNameFromDesignationId() {
