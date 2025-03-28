@@ -11,7 +11,7 @@
                 <button mat-raised-button class="mat-btn-s tab-button-content order-sm-2 order-1" [ngClass]="{'isActive': isCurrent}" type="button" (click)="getCurrentEmployeeList()">Current</button> 
                 <button mat-raised-button class="mat-btn-s tab-button-content order-sm-3 order-2" [ngClass]="{'isActive': isHistory}" type="button" (click)="getEmployeeHistoryList()">History</button> 
                 <!-- <button mat-raised-button class="proceedbtn mat-btn-s download-btn" type="button"><i class="fa fa-download"></i></button> -->
-                <button mat-raised-button class="proceedbtn mat-btn-s order-sm-1 order-3" type="button" (click)="openCreateEmployeePage()">Create
+                <button mat-raised-button class="proceedbtn mat-btn-s order-sm-1 order-3" type="button" (click)="openCreateEmployeePage()" *ngIf="userRole !='Admin' && accessPermissions[0]?.create || userRole === 'Admin'">Create
                   Employee</button>    
               </div>
           </div>
@@ -68,7 +68,7 @@
                       </td>
                       <td> <ng-container>
                         <img src="../../../../assets/images/Edit.svg" class="icon-image" type="button" container="body"
-                          ngbTooltip="Edit" (click)="edit(item)" *ngIf="userRole !='Admin' && accessPermissions[0]?.update || userRole === 'Admin'"/>
+                          ngbTooltip="Edit" (click)="edit(item)" *ngIf="userRole !='Admin' && (accessPermissions[0]?.view || accessPermissions[0]?.update) || userRole === 'Admin'"/>
                           <span  *ngIf="userRole !='Admin' && !accessPermissions[0]?.update && !accessPermissions[0]?.delete">-</span>
                         </ng-container></td>
                     </tr>

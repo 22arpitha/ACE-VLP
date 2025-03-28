@@ -3,7 +3,7 @@
       <div class="row mx-0 px-0">
         <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0">
             <form [formGroup]="jobFormGroup">
-                <div class="row mx-0 my-0 px-2">
+                <div class="row mx-0 my-0 px-2" >
                     <!-- Job Number -->
                     <div class="col-12 col-sm-12 col-md-6 col-lg-3 my-1 px-0">
                     <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
@@ -29,7 +29,7 @@
         <mat-label>Client <b class="r-star">*</b></mat-label>
         <mat-select formControlName="client" autocomplete="off"
                 placeholder="Client" panelClass="custom-select-panel"
-                [disableOptionCentering]="true" (selectionChange)="onClientChange($event)">
+                [disableOptionCentering]="true" (selectionChange)="onClientChange($event)" >
                 <div class="mat-select-search-wrapper d-flex">
                   <input matInput [(ngModel)]="searchClientText" autofocus [ngModelOptions]="{standalone: true}" placeholder="Search Client" class="mat-select-search">
                   <mat-icon class="search-icon" *ngIf="!searchClientText">search</mat-icon>
@@ -252,7 +252,7 @@
 
 </div>
 </div>
-<section class="settings-table-bg">
+<section class="settings-table-bg" >
   <div class="row mx-0 my-1 px-0">
       <div class="col-12 col-sm-12 col-md-6 col-lg-10 py-1 px-0">
           <h4>Employee Details</h4>
@@ -364,7 +364,7 @@
       </div>
     </div>
   </section> 
-<section class="rich-editor-bg mx-0 my-3 px-2">
+<section class="rich-editor-bg mx-0 my-3 px-2" >
     <div class="editor-container NgxEditor__Wrapper px-0">
       <ngx-editor-menu [editor]="editor" [toolbar]="toolbar"> </ngx-editor-menu>
       <ngx-editor
@@ -377,7 +377,7 @@
     <div class="col-12 col-sm-12 col-md-6 col-lg-3 align-content-center px-0">
         <button mat-button class="cancel-button mat-btn-s" type="button" (click)="backBtnFunc()" >
             Back</button>
-        <button mat-raised-button class="proceedbtn mat-btn-s" type="submit" (click)="saveJobDetails()"><span
+        <button mat-raised-button class="proceedbtn mat-btn-s" type="submit" (click)="saveJobDetails()" *ngIf="user_role_name !='Admin' && (accessPermissions[0]?.create || accessPermissions[0]?.update) || user_role_name === 'Admin'"><span
             *ngIf="!isEditItem">Submit</span><span *ngIf="isEditItem" >Update</span></button>
       </div>
       <div class="col-lg-3"></div>
