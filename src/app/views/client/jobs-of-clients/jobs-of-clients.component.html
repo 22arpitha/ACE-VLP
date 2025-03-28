@@ -1,0 +1,96 @@
+<div class="container-wrapper settings-main-content px-0">
+    <section class="settings-table-bg" >
+        <div class="row mx-0 my-0 px-0 py-2">
+          <div class="col-sm-12 col-md-4 col-lg-4 search-div px-0">
+            <input type="search" (input)="filterSearch($event)" class="form-control p-2 sizeinput" [(ngModel)]="term"
+              placeholder="Search" aria-describedby="emailHelp" autocomplete="off">
+            <i *ngIf="!term" class="bi bi-search" id="search-icon-tab"></i>
+          </div>
+        </div>
+        <div class="row mx-0 my-2 px-0 table-wrapper">
+          <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0 ">
+            <table class="table table table-hover table-list">
+              <thead>
+                <tr>
+                  <th scope="col"> S.No</th>
+                  <th scope="col">Job Number
+                    <i *ngIf="!arrowState['job_number']" (click)="sort('asc', 'job_number')" class="bi bi-arrow-down"></i>
+                    <i *ngIf="arrowState['job_number']" (click)="sort('desc', 'job_number')" class="bi bi-arrow-up"></i>  
+                  </th>
+                  <th scope="col">Job Name
+                    <i *ngIf="!arrowState['job_name']" (click)="sort('asc', 'job_name')" class="bi bi-arrow-down"></i>
+                    <i *ngIf="arrowState['job_name']" (click)="sort('desc', 'job_name')" class="bi bi-arrow-up"></i>  
+                  </th>
+                  <th scope="col">Job Allocation Date</th>
+                  <th scope="col">Employee 
+                    <i *ngIf="!arrowState['employee_name']" (click)="sort('asc', 'employee_name')" class="bi bi-arrow-down"></i>
+                    <i *ngIf="arrowState['employee_name']" (click)="sort('desc', 'employee_name')" class="bi bi-arrow-up"></i>  
+                  </th>
+                  <th scope="col">Status 
+                    <i *ngIf="!arrowState['status']" (click)="sort('asc', 'status')" class="bi bi-arrow-down"></i>
+                    <i *ngIf="arrowState['status']" (click)="sort('desc', 'status')" class="bi bi-arrow-up"></i>  
+                  </th>
+                  <th scope="col">Status Date</th>
+                  <!-- <th scope="col">Action </th> -->
+                </tr>
+              </thead>
+              <tbody>
+    
+                <ng-container *ngIf="(allJobs) as result">
+                  <tr *ngFor='let item of result | customSort:directionValue:sortValue
+                             |paginate : {
+                                      itemsPerPage: tableSize,
+                                      currentPage: page,
+                                      totalItems: count
+                                    }; let i=index'>
+                                 
+                            <td>{{getContinuousIndex(i)}}</td>
+                            <td>{{item.job_number}}</td>
+                            <td>{{item.job_name}}</td>
+                            <td>{{item.job_allocation_date}}</td>
+                            <td *ngIf="item.employees.length > 0">
+                              <div *ngFor="let employee of item.employees">
+                                {{employee.employee_name}}
+                              </div>
+                            </td>
+                            <td *ngIf="item.employees.length === 0">
+                              {{'-'}}
+                            </td>
+                            <td>{{item.job_status_name}}</td>
+                            <td>{{item.job_status_date}}</td>
+                    <!-- <td>
+                      <ng-container>
+                        <img src="../../../../assets/images/Edit.svg" class="icon-image" type="button" container="body"
+                          ngbTooltip="Edit" (click)="edit(item)" />
+                        <img src="../../../../assets/images/Delete.svg" class="icon-image" type="button" container="body"
+                          ngbTooltip="Delete" (click)="delete(item.id)" />
+                        </ng-container>
+                    </td> -->
+    
+                  </tr>
+    
+                </ng-container>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="col-12" *ngIf="allJobs.length === 0">
+          <app-generic-norecards></app-generic-norecards>
+        </div>
+      </section>
+      <div class="row mx-0 my-2 px-2" >
+        <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0" *ngIf="allJobs.length > 0">
+          <div class="pagination-container p-0 pt-2">
+            <pagination-controls previousLabel="Prev" nextLabel="Next" (pageChange)="onTableDataChange($event)">
+            </pagination-controls>
+            <div class="items-per-page-container">
+              <div>Items per page</div>
+              <mat-select [(ngModel)]="tableSize" (selectionChange)="onTableSizeChange($event)" placeholder="10"
+                class="page-size">
+                <mat-option *ngFor="let size of tableSizes" [value]="size">{{size}}</mat-option>
+              </mat-select>
+            </div>
+          </div>
+        </div>
+      </div>
+  </div>

@@ -5,7 +5,9 @@
 ::ng-deep .mat-form-field-wrapper {
   padding: 15px 0 !important;
 }
-
+.no-padding-bottom ::ng-deep .mat-form-field-wrapper {
+  padding-bottom: 0 !important;
+}
 .file {
   border: 1px solid #ebedef;
   padding: 5px;

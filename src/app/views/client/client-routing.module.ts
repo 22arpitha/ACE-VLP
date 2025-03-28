@@ -3,7 +3,6 @@ import { RouterModule, Routes } from '@angular/router';
 import { ClientListComponent } from './client-list/client-list.component';
 import { ClientComponent } from './client.component';
 import { CreateClientComponent } from './create-client/create-client.component';
-import { UpdateClientComponent } from './update-client/update-client.component';
 import { TabsListComponent } from './tabs-list/tabs-list.component';
 import {JobsOfEndclientComponent} from './jobs-of-endclient/jobs-of-endclient.component'
 import { ClientsOfGroupComponent } from './clients-of-group/clients-of-group.component';

@@ -75,8 +75,34 @@ thead th {
   opacity: 0.6; /* Optional: makes it visually clear that it's disabled */
 }
 .NgxEditor__Wrapper .NgxEditor .NgxEditor__Content{
-height: 100px !important;
-overflow: auto !important;
+  height: 200px !important;
+  overflow: auto !important;
+}
+// Rich editor css
+.editor-container {
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin: 10px 0;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  position: relative;
+}
+.ck-editor__editable_inline {
+  border: 1px solid #ccc;
+  padding: 10px;
+  border-radius: 5px;
+}
+ngx-editor-menu {
+  z-index: 10; 
+  position: relative; 
+}
+ngx-editor {
+  flex-grow: 1; 
+  overflow: auto;
+}
+.NgxEditor__Popup input{
+height: 25px !important;
 }
 @media only screen and (min-width: 280px) and (max-width: 767px)  {
     .no-padding{

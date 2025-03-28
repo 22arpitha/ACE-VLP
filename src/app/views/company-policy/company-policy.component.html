@@ -5,17 +5,18 @@
           <form [formGroup]="companyPolicyForm">
             <div class="row mx-0 my-0 p-0">
               <div class="col-12 col-sm-12 col-md-6 col-lg-3 px-2">
-                <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+                <mat-form-field appearance="outline" class="w-100 custom-mat-form-field no-padding-bottom">
                   <mat-label>Policy Name<b class="r-star">*</b></mat-label>
                   <input matInput placeholder="Enter Policy Name" formControlName="policy_name" autocomplete="off">
-                  <mat-error *ngIf="f['policy_name']?.invalid && f['policy_name']?.touched || f['policy_name']?.dirty">
-                    <span *ngIf="f['policy_name'].errors?.['required']">Policy name is required</span>
-                    <span
-                      *ngIf="!f['policy_name'].errors?.['required'] && f['policy_name'].errors?.['pattern']">
-                      Invalid name. Extra space and special charaters are not allowed
-                    </span>
-                  </mat-error>
+                  
                 </mat-form-field>
+                <div style="font-size: 11px;padding-left: 10px;color:#f44336" *ngIf="f['policy_name']?.invalid && f['policy_name']?.touched || f['policy_name']?.dirty">
+                  <span *ngIf="f['policy_name'].errors?.['required']">Policy name is required</span>
+                  <span
+                    *ngIf="!f['policy_name'].errors?.['required'] && f['policy_name'].errors?.['pattern']">
+                    Invalid name. Extra space and special charaters are not allowed
+                  </span>
+                </div>
               </div>
               <div class="col-12 col-sm-12 col-md-6 col-lg-3 px-2 mt-3">
                 <input type="file"  accept=".doc,.docx,.pdf" formControlName="policy_file" #fileInput (change)="onFileSelected($event)" hidden>
@@ -64,7 +65,7 @@
                   </mat-error>
                 </mat-form-field>
               </div> -->
-              <div class="col-12 col-sm-12 col-md-6 col-lg-3 align-content-center">
+              <div class="col-12 col-sm-12 col-md-6 col-lg-3 align-content-center mt-2 d-flex">
                 <button mat-raised-button class="cancel-button mat-btn-s" type="button" (click)="resetFormState()">
                   Cancel</button>
                 <button mat-raised-button class="proceedbtn mat-btn-s" type="submit"

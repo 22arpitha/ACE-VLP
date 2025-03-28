@@ -10,10 +10,18 @@
             <div class="col-12 mt-2 col-sm-12 col-md-4 col-lg-6 text-end px-0">
                 <button mat-raised-button class="mat-btn-s tab-button-content" [ngClass]="{'isActive': isCurrent}" type="button" (click)="getCurrentJobs()">Current</button> 
                 <button mat-raised-button class="mat-btn-s tab-button-content" [ngClass]="{'isActive': isHistory}" type="button" (click)="getJobsHistory()">History</button> 
-                <button mat-raised-button class="proceedbtn mat-btn-s download-btn" type="button"><i class="fa fa-download"></i></button>
+                <button mat-raised-button class="proceedbtn mat-btn-s download-btn" type="button" [matMenuTriggerFor]="downloadMenu"><i class="fa fa-download"></i></button>
                 <button mat-raised-button class="proceedbtn mat-btn-s" type="button" (click)="openCreateClientPage()"
                 *ngIf="userRole !='Admin' && accessPermissions[0]?.create || userRole === 'Admin'">Create
                   Jobs</button>
+                  <mat-menu #downloadMenu="matMenu">
+                    <button mat-menu-item (click)="downloadOption('pdf')">
+                      <i class="fa fa-file-pdf"></i> PDF
+                    </button>
+                    <button mat-menu-item (click)="downloadOption('csv')">
+                      <i class="fa fa-file-excel"></i> CSV
+                    </button>
+                  </mat-menu>    
               </div>
           </div>
           <div class="row mx-1 my-2 px-0 table-wrapper">
@@ -122,5 +130,7 @@
           </div>
         </div>
       </div>
+    </div>
   </div>
+  
   

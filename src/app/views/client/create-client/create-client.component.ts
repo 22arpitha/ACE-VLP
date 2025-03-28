@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import {  Validators, FormBuilder,FormGroup, FormGroupDirective, AbstractControl, ValidationErrors, FormArray, FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable, of } from 'rxjs';
@@ -64,7 +64,7 @@ selectedFile: File | null = null;
 userRole: any;
     constructor(private fb:FormBuilder,private activeRoute:ActivatedRoute,
       private common_service: CommonServiceService,private router:Router,private datepipe:DatePipe,
-      private apiService: ApiserviceService,private modalService: NgbModal) { 
+      private apiService: ApiserviceService,private modalService: NgbModal,private cdr: ChangeDetectorRef) { 
       this.common_service.setTitle(this.BreadCrumbsTitle)
       this.user_role_name = sessionStorage.getItem('user_role_name');
       if(this.activeRoute.snapshot.paramMap.get('id')){
@@ -119,7 +119,7 @@ userRole: any;
         email:['',[Validators.required,Validators.pattern('^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$')]],
         country: ['', Validators.required],
         source: ['', Validators.required],
-        address: ['', [Validators.required, Validators.maxLength(50)]],
+        address: ['', [Validators.required, Validators.maxLength(200)]],
         service_start_date: ['', Validators.required],
         service_end_date: [null],
         client_file:[null],
@@ -518,19 +518,21 @@ respData.contact_details.forEach(({ name, email, phone_number }, index, array) =
   }
 
   get currentPageRows() {
-    const startIndex = this.currentPage * this.pageSize;
+    const startIndex = (this.currentPage - 1) * this.pageSize;
     const endIndex = startIndex + this.pageSize;
     return this.employeeFormArray.controls.slice(startIndex, endIndex);
-  }
+}
 
   onPageChanged(event: any) {
     this.currentPage = event.pageIndex + 1;  // `pageIndex` is 0-based, so we add 1
     this.pageSize = event.pageSize;
+    this.cdr.markForCheck();
   }
 
   public getContinuousIndex(index: number): number {
     return (this.currentPage - 1) * this.pageSize + index + 1;
-  }
+}
+
   public getFileName(url:any){
     return url?.split('/')?.pop(); 
   }

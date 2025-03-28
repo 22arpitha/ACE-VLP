@@ -9,19 +9,6 @@
 ::ng-deep .mat-form-field-appearance-outline .mat-form-field-suffix {
   top: .25em !important;
 }
-// Rich editor css
-.editor-container {
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  margin: 10px 0;
-}
-.ck-editor__editable_inline {
-  min-height: 300px;
-  border: 1px solid #ccc;
-  padding: 10px;
-  border-radius: 5px;
-}
-
 .settings-table-bg{
   max-height: max-content !important;
 }
@@ -67,4 +54,9 @@ padding: 0 !important;
 
 .contact-details-table tbody tr td{
   text-align: start !important;
+}
+textarea[matInput] {
+  min-height: 50px; 
+  max-height: max-content;
+  height: auto;
 }

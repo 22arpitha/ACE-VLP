@@ -5,18 +5,18 @@
         <form [formGroup]="templateForm">
           <div class="row mx-0 my-0 p-0">
             <div class="col-12 col-sm-12 col-md-6 col-lg-3 px-2">
-              <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+              <mat-form-field appearance="outline" class="w-100 custom-mat-form-field no-padding-bottom">
                 <mat-label>Template Name<b class="r-star">*</b></mat-label>
                 <input matInput placeholder="Enter Template Name" formControlName="template_name" autocomplete="off">
-                <mat-error
-                  *ngIf="f['template_name']?.invalid && f['template_name']?.touched || f['template_name']?.dirty">
+                
+              </mat-form-field>
+              <div style="font-size: 11px;padding-left: 10px;color:#f44336" *ngIf="f['template_name']?.invalid && f['template_name']?.touched || f['template_name']?.dirty">
                   <span *ngIf="f['template_name'].errors?.['required']">Template Name is required</span>
                   <span
                     *ngIf="!f['template_name'].errors?.['required'] && f['template_name'].errors?.['pattern']">
                     Invalid name. Extra space and special charaters are not allowed
                   </span>
-                </mat-error>
-              </mat-form-field>
+                </div>
             </div>
             <div class="col-12 col-sm-12 col-md-6 col-lg-3 px-2 mt-3">
               <input type="file" accept=".xlsx,.xls,.doc,.docx" formControlName="template_file" #fileInput
@@ -44,35 +44,37 @@
               <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
                 <mat-label>Password<b class="r-star"></b></mat-label>
                 <input matInput placeholder="Enter Password" formControlName="password" autocomplete="off">
-                <mat-error *ngIf="f['password']?.invalid && f['password']?.touched || f['password']?.dirty">
-                  <span *ngIf="f['password'].errors?.['required']">Password is required</span>
-                  <span
-                    *ngIf="!f['password'].errors?.['required'] && f['password'].errors?.['pattern'] && !f['password'].errors?.['maxlength']">
-                    Invalid name. Extra space and special charaters are not allowed
-                  </span>
-                  <span *ngIf="!f['password'].errors?.['required'] && f['password'].errors?.['maxlength']">
-                    Password cannot exceed 20 characters.
-                  </span>
-                </mat-error>
+                
               </mat-form-field>
+              <div style="font-size: 11px;padding-left: 10px;color:#f44336" *ngIf="f['password']?.invalid && f['password']?.touched || f['password']?.dirty">
+                <span *ngIf="f['password'].errors?.['required']">Password is required</span>
+                <span
+                  *ngIf="!f['password'].errors?.['required'] && f['password'].errors?.['pattern'] && !f['password'].errors?.['maxlength']">
+                  Invalid name. Extra space and special charaters are not allowed
+                </span>
+                <span *ngIf="!f['password'].errors?.['required'] && f['password'].errors?.['maxlength']">
+                  Password cannot exceed 20 characters.
+                </span>
+              </div>
             </div>
             <div class="col-12 col-sm-12 col-md-6 col-lg-3 px-2">
               <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
                 <mat-label>When To Use<b class="r-star"></b></mat-label>
                 <input matInput placeholder="Enter When To Use" formControlName="when_to_use" autocomplete="off">
-                <mat-error *ngIf="f['when_to_use']?.invalid && f['when_to_use']?.touched || f['when_to_use']?.dirty">
-                  <span *ngIf="f['when_to_use'].errors?.['required']">When To Use is required</span>
-                  <span
-                    *ngIf="!f['when_to_use'].errors?.['required'] && f['when_to_use'].errors?.['pattern'] && !f['when_to_use'].errors?.['maxlength']">
-                    Invalid name. Extra space and special charaters are not allowed
-                  </span>
-                  <span *ngIf="!f['when_to_use'].errors?.['required'] && f['when_to_use'].errors?.['maxlength']">
-                    When To Use cannot exceed 20 characters.
-                  </span>
-                </mat-error>
+                
               </mat-form-field>
+              <div style="font-size: 11px;padding-left: 10px;color:#f44336" *ngIf="f['when_to_use']?.invalid && f['when_to_use']?.touched || f['when_to_use']?.dirty">
+                <span *ngIf="f['when_to_use'].errors?.['required']">When To Use is required</span>
+                <span
+                  *ngIf="!f['when_to_use'].errors?.['required'] && f['when_to_use'].errors?.['pattern'] && !f['when_to_use'].errors?.['maxlength']">
+                  Invalid name. Extra space and special charaters are not allowed
+                </span>
+                <span *ngIf="!f['when_to_use'].errors?.['required'] && f['when_to_use'].errors?.['maxlength']">
+                  When To Use cannot exceed 20 characters.
+                </span>
+              </div>
             </div>
-            <div class="col-12 col-sm-12 col-md-6 col-lg-3 align-content-center">
+            <div class="col-12 col-sm-12 col-md-6 col-lg-3 align-content-center d-flex mt-2">
               <button mat-raised-button class="cancel-button mat-btn-s" type="button" (click)="resetFormState()">
                 Cancel</button>
               <button mat-raised-button class="proceedbtn mat-btn-s" type="submit" (click)="saveTemplateDetails()"><span
