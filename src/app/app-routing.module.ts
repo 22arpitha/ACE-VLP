@@ -8,13 +8,8 @@ import { LoginComponent } from './views/login/login.component';
 import { RegisterComponent } from './views/pages/register/register.component';
 import { ForgotPasswordComponent } from './views/pages/forgot-password/forgot-password.component';
 import { OtpComponent } from './views/pages/otp/otp.component';
-import { ChangePasswordComponent } from './views/pages/change-password/change-password.component';
-import { CreateRoleComponent } from './views/pages/create-role/create-role.component';
 import { ForgotChangeComponent } from './views/pages/forgot-change/forgot-change.component';
 import { ActivateChildGuard } from './activate-child.guard'
-import { AuthGuard } from './auth.guard'
-import { OrgAuthGuard } from './org-auth.guard';
-import { NotificationComponent } from './views/pages/notification/notification.component';
 import { SubscriptionConfigComponent } from './views/organization/subscription-config/subscription-config.component';
 import { NoInternetComponent } from './views/pages/no-internet/no-internet.component';
 import { Page504Component } from './views/pages/page504/page504.component';
