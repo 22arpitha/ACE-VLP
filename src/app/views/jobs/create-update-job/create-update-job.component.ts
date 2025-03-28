@@ -678,24 +678,18 @@ return json;
         }
 
       }
-      public isPrimarySelection(event:any,selectedIndex:any){
+     
+      public isPrimarySelection(event: { checked: boolean }, selectedIndex: number): void {
         this.employeeFormArray.controls.forEach((control, index) => {
-          if(event.checked === true){
-            if (index !== selectedIndex) {
-              control.get('is_primary')?.setValue(false, { emitEvent: false });
-              control.get('is_primary')?.disable();
-            } else {
-              control.get('is_primary')?.setValue(true, { emitEvent: false })
-              control.get('is_primary')?.enable();
-            }
-          }else{
-            control.get('is_primary')?.setValue(false, { emitEvent: false })
-              control.get('is_primary')?.enable();
+          if (event.checked && index !== selectedIndex) {
+            control.get('is_primary')?.setValue(false, { emitEvent: false });
+            control.get('is_primary')?.disable();
+          } else {
+            control.get('is_primary')?.enable();
           }
-          
         });
-        console.log('Form', this.employeeFormArray.controls.values)
       }
+      
 
       get currentPageRows() {
         const startIndex = (this.currentPage - 1) * this.pageSize;
@@ -704,7 +698,7 @@ return json;
     }
     
       onPageChanged(event: any) {
-        this.currentPage = event.pageIndex + 1;  // `pageIndex` is 0-based, so we add 1
+        this.currentPage = event.pageIndex + 1;  
         this.pageSize = event.pageSize;
       }
     
