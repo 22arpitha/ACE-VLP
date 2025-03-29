@@ -17,6 +17,7 @@ import { SubModuleService } from '../../../app/service/sub-module.service';
 export class TemplatesComponent implements OnInit {
   @ViewChild(FormGroupDirective) formGroupDirective!: FormGroupDirective;
   @ViewChild('fileInput') fileInput: ElementRef;
+  @ViewChild('formInputField') formInputField: ElementRef;
   BreadCrumbsTitle: any = 'Templates';
   isEditItem: boolean = false;
   templateForm: FormGroup;
@@ -229,6 +230,7 @@ public createFromData(){
           this.selectedTemplate = item?.id;
           this.isEditItem = true;
           modalRef.dismiss();
+          this.scrollToField();
           this.getSelectedTemplateDetails(this.selectedTemplate);
         } else {
           modalRef.dismiss();
@@ -260,6 +262,13 @@ public createFromData(){
       this.apiService.showError(error?.error?.message);
     })
   }
+
+  public scrollToField(){
+    if (this.formInputField) {
+      this.formInputField?.nativeElement?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }
+
   public filterSearch(event) {
     const input = event?.target?.value?.trim() || ''; // Fallback to empty string if undefined
     if (input && input.length >= 2) {

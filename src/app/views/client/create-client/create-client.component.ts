@@ -10,6 +10,7 @@ import { GenericDeleteComponent } from '../../../generic-delete/generic-delete.c
 import { environment } from '../../../../environments/environment';
 import { MatPaginator } from '@angular/material/paginator';
 import { DatePipe } from '@angular/common';
+import { FormErrorScrollUtilityService } from '../../../service/form-error-scroll-utility-service.service';
 
 
 
@@ -63,8 +64,8 @@ selectedFile: File | null = null;
   accessPermissions = []
 userRole: any;
     constructor(private fb:FormBuilder,private activeRoute:ActivatedRoute,
-      private common_service: CommonServiceService,private router:Router,private datepipe:DatePipe,
-      private apiService: ApiserviceService,private modalService: NgbModal,private cdr: ChangeDetectorRef) { 
+      private common_service: CommonServiceService,private router:Router,private datepipe:DatePipe,private modalService: NgbModal,private cdr: ChangeDetectorRef,
+      private apiService: ApiserviceService,private formErrorScrollService:FormErrorScrollUtilityService) { 
       this.common_service.setTitle(this.BreadCrumbsTitle)
       this.user_role_name = sessionStorage.getItem('user_role_name');
       if(this.activeRoute.snapshot.paramMap.get('id')){
@@ -427,6 +428,7 @@ respData.contact_details.forEach(({ name, email, phone_number }, index, array) =
       public saveClientDetails(){
         if (this.clientFormGroup.invalid) {
           this.clientFormGroup.markAllAsTouched();
+          this.formErrorScrollService.scrollToFirstError(this.clientFormGroup);
         } else {
           if (this.isEditItem) {
             this.formData = this.createFromData();
@@ -500,6 +502,8 @@ respData.contact_details.forEach(({ name, email, phone_number }, index, array) =
       if (!isEmployeeExists) {
         this.employeeFormArray.push(this.createEmployeeControl());
         this.employeeFormArray.at(this.employeeFormArray.length - 1).setValue(this.selectedEmployee);
+      }else{
+        this.apiService.showWarning('Employee already exists in the list.');
       }
       this.selectedEmployee = null;
     }

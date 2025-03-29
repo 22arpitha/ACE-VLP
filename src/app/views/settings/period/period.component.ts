@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, FormGroupDirective, Validators } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { GenericDeleteComponent } from 'src/app/generic-delete/generic-delete.component';
@@ -15,6 +15,7 @@ import { environment } from 'src/environments/environment';
 export class PeriodComponent implements OnInit {
 
   @ViewChild(FormGroupDirective) formGroupDirective!: FormGroupDirective;
+   @ViewChild('formInputField') formInputField: ElementRef;
  
    BreadCrumbsTitle: any = 'Period';
    isEditItem: boolean = false;
@@ -205,6 +206,7 @@ export class PeriodComponent implements OnInit {
            this.selectedperiod = item?.id;
            this.isEditItem = true;
            modalRef.dismiss();
+           this.scrollToField();
            this.getSelectedPeriod(this.selectedperiod);
          } else {
            modalRef.dismiss();
@@ -214,6 +216,12 @@ export class PeriodComponent implements OnInit {
        console.error('Error opening modal:', error);
      }
    }
+
+   public scrollToField(){
+    if (this.formInputField) {
+      this.formInputField?.nativeElement?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }
  
    public getSelectedPeriod(id: any) {
      this.apiService.getData(`${environment.live_url}/${environment.settings_period}/${id}/`).subscribe((respData: any) => {

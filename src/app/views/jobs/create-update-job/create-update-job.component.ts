@@ -9,6 +9,7 @@ import { ApiserviceService } from '../../../service/apiservice.service';
 import { CommonServiceService } from '../../../service/common-service.service';
 import { environment } from '../../../../environments/environment';
 import { GenericDeleteComponent } from './../../../generic-delete/generic-delete.component';
+import { FormErrorScrollUtilityService } from '../../../service/form-error-scroll-utility-service.service';
 
 @Component({
   selector: 'app-create-update-job',
@@ -69,7 +70,7 @@ user_id:any;
 currentDate:any = new Date().toISOString();
   constructor(private fb:FormBuilder,private activeRoute:ActivatedRoute,
         private common_service: CommonServiceService,private router:Router,private datepipe:DatePipe,
-        private apiService: ApiserviceService,private modalService: NgbModal) { 
+        private apiService: ApiserviceService,private modalService: NgbModal,private formErrorScrollService:FormErrorScrollUtilityService) { 
         this.common_service.setTitle(this.BreadCrumbsTitle);
         this.user_role_name = sessionStorage.getItem('user_role_name');
         this.user_id = sessionStorage.getItem('user_id');
@@ -545,6 +546,7 @@ if(respData){
       public saveJobDetails(){
         if (this.jobFormGroup.invalid) {
           this.jobFormGroup.markAllAsTouched();
+          this.formErrorScrollService.scrollToFirstError(this.jobFormGroup);
         } else {
           if (this.isEditItem) {
             this.formData = this.createFromData();

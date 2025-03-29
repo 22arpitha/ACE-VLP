@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, FormGroupDirective, Validators } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { GenericDeleteComponent } from '../../../generic-delete/generic-delete.component';
@@ -15,7 +15,7 @@ import { environment } from '../../../../environments/environment';
 export class PeriodicityComponent implements OnInit {
 
    @ViewChild(FormGroupDirective) formGroupDirective!: FormGroupDirective;
-  
+   @ViewChild('formInputField') formInputField: ElementRef;
     BreadCrumbsTitle: any = 'Periodicity';
     isEditItem: boolean = false;
     periodicityForm: FormGroup;
@@ -178,6 +178,7 @@ export class PeriodicityComponent implements OnInit {
             this.selectedPeriodicity = item?.id;
             this.isEditItem = true;
             modalRef.dismiss();
+            this.scrollToField();
             this.getSelectedPeriodicity(this.selectedPeriodicity);
           } else {
             modalRef.dismiss();
@@ -188,6 +189,12 @@ export class PeriodicityComponent implements OnInit {
       }
     }
   
+    public scrollToField(){
+      if (this.formInputField) {
+        this.formInputField?.nativeElement?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
+
     public getSelectedPeriodicity(id: any) {
       this.apiService.getData(`${environment.live_url}/${environment.settings_periodicty}/${id}/`).subscribe((respData: any) => {
         this.periodicityForm.patchValue({ 'periodicty_name': respData?.periodicty_name });

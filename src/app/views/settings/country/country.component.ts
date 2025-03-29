@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, FormGroupDirective, Validators } from '@angular/forms';
 import { ApiserviceService } from '../../../service/apiservice.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -14,6 +14,7 @@ import { SubModuleService } from 'src/app/service/sub-module.service';
 })
 export class CountryComponent implements OnInit {
   @ViewChild(FormGroupDirective) formGroupDirective!: FormGroupDirective;
+   @ViewChild('formInputField') formInputField: ElementRef;
   BreadCrumbsTitle: any = 'Country';
   countryForm: FormGroup;
   isEditItem: boolean = false;
@@ -182,6 +183,7 @@ export class CountryComponent implements OnInit {
           this.selectedItemId = item?.id;
           this.isEditItem = true;
           modalRef.dismiss();
+          this.scrollToField();
           this.getSelectedItemData(this.selectedItemId)
         } else {
           modalRef.dismiss();
@@ -192,6 +194,11 @@ export class CountryComponent implements OnInit {
     }
   }
 
+  public scrollToField(){
+    if (this.formInputField) {
+      this.formInputField?.nativeElement?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }
   getSelectedItemData(id: any) {
     this.api.getData(`${environment.live_url}/${environment.settings_country}/${id}/`).subscribe((respData: any) => {
       this.countryForm.patchValue({ 'country_name': respData?.country_name });

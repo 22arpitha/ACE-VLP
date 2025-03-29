@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { CommonServiceService } from '../../../service/common-service.service';
 import { FormBuilder, FormGroup, FormGroupDirective, Validators } from '@angular/forms';
 import { ApiserviceService } from '../../../service/apiservice.service';
@@ -15,6 +15,7 @@ import { SubModuleService } from '../../../service/sub-module.service';
 })
 export class LeaveTypeComponent implements OnInit {
   @ViewChild(FormGroupDirective) formGroupDirective!: FormGroupDirective;
+   @ViewChild('formInputField') formInputField: ElementRef;
 
   BreadCrumbsTitle: any = 'Leave Type';
   isEditItem: boolean = false;
@@ -195,6 +196,7 @@ export class LeaveTypeComponent implements OnInit {
           this.selectedleavetype = item?.id;
           this.isEditItem = true;
           modalRef.dismiss();
+          this.scrollToField();
           this.getSelectedleaveType(this.selectedleavetype);
         } else {
           modalRef.dismiss();
@@ -205,6 +207,11 @@ export class LeaveTypeComponent implements OnInit {
     }
   }
 
+  public scrollToField(){
+    if (this.formInputField) {
+      this.formInputField?.nativeElement?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }
   public getSelectedleaveType(id: any) {
     this.apiService.getData(`${environment.live_url}/${environment.settings_leave_type}/${id}/`).subscribe((respData: any) => {
       this.leaveTypeForm.patchValue({ 'leave_type_name': respData?.leave_type_name });

@@ -76,7 +76,7 @@
     <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
         <mat-label>Address <b class="r-star">*</b></mat-label>
         <textarea matInput placeholder="Enter Address" formControlName="address" autocomplete="off"
-        pattern="^[a-zA-Z0-9]+( [a-zA-Z0-9]+)*$"></textarea>
+        pattern="^[a-zA-Z0-9]+( [a-zA-Z0-9]+)*(\n[a-zA-Z0-9]+( [a-zA-Z0-9]+)*)*$"></textarea>
         <mat-error *ngIf="f['address']?.invalid && f['address']?.touched || f['address']?.dirty">
             <span  *ngIf="f['address']?.errors?.['required']">Address is required
             </span>

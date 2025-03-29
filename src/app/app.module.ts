@@ -83,6 +83,7 @@ import { PdfViewerModule } from 'ng2-pdf-viewer';
 import { NgxDocViewerModule } from 'ngx-doc-viewer';
 import { MatButtonModule } from '@angular/material/button';
 import { PdfViewComponent } from './views/pdf-view/pdf-view.component';
+import { FormErrorScrollUtilityService } from './service/form-error-scroll-utility-service.service';
 
 const APP_CONTAINERS = [
   DefaultFooterComponent,
@@ -175,6 +176,7 @@ const APP_CONTAINERS = [
     // },
     BsModalService,
     RazorpayService,
+    FormErrorScrollUtilityService,
     ActivateChildGuard,
     AuthGuard,
     OrgAuthGuard,

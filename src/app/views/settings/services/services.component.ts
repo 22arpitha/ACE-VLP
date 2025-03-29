@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, FormGroupDirective, Validators } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ApiserviceService } from '../../../service/apiservice.service';
@@ -16,6 +16,7 @@ import { SubModuleService } from 'src/app/service/sub-module.service';
 export class ServicesComponent implements OnInit {
   BreadCrumbsTitle: any = 'Services';
   @ViewChild(FormGroupDirective) formGroupDirective!: FormGroupDirective;
+   @ViewChild('formInputField') formInputField: ElementRef;
   isEditItem: boolean = false;
   serviceForm: FormGroup;
   selectedService: any;

@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, FormGroupDirective, Validators } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { CommonServiceService } from '../../../service/common-service.service';
@@ -15,6 +15,7 @@ import { SubModuleService } from 'src/app/service/sub-module.service';
 })
 export class SourceComponent implements OnInit {
   @ViewChild(FormGroupDirective) formGroupDirective!: FormGroupDirective;
+   @ViewChild('formInputField') formInputField: ElementRef;
 
   BreadCrumbsTitle: any = 'Source';
   isEditItem: boolean = false;
@@ -195,6 +196,7 @@ export class SourceComponent implements OnInit {
           this.selectedSource = item?.id;
           this.isEditItem = true;
           modalRef.dismiss();
+          this.scrollToField();
           this.getSelectedSourceDetails(this.selectedSource);
         } else {
           modalRef.dismiss();
@@ -202,6 +204,12 @@ export class SourceComponent implements OnInit {
       });
     } catch (error) {
       console.error('Error opening modal:', error);
+    }
+  }
+
+  public scrollToField(){
+    if (this.formInputField) {
+      this.formInputField?.nativeElement?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   }
   public getSelectedSourceDetails(id: any) {

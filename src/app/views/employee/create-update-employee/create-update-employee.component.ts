@@ -7,6 +7,7 @@ import { ApiserviceService } from '../../../service/apiservice.service';
 import { environment } from '../../../../environments/environment';
 import { GenericDeleteComponent } from '../../../generic-delete/generic-delete.component';
 import { SubModuleService } from '../../../service/sub-module.service';
+import { FormErrorScrollUtilityService } from 'src/app/service/form-error-scroll-utility-service.service';
 
 @Component({
   selector: 'app-create-update-employee',
@@ -33,7 +34,7 @@ userRole: any;
   constructor(private fb:FormBuilder,private activeRoute:ActivatedRoute,
     private common_service: CommonServiceService,private router:Router,
     private apiService: ApiserviceService,private modalService: NgbModal,
-    private accessControlService:SubModuleService) { 
+    private accessControlService:SubModuleService,private formErrorScrollService:FormErrorScrollUtilityService) { 
       this.user_id = sessionStorage.getItem('user_id');
     this.userRole = sessionStorage.getItem('user_role_name');
     if(this.activeRoute.snapshot.paramMap.get('id')){
@@ -257,6 +258,7 @@ this.searchRoleText ='';
     public saveEmployeeDetails(){
       if (this.employeeFormGroup.invalid) {
         this.employeeFormGroup.markAllAsTouched();
+        this.formErrorScrollService.scrollToFirstError(this.employeeFormGroup);
       } else {
         if (this.isEditItem) {
           this.apiService.updateData(`${environment.live_url}/${environment.employee}/${this.employee_id}/`, this.employeeFormGroup.value).subscribe((respData: any) => {
