@@ -6,14 +6,14 @@ import { Router } from '@angular/router';
 import { ClassToggleService, HeaderComponent } from '@coreui/angular';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { GenericDeleteComponent } from '../../../generic-delete/generic-delete.component';
-import { ApiserviceService } from 'src/app/service/apiservice.service';
-import { CommonServiceService } from 'src/app/service/common-service.service';
-import { NotificationComponent } from 'src/app/views/pages/notification/notification.component';
-import { environment } from 'src/environments/environment';
+import { ApiserviceService } from '../../../service/apiservice.service';
+import { CommonServiceService } from '../../../service/common-service.service';
+import { NotificationComponent } from '../../../views/pages/notification/notification.component';
+import { environment } from '../../../../environments/environment';
 import { BsModalRef, BsModalService, ModalOptions } from 'ngx-bootstrap/modal';
-import { UserGuideModalComponent } from 'src/app/views/user-guide-modal/user-guide-modal.component';
+import { UserGuideModalComponent } from '../../../views/user-guide-modal/user-guide-modal.component';
 import { MatDialog } from '@angular/material/dialog';
-import { UserWelcomeMsgComponent } from 'src/app/views/user-welcome-msg/user-welcome-msg.component';
+import { UserWelcomeMsgComponent } from '../../../views/user-welcome-msg/user-welcome-msg.component';
 import { NotificationService } from '../../../views/pages/notification/notification.service';
 import { WebsocketService } from '../../../service/websocket.service';
 import { EmployeeStatusWebsocketService } from '../../../service/employee-status-websocket.service';
@@ -158,11 +158,10 @@ export class DefaultHeaderComponent extends HeaderComponent implements OnInit {
         this.webSocket.closeWebSocket();
         this.employeeSocket.closeWebSocket();
         this.useraccessSocket.closeWebSocket();
-        this.router.navigate(['/login'])
+        this.router.navigate(['/login',{ replaceUrl: true }]);
         localStorage.clear();
         sessionStorage.clear();
         this.clearCookies();
-        location.reload();
         modelRef.close();
       }
       else {
