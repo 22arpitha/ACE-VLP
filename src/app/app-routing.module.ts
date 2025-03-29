@@ -35,7 +35,7 @@ const routes: Routes = [
     data: {
       title: 'Home'
     },
-    // canActivateChild:[ActivateChildGuard],
+    canActivateChild:[ActivateChildGuard],
     children: [
       {
         path: 'dashboards', loadChildren: () => import('./views/dashboard/dashboard.module').then(m => m.DashboardModule)
