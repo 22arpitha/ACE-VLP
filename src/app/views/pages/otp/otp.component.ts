@@ -1,8 +1,8 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { ApiserviceService } from 'src/app/service/apiservice.service';
-import { environment } from 'src/environments/environment';
+import { ApiserviceService } from '../../../service/apiservice.service';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-otp',
@@ -115,13 +115,13 @@ export class OtpComponent implements OnInit {
     if (event.keyCode === 8 && event.target.value == '') {
       event.preventDefault();
       const currentControl = this.otpForm.get(currentControlName);
-      currentControl.setValue("");
+      currentControl?.setValue("");
 
       const previousControlName = this.getPreviousControlName(currentControlName);
       if (previousControlName) {
         const previousControl = this.otpForm.get(previousControlName);
         this.setFocus(previousControlName);
-        previousControl.setValue("");
+        previousControl?.setValue("");
       }
     }
   }
