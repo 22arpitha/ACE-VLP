@@ -17,18 +17,11 @@ import { Page503Component } from './views/pages/page503/page503.component';
 import { TimesheetConfiguartionComponent } from './views/organization/timesheet-configuartion/timesheet-configuartion.component';
 import { TemplatesComponent } from './views/templates/templates.component';
 import { CompanyPolicyComponent } from './views/company-policy/company-policy.component';
+import { AuthGuard } from './auth.guard';
 
 
 const routes: Routes = [
-  {
-    path: 'login',
-    component: LoginComponent
-  },
-  {
-    path: '',
-    redirectTo: 'login',
-    pathMatch: 'full'
-  },
+  { path: '', redirectTo: '/login', pathMatch: 'full' },
   {
     path: '',
     component: DefaultLayoutComponent,
@@ -36,6 +29,7 @@ const routes: Routes = [
       title: 'Home'
     },
     // canActivateChild:[ActivateChildGuard],
+    canActivate:[AuthGuard],
     children: [
       {
         path: 'dashboards', loadChildren: () => import('./views/dashboard/dashboard.module').then(m => m.DashboardModule)

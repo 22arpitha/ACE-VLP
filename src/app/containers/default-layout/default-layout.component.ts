@@ -349,13 +349,12 @@ export class DefaultLayoutComponent {
     modelRef.componentInstance.status.subscribe((resp) => {
       if (resp == 'ok') {
         this.api.showSuccess('You have been logged out!');
-        localStorage.clear();
-        sessionStorage.clear();
         this.webSocket.closeWebSocket();
         this.employeeSocket.closeWebSocket();
         this.useraccessSocket.closeWebSocket();
+        localStorage.clear();
+        sessionStorage.clear();
         this.router.navigate(['/login']);
-        // location.reload();
         modelRef.close();
       } else {
         modelRef.close();

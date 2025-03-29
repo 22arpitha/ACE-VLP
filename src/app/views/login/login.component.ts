@@ -4,9 +4,9 @@ import { ApiserviceService } from '../../service/apiservice.service';
 import { Router } from '@angular/router';
 import { jwtDecode } from "jwt-decode";
 import { WebsocketService } from '../../service/websocket.service';
-import { EmployeeStatusWebsocketService } from 'src/app/service/employee-status-websocket.service';
-import { UserAccessWebsocketService } from 'src/app/service/user-access-websocket.service';
-import { environment } from 'src/environments/environment';
+import { EmployeeStatusWebsocketService } from '../../service/employee-status-websocket.service';
+import { UserAccessWebsocketService } from '../../service/user-access-websocket.service';
+import { environment } from '../../../environments/environment';
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',

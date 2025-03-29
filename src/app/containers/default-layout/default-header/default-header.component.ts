@@ -158,7 +158,7 @@ export class DefaultHeaderComponent extends HeaderComponent implements OnInit {
         this.webSocket.closeWebSocket();
         this.employeeSocket.closeWebSocket();
         this.useraccessSocket.closeWebSocket();
-        this.router.navigate(['/login',{ replaceUrl: true }]);
+        this.router.navigate(['/login']);
         localStorage.clear();
         sessionStorage.clear();
         this.clearCookies();
