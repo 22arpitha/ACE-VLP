@@ -65,7 +65,6 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
 import { VirtualScrollDirective } from './virtualscroll.directive';
 import { SharedModule } from './shared/shared.module';
 import { NgxUiLoaderHttpModule, NgxUiLoaderModule } from "ngx-ui-loader";
-import { ActivateChildGuard } from './activate-child.guard';
 import { AuthGuard } from './auth.guard';
 import { OrgAuthGuard } from './org-auth.guard';
 import { NgxDaterangepickerMd } from 'ngx-daterangepicker-material';
@@ -83,6 +82,7 @@ import { PdfViewerModule } from 'ng2-pdf-viewer';
 import { NgxDocViewerModule } from 'ngx-doc-viewer';
 import { MatButtonModule } from '@angular/material/button';
 import { PdfViewComponent } from './views/pdf-view/pdf-view.component';
+import { ActivateChildGuard } from './authGuard/activate-child.guard';
 
 const APP_CONTAINERS = [
   DefaultFooterComponent,

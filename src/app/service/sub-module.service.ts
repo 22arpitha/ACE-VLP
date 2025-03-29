@@ -24,8 +24,17 @@ export class SubModuleService {
         for (const module of accessList) {
           if (module.url && module.url === activeUrl) {
             return module.access; 
-          } else{
-            console.log(activeUrl)
+          }
+           else if (module.url) {
+            const moduleUrl = module.url.split('/')
+            const activeUrlParts = activeUrl.split('/');
+            // console.log(activeUrlParts[1],moduleUrl[1],'activeUrlParts')
+            if(activeUrlParts[1] && moduleUrl[1] === activeUrlParts[1]){
+              if (module.access?.[0]?.operations?.[0].view || module.access?.[0]?.operations?.[0].create || module.access?.[0]?.operations?.[0]?.update || module.access?.[0]?.operations?.[0]?.delete) {
+                // console.log(module.access,'module.access')
+                return module.access;
+              }
+            }
           }
 
           if (module.children && module.children.length > 0) {
