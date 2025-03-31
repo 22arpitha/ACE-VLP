@@ -6,8 +6,7 @@ import { ApiserviceService } from '../../../service/apiservice.service';
 import { GenericDeleteComponent } from '../../../generic-delete/generic-delete.component';
 import { GenericEditComponent } from '../../../generic-edit/generic-edit.component';
 import { environment } from '../../../../environments/environment';
-import { log } from 'console';
-import { SubModuleService } from 'src/app/service/sub-module.service';
+import { SubModuleService } from '../../../service/sub-module.service';
 @Component({
   selector: 'app-source',
   templateUrl: './source.component.html',

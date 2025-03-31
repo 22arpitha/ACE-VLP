@@ -29,7 +29,7 @@ export class EditClientComponent implements OnInit {
   sortValue: string = '';
   directionValue: string = '';
   arrowState: { [key: string]: boolean } = {
-    end_client_name: false,
+    client_name: false,
     group_name:false,
 
   };
