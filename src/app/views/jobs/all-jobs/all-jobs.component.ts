@@ -78,6 +78,9 @@ export class AllJobsComponent implements OnInit {
     this.apiService.getData(`${environment.live_url}/${environment.settings_job_status}/`).subscribe(
       (resData: any) => {
         console.log(resData);
+        resData.forEach((element:any)=>{
+          element['valueChanged']=false
+        })
         this.allJobStatus = resData;
       }
     )
@@ -236,16 +239,14 @@ export class AllJobsComponent implements OnInit {
   }
 
   onStatusChange(item: any, event: any) {
-    //console.log(event)
     const selectedStatusId = event.value;
-
-    // Find the percentage associated with the selected status
     const selectedStatus = this.allJobStatus.find(status => status.id == selectedStatusId);
     //console.log(selectedStatus)
     if (selectedStatus) {
       item.job_status = event.value;
       item.percentage_of_completion = selectedStatus.percentage_of_completion;
       item.isInvalid = false;
+      item.valueChanged = true;
         // Update the percentage dynamically
     }
 
@@ -274,6 +275,7 @@ export class AllJobsComponent implements OnInit {
       item.errorType = 'min';
     } else {
       item.isInvalid = false;
+      item.valueChanged = true;
       item.errorType = null; // Clear errors when valid
     }
   }

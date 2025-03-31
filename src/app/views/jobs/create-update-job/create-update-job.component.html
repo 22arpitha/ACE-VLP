@@ -194,7 +194,7 @@
 <div class="col-12 col-sm-12 col-md-6 col-lg-3 my-1 no-padding pl-0 pr-5">
     <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
         <mat-label>Budget <b class="r-star">*</b></mat-label>
-        <input matInput type="text" placeholder="Enter Budget" formControlName="budget_time" autocomplete="off" >
+        <input matInput type="text" placeholder="Enter Budget" formControlName="budget_time" autocomplete="off" (input)="formatBudget($event)" >
         <mat-error *ngIf="f['budget_time']?.invalid && f['budget_time']?.touched || f['budget_time']?.dirty">
           <span *ngIf="f['budget_time']?.errors?.['required']">Budget is required</span>
           <span *ngIf="f['budget_time']?.errors?.['pattern']">Invalid time format. Please use HHH:MM.</span>

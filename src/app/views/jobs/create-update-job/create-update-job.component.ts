@@ -278,7 +278,7 @@ private getClientBasedEndClient(id:any){
 onEndClientChange(event:any){
   const endClient_id = event.value;
   this.jobFormGroup?.get('group')?.reset();
-  this.getCombinationJobName();
+  // this.getCombinationJobName();
   this.getEndClientBasedGroup(endClient_id);
 }
 
@@ -326,7 +326,7 @@ public onPeroidicityChange(event:any){
 }
 public onServiceChange(event:any){
   console.log('event',event);
-this.getCombinationJobName();
+// this.getCombinationJobName();
 }
 public onPeroidChange(event:any){
   console.log('event',event);
@@ -357,7 +357,15 @@ public getAllJobStatus(){
   this.allJobStatusList=[];
   this.apiService.getData(`${environment.live_url}/${environment.settings_job_status}/`).subscribe(
         (res: any) => {
-          this.allJobStatusList = res;
+          if(this.job_id){
+            this.allJobStatusList = res;
+          } else{
+            this.allJobStatusList = res.filter(job => {
+              const status = job.status_name.toLowerCase();
+              return status !== 'completed' && status !== 'cancelled';
+            });
+              
+          }
         }, (error: any) => {
           this.apiService.showError(error?.error?.detail);
         });
@@ -792,5 +800,18 @@ return json;
     
         return obj;
     }
+
+    // add colon 
+    formatBudget(event: any): void {
+      let rawValue = event.target.value.replace(/[^0-9]/g, ''); // Remove non-numeric characters
+
+      if (rawValue.length > 3) {
+        rawValue = rawValue.slice(0, 3) + ':' + rawValue.slice(3); // Insert colon after 3rd digit
+      }
+      this.jobFormGroup.controls['budget_time'].setValue(rawValue, { emitEvent: false })
+    }
+
+    
+    
     
 }
