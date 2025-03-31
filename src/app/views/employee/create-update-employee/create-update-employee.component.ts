@@ -7,7 +7,7 @@ import { ApiserviceService } from '../../../service/apiservice.service';
 import { environment } from '../../../../environments/environment';
 import { GenericDeleteComponent } from '../../../generic-delete/generic-delete.component';
 import { SubModuleService } from '../../../service/sub-module.service';
-import { FormErrorScrollUtilityService } from 'src/app/service/form-error-scroll-utility-service.service';
+import { FormErrorScrollUtilityService } from '../../../service/form-error-scroll-utility-service.service';
 
 @Component({
   selector: 'app-create-update-employee',
@@ -80,7 +80,7 @@ this.employeeFormGroup = this.fb.group({
       last_name: ['', [Validators.required, Validators.maxLength(50)]],
       email:['',[Validators.required,Validators.pattern('^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$')]],
       date_joined: ['', Validators.required],
-      exit_date: ['', Validators.required],
+      exit_date: [''],
       reporting_manager_id:['', Validators.required],
       designation: ['', Validators.required],
       sub_designation:['', Validators.required],
