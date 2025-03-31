@@ -18,7 +18,7 @@ import { TimesheetConfiguartionComponent } from './views/organization/timesheet-
 import { TemplatesComponent } from './views/templates/templates.component';
 import { CompanyPolicyComponent } from './views/company-policy/company-policy.component';
 import { ActivateChildGuard } from './authGuard/activate-child.guard';
-
+import { AuthGuard } from './auth.guard';
 const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },
   {
@@ -28,6 +28,7 @@ const routes: Routes = [
       title: 'Home',
     },
     canActivateChild: [ActivateChildGuard],
+    canActivate:[AuthGuard],
     children: [
       {
         path: 'dashboards',

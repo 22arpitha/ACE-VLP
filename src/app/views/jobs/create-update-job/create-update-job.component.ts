@@ -651,30 +651,41 @@ return json;
         this.getEmployees(queryparams);
       }
 
-      public onSelectionAllEmployee(event:any){
-        if(event.checked === true){
-          this.selectAllEmpFlag=true;
+      public onSelectionAllEmployee(event: any) {
+        if (event.checked === true) {
+          this.selectAllEmpFlag = true;
           this.employeeFormArray.clear();
-          this.allEmployeeList.forEach((element:any) => {
+      
+          this.allEmployeeList.forEach((element: any) => {
+            // Check if the reporting_manager_id exists in the allManagerList
+            const isManagerValid = this.allManagerList?.some((manager: any) => manager?.user_id === element?.reporting_manager_id);
             let empData = this.fb.group({
               'employee': element?.user_id,
-              'manager': element?.reporting_manager_id,
+              'manager': isManagerValid ? element?.reporting_manager_id : '',
               'is_primary': this.user_role_name === 'Employee' ? true : false
             });
-            this.employeeFormArray.push(empData)
+      
+            this.employeeFormArray.push(empData);
+      
+            // Disable or enable fields based on reporting manager validity
+            if (!isManagerValid) {
+              // If reporting manager is invalid, enable and make the field empty
+              empData.get('manager')?.enable();
+              empData.get('manager')?.setValue('');  // Make the field empty
+            } else {
+              // If reporting manager is valid, disable the fields
+              empData.get('employee')?.disable();
+              empData.get('manager')?.disable();
+              empData.get('is_primary')?.disable();
+            }
           });
-          this.employeeFormArray.controls.forEach((empItem:any) => {
-            empItem?.get('employee')?.disable();
-            empItem?.get('manager')?.disable();
-            empItem?.get('is_primary')?.disable();
-          })
-        }else{
-          this.selectAllEmpFlag=false;
+        } else {
+          this.selectAllEmpFlag = false;
           this.employeeFormArray.clear();
           this.employeeFormArray.push(this.createEmployeeControl());
         }
-
       }
+      
 
       public editContact(index: number) {
         const empItem = this.employeeFormArray.at(index);
@@ -702,7 +713,7 @@ return json;
           this.employeeFormArray.at(i).get('manager')?.reset();
           this.employeeFormArray.at(i).get('is_primary')?.reset();
         }else{
-          const selectedEmp = this.allManagerList.find((emp:any)=>emp.user_id === event.value);
+          const selectedEmp = this.allEmployeeList.find((emp:any)=>emp.user_id === event.value);
           this.employeeFormArray.at(i).patchValue({'employee':event.value});
           this.employeeFormArray.at(i).patchValue({'manager':selectedEmp?.reporting_manager_id});
           this.employeeFormArray.at(i).patchValue({'is_primary':this.user_role_name === 'Employee' ? true : false});
@@ -741,8 +752,11 @@ return json;
         let endClientName = this.getSelectedEndClient(this.jobFormGroup?.get('end_client')?.value);
         let service_name = this.getSelectedService(this.jobFormGroup?.get('service')?.value);
         let period_name = this.getSelectedPeroid(this.jobFormGroup?.get('period')?.value);
-        let job_name = `${endClientName} ${service_name} ${period_name}`;
-        this.jobFormGroup?.patchValue({'job_name':job_name});
+        if(this.jobFormGroup?.get('end_client')?.valid && this.jobFormGroup?.get('service')?.valid && this.jobFormGroup?.get('period')?.valid){
+          let job_name = `${endClientName} ${service_name} ${period_name}`;
+          this.jobFormGroup?.patchValue({'job_name':job_name});
+        }
+        
         
       }
 
