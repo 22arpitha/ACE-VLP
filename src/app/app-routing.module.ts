@@ -9,7 +9,7 @@ import { RegisterComponent } from './views/pages/register/register.component';
 import { ForgotPasswordComponent } from './views/pages/forgot-password/forgot-password.component';
 import { OtpComponent } from './views/pages/otp/otp.component';
 import { ForgotChangeComponent } from './views/pages/forgot-change/forgot-change.component';
-import { ActivateChildGuard } from './activate-child.guard'
+
 import { SubscriptionConfigComponent } from './views/organization/subscription-config/subscription-config.component';
 import { NoInternetComponent } from './views/pages/no-internet/no-internet.component';
 import { Page504Component } from './views/pages/page504/page504.component';
@@ -17,8 +17,7 @@ import { Page503Component } from './views/pages/page503/page503.component';
 import { TimesheetConfiguartionComponent } from './views/organization/timesheet-configuartion/timesheet-configuartion.component';
 import { TemplatesComponent } from './views/templates/templates.component';
 import { CompanyPolicyComponent } from './views/company-policy/company-policy.component';
-import { AuthGuard } from './auth.guard';
-
+import { ActivateChildGuard } from './authGuard/activate-child.guard';
 
 const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },
@@ -26,168 +25,235 @@ const routes: Routes = [
     path: '',
     component: DefaultLayoutComponent,
     data: {
-      title: 'Home'
+      title: 'Home',
     },
-    // canActivateChild:[ActivateChildGuard],
-    canActivate:[AuthGuard],
+    canActivateChild: [ActivateChildGuard],
     children: [
       {
-        path: 'dashboards', loadChildren: () => import('./views/dashboard/dashboard.module').then(m => m.DashboardModule)
+        path: 'dashboards',
+        loadChildren: () =>
+          import('./views/dashboard/dashboard.module').then(
+            (m) => m.DashboardModule
+          ),
       },
       {
-        path: 'department', loadChildren: () => import('./views/department/department.module').then(m => m.DepartmentModule)
+        path: 'department',
+        loadChildren: () =>
+          import('./views/department/department.module').then(
+            (m) => m.DepartmentModule
+          ),
       },
       {
-        path: 'accounts', loadChildren: () => import('./views/accounts/accounts.module').then(m => m.AccountsModule)
+        path: 'accounts',
+        loadChildren: () =>
+          import('./views/accounts/accounts.module').then(
+            (m) => m.AccountsModule
+          ),
       },
       {
-        path:'generic',loadChildren:() => import('./generic-delete/generic-delete.module').then(m =>m.GenericDeleteModule)}
-      ,
-      {
-        path:'generic-remove',loadChildren:() => import('./generic-remove/generic-remove.module').then(m =>m.GenericRemoveModule)
+        path: 'generic',
+        loadChildren: () =>
+          import('./generic-delete/generic-delete.module').then(
+            (m) => m.GenericDeleteModule
+          ),
       },
       {
-        path:'people', loadChildren:() => import ('./views/people/people.module').then( m => m.PeopleModule)
+        path: 'generic-remove',
+        loadChildren: () =>
+          import('./generic-remove/generic-remove.module').then(
+            (m) => m.GenericRemoveModule
+          ),
       },
       {
-        path:'leave',loadChildren:()=> import('./views/leave-holiday-list/leave-holiday-list.module').then(m => m.LeaveHolidayListModule)
+        path: 'people',
+        loadChildren: () =>
+          import('./views/people/people.module').then((m) => m.PeopleModule),
       },
       {
-        path:'client', loadChildren:()=> import('./views/client/client.module').then(m => m.ClientModule)
+        path: 'leave',
+        loadChildren: () =>
+          import('./views/leave-holiday-list/leave-holiday-list.module').then(
+            (m) => m.LeaveHolidayListModule
+          ),
       },
       {
-        path:'jobs', loadChildren:()=> import('./views/jobs/jobs.module').then(m => m.JobsModule)
+        path: 'client',
+        loadChildren: () =>
+          import('./views/client/client.module').then((m) => m.ClientModule),
       },
       {
-        path:'status',loadChildren:()=>import('./views/project-status/project-status.module').then( m => m.ProjectStatusModule)
+        path: 'jobs',
+        loadChildren: () =>
+          import('./views/jobs/jobs.module').then((m) => m.JobsModule),
       },
       {
-        path:'task', loadChildren:() => import('./views/task-category/task-category.module').then( m => m.TaskCategoryModule)
+        path: 'status',
+        loadChildren: () =>
+          import('./views/project-status/project-status.module').then(
+            (m) => m.ProjectStatusModule
+          ),
       },
       {
-        path:'project', loadChildren:()=> import('./views/project/project.module').then(m => m.ProjectModule)
+        path: 'task',
+        loadChildren: () =>
+          import('./views/task-category/task-category.module').then(
+            (m) => m.TaskCategoryModule
+          ),
       },
       {
-        path: 'review', loadChildren:()=> import('./views/review/review.module').then((m)=>m.ReviewModule)
+        path: 'project',
+        loadChildren: () =>
+          import('./views/project/project.module').then((m) => m.ProjectModule),
       },
       {
-        path:'approvalTimesheet', loadChildren:()=> import('./views/approval-timesheet/approval-timesheet.module').then(m => m.ApprovalTimesheetModule)
+        path: 'review',
+        loadChildren: () =>
+          import('./views/review/review.module').then((m) => m.ReviewModule),
       },
       {
-        path:'myTimesheet', loadChildren:()=>import('./views/my-timesheet/my-timesheet.module').then(m => m.MyTimesheetModule)
+        path: 'approvalTimesheet',
+        loadChildren: () =>
+          import('./views/approval-timesheet/approval-timesheet.module').then(
+            (m) => m.ApprovalTimesheetModule
+          ),
       },
       {
-        path:'profile',loadChildren:()=>import('./views/profile/profile.module').then(m =>m.ProfileModule)
+        path: 'myTimesheet',
+        loadChildren: () =>
+          import('./views/my-timesheet/my-timesheet.module').then(
+            (m) => m.MyTimesheetModule
+          ),
       },
       {
-        path:'organization',loadChildren:()=>import('./views/organization/organization.module').then(m => m.OrganizationModule)
+        path: 'profile',
+        loadChildren: () =>
+          import('./views/profile/profile.module').then((m) => m.ProfileModule),
       },
       {
-        path:'changePasswords',loadChildren:()=>import('./views/change-passwords/change-passwords.module').then(m => m.ChangePasswordsModule)
+        path: 'organization',
+        loadChildren: () =>
+          import('./views/organization/organization.module').then(
+            (m) => m.OrganizationModule
+          ),
       },
       {
-        path:'settings', loadChildren:()=>import('./views/settings/settings.module').then(m => m.SettingsModule)
+        path: 'changePasswords',
+        loadChildren: () =>
+          import('./views/change-passwords/change-passwords.module').then(
+            (m) => m.ChangePasswordsModule
+          ),
+      },
+      {
+        path: 'settings',
+        loadChildren: () =>
+          import('./views/settings/settings.module').then(
+            (m) => m.SettingsModule
+          ),
       },
       {
         path: 'admin',
         loadChildren: () =>
-          import('./views/admin-panel/admin-panel.module').then((m) => m.AdminPanelModule),
+          import('./views/admin-panel/admin-panel.module').then(
+            (m) => m.AdminPanelModule
+          ),
       },
       {
-        path:'subscription-configuration',component:SubscriptionConfigComponent
+        path: 'subscription-configuration',
+        component: SubscriptionConfigComponent,
       },
       {
-        path:'working-hour-configuration',component:TimesheetConfiguartionComponent
+        path: 'working-hour-configuration',
+        component: TimesheetConfiguartionComponent,
       },
       {
-        path:'templates',component:TemplatesComponent
+        path: 'templates',
+        component: TemplatesComponent,
       },
       {
-        path:'company-policy',component:CompanyPolicyComponent
+        path: 'company-policy',
+        component: CompanyPolicyComponent,
       },
-     
+
       {
         path: 'pages',
         loadChildren: () =>
-          import('./views/pages/pages.module').then((m) => m.PagesModule)
+          import('./views/pages/pages.module').then((m) => m.PagesModule),
       },
-      
+     
     ],
-    
   },
-  
+ 
   {
     path: '404',
     component: Page404Component,
     data: {
-      title: 'Page 404'
-    }
+      title: 'Page 404',
+    },
   },
   {
     path: 'no-internet',
-    component: NoInternetComponent
+    component: NoInternetComponent,
   },
   {
-      path: '504',
-      component: Page504Component,
-      data: {
-        title: 'Page 504'
-      }
+    path: '504',
+    component: Page504Component,
+    data: {
+      title: 'Page 504',
+    },
   },
   {
     path: '503',
     component: Page503Component,
     data: {
-      title: 'Page 503'
-    }
+      title: 'Page 503',
+    },
   },
   {
     path: '500',
     component: Page500Component,
     data: {
-      title: 'Page 500'
-    }
+      title: 'Page 500',
+    },
   },
   {
     path: 'login',
     component: LoginComponent,
     data: {
-      title: 'Login Page'
-    }
+      title: 'Login Page',
+    },
   },
-  
+
   {
     path: 'register',
     component: RegisterComponent,
     data: {
-      title: 'Register Page'
-    }
+      title: 'Register Page',
+    },
   },
   {
     path: 'forgotPassword',
     component: ForgotPasswordComponent,
     data: {
-      title: 'Forgot Password Page'
+      title: 'Forgot Password Page',
     },
-    
   },
-  
+
   {
     path: 'set-password',
     component: ForgotChangeComponent,
     data: {
-      title: 'Set New Password'
-    }
+      title: 'Set New Password',
+    },
   },
   {
     path: 'otp',
     component: OtpComponent,
     data: {
-      title: 'Otp Page'
-    }
+      title: 'Otp Page',
+    },
   },
-  
-    { path: '**', redirectTo: '404' }
+
+  { path: '**', redirectTo: '404' },
 ];
 
 @NgModule({
@@ -197,10 +263,9 @@ const routes: Routes = [
       anchorScrolling: 'enabled',
       initialNavigation: 'enabledBlocking',
       relativeLinkResolution: 'legacy',
-      useHash: false
-    })
+      useHash: false,
+    }),
   ],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
-export class AppRoutingModule {
-}
+export class AppRoutingModule {}
