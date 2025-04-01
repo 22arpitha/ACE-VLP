@@ -803,10 +803,10 @@ return json;
 
     // add colon 
     formatBudget(event: any): void {
-      let rawValue = event.target.value.replace(/[^0-9]/g, ''); // Remove non-numeric characters
+      let rawValue = event.target.value.replace(/[^0-9]/g, '');
 
       if (rawValue.length > 3) {
-        rawValue = rawValue.slice(0, 3) + ':' + rawValue.slice(3); // Insert colon after 3rd digit
+        rawValue = rawValue.slice(0, 3) + ':' + rawValue.slice(3);
       }
       this.jobFormGroup.controls['budget_time'].setValue(rawValue, { emitEvent: false })
     }

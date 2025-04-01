@@ -45,7 +45,6 @@ export class AllJobsComponent implements OnInit {
   userRole: any;
   allEmployeelist:any=[];
   allManagerlist:any=[];
-
   constructor(private common_service: CommonServiceService, private accessControlService: SubModuleService,
     private router: Router, private modalService: NgbModal, private dialog: MatDialog,
     private apiService: ApiserviceService, private fb: FormBuilder) {
@@ -283,6 +282,10 @@ export class AllJobsComponent implements OnInit {
 
   saveJobStausPercentage(item: any) {
     if(!item.isInvalid){
+      // let status = item.job_status.toLowerCase()
+      // if(status ==='cancelled' || 'completed'){
+      //   console.log(item?.job_status)
+      // }
       let formData:any= {'job_status':item?.job_status,'percentage_of_completion':item.percentage_of_completion}
       this.apiService.updateData(`${environment.live_url}/${environment.jobs_percetage}/${item.id}/`,formData).subscribe((respData: any) => {
         if (respData) {
@@ -308,7 +311,15 @@ export class AllJobsComponent implements OnInit {
   }
 
   public downloadOption(type:any){
-    let query = `?page=${this.page}&page_size=${this.tableSize}&file-type=${type}`
+  let status:any 
+    if(this.isCurrent){
+      status = 'True';
+    }
+    else{
+      status = 'False';
+    }
+    console.log(status)
+    let query = `?page=${this.page}&page_size=${this.tableSize}&file-type=${type}&is-active=${status}`
     let apiUrl = `${environment.live_url}/${environment.job_details}/${query}`;
     fetch(apiUrl)
   .then(res => res.blob())

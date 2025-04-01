@@ -181,7 +181,7 @@ export class DesignationsComponent implements OnInit {
     this.apiService.delete(`${environment.live_url}/${environment.settings_designation}/${item?.id}/`).subscribe(async (data: any) => {
       if (data) {
         this.allDesignationStatusList = []
-        this.apiService.showWarning('Job Status deleted successfully!')
+        this.apiService.showWarning(data.message)
         let query = `?page=${1}&page_size=${this.tableSize}`
         if (this.term) {
           query += `&search=${this.term}`

@@ -214,7 +214,14 @@ export class ClientListComponent implements OnInit {
 
 
     public downloadOption(type:any){
-      let query = `?page=${this.page}&page_size=${this.tableSize}&file-type=${type}`
+      let status:any 
+      if(this.isCurrent){
+        status = 'True';
+      }
+      else{
+        status = 'False';
+      }
+      let query = `?page=${this.page}&page_size=${this.tableSize}&file-type=${type}&is-active=${status}`
       let apiUrl = `${environment.live_url}/${environment.clients_details}/${query}`;
       fetch(apiUrl)
     .then(res => res.blob())
