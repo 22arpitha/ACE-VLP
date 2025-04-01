@@ -31,24 +31,24 @@
                   <tr>
                     <th scope="col"> S.No</th>
                     <th scope="col">Job Number
-                      <i *ngIf="!arrowState['job_number']" (click)="sort('asc','job_number')" class="bi bi-arrow-up"></i>
+                      <i *ngIf="!arrowState['job_number']" (click)="sort('asc','job_number')" class="bi bi-arrow-down"></i>
                 <i (click)="sort('desc','job_number')" *ngIf="arrowState['job_number']"
-                  class="bi bi-arrow-down"></i>
+                  class="bi bi-arrow-up"></i>
                     </th>
                     <th scope="col">Job Name
-                      <i *ngIf="!arrowState['job_name']" (click)="sort('asc','job_name')" class="bi bi-arrow-up"></i>
+                      <i *ngIf="!arrowState['job_name']" (click)="sort('asc','job_name')" class="bi bi-arrow-down"></i>
                       <i (click)="sort('desc','job_name')" *ngIf="arrowState['job_name']"
-                        class="bi bi-arrow-down"></i>
+                        class="bi bi-arrow-up"></i>
                     </th>
                     <th scope="col">Job Type
-                      <i *ngIf="!arrowState['job_type_name']" (click)="sort('asc','job_type_name')" class="bi bi-arrow-up"></i>
+                      <i *ngIf="!arrowState['job_type_name']" (click)="sort('asc','job_type_name')" class="bi bi-arrow-down"></i>
                       <i (click)="sort('desc','job_type_name')" *ngIf="arrowState['job_type_name']"
-                        class="bi bi-arrow-down"></i>
+                        class="bi bi-arrow-up"></i>
                     </th>
                     <th scope="col">Client
-                      <i *ngIf="!arrowState['client_name']" (click)="sort('asc','client_name')" class="bi bi-arrow-up"></i>
+                      <i *ngIf="!arrowState['client_name']" (click)="sort('asc','client_name')" class="bi bi-arrow-down"></i>
                       <i (click)="sort('desc','client_name')" *ngIf="arrowState['client_name']"
-                        class="bi bi-arrow-down"></i>
+                        class="bi bi-arrow-up"></i>
                     </th>
                     <th scope="col">Job Allocation Date</th>
                     <th scope="col">Employee</th>

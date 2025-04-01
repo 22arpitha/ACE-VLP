@@ -80,7 +80,7 @@ this.employeeFormGroup = this.fb.group({
       last_name: ['', [Validators.required, Validators.maxLength(50)]],
       email:['',[Validators.required,Validators.pattern('^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$')]],
       date_joined: ['', Validators.required],
-      exit_date: [''],
+      exit_date: [null],
       reporting_manager_id:['', Validators.required],
       designation: ['', Validators.required],
       sub_designation:['', Validators.required],
@@ -263,7 +263,7 @@ this.searchRoleText ='';
         if (this.isEditItem) {
           this.apiService.updateData(`${environment.live_url}/${environment.employee}/${this.employee_id}/`, this.employeeFormGroup.value).subscribe((respData: any) => {
             if (respData) {
-              this.common_service.setEmployeeStatusState(this.employeeFormGroup.get('is_active')?.value)
+              this.common_service.setEmployeeStatusState(this.employeeFormGroup.get('is_active')?.value);
               this.apiService.showSuccess(respData['message']);
               this.resetFormState();
               this.router.navigate(['/settings/all-employee']);

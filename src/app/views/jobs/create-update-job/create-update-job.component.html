@@ -73,7 +73,7 @@
         <mat-label>Group</mat-label>
         <mat-select formControlName="group" autocomplete="off"
                 placeholder="Group" panelClass="custom-select-panel"
-                [disableOptionCentering]="true" readonly>
+                [disableOptionCentering]="true" [disabled]="true">
                 <div class="mat-select-search-wrapper d-flex">
                   <input matInput [(ngModel)]="searchGroupText" autofocus [ngModelOptions]="{standalone: true}" placeholder="Search Group" class="mat-select-search">
                   <mat-icon class="search-icon" *ngIf="!searchGroupText">search</mat-icon>
