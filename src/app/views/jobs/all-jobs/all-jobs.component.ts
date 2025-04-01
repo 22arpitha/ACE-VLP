@@ -57,9 +57,17 @@ export class AllJobsComponent implements OnInit {
     this.getModuleAccess();
     this.getAllEmployeeList();
     this.getAllActiveManagerList();
-    this.getCurrentJobsList();
+    // this.getCurrentJobsList();
     this.getJobStatusList();
     this.initialForm();
+    this.common_service.jobStatus$.subscribe((status:boolean)=>{
+      if(status){
+        console.log(status)
+        this.getJobsHistoryList();
+      }else{
+        this.getCurrentJobsList();        
+      }
+    })
   }
 
   getModuleAccess() {
@@ -237,10 +245,12 @@ export class AllJobsComponent implements OnInit {
     return (this.page - 1) * this.tableSize + index + 1;
   }
 
+  changedStatusName:any
   onStatusChange(item: any, event: any) {
     const selectedStatusId = event.value;
     const selectedStatus = this.allJobStatus.find(status => status.id == selectedStatusId);
-    //console.log(selectedStatus)
+    console.log(selectedStatus)
+    this.changedStatusName = selectedStatus.status_name
     if (selectedStatus) {
       item.job_status = event.value;
       item.percentage_of_completion = selectedStatus.percentage_of_completion;
@@ -282,18 +292,19 @@ export class AllJobsComponent implements OnInit {
 
   saveJobStausPercentage(item: any) {
     if(!item.isInvalid){
-      // let status = item.job_status.toLowerCase()
-      // if(status ==='cancelled' || 'completed'){
-      //   console.log(item?.job_status)
-      // }
       let formData:any= {'job_status':item?.job_status,'percentage_of_completion':item.percentage_of_completion}
       this.apiService.updateData(`${environment.live_url}/${environment.jobs_percetage}/${item.id}/`,formData).subscribe((respData: any) => {
         if (respData) {
           this.apiService.showSuccess(respData['message']);
-          if (this.isCurrent) {
-            this.getCurrentJobsList()
-          } else {
+          let status = this.changedStatusName.toLowerCase();
+          if(status==='completed' || status==='cancelled'){
             this.getJobsHistoryList();
+          } else{
+            if (this.isCurrent) {
+              this.getCurrentJobsList()
+            } else {
+              this.getJobsHistoryList();
+            }
           }
     }},(error: any) => {
       this.apiService.showError(error?.error?.detail);

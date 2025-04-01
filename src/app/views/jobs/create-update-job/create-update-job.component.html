@@ -208,7 +208,7 @@
         <mat-label>Job Status <b class="r-star">*</b></mat-label>
         <mat-select formControlName="job_status" autocomplete="off"
                 placeholder="Select Job Status" panelClass="custom-select-panel"
-                [disableOptionCentering]="true">
+                [disableOptionCentering]="true" (selectionChange)="selectJobStatus($event)">
                 <div class="mat-select-search-wrapper d-flex">
                   <input matInput [(ngModel)]="searchJobStatusText" autofocus [ngModelOptions]="{standalone: true}" placeholder="Search Job Status" class="mat-select-search">
                   <mat-icon class="search-icon" *ngIf="!searchJobStatusText">search</mat-icon>

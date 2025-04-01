@@ -16,7 +16,7 @@ export class CommonServiceService {
    title$ = this.titleSubject.asObservable();
    subsctiptionState$ = new BehaviorSubject(false);
    empolyeeStatus$ = new BehaviorSubject(true);
-  jobStatus$ = new BehaviorSubject(true);
+  jobStatus$ = new BehaviorSubject(false);
    profileSubject = new BehaviorSubject<any>(null);
    profilePhoto$ = this.profileSubject.asObservable()
    private previousPage = new BehaviorSubject<string>('');
