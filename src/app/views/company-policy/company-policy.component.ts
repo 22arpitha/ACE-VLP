@@ -19,6 +19,8 @@ import { SubModuleService } from '../../../app/service/sub-module.service';
 export class CompanyPolicyComponent implements OnInit {
   @ViewChild(FormGroupDirective) formGroupDirective!: FormGroupDirective;
   @ViewChild('fileInput') fileInput: ElementRef;
+  @ViewChild('formInputField') formInputField: ElementRef;
+
   BreadCrumbsTitle: any = 'Company Policy';
   isEditItem: boolean = false;
   companyPolicyForm: FormGroup;
@@ -231,6 +233,7 @@ export class CompanyPolicyComponent implements OnInit {
           this.selectedTemplate = item?.id;
           this.isEditItem = true;
           modalRef.dismiss();
+          this.scrollToField();
           this.getSelectedTemplateDetails(this.selectedTemplate);
         } else {
           modalRef.dismiss();
@@ -350,6 +353,12 @@ export class CompanyPolicyComponent implements OnInit {
   public getFileName(url: any) {
     if (url) {
       return url.split('/').pop();
+    }
+  }
+
+  public scrollToField(){
+    if (this.formInputField) {
+      this.formInputField?.nativeElement?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   }
 

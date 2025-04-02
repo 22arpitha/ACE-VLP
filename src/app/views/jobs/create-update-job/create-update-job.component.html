@@ -73,7 +73,7 @@
         <mat-label>Group</mat-label>
         <mat-select formControlName="group" autocomplete="off"
                 placeholder="Group" panelClass="custom-select-panel"
-                [disableOptionCentering]="true" readonly>
+                [disableOptionCentering]="true" [disabled]="true">
                 <div class="mat-select-search-wrapper d-flex">
                   <input matInput [(ngModel)]="searchGroupText" autofocus [ngModelOptions]="{standalone: true}" placeholder="Search Group" class="mat-select-search">
                   <mat-icon class="search-icon" *ngIf="!searchGroupText">search</mat-icon>
@@ -194,10 +194,13 @@
 <div class="col-12 col-sm-12 col-md-6 col-lg-3 my-1 no-padding pl-0 pr-5">
     <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
         <mat-label>Budget <b class="r-star">*</b></mat-label>
-        <input matInput type="text" placeholder="Enter Budget" formControlName="budget_time" autocomplete="off" >
+        <input matInput type="text" placeholder="Enter Budget" formControlName="budget_time" autocomplete="off" (input)="formatBudget($event)" >
         <mat-error *ngIf="f['budget_time']?.invalid && f['budget_time']?.touched || f['budget_time']?.dirty">
           <span *ngIf="f['budget_time']?.errors?.['required']">Budget is required</span>
-          <span *ngIf="f['budget_time']?.errors?.['pattern']">Invalid time format. Please use HHH:MM.</span>
+          <!-- <span *ngIf="f['budget_time']?.errors?.['pattern'] ">Invalid time format. Please use HHH:MM</span> -->
+          <span *ngIf="f['budget_time']?.errors?.['pattern']">
+            {{ +f['budget_time'].value?.split(':')[1] > 59 ? 'Minutes value cannot exceed 59' : 'Invalid time format. Please use HHH:MM' }}
+          </span>
         </mat-error>
       </mat-form-field>  
     </div>
@@ -208,7 +211,7 @@
         <mat-label>Job Status <b class="r-star">*</b></mat-label>
         <mat-select formControlName="job_status" autocomplete="off"
                 placeholder="Select Job Status" panelClass="custom-select-panel"
-                [disableOptionCentering]="true">
+                [disableOptionCentering]="true" (selectionChange)="selectJobStatus($event)">
                 <div class="mat-select-search-wrapper d-flex">
                   <input matInput [(ngModel)]="searchJobStatusText" autofocus [ngModelOptions]="{standalone: true}" placeholder="Search Job Status" class="mat-select-search">
                   <mat-icon class="search-icon" *ngIf="!searchJobStatusText">search</mat-icon>
@@ -268,7 +271,7 @@
     </div>
   <div class="row mx-0 my-1 px-0">
     <div class="col-12 col-sm-12 col-md-12 col-lg-12 no-padding pl-2 pr-0 table-responsive table-responsive-sm table-responsive-md" *ngIf="employeeFormArray.controls.length >= 1">
-      <table class="table table-hover table-list">
+      <table class="table table-hover table-list employee-details-table">
         <thead>
           <tr>
             <th>S No</th>
@@ -377,8 +380,10 @@
     <div class="col-12 col-sm-12 col-md-6 col-lg-3 align-content-center px-0">
         <button mat-button class="cancel-button mat-btn-s" type="button" (click)="backBtnFunc()" >
             Back</button>
-        <button mat-raised-button class="proceedbtn mat-btn-s" type="submit" (click)="saveJobDetails()" *ngIf="user_role_name !='Admin' && (accessPermissions[0]?.create || accessPermissions[0]?.update) || user_role_name === 'Admin'"><span
-            *ngIf="!isEditItem">Submit</span><span *ngIf="isEditItem" >Update</span></button>
+        <button mat-raised-button class="proceedbtn mat-btn-s" type="submit" (click)="saveJobDetails()" *ngIf="user_role_name !='Admin' && accessPermissions[0]?.create || user_role_name === 'Admin'"><span
+            *ngIf="!isEditItem">Submit</span></button>
+        <button mat-raised-button class="proceedbtn mat-btn-s" type="submit" (click)="saveJobDetails()" *ngIf="user_role_name !='Admin' &&  accessPermissions[0]?.update || user_role_name === 'Admin'">
+          <span *ngIf="isEditItem" >Update</span></button>
       </div>
       <div class="col-lg-3"></div>
       <div class="col-lg-3"></div>

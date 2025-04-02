@@ -7,6 +7,7 @@ import { ApiserviceService } from '../../../service/apiservice.service';
 import { environment } from '../../../../environments/environment';
 import { GenericDeleteComponent } from '../../../generic-components/generic-delete/generic-delete.component';
 import { SubModuleService } from '../../../service/sub-module.service';
+import { FormErrorScrollUtilityService } from '../../../service/form-error-scroll-utility-service.service';
 
 @Component({
   selector: 'app-create-update-employee',
@@ -33,7 +34,7 @@ userRole: any;
   constructor(private fb:FormBuilder,private activeRoute:ActivatedRoute,
     private common_service: CommonServiceService,private router:Router,
     private apiService: ApiserviceService,private modalService: NgbModal,
-    private accessControlService:SubModuleService) { 
+    private accessControlService:SubModuleService,private formErrorScrollService:FormErrorScrollUtilityService) { 
       this.user_id = sessionStorage.getItem('user_id');
     this.userRole = sessionStorage.getItem('user_role_name');
     if(this.activeRoute.snapshot.paramMap.get('id')){
@@ -57,19 +58,15 @@ userRole: any;
   }
 
   getModuleAccess(){
-    this.apiService.getData(`${environment.live_url}/${environment.user_access}/${sessionStorage.getItem('user_id')}/`).subscribe(
+    this.accessControlService.getAccessForActiveUrl(this.user_id).subscribe(
       (res:any)=>{
-       res.access_list.forEach((access:any)=>{
-          access.access.forEach((access_name:any)=>{
-              if(access_name.name===sessionStorage.getItem('access-name')){
-                // console.log(access_name)
-                this.accessPermissions = access_name.operations;
-              }
-            })
-       })
+        console.log(res)
+       const access_name =  sessionStorage.getItem('access-name')
+        let temp = res.find((item:any)=>item.name===access_name)
+        this.accessPermissions = temp.operations
+        // console.log(this.accessPermissions)
       }
     )
-    console.log(this.accessPermissions)
   }
 
   public intialForm(){
@@ -79,7 +76,7 @@ this.employeeFormGroup = this.fb.group({
       last_name: ['', [Validators.required, Validators.maxLength(50)]],
       email:['',[Validators.required,Validators.pattern('^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$')]],
       date_joined: ['', Validators.required],
-      exit_date: ['', Validators.required],
+      exit_date: [null],
       reporting_manager_id:['', Validators.required],
       designation: ['', Validators.required],
       sub_designation:['', Validators.required],
@@ -164,6 +161,7 @@ this.apiService.getData(`${environment.live_url}/${environment.employee}/${id}/`
   }
 
   public backBtnFunc(){
+    sessionStorage.removeItem("access-name")
     this.common_service.setEmployeeStatusState(this.employeeFormGroup.get('is_active')?.value);
     this.router.navigate(['/settings/all-employee']);
   }
@@ -257,13 +255,15 @@ this.searchRoleText ='';
     public saveEmployeeDetails(){
       if (this.employeeFormGroup.invalid) {
         this.employeeFormGroup.markAllAsTouched();
+        this.formErrorScrollService.scrollToFirstError(this.employeeFormGroup);
       } else {
         if (this.isEditItem) {
           this.apiService.updateData(`${environment.live_url}/${environment.employee}/${this.employee_id}/`, this.employeeFormGroup.value).subscribe((respData: any) => {
             if (respData) {
-              this.common_service.setEmployeeStatusState(this.employeeFormGroup.get('is_active')?.value)
+              this.common_service.setEmployeeStatusState(this.employeeFormGroup.get('is_active')?.value);
               this.apiService.showSuccess(respData['message']);
               this.resetFormState();
+              sessionStorage.removeItem("access-name")
               this.router.navigate(['/settings/all-employee']);
             }
           }, (error: any) => {
@@ -275,6 +275,7 @@ this.searchRoleText ='';
               // this.common_service.setEmployeeStatusState(this.employeeFormGroup.get('is_active')?.value);
               this.apiService.showSuccess(respData['message']);
               this.resetFormState();
+              sessionStorage.removeItem("access-name")
               this.router.navigate(['/settings/all-employee']);
             }
           }, (error: any) => {

@@ -92,14 +92,11 @@
 </div>
 <div class="col-12 col-sm-12 col-md-6 col-lg-4 my-1 no-padding pl-5 pr-0">
     <mat-form-field appearance="outline" class="w-100 p-0 custom-mat-form-field">
-        <mat-label>Exit Date <b class="r-star">*</b></mat-label>
+        <mat-label>Exit Date</mat-label>
         <input matInput [matDatepicker]="picker2" placeholder="Enter start date" readonly
             formControlName="exit_date" autocomplete="off" (dateInput)="joiningDateFun($event)">
             <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
              <mat-datepicker #picker2></mat-datepicker>
-             <mat-error *ngIf="f['exit_date']?.invalid && f['exit_date']?.touched || f['exit_date']?.dirty">
-                <span  *ngIf="f['exit_date']?.errors?.['required']">Exit date is required</span>
-          </mat-error>
     </mat-form-field>
   
 </div>
@@ -124,7 +121,7 @@
     </mat-form-field>
 
 </div>
-<div class="col-12 col-sm-12 col-md-6 col-lg-4 my-1 px-0">
+<div class="col-12 col-sm-12 col-md-6 col-lg-4 my-1 no-padding pl-5 pr-0 ">
     <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
         <mat-label>Designation <b class="r-star">*</b></mat-label>
         <mat-select formControlName="sub_designation" autocomplete="off"
@@ -146,7 +143,7 @@
  
 </div>
 
-<div class="col-12 col-sm-12 col-md-6 col-lg-4 my-1 no-padding pl-5 pr-0 ">
+<div class="col-12 col-sm-12 col-md-6 col-lg-4 my-1 px-0">
     <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
         <mat-label>Reporting Manager <b class="r-star">*</b></mat-label>
         <mat-select formControlName="reporting_manager_id" autocomplete="off"
@@ -188,8 +185,10 @@
     <div class="col-12 col-sm-12 col-md-6 col-lg-3 align-content-center">
         <button mat-button class="cancel-button mat-btn-s" type="button" (click)="backBtnFunc()" >
             Back</button>
-        <button mat-raised-button class="proceedbtn mat-btn-s" type="submit" (click)="saveEmployeeDetails()" *ngIf="userRole !='Admin' && (accessPermissions[0]?.create || accessPermissions[0]?.update) || userRole === 'Admin'"><span
-            *ngIf="!isEditItem">Submit</span><span *ngIf="isEditItem" >Update</span></button>
+        <button mat-raised-button class="proceedbtn mat-btn-s" type="submit" (click)="saveEmployeeDetails()" *ngIf="userRole !='Admin' && accessPermissions[0]?.create || userRole === 'Admin'"><span
+            *ngIf="!isEditItem">Submit</span></button>
+        <button mat-raised-button class="proceedbtn mat-btn-s" type="submit" (click)="saveEmployeeDetails()" *ngIf="userRole !='Admin' &&  accessPermissions[0]?.update || userRole === 'Admin'">
+            <span *ngIf="isEditItem" >Update</span></button>
       </div>
       <div class="col-lg-3"></div>
       <div class="col-lg-3"></div>

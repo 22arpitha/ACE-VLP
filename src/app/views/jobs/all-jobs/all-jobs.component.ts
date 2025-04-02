@@ -45,7 +45,6 @@ export class AllJobsComponent implements OnInit {
   userRole: any;
   allEmployeelist:any=[];
   allManagerlist:any=[];
-
   constructor(private common_service: CommonServiceService, private accessControlService: SubModuleService,
     private router: Router, private modalService: NgbModal, private dialog: MatDialog,
     private apiService: ApiserviceService, private fb: FormBuilder) {
@@ -58,16 +57,25 @@ export class AllJobsComponent implements OnInit {
     this.getModuleAccess();
     this.getAllEmployeeList();
     this.getAllActiveManagerList();
-    this.getCurrentJobsList();
+    // this.getCurrentJobsList();
     this.getJobStatusList();
     this.initialForm();
+    this.common_service.jobStatus$.subscribe((status:boolean)=>{
+      if(status){
+        console.log(status)
+        this.getJobsHistoryList();
+      }else{
+        this.getCurrentJobsList();        
+      }
+    })
   }
-
+  access_name:any ;
   getModuleAccess() {
     this.accessControlService.getAccessForActiveUrl(this.user_id).subscribe((access) => {
       if (access) {
+        this.access_name=access[0]
         this.accessPermissions = access[0].operations;
-       // console.log('Access Permissions:', this.accessPermissions);
+       console.log('Access Permissions:', access);
       } else {
       //  console.log('No matching access found.');
       }
@@ -78,6 +86,9 @@ export class AllJobsComponent implements OnInit {
     this.apiService.getData(`${environment.live_url}/${environment.settings_job_status}/`).subscribe(
       (resData: any) => {
         console.log(resData);
+        resData.forEach((element:any)=>{
+          element['valueChanged']=false
+        })
         this.allJobStatus = resData;
       }
     )
@@ -108,6 +119,7 @@ export class AllJobsComponent implements OnInit {
     })
   }
   public openCreateClientPage() {
+     sessionStorage.setItem('access-name', this.access_name?.name)
     this.router.navigate(['/jobs/create-job']);
 
   }
@@ -123,6 +135,7 @@ export class AllJobsComponent implements OnInit {
       modalRef.componentInstance.status.subscribe(resp => {
         if (resp === 'ok') {
           modalRef.dismiss();
+           sessionStorage.setItem('access-name', this.access_name?.name)
           this.router.navigate(['/jobs/update-job', this.selectedItemId]);
 
         } else {
@@ -215,7 +228,11 @@ export class AllJobsComponent implements OnInit {
   }
 
   public getFilterBaseUrl(): string {
+  if(this.userRole === 'Admin'){
+    return `?page=${this.page}&page_size=${this.tableSize}&search=${this.term}`;
+  }else {
     return `?page=${this.page}&page_size=${this.tableSize}&search=${this.term}&employee-id=${this.user_id}`;
+  } 
   }
 
   public sort(direction: string, column: string) {
@@ -231,17 +248,17 @@ export class AllJobsComponent implements OnInit {
     return (this.page - 1) * this.tableSize + index + 1;
   }
 
+  changedStatusName:any
   onStatusChange(item: any, event: any) {
-    //console.log(event)
     const selectedStatusId = event.value;
-
-    // Find the percentage associated with the selected status
     const selectedStatus = this.allJobStatus.find(status => status.id == selectedStatusId);
-    //console.log(selectedStatus)
+    console.log(selectedStatus)
+    this.changedStatusName = selectedStatus.status_name
     if (selectedStatus) {
       item.job_status = event.value;
       item.percentage_of_completion = selectedStatus.percentage_of_completion;
       item.isInvalid = false;
+      item.valueChanged = true;
         // Update the percentage dynamically
     }
 
@@ -270,6 +287,7 @@ export class AllJobsComponent implements OnInit {
       item.errorType = 'min';
     } else {
       item.isInvalid = false;
+      item.valueChanged = true;
       item.errorType = null; // Clear errors when valid
     }
   }
@@ -277,14 +295,23 @@ export class AllJobsComponent implements OnInit {
 
   saveJobStausPercentage(item: any) {
     if(!item.isInvalid){
-      let formData:any= {'job_status':item?.job_status,'percentage_of_completion':item.percentage_of_completion}
+      let temp_status=this.changedStatusName.toLowerCase();
+      let formData:any= {'job_status':item?.job_status,'percentage_of_completion':item.percentage_of_completion,
+        status: (temp_status === 'cancelled' || temp_status === 'completed') ? false : true
+      }
       this.apiService.updateData(`${environment.live_url}/${environment.jobs_percetage}/${item.id}/`,formData).subscribe((respData: any) => {
         if (respData) {
           this.apiService.showSuccess(respData['message']);
-          if (this.isCurrent) {
-            this.getCurrentJobsList()
-          } else {
+          let status = this.changedStatusName.toLowerCase();
+          if(status==='completed' || status==='cancelled'){
             this.getJobsHistoryList();
+          } else{
+            this.getCurrentJobsList()
+            // if (this.isCurrent) {
+            //   this.getCurrentJobsList()
+            // } else {
+            //   this.getJobsHistoryList();
+            // }
           }
     }},(error: any) => {
       this.apiService.showError(error?.error?.detail);
@@ -302,7 +329,15 @@ export class AllJobsComponent implements OnInit {
   }
 
   public downloadOption(type:any){
-    let query = `?page=${this.page}&page_size=${this.tableSize}&file-type=${type}`
+  let status:any 
+    if(this.isCurrent){
+      status = 'True';
+    }
+    else{
+      status = 'False';
+    }
+    console.log(status)
+    let query = `?page=${this.page}&page_size=${this.tableSize}&file-type=${type}&is-active=${status}`
     let apiUrl = `${environment.live_url}/${environment.job_details}/${query}`;
     fetch(apiUrl)
   .then(res => res.blob())

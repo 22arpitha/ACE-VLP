@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, FormGroupDirective, Validators } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { CommonServiceService } from '../../../service/common-service.service';
@@ -14,7 +14,7 @@ import { SubModuleService } from 'src/app/service/sub-module.service';
 })
 export class JobTypeComponent implements OnInit {
   @ViewChild(FormGroupDirective) formGroupDirective!: FormGroupDirective;
-
+ @ViewChild('formInputField') formInputField: ElementRef;
   BreadCrumbsTitle: any = 'Job Type';
   isEditItem: boolean = false;
   jobTypeForm: FormGroup;
@@ -212,6 +212,7 @@ export class JobTypeComponent implements OnInit {
           this.selectedJobtype = item?.id;
           this.isEditItem = true;
           modalRef.dismiss();
+          this.scrollToField();
           this.getSelectedJobType(this.selectedJobtype);
         } else {
           modalRef.dismiss();
@@ -223,6 +224,11 @@ export class JobTypeComponent implements OnInit {
 
   }
 
+  public scrollToField(){
+    if (this.formInputField) {
+      this.formInputField?.nativeElement?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }
   public getSelectedJobType(id: any) {
     this.apiService.getData(`${environment.live_url}/${environment.settings_job_type}/${id}/`).subscribe((respData: any) => {
       this.jobTypeForm.patchValue({ 'job_type_name': respData?.job_type_name });

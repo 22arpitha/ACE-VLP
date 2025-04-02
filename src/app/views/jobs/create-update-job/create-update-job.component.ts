@@ -9,6 +9,8 @@ import { ApiserviceService } from '../../../service/apiservice.service';
 import { CommonServiceService } from '../../../service/common-service.service';
 import { environment } from '../../../../environments/environment';
 import { GenericDeleteComponent } from '../../../generic-components/generic-delete/generic-delete.component';
+import { FormErrorScrollUtilityService } from '../../../service/form-error-scroll-utility-service.service';
+import { SubModuleService } from 'src/app/service/sub-module.service';
 
 @Component({
   selector: 'app-create-update-job',
@@ -67,9 +69,9 @@ selectOtherEmpFlag:boolean=false;
   ];
 user_id:any;
 currentDate:any = new Date().toISOString();
-  constructor(private fb:FormBuilder,private activeRoute:ActivatedRoute,
+  constructor(private fb:FormBuilder,private activeRoute:ActivatedRoute,private accessControlService:SubModuleService,
         private common_service: CommonServiceService,private router:Router,private datepipe:DatePipe,
-        private apiService: ApiserviceService,private modalService: NgbModal) { 
+        private apiService: ApiserviceService,private modalService: NgbModal,private formErrorScrollService:FormErrorScrollUtilityService) { 
         this.common_service.setTitle(this.BreadCrumbsTitle);
         this.user_role_name = sessionStorage.getItem('user_role_name');
         this.user_id = sessionStorage.getItem('user_id');
@@ -109,6 +111,7 @@ currentDate:any = new Date().toISOString();
       job_allocation_date:['',Validators.required],
       budget_time:['',[Validators.required,Validators.pattern('^([0-9]{1,3}):([0-5]?[0-9])$')]],
       job_status:['',Validators.required],
+      percentage_of_completion:[Number,Validators.required],
       job_status_date:[this.currentDate,Validators.required],
       option:['1',Validators.required],
       job_notes:[''],
@@ -131,18 +134,20 @@ currentDate:any = new Date().toISOString();
         this.getAllActiveManagerList();
       }
  getModuleAccess(){
-      this.apiService.getData(`${environment.live_url}/${environment.user_access}/${sessionStorage.getItem('user_id')}/`).subscribe(
+  this.accessControlService.getAccessForActiveUrl(this.user_id).subscribe(
         (res:any)=>{
-          console.log(res)
-         res.access_list.forEach((access:any)=>{
-            access.access.forEach((access_name:any)=>{
-                if(access_name.name===sessionStorage.getItem('access-name')){
-                  console.log(access_name)
-                  this.accessPermissions = access_name.operations;
-                  // console.log('this.accessPermissions', this.accessPermissions);
-                }
-              })
-         })
+          console.log(res);
+          this.accessPermissions = res[0].operations;
+          // console.log('this.accessPermissions', this.accessPermissions)
+        //  res.access_list.forEach((access:any)=>{
+        //     access.access.forEach((access_name:any)=>{
+        //         if(access_name.name===sessionStorage.getItem('access-name')){
+        //           console.log(access_name)
+        //           this.accessPermissions = access_name.operations;
+        //           console.log('this.accessPermissions', this.accessPermissions);
+        //         }
+        //       })
+        //  })
         }
       )
     }
@@ -277,7 +282,7 @@ private getClientBasedEndClient(id:any){
 onEndClientChange(event:any){
   const endClient_id = event.value;
   this.jobFormGroup?.get('group')?.reset();
-  this.getCombinationJobName();
+  // this.getCombinationJobName();
   this.getEndClientBasedGroup(endClient_id);
 }
 
@@ -325,7 +330,7 @@ public onPeroidicityChange(event:any){
 }
 public onServiceChange(event:any){
   console.log('event',event);
-this.getCombinationJobName();
+// this.getCombinationJobName();
 }
 public onPeroidChange(event:any){
   console.log('event',event);
@@ -356,7 +361,15 @@ public getAllJobStatus(){
   this.allJobStatusList=[];
   this.apiService.getData(`${environment.live_url}/${environment.settings_job_status}/`).subscribe(
         (res: any) => {
-          this.allJobStatusList = res;
+          if(this.job_id){
+            this.allJobStatusList = res;
+          } else{
+            this.allJobStatusList = res.filter(job => {
+              const status = job.status_name.toLowerCase();
+              return status !== 'completed' && status !== 'cancelled';
+            });
+              
+          }
         }, (error: any) => {
           this.apiService.showError(error?.error?.detail);
         });
@@ -474,11 +487,13 @@ if(respData){
     job_allocation_date:respData?.job_allocation_date ? new Date(respData?.job_allocation_date)?.toISOString(): null,
     job_status_date:respData?.job_status_date ? new Date(respData?.job_status_date)?.toISOString(): null,
     job_status:respData?.job_status,
+    percentage_of_completion: Number(respData?.percentage_of_completion),
     option:respData?.option.toString(),
     job_notes:respData?.job_notes,
     created_by:respData?.created_by,
     updated_by:respData?.updated_by,
       });
+      this.tempSelectedJobStatus = respData?.job_status_name.toLowerCase();
     if(respData?.budget_time){
       const [hours, minutes] = respData?.budget_time?.split(":");
         const formattedbudget_time = `${hours}:${minutes}`;
@@ -504,6 +519,12 @@ if(respData){
         this.apiService.showError(error?.error?.detail);
       })
 }      public backBtnFunc(){
+        sessionStorage.removeItem("access-name")
+        if(this.tempSelectedJobStatus==='completed' || this.tempSelectedJobStatus ==='cancelled'){
+          this.common_service.setjobStatusState(true);
+        } else{
+          this.common_service.setjobStatusState(false);
+        }
         this.router.navigate(['/jobs/all-jobs']);
       }
 
@@ -542,17 +563,32 @@ if(respData){
     }
         }
       }
+
+      tempSelectedJobStatus:any
+      selectJobStatus(event:any){
+        // console.log(event)
+        let data =this.allJobStatusList.find((x:any)=>x.id===event.value)
+        this.tempSelectedJobStatus = data.status_name.toLowerCase();
+        this.jobFormGroup.patchValue({percentage_of_completion: Number(data.percentage_of_completion)})
+      }
+
       public saveJobDetails(){
         if (this.jobFormGroup.invalid) {
           this.jobFormGroup.markAllAsTouched();
+          this.formErrorScrollService.scrollToFirstError(this.jobFormGroup);
         } else {
           if (this.isEditItem) {
             this.formData = this.createFromData();
             this.apiService.updateData(`${environment.live_url}/${environment.jobs}/${this.job_id}/`, this.formData).subscribe((respData: any) => {
               if (respData) {
-                this.common_service.setjobStatusState(this.jobFormGroup.get('status')?.value);
                 this.apiService.showSuccess(respData['message']);
+                if(this.tempSelectedJobStatus==='completed' || this.tempSelectedJobStatus ==='cancelled'){
+                  this.common_service.setjobStatusState(true);
+                } else{
+                  this.common_service.setjobStatusState(false);
+                }
                 this.resetFormState();
+                sessionStorage.removeItem("access-name")
                 this.router.navigate(['/jobs/all-jobs']);
               }
             }, (error: any) => {
@@ -564,6 +600,7 @@ if(respData){
               if (respData) {
                 this.apiService.showSuccess(respData['message']);
                 this.resetFormState();
+                sessionStorage.removeItem("access-name")
                 this.router.navigate(['/jobs/all-jobs']);
               }
             }, (error: any) => {
@@ -587,12 +624,14 @@ this.formData.set('job_type',this.jobFormGroup?.get('job_type')?.value);
 this.formData.set('job_allocation_date',this.datepipe.transform(this.jobFormGroup?.get('job_allocation_date')?.value,'YYYY-MM-dd'));
 this.formData.set('budget_time',this.jobFormGroup?.get('budget_time')?.value + ":00");
 this.formData.set('job_status',this.jobFormGroup?.get('job_status')?.value);
+this.formData.set('percentage_of_completion',this.jobFormGroup?.get('percentage_of_completion')?.value);
 this.formData.set('job_status_date',this.datepipe.transform(this.jobFormGroup?.get('job_status_date')?.value,'YYYY-MM-dd'));
 this.formData.set('option',this.jobFormGroup?.get('option')?.value.toString());
 this.formData.set('created_by',this.jobFormGroup?.get('created_by')?.value);
 this.formData.set('job_notes',this.jobFormGroup?.get('job_notes')?.value ||'');
 this.formData.set('updated_by',this.jobFormGroup?.get('updated_by')?.value);
 this.formData.set("employees", JSON.stringify(this.jobFormGroup?.get('employees')?.getRawValue()) || []);
+this.formData.set("status", (this.tempSelectedJobStatus === 'cancelled' || this.tempSelectedJobStatus === 'completed') ? false : true)
 const json = this.formDataToJson(this.formData);
 
 return json;
@@ -649,30 +688,41 @@ return json;
         this.getEmployees(queryparams);
       }
 
-      public onSelectionAllEmployee(event:any){
-        if(event.checked === true){
-          this.selectAllEmpFlag=true;
+      public onSelectionAllEmployee(event: any) {
+        if (event.checked === true) {
+          this.selectAllEmpFlag = true;
           this.employeeFormArray.clear();
-          this.allEmployeeList.forEach((element:any) => {
+      
+          this.allEmployeeList.forEach((element: any) => {
+            // Check if the reporting_manager_id exists in the allManagerList
+            const isManagerValid = this.allManagerList?.some((manager: any) => manager?.user_id === element?.reporting_manager_id);
             let empData = this.fb.group({
               'employee': element?.user_id,
-              'manager': element?.reporting_manager_id,
+              'manager': isManagerValid ? element?.reporting_manager_id : '',
               'is_primary': this.user_role_name === 'Employee' ? true : false
             });
-            this.employeeFormArray.push(empData)
+      
+            this.employeeFormArray.push(empData);
+      
+            // Disable or enable fields based on reporting manager validity
+            if (!isManagerValid) {
+              // If reporting manager is invalid, enable and make the field empty
+              empData.get('manager')?.enable();
+              empData.get('manager')?.setValue('');  // Make the field empty
+            } else {
+              // If reporting manager is valid, disable the fields
+              empData.get('employee')?.disable();
+              empData.get('manager')?.disable();
+              empData.get('is_primary')?.disable();
+            }
           });
-          this.employeeFormArray.controls.forEach((empItem:any) => {
-            empItem?.get('employee')?.disable();
-            empItem?.get('manager')?.disable();
-            empItem?.get('is_primary')?.disable();
-          })
-        }else{
-          this.selectAllEmpFlag=false;
+        } else {
+          this.selectAllEmpFlag = false;
           this.employeeFormArray.clear();
           this.employeeFormArray.push(this.createEmployeeControl());
         }
-
       }
+      
 
       public editContact(index: number) {
         const empItem = this.employeeFormArray.at(index);
@@ -700,7 +750,7 @@ return json;
           this.employeeFormArray.at(i).get('manager')?.reset();
           this.employeeFormArray.at(i).get('is_primary')?.reset();
         }else{
-          const selectedEmp = this.allManagerList.find((emp:any)=>emp.user_id === event.value);
+          const selectedEmp = this.allEmployeeList.find((emp:any)=>emp.user_id === event.value);
           this.employeeFormArray.at(i).patchValue({'employee':event.value});
           this.employeeFormArray.at(i).patchValue({'manager':selectedEmp?.reporting_manager_id});
           this.employeeFormArray.at(i).patchValue({'is_primary':this.user_role_name === 'Employee' ? true : false});
@@ -739,8 +789,11 @@ return json;
         let endClientName = this.getSelectedEndClient(this.jobFormGroup?.get('end_client')?.value);
         let service_name = this.getSelectedService(this.jobFormGroup?.get('service')?.value);
         let period_name = this.getSelectedPeroid(this.jobFormGroup?.get('period')?.value);
-        let job_name = `${endClientName} ${service_name} ${period_name}`;
-        this.jobFormGroup?.patchValue({'job_name':job_name});
+        if(this.jobFormGroup?.get('end_client')?.valid && this.jobFormGroup?.get('service')?.valid && this.jobFormGroup?.get('period')?.valid){
+          let job_name = `${endClientName} ${service_name} ${period_name}`;
+          this.jobFormGroup?.patchValue({'job_name':job_name});
+        }
+        
         
       }
 
@@ -776,5 +829,18 @@ return json;
     
         return obj;
     }
+
+    // add colon 
+    formatBudget(event: any): void {
+      let rawValue = event.target.value.replace(/[^0-9]/g, '');
+
+      if (rawValue.length > 3) {
+        rawValue = rawValue.slice(0, 3) + ':' + rawValue.slice(3);
+      }
+      this.jobFormGroup.controls['budget_time'].setValue(rawValue, { emitEvent: false })
+    }
+
+    
+    
     
 }

@@ -47,3 +47,8 @@
   min-width: 200px !important;
   text-align: center;
 }
+
+::ng-deep .custom-select-dropdown {
+  margin-top: 27px !important;
+  margin-bottom: 28px !important;
+}

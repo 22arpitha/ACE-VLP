@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, FormGroupDirective } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { CommonServiceService } from '../../../service/common-service.service';
@@ -6,7 +6,7 @@ import { ApiserviceService } from '../../../service/apiservice.service';
 import { GenericDeleteComponent } from '../../../generic-components/generic-delete/generic-delete.component';
 import { GenericEditComponent } from '../../../generic-components/generic-edit/generic-edit.component';
 import { environment } from '../../../../environments/environment';
-import { SubModuleService } from 'src/app/service/sub-module.service';
+import { SubModuleService } from '../../../service/sub-module.service';
 @Component({
   selector: 'app-status-group',
   templateUrl: './status-group.component.html',
@@ -14,6 +14,7 @@ import { SubModuleService } from 'src/app/service/sub-module.service';
 })
 export class StatusGroupComponent implements OnInit {
   @ViewChild(FormGroupDirective) formGroupDirective!: FormGroupDirective;
+   @ViewChild('formInputField') formInputField: ElementRef;
   BreadCrumbsTitle: any = 'Status Group';
   isEditItem: boolean = false;
   statusGroupForm: FormGroup;
@@ -195,6 +196,7 @@ export class StatusGroupComponent implements OnInit {
           this.selectedStatusGroup = item?.id;
           this.isEditItem = true;
           modalRef.dismiss();
+          this.scrollToField();
           this.getSelectedStatusGroupDetails(this.selectedStatusGroup);
         } else {
           modalRef.dismiss();
@@ -202,6 +204,13 @@ export class StatusGroupComponent implements OnInit {
       });
     } catch (error) {
       console.error('Error opening modal:', error);
+    }
+  }
+
+  
+  public scrollToField(){
+    if (this.formInputField) {
+      this.formInputField?.nativeElement?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   }
   public getSelectedStatusGroupDetails(id: any) {

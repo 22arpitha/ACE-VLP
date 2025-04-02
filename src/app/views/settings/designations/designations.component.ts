@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, FormGroupDirective } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { CommonServiceService } from '../../../service/common-service.service';
@@ -18,6 +18,7 @@ export class DesignationsComponent implements OnInit {
 
   BreadCrumbsTitle: any = 'Designation';
   @ViewChild(FormGroupDirective) formGroupDirective!: FormGroupDirective;
+   @ViewChild('formInputField') formInputField: ElementRef;
   isEditItem: boolean = false;
   designationForm: FormGroup;
   selectedDesignationStatus: any;
@@ -180,7 +181,7 @@ export class DesignationsComponent implements OnInit {
     this.apiService.delete(`${environment.live_url}/${environment.settings_designation}/${item?.id}/`).subscribe(async (data: any) => {
       if (data) {
         this.allDesignationStatusList = []
-        this.apiService.showWarning('Job Status deleted successfully!')
+        this.apiService.showWarning(data.message)
         let query = `?page=${1}&page_size=${this.tableSize}`
         if (this.term) {
           query += `&search=${this.term}`
@@ -207,6 +208,7 @@ export class DesignationsComponent implements OnInit {
           this.selectedDesignationStatus = item?.id;
           this.isEditItem = true;
           modalRef.dismiss();
+          this.scrollToField();
           this.getSelectedDesignation(this.selectedDesignationStatus);
         } else {
           modalRef.dismiss();
@@ -214,6 +216,11 @@ export class DesignationsComponent implements OnInit {
       });
     } catch (error) {
       console.error('Error opening modal:', error);
+    }
+  }
+  public scrollToField(){
+    if (this.formInputField) {
+      this.formInputField?.nativeElement?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   }
   public getSelectedDesignation(id: any) {

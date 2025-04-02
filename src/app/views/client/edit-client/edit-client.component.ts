@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, FormGroupDirective } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { CommonServiceService } from '../../../service/common-service.service';
@@ -15,6 +15,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 })
 export class EditClientComponent implements OnInit {
   @ViewChild(FormGroupDirective) formGroupDirective!: FormGroupDirective;
+  @ViewChild('formInputField') formInputField: ElementRef;
   isEditItem: boolean = false;
   endClientForm: FormGroup;
   selectedJobStatus: any;
@@ -28,7 +29,7 @@ export class EditClientComponent implements OnInit {
   sortValue: string = '';
   directionValue: string = '';
   arrowState: { [key: string]: boolean } = {
-    end_client_name: false,
+    client_name: false,
     group_name:false,
 
   };
@@ -226,6 +227,7 @@ public clearSearch(){
           this.selectedJobStatus = item?.id;
           this.isEditItem = true;
           modalRef.dismiss();
+          this.scrollToField();
           this.getSelectedEndClient(this.selectedJobStatus);
         } else {
           modalRef.dismiss();
@@ -233,6 +235,13 @@ public clearSearch(){
       });
     } catch (error) {
       console.error('Error opening modal:', error);
+    }
+  }
+
+  
+  public scrollToField(){
+    if (this.formInputField) {
+      this.formInputField?.nativeElement?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   }
   public getSelectedEndClient(id: any) {

@@ -65,7 +65,7 @@ export class ClientListComponent implements OnInit {
         if (access) {
           this.access_name=access[0]
           this.accessPermissions = access[0].operations;
-          console.log('Access Permissions:', this.accessPermissions);
+          // console.log('Access Permissions:', access);
         } else {
           console.log('No matching access found.');
         }
@@ -73,6 +73,7 @@ export class ClientListComponent implements OnInit {
     }
   
     public openCreateClientPage(){
+      sessionStorage.setItem('access-name', this.access_name?.name)
       this.router.navigate(['/client/create']);
   
     }
@@ -185,8 +186,12 @@ export class ClientListComponent implements OnInit {
     }
   
     public getFilterBaseUrl(): string {
-      return `?page=${this.page}&page_size=${this.tableSize}&search=${this.term}&employee-id=${this.user_id}`;
-    }
+      if(this.userRole === 'Admin'){
+        return `?page=${this.page}&page_size=${this.tableSize}&search=${this.term}`;
+      }else{
+        return `?page=${this.page}&page_size=${this.tableSize}&search=${this.term}&employee-id=${this.user_id}`;
+      }
+      }
   
     public sort(direction: string, column: string) {
       Object.keys(this.arrowState).forEach(key => {
@@ -210,7 +215,14 @@ export class ClientListComponent implements OnInit {
 
 
     public downloadOption(type:any){
-      let query = `?page=${this.page}&page_size=${this.tableSize}&file-type=${type}`
+      let status:any 
+      if(this.isCurrent){
+        status = 'True';
+      }
+      else{
+        status = 'False';
+      }
+      let query = `?page=${this.page}&page_size=${this.tableSize}&file-type=${type}&is-active=${status}`
       let apiUrl = `${environment.live_url}/${environment.clients_details}/${query}`;
       fetch(apiUrl)
     .then(res => res.blob())

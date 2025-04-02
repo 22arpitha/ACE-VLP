@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, FormGroupDirective } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { CommonServiceService } from '../../../service/common-service.service';
@@ -16,6 +16,7 @@ import { SubModuleService } from 'src/app/service/sub-module.service';
 export class JobStatusComponent implements OnInit {
   BreadCrumbsTitle: any = 'Job Status';
   @ViewChild(FormGroupDirective) formGroupDirective!: FormGroupDirective;
+   @ViewChild('formInputField') formInputField: ElementRef;
   isEditItem: boolean = false;
   jobStatusForm: FormGroup;
   selectedJobStatus: any;
@@ -232,6 +233,7 @@ export class JobStatusComponent implements OnInit {
           this.selectedJobStatus = item?.id;
           this.isEditItem = true;
           modalRef.dismiss();
+          this.scrollToField();
           this.getSelectedJobstatus(this.selectedJobStatus);
         } else {
           modalRef.dismiss();
@@ -239,6 +241,12 @@ export class JobStatusComponent implements OnInit {
       });
     } catch (error) {
       console.error('Error opening modal:', error);
+    }
+  }
+
+  public scrollToField(){
+    if (this.formInputField) {
+      this.formInputField?.nativeElement?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   }
   public getSelectedJobstatus(id: any) {

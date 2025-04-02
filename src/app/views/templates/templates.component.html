@@ -1,13 +1,13 @@
 <div class="container-wrapper settings-main-content px-0">
   <section class="settings-form-bg" *ngIf="userRole !='Admin' && accessPermissions[0]?.create || userRole === 'Admin'">
-    <div class="row mx-0 px-0">
+    <div class="row mx-0 px-0" #formInputField>
       <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0">
         <form [formGroup]="templateForm">
           <div class="row mx-0 my-0 p-0">
             <div class="col-12 col-sm-12 col-md-6 col-lg-3 px-2">
               <mat-form-field appearance="outline" class="w-100 custom-mat-form-field no-padding-bottom">
                 <mat-label>Template Name<b class="r-star">*</b></mat-label>
-                <input matInput placeholder="Enter Template Name" formControlName="template_name" autocomplete="off">
+                <input matInput placeholder="Enter Template Name" formControlName="template_name" autocomplete="off" >
                 
               </mat-form-field>
               <div style="font-size: 11px;padding-left: 10px;color:#f44336" *ngIf="f['template_name']?.invalid && f['template_name']?.touched || f['template_name']?.dirty">

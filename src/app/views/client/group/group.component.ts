@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, FormGroupDirective, Validators } from '@angular/forms';
 import { ApiserviceService } from '../../../service/apiservice.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -15,6 +15,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 })
 export class GroupComponent implements OnInit {
   @ViewChild(FormGroupDirective) formGroupDirective!: FormGroupDirective;
+  @ViewChild('formInputField') formInputField: ElementRef;
   groupForm: FormGroup;
   isEditItem: boolean = false;
   selectedItemId: any
@@ -164,8 +165,7 @@ export class GroupComponent implements OnInit {
     this.term='';
   }
   async edit(item: any) {
-    this.selectedItemId = item?.id;
-    this.isEditItem = true;
+    
     try {
       const modalRef = await this.modalService.open(GenericEditComponent, {
         size: 'sm',
@@ -175,8 +175,11 @@ export class GroupComponent implements OnInit {
 
       modalRef.componentInstance.status.subscribe(resp => {
         if (resp === 'ok') {
+          this.selectedItemId = item?.id;
+          this.isEditItem = true;
           modalRef.dismiss();
-          this.getSelectedItemData(this.selectedItemId)
+          this.scrollToField();
+          this.getSelectedItemData(this.selectedItemId);
         } else {
           modalRef.dismiss();
         }
@@ -194,6 +197,11 @@ export class GroupComponent implements OnInit {
     })
   }
 
+  public scrollToField(){
+    if (this.formInputField) {
+      this.formInputField?.nativeElement?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }
   delete(id: any) {
     if (id) {
       const modelRef = this.modalService.open(GenericDeleteComponent, {

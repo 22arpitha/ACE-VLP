@@ -71,6 +71,8 @@ is_active:false,
   }
 
   public openCreateEmployeePage(){
+    console.log('ddddddddd')
+    sessionStorage.setItem('access-name', this.access_name?.name)
     this.router.navigate(['/settings/create-employee']);
 
   }

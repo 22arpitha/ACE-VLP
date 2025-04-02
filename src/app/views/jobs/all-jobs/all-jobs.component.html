@@ -31,24 +31,24 @@
                   <tr>
                     <th scope="col"> S.No</th>
                     <th scope="col">Job Number
-                      <i *ngIf="!arrowState['job_number']" (click)="sort('asc','job_number')" class="bi bi-arrow-up"></i>
+                      <i *ngIf="!arrowState['job_number']" (click)="sort('asc','job_number')" class="bi bi-arrow-down"></i>
                 <i (click)="sort('desc','job_number')" *ngIf="arrowState['job_number']"
-                  class="bi bi-arrow-down"></i>
+                  class="bi bi-arrow-up"></i>
                     </th>
                     <th scope="col">Job Name
-                      <i *ngIf="!arrowState['job_name']" (click)="sort('asc','job_name')" class="bi bi-arrow-up"></i>
+                      <i *ngIf="!arrowState['job_name']" (click)="sort('asc','job_name')" class="bi bi-arrow-down"></i>
                       <i (click)="sort('desc','job_name')" *ngIf="arrowState['job_name']"
-                        class="bi bi-arrow-down"></i>
+                        class="bi bi-arrow-up"></i>
                     </th>
                     <th scope="col">Job Type
-                      <i *ngIf="!arrowState['job_type_name']" (click)="sort('asc','job_type_name')" class="bi bi-arrow-up"></i>
+                      <i *ngIf="!arrowState['job_type_name']" (click)="sort('asc','job_type_name')" class="bi bi-arrow-down"></i>
                       <i (click)="sort('desc','job_type_name')" *ngIf="arrowState['job_type_name']"
-                        class="bi bi-arrow-down"></i>
+                        class="bi bi-arrow-up"></i>
                     </th>
                     <th scope="col">Client
-                      <i *ngIf="!arrowState['client_name']" (click)="sort('asc','client_name')" class="bi bi-arrow-up"></i>
+                      <i *ngIf="!arrowState['client_name']" (click)="sort('asc','client_name')" class="bi bi-arrow-down"></i>
                       <i (click)="sort('desc','client_name')" *ngIf="arrowState['client_name']"
-                        class="bi bi-arrow-down"></i>
+                        class="bi bi-arrow-up"></i>
                     </th>
                     <th scope="col">Job Allocation Date</th>
                     <th scope="col">Employee</th>
@@ -77,7 +77,7 @@
                       <td>{{getEmployeeName(item?.employees) || '-'}}</td>
                       <td>{{getManagerName(item?.employees) || '-'}}</td>
                           <td>
-                            <mat-select class="mat-select-table" [ngModel]="item?.job_status" (selectionChange)="onStatusChange(item, $event)">
+                            <mat-select panelClass="custom-select-dropdown" class="mat-select-table" [ngModel]="item?.job_status" (selectionChange)="onStatusChange(item, $event)">
                                 <mat-option *ngFor="let status of allJobStatus" [value]="status?.id">
                                   {{ status?.status_name }}
                                 </mat-option>
@@ -95,7 +95,7 @@
                                     <small *ngIf="item.errorType === 'min'">Percentage cannot be less than 1.</small>
                                   </div>
                             </div>
-                            <div *ngIf="userRole !='Admin' && accessPermissions[0]?.update || userRole === 'Admin'"><img src="../../../../assets/images/tick.svg"  (click)="saveJobStausPercentage(item)" alt="" height="20" width="20"></div>
+                            <div *ngIf="userRole !='Admin' && accessPermissions[0]?.update && item.valueChanged || userRole === 'Admin' && item.valueChanged"><img src="../../../../assets/images/tick.svg"  (click)="saveJobStausPercentage(item)" alt="" height="20" width="20"></div>
                            </div>
                           </td>
                       <td>{{item?.job_status_date}}</td>
