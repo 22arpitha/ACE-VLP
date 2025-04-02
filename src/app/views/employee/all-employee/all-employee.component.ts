@@ -41,13 +41,13 @@ is_active:false,
     private router:Router,private modalService: NgbModal,private accessControlService:SubModuleService,
     private apiService: ApiserviceService) {
     this.common_service.setTitle(this.BreadCrumbsTitle)
-    // this.common_service.empolyeeStatus$.subscribe((status:boolean)=>{
-    //   if(status){
-    //     this.getActiveEmployeeList();
-    //   }else{
-    //     this.getInActiveEmployeeList();        
-    //   }
-    // })
+    this.common_service.empolyeeStatus$.subscribe((status:boolean)=>{
+      if(status){
+        this.getActiveEmployeeList();
+      }else{
+        this.getInActiveEmployeeList();        
+      }
+    })
    }
 
   ngOnInit(): void {
@@ -71,6 +71,8 @@ is_active:false,
   }
 
   public openCreateEmployeePage(){
+    console.log('ddddddddd')
+    sessionStorage.setItem('access-name', this.access_name?.name)
     this.router.navigate(['/settings/create-employee']);
 
   }

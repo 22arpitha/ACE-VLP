@@ -94,7 +94,7 @@ export class OtpComponent implements OnInit {
         if (res) {
           this.api.showSuccess(res['message'])
           sessionStorage.setItem('user_id', res['user_id'])
-          this.router.navigate(['/forgotChange'], { replaceUrl: true });
+          this.router.navigate(['/set-password'], { replaceUrl: true });
         }
         else {
           this.api.showError(res['message']);

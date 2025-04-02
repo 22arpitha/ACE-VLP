@@ -197,7 +197,10 @@
         <input matInput type="text" placeholder="Enter Budget" formControlName="budget_time" autocomplete="off" (input)="formatBudget($event)" >
         <mat-error *ngIf="f['budget_time']?.invalid && f['budget_time']?.touched || f['budget_time']?.dirty">
           <span *ngIf="f['budget_time']?.errors?.['required']">Budget is required</span>
-          <span *ngIf="f['budget_time']?.errors?.['pattern']">Invalid time format. Please use HHH:MM.</span>
+          <!-- <span *ngIf="f['budget_time']?.errors?.['pattern'] ">Invalid time format. Please use HHH:MM</span> -->
+          <span *ngIf="f['budget_time']?.errors?.['pattern']">
+            {{ +f['budget_time'].value?.split(':')[1] > 59 ? 'Minutes value cannot exceed 59' : 'Invalid time format. Please use HHH:MM' }}
+          </span>
         </mat-error>
       </mat-form-field>  
     </div>
@@ -377,8 +380,10 @@
     <div class="col-12 col-sm-12 col-md-6 col-lg-3 align-content-center px-0">
         <button mat-button class="cancel-button mat-btn-s" type="button" (click)="backBtnFunc()" >
             Back</button>
-        <button mat-raised-button class="proceedbtn mat-btn-s" type="submit" (click)="saveJobDetails()" *ngIf="user_role_name !='Admin' && (accessPermissions[0]?.create || accessPermissions[0]?.update) || user_role_name === 'Admin'"><span
-            *ngIf="!isEditItem">Submit</span><span *ngIf="isEditItem" >Update</span></button>
+        <button mat-raised-button class="proceedbtn mat-btn-s" type="submit" (click)="saveJobDetails()" *ngIf="user_role_name !='Admin' && accessPermissions[0]?.create || user_role_name === 'Admin'"><span
+            *ngIf="!isEditItem">Submit</span></button>
+        <button mat-raised-button class="proceedbtn mat-btn-s" type="submit" (click)="saveJobDetails()" *ngIf="user_role_name !='Admin' &&  accessPermissions[0]?.update || user_role_name === 'Admin'">
+          <span *ngIf="isEditItem" >Update</span></button>
       </div>
       <div class="col-lg-3"></div>
       <div class="col-lg-3"></div>

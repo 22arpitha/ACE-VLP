@@ -10,6 +10,7 @@ import { CommonServiceService } from '../../../service/common-service.service';
 import { environment } from '../../../../environments/environment';
 import { GenericDeleteComponent } from './../../../generic-delete/generic-delete.component';
 import { FormErrorScrollUtilityService } from '../../../service/form-error-scroll-utility-service.service';
+import { SubModuleService } from 'src/app/service/sub-module.service';
 
 @Component({
   selector: 'app-create-update-job',
@@ -68,7 +69,7 @@ selectOtherEmpFlag:boolean=false;
   ];
 user_id:any;
 currentDate:any = new Date().toISOString();
-  constructor(private fb:FormBuilder,private activeRoute:ActivatedRoute,
+  constructor(private fb:FormBuilder,private activeRoute:ActivatedRoute,private accessControlService:SubModuleService,
         private common_service: CommonServiceService,private router:Router,private datepipe:DatePipe,
         private apiService: ApiserviceService,private modalService: NgbModal,private formErrorScrollService:FormErrorScrollUtilityService) { 
         this.common_service.setTitle(this.BreadCrumbsTitle);
@@ -133,18 +134,20 @@ currentDate:any = new Date().toISOString();
         this.getAllActiveManagerList();
       }
  getModuleAccess(){
-      this.apiService.getData(`${environment.live_url}/${environment.user_access}/${sessionStorage.getItem('user_id')}/`).subscribe(
+  this.accessControlService.getAccessForActiveUrl(this.user_id).subscribe(
         (res:any)=>{
-          console.log(res)
-         res.access_list.forEach((access:any)=>{
-            access.access.forEach((access_name:any)=>{
-                if(access_name.name===sessionStorage.getItem('access-name')){
-                  console.log(access_name)
-                  this.accessPermissions = access_name.operations;
-                  // console.log('this.accessPermissions', this.accessPermissions);
-                }
-              })
-         })
+          console.log(res);
+          this.accessPermissions = res[0].operations;
+          // console.log('this.accessPermissions', this.accessPermissions)
+        //  res.access_list.forEach((access:any)=>{
+        //     access.access.forEach((access_name:any)=>{
+        //         if(access_name.name===sessionStorage.getItem('access-name')){
+        //           console.log(access_name)
+        //           this.accessPermissions = access_name.operations;
+        //           console.log('this.accessPermissions', this.accessPermissions);
+        //         }
+        //       })
+        //  })
         }
       )
     }
@@ -516,6 +519,12 @@ if(respData){
         this.apiService.showError(error?.error?.detail);
       })
 }      public backBtnFunc(){
+        sessionStorage.removeItem("access-name")
+        if(this.tempSelectedJobStatus==='completed' || this.tempSelectedJobStatus ==='cancelled'){
+          this.common_service.setjobStatusState(true);
+        } else{
+          this.common_service.setjobStatusState(false);
+        }
         this.router.navigate(['/jobs/all-jobs']);
       }
 
@@ -579,6 +588,7 @@ if(respData){
                   this.common_service.setjobStatusState(false);
                 }
                 this.resetFormState();
+                sessionStorage.removeItem("access-name")
                 this.router.navigate(['/jobs/all-jobs']);
               }
             }, (error: any) => {
@@ -590,6 +600,7 @@ if(respData){
               if (respData) {
                 this.apiService.showSuccess(respData['message']);
                 this.resetFormState();
+                sessionStorage.removeItem("access-name")
                 this.router.navigate(['/jobs/all-jobs']);
               }
             }, (error: any) => {
@@ -620,6 +631,7 @@ this.formData.set('created_by',this.jobFormGroup?.get('created_by')?.value);
 this.formData.set('job_notes',this.jobFormGroup?.get('job_notes')?.value ||'');
 this.formData.set('updated_by',this.jobFormGroup?.get('updated_by')?.value);
 this.formData.set("employees", JSON.stringify(this.jobFormGroup?.get('employees')?.getRawValue()) || []);
+this.formData.set("status", (this.tempSelectedJobStatus === 'cancelled' || this.tempSelectedJobStatus === 'completed') ? false : true)
 const json = this.formDataToJson(this.formData);
 
 return json;

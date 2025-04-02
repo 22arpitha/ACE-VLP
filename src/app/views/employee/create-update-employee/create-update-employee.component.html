@@ -185,8 +185,10 @@
     <div class="col-12 col-sm-12 col-md-6 col-lg-3 align-content-center">
         <button mat-button class="cancel-button mat-btn-s" type="button" (click)="backBtnFunc()" >
             Back</button>
-        <button mat-raised-button class="proceedbtn mat-btn-s" type="submit" (click)="saveEmployeeDetails()" *ngIf="userRole !='Admin' && (accessPermissions[0]?.create || accessPermissions[0]?.update) || userRole === 'Admin'"><span
-            *ngIf="!isEditItem">Submit</span><span *ngIf="isEditItem" >Update</span></button>
+        <button mat-raised-button class="proceedbtn mat-btn-s" type="submit" (click)="saveEmployeeDetails()" *ngIf="userRole !='Admin' && accessPermissions[0]?.create || userRole === 'Admin'"><span
+            *ngIf="!isEditItem">Submit</span></button>
+        <button mat-raised-button class="proceedbtn mat-btn-s" type="submit" (click)="saveEmployeeDetails()" *ngIf="userRole !='Admin' &&  accessPermissions[0]?.update || userRole === 'Admin'">
+            <span *ngIf="isEditItem" >Update</span></button>
       </div>
       <div class="col-lg-3"></div>
       <div class="col-lg-3"></div>

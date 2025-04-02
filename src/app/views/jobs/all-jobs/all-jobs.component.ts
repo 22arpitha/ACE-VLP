@@ -69,12 +69,13 @@ export class AllJobsComponent implements OnInit {
       }
     })
   }
-
+  access_name:any ;
   getModuleAccess() {
     this.accessControlService.getAccessForActiveUrl(this.user_id).subscribe((access) => {
       if (access) {
+        this.access_name=access[0]
         this.accessPermissions = access[0].operations;
-       // console.log('Access Permissions:', this.accessPermissions);
+       console.log('Access Permissions:', access);
       } else {
       //  console.log('No matching access found.');
       }
@@ -118,6 +119,7 @@ export class AllJobsComponent implements OnInit {
     })
   }
   public openCreateClientPage() {
+     sessionStorage.setItem('access-name', this.access_name?.name)
     this.router.navigate(['/jobs/create-job']);
 
   }
@@ -133,6 +135,7 @@ export class AllJobsComponent implements OnInit {
       modalRef.componentInstance.status.subscribe(resp => {
         if (resp === 'ok') {
           modalRef.dismiss();
+           sessionStorage.setItem('access-name', this.access_name?.name)
           this.router.navigate(['/jobs/update-job', this.selectedItemId]);
 
         } else {
@@ -292,7 +295,10 @@ export class AllJobsComponent implements OnInit {
 
   saveJobStausPercentage(item: any) {
     if(!item.isInvalid){
-      let formData:any= {'job_status':item?.job_status,'percentage_of_completion':item.percentage_of_completion}
+      let temp_status=this.changedStatusName.toLowerCase();
+      let formData:any= {'job_status':item?.job_status,'percentage_of_completion':item.percentage_of_completion,
+        status: (temp_status === 'cancelled' || temp_status === 'completed') ? false : true
+      }
       this.apiService.updateData(`${environment.live_url}/${environment.jobs_percetage}/${item.id}/`,formData).subscribe((respData: any) => {
         if (respData) {
           this.apiService.showSuccess(respData['message']);
@@ -300,11 +306,12 @@ export class AllJobsComponent implements OnInit {
           if(status==='completed' || status==='cancelled'){
             this.getJobsHistoryList();
           } else{
-            if (this.isCurrent) {
-              this.getCurrentJobsList()
-            } else {
-              this.getJobsHistoryList();
-            }
+            this.getCurrentJobsList()
+            // if (this.isCurrent) {
+            //   this.getCurrentJobsList()
+            // } else {
+            //   this.getJobsHistoryList();
+            // }
           }
     }},(error: any) => {
       this.apiService.showError(error?.error?.detail);

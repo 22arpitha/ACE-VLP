@@ -58,19 +58,15 @@ userRole: any;
   }
 
   getModuleAccess(){
-    this.apiService.getData(`${environment.live_url}/${environment.user_access}/${sessionStorage.getItem('user_id')}/`).subscribe(
+    this.accessControlService.getAccessForActiveUrl(this.user_id).subscribe(
       (res:any)=>{
-       res.access_list.forEach((access:any)=>{
-          access.access.forEach((access_name:any)=>{
-              if(access_name.name===sessionStorage.getItem('access-name')){
-                // console.log(access_name)
-                this.accessPermissions = access_name.operations;
-              }
-            })
-       })
+        console.log(res)
+       const access_name =  sessionStorage.getItem('access-name')
+        let temp = res.find((item:any)=>item.name===access_name)
+        this.accessPermissions = temp.operations
+        // console.log(this.accessPermissions)
       }
     )
-    console.log(this.accessPermissions)
   }
 
   public intialForm(){
@@ -165,6 +161,7 @@ this.apiService.getData(`${environment.live_url}/${environment.employee}/${id}/`
   }
 
   public backBtnFunc(){
+    sessionStorage.removeItem("access-name")
     this.common_service.setEmployeeStatusState(this.employeeFormGroup.get('is_active')?.value);
     this.router.navigate(['/settings/all-employee']);
   }
@@ -266,6 +263,7 @@ this.searchRoleText ='';
               this.common_service.setEmployeeStatusState(this.employeeFormGroup.get('is_active')?.value);
               this.apiService.showSuccess(respData['message']);
               this.resetFormState();
+              sessionStorage.removeItem("access-name")
               this.router.navigate(['/settings/all-employee']);
             }
           }, (error: any) => {
@@ -277,6 +275,7 @@ this.searchRoleText ='';
               // this.common_service.setEmployeeStatusState(this.employeeFormGroup.get('is_active')?.value);
               this.apiService.showSuccess(respData['message']);
               this.resetFormState();
+              sessionStorage.removeItem("access-name")
               this.router.navigate(['/settings/all-employee']);
             }
           }, (error: any) => {

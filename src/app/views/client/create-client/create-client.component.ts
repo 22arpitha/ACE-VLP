@@ -11,6 +11,7 @@ import { environment } from '../../../../environments/environment';
 import { MatPaginator } from '@angular/material/paginator';
 import { DatePipe } from '@angular/common';
 import { FormErrorScrollUtilityService } from '../../../service/form-error-scroll-utility-service.service';
+import { SubModuleService } from 'src/app/service/sub-module.service';
 
 
 
@@ -63,10 +64,12 @@ selectedFile: File | null = null;
   searchSourceText:any;
   accessPermissions = []
 userRole: any;
-    constructor(private fb:FormBuilder,private activeRoute:ActivatedRoute,
+user_id:any
+    constructor(private fb:FormBuilder,private activeRoute:ActivatedRoute,private accessControlService:SubModuleService,
       private common_service: CommonServiceService,private router:Router,private datepipe:DatePipe,private modalService: NgbModal,private cdr: ChangeDetectorRef,
       private apiService: ApiserviceService,private formErrorScrollService:FormErrorScrollUtilityService) { 
       this.common_service.setTitle(this.BreadCrumbsTitle)
+      this.user_id = sessionStorage.getItem('user_id');
       this.user_role_name = sessionStorage.getItem('user_role_name');
       if(this.activeRoute.snapshot.paramMap.get('id')){
         this.common_service.setTitle('Update ' + this.BreadCrumbsTitle)
@@ -97,18 +100,20 @@ userRole: any;
     }
 
     getModuleAccess(){
-      this.apiService.getData(`${environment.live_url}/${environment.user_access}/${sessionStorage.getItem('user_id')}/`).subscribe(
+      this.accessControlService.getAccessForActiveUrl(this.user_id).subscribe(
         (res:any)=>{
-          console.log(res)
-         res.access_list.forEach((access:any)=>{
-            access.access.forEach((access_name:any)=>{
-                if(access_name.name===sessionStorage.getItem('access-name')){
-                  console.log(access_name)
-                  this.accessPermissions = access_name.operations;
-                  // console.log('this.accessPermissions', this.accessPermissions);
-                }
-              })
-         })
+          console.log(res);
+          this.accessPermissions = res[0].operations;
+          // console.log('this.accessPermissions', this.accessPermissions)
+        //  res.access_list.forEach((access:any)=>{
+        //     access.access.forEach((access_name:any)=>{
+        //         if(access_name.name===sessionStorage.getItem('access-name')){
+        //           console.log(access_name)
+        //           this.accessPermissions = access_name.operations;
+        //           // console.log('this.accessPermissions', this.accessPermissions);
+        //         }
+        //       })
+        //  })
         }
       )
     }

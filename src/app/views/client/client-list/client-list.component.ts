@@ -65,7 +65,7 @@ export class ClientListComponent implements OnInit {
         if (access) {
           this.access_name=access[0]
           this.accessPermissions = access[0].operations;
-          console.log('Access Permissions:', this.accessPermissions);
+          // console.log('Access Permissions:', access);
         } else {
           console.log('No matching access found.');
         }
@@ -73,6 +73,7 @@ export class ClientListComponent implements OnInit {
     }
   
     public openCreateClientPage(){
+      sessionStorage.setItem('access-name', this.access_name?.name)
       this.router.navigate(['/client/create']);
   
     }
