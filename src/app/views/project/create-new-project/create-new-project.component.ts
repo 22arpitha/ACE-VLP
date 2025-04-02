@@ -6,7 +6,7 @@ import { environment } from 'src/environments/environment';
 import { Location } from '@angular/common';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { CommonServiceService } from 'src/app/service/common-service.service';
-import { GenericDeleteComponent } from 'src/app/generic-delete/generic-delete.component';
+import { GenericDeleteComponent } from 'src/app/generic-components/generic-delete/generic-delete.component';
 
 @Component({
   selector: 'app-create-new-project',

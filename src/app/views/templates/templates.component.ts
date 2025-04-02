@@ -1,8 +1,8 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormGroupDirective, FormGroup, FormBuilder, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { GenericDeleteComponent } from '../../generic-delete/generic-delete.component';
-import { GenericEditComponent } from '../../generic-edit/generic-edit.component';
+import { GenericDeleteComponent } from '../../generic-components/generic-delete/generic-delete.component';
+import { GenericEditComponent } from '../../generic-components/generic-edit/generic-edit.component';
 import { ApiserviceService } from '../../service/apiservice.service';
 import { CommonServiceService } from '../../service/common-service.service';
 import { environment } from '../../../environments/environment';

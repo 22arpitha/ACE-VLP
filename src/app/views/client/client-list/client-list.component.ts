@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { MatDialog } from '@angular/material/dialog';
-import { GenericEditComponent } from '../../../generic-edit/generic-edit.component';
+import { GenericEditComponent } from '../../../generic-components/generic-edit/generic-edit.component';
 import { SortPipe } from '../../../sort/sort.pipe';
 import { ApiserviceService } from '../../../service/apiservice.service';
 import { CommonServiceService } from '../../../service/common-service.service';

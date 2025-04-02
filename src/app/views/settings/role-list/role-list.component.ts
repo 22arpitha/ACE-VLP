@@ -3,8 +3,8 @@ import { FormBuilder, FormGroup, FormGroupDirective, Validators } from '@angular
 import { ApiserviceService } from '../../../service/apiservice.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { CommonServiceService } from '../../../service/common-service.service';
-import { GenericDeleteComponent } from '../../../generic-delete/generic-delete.component';
-import { GenericEditComponent } from '../../../generic-edit/generic-edit.component';
+import { GenericDeleteComponent } from '../../../generic-components/generic-delete/generic-delete.component';
+import { GenericEditComponent } from '../../../generic-components/generic-edit/generic-edit.component';
 import { environment } from '../../../../environments/environment';
 import { Router } from '@angular/router';
 import{SubModuleService} from '../../../service/sub-module.service'

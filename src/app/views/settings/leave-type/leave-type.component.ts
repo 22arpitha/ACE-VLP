@@ -4,8 +4,8 @@ import { FormBuilder, FormGroup, FormGroupDirective, Validators } from '@angular
 import { ApiserviceService } from '../../../service/apiservice.service';
 import { environment } from '../../../../environments/environment';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { GenericDeleteComponent } from '../../../generic-delete/generic-delete.component';
-import { GenericEditComponent } from '../../../generic-edit/generic-edit.component';
+import { GenericDeleteComponent } from '../../../generic-components/generic-delete/generic-delete.component';
+import { GenericEditComponent } from '../../../generic-components/generic-edit/generic-edit.component';
 import { SubModuleService } from '../../../service/sub-module.service';
 
 @Component({

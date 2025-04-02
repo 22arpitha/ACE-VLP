@@ -10,11 +10,11 @@ import { ForgotPasswordComponent } from './views/pages/forgot-password/forgot-pa
 import { OtpComponent } from './views/pages/otp/otp.component';
 import { ForgotChangeComponent } from './views/pages/forgot-change/forgot-change.component';
 
-import { SubscriptionConfigComponent } from './views/organization/subscription-config/subscription-config.component';
+
 import { NoInternetComponent } from './views/pages/no-internet/no-internet.component';
 import { Page504Component } from './views/pages/page504/page504.component';
 import { Page503Component } from './views/pages/page503/page503.component';
-import { TimesheetConfiguartionComponent } from './views/organization/timesheet-configuartion/timesheet-configuartion.component';
+
 import { TemplatesComponent } from './views/templates/templates.component';
 import { CompanyPolicyComponent } from './views/company-policy/company-policy.component';
 import { ActivateChildGuard } from './authGuard/activate-child.guard';
@@ -53,14 +53,14 @@ const routes: Routes = [
       {
         path: 'generic',
         loadChildren: () =>
-          import('./generic-delete/generic-delete.module').then(
+          import('./generic-components/generic-delete/generic-delete.module').then(
             (m) => m.GenericDeleteModule
           ),
       },
       {
         path: 'generic-remove',
         loadChildren: () =>
-          import('./generic-remove/generic-remove.module').then(
+          import('./generic-components/generic-remove/generic-remove.module').then(
             (m) => m.GenericRemoveModule
           ),
       },
@@ -129,13 +129,7 @@ const routes: Routes = [
         loadChildren: () =>
           import('./views/profile/profile.module').then((m) => m.ProfileModule),
       },
-      {
-        path: 'organization',
-        loadChildren: () =>
-          import('./views/organization/organization.module').then(
-            (m) => m.OrganizationModule
-          ),
-      },
+      
       {
         path: 'changePasswords',
         loadChildren: () =>
@@ -149,21 +143,6 @@ const routes: Routes = [
           import('./views/settings/settings.module').then(
             (m) => m.SettingsModule
           ),
-      },
-      {
-        path: 'admin',
-        loadChildren: () =>
-          import('./views/admin-panel/admin-panel.module').then(
-            (m) => m.AdminPanelModule
-          ),
-      },
-      {
-        path: 'subscription-configuration',
-        component: SubscriptionConfigComponent,
-      },
-      {
-        path: 'working-hour-configuration',
-        component: TimesheetConfiguartionComponent,
       },
       {
         path: 'templates',

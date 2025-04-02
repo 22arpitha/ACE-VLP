@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { GenericDeleteComponent } from '../../../../app/generic-delete/generic-delete.component';
+import { GenericDeleteComponent } from '../../../generic-components/generic-delete/generic-delete.component';
 import { ApiserviceService } from 'src/app/service/apiservice.service';
 import { TimesheetService } from 'src/app/service/timesheet.service';
 import { environment } from 'src/environments/environment';

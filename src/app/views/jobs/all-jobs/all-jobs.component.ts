@@ -1,8 +1,8 @@
 import { Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { MatDialog } from '@angular/material/dialog';
-import { GenericDeleteComponent } from '../../../generic-delete/generic-delete.component';
-import { GenericEditComponent } from '../../../generic-edit/generic-edit.component';
+import { GenericDeleteComponent } from '../../../generic-components/generic-delete/generic-delete.component';
+import { GenericEditComponent } from '../../../generic-components/generic-edit/generic-edit.component';
 import { SortPipe } from '../../../sort/sort.pipe';
 import { ApiserviceService } from '../../../service/apiservice.service';
 import { CommonServiceService } from '../../../service/common-service.service';

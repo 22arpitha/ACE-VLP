@@ -8,7 +8,7 @@ import { Editor, Toolbar } from 'ngx-editor';
 import { ApiserviceService } from '../../../service/apiservice.service';
 import { CommonServiceService } from '../../../service/common-service.service';
 import { environment } from '../../../../environments/environment';
-import { GenericDeleteComponent } from './../../../generic-delete/generic-delete.component';
+import { GenericDeleteComponent } from '../../../generic-components/generic-delete/generic-delete.component';
 
 @Component({
   selector: 'app-create-update-job',

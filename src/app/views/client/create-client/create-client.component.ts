@@ -6,7 +6,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Editor, Toolbar } from 'ngx-editor';
 import { ApiserviceService } from '../../../service/apiservice.service';
 import { CommonServiceService } from '../../../service/common-service.service';
-import { GenericDeleteComponent } from '../../../generic-delete/generic-delete.component';
+import { GenericDeleteComponent } from '../../../generic-components/generic-delete/generic-delete.component';
 import { environment } from '../../../../environments/environment';
 import { MatPaginator } from '@angular/material/paginator';
 import { DatePipe } from '@angular/common';

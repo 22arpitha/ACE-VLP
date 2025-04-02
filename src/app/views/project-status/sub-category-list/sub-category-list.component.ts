@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Location } from '@angular/common';
 import { Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { GenericDeleteComponent } from 'src/app/generic-delete/generic-delete.component';
+import { GenericDeleteComponent } from 'src/app/generic-components/generic-delete/generic-delete.component';
 import { ApiserviceService } from '../../../service/apiservice.service';
 import { CommonServiceService } from 'src/app/service/common-service.service';
 import { environment } from 'src/environments/environment';

@@ -1,13 +1,11 @@
-import { Component, HostListener } from '@angular/core';
+import { Component } from '@angular/core';
 import { NgxUiLoaderService } from 'ngx-ui-loader';
-import { navItems } from '../../views/_nav';
 import { navItems1 } from '../../views/_nav1';
 import { ApiserviceService } from '../../service/apiservice.service';
-import { GenericDeleteComponent } from '../../generic-delete/generic-delete.component';
+import { GenericDeleteComponent } from '../../generic-components/generic-delete/generic-delete.component';
 import { Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { CommonServiceService } from '../../service/common-service.service';
-import { ChangeDetectorRef } from '@angular/core';
 import { environment } from '../../../environments/environment';
 import { WebsocketService } from '../../service/websocket.service';
 import { EmployeeStatusWebsocketService } from '../../service/employee-status-websocket.service';
@@ -31,7 +29,6 @@ export class DefaultLayoutComponent {
   user_role_Name: any;
   user_name: string;
   last_name: any;
-  public navItems = navItems;
   public nav1 = navItems1;
   currentUrl: any = '';
   currentUrlName: any = '';
@@ -166,7 +163,6 @@ export class DefaultLayoutComponent {
     private ngxService: NgxUiLoaderService,
     private api: ApiserviceService,
     private modalService: NgbModal,
-    private cdref: ChangeDetectorRef,
     private common_service: CommonServiceService,
     private router: Router,
     private webSocket: WebsocketService,
