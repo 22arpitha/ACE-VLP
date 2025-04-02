@@ -3,6 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { JobsComponent } from './jobs.component';
 import { AllJobsComponent } from './all-jobs/all-jobs.component';
 import { CreateUpdateJobComponent } from './create-update-job/create-update-job.component';
+import { JobKpiComponent } from './job-kpi/job-kpi.component';
 
 const routes: Routes = [
     {
@@ -20,6 +21,10 @@ const routes: Routes = [
               {
                 path: 'update-job/:id',
                 component: CreateUpdateJobComponent,
+              },
+              {
+                path: 'update-kpi/:id',
+                component: JobKpiComponent,
               },
       ]
     }

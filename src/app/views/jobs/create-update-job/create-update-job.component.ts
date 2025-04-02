@@ -528,6 +528,10 @@ if(respData){
         this.router.navigate(['/jobs/all-jobs']);
       }
 
+      public openJobKPIDetails(){
+        this.router.navigate(['/jobs/update-kpi/',this.job_id]);
+      }
+
       public joiningDateFun(event: any) {
         if(this.user_role_name === 'Admin'){
           this.jobFormGroup.patchValue({'job_status_date':event.value});

@@ -10,6 +10,7 @@ import { Observable, of } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 import {PdfViewComponent} from '../pdf-view/pdf-view.component'
 import { SubModuleService } from '../../../app/service/sub-module.service';
+import {fullUrlToFile} from '../../shared/fileUtils.utils';
 
 @Component({
   selector: 'app-company-policy',
@@ -253,7 +254,7 @@ export class CompanyPolicyComponent implements OnInit {
       this.companyPolicyForm.get('policy_file')?.setErrors(null);
 
       console.error('Controls:', this.companyPolicyForm.controls);
-      urlToFile(respData?.policy_file, this.getFileName(respData?.policy_file))
+      fullUrlToFile(respData?.policy_file, this.getFileName(respData?.policy_file))
         .then(file => {
           this.file = file;
           this.selectedFile = this.file;
@@ -389,12 +390,5 @@ export class CompanyPolicyComponent implements OnInit {
     });
   }
 
-}
-async function urlToFile(url: string, fileName: string): Promise<File> {
-  const response = await fetch(url);
-  const blob = await response.blob();
-  const mimeType = blob.type || 'application/octet-stream';
-
-  return new File([blob], fileName, { type: mimeType });
 }
 
