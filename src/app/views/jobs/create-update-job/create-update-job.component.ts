@@ -10,7 +10,7 @@ import { CommonServiceService } from '../../../service/common-service.service';
 import { environment } from '../../../../environments/environment';
 import { GenericDeleteComponent } from './../../../generic-delete/generic-delete.component';
 import { FormErrorScrollUtilityService } from '../../../service/form-error-scroll-utility-service.service';
-import { SubModuleService } from 'src/app/service/sub-module.service';
+import { SubModuleService } from '../../../service/sub-module.service';
 
 @Component({
   selector: 'app-create-update-job',

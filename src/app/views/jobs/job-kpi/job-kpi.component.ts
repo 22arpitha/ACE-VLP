@@ -1,10 +1,10 @@
-import { Component, ElementRef, OnInit, QueryList, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, FormGroupDirective, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { forkJoin, map } from 'rxjs';
-import { ApiserviceService } from 'src/app/service/apiservice.service';
-import { CommonServiceService } from 'src/app/service/common-service.service';
-import { FormErrorScrollUtilityService } from 'src/app/service/form-error-scroll-utility-service.service';
+import { ApiserviceService } from '../../../service/apiservice.service';
+import { CommonServiceService } from '../../../service/common-service.service';
+import { FormErrorScrollUtilityService } from '../../../service/form-error-scroll-utility-service.service';
 import { environment } from '../../../../environments/environment';
 import {urlToFile,fileToBase64} from '../../../shared/fileUtils.utils';
 
@@ -14,9 +14,9 @@ import {urlToFile,fileToBase64} from '../../../shared/fileUtils.utils';
   styleUrls: ['./job-kpi.component.scss']
 })
 export class JobKpiComponent implements OnInit {
-    @ViewChild('fileInput') fileInput: QueryList<ElementRef>;
-      @ViewChild('crpfileInput') crpfileInput: QueryList<ElementRef>;;
-        @ViewChild('mrpfileInput') mrpfileInput: QueryList<ElementRef>;;
+    @ViewChildren('fileInput') fileInputs: QueryList<ElementRef>;
+      @ViewChildren('crpfileInput') crpfileInputs: QueryList<ElementRef>;;
+        @ViewChildren('mrpfileInput') mrpfileInputs: QueryList<ElementRef>;;
   BreadCrumbsTitle: any = 'KPI';
   job_id:any;
   isEditItem:boolean=false;
@@ -147,6 +147,7 @@ if(emp?.kpi){
   if(emp?.kpi?.budget_file){
     urlToFile(emp?.kpi?.budget_file, this.getFileName(emp?.kpi?.budget_file))
     .then(file => {
+      console.log('1 File',file,this.budgetFile);
       this.budgetFile[index] = file;
       this.selectedBudgetFile[index] = this.budgetFile[index];
     }
@@ -160,6 +161,7 @@ if(emp?.kpi){
       employeesDetailsArray?.at(index)?.get('mrpFile')?.setErrors(null);
       urlToFile(emp?.kpi?.mrpFile, this.getFileName(emp?.kpi?.mrpFile))
       .then(file => {
+        console.log('2 File',file,this.mrpFile);
         this.mrpFile[index] = file;
         this.selectedMrpFile[index] = this.mrpFile[index];
       }
@@ -173,6 +175,7 @@ if(emp?.kpi){
         employeesDetailsArray?.at(index)?.get('crpFile')?.setErrors(null);
         urlToFile(emp?.kpi?.crpFile, this.getFileName(emp?.kpi?.crpFile))
         .then(file => {
+          console.log('3 File',file,this.crpFile);
           this.crpFile[index] = file;
           this.selectedCrpFile[index] = this.crpFile[index];
         }
@@ -213,7 +216,7 @@ public saveJobKPIDetails(){
   }else{
     let reqPayload:any={};
     reqPayload['job']=this.jobKPIFormGroup?.get('job')?.value;
-    let empData:any = this.jobKPIFormGroup.get('data').value;
+    let empData:any = this.jobKPIFormGroup?.get('data')?.value;
     let updateEmpData = this.UpdateFileFieldData(empData).then((updatedData) => {
     reqPayload['data']=updatedData;
   }).catch((error) => {
@@ -362,16 +365,28 @@ public onPageChanged(event: any) {
                   }
 }
 public triggerFileInput(index:any) {
-  const fileInput = this.fileInput.toArray()[index];
+  console.log('fileInputs',this.fileInputs);
+  const fileInput = this.fileInputs?.toArray()[index];
+  console.log('fileInput',fileInput);
+
+  if (fileInput) {
     fileInput?.nativeElement?.click();
+  }
  }
   public triggerMrpFileInput(index:any) {
-   const fileInput = this.mrpfileInput.toArray()[index];
+   const fileInput = this.mrpfileInputs?.toArray()[index];
+   console.log('fileInput',fileInput);
+
+   if (fileInput) {
    fileInput?.nativeElement?.click();
+   }
  }
  public triggerCrpFileInput(index:any) {
-  const fileInput = this.crpfileInput.toArray()[index];
+  const fileInput = this.crpfileInputs?.toArray()[index];
+  console.log('fileInput',fileInput);
+  if (fileInput) {
    fileInput?.nativeElement?.click();
+  }
   }
  public formatProcessingTime(event: any): void {
 let rawValue = event.target.value.replace(/[^0-9]/g, ''); // Remove non-numeric characters
