@@ -33,7 +33,7 @@ crpFile:  any=[];
 selectedBudgetFile:(File | null)[] = [];
 selectedMrpFile:(File | null)[] = [];
 selectedCrpFile:(File | null)[] = [];
-defaultReviewingTime:any='000:00:00';
+defaultReviewingTime:any='00:00';
 formData:any;
   constructor(private fb:FormBuilder,private activeRoute:ActivatedRoute,
           private common_service: CommonServiceService,
@@ -60,13 +60,13 @@ formData:any;
   }
   public createEmployeeControl(): FormGroup {
     return this.fb.group({
-      employee: ['', Validators.required],
-      processing_time:['', Validators.required],
-      review_time:['', Validators.required],
+      employee: [''],
+      processing_time:[this.defaultReviewingTime],
+      review_time:[this.defaultReviewingTime],
       budget_file:[null],
-      mrp:['', [Validators.required,Validators.pattern(/^[0-9]{1,3}$/), Validators.maxLength(3), Validators.min(0), Validators.minLength(1)]],
+      mrp:[0],
       mrpFile:[null],
-      crp:['', [Validators.required,Validators.pattern(/^[0-9]{1,3}$/), Validators.maxLength(3), Validators.min(0), Validators.minLength(1)]],
+      crp:[0],
       crpFile:[null],
     });
   }
@@ -134,7 +134,7 @@ formData:any;
     const employeeForm = this.fb.group({
       employee: [{ value: emp?.employee, disabled: true}],
       processing_time: [{ value: emp?.kpi ? emp?.kpi?.processing_time:formattedbudget_time?.toString(), disabled: true}],
-      review_time: [{ value: emp?.kpi ? emp?.kpi?.processing_time:this.defaultReviewingTime, disabled: true}],
+      review_time: [{ value: emp?.kpi ? emp?.kpi?.review_time:'00:00', disabled: true}],
       budget_file: [{ value: null, disabled: true}],
       mrp: [{ value: emp?.kpi ? emp?.kpi?.mrp:0, disabled: true}],
       mrpFile: [{ value: null, disabled: true}],
@@ -144,26 +144,37 @@ formData:any;
 if(emp?.kpi){
   employeesDetailsArray?.at(index)?.get('budget_file')?.setErrors(null);
   // Budget File
-  if(emp?.kpi?.budget_file){
+  if(emp?.kpi && emp?.kpi?.budget_file){
     urlToFile(emp?.kpi?.budget_file, this.getFileName(emp?.kpi?.budget_file))
     .then(file => {
-      console.log('1 File',file,this.budgetFile);
-      this.budgetFile[index] = file;
-      this.selectedBudgetFile[index] = this.budgetFile[index];
+      if(file){
+        this.budgetFile[index] = file;
+        this.selectedBudgetFile[index] = this.budgetFile[index];
+      }else{
+        this.budgetFile[index] = null;
+      this.selectedBudgetFile[index] = null;
+      employeesDetailsArray?.at(index)?.patchValue({'budget_file':null});
+      }
     }
+    
     )
     .catch(error => console.error('Error:', error));
     }else{
       employeesDetailsArray?.at(index)?.patchValue({'budget_file':null});
     }
     // MRP File
-    if(emp?.kpi?.mrpFile){
+    if(emp?.kpi && emp?.kpi?.mrpFile){
       employeesDetailsArray?.at(index)?.get('mrpFile')?.setErrors(null);
       urlToFile(emp?.kpi?.mrpFile, this.getFileName(emp?.kpi?.mrpFile))
       .then(file => {
-        console.log('2 File',file,this.mrpFile);
-        this.mrpFile[index] = file;
+        if(file){
+          this.mrpFile[index] = file;
         this.selectedMrpFile[index] = this.mrpFile[index];
+        }else{
+          this.mrpFile[index] = null;
+        this.selectedMrpFile[index] = null;
+        employeesDetailsArray?.at(index)?.patchValue({'mrpFile':null});
+        }
       }
       )
       .catch(error => console.error('Error:', error));
@@ -171,13 +182,19 @@ if(emp?.kpi){
         employeesDetailsArray?.at(index)?.patchValue({'mrpFile':null});
       }
       // CRP File
-      if(emp?.kpi?.crpFile){
+      if(emp?.kpi && emp?.kpi?.crpFile){
         employeesDetailsArray?.at(index)?.get('crpFile')?.setErrors(null);
         urlToFile(emp?.kpi?.crpFile, this.getFileName(emp?.kpi?.crpFile))
         .then(file => {
-          console.log('3 File',file,this.crpFile);
-          this.crpFile[index] = file;
-          this.selectedCrpFile[index] = this.crpFile[index];
+          if(file){
+            this.crpFile[index] = file;
+            this.selectedCrpFile[index] = this.crpFile[index];
+          }else{
+            this.crpFile[index]=null;
+            this.selectedCrpFile[index]=null;
+            employeesDetailsArray?.at(index)?.patchValue({'crpFile':null});
+          }
+          
         }
         )
         .catch(error => console.error('Error:', error));
@@ -209,15 +226,15 @@ if(emp?.kpi){
           this.router.navigate(['/jobs/update-job/',this.job_id]);
         }
      // Save JOB KPI
-public saveJobKPIDetails(){
+public async saveJobKPIDetails(){
   if (this.jobKPIFormGroup.invalid) {
     this.jobKPIFormGroup.markAllAsTouched();
     this.formErrorScrollService.scrollToFirstError(this.jobKPIFormGroup);
   }else{
     let reqPayload:any={};
     reqPayload['job']=this.jobKPIFormGroup?.get('job')?.value;
-    let empData:any = this.jobKPIFormGroup?.get('data')?.value;
-    let updateEmpData = this.UpdateFileFieldData(empData).then((updatedData) => {
+    let empData:any = this.jobKPIFormGroup?.get('data')?.getRawValue();
+    await this.UpdateFileFieldData(empData).then((updatedData) => {
     reqPayload['data']=updatedData;
   }).catch((error) => {
     reqPayload['data']=[];
@@ -240,14 +257,15 @@ public async UpdateFileFieldData(empData: any) {
   if (empData && empData.length >= 1) {
     // Use for...of to ensure we await properly inside the loop
     for (let index = 0; index < empData.length; index++) {
+
       // Handle each file type asynchronously
-      if (this.budgetFile[index]) {
+      if (this.budgetFile && this.budgetFile[index]) {
         empData[index].budget_file = await this.convertFileToBase64(this.budgetFile[index]);
       }
-      if (this.mrpFile[index]) {
+      if (this.mrpFile && this.mrpFile[index]) {
         empData[index].mrpFile = await this.convertFileToBase64(this.mrpFile[index]);
       }
-      if (this.crpFile[index]) {
+      if (this.crpFile && this.crpFile[index]) {
         empData[index].crpFile = await this.convertFileToBase64(this.crpFile[index]);
       }
     }
@@ -388,26 +406,54 @@ public triggerFileInput(index:any) {
    fileInput?.nativeElement?.click();
   }
   }
- public formatProcessingTime(event: any): void {
+ public formatProcessingTime(event: any,index:any): void {
 let rawValue = event.target.value.replace(/[^0-9]/g, ''); // Remove non-numeric characters
-            
- if (rawValue.length > 3) {
+if (!rawValue) {
+  const employeesDetailsArray = this.jobKPIFormGroup?.get('data') as FormArray;
+  rawValue = '00:00'; 
+ employeesDetailsArray.at(index).patchValue({'processing_time':rawValue}); // Default value (can adjust as needed)
+}        
+if (rawValue.length > 3) {
   rawValue = rawValue.slice(0, 3) + ':' + rawValue.slice(3); // Insert colon after 3rd digit
  }
 }
- public formatReviewTime(event: any): void {
-    let rawValue = event.target.value.replace(/[^0-9]/g, ''); // Remove non-numeric characters
+ public formatReviewTime(event: any,index:any): void {
+    let rawValue = event.target.value.replace(/[^0-9]/g, '');
+    if (!rawValue) {
+      const employeesDetailsArray = this.jobKPIFormGroup.get('data') as FormArray;
+      rawValue = '00:00'; 
+      employeesDetailsArray.at(index).patchValue({'review_time':rawValue});
+    }    
    if (rawValue.length > 3) {
   rawValue = rawValue.slice(0, 3) + ':' + rawValue.slice(3); // Insert colon after 3rd digit
   }
  }
-                public validateKeyPress(event: KeyboardEvent) {
-                  // Get the key code of the pressed key
-                  const keyCode = event.which || event.keyCode;
-              
-                  // Allow only digits (0-9), backspace, and arrow keys
-                  if ((keyCode < 48 || keyCode > 57) && keyCode !== 8 && keyCode !== 37 && keyCode !== 39 && keyCode !== 46) {
-                    event.preventDefault(); // Prevent the default action (i.e., entering the character)
-                  }
-                }                
+
+ setMrpDefaultValueIfEmpty(event: any,index:any): void{
+  let rawValue = event.target.value
+  if (!rawValue) {
+    const employeesDetailsArray = this.jobKPIFormGroup?.get('data') as FormArray;
+    rawValue = 0;
+ employeesDetailsArray.at(index).patchValue({'mrp':rawValue}); 
+  }
+ }
+
+ setCrpDefaultValueIfEmpty(event: any,index:any): void{
+  let rawValue = event.target.value
+  if (!rawValue) {
+  const employeesDetailsArray = this.jobKPIFormGroup?.get('data') as FormArray;
+  rawValue = 0; 
+  employeesDetailsArray.at(index).patchValue({'crp':rawValue});
+  }
+ }
+ public validateKeyPress(event: KeyboardEvent) {
+  const keyCode = event.which || event.keyCode;
+  if (
+    (keyCode >= 48 && keyCode <= 57) || keyCode === 8 || keyCode === 37 || keyCode === 39 || keyCode === 189 || keyCode === 109                    
+  ) {
+    return; 
+  } else {
+    event.preventDefault();
+}
+}                               
 }

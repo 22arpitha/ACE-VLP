@@ -4,7 +4,7 @@
 <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0">
   <section class="settings-table-bg" >
     <div class="row row mx-0 px-0" *ngIf="!isEditItem && job_id">
-        <div class="col-12 col-sm-12 col-md-12 col-lg-12 pl-0 pr-5 text-end">
+        <div class="col-12 col-sm-12 col-md-12 col-lg-12 my-1 pl-0 pr-5 text-end">
           <button mat-raised-button class="proceedbtn mat-btn-s" type="button" (click)="editJobKPIDetails()" *ngIf="user_role_name !='Admin' && accessPermissions[0]?.update || user_role_name === 'Admin'">Edit</button>
         </div>
       </div>
@@ -17,8 +17,8 @@
                   <tr>
                     <th>Staff</th>
                     <th>Estimated Time</th>
-                    <th>MRP Review Points</th>
-                    <th>CRP Review Points</th>
+                    <th>MRP</th>
+                    <th>CRP</th>
                   </tr>
                 </thead>
                 <tbody formArrayName="data" class="contact-form-content">
@@ -38,35 +38,22 @@
                             </mat-option>
                           </mat-select>
                         </mat-form-field>
-                        <div class="px-2" *ngIf="emp?.get('employee')?.invalid && emp?.get('employee')?.touched || emp?.get('employee')?.dirty">
-                          <span class="text-errors" *ngIf="emp?.get('employee')?.errors?.['required']">Employee is required</span>
-                        </div>
                       </div>
                     </td>
                     <td> 
-                        <div class="mx-0 my-1 px-0  justify-content-center">
+                        <div class="mx-0 my-1 px-0 d-flex justify-content-between">
                             <div class="time-field-width">
                             <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
-                                <mat-label>Processing Time <b class="r-star">*</b></mat-label>
-                                <input matInput type="text" placeholder="Enter Processing Time" formControlName="processing_time" autocomplete="off" (input)="formatProcessingTime($event)" >
-                                
+                                <mat-label>Processing Time</mat-label>
+                                <input matInput type="text" placeholder="00:00" maxlength="6"  formControlName="processing_time" autocomplete="off" (focusout)="formatProcessingTime($event,i)" >
                               </mat-form-field>
-                              <div class="px-2" style="font-size: 11px;padding-left: 10px;color:#f44336" *ngIf="emp?.get('processing_time')?.invalid && emp?.get('processing_time')?.touched || emp?.get('processing_time')?.dirty">
-                                <span *ngIf="emp?.get('processing_time')?.errors?.['required']">Processing Time is required</span>
-                                <span *ngIf="emp?.get('processing_time')?.errors?.['pattern']">Invalid time format. Please use HHH:MM.</span>
-                              </div>
                             </div> 
-                        </div>
-                        <div class="mx-0 my-1 px-0justify-content-center">
-                             
-                            <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
-                              <mat-label>Review Time <b class="r-star">*</b></mat-label>
-                              <input matInput type="text" placeholder="Enter Budget" formControlName="review_time" autocomplete="off" (input)="formatReviewTime($event)" >
-                              
-                            </mat-form-field> 
-                            <div class="px-2" style="font-size: 11px;padding-left: 10px;color:#f44336" *ngIf="emp?.get('review_time')?.invalid && emp?.get('review_time')?.touched || emp?.get('review_time')?.dirty">
-                              <span *ngIf="emp?.get('review_time')?.errors?.['required']">Review Time is required</span>
-                              <span *ngIf="emp?.get('review_time')?.errors?.['pattern']">Invalid time format. Please use HHH:MM.</span>
+                            <div class="time-field-width ml-1 mr-0 mx-0">
+                              <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+                                <mat-label>Review Time</mat-label>
+                                <input matInput type="text" placeholder="00:00" maxlength="6" formControlName="review_time"  autocomplete="off" (focusout)="formatReviewTime($event,i)" >
+
+                              </mat-form-field> 
                             </div>
                         </div>
                         <div class="row mx-0 my-1 px-0 justify-content-center">
@@ -75,10 +62,10 @@
                           <div class="image-container w-100 d-flex justify-content-between align-items-center"
                             style="padding: 1px 15px;"
                             [ngClass]="{'is-invalid': emp?.get('budget_file')?.touched && emp?.get('budget_file')?.invalid}">
-                            <mat-label >{{selectedBudgetFile[i] ? selectedBudgetFile[i]?.name : 'Upload Budget File'}}</mat-label>
+                            <mat-label [ngbTooltip]="selectedBudgetFile[i] && selectedBudgetFile[i]?.name ? selectedBudgetFile[i]?.name : ''">{{selectedBudgetFile[i] && selectedBudgetFile[i]?.name ? selectedBudgetFile[i]?.name : 'Upload Budget File'}}</mat-label>
                             <button type="button" mat-icon-button (click)="triggerFileInput(i)">
-                              <i matTooltip="{{selectedBudgetFile[i] ? 'Edit' : 'Upload Budget File'}}"
-                                class="{{selectedBudgetFile[i] ? 'bi bi-pencil-fill' : 'bi bi-file-earmark-spreadsheet'}}"
+                              <i matTooltip="{{selectedBudgetFile[i] && selectedBudgetFile[i]?.name ? 'Edit' : 'Upload Budget File'}}"
+                                class="{{selectedBudgetFile[i] && selectedBudgetFile[i]?.name ? 'bi bi-pencil-fill' : 'bi bi-file-earmark-spreadsheet'}}"
                                 id="edit-or-upload-icon"></i>
                             </button>
                           </div>
@@ -92,22 +79,10 @@
                     <td>
                       <div class="mx-0 my-1 px-0 justify-content-center">
                         <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
-                        <mat-label>MRP <b class="r-star">*</b></mat-label>
-                        <input matInput type="number" placeholder="Enter MRP" formControlName="mrp" autocomplete="off" (keypress)="validateKeyPress($event)">
+                        <mat-label>MRP</mat-label>
+                        <input matInput type="number" placeholder="Enter MRP" formControlName="mrp" maxlength="3" minlength="1" autocomplete="off" (focusout)="setMrpDefaultValueIfEmpty($event,i)" (keypress)="validateKeyPress($event)">
                        
                       </mat-form-field> 
-                      <div class="px-2" style="font-size: 11px;padding-left: 10px;color:#f44336" *ngIf="emp?.get('mrp')?.invalid && emp?.get('mrp')?.touched || emp?.get('mrp')?.dirty">
-                        <span *ngIf="emp?.get('mrp')?.errors?.['required']">MRP is required</span>
-                        <span *ngIf="!emp?.get('mrp')?.errors?.['required'] && emp?.get('mrp')?.errors?.['maxlength']">
-                          MRP cannot exceed 3 characters.
-                        </span>
-                        <span *ngIf="!emp?.get('mrp')?.errors?.['required'] && emp?.get('mrp')?.errors?.['minlength']">
-                          MRP must be at least 1 character.
-                        </span>
-                        <span *ngIf="!emp?.get('mrp')?.errors?.['required'] && emp?.get('mrp')?.errors?.['min']">
-                          MRP must be at least 0.
-                        </span>
-                      </div>
                     </div>
                     <div class="mx-0 my-1 px-0 justify-content-center">
                         <input type="file" accept=".xlsx,.xls,.doc,.docx,.pdf" formControlName="mrpFile" #mrpfileInput
@@ -115,10 +90,10 @@
                       <div class="image-container w-100 d-flex justify-content-between align-items-center"
                         style="padding: 1px 15px;"
                         [ngClass]="{'is-invalid': emp?.get('mrpFile')?.touched && emp?.get('mrpFile')?.invalid}">
-                        <mat-label >{{selectedMrpFile[i] ? selectedMrpFile[i]?.name : 'Upload MRP File'}}</mat-label>
+                        <mat-label [ngbTooltip]="selectedMrpFile[i] && selectedMrpFile[i]?.name ? selectedMrpFile[i]?.name : ''">{{selectedMrpFile[i] && selectedMrpFile[i]?.name ? selectedMrpFile[i]?.name : 'Upload MRP File'}}</mat-label>
                         <button type="button" mat-icon-button (click)="triggerMrpFileInput(i)">
-                          <i matTooltip="{{selectedMrpFile[i] ? 'Edit' : 'Upload MRP File'}}"
-                            class="{{selectedMrpFile[i] ? 'bi bi-pencil-fill' : 'bi bi-file-earmark-spreadsheet'}}"
+                          <i matTooltip="{{selectedMrpFile[i] && selectedMrpFile[i]?.name ? 'Edit' : 'Upload MRP File'}}"
+                            class="{{selectedMrpFile[i] && selectedMrpFile[i]?.name ? 'bi bi-pencil-fill' : 'bi bi-file-earmark-spreadsheet'}}"
                             id="edit-or-upload-icon"></i>
                         </button>
                       </div>
@@ -132,22 +107,9 @@
                      <td>
                       <div class="mx-0 my-1 px-0 justify-content-center"> 
                       <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
-                      <mat-label>CRP <b class="r-star">*</b></mat-label>
-                      <input matInput type="number" placeholder="Enter Job Number" formControlName="crp" autocomplete="off" (keypress)="validateKeyPress($event)">
-                     
+                      <mat-label>CRP</mat-label>
+                      <input matInput type="number" placeholder="Enter Job Number" formControlName="crp" autocomplete="off" maxlength="3" minlength="1" (focusout)="setCrpDefaultValueIfEmpty($event,i)" (keypress)="validateKeyPress($event)">
                     </mat-form-field> 
-                    <div class="px-2" style="font-size: 11px;padding-left: 10px;color:#f44336" *ngIf="emp?.get('crp')?.invalid && emp?.get('crp')?.touched || emp?.get('crp')?.dirty">
-                      <span *ngIf="emp?.get('crp')?.errors?.['required']">CRP is required</span>
-                      <span *ngIf="!emp?.get('crp')?.errors?.['required'] && emp?.get('crp')?.errors?.['maxlength']">
-                        CRP cannot exceed 10 characters.
-                      </span>
-                      <span *ngIf="!emp?.get('crp')?.errors?.['required'] && emp?.get('crp')?.errors?.['minlength']">
-                        CRP must be at least 1 character.
-                      </span>
-                      <span *ngIf="!emp?.get('crp')?.errors?.['required'] && emp?.get('crp')?.errors?.['min']">
-                        CRP must be at least 0.
-                      </span>
-                    </div>
                   </div>
                   <div class="mx-0 my-1 px-0 justify-content-center">
                       <input type="file" accept=".xlsx,.xls,.doc,.docx,.pdf" formControlName="crpFile" #crpfileInput
@@ -155,10 +117,10 @@
                     <div class="image-container w-100 d-flex justify-content-between align-items-center"
                       style="padding: 1px 15px;"
                       [ngClass]="{'is-invalid': emp?.get('crpFile')?.touched && emp?.get('crpFile')?.invalid}">
-                      <mat-label >{{selectedCrpFile[i] ? selectedCrpFile[i]?.name : 'Upload CRP File'}}</mat-label>
+                      <mat-label [ngbTooltip]="selectedCrpFile[i] && selectedCrpFile[i]?.name ? selectedCrpFile[i]?.name : ''">{{selectedCrpFile[i] &&  selectedCrpFile[i]?.name ? selectedCrpFile[i]?.name : 'Upload CRP File'}}</mat-label>
                       <button type="button" mat-icon-button (click)="triggerCrpFileInput(i)">
-                        <i matTooltip="{{selectedCrpFile[i] ? 'Edit' : 'Upload CRP File'}}"
-                          class="{{selectedCrpFile[i] ? 'bi bi-pencil-fill' : 'bi bi-file-earmark-spreadsheet'}}"
+                        <i matTooltip="{{selectedCrpFile[i] && selectedCrpFile[i]?.name ? 'Edit' : 'Upload CRP File'}}"
+                          class="{{selectedCrpFile[i] && selectedCrpFile[i]?.name ? 'bi bi-pencil-fill' : 'bi bi-file-earmark-spreadsheet'}}"
                           id="edit-or-upload-icon"></i>
                       </button>
                     </div>

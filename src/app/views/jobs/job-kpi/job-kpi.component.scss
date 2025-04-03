@@ -80,3 +80,13 @@
     appearance: none; 
     background: transparent;
   }
+  .time-field-width{
+    width: 8em !important;
+    margin: 0 5px 0 0;
+  }
+ .employee-details-table ::ng-deep .image-container mat-label {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 10em;
+  }
