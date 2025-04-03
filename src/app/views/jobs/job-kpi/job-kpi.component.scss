@@ -90,3 +90,6 @@
     text-overflow: ellipsis;
     width: 10em;
   }
+  .employee-details-table ::ng-deep .image-container mat-label a{
+    color: #87CEEB;
+  }

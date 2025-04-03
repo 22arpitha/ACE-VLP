@@ -60,3 +60,12 @@ textarea[matInput] {
   max-height: max-content;
   height: auto;
 }
+.settings-main-content ::ng-deep .image-container mat-label {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 10em;
+}
+.settings-main-content ::ng-deep .image-container mat-label a{
+  color: #87CEEB;
+}

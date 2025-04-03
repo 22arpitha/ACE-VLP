@@ -30,9 +30,13 @@ user_role_name:any;
 budgetFile: any=[];
 mrpFile:  any=[];
 crpFile:  any=[];
+budgetFileLink: any=[];
+mrpFileLink:  any=[];
+crpFileLink:  any=[];
 selectedBudgetFile:(File | null)[] = [];
 selectedMrpFile:(File | null)[] = [];
 selectedCrpFile:(File | null)[] = [];
+
 defaultReviewingTime:any='00:00';
 formData:any;
   constructor(private fb:FormBuilder,private activeRoute:ActivatedRoute,
@@ -150,9 +154,11 @@ if(emp?.kpi){
       if(file){
         this.budgetFile[index] = file;
         this.selectedBudgetFile[index] = this.budgetFile[index];
+        this.budgetFileLink[index]=`${environment.media_url+emp?.kpi?.budget_file}`
       }else{
         this.budgetFile[index] = null;
       this.selectedBudgetFile[index] = null;
+      this.budgetFileLink[index]=null;
       employeesDetailsArray?.at(index)?.patchValue({'budget_file':null});
       }
     }
@@ -170,9 +176,11 @@ if(emp?.kpi){
         if(file){
           this.mrpFile[index] = file;
         this.selectedMrpFile[index] = this.mrpFile[index];
+        this.mrpFileLink[index]=`${environment.media_url+emp?.kpi?.budget_file}`;
         }else{
           this.mrpFile[index] = null;
         this.selectedMrpFile[index] = null;
+        this.mrpFileLink[index]=null;
         employeesDetailsArray?.at(index)?.patchValue({'mrpFile':null});
         }
       }
@@ -189,9 +197,11 @@ if(emp?.kpi){
           if(file){
             this.crpFile[index] = file;
             this.selectedCrpFile[index] = this.crpFile[index];
+            this.crpFileLink[index]=`${environment.media_url+emp?.kpi?.budget_file}`;
           }else{
             this.crpFile[index]=null;
             this.selectedCrpFile[index]=null;
+            this.crpFileLink[index]=null;
             employeesDetailsArray?.at(index)?.patchValue({'crpFile':null});
           }
           
@@ -243,8 +253,8 @@ public async saveJobKPIDetails(){
               this.apiService.postData(`${environment.live_url}/${environment.jobs_kpi}/`, reqPayload).subscribe((respData: any) => {
               if (respData) {
                 this.apiService.showSuccess(respData['message']);
-                // this.resetFormState();
-                this.router.navigate(['/jobs/all-jobs']);
+                this.formGroupDirective.resetForm();
+                location.reload();
               }
             }, (error: any) => {
               this.apiService.showError(error?.error?.detail);
@@ -317,7 +327,7 @@ public onPageChanged(event: any) {
                     ) {
                       this.budgetFile[index] = selectedFile;
                       this.selectedBudgetFile[index] = this.budgetFile[index];
-                
+                      this.budgetFileLink[index]=null;
                       // Reset input value after a slight delay to allow re-selection
                       setTimeout(() => {
                         input.value = "";
@@ -344,7 +354,7 @@ public onPageChanged(event: any) {
                     ) {
                       this.mrpFile[index] = selectedFile;
                       this.selectedMrpFile[index] = this.mrpFile[index];
-                
+                      this.mrpFileLink[index]=null;
                       // Reset input value after a slight delay to allow re-selection
                       setTimeout(() => {
                         input.value = "";
@@ -352,6 +362,7 @@ public onPageChanged(event: any) {
                     } else {
                       this.apiService.showError("Invalid file type. Only xlsx, xls, doc, docx, pdf files are allowed.");
                       this.selectedMrpFile[index] = null;
+                      this.mrpFileLink[index]=null;
                     }
                   }
  }
@@ -371,7 +382,7 @@ public onPageChanged(event: any) {
                     ) {
                       this.crpFile[index] = selectedFile;
                       this.selectedCrpFile[index] = this.crpFile[index];
-                
+                      this.crpFileLink[index]=null;
                       // Reset input value after a slight delay to allow re-selection
                       setTimeout(() => {
                         input.value = "";
@@ -379,6 +390,7 @@ public onPageChanged(event: any) {
                     } else {
                       this.apiService.showError("Invalid file type. Only xlsx, xls, doc, docx, pdf files are allowed.");
                       this.selectedCrpFile[index] = null;
+                      this.crpFileLink[index]=null;
                     }
                   }
 }
@@ -406,27 +418,63 @@ public triggerFileInput(index:any) {
    fileInput?.nativeElement?.click();
   }
   }
- public formatProcessingTime(event: any,index:any): void {
-let rawValue = event.target.value.replace(/[^0-9]/g, ''); // Remove non-numeric characters
+
+  public openFileInNewTab(source:any,index:any){
+    if(source==='mrp'){
+if(this.mrpFileLink[index]){
+  window.open(this.mrpFileLink[index], '_blank');
+}
+}else if (source==='crp')
+{
+if(this.crpFileLink[index]){
+  window.open(this.crpFileLink[index], '_blank');
+}
+}else{
+  if(this.budgetFileLink[index]){
+    window.open(this.budgetFileLink[index], '_blank');
+  }
+}  
+}
+ public defaultProcessingTime(event: any,index:any): void {
+let rawValue = event.target.value;
 if (!rawValue) {
   const employeesDetailsArray = this.jobKPIFormGroup?.get('data') as FormArray;
   rawValue = '00:00'; 
  employeesDetailsArray.at(index).patchValue({'processing_time':rawValue}); // Default value (can adjust as needed)
-}        
-if (rawValue.length > 3) {
-  rawValue = rawValue.slice(0, 3) + ':' + rawValue.slice(3); // Insert colon after 3rd digit
- }
+} 
 }
- public formatReviewTime(event: any,index:any): void {
+
+public formatProcessingTime(event: any, index: any): void {
+  let rawValue = event.target.value.replace(/[^0-9]/g, ''); // Remove non-numeric characters
+  const employeesDetailsArray = this.jobKPIFormGroup?.get('data') as FormArray;
+  
+  // Insert the colon if the length of the value exceeds 3 digits
+  if (rawValue.length > 3 && rawValue.indexOf(':') === -1) {
+    rawValue = rawValue.slice(0, 3) + ':' + rawValue.slice(3);
+  }
+  // Update the processing_time field in the form without emitting an event
+  employeesDetailsArray?.at(index)?.get('processing_time')?.setValue(rawValue, { emitEvent: false });
+}
+
+
+
+
+public formatReviewingTime(event: any,index:any): void {
+  let rawValue = event.target.value.replace(/[^0-9]/g, '');
+  const employeesDetailsArray = this.jobKPIFormGroup?.get('data') as FormArray;
+  
+ if (rawValue.length > 3 && rawValue.indexOf(':') === -1) {
+    rawValue = rawValue.slice(0, 3) + ':' + rawValue.slice(3);
+  }
+  employeesDetailsArray?.at(index)?.get('review_time')?.setValue(rawValue, { emitEvent: false });
+}
+ public defaultReviewTime(event: any,index:any): void {
     let rawValue = event.target.value.replace(/[^0-9]/g, '');
     if (!rawValue) {
       const employeesDetailsArray = this.jobKPIFormGroup.get('data') as FormArray;
       rawValue = '00:00'; 
       employeesDetailsArray.at(index).patchValue({'review_time':rawValue});
-    }    
-   if (rawValue.length > 3) {
-  rawValue = rawValue.slice(0, 3) + ':' + rawValue.slice(3); // Insert colon after 3rd digit
-  }
+    }     
  }
 
  setMrpDefaultValueIfEmpty(event: any,index:any): void{
@@ -455,5 +503,6 @@ if (rawValue.length > 3) {
   } else {
     event.preventDefault();
 }
-}                               
+}  
+
 }

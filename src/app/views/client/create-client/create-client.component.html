@@ -146,7 +146,9 @@
               <div class="image-container w-100 d-flex justify-content-between align-items-center"
                 style="padding: 1px 15px;"
                 [ngClass]="{'is-invalid': f['client_file']?.touched && f['client_file']?.invalid}">
-                <mat-label >{{selectedFile ? selectedFile.name : 'Upload File'}}</mat-label>
+                <mat-label *ngIf="selectedFile && selectedFile?.name"><a type="button" (click)="openFileInNewTab()">{{selectedFile?.name}}</a></mat-label>
+                <mat-label *ngIf="!selectedFile && !selectedFile?.name">Upload File</mat-label>
+
                 <button type="button" mat-icon-button (click)="triggerFileInput()">
                   <i matTooltip="{{selectedFile ? 'Edit' : 'Upload File'}}"
                     class="{{selectedFile ? 'bi bi-pencil-fill' : 'bi bi-file-earmark-spreadsheet'}}"

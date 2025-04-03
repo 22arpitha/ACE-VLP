@@ -44,6 +44,7 @@ export class CreateClientComponent implements OnInit, OnDestroy {
   ];
   colorPresets = ['red', '#FF0000', 'rgb(255, 0, 0)'];
   file: any;
+  selectedFileLink:any=null;
 selectedFile: File | null = null;
   BreadCrumbsTitle: any = 'Client';
   clientFormGroup:FormGroup;
@@ -230,6 +231,7 @@ if(respData?.client_file){
 .then(file => {
   this.file = file;
   this.selectedFile = this.file;
+  this.selectedFileLink = `${environment.media_url+respData?.client_file}`;
 }
 )
 .catch(error => console.error('Error:', error));
@@ -385,7 +387,7 @@ respData.contact_details.forEach(({ name, email, phone_number }, index, array) =
       ) {
         this.file = selectedFile;
         this.selectedFile = this.file;
-  
+        this.selectedFileLink=null;
         // Reset input value after a slight delay to allow re-selection
         setTimeout(() => {
           input.value = "";
@@ -548,6 +550,12 @@ respData.contact_details.forEach(({ name, email, phone_number }, index, array) =
     return url?.split('/')?.pop(); 
   }
 
+  public openFileInNewTab(){
+    if(this.selectedFileLink){
+      window.open(this.selectedFileLink, '_blank');
+    }
+  
+  }
   private duplicateNameValidator(control: AbstractControl) {
     const formArray = control as FormArray;
     const emailset = new Set<string>();

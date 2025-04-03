@@ -4,7 +4,7 @@
 <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0">
   <section class="settings-table-bg" >
     <div class="row row mx-0 px-0" *ngIf="!isEditItem && job_id">
-        <div class="col-12 col-sm-12 col-md-12 col-lg-12 my-1 pl-0 pr-5 text-end">
+        <div class="col-12 col-sm-12 col-md-12 col-lg-12 my-2 pl-0 pr-5 text-end">
           <button mat-raised-button class="proceedbtn mat-btn-s" type="button" (click)="editJobKPIDetails()" *ngIf="user_role_name !='Admin' && accessPermissions[0]?.update || user_role_name === 'Admin'">Edit</button>
         </div>
       </div>
@@ -45,13 +45,13 @@
                             <div class="time-field-width">
                             <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
                                 <mat-label>Processing Time</mat-label>
-                                <input matInput type="text" placeholder="00:00" maxlength="6"  formControlName="processing_time" autocomplete="off" (focusout)="formatProcessingTime($event,i)" >
+                                <input matInput type="text" placeholder="00:00"  maxlength="6" formControlName="processing_time" autocomplete="off" (input)="formatProcessingTime($event,i)" (focusout)="defaultProcessingTime($event,i)" >
                               </mat-form-field>
                             </div> 
                             <div class="time-field-width ml-1 mr-0 mx-0">
                               <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
                                 <mat-label>Review Time</mat-label>
-                                <input matInput type="text" placeholder="00:00" maxlength="6" formControlName="review_time"  autocomplete="off" (focusout)="formatReviewTime($event,i)" >
+                                <input matInput type="text" placeholder="00:00"  maxlength="6" formControlName="review_time" autocomplete="off" (input)="formatReviewingTime($event,i)" (focusout)="defaultReviewTime($event,i)" >
 
                               </mat-form-field> 
                             </div>
@@ -62,7 +62,8 @@
                           <div class="image-container w-100 d-flex justify-content-between align-items-center"
                             style="padding: 1px 15px;"
                             [ngClass]="{'is-invalid': emp?.get('budget_file')?.touched && emp?.get('budget_file')?.invalid}">
-                            <mat-label [ngbTooltip]="selectedBudgetFile[i] && selectedBudgetFile[i]?.name ? selectedBudgetFile[i]?.name : ''">{{selectedBudgetFile[i] && selectedBudgetFile[i]?.name ? selectedBudgetFile[i]?.name : 'Upload Budget File'}}</mat-label>
+                            <mat-label *ngIf="selectedBudgetFile[i] && selectedBudgetFile[i]?.name" [ngbTooltip]="selectedBudgetFile[i]?.name" ><a type="button" (click)="openFileInNewTab('budget',i)">{{selectedBudgetFile[i]?.name}}</a></mat-label>
+                            <mat-label *ngIf="!selectedBudgetFile[i] && !selectedBudgetFile[i]?.name">Upload Budget File</mat-label>
                             <button type="button" mat-icon-button (click)="triggerFileInput(i)">
                               <i matTooltip="{{selectedBudgetFile[i] && selectedBudgetFile[i]?.name ? 'Edit' : 'Upload Budget File'}}"
                                 class="{{selectedBudgetFile[i] && selectedBudgetFile[i]?.name ? 'bi bi-pencil-fill' : 'bi bi-file-earmark-spreadsheet'}}"
@@ -90,7 +91,8 @@
                       <div class="image-container w-100 d-flex justify-content-between align-items-center"
                         style="padding: 1px 15px;"
                         [ngClass]="{'is-invalid': emp?.get('mrpFile')?.touched && emp?.get('mrpFile')?.invalid}">
-                        <mat-label [ngbTooltip]="selectedMrpFile[i] && selectedMrpFile[i]?.name ? selectedMrpFile[i]?.name : ''">{{selectedMrpFile[i] && selectedMrpFile[i]?.name ? selectedMrpFile[i]?.name : 'Upload MRP File'}}</mat-label>
+                        <mat-label *ngIf="selectedMrpFile[i] && selectedMrpFile[i]?.name" [ngbTooltip]="selectedMrpFile[i]?.name" ><a type="button" (click)="openFileInNewTab('mrp',i)">{{selectedMrpFile[i]?.name}}</a></mat-label>
+                        <mat-label *ngIf="!selectedMrpFile[i] && !selectedMrpFile[i]?.name" >Upload MRP File</mat-label>
                         <button type="button" mat-icon-button (click)="triggerMrpFileInput(i)">
                           <i matTooltip="{{selectedMrpFile[i] && selectedMrpFile[i]?.name ? 'Edit' : 'Upload MRP File'}}"
                             class="{{selectedMrpFile[i] && selectedMrpFile[i]?.name ? 'bi bi-pencil-fill' : 'bi bi-file-earmark-spreadsheet'}}"
@@ -117,7 +119,8 @@
                     <div class="image-container w-100 d-flex justify-content-between align-items-center"
                       style="padding: 1px 15px;"
                       [ngClass]="{'is-invalid': emp?.get('crpFile')?.touched && emp?.get('crpFile')?.invalid}">
-                      <mat-label [ngbTooltip]="selectedCrpFile[i] && selectedCrpFile[i]?.name ? selectedCrpFile[i]?.name : ''">{{selectedCrpFile[i] &&  selectedCrpFile[i]?.name ? selectedCrpFile[i]?.name : 'Upload CRP File'}}</mat-label>
+                      <mat-label *ngIf="selectedCrpFile[i] && selectedCrpFile[i]?.name" [ngbTooltip]="selectedCrpFile[i]?.name"><a type="button" (click)="openFileInNewTab('crp',i)">{{selectedCrpFile[i]?.name}}</a></mat-label>
+                      <mat-label *ngIf="!selectedCrpFile[i] && !selectedCrpFile[i]?.name">'Upload CRP File</mat-label>
                       <button type="button" mat-icon-button (click)="triggerCrpFileInput(i)">
                         <i matTooltip="{{selectedCrpFile[i] && selectedCrpFile[i]?.name ? 'Edit' : 'Upload CRP File'}}"
                           class="{{selectedCrpFile[i] && selectedCrpFile[i]?.name ? 'bi bi-pencil-fill' : 'bi bi-file-earmark-spreadsheet'}}"
@@ -152,11 +155,11 @@
     </form>
    
 </section>
-<div class="row mx-0 my-3 px-2" *ngIf="isEditItem && job_id">
+<div class="row mx-0 my-3 px-2" >
   <div class="col-12 col-sm-12 col-md-6 col-lg-3 align-content-center px-0">
       <button mat-button class="cancel-button mat-btn-s" type="button"  (click)="backBtnFunc()">
           Back</button>
-      <button mat-raised-button class="proceedbtn mat-btn-s" type="submit" (click)="saveJobKPIDetails()">Submit</button>
+      <button mat-raised-button class="proceedbtn mat-btn-s" type="submit" (click)="saveJobKPIDetails()" *ngIf="isEditItem && job_id">Submit</button>
     </div>
         </div>
 </div>
