@@ -440,18 +440,33 @@ let rawValue = event.target.value;
 if (!rawValue) {
   const employeesDetailsArray = this.jobKPIFormGroup?.get('data') as FormArray;
   rawValue = '00:00'; 
- employeesDetailsArray.at(index).patchValue({'processing_time':rawValue}); // Default value (can adjust as needed)
+ employeesDetailsArray?.at(index)?.patchValue({'processing_time':rawValue}); // Default value (can adjust as needed)
 } 
 }
 
 public formatProcessingTime(event: any, index: any): void {
-  let rawValue = event.target.value.replace(/[^0-9]/g, ''); // Remove non-numeric characters
+  let rawValue = event.target.value?.replace(/[^0-9]/g, ''); // Remove non-numeric characters
   const employeesDetailsArray = this.jobKPIFormGroup?.get('data') as FormArray;
-  
   // Insert the colon if the length of the value exceeds 3 digits
-  if (rawValue.length > 3 && rawValue.indexOf(':') === -1) {
-    rawValue = rawValue.slice(0, 3) + ':' + rawValue.slice(3);
+  if (rawValue.length > 3 && rawValue?.indexOf(':') === -1) {
+    rawValue = rawValue?.slice(0, 3) + ':' + rawValue?.slice(3);
   }
+
+  if (rawValue?.includes(':')) {
+    const parts = rawValue?.split(':');
+    
+    if (parts[1].length > 0) {
+        const secondPart = parseInt(parts[1][0], 10);  // Get the first character after the colon
+        
+        // Check if the second part's first character is greater than 5
+        if (secondPart > 5) {
+            // Replace it immediately with '5' + the rest of the characters
+            parts[1] = '5' + parts[1]?.slice(1);
+            rawValue = parts?.join(':');  // Join the parts back together
+            event.target.value = rawValue; // Update the input field value
+        }
+    }
+}
   // Update the processing_time field in the form without emitting an event
   employeesDetailsArray?.at(index)?.get('processing_time')?.setValue(rawValue, { emitEvent: false });
 }
@@ -460,12 +475,27 @@ public formatProcessingTime(event: any, index: any): void {
 
 
 public formatReviewingTime(event: any,index:any): void {
-  let rawValue = event.target.value.replace(/[^0-9]/g, '');
+  let rawValue = event.target.value?.replace(/[^0-9]/g, '');
   const employeesDetailsArray = this.jobKPIFormGroup?.get('data') as FormArray;
   
- if (rawValue.length > 3 && rawValue.indexOf(':') === -1) {
-    rawValue = rawValue.slice(0, 3) + ':' + rawValue.slice(3);
+ if (rawValue.length > 3 && rawValue?.indexOf(':') === -1) {
+    rawValue = rawValue?.slice(0, 3) + ':' + rawValue?.slice(3);
   }
+  if (rawValue?.includes(':')) {
+    const parts = rawValue?.split(':');
+    
+    if (parts[1].length > 0) {
+        const secondPart = parseInt(parts[1][0], 10);  // Get the first character after the colon
+        
+        // Check if the second part's first character is greater than 5
+        if (secondPart > 5) {
+            // Replace it immediately with '5' + the rest of the characters
+            parts[1] = '5' + parts[1]?.slice(1);
+            rawValue = parts?.join(':');  // Join the parts back together
+            event.target.value = rawValue; // Update the input field value
+        }
+    }
+}
   employeesDetailsArray?.at(index)?.get('review_time')?.setValue(rawValue, { emitEvent: false });
 }
  public defaultReviewTime(event: any,index:any): void {
@@ -473,7 +503,7 @@ public formatReviewingTime(event: any,index:any): void {
     if (!rawValue) {
       const employeesDetailsArray = this.jobKPIFormGroup.get('data') as FormArray;
       rawValue = '00:00'; 
-      employeesDetailsArray.at(index).patchValue({'review_time':rawValue});
+      employeesDetailsArray?.at(index)?.patchValue({'review_time':rawValue});
     }     
  }
 
