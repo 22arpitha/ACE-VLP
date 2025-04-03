@@ -81,14 +81,33 @@ export class LoginComponent implements OnInit {
         sessionStorage.setItem('token', response['token']),
         sessionStorage.setItem('logged_count', response['logged_in_time']);
         sessionStorage.setItem('user_id',decoded.user_id )
-        this.api.showSuccess('Login successful!'); // remove this line once the user access api  is done
         
         this.api.getData(`${environment.live_url}/${environment.user_access}/${decoded.user_id}/`).subscribe(
           (data:any)=>{
             console.log('user access',data)
-            sessionStorage.setItem('user_role_name', data.user_role);
+            if (data.user_role == 'Employee') {
+              sessionStorage.setItem('user_role_name', data.designation);
+              sessionStorage.setItem('designation', data.sub_designation);
+            } else {
+              sessionStorage.setItem('user_role_name', data.user_role);
+            }
             sessionStorage.setItem('user_name', data.user_info[0].first_name);
-            this.router.navigate(['settings/country']) // remove this line once the user access api  is done
+            let access = data.access_list.find(data=>data.name==='Jobs')
+            // console.log(access)
+            if(data.access_list.length!=0){
+              if(access){
+              this.router.navigate([access.url])
+            } else{
+              this.router.navigate([data.access_list[0].url || data.access_list[0].children[0].url])
+            }
+            this.api.showSuccess('Login successful!');
+            }
+            // if(access){
+            //   this.router.navigate([access.url])
+            // } else{
+            //   this.router.navigate([data.access_list[0].url || data.access_list[0].children[0].url])
+            // }
+            // this.router.navigate(['settings/country']) // remove this line once the user access api  is done
         //     sessionStorage.setItem('organization_id', data.organization_id);
         //     sessionStorage.setItem('designation', data.designation);
         //       let permissionArr: any = []
@@ -108,7 +127,7 @@ export class LoginComponent implements OnInit {
         //       this.api.showSuccess('Login successful!');
           },
           (error:any)=>{
-           // console.log('error',error)
+           console.log('error',error.error.detail)
           }
         )
 

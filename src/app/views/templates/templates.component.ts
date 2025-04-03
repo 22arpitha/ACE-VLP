@@ -8,6 +8,7 @@ import { CommonServiceService } from '../../service/common-service.service';
 import { environment } from '../../../environments/environment';
 import { Observable, of } from 'rxjs';
 import { SubModuleService } from '../../../app/service/sub-module.service';
+import {fullUrlToFile} from '../../shared/fileUtils.utils';
 
 @Component({
   selector: 'app-templates',
@@ -250,7 +251,7 @@ public createFromData(){
       this.templateForm.get('template_file')?.setErrors(null);
 
       console.error('Controls:', this.templateForm.controls);
-      urlToFile(respData?.template_file, this.getFileName(respData?.template_file))
+      fullUrlToFile(respData?.template_file, this.getFileName(respData?.template_file))
     .then(file => {
       this.file = file;
       this.selectedFile = this.file;
@@ -351,11 +352,4 @@ public createFromData(){
 
  
   }
-  async function urlToFile(url: string, fileName: string): Promise<File> {
-    const response = await fetch(url);
-    const blob = await response.blob();
-    const mimeType = blob.type || 'application/octet-stream';
-
-    return new File([blob], fileName, { type: mimeType });
-}
 

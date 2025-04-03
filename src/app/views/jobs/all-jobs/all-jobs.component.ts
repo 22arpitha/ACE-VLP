@@ -258,11 +258,10 @@ export class AllJobsComponent implements OnInit {
       item.job_status = event.value;
       item.percentage_of_completion = selectedStatus.percentage_of_completion;
       item.isInvalid = false;
-      item.valueChanged = true;
-        // Update the percentage dynamically
+      // item.valueChanged = true;
     }
 
-    // trigger the the api to upadate the job status
+    this.saveJobStausPercentage(item)
 
   }
   public validateKeyPress(event: KeyboardEvent) {
@@ -295,6 +294,10 @@ export class AllJobsComponent implements OnInit {
 
   saveJobStausPercentage(item: any) {
     if(!item.isInvalid){
+      console.log(item)
+      if(!this.changedStatusName){
+        this.changedStatusName = item.job_status_name
+      } 
       let temp_status=this.changedStatusName.toLowerCase();
       let formData:any= {'job_status':item?.job_status,'percentage_of_completion':item.percentage_of_completion,
         status: (temp_status === 'cancelled' || temp_status === 'completed') ? false : true

@@ -1,6 +1,11 @@
 <div class="container-wrapper settings-main-content px-0">
     <section class="settings-form-bg px-0">
-      <div class="row mx-0 px-0">
+      <div class="row row mx-0 my-1 px-0" *ngIf="isEditItem && job_id && employeeFormArray.controls.length >= 1">
+        <div class="col-12 col-sm-12 col-md-12 col-lg-12 pl-0 pr-5 text-end">
+          <button mat-raised-button class="proceedbtn mat-btn-s" type="button" (click)="openJobKPIDetails()" *ngIf="user_role_name !='Admin' && accessPermissions[0]?.update || user_role_name === 'Admin'">KPI</button>
+        </div>
+      </div>
+      <div class="row my-1 mx-0 px-0">
         <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0">
             <form [formGroup]="jobFormGroup">
                 <div class="row mx-0 my-0 px-2" >

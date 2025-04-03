@@ -1,0 +1,166 @@
+<div class="container-wrapper settings-main-content px-0">
+  <section class="settings-form-bg px-0">
+    <div class="row mx-0 my-3 px-2">
+<div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0">
+  <section class="settings-table-bg" >
+    <div class="row row mx-0 px-0" *ngIf="!isEditItem && job_id">
+        <div class="col-12 col-sm-12 col-md-12 col-lg-12 my-1 pl-0 pr-5 text-end">
+          <button mat-raised-button class="proceedbtn mat-btn-s" type="button" (click)="editJobKPIDetails()" *ngIf="user_role_name !='Admin' && accessPermissions[0]?.update || user_role_name === 'Admin'">Edit</button>
+        </div>
+      </div>
+      <form [formGroup]="jobKPIFormGroup">
+      <div class="row mx-0 my-1 px-0">
+        <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0 table-responsive table-responsive-sm table-responsive-md" *ngIf="employeeFormArray.controls.length >= 1">
+
+            <table class="table table-hover table-list employee-details-table">
+                <thead>
+                  <tr>
+                    <th>Staff</th>
+                    <th>Estimated Time</th>
+                    <th>MRP</th>
+                    <th>CRP</th>
+                  </tr>
+                </thead>
+                <tbody formArrayName="data" class="contact-form-content">
+                  <tr *ngFor="let emp of employeeFormArray.controls |paginate : {
+                    itemsPerPage: pageSize,
+                    currentPage: currentPage,
+                    totalItems: employeeFormArray?.length
+                  }; let i = index" [formGroupName]="i" >
+                    <td class="align-content-center">
+                      <div class="mx-0 my-1 px-0  justify-content-center">
+                        <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+                          <mat-label>Select Employee <b class="r-star">*</b></mat-label>
+                          <mat-select formControlName="employee"  autocomplete="off" placeholder="Select" panelClass="custom-select-panel">
+                            <!-- Filtered options -->
+                            <mat-option *ngFor="let emp of allEmployeeList" [value]="emp?.user_id">
+                              {{ emp?.user__full_name }}
+                            </mat-option>
+                          </mat-select>
+                        </mat-form-field>
+                      </div>
+                    </td>
+                    <td> 
+                        <div class="mx-0 my-1 px-0 d-flex justify-content-between">
+                            <div class="time-field-width">
+                            <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+                                <mat-label>Processing Time</mat-label>
+                                <input matInput type="text" placeholder="00:00" maxlength="6"  formControlName="processing_time" autocomplete="off" (focusout)="formatProcessingTime($event,i)" >
+                              </mat-form-field>
+                            </div> 
+                            <div class="time-field-width ml-1 mr-0 mx-0">
+                              <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+                                <mat-label>Review Time</mat-label>
+                                <input matInput type="text" placeholder="00:00" maxlength="6" formControlName="review_time"  autocomplete="off" (focusout)="formatReviewTime($event,i)" >
+
+                              </mat-form-field> 
+                            </div>
+                        </div>
+                        <div class="row mx-0 my-1 px-0 justify-content-center">
+                            <input type="file" accept=".xlsx,.xls,.doc,.docx,.pdf" formControlName="budget_file" #fileInput
+                            (change)="onBudgetFileSelected($event,i)" hidden>
+                          <div class="image-container w-100 d-flex justify-content-between align-items-center"
+                            style="padding: 1px 15px;"
+                            [ngClass]="{'is-invalid': emp?.get('budget_file')?.touched && emp?.get('budget_file')?.invalid}">
+                            <mat-label [ngbTooltip]="selectedBudgetFile[i] && selectedBudgetFile[i]?.name ? selectedBudgetFile[i]?.name : ''">{{selectedBudgetFile[i] && selectedBudgetFile[i]?.name ? selectedBudgetFile[i]?.name : 'Upload Budget File'}}</mat-label>
+                            <button type="button" mat-icon-button (click)="triggerFileInput(i)">
+                              <i matTooltip="{{selectedBudgetFile[i] && selectedBudgetFile[i]?.name ? 'Edit' : 'Upload Budget File'}}"
+                                class="{{selectedBudgetFile[i] && selectedBudgetFile[i]?.name ? 'bi bi-pencil-fill' : 'bi bi-file-earmark-spreadsheet'}}"
+                                id="edit-or-upload-icon"></i>
+                            </button>
+                          </div>
+                          <div *ngIf="emp?.get('budget_file')?.touched && emp?.get('budget_file')?.invalid"
+                            style="font-size: 11px;padding-left: 10px;color:#f44336">
+                            <span *ngIf="emp?.get('budget_file')?.errors?.['accept']">Invalid file type. Please upload .xlsx, .xls, .doc, .docx, .pdf file.</span>
+                            <span *ngIf="emp?.get('budget_file')?.errors?.['maxSize']">File size exceeds 10MB.</span>
+                          </div>
+                        </div>
+                    </td>
+                    <td>
+                      <div class="mx-0 my-1 px-0 justify-content-center">
+                        <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+                        <mat-label>MRP</mat-label>
+                        <input matInput type="number" placeholder="Enter MRP" formControlName="mrp" maxlength="3" minlength="1" autocomplete="off" (focusout)="setMrpDefaultValueIfEmpty($event,i)" (keypress)="validateKeyPress($event)">
+                       
+                      </mat-form-field> 
+                    </div>
+                    <div class="mx-0 my-1 px-0 justify-content-center">
+                        <input type="file" accept=".xlsx,.xls,.doc,.docx,.pdf" formControlName="mrpFile" #mrpfileInput
+                        (change)="onMrpFileSelected($event,i)" hidden>
+                      <div class="image-container w-100 d-flex justify-content-between align-items-center"
+                        style="padding: 1px 15px;"
+                        [ngClass]="{'is-invalid': emp?.get('mrpFile')?.touched && emp?.get('mrpFile')?.invalid}">
+                        <mat-label [ngbTooltip]="selectedMrpFile[i] && selectedMrpFile[i]?.name ? selectedMrpFile[i]?.name : ''">{{selectedMrpFile[i] && selectedMrpFile[i]?.name ? selectedMrpFile[i]?.name : 'Upload MRP File'}}</mat-label>
+                        <button type="button" mat-icon-button (click)="triggerMrpFileInput(i)">
+                          <i matTooltip="{{selectedMrpFile[i] && selectedMrpFile[i]?.name ? 'Edit' : 'Upload MRP File'}}"
+                            class="{{selectedMrpFile[i] && selectedMrpFile[i]?.name ? 'bi bi-pencil-fill' : 'bi bi-file-earmark-spreadsheet'}}"
+                            id="edit-or-upload-icon"></i>
+                        </button>
+                      </div>
+                      <div *ngIf="emp?.get('mrpFile')?.touched && emp?.get('mrpFile')?.invalid"
+                        style="font-size: 11px;padding-left: 10px;color:#f44336">
+                        <span *ngIf="emp?.get('mrpFile')?.errors?.['accept']">Invalid file type. Please upload .xlsx, .xls, .doc, .docx, .pdf file.</span>
+                        <span *ngIf="emp?.get('mrpFile')?.errors?.['maxSize']">File size exceeds 10MB.</span>
+                      </div>
+                       </div>
+                     </td>
+                     <td>
+                      <div class="mx-0 my-1 px-0 justify-content-center"> 
+                      <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+                      <mat-label>CRP</mat-label>
+                      <input matInput type="number" placeholder="Enter Job Number" formControlName="crp" autocomplete="off" maxlength="3" minlength="1" (focusout)="setCrpDefaultValueIfEmpty($event,i)" (keypress)="validateKeyPress($event)">
+                    </mat-form-field> 
+                  </div>
+                  <div class="mx-0 my-1 px-0 justify-content-center">
+                      <input type="file" accept=".xlsx,.xls,.doc,.docx,.pdf" formControlName="crpFile" #crpfileInput
+                      (change)="onCrpFileSelected($event,i)" hidden>
+                    <div class="image-container w-100 d-flex justify-content-between align-items-center"
+                      style="padding: 1px 15px;"
+                      [ngClass]="{'is-invalid': emp?.get('crpFile')?.touched && emp?.get('crpFile')?.invalid}">
+                      <mat-label [ngbTooltip]="selectedCrpFile[i] && selectedCrpFile[i]?.name ? selectedCrpFile[i]?.name : ''">{{selectedCrpFile[i] &&  selectedCrpFile[i]?.name ? selectedCrpFile[i]?.name : 'Upload CRP File'}}</mat-label>
+                      <button type="button" mat-icon-button (click)="triggerCrpFileInput(i)">
+                        <i matTooltip="{{selectedCrpFile[i] && selectedCrpFile[i]?.name ? 'Edit' : 'Upload CRP File'}}"
+                          class="{{selectedCrpFile[i] && selectedCrpFile[i]?.name ? 'bi bi-pencil-fill' : 'bi bi-file-earmark-spreadsheet'}}"
+                          id="edit-or-upload-icon"></i>
+                      </button>
+                    </div>
+                    <div *ngIf="emp?.get('crpFile')?.touched && emp?.get('crpFile')?.invalid"
+                      style="font-size: 11px;padding-left: 10px;color:#f44336">
+                      <span *ngIf="emp?.get('crpFile')?.errors?.['accept']">Invalid file type. Please upload .xlsx, .xls, .doc, .docx, .pdf file.</span>
+                      <span *ngIf="emp?.get('crpFile')?.errors?.['maxSize']">File size exceeds 10MB.</span>
+                    </div>
+                  </div>
+                  </td>
+                  </tr>
+                </tbody>
+              </table>
+        
+       
+        </div>
+        </div>
+        <div class="row mx-0 my-1 px-0" *ngIf="employeeFormArray.controls.length >= 1">
+          <div class="col-lg-5 px-0">
+          </div>
+          <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0">
+            <mat-paginator [length]="employeeFormArray.length"
+          [pageSize]="10"
+          [pageIndex]="currentPage - 1"
+          (page)="onPageChanged($event)">
+        </mat-paginator>
+          </div>
+        </div>
+    </form>
+   
+</section>
+<div class="row mx-0 my-3 px-2" *ngIf="isEditItem && job_id">
+  <div class="col-12 col-sm-12 col-md-6 col-lg-3 align-content-center px-0">
+      <button mat-button class="cancel-button mat-btn-s" type="button"  (click)="backBtnFunc()">
+          Back</button>
+      <button mat-raised-button class="proceedbtn mat-btn-s" type="submit" (click)="saveJobKPIDetails()">Submit</button>
+    </div>
+        </div>
+</div>
+    </div>
+
+            </section> 
+</div>

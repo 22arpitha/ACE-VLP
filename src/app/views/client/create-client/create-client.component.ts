@@ -1,6 +1,8 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import {  Validators, FormBuilder,FormGroup, FormGroupDirective, AbstractControl, ValidationErrors, FormArray, FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { MatPaginator } from '@angular/material/paginator';
+import { DatePipe } from '@angular/common';
 import { Observable, of } from 'rxjs';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Editor, Toolbar } from 'ngx-editor';
@@ -8,10 +10,10 @@ import { ApiserviceService } from '../../../service/apiservice.service';
 import { CommonServiceService } from '../../../service/common-service.service';
 import { GenericDeleteComponent } from '../../../generic-components/generic-delete/generic-delete.component';
 import { environment } from '../../../../environments/environment';
-import { MatPaginator } from '@angular/material/paginator';
-import { DatePipe } from '@angular/common';
+
 import { FormErrorScrollUtilityService } from '../../../service/form-error-scroll-utility-service.service';
-import { SubModuleService } from 'src/app/service/sub-module.service';
+import { SubModuleService } from '../../../service/sub-module.service';
+import {urlToFile} from '../../../shared/fileUtils.utils';
 
 
 
@@ -469,7 +471,7 @@ respData.contact_details.forEach(({ name, email, phone_number }, index, array) =
   public createFromData(){
     this.formData = new FormData();
     if (this.file) {
-      this.formData.set("client_file", this.file || '');
+      this.formData.set("client_file", this.file || null);
     }else{
       this.formData.set("client_file", null);
     }
@@ -590,12 +592,3 @@ respData.contact_details.forEach(({ name, email, phone_number }, index, array) =
   }
 
   }
-  async function urlToFile(url: string, fileName: string): Promise<File> {
-    let fullurl = environment.media_url+url;
-    console.log('fullurl',fullurl);
-    const response = await fetch(fullurl);
-    const blob = await response.blob();
-    const mimeType = blob.type || 'application/octet-stream';
-
-    return new File([blob], fileName, { type: mimeType });
-}

@@ -10,7 +10,7 @@ import { CommonServiceService } from '../../../service/common-service.service';
 import { environment } from '../../../../environments/environment';
 import { GenericDeleteComponent } from '../../../generic-components/generic-delete/generic-delete.component';
 import { FormErrorScrollUtilityService } from '../../../service/form-error-scroll-utility-service.service';
-import { SubModuleService } from 'src/app/service/sub-module.service';
+import { SubModuleService } from '../../../service/sub-module.service';
 
 @Component({
   selector: 'app-create-update-job',
@@ -74,6 +74,7 @@ currentDate:any = new Date().toISOString();
         private apiService: ApiserviceService,private modalService: NgbModal,private formErrorScrollService:FormErrorScrollUtilityService) { 
         this.common_service.setTitle(this.BreadCrumbsTitle);
         this.user_role_name = sessionStorage.getItem('user_role_name');
+        console.log('this.user_role_name',this.user_role_name)
         this.user_id = sessionStorage.getItem('user_id');
         if(this.activeRoute.snapshot.paramMap.get('id')){
           this.common_service.setTitle('Update ' + this.BreadCrumbsTitle)
@@ -526,6 +527,10 @@ if(respData){
           this.common_service.setjobStatusState(false);
         }
         this.router.navigate(['/jobs/all-jobs']);
+      }
+
+      public openJobKPIDetails(){
+        this.router.navigate(['/jobs/update-kpi/',this.job_id]);
       }
 
       public joiningDateFun(event: any) {
