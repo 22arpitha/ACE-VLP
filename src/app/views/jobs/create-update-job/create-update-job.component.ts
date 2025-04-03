@@ -74,7 +74,6 @@ currentDate:any = new Date().toISOString();
         private apiService: ApiserviceService,private modalService: NgbModal,private formErrorScrollService:FormErrorScrollUtilityService) { 
         this.common_service.setTitle(this.BreadCrumbsTitle);
         this.user_role_name = sessionStorage.getItem('user_role_name');
-        console.log('this.user_role_name',this.user_role_name)
         this.user_id = sessionStorage.getItem('user_id');
         if(this.activeRoute.snapshot.paramMap.get('id')){
           this.common_service.setTitle('Update ' + this.BreadCrumbsTitle)
@@ -368,8 +367,13 @@ public getAllJobStatus(){
             this.allJobStatusList = res.filter(job => {
               const status = job.status_name.toLowerCase();
               return status !== 'completed' && status !== 'cancelled';
-            });
-              
+            })
+            let data = res.filter(job => {
+              const status = job.status_name.toLowerCase();
+              return status === 'yet to start';
+            })
+              this.jobFormGroup.patchValue({job_status: data[0].id})
+              this.jobFormGroup.patchValue({percentage_of_completion: data[0].percentage_of_completion})
           }
         }, (error: any) => {
           this.apiService.showError(error?.error?.detail);
