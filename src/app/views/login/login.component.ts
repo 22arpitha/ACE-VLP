@@ -88,7 +88,7 @@ export class LoginComponent implements OnInit {
             sessionStorage.setItem('user_role_name', data.user_role);
             sessionStorage.setItem('user_name', data.user_info[0].first_name);
             let access = data.access_list.find(data=>data.name==='Jobs')
-            console.log(access)
+            // console.log(access)
             if(data.access_list.length!=0){
               if(access){
               this.router.navigate([access.url])
@@ -122,7 +122,7 @@ export class LoginComponent implements OnInit {
         //       this.api.showSuccess('Login successful!');
           },
           (error:any)=>{
-           // console.log('error',error)
+           console.log('error',error.error.detail)
           }
         )
 
