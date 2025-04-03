@@ -74,6 +74,7 @@ currentDate:any = new Date().toISOString();
         private apiService: ApiserviceService,private modalService: NgbModal,private formErrorScrollService:FormErrorScrollUtilityService) { 
         this.common_service.setTitle(this.BreadCrumbsTitle);
         this.user_role_name = sessionStorage.getItem('user_role_name');
+        console.log('this.user_role_name',this.user_role_name)
         this.user_id = sessionStorage.getItem('user_id');
         if(this.activeRoute.snapshot.paramMap.get('id')){
           this.common_service.setTitle('Update ' + this.BreadCrumbsTitle)

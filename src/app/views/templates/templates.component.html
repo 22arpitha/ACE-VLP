@@ -141,7 +141,7 @@
                     type="button" (click)="editContent(item)" *ngIf="userRole !='Admin' && accessPermissions[0]?.update || userRole === 'Admin'"/>
                   <img src="../../../../assets/images/Delete.svg" class="icon-image" container="body"
                     ngbTooltip="Delete" type="button" (click)="confirmDelete(item)" *ngIf="userRole !='Admin' && accessPermissions[0]?.delete || userRole === 'Admin'"/>
-
+                    <span  *ngIf="userRole !='Admin' && !accessPermissions[0]?.update && !accessPermissions[0]?.delete">-</span>
                 </ng-container>
               </td>
             </tr>

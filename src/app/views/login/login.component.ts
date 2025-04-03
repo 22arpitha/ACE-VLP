@@ -85,7 +85,12 @@ export class LoginComponent implements OnInit {
         this.api.getData(`${environment.live_url}/${environment.user_access}/${decoded.user_id}/`).subscribe(
           (data:any)=>{
             console.log('user access',data)
-            sessionStorage.setItem('user_role_name', data.user_role);
+            if (data.user_role == 'Employee') {
+              sessionStorage.setItem('user_role_name', data.designation);
+              sessionStorage.setItem('designation', data.sub_designation);
+            } else {
+              sessionStorage.setItem('user_role_name', data.user_role);
+            }
             sessionStorage.setItem('user_name', data.user_info[0].first_name);
             let access = data.access_list.find(data=>data.name==='Jobs')
             // console.log(access)
