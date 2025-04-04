@@ -131,7 +131,9 @@ export class CreateUpdateJobComponent implements OnInit, OnDestroy {
     this.getAllJobType();
     this.getAllJobStatus();
     this.getAllEmployeeList();
-    this.getAllActiveManagerList();
+    setTimeout(() => {
+      this.getAllActiveManagerList();
+    }, 500);
   }
   getModuleAccess() {
     this.accessControlService.getAccessForActiveUrl(this.user_id).subscribe(
@@ -204,11 +206,13 @@ export class CreateUpdateJobComponent implements OnInit, OnDestroy {
     this.getEmployees(queryparams);
   }
 
+  accountManagerId:any;
   public getEmployees(params) {
     this.allEmployeeList = [];
     this.apiService.getData(`${environment.live_url}/${environment.employee}/${params}`).subscribe((respData: any) => {
       this.allEmployeeList = respData;
-      // console.log('employee list', respData)
+      this.accountManagerId = this.allEmployeeList[0]?.reporting_manager_id
+      console.log('employee list', respData)
     }, (error => {
       this.apiService.showError(error?.error?.detail)
     }));
@@ -223,7 +227,7 @@ export class CreateUpdateJobComponent implements OnInit, OnDestroy {
     } else if(this.user_role_name === 'Manager') { 
       queryparams = `?is_active=True&employee=True&employee_id=${this.user_id}&is_manager=True`
     } else if(this.user_role_name === 'Accountant'){
-      queryparams = `?is_active=True&employee=True&employee_id=${this.user_id}`;
+      queryparams = `?is_active=True&employee=True&employee_id=${this.accountManagerId}`;
     }
    this.getManagers(queryparams)
     // old code
