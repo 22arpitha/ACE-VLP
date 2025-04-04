@@ -66,7 +66,6 @@ import { VirtualScrollDirective } from './virtualscroll.directive';
 import { SharedModule } from './shared/shared.module';
 import { NgxUiLoaderHttpModule, NgxUiLoaderModule } from "ngx-ui-loader";
 import { AuthGuard } from './auth.guard';
-import { OrgAuthGuard } from './org-auth.guard';
 import { NgxDaterangepickerMd } from 'ngx-daterangepicker-material';
 import { CommonModule } from '@angular/common';
 import { ModalModule, BsModalService } from 'ngx-bootstrap/modal';
@@ -179,7 +178,6 @@ const APP_CONTAINERS = [
     FormErrorScrollUtilityService,
     ActivateChildGuard,
     AuthGuard,
-    OrgAuthGuard,
     {
       provide: PERFECT_SCROLLBAR_CONFIG,
       useValue: DEFAULT_PERFECT_SCROLLBAR_CONFIG,

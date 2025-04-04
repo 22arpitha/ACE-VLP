@@ -5,7 +5,7 @@ import { Router } from '@angular/router';
 
 import { ClassToggleService, HeaderComponent } from '@coreui/angular';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { GenericDeleteComponent } from '../../../generic-delete/generic-delete.component';
+import { GenericDeleteComponent } from '../../../generic-components/generic-delete/generic-delete.component';
 import { ApiserviceService } from '../../../service/apiservice.service';
 import { CommonServiceService } from '../../../service/common-service.service';
 import { NotificationComponent } from '../../../views/pages/notification/notification.component';

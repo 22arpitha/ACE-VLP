@@ -8,7 +8,7 @@ import { Editor, Toolbar } from 'ngx-editor';
 import { ApiserviceService } from '../../../service/apiservice.service';
 import { CommonServiceService } from '../../../service/common-service.service';
 import { environment } from '../../../../environments/environment';
-import { GenericDeleteComponent } from './../../../generic-delete/generic-delete.component';
+import { GenericDeleteComponent } from '../../../generic-components/generic-delete/generic-delete.component';
 import { FormErrorScrollUtilityService } from '../../../service/form-error-scroll-utility-service.service';
 import { SubModuleService } from '../../../service/sub-module.service';
 

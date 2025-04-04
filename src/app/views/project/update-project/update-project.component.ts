@@ -7,8 +7,8 @@ import { environment } from 'src/environments/environment';
 import { Location } from '@angular/common';
 import { CommonServiceService } from 'src/app/service/common-service.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { GenericDeleteComponent } from 'src/app/generic-delete/generic-delete.component';
-import { GenericRemoveComponent } from 'src/app/generic-remove/generic-remove.component';
+import { GenericDeleteComponent } from 'src/app/generic-components/generic-delete/generic-delete.component';
+import { GenericRemoveComponent } from 'src/app/generic-components/generic-remove/generic-remove.component';
 
 @Component({
   selector: 'app-update-project',

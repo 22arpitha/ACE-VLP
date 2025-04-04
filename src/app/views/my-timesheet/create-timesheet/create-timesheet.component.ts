@@ -5,7 +5,7 @@ import { ApiserviceService } from 'src/app/service/apiservice.service';
 import { environment } from 'src/environments/environment';
 import { MatAccordion, MatExpansionPanel } from '@angular/material/expansion';
 import { CommonServiceService } from 'src/app/service/common-service.service';
-import { GenericDeleteComponent } from 'src/app/generic-delete/generic-delete.component';
+import { GenericDeleteComponent } from 'src/app/generic-components/generic-delete/generic-delete.component';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { SubModuleService } from 'src/app/service/sub-module.service';
 
