@@ -37,7 +37,7 @@ selectedBudgetFile:(File | null)[] = [];
 selectedMrpFile:(File | null)[] = [];
 selectedCrpFile:(File | null)[] = [];
 
-defaultReviewingTime:any='00:00';
+defaultReviewingTime:any='000:00';
 formData:any;
   constructor(private fb:FormBuilder,private activeRoute:ActivatedRoute,
           private common_service: CommonServiceService,
@@ -138,7 +138,7 @@ formData:any;
     const employeeForm = this.fb.group({
       employee: [{ value: emp?.employee, disabled: true}],
       processing_time: [{ value: emp?.kpi ? emp?.kpi?.processing_time:formattedbudget_time?.toString(), disabled: true}],
-      review_time: [{ value: emp?.kpi ? emp?.kpi?.review_time:'00:00', disabled: true}],
+      review_time: [{ value: emp?.kpi ? emp?.kpi?.review_time:'000:00', disabled: true}],
       budget_file: [{ value: null, disabled: true}],
       mrp: [{ value: emp?.kpi ? emp?.kpi?.mrp:0, disabled: true}],
       mrpFile: [{ value: null, disabled: true}],
@@ -431,7 +431,7 @@ if(this.crpFileLink[index]){
 let rawValue = event.target.value;
 if (!rawValue) {
   const employeesDetailsArray = this.jobKPIFormGroup?.get('data') as FormArray;
-  rawValue = '00:00'; 
+  rawValue = '000:00'; 
  employeesDetailsArray?.at(index)?.patchValue({'processing_time':rawValue}); // Default value (can adjust as needed)
 } 
 }
@@ -494,7 +494,7 @@ public formatReviewingTime(event: any,index:any): void {
     let rawValue = event.target.value.replace(/[^0-9]/g, '');
     if (!rawValue) {
       const employeesDetailsArray = this.jobKPIFormGroup.get('data') as FormArray;
-      rawValue = '00:00'; 
+      rawValue = '000:00'; 
       employeesDetailsArray?.at(index)?.patchValue({'review_time':rawValue});
     }     
  }
