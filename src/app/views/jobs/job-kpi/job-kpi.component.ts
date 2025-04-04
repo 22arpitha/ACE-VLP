@@ -221,15 +221,7 @@ if(emp?.kpi){
       public editJobKPIDetails(){
       this.isEditItem = !this.isEditItem;
       const employeesDetailsArray = this.jobKPIFormGroup.get('data') as FormArray;
-      employeesDetailsArray.controls.forEach((controls)=>{
-        controls.get('processing_time')?.enable();
-        controls.get('review_time')?.enable();
-        controls.get('budget_file')?.enable();
-        controls.get('mrp')?.enable();
-        controls.get('mrpFile')?.enable();
-        controls.get('crp')?.enable();
-        controls.get('crpFile')?.enable();
-      })
+      employeesDetailsArray.controls.forEach((controls)=>{ controls?.enable()})
         }
 
         public backBtnFunc(){

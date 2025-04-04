@@ -120,7 +120,7 @@
                       style="padding: 1px 15px;"
                       [ngClass]="{'is-invalid': emp?.get('crpFile')?.touched && emp?.get('crpFile')?.invalid}">
                       <mat-label *ngIf="selectedCrpFile[i] && selectedCrpFile[i]?.name" [ngbTooltip]="selectedCrpFile[i]?.name"><a type="button" (click)="openFileInNewTab('crp',i)">{{selectedCrpFile[i]?.name}}</a></mat-label>
-                      <mat-label *ngIf="!selectedCrpFile[i] && !selectedCrpFile[i]?.name">'Upload CRP File</mat-label>
+                      <mat-label *ngIf="!selectedCrpFile[i] && !selectedCrpFile[i]?.name">Upload CRP File</mat-label>
                       <button type="button" mat-icon-button (click)="triggerCrpFileInput(i)">
                         <i matTooltip="{{selectedCrpFile[i] && selectedCrpFile[i]?.name ? 'Edit' : 'Upload CRP File'}}"
                           class="{{selectedCrpFile[i] && selectedCrpFile[i]?.name ? 'bi bi-pencil-fill' : 'bi bi-file-earmark-spreadsheet'}}"
