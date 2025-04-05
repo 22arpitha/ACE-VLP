@@ -262,14 +262,14 @@
 </div>
 <section class="settings-table-bg" >
   <div class="row mx-0 my-1 px-0">
-      <div class="col-12 col-sm-12 col-md-6 col-lg-10 py-1 px-0">
+      <div class="col-12 col-sm-12 col-md-6 col-lg-9 py-1 px-0">
           <h4>Employee Details</h4>
       </div>
-      <div class="col-12 col-sm-12 col-md-6 col-lg-2 no-padding py-1 pl-0 pr-2" *ngIf="user_role_name === 'Admin'">
+      <div class="col-12 col-sm-12 col-md-6 col-lg-3 no-padding py-1 pl-0 pr-2 text-end" *ngIf="user_role_name === 'Admin'">
         <mat-checkbox color="primary" class="example-margin" [(ngModel)]="selectAllEmpFlag" [ngModelOptions]="{standalone: true}" (change)="onSelectionAllEmployee($event)" ><h5 class="c-header">All Employee</h5></mat-checkbox>
     
       </div>
-      <div class="col-12 col-sm-12 col-md-6 col-lg-2 no-padding py-1 pl-0 pr-2" *ngIf="user_role_name === 'Manager'">
+      <div class="col-12 col-sm-12 col-md-6 col-lg-3 no-padding py-1 pl-0 pr-2" *ngIf="user_role_name === 'Manager'">
         <mat-checkbox color="primary" class="example-margin" (change)="onSelectOtherEmployee($event)" [(ngModel)]="selectOtherEmpFlag" [ngModelOptions]="{standalone: true}" ><h5 class="c-header">Allocate to another employee</h5></mat-checkbox>
     
       </div>
@@ -347,7 +347,7 @@
                         <img src="../../../../assets/images/tick.svg" class="icon-image" type="button" container="body"
                         ngbTooltip="save" (click)="saveChanges(i)" *ngIf="emp?.get('employee')?.enabled  && i < employeeFormArray?.length - 1 || (emp?.get('employee')?.enabled && i === allEmployeeList?.length-1)"/>
                         
-                <img src="../../../../assets/images/Delete.svg" class="icon-image" type="button" container="body" ngbTooltip="Delete" (click)="removeEmployee(i)" *ngIf="employeeFormArray.length >= 1" />
+                <img src="../../../../assets/images/Delete.svg" class="icon-image" type="button" container="body" ngbTooltip="Delete" (click)="removeEmployee(i)" *ngIf="employeeFormArray.length >= 2" />
                 <img src="../../../../assets/images/addnew.svg" class="icon-image" type="button" container="body"
                 ngbTooltip="add" (click)="addEmployee()" *ngIf="i === employeeFormArray?.length - 1 && employeeFormArray?.length != allEmployeeList?.length"/>
               </ng-container>
