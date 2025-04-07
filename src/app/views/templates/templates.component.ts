@@ -127,6 +127,7 @@ userRole: any;
 
 public createFromData(){
   this.formData = new FormData();
+  console.log('this.file',this.file);
   if (this.file) {
     this.formData.set("template_file", this.file || '');
     this.formData.set("template_name", this.templateForm?.get('template_name')?.value || '');

@@ -140,7 +140,7 @@ export class CompanyPolicyComponent implements OnInit {
   }
 
   public resetFormState() {
-    this.companyPolicyForm.controls['policy_file'].setValidators([Validators.required]);
+    this.companyPolicyForm.controls['policy_file']?.setValidators([Validators.required]);
     this.formGroupDirective.resetForm();
     this.selectedFile = null;
     this.file = null;
@@ -287,19 +287,19 @@ export class CompanyPolicyComponent implements OnInit {
 
       // Validate file type
       if (!allowedExtensions.includes(fileExtension)) {
-        this.companyPolicyForm.controls['policy_file'].setErrors({ accept: true });
+        this.companyPolicyForm.controls['policy_file']?.setErrors({ accept: true });
         return;
       }
 
       // Validate file size (10MB limit)
       if (file.size > 10 * 1024 * 1024) { // 10MB limit
-        this.companyPolicyForm.controls['policy_file'].setErrors({ maxSize: true });
+        this.companyPolicyForm.controls['policy_file']?.setErrors({ maxSize: true });
         return;
       }
       this.file = file;
       this.selectedFile = file; // Store the selected file
       console.log('selectedFile', this.selectedFile)
-      this.companyPolicyForm.controls['policy_file'].setValue(file);
+      this.companyPolicyForm.controls['policy_file']?.setValue(file);
     }
     // const input = event.target as HTMLInputElement;
 
@@ -378,7 +378,7 @@ export class CompanyPolicyComponent implements OnInit {
 
   previewFile(data:any){
     console.log(data)
-    const fileExtension = data.policy_file.split('.').pop()?.toLowerCase() || 'unknown';
+    const fileExtension = data?.policy_file?.split('.')?.pop()?.toLowerCase() || 'unknown';
     console.log(fileExtension)
     this.openFileViewer(data.policy_file,fileExtension)
   }
