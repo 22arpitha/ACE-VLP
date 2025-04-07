@@ -148,7 +148,7 @@ export class RoleListComponent implements OnInit {
           if (respData) {
             this.api.showSuccess(respData['message']);
             this.resetFormState();
-            this.getAllRolesList('?page=1&page_size=5');
+            this.getAllRolesList(`?page=${1}&page_size=${5}`);
           }
         }, (error: any) => {
           this.api.showError(error?.error?.message);
@@ -159,7 +159,7 @@ export class RoleListComponent implements OnInit {
             this.api.showSuccess(respData['message']);
             this.resetFormState();
             // this.getAllRolesList('?page=1&page_size=5');
-            this.router.navigate([`/settings/roles-access/${respData.result.id}`])
+            this.router.navigate([`/settings/roles-access/${respData?.result?.id}`])
           }
         }, (error: any) => {
           this.api.showError(error?.error?.message);   
@@ -168,7 +168,7 @@ export class RoleListComponent implements OnInit {
     }
   }
   public resetFormState() {
-    this.formGroupDirective.resetForm();
+    this.formGroupDirective?.resetForm();
     this.isEditItem = false;
   }
   async edit(item: any) {

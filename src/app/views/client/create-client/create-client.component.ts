@@ -245,10 +245,10 @@ if(respData?.employee_details && respData?.employee_details?.length >=1){
 }else{
   this.clientFormGroup?.patchValue({'employee_ids':[]});
 }
-if (respData?.contact_details && Array.isArray(respData.contact_details) && respData.employee_details?.length >= 1) {
+if (respData?.contact_details && Array.isArray(respData?.contact_details) && respData.contact_details?.length >= 1) {
   const contactDetailsArray = this.clientFormGroup.get('contact_details') as FormArray;
   contactDetailsArray.clear();
-respData.contact_details.forEach(({ name, email, phone_number }, index, array) => {
+respData?.contact_details?.forEach(({ name, email, phone_number }, index, array) => {
   const isLastItem = index === array.length - 1;
   const contactForm = this.fb.group({
     name: [{ value: name, disabled: !isLastItem }],

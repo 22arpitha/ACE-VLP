@@ -668,7 +668,7 @@ export class CreateUpdateJobComponent implements OnInit, OnDestroy {
     this.formData.set('period', this.jobFormGroup?.get('period')?.value);
     this.formData.set('job_type', this.jobFormGroup?.get('job_type')?.value);
     this.formData.set('job_allocation_date', this.datepipe.transform(this.jobFormGroup?.get('job_allocation_date')?.value, 'YYYY-MM-dd'));
-    this.formData.set('budget_time', this.jobFormGroup?.get('budget_time')?.value + ":00");
+    this.formData.set('budget_time', this.jobFormGroup?.get('budget_time')?.value);
     this.formData.set('job_status', this.jobFormGroup?.get('job_status')?.value);
     this.formData.set('percentage_of_completion', this.jobFormGroup?.get('percentage_of_completion')?.value);
     this.formData.set('job_status_date', this.datepipe.transform(this.jobFormGroup?.get('job_status_date')?.value, 'YYYY-MM-dd'));
