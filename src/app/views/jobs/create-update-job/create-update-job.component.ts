@@ -53,6 +53,7 @@ export class CreateUpdateJobComponent implements OnInit, OnDestroy {
   formData: any;
   selectAllEmpFlag: boolean = false;
   selectOtherEmpFlag: boolean = false;
+  jobDetails:any = []
   toolbar: Toolbar = [
     // default value
     ['bold', 'italic'],
@@ -117,6 +118,8 @@ export class CreateUpdateJobComponent implements OnInit, OnDestroy {
       job_notes: [''],
       created_by: Number(this.user_id),
       updated_by: Number(this.user_id),
+      is_allocated:[''],
+      all_employees:[''],
       employees: this.fb.array([this.createEmployeeControl()]),
     });
   }
@@ -130,15 +133,18 @@ export class CreateUpdateJobComponent implements OnInit, OnDestroy {
     this.getAllPeriodicity();
     this.getAllJobType();
     this.getAllJobStatus();
-    this.getAllEmployeeList();
+    // this.getEmployees(`?is_active=True&employee=True`);
+    if(!this.isEditItem){
+      this.getAllEmployeeList();
+    }
     setTimeout(() => {
       this.getAllActiveManagerList();
-    }, 500);
+    }, 1000);
   }
   getModuleAccess() {
     this.accessControlService.getAccessForActiveUrl(this.user_id).subscribe(
       (res: any) => {
-        console.log(res);
+        // console.log(res);
         this.accessPermissions = res[0].operations;
         // console.log('this.accessPermissions', this.accessPermissions)
         //  res.access_list.forEach((access:any)=>{
@@ -186,21 +192,15 @@ export class CreateUpdateJobComponent implements OnInit, OnDestroy {
       this.apiService.showError(error?.error?.detail);
     });
   }
-  public getAllEmployeeList() {
-    let queryparams: any;
-    if (this.user_role_name === 'Admin') {
-      queryparams = `?is_active=True&employee=True`;
-    } else {
-      if ((this.job_id && this.selectOtherEmpFlag) || (this.job_id && this.user_role_name === 'Accountant')) {
-        queryparams = `?is_active=True&employee=True`;
-      } else {
-        if (this.user_role_name === 'Accountant') {
-          queryparams = `?is_active=True&employee=True&employee_id=${this.user_id}`;
 
-        } else {
-          queryparams = `?is_active=True&employee=True&reporting_manager_id=${this.user_id}`;
-          // queryparams = `?is_active=True&employee=True&employee_id=${this.user_id}&is_manager=True`;
-        }
+  public getAllEmployeeList() {
+    let queryparams = `?is_active=True&employee=True`;
+    const shouldAddQuery = this.selectOtherEmpFlag || this.selectAllEmpFlag;
+    if (!shouldAddQuery) {
+      if (this.user_role_name === 'Accountant') {
+        queryparams += `&employee_id=${this.user_id}`;
+      } else if (this.user_role_name === 'Manager') {
+        queryparams += `&reporting_manager_id=${this.user_id}`;
       }
     }
     this.getEmployees(queryparams);
@@ -211,8 +211,11 @@ export class CreateUpdateJobComponent implements OnInit, OnDestroy {
     this.allEmployeeList = [];
     this.apiService.getData(`${environment.live_url}/${environment.employee}/${params}`).subscribe((respData: any) => {
       this.allEmployeeList = respData;
-      this.accountManagerId = this.allEmployeeList[0]?.reporting_manager_id
-      console.log('employee list', respData)
+      this.accountManagerId = this.allEmployeeList[0]?.reporting_manager_id;
+      if(this.isEditItem && this.user_role_name==='Admin' && this.allEmployeeList.length===this.jobDetails?.employees.length){
+        this.selectAllEmpFlag = true;
+      }
+      // console.log('employee list', respData)
     }, (error => {
       this.apiService.showError(error?.error?.detail)
     }));
@@ -220,15 +223,14 @@ export class CreateUpdateJobComponent implements OnInit, OnDestroy {
 
 
   public getAllActiveManagerList() {
-    this.allManagerList = [];
-    let queryparams: any;
-    if (this.user_role_name === 'Admin') {
-      queryparams = `?is_active=True&employee=True&designation=manager`
-    } else if(this.user_role_name === 'Manager') { 
-      queryparams = `?is_active=True&employee=True&employee_id=${this.user_id}&is_manager=True`
-    } else if(this.user_role_name === 'Accountant'){
-      queryparams = `?is_active=True&employee=True&employee_id=${this.accountManagerId}`;
-    }
+    let queryparams: any = `?is_active=True&employee=True&designation=manager`;
+    const shouldAddQuery = this.selectOtherEmpFlag || this.selectAllEmpFlag;
+    if(!shouldAddQuery){
+     if(this.user_role_name === 'Manager') { 
+        queryparams = `?is_active=True&employee=True&employee_id=${this.user_id}&is_manager=True`
+      } 
+    } 
+    
    this.getManagers(queryparams)
     // old code
     // this.apiService.getData(`${environment.live_url}/${environment.employee}/?is_active=True&employee=True&designation=manager`).subscribe((respData: any) => {
@@ -252,6 +254,7 @@ export class CreateUpdateJobComponent implements OnInit, OnDestroy {
   }
 
  public getManagers(queryparams:any){
+  this.allManagerList = [];
     this.apiService.getData(`${environment.live_url}/${environment.employee}/${queryparams}`).subscribe((respData: any) => {
       this.allManagerList = respData;
       if (this.user_role_name === 'Accountant' && !this.job_id) {
@@ -291,7 +294,13 @@ export class CreateUpdateJobComponent implements OnInit, OnDestroy {
 
   public getAllActiveClients() {
     this.allClientslist = [];
-    this.apiService.getData(`${environment.live_url}/${environment.clients}/?status=True`).subscribe(
+    let query:any
+    if(this.user_role_name ==='Admin'){
+      query = '?status=True'
+    } else{
+      query = `?status=True&employee-id=${this.user_id}`
+    }
+    this.apiService.getData(`${environment.live_url}/${environment.clients}/${query}`).subscribe(
       (res: any) => {
         this.allClientslist = res;
       }, (error: any) => {
@@ -367,11 +376,11 @@ export class CreateUpdateJobComponent implements OnInit, OnDestroy {
     this.getPeroidicityBasedPeroid(peroidicity);
   }
   public onServiceChange(event: any) {
-    console.log('event', event);
+    // console.log('event', event);
     // this.getCombinationJobName();
   }
   public onPeroidChange(event: any) {
-    console.log('event', event);
+    // console.log('event', event);
     this.getCombinationJobName();
   }
 
@@ -512,9 +521,13 @@ export class CreateUpdateJobComponent implements OnInit, OnDestroy {
   public getJobDetails(id: any) {
     this.apiService.getData(`${environment.live_url}/${environment.jobs}/${id}/`).subscribe((respData: any) => {
       if (respData) {
+        this.jobDetails = respData
         this.getClientBasedEndClient(respData?.client);
         this.getEndClientBasedGroup(respData?.end_client);
         this.getPeroidicityBasedPeroid(respData?.periodicity);
+        this.selectOtherEmpFlag = respData?.is_allocated,
+        this.selectAllEmpFlag = respData?.all_employees,
+        this.getAllEmployeeList();
         // this.getEndClientBasedGroup(respData?.end_client);
         this.jobFormGroup.patchValue({
           job_number: respData?.job_number,
@@ -534,6 +547,8 @@ export class CreateUpdateJobComponent implements OnInit, OnDestroy {
           job_notes: respData?.job_notes,
           created_by: respData?.created_by,
           updated_by: respData?.updated_by,
+          is_allocated:respData?.is_allocated,
+          all_employees:respData?.all_employees,
         });
         this.tempSelectedJobStatus = respData?.job_status_name.toLowerCase();
         if (respData?.budget_time) {
@@ -585,7 +600,7 @@ export class CreateUpdateJobComponent implements OnInit, OnDestroy {
 
   addEmployee() {
     let lastItemIndex = this.employeeFormArray.length - 1;
-    console.log(this.employeeFormArray?.at(lastItemIndex).valid);
+    // console.log(this.employeeFormArray?.at(lastItemIndex).valid);
     // Disable the previous contact group before adding a new one
     if (this.employeeFormArray?.at(lastItemIndex)?.valid) {
       const contact = this.employeeFormArray.at(lastItemIndex);
@@ -625,6 +640,7 @@ export class CreateUpdateJobComponent implements OnInit, OnDestroy {
     } else {
       if (this.isEditItem) {
         this.formData = this.createFromData();
+        // console.log(typeof this.formData.is_allocated)
         this.apiService.updateData(`${environment.live_url}/${environment.jobs}/${this.job_id}/`, this.formData).subscribe((respData: any) => {
           if (respData) {
             this.apiService.showSuccess(respData['message']);
@@ -677,7 +693,9 @@ export class CreateUpdateJobComponent implements OnInit, OnDestroy {
     this.formData.set('job_notes', this.jobFormGroup?.get('job_notes')?.value || '');
     this.formData.set('updated_by', this.jobFormGroup?.get('updated_by')?.value);
     this.formData.set("employees", JSON.stringify(this.jobFormGroup?.get('employees')?.getRawValue()) || []);
-    this.formData.set("status", (this.tempSelectedJobStatus === 'cancelled' || this.tempSelectedJobStatus === 'completed') ? false : true)
+    this.formData.set("status", (this.tempSelectedJobStatus === 'cancelled' || this.tempSelectedJobStatus === 'completed') ? false : true);
+    this.formData.set("is_allocated", this.jobFormGroup.get('is_allocated')?.value ? 'true' : 'false');
+    this.formData.set("all_employees",this.jobFormGroup.get('all_employees')?.value ? 'true' : 'false');
     const json = this.formDataToJson(this.formData);
 
     return json;
@@ -725,6 +743,7 @@ export class CreateUpdateJobComponent implements OnInit, OnDestroy {
   public onSelectOtherEmployee(event: any) {
     let employeeQuery;
     let managerQuery;
+    // console.log(typeof this.jobFormGroup?.value.is_allocated,this.jobFormGroup?.value.is_allocated)
     if (event.checked === true) {
       // get all employees and managers
       employeeQuery = `?is_active=True&employee=True`;
@@ -753,7 +772,6 @@ export class CreateUpdateJobComponent implements OnInit, OnDestroy {
     if (event.checked === true) {
       this.selectAllEmpFlag = true;
       this.employeeFormArray.clear();
-
       this.allEmployeeList.forEach((element: any) => {
         // Check if the reporting_manager_id exists in the allManagerList
         const isManagerValid = this.allManagerList?.some((manager: any) => manager?.user_id === element?.reporting_manager_id);
@@ -883,7 +901,12 @@ export class CreateUpdateJobComponent implements OnInit, OnDestroy {
         }
       } else if (value === 'null') {
         obj[key] = null;
-      } else {
+      } else if (value === 'true') {
+        obj[key] = true;
+      } else if (value === 'false') {
+        obj[key] = false;
+      }
+      else {
         obj[key] = value;
       }
     });
