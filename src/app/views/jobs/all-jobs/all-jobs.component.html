@@ -13,7 +13,7 @@
                 <button mat-raised-button class="proceedbtn mat-btn-s download-btn" type="button" [matMenuTriggerFor]="downloadMenu"><i class="fa fa-download"></i></button>
                 <button mat-raised-button class="proceedbtn mat-btn-s" type="button" (click)="openCreateClientPage()"
                 *ngIf="userRole !='Admin' && accessPermissions[0]?.create || userRole === 'Admin'">Create
-                  Jobs</button>
+                  Job</button>
                   <mat-menu #downloadMenu="matMenu">
                     <button mat-menu-item (click)="downloadOption('pdf')">
                       <i class="fa fa-file-pdf"></i> PDF

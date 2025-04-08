@@ -609,7 +609,7 @@ export class CreateUpdateJobComponent implements OnInit, OnDestroy {
       this.employeeFormArray.markAllAsTouched();
       this.employeeFormArray.push(this.createEmployeeControl());
     }
-
+    this.checkAllEmployeeCheckbox();
   }
 
 
@@ -623,6 +623,7 @@ export class CreateUpdateJobComponent implements OnInit, OnDestroy {
         ['employee', 'manager', 'is_primary'].forEach(field => lastItem.get(field)?.enable());
       }
     }
+    this.checkAllEmployeeCheckbox();
   }
 
   tempSelectedJobStatus: any
@@ -800,6 +801,7 @@ export class CreateUpdateJobComponent implements OnInit, OnDestroy {
       this.employeeFormArray.clear();
       this.employeeFormArray.push(this.createEmployeeControl());
     }
+    this.checkAllEmployeeCheckbox();
   }
 
 
@@ -925,6 +927,12 @@ export class CreateUpdateJobComponent implements OnInit, OnDestroy {
   }
 
 
-
+checkAllEmployeeCheckbox(){
+  if(this.user_role_name==='Admin' && this.employeeFormArray.length===this.allEmployeeList.length){
+    this.jobFormGroup.patchValue({'all_employees':true})
+  }  else{
+    this.jobFormGroup.patchValue({'all_employees':false})
+  }
+}
 
 }
