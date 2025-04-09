@@ -8,12 +8,15 @@ import { GenericEditComponent } from '../../../generic-components/generic-edit/g
 import { environment } from '../../../../environments/environment';
 import { Router } from '@angular/router';
 import{SubModuleService} from '../../../service/sub-module.service'
+import { CanComponentDeactivate } from 'src/app/authGuard/can-deactivate.guard';
+import { FormErrorScrollUtilityService } from 'src/app/service/form-error-scroll-utility-service.service';
+import { Observable } from 'rxjs';
 @Component({
   selector: 'app-role-list',
   templateUrl: './role-list.component.html',
   styleUrls: ['./role-list.component.scss']
 })
-export class RoleListComponent implements OnInit {
+export class RoleListComponent implements CanComponentDeactivate, OnInit {
   @ViewChild(FormGroupDirective) formGroupDirective!: FormGroupDirective;
   BreadCrumbsTitle: any = 'Roles';
   rolesForm: FormGroup;
@@ -36,7 +39,9 @@ export class RoleListComponent implements OnInit {
   userRole: any;
   constructor(
     private common_service: CommonServiceService, private fb: FormBuilder, private api: ApiserviceService,
-    private modalService: NgbModal, private router:Router,private accessControlService:SubModuleService
+    private modalService: NgbModal, private router:Router,
+    private accessControlService:SubModuleService,
+    private formUtilityService:FormErrorScrollUtilityService
   ) { }
 
   ngOnInit(): void {
@@ -246,4 +251,8 @@ export class RoleListComponent implements OnInit {
     console.log(id)
     this.router.navigate([`/settings/roles-access/${id}`])
   }
+
+    canDeactivate(): Observable<boolean> {
+        return this.formUtilityService.isFormDirtyOrInvalidCheck(this.rolesForm);
+        }
 }

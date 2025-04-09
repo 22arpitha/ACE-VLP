@@ -7,12 +7,15 @@ import { GenericDeleteComponent } from '../../../generic-components/generic-dele
 import { GenericEditComponent } from '../../../generic-components/generic-edit/generic-edit.component';
 import { environment } from '../../../../environments/environment';
 import { SubModuleService } from 'src/app/service/sub-module.service';
+import { FormErrorScrollUtilityService } from 'src/app/service/form-error-scroll-utility-service.service';
+import { CanComponentDeactivate } from 'src/app/authGuard/can-deactivate.guard';
+import { Observable } from 'rxjs';
 @Component({
   selector: 'app-country',
   templateUrl: './country.component.html',
   styleUrls: ['./country.component.scss']
 })
-export class CountryComponent implements OnInit {
+export class CountryComponent implements CanComponentDeactivate, OnInit {
   @ViewChild(FormGroupDirective) formGroupDirective!: FormGroupDirective;
    @ViewChild('formInputField') formInputField: ElementRef;
   BreadCrumbsTitle: any = 'Country';
@@ -37,7 +40,8 @@ export class CountryComponent implements OnInit {
   userRole: any;
   constructor(
     private common_service: CommonServiceService, private fb: FormBuilder, private api: ApiserviceService,
-    private modalService: NgbModal,private accessControlService:SubModuleService
+    private modalService: NgbModal,private accessControlService:SubModuleService,
+    private formUtilityService:FormErrorScrollUtilityService
   ) { }
 
   ngOnInit(): void {
@@ -248,4 +252,8 @@ export class CountryComponent implements OnInit {
     this.resetFormState();
     this.getAllCountryList(`?page=${1}&page_size=${5}`);
   }
+
+    canDeactivate(): Observable<boolean> {
+      return this.formUtilityService.isFormDirtyOrInvalidCheck(this.countryForm);
+    }
 }

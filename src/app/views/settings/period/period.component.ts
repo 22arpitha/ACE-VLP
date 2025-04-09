@@ -1,10 +1,13 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, FormGroupDirective, Validators } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { Observable } from 'rxjs';
+import { CanComponentDeactivate } from 'src/app/authGuard/can-deactivate.guard';
 import { GenericDeleteComponent } from 'src/app/generic-components/generic-delete/generic-delete.component';
 import { GenericEditComponent } from 'src/app/generic-components/generic-edit/generic-edit.component';
 import { ApiserviceService } from 'src/app/service/apiservice.service';
 import { CommonServiceService } from 'src/app/service/common-service.service';
+import { FormErrorScrollUtilityService } from 'src/app/service/form-error-scroll-utility-service.service';
 import { environment } from 'src/environments/environment';
 
 @Component({
@@ -12,7 +15,7 @@ import { environment } from 'src/environments/environment';
   templateUrl: './period.component.html',
   styleUrls: ['./period.component.scss']
 })
-export class PeriodComponent implements OnInit {
+export class PeriodComponent implements CanComponentDeactivate, OnInit {
 
   @ViewChild(FormGroupDirective) formGroupDirective!: FormGroupDirective;
    @ViewChild('formInputField') formInputField: ElementRef;
@@ -31,14 +34,15 @@ export class PeriodComponent implements OnInit {
    directionValue: string = '';
    arrowState: { [key: string]: boolean } = {
     period_name: false,
-    periodicity:false,
+    periodicty_name:false,
    };
    arrow: boolean = false;
    term: any;
    searchPeriodicityText:any
    allPeriodicityList:any=[];
    constructor(private fb: FormBuilder, private modalService: NgbModal,
-     private common_service: CommonServiceService, private apiService: ApiserviceService) {
+     private common_service: CommonServiceService, private apiService: ApiserviceService,
+     private formUtilityService:FormErrorScrollUtilityService) {
      this.common_service.setTitle(this.BreadCrumbsTitle)
    }
  
@@ -249,4 +253,8 @@ export class PeriodComponent implements OnInit {
     const itemPeriodicity = this.allPeriodicityList?.find((p: any) => p?.id=== id);
     return itemPeriodicity?.periodicty_name
   }
+
+  canDeactivate(): Observable<boolean> {
+   return this.formUtilityService.isFormDirtyOrInvalidCheck(this.periodForm);
+    }
 }

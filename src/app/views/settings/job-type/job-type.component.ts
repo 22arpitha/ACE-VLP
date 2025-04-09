@@ -7,12 +7,15 @@ import { GenericDeleteComponent } from '../../../generic-components/generic-dele
 import { GenericEditComponent } from '../../../generic-components/generic-edit/generic-edit.component';
 import { environment } from '../../../../environments/environment';
 import { SubModuleService } from 'src/app/service/sub-module.service';
+import { Observable } from 'rxjs';
+import { FormErrorScrollUtilityService } from 'src/app/service/form-error-scroll-utility-service.service';
+import { CanComponentDeactivate } from 'src/app/authGuard/can-deactivate.guard';
 @Component({
   selector: 'app-job-type',
   templateUrl: './job-type.component.html',
   styleUrls: ['./job-type.component.scss']
 })
-export class JobTypeComponent implements OnInit {
+export class JobTypeComponent implements CanComponentDeactivate, OnInit {
   @ViewChild(FormGroupDirective) formGroupDirective!: FormGroupDirective;
  @ViewChild('formInputField') formInputField: ElementRef;
   BreadCrumbsTitle: any = 'Job Type';
@@ -37,7 +40,8 @@ export class JobTypeComponent implements OnInit {
   user_id: any;
   userRole: any;
   constructor(private fb: FormBuilder, private modalService: NgbModal, private accessControlService:SubModuleService,
-    private common_service: CommonServiceService, private apiService: ApiserviceService
+    private common_service: CommonServiceService, private apiService: ApiserviceService,
+    private formUtilityService:FormErrorScrollUtilityService
   ) {
     this.common_service.setTitle(this.BreadCrumbsTitle);
   }
@@ -250,5 +254,10 @@ export class JobTypeComponent implements OnInit {
       this.getAllJobTypes(query);
     }
   }
+
+
+     canDeactivate(): Observable<boolean> {
+            return this.formUtilityService.isFormDirtyOrInvalidCheck(this.jobTypeForm);
+          }
 }
 

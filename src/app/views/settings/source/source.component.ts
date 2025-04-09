@@ -1,18 +1,21 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, FormGroupDirective, Validators } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { Observable } from 'rxjs/internal/Observable';
 import { CommonServiceService } from '../../../service/common-service.service';
 import { ApiserviceService } from '../../../service/apiservice.service';
 import { GenericDeleteComponent } from '../../../generic-components/generic-delete/generic-delete.component';
 import { GenericEditComponent } from '../../../generic-components/generic-edit/generic-edit.component';
 import { environment } from '../../../../environments/environment';
 import { SubModuleService } from '../../../service/sub-module.service';
+import { CanComponentDeactivate } from '../../../authGuard/can-deactivate.guard';
+import { FormErrorScrollUtilityService } from '../../../service/form-error-scroll-utility-service.service';
 @Component({
   selector: 'app-source',
   templateUrl: './source.component.html',
   styleUrls: ['./source.component.scss']
 })
-export class SourceComponent implements OnInit {
+export class SourceComponent implements CanComponentDeactivate, OnInit {
   @ViewChild(FormGroupDirective) formGroupDirective!: FormGroupDirective;
    @ViewChild('formInputField') formInputField: ElementRef;
 
@@ -37,7 +40,7 @@ export class SourceComponent implements OnInit {
   user_id: any;
   userRole: any;
   constructor(private fb: FormBuilder, private modalService: NgbModal,private accessControlService:SubModuleService,
-    private common_service: CommonServiceService, private apiService: ApiserviceService) {
+    private common_service: CommonServiceService, private apiService: ApiserviceService,private formUtilityService:FormErrorScrollUtilityService) {
     this.common_service.setTitle(this.BreadCrumbsTitle)
   }
 
@@ -66,7 +69,6 @@ export class SourceComponent implements OnInit {
   }
 
   public get f() {
-
     return this.sourceForm?.controls;
   }
 
@@ -230,6 +232,10 @@ export class SourceComponent implements OnInit {
       const query = `?page=${this.page}&page_size=${this.tableSize}`;
       this.getAllSource(query);
     }
+  }
+
+  canDeactivate(): Observable<boolean> {
+    return this.formUtilityService.isFormDirtyOrInvalidCheck(this.sourceForm);
   }
 
 }

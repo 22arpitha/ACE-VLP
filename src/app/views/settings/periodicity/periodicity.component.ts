@@ -6,13 +6,16 @@ import { GenericEditComponent } from '../../../generic-components/generic-edit/g
 import { ApiserviceService } from '../../../service/apiservice.service';
 import { CommonServiceService } from '../../../service/common-service.service';
 import { environment } from '../../../../environments/environment';
+import { CanComponentDeactivate } from 'src/app/authGuard/can-deactivate.guard';
+import { FormErrorScrollUtilityService } from 'src/app/service/form-error-scroll-utility-service.service';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-periodicity',
   templateUrl: './periodicity.component.html',
   styleUrls: ['./periodicity.component.scss']
 })
-export class PeriodicityComponent implements OnInit {
+export class PeriodicityComponent implements CanComponentDeactivate, OnInit {
 
    @ViewChild(FormGroupDirective) formGroupDirective!: FormGroupDirective;
    @ViewChild('formInputField') formInputField: ElementRef;
@@ -34,7 +37,8 @@ export class PeriodicityComponent implements OnInit {
     arrow: boolean = false;
     term: any;
     constructor(private fb: FormBuilder, private modalService: NgbModal,
-      private common_service: CommonServiceService, private apiService: ApiserviceService) {
+      private common_service: CommonServiceService, private apiService: ApiserviceService,
+      private formUtilityService:FormErrorScrollUtilityService) {
       this.common_service.setTitle(this.BreadCrumbsTitle)
     }
   
@@ -215,4 +219,8 @@ export class PeriodicityComponent implements OnInit {
         this.getAllPeriodicity(query);
       }
     }
+
+     canDeactivate(): Observable<boolean> {
+      return this.formUtilityService.isFormDirtyOrInvalidCheck(this.periodicityForm);
+      }
 }

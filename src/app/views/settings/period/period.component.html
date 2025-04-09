@@ -74,8 +74,8 @@
                   <i *ngIf="arrowState['period_name']" (click)="sort('desc', 'period_name')" class="bi bi-arrow-up"></i>
                 </th>
                 <th>Periodicty
-                    <i *ngIf="!arrowState['periodicity']" (click)="sort('asc', 'periodicity')" class="bi bi-arrow-down"></i>
-                    <i *ngIf="arrowState['periodicity']" (click)="sort('desc', 'periodicity')" class="bi bi-arrow-up"></i>
+                    <i *ngIf="!arrowState['periodicty_name']" (click)="sort('asc', 'periodicty_name')" class="bi bi-arrow-down"></i>
+                    <i *ngIf="arrowState['periodicty_name']" (click)="sort('desc', 'periodicty_name')" class="bi bi-arrow-up"></i>
                 </th>
                 <th>Action</th>
               </tr>
@@ -89,7 +89,7 @@
                                  }; let i=index'>
                 <td>{{getContinuousIndex(i)}}</td>
                 <td>{{item?.period_name || '-'}}</td>
-                <td>{{getPeriodicityName(item?.periodicity) || '-'}}</td>
+                <td>{{item?.periodicty_name || '-'}}</td>
                 <td>
                   <ng-container>
                     <img src="../../../../assets/images/Edit.svg" class="icon-image" container="body" ngbTooltip="Edit"
