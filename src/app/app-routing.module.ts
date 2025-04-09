@@ -19,6 +19,7 @@ import { TemplatesComponent } from './views/templates/templates.component';
 import { CompanyPolicyComponent } from './views/company-policy/company-policy.component';
 import { ActivateChildGuard } from './authGuard/activate-child.guard';
 import { AuthGuard } from './auth.guard';
+import { CanDeactivateGuard } from './authGuard/can-deactivate.guard';
 const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },
   {
@@ -148,10 +149,13 @@ const routes: Routes = [
       {
         path: 'templates',
         component: TemplatesComponent,
+        // canDeactivate:[CanDeactivateGuard]   
       },
       {
         path: 'company-policy',
         component: CompanyPolicyComponent,
+        // canDeactivate:[CanDeactivateGuard]
+        
       },
 
       {

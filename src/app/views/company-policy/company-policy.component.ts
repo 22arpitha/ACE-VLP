@@ -11,13 +11,15 @@ import { MatDialog } from '@angular/material/dialog';
 import {PdfViewComponent} from '../pdf-view/pdf-view.component'
 import { SubModuleService } from '../../../app/service/sub-module.service';
 import {fullUrlToFile} from '../../shared/fileUtils.utils';
+import { CanComponentDeactivate } from 'src/app/authGuard/can-deactivate.guard';
+import { FormErrorScrollUtilityService } from 'src/app/service/form-error-scroll-utility-service.service';
 
 @Component({
   selector: 'app-company-policy',
   templateUrl: './company-policy.component.html',
   styleUrls: ['./company-policy.component.scss']
 })
-export class CompanyPolicyComponent implements OnInit {
+export class CompanyPolicyComponent implements CanComponentDeactivate, OnInit {
   @ViewChild(FormGroupDirective) formGroupDirective!: FormGroupDirective;
   @ViewChild('fileInput') fileInput: ElementRef;
   @ViewChild('formInputField') formInputField: ElementRef;
@@ -46,7 +48,9 @@ export class CompanyPolicyComponent implements OnInit {
   user_id: any;
   userRole: any;
   constructor(private fb: FormBuilder, private modalService: NgbModal,private accessControlService:SubModuleService,
-    private common_service: CommonServiceService, private apiService: ApiserviceService,
+    private common_service: CommonServiceService, 
+    private apiService: ApiserviceService,
+    private formUtilityService:FormErrorScrollUtilityService,
     private dialog: MatDialog) {
     this.common_service.setTitle(this.BreadCrumbsTitle)
   }
@@ -390,5 +394,8 @@ export class CompanyPolicyComponent implements OnInit {
     });
   }
 
+  canDeactivate(): Observable<boolean> {
+    return this.formUtilityService.isFormDirtyOrInvalidCheck(this.companyPolicyForm);
+  }
 }
 

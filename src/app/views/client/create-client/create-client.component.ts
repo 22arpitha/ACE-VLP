@@ -290,7 +290,9 @@ respData?.contact_details?.forEach(({ name, email, phone_number }, index, array)
     public joiningDateFun(event: any) {
   
     }
- 
+    resetDate() {
+      this.clientFormGroup?.get('service_end_date')?.setValue(null);
+    }
     public addContact() {
       console.log(this.contactDetails.controls);
       let lastItemIndex = this.contactDetails.length - 1;

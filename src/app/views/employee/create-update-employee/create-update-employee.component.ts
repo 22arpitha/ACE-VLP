@@ -289,4 +289,7 @@ public resetFormState() {
   this.formGroupDirective.resetForm();
   this.isEditItem = false;
 }
+resetDate() {
+  this.employeeFormGroup?.get('exit_date')?.setValue(null);
+}
 }

@@ -27,37 +27,37 @@ const routes: Routes = [
       {
         path: 'country',
         component: CountryComponent,
-        // canDeactivate:[CanDeactivateGuard]
+        canDeactivate:[CanDeactivateGuard]
       },
       {
         path: 'job-type',
         component: JobTypeComponent,
-        // canDeactivate:[CanDeactivateGuard]
+        canDeactivate:[CanDeactivateGuard]
       },
       {
         path: 'source',
         component: SourceComponent,
-        // canDeactivate:[CanDeactivateGuard]
+        canDeactivate:[CanDeactivateGuard]
       },
       {
         path: 'status-group',
         component: StatusGroupComponent,
-        // canDeactivate:[CanDeactivateGuard]
+        canDeactivate:[CanDeactivateGuard]
       },
       {
         path: 'job-status',
         component: JobStatusComponent,
-        // canDeactivate:[CanDeactivateGuard]
+        canDeactivate:[CanDeactivateGuard]
       },
       {
         path: 'leave-type',
         component: LeaveTypeComponent,
-        // canDeactivate:[CanDeactivateGuard]
+        canDeactivate:[CanDeactivateGuard]
       },
       {
         path: 'services',
         component: ServicesComponent,
-        // canDeactivate:[CanDeactivateGuard]
+        canDeactivate:[CanDeactivateGuard]
       },
       {
         path: 'all-employee',
@@ -74,7 +74,7 @@ const routes: Routes = [
       {
         path: 'roles',
         component: RoleListComponent,
-        // canDeactivate:[CanDeactivateGuard]
+        canDeactivate:[CanDeactivateGuard]
       },
       { path: 'roles-access/:id', 
         component: RolesAccessComponent 
@@ -82,17 +82,17 @@ const routes: Routes = [
       {
         path: 'designation',
         component: DesignationsComponent,
-        // canDeactivate:[CanDeactivateGuard]
+        canDeactivate:[CanDeactivateGuard]
       },
       {
         path: 'periodicity',
         component: PeriodicityComponent,
-        // canDeactivate:[CanDeactivateGuard]
+        canDeactivate:[CanDeactivateGuard]
       },
       {
         path: 'period',
         component: PeriodComponent,
-        // canDeactivate:[CanDeactivateGuard]
+        canDeactivate:[CanDeactivateGuard]
       },
     ]
   },

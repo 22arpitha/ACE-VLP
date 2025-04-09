@@ -9,13 +9,15 @@ import { environment } from '../../../environments/environment';
 import { Observable, of } from 'rxjs';
 import { SubModuleService } from '../../../app/service/sub-module.service';
 import {fullUrlToFile} from '../../shared/fileUtils.utils';
+import { CanComponentDeactivate } from 'src/app/authGuard/can-deactivate.guard';
+import { FormErrorScrollUtilityService } from 'src/app/service/form-error-scroll-utility-service.service';
 
 @Component({
   selector: 'app-templates',
   templateUrl: './templates.component.html',
   styleUrls: ['./templates.component.scss']
 })
-export class TemplatesComponent implements OnInit {
+export class TemplatesComponent implements CanComponentDeactivate, OnInit {
   @ViewChild(FormGroupDirective) formGroupDirective!: FormGroupDirective;
   @ViewChild('fileInput') fileInput: ElementRef;
   @ViewChild('formInputField') formInputField: ElementRef;
@@ -44,7 +46,9 @@ user_id: any;
 userRole: any;
 
     constructor(private fb:FormBuilder,private modalService:NgbModal,private accessControlService:SubModuleService,
-        private common_service: CommonServiceService,private apiService:ApiserviceService) { 
+        private common_service: CommonServiceService,
+        private apiService:ApiserviceService,
+        private formUtilityService:FormErrorScrollUtilityService) { 
       this.common_service.setTitle(this.BreadCrumbsTitle)
     }
   
@@ -351,6 +355,8 @@ public createFromData(){
     document.body.removeChild(link);
   }
 
- 
+  canDeactivate(): Observable<boolean> {
+    return this.formUtilityService.isFormDirtyOrInvalidCheck(this.templateForm);
+  }
   }
 
