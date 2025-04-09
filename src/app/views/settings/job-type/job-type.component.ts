@@ -39,6 +39,7 @@ export class JobTypeComponent implements CanComponentDeactivate, OnInit {
   accessPermissions = []
   user_id: any;
   userRole: any;
+  initialFormValue:any;
   constructor(private fb: FormBuilder, private modalService: NgbModal, private accessControlService:SubModuleService,
     private common_service: CommonServiceService, private apiService: ApiserviceService,
     private formUtilityService:FormErrorScrollUtilityService
@@ -70,6 +71,8 @@ export class JobTypeComponent implements CanComponentDeactivate, OnInit {
       job_type_name: ['', [Validators.required, Validators.pattern(/^[a-zA-Z]+( [a-zA-Z]+)*$/), Validators.maxLength(20)]],
       job_price: [null, [Validators.required,Validators.pattern(/^[0-9]+(\.[0-9]{1,2})?$/), Validators.maxLength(10), Validators.min(0), Validators.minLength(1)]],
     });
+    this.initialFormValue = this.jobTypeForm?.getRawValue();
+
   }
   public get f() {
     return this.jobTypeForm.controls;
@@ -138,6 +141,7 @@ export class JobTypeComponent implements CanComponentDeactivate, OnInit {
     this.formGroupDirective.resetForm();
     this.isEditItem = false;
     this.term='';
+    this.initialFormValue = this.jobTypeForm?.getRawValue();
   }
 
   public sort(direction: string, column: string) {
@@ -255,9 +259,10 @@ export class JobTypeComponent implements CanComponentDeactivate, OnInit {
     }
   }
 
-
-     canDeactivate(): Observable<boolean> {
-            return this.formUtilityService.isFormDirtyOrInvalidCheck(this.jobTypeForm);
-          }
+  canDeactivate(): Observable<boolean> {
+    const currentFormValue = this.jobTypeForm?.getRawValue();
+    const isFormChanged:boolean =  JSON.stringify(currentFormValue) !== JSON.stringify(this.initialFormValue);
+    return this.formUtilityService.isFormDirtyOrInvalidCheck(isFormChanged,this.jobTypeForm);
+  }
 }
 

@@ -37,6 +37,7 @@ export class RoleListComponent implements CanComponentDeactivate, OnInit {
   accessPermissions = []
   user_id: any;
   userRole: any;
+  initialFormValue:any;
   constructor(
     private common_service: CommonServiceService, private fb: FormBuilder, private api: ApiserviceService,
     private modalService: NgbModal, private router:Router,
@@ -56,7 +57,8 @@ export class RoleListComponent implements CanComponentDeactivate, OnInit {
   intialForm() {
     this.rolesForm = this.fb.group({
       designation_name: ['', Validators.required]
-    })
+    });
+    this.initialFormValue = this.rolesForm?.getRawValue();
   }
   get f() {
     return this.rolesForm.controls;
@@ -175,6 +177,8 @@ export class RoleListComponent implements CanComponentDeactivate, OnInit {
   public resetFormState() {
     this.formGroupDirective?.resetForm();
     this.isEditItem = false;
+    this.initialFormValue = this.rolesForm?.getRawValue();
+
   }
   async edit(item: any) {
     this.selectedItemId = item?.id;
@@ -251,8 +255,9 @@ export class RoleListComponent implements CanComponentDeactivate, OnInit {
     console.log(id)
     this.router.navigate([`/settings/roles-access/${id}`])
   }
-
-    canDeactivate(): Observable<boolean> {
-        return this.formUtilityService.isFormDirtyOrInvalidCheck(this.rolesForm);
-        }
+  canDeactivate(): Observable<boolean> {
+    const currentFormValue = this.rolesForm?.getRawValue();
+    const isFormChanged:boolean =  JSON.stringify(currentFormValue) !== JSON.stringify(this.initialFormValue);
+    return this.formUtilityService.isFormDirtyOrInvalidCheck(isFormChanged,this.rolesForm);
+  }
 }

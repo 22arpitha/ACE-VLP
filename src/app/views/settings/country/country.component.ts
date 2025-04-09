@@ -38,6 +38,7 @@ export class CountryComponent implements CanComponentDeactivate, OnInit {
   accessPermissions = []
   user_id: any;
   userRole: any;
+  initialFormValue:any;
   constructor(
     private common_service: CommonServiceService, private fb: FormBuilder, private api: ApiserviceService,
     private modalService: NgbModal,private accessControlService:SubModuleService,
@@ -67,7 +68,8 @@ export class CountryComponent implements CanComponentDeactivate, OnInit {
   intialForm() {
     this.countryForm = this.fb.group({
       country_name: ['', [Validators.required, Validators.pattern(/^[a-zA-Z]+( [a-zA-Z]+)*$/), Validators.maxLength(20)]],
-    })
+    });
+    this.initialFormValue = this.countryForm?.getRawValue();
   }
   get f() {
     return this.countryForm.controls;
@@ -172,6 +174,7 @@ export class CountryComponent implements CanComponentDeactivate, OnInit {
     this.formGroupDirective.resetForm();
     this.isEditItem = false;
     this.term='';
+    this.initialFormValue = this.countryForm?.getRawValue();
   }
   async edit(item: any) {
 
@@ -252,8 +255,9 @@ export class CountryComponent implements CanComponentDeactivate, OnInit {
     this.resetFormState();
     this.getAllCountryList(`?page=${1}&page_size=${5}`);
   }
-
-    canDeactivate(): Observable<boolean> {
-      return this.formUtilityService.isFormDirtyOrInvalidCheck(this.countryForm);
-    }
+  canDeactivate(): Observable<boolean> {
+    const currentFormValue = this.countryForm?.getRawValue();
+    const isFormChanged:boolean =  JSON.stringify(currentFormValue) !== JSON.stringify(this.initialFormValue);
+    return this.formUtilityService.isFormDirtyOrInvalidCheck(isFormChanged,this.countryForm);
+  }
 }

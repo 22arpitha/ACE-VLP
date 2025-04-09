@@ -40,6 +40,7 @@ export class PeriodComponent implements CanComponentDeactivate, OnInit {
    term: any;
    searchPeriodicityText:any
    allPeriodicityList:any=[];
+   initialFormValue:any;
    constructor(private fb: FormBuilder, private modalService: NgbModal,
      private common_service: CommonServiceService, private apiService: ApiserviceService,
      private formUtilityService:FormErrorScrollUtilityService) {
@@ -57,6 +58,7 @@ export class PeriodComponent implements CanComponentDeactivate, OnInit {
       period_name: ['', [Validators.required, Validators.pattern(/^[a-zA-Z0-9]+( [a-zA-Z0-9]+)*$/), , Validators.maxLength(20)]],
       periodicity: [null, Validators.required], 
     });
+    this.initialFormValue = this.periodForm?.getRawValue();
    }
    public get f() {
      return this.periodForm?.controls;
@@ -129,6 +131,7 @@ export class PeriodComponent implements CanComponentDeactivate, OnInit {
      this.formGroupDirective.resetForm();
      this.isEditItem = false;
      this.term='';
+     this.initialFormValue = this.periodForm?.getRawValue();
    }
  
    sort(direction: string, column: string) {
@@ -253,8 +256,9 @@ export class PeriodComponent implements CanComponentDeactivate, OnInit {
     const itemPeriodicity = this.allPeriodicityList?.find((p: any) => p?.id=== id);
     return itemPeriodicity?.periodicty_name
   }
-
   canDeactivate(): Observable<boolean> {
-   return this.formUtilityService.isFormDirtyOrInvalidCheck(this.periodForm);
-    }
+    const currentFormValue = this.periodForm?.getRawValue();
+    const isFormChanged:boolean =  JSON.stringify(currentFormValue) !== JSON.stringify(this.initialFormValue);
+    return this.formUtilityService.isFormDirtyOrInvalidCheck(isFormChanged,this.periodForm);
+  }
 }

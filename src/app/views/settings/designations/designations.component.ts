@@ -43,6 +43,7 @@ export class DesignationsComponent implements CanComponentDeactivate, OnInit {
   accessPermissions = []
   user_id: any;
   userRole: any;
+  initialFormValue:any;
   constructor(private fb: FormBuilder, private modalService: NgbModal,private accessControlService:SubModuleService,
     private common_service: CommonServiceService, private apiService: ApiserviceService,
     private formUtilityService:FormErrorScrollUtilityService
@@ -74,6 +75,7 @@ export class DesignationsComponent implements CanComponentDeactivate, OnInit {
       sub_designation_name: ['', [Validators.pattern(/^[a-zA-Z0-9]+( [a-zA-Z0-9]+)*$/), Validators.required, Validators.maxLength(20)]],
       designation: [null, Validators.required],
     });
+    this.initialFormValue = this.designationForm?.getRawValue();
   }
   public get f() {
     return this.designationForm.controls;
@@ -135,6 +137,7 @@ export class DesignationsComponent implements CanComponentDeactivate, OnInit {
     this.formGroupDirective.resetForm();
     this.isEditItem = false;
     this.term='';
+    this.initialFormValue = this.designationForm?.getRawValue();
   }
 
   public sort(direction: string, column: string) {
@@ -262,9 +265,10 @@ export class DesignationsComponent implements CanComponentDeactivate, OnInit {
 
     return itemStatusGroup?.designation_name
   }
-
-    canDeactivate(): Observable<boolean> {
-        return this.formUtilityService.isFormDirtyOrInvalidCheck(this.designationForm);
-      }
+  canDeactivate(): Observable<boolean> {
+    const currentFormValue = this.designationForm?.getRawValue();
+    const isFormChanged:boolean =  JSON.stringify(currentFormValue) !== JSON.stringify(this.initialFormValue);
+    return this.formUtilityService.isFormDirtyOrInvalidCheck(isFormChanged,this.designationForm);
+  }
 }
 

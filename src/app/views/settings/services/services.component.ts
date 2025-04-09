@@ -39,7 +39,7 @@ export class ServicesComponent implements CanComponentDeactivate, OnInit {
   accessPermissions = []
   user_id: any;
   userRole: any;
-
+  initialFormValue:any;
   constructor(private fb: FormBuilder, private modalService: NgbModal,private accessControlService:SubModuleService,
     private common_service: CommonServiceService, 
     private apiService: ApiserviceService,
@@ -69,6 +69,7 @@ export class ServicesComponent implements CanComponentDeactivate, OnInit {
     this.serviceForm = this.fb.group({
       service_name: ['', [Validators.required, Validators.pattern(/^[a-zA-Z]+( [a-zA-Z]+)*$/), Validators.maxLength(20)]],
     });
+    this.initialFormValue=this.serviceForm?.getRawValue();
   }
   public get f() {
     return this.serviceForm?.controls;
@@ -118,6 +119,8 @@ export class ServicesComponent implements CanComponentDeactivate, OnInit {
   public resetFormState() {
     this.formGroupDirective.resetForm();
     this.isEditItem = false;
+    this.initialFormValue = this.serviceForm?.getRawValue();
+
   }
 
   sort(direction: string, column: string) {
@@ -231,6 +234,8 @@ export class ServicesComponent implements CanComponentDeactivate, OnInit {
     }
   }
 canDeactivate(): Observable<boolean> {
-  return this.formUtilityService.isFormDirtyOrInvalidCheck(this.serviceForm);
-}
+    const currentFormValue = this.serviceForm?.getRawValue();
+    const isFormChanged:boolean =  JSON.stringify(currentFormValue) !== JSON.stringify(this.initialFormValue);
+    return this.formUtilityService.isFormDirtyOrInvalidCheck(isFormChanged,this.serviceForm);
+  }
 }

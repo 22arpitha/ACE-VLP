@@ -47,6 +47,7 @@ export class CompanyPolicyComponent implements CanComponentDeactivate, OnInit {
   accessPermissions = []
   user_id: any;
   userRole: any;
+  initialFormValue:any;
   constructor(private fb: FormBuilder, private modalService: NgbModal,private accessControlService:SubModuleService,
     private common_service: CommonServiceService, 
     private apiService: ApiserviceService,
@@ -81,8 +82,9 @@ export class CompanyPolicyComponent implements CanComponentDeactivate, OnInit {
       policy_file: ['', Validators.required, this.fileFormatValidator],
       password: ['', [Validators.pattern(/^[a-zA-Z0-9!@#$%^&*()_+{}\[\]:;"'<>,.?/\\|`~\-]+( [a-zA-Z0-9!@#$%^&*()_+{}\[\]:;"'<>,.?/\\|`~\-]+)*$/), Validators.maxLength(20)]],
       when_to_use: ['', [ Validators.pattern(/^[a-zA-Z0-9]+( [a-zA-Z0-9]+)*$/), Validators.maxLength(20)]],
-
     });
+    this.initialFormValue=this.companyPolicyForm?.getRawValue();
+
   }
 
   public get f() {
@@ -154,6 +156,7 @@ export class CompanyPolicyComponent implements CanComponentDeactivate, OnInit {
     if (fileInput) {
       fileInput.value = "";
     }
+    this.initialFormValue = this.companyPolicyForm?.getRawValue();
   }
 
   public sort(direction: string, column: string) {
@@ -394,8 +397,11 @@ export class CompanyPolicyComponent implements CanComponentDeactivate, OnInit {
     });
   }
 
+
   canDeactivate(): Observable<boolean> {
-    return this.formUtilityService.isFormDirtyOrInvalidCheck(this.companyPolicyForm);
+    const currentFormValue = this.companyPolicyForm?.getRawValue();
+    const isFormChanged:boolean =  JSON.stringify(currentFormValue) !== JSON.stringify(this.initialFormValue);
+    return this.formUtilityService.isFormDirtyOrInvalidCheck(isFormChanged,this.companyPolicyForm);
   }
 }
 

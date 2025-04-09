@@ -40,6 +40,7 @@ export class LeaveTypeComponent implements CanComponentDeactivate, OnInit {
   accessPermissions = []
   user_id: any;
   userRole: any;
+  initialFormValue:any;
   constructor(private fb: FormBuilder, private modalService: NgbModal,private accessControlService:SubModuleService,
     private common_service: CommonServiceService, private apiService: ApiserviceService,
     private formUtilityService:FormErrorScrollUtilityService) {
@@ -69,6 +70,7 @@ export class LeaveTypeComponent implements CanComponentDeactivate, OnInit {
     this.leaveTypeForm = this.fb.group({
       leave_type_name: ['', [Validators.required, Validators.pattern(/^[a-zA-Z]+( [a-zA-Z]+)*$/), , Validators.maxLength(20)]],
     });
+    this.initialFormValue = this.leaveTypeForm?.getRawValue();
   }
   public get f() {
     return this.leaveTypeForm?.controls;
@@ -119,6 +121,7 @@ export class LeaveTypeComponent implements CanComponentDeactivate, OnInit {
     this.formGroupDirective.resetForm();
     this.isEditItem = false;
     this.term='';
+    this.initialFormValue = this.leaveTypeForm?.getRawValue();
   }
 
   sort(direction: string, column: string) {
@@ -238,6 +241,8 @@ export class LeaveTypeComponent implements CanComponentDeactivate, OnInit {
   }
 
   canDeactivate(): Observable<boolean> {
- return this.formUtilityService.isFormDirtyOrInvalidCheck(this.leaveTypeForm);
+    const currentFormValue = this.leaveTypeForm?.getRawValue();
+    const isFormChanged:boolean =  JSON.stringify(currentFormValue) !== JSON.stringify(this.initialFormValue);
+    return this.formUtilityService.isFormDirtyOrInvalidCheck(isFormChanged,this.leaveTypeForm);
   }
 }

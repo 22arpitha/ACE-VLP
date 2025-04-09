@@ -34,8 +34,8 @@ export class FormErrorScrollUtilityService {
     ) || null;
   }
 
-  isFormDirtyOrInvalidCheck(formGroup: FormGroup): Observable<boolean> {
-    const isDirtyOrInvalid = formGroup?.dirty || (formGroup.touched && formGroup?.invalid);
+  isFormDirtyOrInvalidCheck(isFormChanged:boolean, formGroup: FormGroup): Observable<boolean> {
+    const isDirtyOrInvalid = isFormChanged || (formGroup.touched && formGroup?.invalid);
     return isDirtyOrInvalid ? this.getConfirmationPopup() : of(true);
   }
 

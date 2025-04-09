@@ -39,6 +39,7 @@ export class SourceComponent implements CanComponentDeactivate, OnInit {
   accessPermissions = []
   user_id: any;
   userRole: any;
+  initialFormValue:any;
   constructor(private fb: FormBuilder, private modalService: NgbModal,private accessControlService:SubModuleService,
     private common_service: CommonServiceService, private apiService: ApiserviceService,private formUtilityService:FormErrorScrollUtilityService) {
     this.common_service.setTitle(this.BreadCrumbsTitle)
@@ -66,6 +67,7 @@ export class SourceComponent implements CanComponentDeactivate, OnInit {
     this.sourceForm = this.fb.group({
       source_name: ['', [Validators.required, Validators.pattern(/^[a-zA-Z]+( [a-zA-Z]+)*$/), Validators.maxLength(20)]],
     });
+    this.initialFormValue=this.sourceForm?.getRawValue();
   }
 
   public get f() {
@@ -117,6 +119,7 @@ export class SourceComponent implements CanComponentDeactivate, OnInit {
     this.formGroupDirective.resetForm();
     this.isEditItem = false;
     this.term='';
+    this.initialFormValue = this.sourceForm?.getRawValue();
   }
 
   sort(direction: string, column: string) {
@@ -235,7 +238,9 @@ export class SourceComponent implements CanComponentDeactivate, OnInit {
   }
 
   canDeactivate(): Observable<boolean> {
-    return this.formUtilityService.isFormDirtyOrInvalidCheck(this.sourceForm);
+    const currentFormValue = this.sourceForm?.getRawValue();
+    const isFormChanged:boolean =  JSON.stringify(currentFormValue) !== JSON.stringify(this.initialFormValue);
+    return this.formUtilityService.isFormDirtyOrInvalidCheck(isFormChanged,this.sourceForm);
   }
 
 }

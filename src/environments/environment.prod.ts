@@ -4,16 +4,15 @@ export const environment = {
   Razorpay_live_key:'rzp_test_Z6PoT6HRL71TiC',
   
    
-  // // Testing url
-  
-  // media_url: 'https://vlp.thestorywallcafe.com',
-  // live_url:'https://vlp.thestorywallcafe.com/api-vlp',
-  // socket_url:'projectacedevelop.thestorywallcafe.com',
+  // Testing url
+  media_url: 'https://vlp.thestorywallcafe.com',
+  live_url:'https://vlp.thestorywallcafe.com/api-vlp',
+  socket_url:'projectacedevelop.thestorywallcafe.com',
 
   // UAT url 
-  media_url: 'https://vlpuat.thestorywallcafe.com',
-  live_url:'https://vlpuat.thestorywallcafe.com/api-vlp',
-  socket_url:'projectacedevelop.thestorywallcafe.com',
+  // media_url: 'https://vlpuat.thestorywallcafe.com',
+  // live_url:'https://vlpuat.thestorywallcafe.com/api-vlp',
+  // socket_url:'projectacedevelop.thestorywallcafe.com',
 
  //  vlp Auth
  login:`login`,

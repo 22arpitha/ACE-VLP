@@ -32,7 +32,7 @@ isActivelist:any=[{name:'In Active',is_active:false},{name:'Active',is_active:tr
 accessPermissions = []
 user_id: any;
 userRole: any;
-
+initialFormValue:any;
   constructor(private fb:FormBuilder,private activeRoute:ActivatedRoute,
     private common_service: CommonServiceService,private router:Router,
     private apiService: ApiserviceService,private modalService: NgbModal,
@@ -86,6 +86,8 @@ this.employeeFormGroup = this.fb.group({
       role: 2,
       is_active:[true,Validators.required],
     });
+    this.initialFormValue = this.employeeFormGroup?.getRawValue();
+
   }
   // To Get Unique Employee Number
   public getEmployeeUniqueNumber(){
@@ -291,12 +293,15 @@ this.searchRoleText ='';
 public resetFormState() {
   this.formGroupDirective.resetForm();
   this.isEditItem = false;
+  this.initialFormValue = this.employeeFormGroup?.getRawValue();
 }
 resetDate() {
   this.employeeFormGroup?.get('exit_date')?.setValue(null);
 }
 
 canDeactivate(): Observable<boolean> {
-  return this.formErrorScrollService.isFormDirtyOrInvalidCheck(this.employeeFormGroup);
+  const currentFormValue = this.employeeFormGroup.getRawValue();
+  const isFormChanged:boolean =  JSON.stringify(currentFormValue) !== JSON.stringify(this.initialFormValue);
+  return this.formErrorScrollService.isFormDirtyOrInvalidCheck(isFormChanged,this.employeeFormGroup);
 }
 }

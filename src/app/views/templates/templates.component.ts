@@ -44,7 +44,7 @@ formData:any;
 accessPermissions = []
 user_id: any;
 userRole: any;
-
+initialFormValue:any;
     constructor(private fb:FormBuilder,private modalService:NgbModal,private accessControlService:SubModuleService,
         private common_service: CommonServiceService,
         private apiService:ApiserviceService,
@@ -77,8 +77,8 @@ userRole: any;
       template_file: ['',Validators.required,this.fileFormatValidator],
       password: ['', [Validators.pattern(/^[a-zA-Z0-9!@#$%^&*()_+{}\[\]:;"'<>,.?/\\|`~\-]+( [a-zA-Z0-9!@#$%^&*()_+{}\[\]:;"'<>,.?/\\|`~\-]+)*$/),Validators.maxLength(20)]],
       when_to_use: ['', [Validators.pattern(/^[a-zA-Z0-9]+( [a-zA-Z0-9]+)*$/),Validators.maxLength(20)]],
-    
     });
+    this.initialFormValue=this.templateForm?.getRawValue();
   }
 
   public get f() {
@@ -152,6 +152,7 @@ public createFromData(){
     if (fileInput) {
     fileInput.value = "";
    }
+   this.initialFormValue = this.templateForm?.getRawValue();
   }
 
   public sort(direction: string, column: string) {
@@ -356,7 +357,9 @@ public createFromData(){
   }
 
   canDeactivate(): Observable<boolean> {
-    return this.formUtilityService.isFormDirtyOrInvalidCheck(this.templateForm);
+    const currentFormValue = this.templateForm?.getRawValue();
+    const isFormChanged:boolean =  JSON.stringify(currentFormValue) !== JSON.stringify(this.initialFormValue);
+    return this.formUtilityService.isFormDirtyOrInvalidCheck(isFormChanged,this.templateForm);
   }
   }
 
