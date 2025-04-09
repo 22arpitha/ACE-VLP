@@ -9,8 +9,7 @@ import { GenericRedirectionConfirmationComponent } from '../generic-components/g
 })
 export class FormErrorScrollUtilityService {
   constructor(private modalService:NgbModal) {
-      
-     }
+ }
   scrollToFirstError(formGroup: FormGroup): void {
     const firstInvalidControl = this.getFirstInvalidControl(formGroup);
 
@@ -35,17 +34,16 @@ export class FormErrorScrollUtilityService {
     ) || null;
   }
 
-  isFormDirtyOrInvalidCheck(formGroup: FormGroup):Observable<boolean>{
-    return (formGroup?.dirty || formGroup.touched) && formGroup?.invalid
-      ? this.getConfirmationPopup()
-      : of(true);
+  isFormDirtyOrInvalidCheck(formGroup: FormGroup): Observable<boolean> {
+    const isDirtyOrInvalid = formGroup?.dirty || (formGroup.touched && formGroup?.invalid);
+    return isDirtyOrInvalid ? this.getConfirmationPopup() : of(true);
   }
 
 
   private getConfirmationPopup(): Observable<boolean> {
     return new Observable<boolean>((observer) => {
       const modelRef = this.modalService.open(GenericRedirectionConfirmationComponent, {
-        size: 'md' as any,
+        size: 'sm' as any,
         backdrop: true,
         centered: true
       });

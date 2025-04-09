@@ -149,12 +149,12 @@ const routes: Routes = [
       {
         path: 'templates',
         component: TemplatesComponent,
-        // canDeactivate:[CanDeactivateGuard]   
+        canDeactivate:[CanDeactivateGuard]   
       },
       {
         path: 'company-policy',
         component: CompanyPolicyComponent,
-        // canDeactivate:[CanDeactivateGuard]
+        canDeactivate:[CanDeactivateGuard]
         
       },
 

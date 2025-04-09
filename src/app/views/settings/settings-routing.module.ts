@@ -66,10 +66,14 @@ const routes: Routes = [
       {
         path: 'create-employee',
         component: CreateUpdateEmployeeComponent,
+        canDeactivate:[CanDeactivateGuard]   
+
       },
       {
         path: 'update-employee/:id',
         component: CreateUpdateEmployeeComponent,
+        canDeactivate:[CanDeactivateGuard]   
+
       },
       {
         path: 'roles',

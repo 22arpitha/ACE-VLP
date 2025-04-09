@@ -8,13 +8,15 @@ import { environment } from '../../../../environments/environment';
 import { GenericDeleteComponent } from '../../../generic-components/generic-delete/generic-delete.component';
 import { SubModuleService } from '../../../service/sub-module.service';
 import { FormErrorScrollUtilityService } from '../../../service/form-error-scroll-utility-service.service';
+import { Observable } from 'rxjs';
+import { CanComponentDeactivate } from 'src/app/authGuard/can-deactivate.guard';
 
 @Component({
   selector: 'app-create-update-employee',
   templateUrl: './create-update-employee.component.html',
   styleUrls: ['./create-update-employee.component.scss']
 })
-export class CreateUpdateEmployeeComponent implements OnInit {
+export class CreateUpdateEmployeeComponent implements CanComponentDeactivate, OnInit {
 @ViewChild(FormGroupDirective) formGroupDirective!: FormGroupDirective;
 BreadCrumbsTitle: any = 'Employee';
 employeeFormGroup:FormGroup;
@@ -34,7 +36,8 @@ userRole: any;
   constructor(private fb:FormBuilder,private activeRoute:ActivatedRoute,
     private common_service: CommonServiceService,private router:Router,
     private apiService: ApiserviceService,private modalService: NgbModal,
-    private accessControlService:SubModuleService,private formErrorScrollService:FormErrorScrollUtilityService) { 
+    private accessControlService:SubModuleService,
+    private formErrorScrollService:FormErrorScrollUtilityService) { 
       this.user_id = sessionStorage.getItem('user_id');
     this.userRole = sessionStorage.getItem('user_role_name');
     if(this.activeRoute.snapshot.paramMap.get('id')){
@@ -291,5 +294,9 @@ public resetFormState() {
 }
 resetDate() {
   this.employeeFormGroup?.get('exit_date')?.setValue(null);
+}
+
+canDeactivate(): Observable<boolean> {
+  return this.formErrorScrollService.isFormDirtyOrInvalidCheck(this.employeeFormGroup);
 }
 }
