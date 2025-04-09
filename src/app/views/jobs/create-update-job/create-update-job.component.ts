@@ -212,7 +212,7 @@ export class CreateUpdateJobComponent implements OnInit, OnDestroy {
     this.apiService.getData(`${environment.live_url}/${environment.employee}/${params}`).subscribe((respData: any) => {
       this.allEmployeeList = respData;
       this.accountManagerId = this.allEmployeeList[0]?.reporting_manager_id;
-      if(this.isEditItem && this.user_role_name==='Admin' && this.allEmployeeList.length===this.jobDetails?.employees.length){
+      if(this.isEditItem && this.user_role_name==='Admin' && this.allEmployeeList.length===this.jobDetails?.employees?.length){
         this.selectAllEmpFlag = true;
       }
       // console.log('employee list', respData)

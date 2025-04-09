@@ -93,7 +93,7 @@ export class CompanyPolicyComponent implements OnInit {
       this.count = noOfPages * this.tableSize;
       this.page = respData?.current_page;
     }, (error: any) => {
-      this.apiService.showError(error?.error?.error?.message);
+      this.apiService.showError(error?.error?.detail);
 
     })
   }
@@ -110,7 +110,7 @@ export class CompanyPolicyComponent implements OnInit {
             this.getAllCompanyPolicy('?page=1&page_size=5');
           }
         }, (error: any) => {
-          this.apiService.showError(error?.error?.message);
+          this.apiService.showError(error?.error?.detail);
         });
       } else {
         this.formData = this.createFromData();
@@ -122,7 +122,7 @@ export class CompanyPolicyComponent implements OnInit {
           }
 
         }, (error: any) => {
-          this.apiService.showError(error?.error?.message);
+          this.apiService.showError(error?.error?.detail);
         });
       }
     }
@@ -217,7 +217,7 @@ export class CompanyPolicyComponent implements OnInit {
       }
 
     }, (error => {
-      this.apiService.showError(error?.error?.message)
+      this.apiService.showError(error?.error?.detail)
     }))
   }
 
@@ -263,7 +263,7 @@ export class CompanyPolicyComponent implements OnInit {
         .catch(error => console.error('Error:', error));
 
     }, (error: any) => {
-      this.apiService.showError(error?.error?.message);
+      this.apiService.showError(error?.error?.detail);
     })
   }
   public filterSearch(event) {

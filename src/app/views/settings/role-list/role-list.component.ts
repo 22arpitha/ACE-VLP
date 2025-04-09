@@ -151,7 +151,7 @@ export class RoleListComponent implements OnInit {
             this.getAllRolesList(`?page=${1}&page_size=${5}`);
           }
         }, (error: any) => {
-          this.api.showError(error?.error?.message);
+          this.api.showError(error?.error?.detail);
         });
       } else {
         this.api.postData(`${environment.live_url}/${environment.settings_roles}/`, this.rolesForm.value).subscribe((respData: any) => {
@@ -162,7 +162,7 @@ export class RoleListComponent implements OnInit {
             this.router.navigate([`/settings/roles-access/${respData?.result?.id}`])
           }
         }, (error: any) => {
-          this.api.showError(error?.error?.message);   
+          this.api.showError(error?.error?.detail);   
         });
       }
     }
