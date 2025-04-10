@@ -51,6 +51,8 @@ end_client_jobs:`end-client-jobs`,
 // jobs
 jobs:`jobs`,
 jobs_kpi:'kpi',
+// timesheet
+vlp_timesheets:`timesheet`,
 
 // project ace 
   leave_application: 'leave-application',

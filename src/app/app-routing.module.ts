@@ -89,6 +89,16 @@ const routes: Routes = [
           import('./views/jobs/jobs.module').then((m) => m.JobsModule),
       },
       {
+        path: 'timesheets',
+        loadChildren: () =>
+          import('./views/timesheets/timesheets.module').then((m) => m.TimesheetsModule),
+      },
+      {
+        path: 'invoice',
+        loadChildren: () =>
+          import('./views/invoice/invoice.module').then((m) => m.InvoiceModule),
+      },
+      {
         path: 'status',
         loadChildren: () =>
           import('./views/project-status/project-status.module').then(
