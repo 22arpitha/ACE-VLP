@@ -1,0 +1,21 @@
+.vlp-timesheet .mat-btn-s{
+    margin: 0px 5px;
+}
+.vlp-timesheet .settings-table-bg{
+    max-height: 75vh !important;
+}
+.vlp-timesheet .table-wrapper{
+    max-height: 55vh !important;
+    overflow-x: auto;
+    margin-bottom: 20px;
+}
+::ng-deep .vlp-timesheet .mat-form-field-type-mat-date-range-input .mat-form-field-infix {
+    width: 200px;
+    display: contents !important;
+}
+::ng-deep .vlp-timesheet .mat-form-field-appearance-outline .mat-form-field-outline {
+    // background-color: white !important;
+}
+.mat-form-field-wrapper {
+    padding: 0 !important;
+}

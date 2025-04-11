@@ -74,3 +74,10 @@
   .employee-details-table tbody tr td{
     // text-align: start !important;
   }
+  ::ng-deep .time-spent .mat-form-field-wrapper {
+      background-color: #f3f3f3 !important;
+      padding: 0px !important;
+      margin-top: 17px !important;
+      // pointer-events: none;
+  }
+  

@@ -14,10 +14,11 @@ import { DatePipe } from '@angular/common';
   styleUrls: ['./create-update-timesheet.component.scss']
 })
 export class CreateUpdateTimesheetComponent implements OnInit {
-   @ViewChild(FormGroupDirective) formGroupDirective!: FormGroupDirective;
+  @ViewChild(FormGroupDirective) formGroupDirective!: FormGroupDirective;
   BreadCrumbsTitle: any = 'Timesheet';
   timesheetFormGroup: FormGroup
   currentDate: any = new Date().toISOString();
+  currentTime: any
   accessPermissions: any = [];
   employeeData: any = []
   clientList: any = []
@@ -32,7 +33,7 @@ export class CreateUpdateTimesheetComponent implements OnInit {
   timesheet_id: any;
   minstartTime: any
   minEndTime: string = '';
-  constructor(private fb: FormBuilder, private apiService: ApiserviceService, private datePipe:DatePipe,
+  constructor(private fb: FormBuilder, private apiService: ApiserviceService, private datePipe: DatePipe,
     private accessControlService: SubModuleService, private router: Router, private common_service: CommonServiceService,
     private activeRoute: ActivatedRoute, private formErrorScrollService: FormErrorScrollUtilityService
   ) {
@@ -42,21 +43,29 @@ export class CreateUpdateTimesheetComponent implements OnInit {
       this.common_service.setTitle('Update ' + this.BreadCrumbsTitle)
       this.timesheet_id = this.activeRoute.snapshot.paramMap.get('id')
       this.isEditItem = true;
-      this.getAllDropdownData();
-      this.getTimesheetDetails(this.timesheet_id);
     } else {
       this.common_service.setTitle('Create ' + this.BreadCrumbsTitle)
-      this.getAllDropdownData()
     }
   }
 
   ngOnInit(): void {
+    const now = new Date();
+    const hours = now.getHours().toString().padStart(2, '0');
+    const minutes = now.getMinutes().toString().padStart(2, '0');
+    this.currentTime = `${hours}:${minutes}`;
     this.initialForm()
+    this.getAllDropdownData();
+    if (this.isEditItem) {
+      this.getTimesheetDetails(this.timesheet_id);
+    } else {
+      this.getStartTimePreviousData();
+    }
+
   }
 
 
-   
-  
+
+
 
   getAllDropdownData() {
     if (this.user_role_name != 'Admin') {
@@ -75,7 +84,7 @@ export class CreateUpdateTimesheetComponent implements OnInit {
       job_id: ['', Validators.required],
       task: ['', Validators.required],
       start_time: ['', [Validators.required, Validators.pattern(/^([01]\d|2[0-3]):([0-5][0-9]|[1-5][0-9])$/)]],
-      end_time: ['', [Validators.required, Validators.pattern(/^([01]\d|2[0-3]):([0-5][0-9]|[1-5][0-9])$/)]],
+      end_time: [this.currentTime, [Validators.required, Validators.pattern(/^([01]\d|2[0-3]):([0-5][0-9]|[1-5][0-9])$/)]],
       time_spent: [''],
       notes: [''],
       created_by: [this.user_id, Validators.required],
@@ -157,13 +166,38 @@ export class CreateUpdateTimesheetComponent implements OnInit {
     this.apiService.getData(`${environment.live_url}/${environment.vlp_timesheets}/${queryparams}`).subscribe(
       (res: any) => {
         // console.log('task data', res)
-        this.taskList = res
+        this.taskList = res;
+        this.taskList.forEach((task_name) => {
+          if (task_name.value === 'Review' && this.user_role_name === 'Manager') {
+            this.timesheetFormGroup.patchValue({ task: task_name.id })
+          } else if (task_name.value === 'Processing' && this.user_role_name === 'Accountant') {
+            this.timesheetFormGroup.patchValue({ task: task_name.id })
+          }
+        });
       },
       (error: any) => {
         this.apiService.showError(error?.error?.detail);
       }
     )
   }
+
+  getStartTimePreviousData() {
+    let queryparams = `?timesheet-employee=${this.user_id}&higest-end-time=True`
+    this.apiService.getData(`${environment.live_url}/${environment.vlp_timesheets}/${queryparams}`).subscribe(
+      (res: any) => {
+        // console.log('perious time data', res)
+        if (res) {
+          this.timesheetFormGroup.patchValue({ start_time: res.higest_end_time })
+          this.updateDuration();
+        }
+      },
+      (error: any) => {
+        this.apiService.showError(error?.error?.detail);
+      }
+    )
+  }
+
+
   public clearSearch(key: any) {
     if (key === 'client') {
       this.searchClientText = '';
@@ -174,7 +208,7 @@ export class CreateUpdateTimesheetComponent implements OnInit {
 
   startTimeFormat(event: any): void {
     let rawValue = event.target.value.replace(/[^0-9]/g, '');
-    if (rawValue.length >2) {
+    if (rawValue.length > 2) {
       rawValue = rawValue.slice(0, 2) + ':' + rawValue.slice(2);
     }
     this.timesheetFormGroup.controls['start_time'].setValue(rawValue, { emitEvent: false });
@@ -183,32 +217,32 @@ export class CreateUpdateTimesheetComponent implements OnInit {
   }
   endTimeFormat(event: any): void {
     let rawValue = event.target.value.replace(/[^0-9]/g, '');
-    if (rawValue.length >2) {
+    if (rawValue.length > 2) {
       rawValue = rawValue.slice(0, 2) + ':' + rawValue.slice(2);
     }
     this.timesheetFormGroup.controls['end_time'].setValue(rawValue, { emitEvent: false });
     this.isEndTimeBeforeStartTime();
   }
-  
-  sss:boolean = false
+
+  sss: boolean = false
   isEndTimeBeforeStartTime(): void {
     const startTime = this.timesheetFormGroup.value.start_time;
     const endTime = this.timesheetFormGroup.value.end_time;
-  
+
     if (!startTime || !endTime || !startTime.includes(':') || !endTime.includes(':')) {
       this.timesheetFormGroup.get('end_time')?.setErrors(null);
       return;
     }
-  
+
     const [startHours, startMinutes] = startTime.split(':').map(Number);
     const [endHours, endMinutes] = endTime.split(':').map(Number);
-  
+
     const startTotal = startHours * 60 + startMinutes;
     const endTotal = endHours * 60 + endMinutes;
-  
+
     const control = this.timesheetFormGroup.get('end_time');
-  
-    if (endTotal < startTotal) {
+
+    if (endTotal <= startTotal) {
       control?.setErrors({ endBeforeStart: true });
     } else {
       if (control?.hasError('endBeforeStart')) {
@@ -219,7 +253,7 @@ export class CreateUpdateTimesheetComponent implements OnInit {
     }
     this.updateDuration()
   }
-  
+
   updateDuration(): void {
     const start = this.timesheetFormGroup.value.start_time;
     const end = this.timesheetFormGroup.value.end_time;
@@ -227,7 +261,7 @@ export class CreateUpdateTimesheetComponent implements OnInit {
       this.timesheetFormGroup.get('time_spent')?.setValue('');
       return;
     }
-  
+
     const [sh, sm] = start.split(':').map(Number);
     const [eh, em] = end.split(':').map(Number);
     const diff = (eh * 60 + em) - (sh * 60 + sm);
@@ -235,29 +269,57 @@ export class CreateUpdateTimesheetComponent implements OnInit {
       this.timesheetFormGroup.get('time_spent')?.setValue('');
       return;
     }
-  
+
     const hrs = Math.floor(diff / 60).toString().padStart(2, '0');
     const mins = (diff % 60).toString().padStart(2, '0');
     this.timesheetFormGroup.get('time_spent')?.setValue(`${hrs}:${mins}`);
   }
-  
-  
+
+
 
   getTimesheetDetails(id: any) {
-
+    this.apiService.getData(`${environment.live_url}/${environment.vlp_timesheets}/${id}/`).subscribe(
+      (res: any) => {
+        // console.log(res);
+        this.timesheetFormGroup.patchValue({
+          date: res.date,
+          employee_id: res.employee_id,
+          client_id: res.client_id,
+          job_id: res.job_id,
+          task: res.task,
+          start_time: res.start_time,
+          end_time: res.end_time,
+          time_spent: res.time_spent,
+          notes: res.notes,
+          created_by: res.created_by,
+        })
+      },
+      (error: any) => {
+        this.apiService.showError(error?.error?.detail);
+      }
+    )
   }
 
   backBtnFunc() {
     this.router.navigate(['/timesheets/all-timesheets']);
   }
   saveTimesheets() {
-    this.timesheetFormGroup.patchValue({date: this.datePipe.transform(this.timesheetFormGroup?.get('date')?.value, 'YYYY-MM-dd')})
+    this.timesheetFormGroup.patchValue({ date: this.datePipe.transform(this.timesheetFormGroup?.get('date')?.value, 'YYYY-MM-dd') })
     if (this.timesheetFormGroup.invalid) {
       this.timesheetFormGroup.markAllAsTouched();
       this.formErrorScrollService.scrollToFirstError(this.timesheetFormGroup);
     } else {
       if (this.isEditItem) {
-
+        this.apiService.updateData(`${environment.live_url}/${environment.vlp_timesheets}/${this.timesheet_id}/`, this.timesheetFormGroup.value).subscribe((respData: any) => {
+          if (respData) {
+            this.apiService.showSuccess(respData['message']);
+            this.resetFormState();
+            sessionStorage.removeItem("access-name")
+            this.router.navigate(['/timesheets/all-timesheets']);
+          }
+        }, (error: any) => {
+          this.apiService.showError(error?.error?.detail);
+        });
       } else {
         // console.log(this.timesheetFormGroup.value)
         this.apiService.postData(`${environment.live_url}/${environment.vlp_timesheets}/`, this.timesheetFormGroup.value).subscribe((respData: any) => {
