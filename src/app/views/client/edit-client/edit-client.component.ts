@@ -7,13 +7,16 @@ import { GenericDeleteComponent } from '../../../generic-components/generic-dele
 import { GenericEditComponent } from '../../../generic-components/generic-edit/generic-edit.component';
 import { environment } from '../../../../environments/environment';
 import { ActivatedRoute, Router } from '@angular/router';
+import { CanComponentDeactivate } from 'src/app/authGuard/can-deactivate.guard';
+import { FormErrorScrollUtilityService } from 'src/app/service/form-error-scroll-utility-service.service';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-edit-client',
   templateUrl: './edit-client.component.html',
   styleUrls: ['./edit-client.component.scss']
 })
-export class EditClientComponent implements OnInit {
+export class EditClientComponent implements CanComponentDeactivate, OnInit {
   @ViewChild(FormGroupDirective) formGroupDirective!: FormGroupDirective;
   @ViewChild('formInputField') formInputField: ElementRef;
   isEditItem: boolean = false;
@@ -37,10 +40,13 @@ export class EditClientComponent implements OnInit {
   term: any;
   client_id:any;
   searchGroupText:any;
+  initialFormValue:any;
   constructor(private fb: FormBuilder,
      private modalService: NgbModal,
     private router:Router,private activeRoute:ActivatedRoute,
-    private common_service: CommonServiceService, private apiService: ApiserviceService
+    private common_service: CommonServiceService,
+    private apiService: ApiserviceService,
+    private formErrorScrollService:FormErrorScrollUtilityService
   ) {
     if(this.activeRoute.snapshot.paramMap.get('id')){
       this.client_id= this.activeRoute.snapshot.paramMap.get('id')}
@@ -64,6 +70,7 @@ export class EditClientComponent implements OnInit {
       group: [null],
       client:this.client_id
     });
+    this.initialFormValue=this.endClientForm?.getRawValue();
   }
   public get f() {
     return this.endClientForm.controls;
@@ -287,6 +294,10 @@ public clearSearch(){
   getFilterBaseUrl(): string {
     return `?page=${this.page}&page_size=${this.tableSize}&client=${this.client_id}`;
   }
-  
+  canDeactivate(): Observable<boolean> {
+      const currentFormValue = this.endClientForm?.getRawValue();
+      const isFormChanged:boolean =  JSON.stringify(currentFormValue) !== JSON.stringify(this.initialFormValue);
+      return this.formErrorScrollService.isFormDirtyOrInvalidCheck(isFormChanged,this.endClientForm);
+    }
 }
 

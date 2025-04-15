@@ -54,6 +54,7 @@ jobs:`jobs`,
 jobs_kpi:'kpi',
 // timesheet
 vlp_timesheets:`timesheet`,
+client_invoice:'client-invoice',
 
  
   leave_application: 'leave-application',

@@ -11,13 +11,15 @@ import { environment } from '../../../../environments/environment';
 import { GenericDeleteComponent } from '../../../generic-components/generic-delete/generic-delete.component';
 import { FormErrorScrollUtilityService } from '../../../service/form-error-scroll-utility-service.service';
 import { SubModuleService } from '../../../service/sub-module.service';
+import { CanComponentDeactivate } from 'src/app/authGuard/can-deactivate.guard';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-create-update-job',
   templateUrl: './create-update-job.component.html',
   styleUrls: ['./create-update-job.component.scss']
 })
-export class CreateUpdateJobComponent implements OnInit, OnDestroy {
+export class CreateUpdateJobComponent implements CanComponentDeactivate, OnInit, OnDestroy {
   BreadCrumbsTitle: any = 'Job';
   @ViewChild(FormGroupDirective) formGroupDirective!: FormGroupDirective;
   @ViewChild(MatPaginator) paginator: MatPaginator | undefined;
@@ -70,6 +72,7 @@ export class CreateUpdateJobComponent implements OnInit, OnDestroy {
   ];
   user_id: any;
   currentDate: any = new Date().toISOString();
+  initialFormValue:any;
   constructor(private fb: FormBuilder, private activeRoute: ActivatedRoute, private accessControlService: SubModuleService,
     private common_service: CommonServiceService, private router: Router, private datepipe: DatePipe,
     private apiService: ApiserviceService, private modalService: NgbModal, private formErrorScrollService: FormErrorScrollUtilityService) {
@@ -122,6 +125,7 @@ export class CreateUpdateJobComponent implements OnInit, OnDestroy {
       all_employees:[''],
       employees: this.fb.array([this.createEmployeeControl()]),
     });
+    this.initialFormValue=this.jobFormGroup?.getRawValue();
   }
 
   public getAllDropdownData() {
@@ -934,5 +938,11 @@ checkAllEmployeeCheckbox(){
     this.jobFormGroup.patchValue({'all_employees':false})
   }
 }
+
+canDeactivate(): Observable<boolean> {
+    const currentFormValue = this.jobFormGroup?.getRawValue();
+    const isFormChanged:boolean =  JSON.stringify(currentFormValue) !== JSON.stringify(this.initialFormValue);
+    return this.formErrorScrollService.isFormDirtyOrInvalidCheck(isFormChanged,this.jobFormGroup);
+  }
 
 }

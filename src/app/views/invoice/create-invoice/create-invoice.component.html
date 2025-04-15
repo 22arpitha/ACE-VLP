@@ -1,1 +1,135 @@
-<p>create-invoice works!</p>
+<div class="container-wrapper settings-main-content px-0">
+    <section class="settings-table-bg px-3">
+        <div class="row mx-0 my-1 px-0 py-2">
+            <div class="col-12 mt-2 col-sm-12 col-md-6 col-lg-3 search-div px-0">
+              <input type="search" (input)="filterSearch($event)" class="form-control p-2 sizeinput" [(ngModel)]="term"
+                placeholder="Search by Job" aria-describedby="emailHelp" autocomplete="off">
+              <i *ngIf="!term" class="bi bi-search" id="search-icon-tab"></i>
+            </div>
+                        <!-- Client Dropdown -->
+<div class="col-12 col-sm-12 col-md-6 col-lg-3 no-padding pl-5 pr-0">
+    <mat-form-field appearance="outline" class="w-100 custom-mat-form-field no-padding-bottom">
+        <mat-label>Client <b class="r-star">*</b></mat-label>
+        <mat-select [(ngModel)]="selectedClientId" [ngModelOptions]="{standalone: true}" autocomplete="off"
+                placeholder="Client" panelClass="custom-select-panel"
+                [disableOptionCentering]="true" (selectionChange)="onClientChange($event)" >
+                <div class="mat-select-search-wrapper d-flex">
+                  <input matInput [(ngModel)]="searchClientText" autofocus [ngModelOptions]="{standalone: true}" placeholder="Search Client" class="mat-select-search">
+                  <mat-icon class="search-icon" *ngIf="!searchClientText">search</mat-icon>
+                  <mat-icon class="search-icon" *ngIf="searchClientText" type="button" (click)="clearSearch()">close</mat-icon>
+                </div>
+                <mat-option *ngFor="let item of filteredClientList()" [value]="item?.id">
+                    {{item?.client_name}}
+                </mat-option>
+        </mat-select>
+        <button mat-icon-button *ngIf="selectedClientId" matSuffix (click)="clearSelection()" tabindex="-1">
+          <mat-icon>close</mat-icon>
+        </button>
+    </mat-form-field>
+ 
+</div> 
+            <div class="col-12 mt-2 col-sm-12 col-md-12 col-lg-2"></div>
+            <div class="col-12 mt-2 col-sm-12 col-md-12 col-lg-4 text-end px-0">
+                <button mat-raised-button class="proceedbtn mat-btn-s" type="button" (click)="createInvoice()" [disabled]="jobSelection?.length<=0">Approve
+                  Invoice</button>
+              </div>
+        </div>
+          <div class="row mx-1 my-2 px-0 table-wrapper">
+            <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0 ">
+              <table class="table table table-hover table-list">
+                <thead>
+                  <tr>
+                    <th scope="col">
+                      <mat-checkbox
+                      (change)="toggleAllJobs($event)"
+                      [checked]="isAllJobsSelected()"
+                      [indeterminate]="isSomeJobsSelected()"
+                    ></mat-checkbox>
+                  </th>
+                    <th scope="col">Job Number
+                      <i *ngIf="!arrowState['job_number']" (click)="sort('asc','job_number')" class="bi bi-arrow-down"></i>
+                <i (click)="sort('desc','job_number')" *ngIf="arrowState['job_number']"
+                  class="bi bi-arrow-up"></i>
+                    </th>
+                    <th scope="col">Job Name
+                      <i *ngIf="!arrowState['job_name']" (click)="sort('asc','job_name')" class="bi bi-arrow-down"></i>
+                      <i (click)="sort('desc','job_name')" *ngIf="arrowState['job_name']"
+                        class="bi bi-arrow-up"></i>
+                    </th>
+                    <th scope="col">Job Status
+                      <i *ngIf="!arrowState['job_status_name']" (click)="sort('asc','job_status_name')" class="bi bi-arrow-down"></i>
+                      <i (click)="sort('desc','job_status_name')" *ngIf="arrowState['job_status_name']"
+                        class="bi bi-arrow-up"></i>
+                    </th>
+                    <th scope="col">Budget Time (hrs)
+                      <i *ngIf="!arrowState['budget_time']" (click)="sort('asc','budget_time')" class="bi bi-arrow-down"></i>
+                      <i (click)="sort('desc','budget_time')" *ngIf="arrowState['budget_time']"
+                        class="bi bi-arrow-up"></i>
+                    </th>
+                    <th scope="col">Price (Rs)
+                        <i *ngIf="!arrowState['job_price']" (click)="sort('asc','job_price')" class="bi bi-arrow-down"></i>
+                        <i (click)="sort('desc','job_price')" *ngIf="arrowState['job_price']"
+                          class="bi bi-arrow-up"></i>
+                      </th>
+                      <th scope="col">Total Amount (Rs)
+                        <i *ngIf="!arrowState['total_price']" (click)="sort('asc','total_price')" class="bi bi-arrow-down"></i>
+                        <i (click)="sort('desc','total_price')" *ngIf="arrowState['total_price']"
+                          class="bi bi-arrow-up"></i>
+                      </th>
+                  </tr>
+                </thead>
+                <tbody>
+      
+                  <ng-container *ngIf="(allClientBasedJobsLists) as result">
+                    <tr *ngFor='let item of result | customSort:directionValue:sortValue|paginate : {
+                             itemsPerPage: tableSize,
+                             currentPage: page,
+                             totalItems: count
+                           }; let i=index'>
+                      <td>
+                        <mat-checkbox
+                        (change)="toggleJobSelection(item)"
+                        [checked]="jobSelection.includes(item)"
+                      ></mat-checkbox>
+                    </td>
+                      <td>{{item?.job_number || '-'}}</td>
+                      <td>{{item?.job_name || '-'}}</td>
+                      <td>{{item?.job_status_name || '-'}}</td>
+                      <td>{{item?.budget_time || '-'}}</td>
+                      <td>{{item?.job_price || '-'}}</td>
+                      <td>{{item?.total_amount || '-'}}</td>
+                    </tr>
+                  </ng-container>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          
+          <div class="row mx-1 my-2 px-0" *ngIf="allClientBasedJobsLists?.length === 0" >
+            <app-generic-norecards></app-generic-norecards>
+          </div>
+        
+    </section>
+    <div class="row mx-0 px-3" *ngIf="allClientBasedJobsLists?.length > 0">
+        <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0">
+          <div class="pagination-container p-0">
+            <pagination-controls previousLabel="Prev" nextLabel="Next" (pageChange)="onTableDataChange($event)">
+            </pagination-controls>
+            <div class="items-per-page-container">
+              <div>Items per page</div>
+              <mat-select [(ngModel)]="tableSize" (selectionChange)="onTableSizeChange($event)" placeholder="10" disableOptionCentering panelClass="paginationPanelClass"
+                class="page-size">
+                <mat-option *ngFor="let size of tableSizes" [value]="size">{{size}}</mat-option>
+              </mat-select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row mx-0 my-3 px-2">
+        <div class="col-12 col-sm-12 col-md-6 col-lg-3 align-content-center no-padding pl-5 pr-0">
+            <button mat-button class="cancel-button mat-btn-s" type="button" (click)="backBtnFunc()" >
+                Back</button>
+              </div>
+                </div>
+  </div>

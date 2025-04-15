@@ -1,19 +1,20 @@
 import { Component, ElementRef, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, FormGroupDirective, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { forkJoin, map } from 'rxjs';
+import { forkJoin, map, Observable } from 'rxjs';
 import { ApiserviceService } from '../../../service/apiservice.service';
 import { CommonServiceService } from '../../../service/common-service.service';
 import { FormErrorScrollUtilityService } from '../../../service/form-error-scroll-utility-service.service';
 import { environment } from '../../../../environments/environment';
 import {urlToFile,fileToBase64} from '../../../shared/fileUtils.utils';
+import { CanComponentDeactivate } from '../../../authGuard/can-deactivate.guard';
 
 @Component({
   selector: 'app-job-kpi',
   templateUrl: './job-kpi.component.html',
   styleUrls: ['./job-kpi.component.scss']
 })
-export class JobKpiComponent implements OnInit {
+export class JobKpiComponent implements CanComponentDeactivate, OnInit {
     @ViewChildren('fileInput') fileInputs: QueryList<ElementRef>;
       @ViewChildren('crpfileInput') crpfileInputs: QueryList<ElementRef>;;
         @ViewChildren('mrpfileInput') mrpfileInputs: QueryList<ElementRef>;;
@@ -39,6 +40,7 @@ selectedCrpFile:(File | null)[] = [];
 
 defaultReviewingTime:any='000:00';
 formData:any;
+initialFormValue:any;
   constructor(private fb:FormBuilder,private activeRoute:ActivatedRoute,
           private common_service: CommonServiceService,
           private apiService: ApiserviceService,private router:Router,
@@ -60,7 +62,8 @@ formData:any;
     this.jobKPIFormGroup = this.fb.group({
       job: Number(this.job_id),
       data:this.fb.array([this.createEmployeeControl()]),
-    })
+    });
+    this.initialFormValue=this.jobKPIFormGroup?.getRawValue();
   }
   public createEmployeeControl(): FormGroup {
     return this.fb.group({
@@ -535,4 +538,9 @@ public formatReviewingTime(event: any,index:any): void {
 }
 }  
 
+canDeactivate(): Observable<boolean> {
+    const currentFormValue = this.jobKPIFormGroup?.getRawValue();
+    const isFormChanged:boolean =  JSON.stringify(currentFormValue) !== JSON.stringify(this.initialFormValue);
+    return this.formErrorScrollService.isFormDirtyOrInvalidCheck(isFormChanged,this.jobKPIFormGroup);
+  }
 }

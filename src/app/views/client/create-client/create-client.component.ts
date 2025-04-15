@@ -14,6 +14,7 @@ import { environment } from '../../../../environments/environment';
 import { FormErrorScrollUtilityService } from '../../../service/form-error-scroll-utility-service.service';
 import { SubModuleService } from '../../../service/sub-module.service';
 import {urlToFile} from '../../../shared/fileUtils.utils';
+import { CanComponentDeactivate } from '../../../authGuard/can-deactivate.guard';
 
 
 
@@ -23,7 +24,7 @@ import {urlToFile} from '../../../shared/fileUtils.utils';
   styleUrls: ['./create-client.component.scss'],
   changeDetection:ChangeDetectionStrategy.OnPush
 })
-export class CreateClientComponent implements OnInit, OnDestroy {
+export class CreateClientComponent implements CanComponentDeactivate,OnInit, OnDestroy {
   @ViewChild(FormGroupDirective) formGroupDirective!: FormGroupDirective;
   @ViewChild('fileInput') fileInput: ElementRef;
   @ViewChild(MatPaginator) paginator: MatPaginator | undefined;
@@ -67,7 +68,8 @@ selectedFile: File | null = null;
   searchSourceText:any;
   accessPermissions = []
 userRole: any;
-user_id:any
+user_id:any;
+initialFormValue:any;
     constructor(private fb:FormBuilder,private activeRoute:ActivatedRoute,private accessControlService:SubModuleService,
       private common_service: CommonServiceService,private router:Router,private datepipe:DatePipe,private modalService: NgbModal,private cdr: ChangeDetectorRef,
       private apiService: ApiserviceService,private formErrorScrollService:FormErrorScrollUtilityService) { 
@@ -137,6 +139,7 @@ user_id:any
         allow_sending_status_report_to_client:[false],
         practice_notes:[''],
       });
+      this.initialFormValue=this.clientFormGroup?.getRawValue();
     }
     // To Get Unique Employee Number
     public getClientUniqueNumber(){
@@ -599,6 +602,12 @@ respData?.contact_details?.forEach(({ name, email, phone_number }, index, array)
     }
   
     return null;
+  }
+
+  canDeactivate(): Observable<boolean> {
+    const currentFormValue = this.clientFormGroup?.getRawValue();
+    const isFormChanged:boolean =  JSON.stringify(currentFormValue) !== JSON.stringify(this.initialFormValue);
+    return this.formErrorScrollService.isFormDirtyOrInvalidCheck(isFormChanged,this.clientFormGroup);
   }
 
   }
