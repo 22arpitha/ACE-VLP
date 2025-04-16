@@ -17,8 +17,8 @@ import { Page503Component } from './views/pages/page503/page503.component';
 
 import { TemplatesComponent } from './views/templates/templates.component';
 import { CompanyPolicyComponent } from './views/company-policy/company-policy.component';
-import { ActivateChildGuard } from './authGuard/activate-child.guard';
-import { AuthGuard } from './auth.guard';
+import { ActivateChildGuard } from './auth-guard/activate-child.guard';
+import { AuthGuard } from './auth-guard/auth.guard';
 const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },
   {
@@ -27,8 +27,8 @@ const routes: Routes = [
     data: {
       title: 'Home',
     },
-    canActivateChild: [ActivateChildGuard],
-    canActivate:[AuthGuard],
+    // canActivateChild: [ActivateChildGuard],
+    // canActivate:[AuthGuard],
     children: [
       {
         path: 'dashboards',
@@ -130,7 +130,7 @@ const routes: Routes = [
         loadChildren: () =>
           import('./views/profile/profile.module').then((m) => m.ProfileModule),
       },
-      
+
       {
         path: 'changePasswords',
         loadChildren: () =>
@@ -159,10 +159,15 @@ const routes: Routes = [
         loadChildren: () =>
           import('./views/pages/pages.module').then((m) => m.PagesModule),
       },
-     
+      {
+        path: 'reports',
+        loadChildren: () => import('./views/reports/reports.module').then(
+          (m) => m.ReportsModule)
+      }
+
     ],
   },
- 
+
   {
     path: '404',
     component: Page404Component,
