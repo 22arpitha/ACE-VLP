@@ -7,7 +7,7 @@ import { GenericDeleteComponent } from '../../../generic-components/generic-dele
 import { GenericEditComponent } from '../../../generic-components/generic-edit/generic-edit.component';
 import { environment } from '../../../../environments/environment';
 import { ActivatedRoute, Router } from '@angular/router';
-import { CanComponentDeactivate } from 'src/app/authGuard/can-deactivate.guard';
+import { CanComponentDeactivate } from 'src/app/auth-guard/can-deactivate.guard';
 import { FormErrorScrollUtilityService } from 'src/app/service/form-error-scroll-utility-service.service';
 import { Observable } from 'rxjs';
 
@@ -54,7 +54,7 @@ export class EditClientComponent implements CanComponentDeactivate, OnInit {
         if(resp){
           this.getGroupList();
         }
-      });   
+      });
   }
 
   ngOnInit(): void {
@@ -103,7 +103,7 @@ export class EditClientComponent implements CanComponentDeactivate, OnInit {
     if (!this.searchGroupText) {
       return this.allGroupList;
     }
-    return this.allGroupList.filter((group:any) => 
+    return this.allGroupList.filter((group:any) =>
       group?.group_name?.toLowerCase()?.includes(this.searchGroupText?.toLowerCase())
     );
   }
@@ -245,7 +245,7 @@ public clearSearch(){
     }
   }
 
-  
+
   public scrollToField(){
     if (this.formInputField) {
       this.formInputField?.nativeElement?.scrollIntoView({ behavior: 'smooth', block: 'start' });

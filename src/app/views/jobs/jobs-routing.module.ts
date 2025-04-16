@@ -4,7 +4,7 @@ import { JobsComponent } from './jobs.component';
 import { AllJobsComponent } from './all-jobs/all-jobs.component';
 import { CreateUpdateJobComponent } from './create-update-job/create-update-job.component';
 import { JobKpiComponent } from './job-kpi/job-kpi.component';
-import { CanDeactivateGuard } from '../../authGuard/can-deactivate.guard';
+import { CanDeactivateGuard } from '../../auth-guard/can-deactivate.guard';
 
 const routes: Routes = [
     {

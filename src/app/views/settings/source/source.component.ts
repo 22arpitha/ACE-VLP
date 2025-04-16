@@ -8,7 +8,7 @@ import { GenericDeleteComponent } from '../../../generic-components/generic-dele
 import { GenericEditComponent } from '../../../generic-components/generic-edit/generic-edit.component';
 import { environment } from '../../../../environments/environment';
 import { SubModuleService } from '../../../service/sub-module.service';
-import { CanComponentDeactivate } from '../../../authGuard/can-deactivate.guard';
+import { CanComponentDeactivate } from '../../../auth-guard/can-deactivate.guard';
 import { FormErrorScrollUtilityService } from '../../../service/form-error-scroll-utility-service.service';
 @Component({
   selector: 'app-source',

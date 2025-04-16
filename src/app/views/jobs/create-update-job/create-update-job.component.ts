@@ -11,7 +11,7 @@ import { environment } from '../../../../environments/environment';
 import { GenericDeleteComponent } from '../../../generic-components/generic-delete/generic-delete.component';
 import { FormErrorScrollUtilityService } from '../../../service/form-error-scroll-utility-service.service';
 import { SubModuleService } from '../../../service/sub-module.service';
-import { CanComponentDeactivate } from 'src/app/authGuard/can-deactivate.guard';
+import { CanComponentDeactivate } from 'src/app/auth-guard/can-deactivate.guard';
 import { Observable } from 'rxjs';
 
 @Component({
@@ -230,11 +230,11 @@ export class CreateUpdateJobComponent implements CanComponentDeactivate, OnInit,
     let queryparams: any = `?is_active=True&employee=True&designation=manager`;
     const shouldAddQuery = this.selectOtherEmpFlag || this.selectAllEmpFlag;
     if(!shouldAddQuery){
-     if(this.user_role_name === 'Manager') { 
+     if(this.user_role_name === 'Manager') {
         queryparams = `?is_active=True&employee=True&employee_id=${this.user_id}&is_manager=True`
-      } 
-    } 
-    
+      }
+    }
+
    this.getManagers(queryparams)
     // old code
     // this.apiService.getData(`${environment.live_url}/${environment.employee}/?is_active=True&employee=True&designation=manager`).subscribe((respData: any) => {
@@ -276,7 +276,7 @@ export class CreateUpdateJobComponent implements CanComponentDeactivate, OnInit,
       this.apiService.showError(error?.error?.detail)
     }));
   }
-  // search Employee   
+  // search Employee
   filteredEmployeeList() {
     if (!this.searchEmployeeText) {
       return this.allEmployeeList;
@@ -286,7 +286,7 @@ export class CreateUpdateJobComponent implements CanComponentDeactivate, OnInit,
     );
   }
 
-  // search Employee   
+  // search Employee
   filteredManagerList() {
     if (!this.searchManagerText) {
       return this.allManagerList;
@@ -920,7 +920,7 @@ export class CreateUpdateJobComponent implements CanComponentDeactivate, OnInit,
     return obj;
   }
 
-  // add colon 
+  // add colon
   formatBudget(event: any): void {
     let rawValue = event.target.value.replace(/[^0-9]/g, '');
 

@@ -9,7 +9,7 @@ import { environment } from '../../../environments/environment';
 import { Observable, of } from 'rxjs';
 import { SubModuleService } from '../../../app/service/sub-module.service';
 import {fullUrlToFile} from '../../shared/fileUtils.utils';
-import { CanComponentDeactivate } from 'src/app/authGuard/can-deactivate.guard';
+import { CanComponentDeactivate } from '../../auth-guard/can-deactivate.guard';
 import { FormErrorScrollUtilityService } from 'src/app/service/form-error-scroll-utility-service.service';
 
 @Component({
@@ -48,11 +48,11 @@ initialFormValue:any;
     constructor(private fb:FormBuilder,private modalService:NgbModal,private accessControlService:SubModuleService,
         private common_service: CommonServiceService,
         private apiService:ApiserviceService,
-        private formUtilityService:FormErrorScrollUtilityService) { 
+        private formUtilityService:FormErrorScrollUtilityService) {
       this.common_service.setTitle(this.BreadCrumbsTitle)
     }
-  
-    
+
+
   ngOnInit(): void {
     this.user_id = sessionStorage.getItem('user_id');
     this.userRole = sessionStorage.getItem('user_role_name');
@@ -253,7 +253,7 @@ public createFromData(){
       // this.templateForm.patchValue({ 'template_file': respData?.template_file });
       this.templateForm.patchValue({ 'password': respData?.password });
       this.templateForm.patchValue({ 'when_to_use': respData?.when_to_use });
-      this.templateForm.get('template_file')?.setValidators(null); 
+      this.templateForm.get('template_file')?.setValidators(null);
       this.templateForm.get('template_file')?.setErrors(null);
 
       console.error('Controls:', this.templateForm.controls);
@@ -291,10 +291,10 @@ public createFromData(){
 
   public onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
-  
+
     if (input.files && input.files.length > 0) {
       const selectedFile = input.files[0];
-  
+
       // Validate file type
       if (
         selectedFile.type === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" || // Excel
@@ -304,7 +304,7 @@ public createFromData(){
       )  {
         this.file = selectedFile;
         this.selectedFile = this.file;
-  
+
         // Reset input value after a slight delay to allow re-selection
         setTimeout(() => {
           input.value = "";
@@ -343,9 +343,9 @@ public createFromData(){
 }
 
   public getFileName(url:any){
-    return url.split('/').pop(); 
+    return url.split('/').pop();
   }
-  
+
   public downloadFile(url:any){
     const link = document.createElement('a');
     link.href = url.template_file;

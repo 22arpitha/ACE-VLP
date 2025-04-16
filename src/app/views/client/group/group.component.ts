@@ -7,7 +7,7 @@ import { GenericDeleteComponent } from '../../../generic-components/generic-dele
 import { GenericEditComponent } from '../../../generic-components/generic-edit/generic-edit.component';
 import { environment } from '../../../../environments/environment';
 import { ActivatedRoute, Router } from '@angular/router';
-import { CanComponentDeactivate } from '../../../authGuard/can-deactivate.guard';
+import { CanComponentDeactivate } from '../../../auth-guard/can-deactivate.guard';
 import { Observable } from 'rxjs';
 import { FormErrorScrollUtilityService } from '../../../service/form-error-scroll-utility-service.service';
 
@@ -49,7 +49,7 @@ export class GroupComponent implements CanComponentDeactivate, OnInit {
         if(resp){
           this.getAllGroupList(`?page=${1}&page_size=${5}&client=${this.client_id}`);
         }
-      });   
+      });
    }
 
   ngOnInit(): void {
@@ -171,7 +171,7 @@ export class GroupComponent implements CanComponentDeactivate, OnInit {
     this.term='';
   }
   async edit(item: any) {
-    
+
     try {
       const modalRef = await this.modalService.open(GenericEditComponent, {
         size: 'sm',

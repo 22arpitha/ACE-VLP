@@ -8,7 +8,7 @@ import { GenericEditComponent } from '../../../generic-components/generic-edit/g
 import { environment } from '../../../../environments/environment';
 import { SubModuleService } from 'src/app/service/sub-module.service';
 import { FormErrorScrollUtilityService } from 'src/app/service/form-error-scroll-utility-service.service';
-import { CanComponentDeactivate } from 'src/app/authGuard/can-deactivate.guard';
+import { CanComponentDeactivate } from 'src/app/auth-guard/can-deactivate.guard';
 import { Observable } from 'rxjs';
 @Component({
   selector: 'app-country',
