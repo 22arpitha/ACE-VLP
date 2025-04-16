@@ -19,6 +19,7 @@ import { TemplatesComponent } from './views/templates/templates.component';
 import { CompanyPolicyComponent } from './views/company-policy/company-policy.component';
 import { ActivateChildGuard } from './auth-guard/activate-child.guard';
 import { AuthGuard } from './auth-guard/auth.guard';
+import { CanDeactivateGuard } from './auth-guard/can-deactivate.guard';
 const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },
   {
@@ -27,8 +28,8 @@ const routes: Routes = [
     data: {
       title: 'Home',
     },
-    // canActivateChild: [ActivateChildGuard],
-    // canActivate:[AuthGuard],
+    canActivateChild: [ActivateChildGuard],
+    canActivate:[AuthGuard],
     children: [
       {
         path: 'dashboards',
@@ -86,6 +87,16 @@ const routes: Routes = [
         path: 'jobs',
         loadChildren: () =>
           import('./views/jobs/jobs.module').then((m) => m.JobsModule),
+      },
+      {
+        path: 'timesheets',
+        loadChildren: () =>
+          import('./views/timesheets/timesheets.module').then((m) => m.TimesheetsModule),
+      },
+      {
+        path: 'invoice',
+        loadChildren: () =>
+          import('./views/invoice/invoice.module').then((m) => m.InvoiceModule),
       },
       {
         path: 'status',
@@ -148,10 +159,13 @@ const routes: Routes = [
       {
         path: 'templates',
         component: TemplatesComponent,
+        canDeactivate:[CanDeactivateGuard]
       },
       {
         path: 'company-policy',
         component: CompanyPolicyComponent,
+        canDeactivate:[CanDeactivateGuard]
+
       },
 
       {

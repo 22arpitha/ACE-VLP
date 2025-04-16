@@ -11,13 +11,15 @@ import { MatDialog } from '@angular/material/dialog';
 import {PdfViewComponent} from '../pdf-view/pdf-view.component'
 import { SubModuleService } from '../../../app/service/sub-module.service';
 import {fullUrlToFile} from '../../shared/fileUtils.utils';
+import { CanComponentDeactivate } from 'src/app/authGuard/can-deactivate.guard';
+import { FormErrorScrollUtilityService } from 'src/app/service/form-error-scroll-utility-service.service';
 
 @Component({
   selector: 'app-company-policy',
   templateUrl: './company-policy.component.html',
   styleUrls: ['./company-policy.component.scss']
 })
-export class CompanyPolicyComponent implements OnInit {
+export class CompanyPolicyComponent implements CanComponentDeactivate, OnInit {
   @ViewChild(FormGroupDirective) formGroupDirective!: FormGroupDirective;
   @ViewChild('fileInput') fileInput: ElementRef;
   @ViewChild('formInputField') formInputField: ElementRef;
@@ -45,8 +47,11 @@ export class CompanyPolicyComponent implements OnInit {
   accessPermissions = []
   user_id: any;
   userRole: any;
+  initialFormValue:any;
   constructor(private fb: FormBuilder, private modalService: NgbModal,private accessControlService:SubModuleService,
-    private common_service: CommonServiceService, private apiService: ApiserviceService,
+    private common_service: CommonServiceService, 
+    private apiService: ApiserviceService,
+    private formUtilityService:FormErrorScrollUtilityService,
     private dialog: MatDialog) {
     this.common_service.setTitle(this.BreadCrumbsTitle)
   }
@@ -77,8 +82,9 @@ export class CompanyPolicyComponent implements OnInit {
       policy_file: ['', Validators.required, this.fileFormatValidator],
       password: ['', [Validators.pattern(/^[a-zA-Z0-9!@#$%^&*()_+{}\[\]:;"'<>,.?/\\|`~\-]+( [a-zA-Z0-9!@#$%^&*()_+{}\[\]:;"'<>,.?/\\|`~\-]+)*$/), Validators.maxLength(20)]],
       when_to_use: ['', [ Validators.pattern(/^[a-zA-Z0-9]+( [a-zA-Z0-9]+)*$/), Validators.maxLength(20)]],
-
     });
+    this.initialFormValue=this.companyPolicyForm?.getRawValue();
+
   }
 
   public get f() {
@@ -93,7 +99,7 @@ export class CompanyPolicyComponent implements OnInit {
       this.count = noOfPages * this.tableSize;
       this.page = respData?.current_page;
     }, (error: any) => {
-      this.apiService.showError(error?.error?.error?.message);
+      this.apiService.showError(error?.error?.detail);
 
     })
   }
@@ -110,7 +116,7 @@ export class CompanyPolicyComponent implements OnInit {
             this.getAllCompanyPolicy('?page=1&page_size=5');
           }
         }, (error: any) => {
-          this.apiService.showError(error?.error?.message);
+          this.apiService.showError(error?.error?.detail);
         });
       } else {
         this.formData = this.createFromData();
@@ -122,7 +128,7 @@ export class CompanyPolicyComponent implements OnInit {
           }
 
         }, (error: any) => {
-          this.apiService.showError(error?.error?.message);
+          this.apiService.showError(error?.error?.detail);
         });
       }
     }
@@ -150,6 +156,7 @@ export class CompanyPolicyComponent implements OnInit {
     if (fileInput) {
       fileInput.value = "";
     }
+    this.initialFormValue = this.companyPolicyForm?.getRawValue();
   }
 
   public sort(direction: string, column: string) {
@@ -217,7 +224,7 @@ export class CompanyPolicyComponent implements OnInit {
       }
 
     }, (error => {
-      this.apiService.showError(error?.error?.message)
+      this.apiService.showError(error?.error?.detail)
     }))
   }
 
@@ -263,7 +270,7 @@ export class CompanyPolicyComponent implements OnInit {
         .catch(error => console.error('Error:', error));
 
     }, (error: any) => {
-      this.apiService.showError(error?.error?.message);
+      this.apiService.showError(error?.error?.detail);
     })
   }
   public filterSearch(event) {
@@ -390,5 +397,11 @@ export class CompanyPolicyComponent implements OnInit {
     });
   }
 
+
+  canDeactivate(): Observable<boolean> {
+    const currentFormValue = this.companyPolicyForm?.getRawValue();
+    const isFormChanged:boolean =  JSON.stringify(currentFormValue) !== JSON.stringify(this.initialFormValue);
+    return this.formUtilityService.isFormDirtyOrInvalidCheck(isFormChanged,this.companyPolicyForm);
+  }
 }
 

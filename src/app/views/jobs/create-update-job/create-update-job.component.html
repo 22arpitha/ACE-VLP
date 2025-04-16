@@ -260,17 +260,17 @@
 
 </div>
 </div>
-<section class="settings-table-bg" >
+<section class="settings-table-bg" [ngStyle]="{'pointer-events': (user_role_name==='Accountant') ? 'none' : 'all'}">
   <div class="row mx-0 my-1 px-0">
       <div class="col-12 col-sm-12 col-md-6 col-lg-9 py-1 px-0">
           <h4>Employee Details</h4>
       </div>
       <div class="col-12 col-sm-12 col-md-6 col-lg-3 no-padding py-1 pl-0 pr-2 text-end" *ngIf="user_role_name === 'Admin'">
-        <mat-checkbox color="primary" class="example-margin" [(ngModel)]="selectAllEmpFlag" [ngModelOptions]="{standalone: true}" (change)="onSelectionAllEmployee($event)" ><h5 class="c-header">All Employee</h5></mat-checkbox>
+        <mat-checkbox color="primary" class="example-margin" formControlName="all_employees" (change)="onSelectionAllEmployee($event)" ><h5 class="c-header">All Employees</h5></mat-checkbox>
     
       </div>
       <div class="col-12 col-sm-12 col-md-6 col-lg-3 no-padding py-1 pl-0 pr-2" *ngIf="user_role_name === 'Manager'">
-        <mat-checkbox color="primary" class="example-margin" (change)="onSelectOtherEmployee($event)" [(ngModel)]="selectOtherEmpFlag" [ngModelOptions]="{standalone: true}" ><h5 class="c-header">Allocate to another employee</h5></mat-checkbox>
+        <mat-checkbox color="primary" class="example-margin" (change)="onSelectOtherEmployee($event)" formControlName="is_allocated" ><h5 class="c-header">Allocate to another employee</h5></mat-checkbox>
     
       </div>
     </div>
@@ -385,11 +385,12 @@
     <div class="col-12 col-sm-12 col-md-6 col-lg-3 align-content-center px-0">
         <button mat-button class="cancel-button mat-btn-s" type="button" (click)="backBtnFunc()" >
             Back</button>
-        <button mat-raised-button class="proceedbtn mat-btn-s" type="submit" (click)="saveJobDetails()" *ngIf="user_role_name !='Admin' && accessPermissions[0]?.create || user_role_name === 'Admin' && !isEditItem">
-          <span
-            *ngIf="!isEditItem">Submit</span></button>
-        <button mat-raised-button class="proceedbtn mat-btn-s" type="submit" (click)="saveJobDetails()" *ngIf="user_role_name !='Admin' &&  accessPermissions[0]?.update || user_role_name === 'Admin' && isEditItem">
-          <span *ngIf="isEditItem" >Update</span></button>
+        <button mat-raised-button class="proceedbtn mat-btn-s" type="submit" (click)="saveJobDetails()"
+        *ngIf="((user_role_name !== 'Admin' && accessPermissions[0]?.create) || user_role_name === 'Admin') && !isEditItem">
+          <span>Submit</span></button>
+        <button mat-raised-button class="proceedbtn mat-btn-s" type="submit" (click)="saveJobDetails()"
+        *ngIf="((user_role_name !== 'Admin' && accessPermissions[0]?.update) || user_role_name === 'Admin') && isEditItem">
+          <span>Update</span></button>
       </div>
       <div class="col-lg-3"></div>
       <div class="col-lg-3"></div>

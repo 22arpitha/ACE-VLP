@@ -135,6 +135,9 @@
         <mat-label>End Date</mat-label>
         <input matInput [matDatepicker]="picker2" placeholder="Enter End date" 
             formControlName="service_end_date" autocomplete="off" (dateInput)="joiningDateFun($event)">
+            <button *ngIf="clientFormGroup?.get('service_end_date')?.value" ngbTooltip="Clear" matSuffix mat-icon-button aria-label="Clear" (click)="resetDate()" type="button">
+              <mat-icon>close</mat-icon>
+            </button>
             <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
              <mat-datepicker #picker2></mat-datepicker>
              <mat-error *ngIf="f['service_end_date']?.invalid && f['service_end_date']?.touched || f['service_end_date']?.dirty">
@@ -329,9 +332,9 @@
     <div class="col-12 col-sm-12 col-md-6 col-lg-3 align-content-center px-0">
         <button mat-button class="cancel-button mat-btn-s" type="button" (click)="backBtnFunc()" >
             Back</button>
-        <button mat-raised-button class="proceedbtn mat-btn-s" type="submit" (click)="saveClientDetails()" *ngIf="user_role_name !='Admin' && accessPermissions[0]?.create || user_role_name === 'Admin'"><span
+        <button mat-raised-button class="proceedbtn mat-btn-s" type="submit" (click)="saveClientDetails()" *ngIf="!isEditItem && ((user_role_name !='Admin' && accessPermissions[0]?.create) || user_role_name === 'Admin')"><span
             *ngIf="!isEditItem">Submit</span></button>
-        <button mat-raised-button class="proceedbtn mat-btn-s" type="submit" (click)="saveClientDetails()" *ngIf="user_role_name !='Admin' && accessPermissions[0]?.update || user_role_name === 'Admin'">
+        <button mat-raised-button class="proceedbtn mat-btn-s" type="submit" (click)="saveClientDetails()" *ngIf="isEditItem && ((user_role_name !='Admin' && accessPermissions[0]?.update) || user_role_name === 'Admin')">
             <span *ngIf="isEditItem" >Update</span></button>
       </div>
       <div class="col-lg-3"></div>

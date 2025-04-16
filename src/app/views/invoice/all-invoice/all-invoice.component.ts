@@ -1,0 +1,179 @@
+import { HttpClient } from '@angular/common/http';
+import { Component, OnInit } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
+import { Router } from '@angular/router';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { DatePipe } from '@angular/common';
+import { GenericEditComponent } from '../../../generic-components/generic-edit/generic-edit.component';
+import { ApiserviceService } from '../../../service/apiservice.service';
+import { CommonServiceService } from '../../../service/common-service.service';
+import { SubModuleService } from '../../../service/sub-module.service';
+import { environment } from '../../../../environments/environment';
+import { EditInvoiceComponent } from '../edit-invoice/edit-invoice.component';
+
+
+@Component({
+  selector: 'app-all-invoice',
+  templateUrl: './all-invoice.component.html',
+  styleUrls: ['./all-invoice.component.scss']
+})
+export class AllInvoiceComponent implements OnInit {
+
+BreadCrumbsTitle: any = 'Invoice';
+    term:any='';
+    sortValue: string = '';
+    directionValue: string = '';
+    selectedItemId:any;
+    arrowState: { [key: string]: boolean } = {
+      invoice_date:false,
+      invoice_number:false,
+      client_name:false,
+    };
+    page = 1;
+    count = 0;
+    tableSize = 5;
+    tableSizes = [5, 10, 25, 50, 100];
+    currentIndex: any;
+    allInvoiceList:any=[];
+    accessPermissions = [];
+    user_id: any;
+    userRole: any;
+
+    constructor(private common_service: CommonServiceService,private accessControlService:SubModuleService,
+      private router:Router,private modalService: NgbModal,private dialog:MatDialog,
+      private datePipe:DatePipe,
+      private apiService: ApiserviceService,private http: HttpClient) {
+      this.common_service.setTitle(this.BreadCrumbsTitle)
+     }
+  
+    ngOnInit(): void {
+      this.initalCall();
+    }
+
+    public initalCall(){
+      this.user_id = sessionStorage.getItem('user_id');
+      this.userRole = sessionStorage.getItem('user_role_name');
+      this.getModuleAccess();
+      this.getAllInvoiceList();
+    }
+
+    access_name:any ;
+    getModuleAccess(){
+      this.accessControlService.getAccessForActiveUrl(this.user_id).subscribe((access) => {
+        if (access) {
+          this.access_name=access[0]
+          this.accessPermissions = access[0].operations;
+          // console.log('Access Permissions:', access);
+        } else {
+          console.log('No matching access found.');
+        }
+      });
+    }
+  
+
+    
+
+    public openCreateInvoicePage(){
+      sessionStorage.setItem('access-name', this.access_name?.name)
+      this.router.navigate(['/invoice/create-invoice']);
+  
+    }
+    async edit(item: any) {
+      this.selectedItemId = item?.id;
+      try {
+        const modalRef = await this.modalService.open(GenericEditComponent, {
+          size: 'sm',
+          backdrop: 'static',
+          centered: true
+        });
+  
+        modalRef.componentInstance.status.subscribe(resp => {
+          if (resp === 'ok') {
+            modalRef.dismiss();
+            sessionStorage.setItem('access-name', this.access_name?.name);
+            this.openEditInvoicePopup(item);
+          } else {
+            modalRef.dismiss();
+          }
+        });
+      } catch (error) {
+        console.error('Error opening modal:', error);
+      }
+    }
+  public getAllInvoiceList(){
+    let query = this.getFilterBaseUrl();
+this.apiService.getData(`${environment.live_url}/${environment.client_invoice}/${query}`).subscribe(
+      (res: any) => {
+        this.allInvoiceList = res?.results;
+        const noOfPages: number = res?.['total_pages']
+        this.count = noOfPages * this.tableSize;
+        this.count = res?.['total_no_of_record']
+        this.page = res?.['current_page'];
+      }
+    )
+    }
+
+
+    public onTableSizeChange(event: any): void {
+      if (event) {
+        this.page = 1;
+        this.tableSize = Number(event.value);
+          this.getAllInvoiceList()
+      }
+    }
+    public onTableDataChange(event: any) {
+      this.page = event;
+          this.getAllInvoiceList()
+    }
+    public filterSearch(event: any) {
+      this.term = event.target.value?.trim();
+      if (this.term && this.term.length >= 2) {
+        this.page = 1;
+          this.getAllInvoiceList()
+      }
+      else if (!this.term) {
+          this.getAllInvoiceList()
+      }
+    }
+  
+    public getFilterBaseUrl(): string {
+      if(this.userRole === 'Admin'){
+        return `?page=${this.page}&page_size=${this.tableSize}&search=${this.term}`;
+      }else{
+        return `?page=${this.page}&page_size=${this.tableSize}&search=${this.term}`;
+      }
+      }
+  
+    public sort(direction: string, column: string) {
+      Object.keys(this.arrowState).forEach(key => {
+        this.arrowState[key] = false;
+      });
+      this.arrowState[column] = direction === 'asc' ? true : false;
+      this.directionValue = direction;
+      this.sortValue = column;
+    }
+  
+    public getContinuousIndex(index: number): number {
+      return (this.page - 1) * this.tableSize + index + 1;
+    }
+
+    public openEditInvoicePopup(item:any){
+      this.dialog.open(EditInvoiceComponent, {
+      data: { invoice_id: item?.id,client_id:item?.client_id },
+      width:'75%',
+    });
+    this.dialog.afterAllClosed.subscribe((resp:any)=>{
+      console.log('resp',resp);
+      this.initalCall();
+    });
+    }
+
+    public viewInvoiceDetails(item:any){
+      this.router.navigate(['/invoice/view-invoice',item?.id]);
+    }
+
+    public getConvertedDate(item:any){
+      const cleanedDate = item?.created_date?.replace(/(\.\d{3})\d+/, '$1');
+     return cleanedDate ? this.datePipe.transform(cleanedDate,'dd/MM/yyyy') : '-';
+    }
+}

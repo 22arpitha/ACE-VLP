@@ -93,8 +93,11 @@
 <div class="col-12 col-sm-12 col-md-6 col-lg-4 my-1 no-padding pl-5 pr-0">
     <mat-form-field appearance="outline" class="w-100 p-0 custom-mat-form-field">
         <mat-label>Exit Date</mat-label>
-        <input matInput [matDatepicker]="picker2" placeholder="Enter start date" readonly
+        <input matInput [matDatepicker]="picker2" placeholder="Enter start date"
             formControlName="exit_date" autocomplete="off" (dateInput)="joiningDateFun($event)">
+            <button *ngIf="employeeFormGroup?.get('exit_date')?.value" ngbTooltip="Clear" matSuffix mat-icon-button aria-label="Clear" (click)="resetDate()" type="button">
+                <mat-icon>close</mat-icon>
+              </button>
             <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
              <mat-datepicker #picker2></mat-datepicker>
     </mat-form-field>
@@ -185,9 +188,9 @@
     <div class="col-12 col-sm-12 col-md-6 col-lg-3 align-content-center">
         <button mat-button class="cancel-button mat-btn-s" type="button" (click)="backBtnFunc()" >
             Back</button>
-        <button mat-raised-button class="proceedbtn mat-btn-s" type="submit" (click)="saveEmployeeDetails()" *ngIf="userRole !='Admin' && accessPermissions[0]?.create || userRole === 'Admin'"><span
+        <button mat-raised-button class="proceedbtn mat-btn-s" type="submit" (click)="saveEmployeeDetails()" *ngIf="!isEditItem && ((userRole !='Admin' && accessPermissions[0]?.create) || userRole === 'Admin')"><span
             *ngIf="!isEditItem">Submit</span></button>
-        <button mat-raised-button class="proceedbtn mat-btn-s" type="submit" (click)="saveEmployeeDetails()" *ngIf="userRole !='Admin' &&  accessPermissions[0]?.update || userRole === 'Admin'">
+        <button mat-raised-button class="proceedbtn mat-btn-s" type="submit" (click)="saveEmployeeDetails()" *ngIf="isEditItem && ((userRole !='Admin' &&  accessPermissions[0]?.update) || userRole === 'Admin')">
             <span *ngIf="isEditItem" >Update</span></button>
       </div>
       <div class="col-lg-3"></div>

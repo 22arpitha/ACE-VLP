@@ -7,13 +7,16 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { GenericDeleteComponent } from '../../../generic-components/generic-delete/generic-delete.component';
 import { GenericEditComponent } from '../../../generic-components/generic-edit/generic-edit.component';
 import { SubModuleService } from '../../../service/sub-module.service';
+import { CanComponentDeactivate } from 'src/app/authGuard/can-deactivate.guard';
+import { FormErrorScrollUtilityService } from 'src/app/service/form-error-scroll-utility-service.service';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-leave-type',
   templateUrl: './leave-type.component.html',
   styleUrls: ['./leave-type.component.scss']
 })
-export class LeaveTypeComponent implements OnInit {
+export class LeaveTypeComponent implements CanComponentDeactivate, OnInit {
   @ViewChild(FormGroupDirective) formGroupDirective!: FormGroupDirective;
    @ViewChild('formInputField') formInputField: ElementRef;
 
@@ -37,8 +40,10 @@ export class LeaveTypeComponent implements OnInit {
   accessPermissions = []
   user_id: any;
   userRole: any;
+  initialFormValue:any;
   constructor(private fb: FormBuilder, private modalService: NgbModal,private accessControlService:SubModuleService,
-    private common_service: CommonServiceService, private apiService: ApiserviceService) {
+    private common_service: CommonServiceService, private apiService: ApiserviceService,
+    private formUtilityService:FormErrorScrollUtilityService) {
     this.common_service.setTitle(this.BreadCrumbsTitle)
   }
 
@@ -65,6 +70,7 @@ export class LeaveTypeComponent implements OnInit {
     this.leaveTypeForm = this.fb.group({
       leave_type_name: ['', [Validators.required, Validators.pattern(/^[a-zA-Z]+( [a-zA-Z]+)*$/), , Validators.maxLength(20)]],
     });
+    this.initialFormValue = this.leaveTypeForm?.getRawValue();
   }
   public get f() {
     return this.leaveTypeForm?.controls;
@@ -115,6 +121,7 @@ export class LeaveTypeComponent implements OnInit {
     this.formGroupDirective.resetForm();
     this.isEditItem = false;
     this.term='';
+    this.initialFormValue = this.leaveTypeForm?.getRawValue();
   }
 
   sort(direction: string, column: string) {
@@ -231,5 +238,11 @@ export class LeaveTypeComponent implements OnInit {
       const query = `?page=${this.page}&page_size=${this.tableSize}`;
       this.getAllLeaveTypes(query);
     }
+  }
+
+  canDeactivate(): Observable<boolean> {
+    const currentFormValue = this.leaveTypeForm?.getRawValue();
+    const isFormChanged:boolean =  JSON.stringify(currentFormValue) !== JSON.stringify(this.initialFormValue);
+    return this.formUtilityService.isFormDirtyOrInvalidCheck(isFormChanged,this.leaveTypeForm);
   }
 }

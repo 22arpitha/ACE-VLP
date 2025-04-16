@@ -7,6 +7,9 @@ import { GenericDeleteComponent } from '../../../generic-components/generic-dele
 import { GenericEditComponent } from '../../../generic-components/generic-edit/generic-edit.component';
 import { environment } from '../../../../environments/environment';
 import { SubModuleService } from 'src/app/service/sub-module.service';
+import { Observable } from 'rxjs';
+import { FormErrorScrollUtilityService } from 'src/app/service/form-error-scroll-utility-service.service';
+import { CanComponentDeactivate } from 'src/app/authGuard/can-deactivate.guard';
 
 
 @Component({
@@ -14,7 +17,7 @@ import { SubModuleService } from 'src/app/service/sub-module.service';
   templateUrl: './designations.component.html',
   styleUrls: ['./designations.component.scss']
 })
-export class DesignationsComponent implements OnInit {
+export class DesignationsComponent implements CanComponentDeactivate, OnInit {
 
   BreadCrumbsTitle: any = 'Designation';
   @ViewChild(FormGroupDirective) formGroupDirective!: FormGroupDirective;
@@ -33,15 +36,17 @@ export class DesignationsComponent implements OnInit {
   directionValue: string = '';
   arrowState: { [key: string]: boolean } = {
     sub_designation_name: false,
-    designation:false,
+    role_name:false,
   };
   arrow: boolean = false;
   term: any;
   accessPermissions = []
   user_id: any;
   userRole: any;
+  initialFormValue:any;
   constructor(private fb: FormBuilder, private modalService: NgbModal,private accessControlService:SubModuleService,
-    private common_service: CommonServiceService, private apiService: ApiserviceService
+    private common_service: CommonServiceService, private apiService: ApiserviceService,
+    private formUtilityService:FormErrorScrollUtilityService
   ) {
     this.common_service.setTitle(this.BreadCrumbsTitle);
   }
@@ -70,6 +75,7 @@ export class DesignationsComponent implements OnInit {
       sub_designation_name: ['', [Validators.pattern(/^[a-zA-Z0-9]+( [a-zA-Z0-9]+)*$/), Validators.required, Validators.maxLength(20)]],
       designation: [null, Validators.required],
     });
+    this.initialFormValue = this.designationForm?.getRawValue();
   }
   public get f() {
     return this.designationForm.controls;
@@ -131,6 +137,7 @@ export class DesignationsComponent implements OnInit {
     this.formGroupDirective.resetForm();
     this.isEditItem = false;
     this.term='';
+    this.initialFormValue = this.designationForm?.getRawValue();
   }
 
   public sort(direction: string, column: string) {
@@ -257,6 +264,11 @@ export class DesignationsComponent implements OnInit {
     const itemStatusGroup = this.RolesList.find((s: any) => s?.id === id);
 
     return itemStatusGroup?.designation_name
+  }
+  canDeactivate(): Observable<boolean> {
+    const currentFormValue = this.designationForm?.getRawValue();
+    const isFormChanged:boolean =  JSON.stringify(currentFormValue) !== JSON.stringify(this.initialFormValue);
+    return this.formUtilityService.isFormDirtyOrInvalidCheck(isFormChanged,this.designationForm);
   }
 }
 

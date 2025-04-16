@@ -1,18 +1,23 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, FormGroupDirective } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { Observable } from 'rxjs';
+import { CanComponentDeactivate } from '../../../authGuard/can-deactivate.guard';
+import { SubModuleService } from '../../../service/sub-module.service';
+import { FormErrorScrollUtilityService } from '../../../service/form-error-scroll-utility-service.service';
 import { CommonServiceService } from '../../../service/common-service.service';
 import { ApiserviceService } from '../../../service/apiservice.service';
 import { GenericDeleteComponent } from '../../../generic-components/generic-delete/generic-delete.component';
 import { GenericEditComponent } from '../../../generic-components/generic-edit/generic-edit.component';
 import { environment } from '../../../../environments/environment';
-import { SubModuleService } from '../../../service/sub-module.service';
+
+
 @Component({
   selector: 'app-status-group',
   templateUrl: './status-group.component.html',
   styleUrls: ['./status-group.component.scss']
 })
-export class StatusGroupComponent implements OnInit {
+export class StatusGroupComponent implements CanComponentDeactivate, OnInit {
   @ViewChild(FormGroupDirective) formGroupDirective!: FormGroupDirective;
    @ViewChild('formInputField') formInputField: ElementRef;
   BreadCrumbsTitle: any = 'Status Group';
@@ -35,9 +40,10 @@ export class StatusGroupComponent implements OnInit {
   accessPermissions = []
   user_id: any;
   userRole: any;
-
+  initialFormValue:any;
   constructor(private fb: FormBuilder, private modalService: NgbModal,private accessControlService:SubModuleService,
-    private common_service: CommonServiceService, private apiService: ApiserviceService) {
+    private common_service: CommonServiceService, private apiService: ApiserviceService,
+  private formUtilityService:FormErrorScrollUtilityService) {
     this.common_service.setTitle(this.BreadCrumbsTitle)
 
   }
@@ -64,6 +70,7 @@ export class StatusGroupComponent implements OnInit {
     this.statusGroupForm = this.fb.group({
       group_name: ['', [Validators.required, Validators.pattern(/^[a-zA-Z]+( [a-zA-Z]+)*$/), , Validators.maxLength(20)]],
     });
+    this.initialFormValue=this.statusGroupForm?.getRawValue();
   }
 
   public get f() {
@@ -115,6 +122,7 @@ export class StatusGroupComponent implements OnInit {
     this.formGroupDirective.resetForm();
     this.isEditItem = false;
     this.term='';
+    this.initialFormValue = this.statusGroupForm?.getRawValue();
   }
 
   sort(direction: string, column: string) {
@@ -232,5 +240,9 @@ export class StatusGroupComponent implements OnInit {
       this.getAllStatusGroup(query);
     }
   }
-
+canDeactivate(): Observable<boolean> {
+  const currentFormValue = this.statusGroupForm?.getRawValue();
+  const isFormChanged:boolean =  JSON.stringify(currentFormValue) !== JSON.stringify(this.initialFormValue);
+  return this.formUtilityService.isFormDirtyOrInvalidCheck(isFormChanged,this.statusGroupForm);
+}
 }

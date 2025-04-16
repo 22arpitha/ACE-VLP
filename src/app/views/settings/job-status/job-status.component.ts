@@ -7,13 +7,16 @@ import { GenericDeleteComponent } from '../../../generic-components/generic-dele
 import { GenericEditComponent } from '../../../generic-components/generic-edit/generic-edit.component';
 import { environment } from '../../../../environments/environment';
 import { SubModuleService } from 'src/app/service/sub-module.service';
+import { CanComponentDeactivate } from 'src/app/authGuard/can-deactivate.guard';
+import { FormErrorScrollUtilityService } from 'src/app/service/form-error-scroll-utility-service.service';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-job-status',
   templateUrl: './job-status.component.html',
   styleUrls: ['./job-status.component.scss']
 })
-export class JobStatusComponent implements OnInit {
+export class JobStatusComponent implements CanComponentDeactivate, OnInit {
   BreadCrumbsTitle: any = 'Job Status';
   @ViewChild(FormGroupDirective) formGroupDirective!: FormGroupDirective;
    @ViewChild('formInputField') formInputField: ElementRef;
@@ -31,7 +34,7 @@ export class JobStatusComponent implements OnInit {
   directionValue: string = '';
   arrowState: { [key: string]: boolean } = {
     status_name: false,
-    status_group:false,
+    status_group_name:false,
     percentage_of_completion:false,
 
   };
@@ -41,8 +44,10 @@ export class JobStatusComponent implements OnInit {
   user_id: any;
   userRole: any;
   searchStatusGroupText:any;
+  initialFormValue:any;
   constructor(private fb: FormBuilder, private modalService: NgbModal,private accessControlService:SubModuleService,
-    private common_service: CommonServiceService, private apiService: ApiserviceService
+    private common_service: CommonServiceService, private apiService: ApiserviceService,
+    private formUtilityService:FormErrorScrollUtilityService
   ) {
     this.common_service.setTitle(this.BreadCrumbsTitle);
   }
@@ -74,6 +79,7 @@ export class JobStatusComponent implements OnInit {
       percentage_of_completion: [null, [Validators.required,Validators.pattern(/^(100|[1-9]?\d)$/), Validators.maxLength(3), Validators.max(100), Validators.min(0), Validators.minLength(1)]],
       status_group: [null, Validators.required],
     });
+    this.initialFormValue = this.jobStatusForm?.getRawValue();
   }
   public get f() {
     return this.jobStatusForm.controls;
@@ -156,6 +162,7 @@ export class JobStatusComponent implements OnInit {
     this.formGroupDirective.resetForm();
     this.isEditItem = false;
     this.term='';
+    this.initialFormValue = this.jobStatusForm?.getRawValue();
   }
 
   public sort(direction: string, column: string) {
@@ -284,6 +291,12 @@ export class JobStatusComponent implements OnInit {
     const itemStatusGroup = this.allStatusGroupList.find((s: any) => s?.id === id);
 
     return itemStatusGroup?.group_name
+  }
+
+  canDeactivate(): Observable<boolean> {
+    const currentFormValue = this.jobStatusForm?.getRawValue();
+    const isFormChanged:boolean =  JSON.stringify(currentFormValue) !== JSON.stringify(this.initialFormValue);
+    return this.formUtilityService.isFormDirtyOrInvalidCheck(isFormChanged,this.jobStatusForm);
   }
 }
 

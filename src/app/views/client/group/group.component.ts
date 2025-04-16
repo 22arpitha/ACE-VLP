@@ -7,13 +7,16 @@ import { GenericDeleteComponent } from '../../../generic-components/generic-dele
 import { GenericEditComponent } from '../../../generic-components/generic-edit/generic-edit.component';
 import { environment } from '../../../../environments/environment';
 import { ActivatedRoute, Router } from '@angular/router';
+import { CanComponentDeactivate } from '../../../authGuard/can-deactivate.guard';
+import { Observable } from 'rxjs';
+import { FormErrorScrollUtilityService } from '../../../service/form-error-scroll-utility-service.service';
 
 @Component({
   selector: 'app-group',
   templateUrl: './group.component.html',
   styleUrls: ['./group.component.scss']
 })
-export class GroupComponent implements OnInit {
+export class GroupComponent implements CanComponentDeactivate, OnInit {
   @ViewChild(FormGroupDirective) formGroupDirective!: FormGroupDirective;
   @ViewChild('formInputField') formInputField: ElementRef;
   groupForm: FormGroup;
@@ -32,11 +35,13 @@ export class GroupComponent implements OnInit {
   currentIndex: any;
   term: any = '';
   client_id:any;
+  initialFormValue:any;
   constructor(
     private common_service: CommonServiceService,
     private activeRoute:ActivatedRoute,
     private fb: FormBuilder, private api: ApiserviceService,
-    private modalService: NgbModal, private router:Router
+    private modalService: NgbModal, private router:Router,
+    private formErrorScrollService:FormErrorScrollUtilityService
   ) {
     if(this.activeRoute.snapshot.paramMap.get('id')){
       this.client_id= this.activeRoute.snapshot.paramMap.get('id')}
@@ -56,7 +61,8 @@ export class GroupComponent implements OnInit {
     this.groupForm = this.fb.group({
       group_name: ['', [Validators.required, Validators.pattern(/^[a-zA-Z]+( [a-zA-Z]+)*$/), Validators.maxLength(20)]],
       client:this.client_id
-    })
+    });
+    this.initialFormValue=this.groupForm?.getRawValue();
   }
   get f() {
     return this.groupForm.controls;
@@ -248,4 +254,10 @@ export class GroupComponent implements OnInit {
   viewClientsOfGrpup(data){
     this.router.navigate([`/client/client-groups/${data?.group_name}/${this.client_id}/${data.id}`])
   }
+
+  canDeactivate(): Observable<boolean> {
+      const currentFormValue = this.groupForm?.getRawValue();
+      const isFormChanged:boolean =  JSON.stringify(currentFormValue) !== JSON.stringify(this.initialFormValue);
+      return this.formErrorScrollService.isFormDirtyOrInvalidCheck(isFormChanged,this.groupForm);
+    }
 }

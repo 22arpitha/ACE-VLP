@@ -8,13 +8,15 @@ import { environment } from '../../../../environments/environment';
 import { GenericDeleteComponent } from '../../../generic-components/generic-delete/generic-delete.component';
 import { SubModuleService } from '../../../service/sub-module.service';
 import { FormErrorScrollUtilityService } from '../../../service/form-error-scroll-utility-service.service';
+import { Observable } from 'rxjs';
+import { CanComponentDeactivate } from 'src/app/authGuard/can-deactivate.guard';
 
 @Component({
   selector: 'app-create-update-employee',
   templateUrl: './create-update-employee.component.html',
   styleUrls: ['./create-update-employee.component.scss']
 })
-export class CreateUpdateEmployeeComponent implements OnInit {
+export class CreateUpdateEmployeeComponent implements CanComponentDeactivate, OnInit {
 @ViewChild(FormGroupDirective) formGroupDirective!: FormGroupDirective;
 BreadCrumbsTitle: any = 'Employee';
 employeeFormGroup:FormGroup;
@@ -30,11 +32,12 @@ isActivelist:any=[{name:'In Active',is_active:false},{name:'Active',is_active:tr
 accessPermissions = []
 user_id: any;
 userRole: any;
-
+initialFormValue:any;
   constructor(private fb:FormBuilder,private activeRoute:ActivatedRoute,
     private common_service: CommonServiceService,private router:Router,
     private apiService: ApiserviceService,private modalService: NgbModal,
-    private accessControlService:SubModuleService,private formErrorScrollService:FormErrorScrollUtilityService) { 
+    private accessControlService:SubModuleService,
+    private formErrorScrollService:FormErrorScrollUtilityService) { 
       this.user_id = sessionStorage.getItem('user_id');
     this.userRole = sessionStorage.getItem('user_role_name');
     if(this.activeRoute.snapshot.paramMap.get('id')){
@@ -83,6 +86,8 @@ this.employeeFormGroup = this.fb.group({
       role: 2,
       is_active:[true,Validators.required],
     });
+    this.initialFormValue = this.employeeFormGroup?.getRawValue();
+
   }
   // To Get Unique Employee Number
   public getEmployeeUniqueNumber(){
@@ -288,5 +293,15 @@ this.searchRoleText ='';
 public resetFormState() {
   this.formGroupDirective.resetForm();
   this.isEditItem = false;
+  this.initialFormValue = this.employeeFormGroup?.getRawValue();
+}
+resetDate() {
+  this.employeeFormGroup?.get('exit_date')?.setValue(null);
+}
+
+canDeactivate(): Observable<boolean> {
+  const currentFormValue = this.employeeFormGroup.getRawValue();
+  const isFormChanged:boolean =  JSON.stringify(currentFormValue) !== JSON.stringify(this.initialFormValue);
+  return this.formErrorScrollService.isFormDirtyOrInvalidCheck(isFormChanged,this.employeeFormGroup);
 }
 }

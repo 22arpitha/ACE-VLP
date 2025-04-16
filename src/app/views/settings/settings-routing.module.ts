@@ -15,6 +15,7 @@ import { DesignationsComponent } from './designations/designations.component';
 import { RolesAccessComponent } from './roles-access/roles-access.component';
 import { PeriodicityComponent } from './periodicity/periodicity.component';
 import { PeriodComponent } from './period/period.component';
+import { CanDeactivateGuard } from '../../authGuard/can-deactivate.guard';
 
 
 
@@ -26,30 +27,37 @@ const routes: Routes = [
       {
         path: 'country',
         component: CountryComponent,
+        canDeactivate:[CanDeactivateGuard]
       },
       {
         path: 'job-type',
         component: JobTypeComponent,
+        canDeactivate:[CanDeactivateGuard]
       },
       {
         path: 'source',
         component: SourceComponent,
+        canDeactivate:[CanDeactivateGuard]
       },
       {
         path: 'status-group',
         component: StatusGroupComponent,
+        canDeactivate:[CanDeactivateGuard]
       },
       {
         path: 'job-status',
         component: JobStatusComponent,
+        canDeactivate:[CanDeactivateGuard]
       },
       {
         path: 'leave-type',
         component: LeaveTypeComponent,
+        canDeactivate:[CanDeactivateGuard]
       },
       {
         path: 'services',
         component: ServicesComponent,
+        canDeactivate:[CanDeactivateGuard]
       },
       {
         path: 'all-employee',
@@ -58,15 +66,19 @@ const routes: Routes = [
       {
         path: 'create-employee',
         component: CreateUpdateEmployeeComponent,
+        canDeactivate:[CanDeactivateGuard]   
+
       },
       {
         path: 'update-employee/:id',
         component: CreateUpdateEmployeeComponent,
+        canDeactivate:[CanDeactivateGuard]   
+
       },
       {
         path: 'roles',
         component: RoleListComponent,
-
+        canDeactivate:[CanDeactivateGuard]
       },
       { path: 'roles-access/:id', 
         component: RolesAccessComponent 
@@ -74,14 +86,17 @@ const routes: Routes = [
       {
         path: 'designation',
         component: DesignationsComponent,
+        canDeactivate:[CanDeactivateGuard]
       },
       {
         path: 'periodicity',
         component: PeriodicityComponent,
+        canDeactivate:[CanDeactivateGuard]
       },
       {
         path: 'period',
         component: PeriodComponent,
+        canDeactivate:[CanDeactivateGuard]
       },
     ]
   },

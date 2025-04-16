@@ -1,10 +1,15 @@
 import { Injectable } from '@angular/core';
 import { AbstractControl, FormGroup } from '@angular/forms';
+import { Observable, of } from 'rxjs';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { GenericRedirectionConfirmationComponent } from '../generic-components/generic-redirection-confirmation/generic-redirection-confirmation.component';
 
 @Injectable({
   providedIn: 'root',
 })
 export class FormErrorScrollUtilityService {
+  constructor(private modalService:NgbModal) {
+ }
   scrollToFirstError(formGroup: FormGroup): void {
     const firstInvalidControl = this.getFirstInvalidControl(formGroup);
 
@@ -28,4 +33,27 @@ export class FormErrorScrollUtilityService {
       (key) => formGroup.get(key) === control
     ) || null;
   }
+
+  isFormDirtyOrInvalidCheck(isFormChanged:boolean, formGroup: FormGroup): Observable<boolean> {
+    const isDirtyOrInvalid = isFormChanged || (formGroup.touched && formGroup?.invalid);
+    return isDirtyOrInvalid ? this.getConfirmationPopup() : of(true);
+  }
+
+
+  private getConfirmationPopup(): Observable<boolean> {
+    return new Observable<boolean>((observer) => {
+      const modelRef = this.modalService.open(GenericRedirectionConfirmationComponent, {
+        size: 'sm' as any,
+        backdrop: true,
+        centered: true
+      });
+  
+      modelRef.componentInstance.status.subscribe((resp: any) => {
+        observer.next(resp === 'ok');
+        observer.complete();
+        modelRef.close();
+      });
+    });
+  }
+
 }

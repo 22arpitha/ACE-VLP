@@ -50,7 +50,9 @@
             ],
             "allowedCommonJsDependencies": [
               "chart.js",
-              "@coreui/chartjs/dist/js/coreui-chartjs.js"
+              "@coreui/chartjs/dist/js/coreui-chartjs.js",
+              "pdfjs-dist",
+              "dayjs"
             ]
           },
           "configurations": {

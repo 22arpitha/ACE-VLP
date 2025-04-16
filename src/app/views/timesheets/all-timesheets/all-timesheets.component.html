@@ -1,0 +1,124 @@
+<div class="container-wrapper settings-main-content vlp-timesheet px-0">
+    <section class="settings-table-bg px-3"
+        *ngIf="userRole !='Admin' && accessPermissions[0]?.view || userRole === 'Admin'">
+        <div class="row mx-0 my-1 px-0 py-2">
+            <div class="col-12 mt-2 col-sm-12 col-md-4 col-lg-3 search-div px-0">
+                <input type="search" (input)="filterSearch($event)" class="form-control p-2 sizeinput"
+                    [(ngModel)]="term" placeholder="Search" aria-describedby="emailHelp" autocomplete="off">
+                <i *ngIf="!term" class="bi bi-search" id="search-icon-tab"></i>
+            </div>
+            <div class="col-12 mt-2 col-sm-12 col-md-4 col-lg-3">
+                <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+                    <mat-label> &nbsp; Enter a date range</mat-label>
+                    <mat-date-range-input [rangePicker]="picker">
+                      <input matStartDate placeholder="Start date">
+                      <input matEndDate placeholder="End date">
+                    </mat-date-range-input>
+                    <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                    <mat-date-range-picker #picker></mat-date-range-picker>
+                  </mat-form-field>
+            </div>
+            <div class="col-12 mt-2 col-sm-12 col-md-4 col-lg-6 text-end px-0">
+                <button mat-raised-button class="proceedbtn mat-btn-s order-sm-1 order-3" type="button"
+                    (click)="openCreateEmployeePage()"
+                    *ngIf="userRole !='Admin' && accessPermissions[0]?.create || userRole === 'Admin'">Create
+                    TimeSheet</button>
+            </div>
+        </div>
+        <div class="row mx-1 my-2 px-0 table-wrapper">
+            <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0 ">
+                <table class="table table table-hover table-list">
+                    <thead>
+                        <tr>
+                            <th scope="col"> S.No</th>
+                            <th scope="col">Date
+                            </th>
+                            <th scope="col">Employee Name
+                                <i *ngIf="!arrowState['employee_name']" (click)="sort('asc','employee_name')"
+                                    class="bi bi-arrow-down"></i>
+                                <i (click)="sort('desc','employee_name')" *ngIf="arrowState['employee_name']"
+                                    class="bi bi-arrow-up"></i>
+                            </th>
+                            <th scope="col">Client
+                                <i *ngIf="!arrowState['client_name']" (click)="sort('asc','client_name')"
+                                    class="bi bi-arrow-down"></i>
+                                <i (click)="sort('desc','client_name')" *ngIf="arrowState['client_name']"
+                                    class="bi bi-arrow-up"></i>
+                            </th>
+                            <th scope="col">Job
+                                <i *ngIf="!arrowState['job_name']" (click)="sort('asc','job_name')"
+                                    class="bi bi-arrow-down"></i>
+                                <i (click)="sort('desc','job_name')" *ngIf="arrowState['job_name']"
+                                    class="bi bi-arrow-up"></i>
+                            </th>
+                            <th scope="col">Task
+                                <i *ngIf="!arrowState['task_nmae']" (click)="sort('asc','task_nmae')"
+                                    class="bi bi-arrow-down"></i>
+                                <i (click)="sort('desc','task_nmae')" *ngIf="arrowState['task_nmae']"
+                                    class="bi bi-arrow-up"></i>
+                            </th>
+                            <th scope="col">Time</th>
+                            <th scope="col">Notes
+                                <i *ngIf="!arrowState['notes']" (click)="sort('asc','notes')"
+                                    class="bi bi-arrow-down"></i>
+                                <i (click)="sort('desc','notes')" *ngIf="arrowState['notes']"
+                                    class="bi bi-arrow-up"></i>
+                            </th>
+                            <th scope="col">Action </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        <ng-container *ngIf="(allTimesheetsList) as result">
+                            <tr *ngFor='let item of result | customSort:directionValue:sortValue
+                             |paginate : {
+                             itemsPerPage: tableSize,
+                             currentPage: page,
+                             totalItems: count
+                              }; let i=index'>
+                                <td>{{getContinuousIndex(i)}}</td>
+                                <td>{{item?.date || '-'}}</td>
+                                <td>{{item?.employee_name || '-'}}</td>
+                                <td>{{item?.client_name || '-'}}</td>
+                                <td>{{item?.job_name || '-'}}</td>
+                                <td> {{item?.task_name || '-'}}</td>
+                                <td> {{item?.time_spent}} <br> [{{item?.start_time}} - {{item?.end_time}}] </td>
+                                <td> {{item?.notes || '-'}}</td>
+                                <td> <ng-container>
+                                        <img src="../../../../assets/images/Delete.svg" class="icon-image" type="button"
+                                            container="body" ngbTooltip="Delete" (click)="delete(item.id)"
+                                            *ngIf="userRole !='Admin' && accessPermissions[0]?.delete || userRole === 'Admin'" />
+                                        <img src="../../../../assets/images/Edit.svg" class="icon-image" type="button"
+                                            container="body" ngbTooltip="Edit" (click)="edit(item)"
+                                            *ngIf="userRole !='Admin' && (accessPermissions[0]?.view && accessPermissions[0]?.update) || userRole === 'Admin'" />
+                                        <span
+                                            *ngIf="userRole !='Admin' && !accessPermissions[0]?.update && !accessPermissions[0]?.delete">-</span>
+                                    </ng-container></td>
+                            </tr>
+                        </ng-container>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="row mx-1 my-2 px-0" *ngIf="allTimesheetsList?.length === 0">
+            <app-generic-norecards></app-generic-norecards>
+        </div>
+
+    </section>
+    <div class="row mx-0 px-3" *ngIf="allTimesheetsList?.length > 0">
+        <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0">
+            <div class="pagination-container p-0">
+                <pagination-controls previousLabel="Prev" nextLabel="Next" (pageChange)="onTableDataChange($event)">
+                </pagination-controls>
+                <div class="items-per-page-container">
+                    <div>Items per page</div>
+                    <mat-select [(ngModel)]="tableSize" (selectionChange)="onTableSizeChange($event)" placeholder="10"
+                        disableOptionCentering panelClass="paginationPanelClass" class="page-size">
+                        <mat-option *ngFor="let size of tableSizes" [value]="size">{{size}}</mat-option>
+                    </mat-select>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

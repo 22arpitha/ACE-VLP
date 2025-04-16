@@ -1,0 +1,91 @@
+<div class="container-wrapper settings-main-content px-0">
+    <section class="settings-table-bg px-3">
+        <div class="row mx-0 my-1 px-0 py-2">
+            <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0">
+                <h4>
+                    <b>Invoice Details</b>
+                </h4>
+            </div>
+        </div>
+
+        <div class="row mx-0 my-1 px-0 py-2">
+            <div class="col-12 mt-2 col-sm-12 col-md-4 col-lg-4 search-div px-0">
+              <input type="search" (input)="filterSearch($event)" class="form-control p-2 sizeinput" [(ngModel)]="term"
+                placeholder="Search by Invoice " aria-describedby="emailHelp" autocomplete="off">
+              <i *ngIf="!term" class="bi bi-search" id="search-icon-tab"></i>
+            </div>
+        </div>
+          <div class="row mx-0 my-2 px-0 table-wrapper">
+            <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0 ">
+              <table class="table table table-hover table-list">
+                <thead>
+                  <tr>
+                    <th scope="col">
+                        <mat-checkbox
+                        (change)="toggleAllJobs($event)"
+                        [checked]="isAllJobsSelected()"
+                        [indeterminate]="isSomeJobsSelected()"
+                      ></mat-checkbox>
+                    </th>
+                    <th scope="col">Job Number
+                      <i *ngIf="!arrowState['job_number']" (click)="sort('asc','job_number')" class="bi bi-arrow-down"></i>
+                <i (click)="sort('desc','job_number')" *ngIf="arrowState['job_number']"
+                  class="bi bi-arrow-up"></i>
+                    </th>
+                    <th scope="col">Job Name
+                      <i *ngIf="!arrowState['job_name']" (click)="sort('asc','job_name')" class="bi bi-arrow-down"></i>
+                      <i (click)="sort('desc','job_name')" *ngIf="arrowState['job_name']"
+                        class="bi bi-arrow-up"></i>
+                    </th>
+                    <th scope="col">Budget Time (hrs)
+                      <i *ngIf="!arrowState['budget_time']" (click)="sort('asc','budget_time')" class="bi bi-arrow-down"></i>
+                      <i (click)="sort('desc','budget_time')" *ngIf="arrowState['budget_time']"
+                        class="bi bi-arrow-up"></i>
+                    </th>
+                    <th scope="col">Price (Rs)
+                        <i *ngIf="!arrowState['job_price']" (click)="sort('asc','job_price')" class="bi bi-arrow-down"></i>
+                        <i (click)="sort('desc','job_price')" *ngIf="arrowState['job_price']"
+                          class="bi bi-arrow-up"></i>
+                      </th>
+                      <th scope="col">Total Amount (Rs)
+                        <i *ngIf="!arrowState['total_price']" (click)="sort('asc','total_price')" class="bi bi-arrow-down"></i>
+                        <i (click)="sort('desc','total_price')" *ngIf="arrowState['total_price']"
+                          class="bi bi-arrow-up"></i>
+                      </th>
+                  </tr>
+                </thead>
+                <tbody>
+      
+                  <ng-container *ngIf="(allClientBasedJobsLists) as result">
+                    <tr *ngFor='let item of result | customSort:directionValue:sortValue; let i=index'>
+                      <td>
+                        <mat-checkbox
+                        (change)="toggleJobSelection(item)"
+                        [checked]="jobSelection.includes(item)"
+                      ></mat-checkbox>
+                      </td>
+                      <td>{{item?.job_number || '-'}}</td>
+                      <td>{{item?.job_name || '-'}}</td>
+                      <td>{{item?.budget_time || '-'}}</td>
+                      <td>{{item?.job_price || '-'}}</td>
+                      <td>{{item?.total_amount || '-'}}</td>
+                    </tr>
+                  </ng-container>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          
+          <div class="row mx-1 my-2 px-0" *ngIf="allClientBasedJobsLists?.length === 0" >
+            <app-generic-norecards></app-generic-norecards>
+          </div>
+        
+    </section>
+      <div class="row mx-0 my-2 px-0 justify-content-end">
+        <div class="col-12 mt-2 col-sm-12 col-md-6 col-lg-6 px-0 text-end">
+            <button mat-raised-button class="proceedbtn mat-btn-s" type="button" (click)="updateInvoice()" [disabled]="jobSelection?.length<=0">Re-Approve</button>
+            <button mat-button class="cancel-button mat-btn-s" type="button" (click)="closeEditDetails()">
+                Close</button> 
+        </div>
+      </div>
+  </div>

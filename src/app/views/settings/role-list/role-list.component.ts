@@ -8,12 +8,15 @@ import { GenericEditComponent } from '../../../generic-components/generic-edit/g
 import { environment } from '../../../../environments/environment';
 import { Router } from '@angular/router';
 import{SubModuleService} from '../../../service/sub-module.service'
+import { CanComponentDeactivate } from 'src/app/authGuard/can-deactivate.guard';
+import { FormErrorScrollUtilityService } from 'src/app/service/form-error-scroll-utility-service.service';
+import { Observable } from 'rxjs';
 @Component({
   selector: 'app-role-list',
   templateUrl: './role-list.component.html',
   styleUrls: ['./role-list.component.scss']
 })
-export class RoleListComponent implements OnInit {
+export class RoleListComponent implements CanComponentDeactivate, OnInit {
   @ViewChild(FormGroupDirective) formGroupDirective!: FormGroupDirective;
   BreadCrumbsTitle: any = 'Roles';
   rolesForm: FormGroup;
@@ -34,9 +37,12 @@ export class RoleListComponent implements OnInit {
   accessPermissions = []
   user_id: any;
   userRole: any;
+  initialFormValue:any;
   constructor(
     private common_service: CommonServiceService, private fb: FormBuilder, private api: ApiserviceService,
-    private modalService: NgbModal, private router:Router,private accessControlService:SubModuleService
+    private modalService: NgbModal, private router:Router,
+    private accessControlService:SubModuleService,
+    private formUtilityService:FormErrorScrollUtilityService
   ) { }
 
   ngOnInit(): void {
@@ -51,7 +57,8 @@ export class RoleListComponent implements OnInit {
   intialForm() {
     this.rolesForm = this.fb.group({
       designation_name: ['', Validators.required]
-    })
+    });
+    this.initialFormValue = this.rolesForm?.getRawValue();
   }
   get f() {
     return this.rolesForm.controls;
@@ -151,7 +158,7 @@ export class RoleListComponent implements OnInit {
             this.getAllRolesList(`?page=${1}&page_size=${5}`);
           }
         }, (error: any) => {
-          this.api.showError(error?.error?.message);
+          this.api.showError(error?.error?.detail);
         });
       } else {
         this.api.postData(`${environment.live_url}/${environment.settings_roles}/`, this.rolesForm.value).subscribe((respData: any) => {
@@ -162,7 +169,7 @@ export class RoleListComponent implements OnInit {
             this.router.navigate([`/settings/roles-access/${respData?.result?.id}`])
           }
         }, (error: any) => {
-          this.api.showError(error?.error?.message);   
+          this.api.showError(error?.error?.detail);   
         });
       }
     }
@@ -170,6 +177,8 @@ export class RoleListComponent implements OnInit {
   public resetFormState() {
     this.formGroupDirective?.resetForm();
     this.isEditItem = false;
+    this.initialFormValue = this.rolesForm?.getRawValue();
+
   }
   async edit(item: any) {
     this.selectedItemId = item?.id;
@@ -245,5 +254,10 @@ export class RoleListComponent implements OnInit {
   roleAccess(id:any){
     console.log(id)
     this.router.navigate([`/settings/roles-access/${id}`])
+  }
+  canDeactivate(): Observable<boolean> {
+    const currentFormValue = this.rolesForm?.getRawValue();
+    const isFormChanged:boolean =  JSON.stringify(currentFormValue) !== JSON.stringify(this.initialFormValue);
+    return this.formUtilityService.isFormDirtyOrInvalidCheck(isFormChanged,this.rolesForm);
   }
 }

@@ -101,8 +101,8 @@
               </th>
               <th>
                 Status Group
-                <i *ngIf="!arrowState['status_group']" (click)="sort('asc', 'status_group')" class="bi bi-arrow-down"></i>
-                <i *ngIf="arrowState['status_group']" (click)="sort('desc', 'status_group')" class="bi bi-arrow-up"></i>
+                <i *ngIf="!arrowState['status_group_name']" (click)="sort('asc', 'status_group_name')" class="bi bi-arrow-down"></i>
+                <i *ngIf="arrowState['status_group_name']" (click)="sort('desc', 'status_group_name')" class="bi bi-arrow-up"></i>
               </th>
               <th>Job Status
                 <i *ngIf="!arrowState['status_name']" (click)="sort('asc', 'status_name')" class="bi bi-arrow-down"></i>
@@ -123,7 +123,7 @@
                                  totalItems: count
                                }; let i=index'>
               <td>{{getContinuousIndex(i)}}</td>
-              <td>{{getStatusGroupName(status_item?.status_group) || '-'}}</td>
+              <td>{{status_item?.status_group_name || '-'}}</td>
               <td>{{status_item?.status_name || '-'}}</td>
               <td>{{status_item?.percentage_of_completion || '-'}}</td>
               <td>

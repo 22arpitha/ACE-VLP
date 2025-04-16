@@ -7,12 +7,15 @@ import { GenericDeleteComponent } from '../../../generic-components/generic-dele
 import { GenericEditComponent } from '../../../generic-components/generic-edit/generic-edit.component';
 import { environment } from '../../../../environments/environment';
 import { SubModuleService } from 'src/app/service/sub-module.service';
+import { FormErrorScrollUtilityService } from 'src/app/service/form-error-scroll-utility-service.service';
+import { CanComponentDeactivate } from 'src/app/authGuard/can-deactivate.guard';
+import { Observable } from 'rxjs';
 @Component({
   selector: 'app-country',
   templateUrl: './country.component.html',
   styleUrls: ['./country.component.scss']
 })
-export class CountryComponent implements OnInit {
+export class CountryComponent implements CanComponentDeactivate, OnInit {
   @ViewChild(FormGroupDirective) formGroupDirective!: FormGroupDirective;
    @ViewChild('formInputField') formInputField: ElementRef;
   BreadCrumbsTitle: any = 'Country';
@@ -35,9 +38,11 @@ export class CountryComponent implements OnInit {
   accessPermissions = []
   user_id: any;
   userRole: any;
+  initialFormValue:any;
   constructor(
     private common_service: CommonServiceService, private fb: FormBuilder, private api: ApiserviceService,
-    private modalService: NgbModal,private accessControlService:SubModuleService
+    private modalService: NgbModal,private accessControlService:SubModuleService,
+    private formUtilityService:FormErrorScrollUtilityService
   ) { }
 
   ngOnInit(): void {
@@ -63,7 +68,8 @@ export class CountryComponent implements OnInit {
   intialForm() {
     this.countryForm = this.fb.group({
       country_name: ['', [Validators.required, Validators.pattern(/^[a-zA-Z]+( [a-zA-Z]+)*$/), Validators.maxLength(20)]],
-    })
+    });
+    this.initialFormValue = this.countryForm?.getRawValue();
   }
   get f() {
     return this.countryForm.controls;
@@ -168,6 +174,7 @@ export class CountryComponent implements OnInit {
     this.formGroupDirective.resetForm();
     this.isEditItem = false;
     this.term='';
+    this.initialFormValue = this.countryForm?.getRawValue();
   }
   async edit(item: any) {
 
@@ -247,5 +254,10 @@ export class CountryComponent implements OnInit {
   reset() {
     this.resetFormState();
     this.getAllCountryList(`?page=${1}&page_size=${5}`);
+  }
+  canDeactivate(): Observable<boolean> {
+    const currentFormValue = this.countryForm?.getRawValue();
+    const isFormChanged:boolean =  JSON.stringify(currentFormValue) !== JSON.stringify(this.initialFormValue);
+    return this.formUtilityService.isFormDirtyOrInvalidCheck(isFormChanged,this.countryForm);
   }
 }

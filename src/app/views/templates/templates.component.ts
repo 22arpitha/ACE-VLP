@@ -9,13 +9,15 @@ import { environment } from '../../../environments/environment';
 import { Observable, of } from 'rxjs';
 import { SubModuleService } from '../../../app/service/sub-module.service';
 import {fullUrlToFile} from '../../shared/fileUtils.utils';
+import { CanComponentDeactivate } from 'src/app/authGuard/can-deactivate.guard';
+import { FormErrorScrollUtilityService } from 'src/app/service/form-error-scroll-utility-service.service';
 
 @Component({
   selector: 'app-templates',
   templateUrl: './templates.component.html',
   styleUrls: ['./templates.component.scss']
 })
-export class TemplatesComponent implements OnInit {
+export class TemplatesComponent implements CanComponentDeactivate, OnInit {
   @ViewChild(FormGroupDirective) formGroupDirective!: FormGroupDirective;
   @ViewChild('fileInput') fileInput: ElementRef;
   @ViewChild('formInputField') formInputField: ElementRef;
@@ -42,9 +44,11 @@ formData:any;
 accessPermissions = []
 user_id: any;
 userRole: any;
-
+initialFormValue:any;
     constructor(private fb:FormBuilder,private modalService:NgbModal,private accessControlService:SubModuleService,
-        private common_service: CommonServiceService,private apiService:ApiserviceService) { 
+        private common_service: CommonServiceService,
+        private apiService:ApiserviceService,
+        private formUtilityService:FormErrorScrollUtilityService) { 
       this.common_service.setTitle(this.BreadCrumbsTitle)
     }
   
@@ -73,8 +77,8 @@ userRole: any;
       template_file: ['',Validators.required,this.fileFormatValidator],
       password: ['', [Validators.pattern(/^[a-zA-Z0-9!@#$%^&*()_+{}\[\]:;"'<>,.?/\\|`~\-]+( [a-zA-Z0-9!@#$%^&*()_+{}\[\]:;"'<>,.?/\\|`~\-]+)*$/),Validators.maxLength(20)]],
       when_to_use: ['', [Validators.pattern(/^[a-zA-Z0-9]+( [a-zA-Z0-9]+)*$/),Validators.maxLength(20)]],
-    
     });
+    this.initialFormValue=this.templateForm?.getRawValue();
   }
 
   public get f() {
@@ -89,7 +93,7 @@ userRole: any;
       this.count = noOfPages * this.tableSize;
       this.page = respData?.current_page;
     }, (error: any) => {
-      this.apiService.showError(error?.error?.error?.message);
+      this.apiService.showError(error?.error?.error?.detail);
 
     })
   }
@@ -107,7 +111,7 @@ userRole: any;
             this.getAllTemplates('?page=1&page_size=5');
           }
         }, (error: any) => {
-          this.apiService.showError(error?.error?.message);
+          this.apiService.showError(error?.error?.detail);
         });
       } else {
         this.formData = this.createFromData();
@@ -119,7 +123,7 @@ userRole: any;
           }
 
         }, (error: any) => {
-          this.apiService.showError(error?.error?.message);
+          this.apiService.showError(error?.error?.detail);
         });
       }
     }
@@ -148,6 +152,7 @@ public createFromData(){
     if (fileInput) {
     fileInput.value = "";
    }
+   this.initialFormValue = this.templateForm?.getRawValue();
   }
 
   public sort(direction: string, column: string) {
@@ -215,7 +220,7 @@ public createFromData(){
       }
 
     }, (error => {
-      this.apiService.showError(error?.error?.message)
+      this.apiService.showError(error?.error?.detail)
     }))
   }
 
@@ -261,7 +266,7 @@ public createFromData(){
     .catch(error => console.error('Error:', error));
 
     }, (error: any) => {
-      this.apiService.showError(error?.error?.message);
+      this.apiService.showError(error?.error?.detail);
     })
   }
 
@@ -351,6 +356,10 @@ public createFromData(){
     document.body.removeChild(link);
   }
 
- 
+  canDeactivate(): Observable<boolean> {
+    const currentFormValue = this.templateForm?.getRawValue();
+    const isFormChanged:boolean =  JSON.stringify(currentFormValue) !== JSON.stringify(this.initialFormValue);
+    return this.formUtilityService.isFormDirtyOrInvalidCheck(isFormChanged,this.templateForm);
+  }
   }
 

@@ -5,7 +5,6 @@ export const environment = {
   
    
   // Testing url
-  
   media_url: 'https://vlp.thestorywallcafe.com',
   live_url:'https://vlp.thestorywallcafe.com/api-vlp',
   socket_url:'projectacedevelop.thestorywallcafe.com',
@@ -53,6 +52,9 @@ end_client_jobs:`end-client-jobs`,
 // jobs
 jobs:`jobs`,
 jobs_kpi:'kpi',
+// timesheet
+vlp_timesheets:`timesheet`,
+client_invoice:'client-invoice',
 
  
   leave_application: 'leave-application',
