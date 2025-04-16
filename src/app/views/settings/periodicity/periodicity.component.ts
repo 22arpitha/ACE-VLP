@@ -6,7 +6,7 @@ import { GenericEditComponent } from '../../../generic-components/generic-edit/g
 import { ApiserviceService } from '../../../service/apiservice.service';
 import { CommonServiceService } from '../../../service/common-service.service';
 import { environment } from '../../../../environments/environment';
-import { CanComponentDeactivate } from 'src/app/authGuard/can-deactivate.guard';
+import { CanComponentDeactivate } from 'src/app/auth-guard/can-deactivate.guard';
 import { FormErrorScrollUtilityService } from 'src/app/service/form-error-scroll-utility-service.service';
 import { Observable } from 'rxjs';
 
@@ -42,12 +42,12 @@ export class PeriodicityComponent implements CanComponentDeactivate, OnInit {
       private formUtilityService:FormErrorScrollUtilityService) {
       this.common_service.setTitle(this.BreadCrumbsTitle)
     }
-  
+
     ngOnInit(): void {
       this.initializeForm();
       this.getAllPeriodicity('?page=1&page_size=5');
     }
-  
+
     public initializeForm() {
       this.periodicityForm = this.fb.group({
         periodicty_name: ['', [Validators.required, Validators.pattern(/^[a-zA-Z]+( [a-zA-Z]+)*$/), , Validators.maxLength(20)]],
@@ -57,7 +57,7 @@ export class PeriodicityComponent implements CanComponentDeactivate, OnInit {
     public get f() {
       return this.periodicityForm?.controls;
     }
-  
+
     public getAllPeriodicity(pramas: any) {
       this.allPeriodicityList = [];
       this.apiService.getData(`${environment.live_url}/${environment.settings_periodicty}/${pramas}`).subscribe((respData: any) => {
@@ -67,7 +67,7 @@ export class PeriodicityComponent implements CanComponentDeactivate, OnInit {
         this.page = respData?.current_page;
       }, (error: any) => {
         this.apiService.showError(error?.error?.detail);
-  
+
       })
     }
     public savePeriodicityDetails() {
@@ -98,24 +98,24 @@ export class PeriodicityComponent implements CanComponentDeactivate, OnInit {
         }
       }
     }
-  
+
     public resetFormState() {
       this.formGroupDirective.resetForm();
       this.isEditItem = false;
       this.term='';
       this.initialFormValue = this.periodicityForm?.getRawValue();
     }
-  
+
     sort(direction: string, column: string) {
       this.arrowState[column] = direction === 'asc' ? true : false;
       this.directionValue = direction;
       this.sortValue = column;
     }
     public getContinuousIndex(index: number): number {
-  
+
       return (this.page - 1) * this.tableSize + index + 1;
     }
-  
+
     public onTableDataChange(event: any) {
       this.page = event;
       let query = `?page=${this.page}&page_size=${this.tableSize}`
@@ -126,7 +126,7 @@ export class PeriodicityComponent implements CanComponentDeactivate, OnInit {
     }
     public onTableSizeChange(event: any): void {
       if (event) {
-  
+
         this.tableSize = Number(event.value);
         let query = `?page=${1}&page_size=${this.tableSize}`
         if (this.term) {
@@ -151,7 +151,7 @@ export class PeriodicityComponent implements CanComponentDeactivate, OnInit {
             modelRef.close();
           }
         })
-  
+
       }
     }
     public deleteContent(item: any) {
@@ -163,15 +163,15 @@ export class PeriodicityComponent implements CanComponentDeactivate, OnInit {
           if (this.term) {
             query += `&search=${this.term}`
           }
-  
+
           this.getAllPeriodicity(query);
         }
-  
+
       }, (error => {
         this.apiService.showError(error?.error?.detail)
       }))
     }
-  
+
     async editContent(item: any) {
       try {
         const modalRef = await this.modalService.open(GenericEditComponent, {
@@ -179,7 +179,7 @@ export class PeriodicityComponent implements CanComponentDeactivate, OnInit {
           backdrop: 'static',
           centered: true
         });
-  
+
         modalRef.componentInstance.status.subscribe(resp => {
           if (resp === 'ok') {
             this.selectedPeriodicity = item?.id;
@@ -195,7 +195,7 @@ export class PeriodicityComponent implements CanComponentDeactivate, OnInit {
         console.error('Error opening modal:', error);
       }
     }
-  
+
     public scrollToField(){
       if (this.formInputField) {
         this.formInputField?.nativeElement?.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -209,7 +209,7 @@ export class PeriodicityComponent implements CanComponentDeactivate, OnInit {
         this.apiService.showError(error?.error?.detail);
       })
     }
-  
+
     public filterSearch(event) {
       const input = event?.target?.value?.trim() || ''; // Fallback to empty string if undefined
       if (input && input.length >= 2) {

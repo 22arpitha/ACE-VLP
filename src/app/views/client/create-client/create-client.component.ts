@@ -10,13 +10,10 @@ import { ApiserviceService } from '../../../service/apiservice.service';
 import { CommonServiceService } from '../../../service/common-service.service';
 import { GenericDeleteComponent } from '../../../generic-components/generic-delete/generic-delete.component';
 import { environment } from '../../../../environments/environment';
-
 import { FormErrorScrollUtilityService } from '../../../service/form-error-scroll-utility-service.service';
 import { SubModuleService } from '../../../service/sub-module.service';
 import {urlToFile} from '../../../shared/fileUtils.utils';
-import { CanComponentDeactivate } from '../../../authGuard/can-deactivate.guard';
-
-
+import { CanComponentDeactivate } from '../../../auth-guard/can-deactivate.guard';
 
 @Component({
   selector: 'app-create-client',
@@ -72,7 +69,7 @@ user_id:any;
 initialFormValue:any;
     constructor(private fb:FormBuilder,private activeRoute:ActivatedRoute,private accessControlService:SubModuleService,
       private common_service: CommonServiceService,private router:Router,private datepipe:DatePipe,private modalService: NgbModal,private cdr: ChangeDetectorRef,
-      private apiService: ApiserviceService,private formErrorScrollService:FormErrorScrollUtilityService) { 
+      private apiService: ApiserviceService,private formErrorScrollService:FormErrorScrollUtilityService) {
       this.common_service.setTitle(this.BreadCrumbsTitle)
       this.user_id = sessionStorage.getItem('user_id');
       this.user_role_name = sessionStorage.getItem('user_role_name');
@@ -92,7 +89,7 @@ initialFormValue:any;
         this.getAllEmployeeList();
       }
     }
-  
+
     ngOnInit(): void {
       this.editor = new Editor();
       this.getModuleAccess()
@@ -122,9 +119,9 @@ initialFormValue:any;
         }
       )
     }
-  
+
     public intialForm(){
-  this.clientFormGroup = this.fb.group({
+        this.clientFormGroup = this.fb.group({
         client_number: ['',Validators.required],
         client_name: ['', [Validators.required, Validators.maxLength(50)]],
         email:['',[Validators.required,Validators.pattern('^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$')]],
@@ -149,8 +146,8 @@ initialFormValue:any;
               this.apiService.showError(error?.error?.detail)
             }));
     }
-    
-    // Get All Country List 
+
+    // Get All Country List
     public getCountryList(){
       this.allCountry=[];
       this.apiService.getData(`${environment.live_url}/${environment.settings_country}/`).subscribe((respData: any) => {
@@ -167,7 +164,7 @@ initialFormValue:any;
         this.apiService.showError(error?.error?.detail)
       }));
     }
-// Get Reporting Manager 
+// Get Reporting Manager
 public getAllEmployeeList(){
   this.allEmployeeList =[];
   this.apiService.getData(`${environment.live_url}/${environment.employee}/?is_active=True&employee=True`).subscribe((respData: any) => {
@@ -177,12 +174,12 @@ this.allEmployeeList = respData;
   }));
 }
 
-// search Employee   
+// search Employee
 filteredEmployeeList() {
   if (!this.searchEmployeeText) {
     return this.allEmployeeList;
   }
-  return this.allEmployeeList.filter((emp:any) => 
+  return this.allEmployeeList.filter((emp:any) =>
     emp?.user__full_name?.toLowerCase()?.includes(this.searchEmployeeText?.toLowerCase())
   );
 }
@@ -200,7 +197,7 @@ filteredCountryList() {
   if (!this.searchCountryText) {
     return this.allCountry;
   }
-  return this.allCountry.filter((con:any) => 
+  return this.allCountry.filter((con:any) =>
     con?.country_name?.toLowerCase()?.includes(this.searchCountryText?.toLowerCase())
   );
 }
@@ -209,11 +206,11 @@ filteredSourceList() {
   if (!this.searchSourceText) {
     return this.allSource;
   }
-  return this.allSource.filter((source:any) => 
+  return this.allSource.filter((source:any) =>
     source?.source_name?.toLowerCase()?.includes(this.searchSourceText?.toLowerCase())
   );
 }
-    // Get Employee Detials 
+    // Get Employee Detials
     public getClientDetails(id:any){
   this.apiService.getData(`${environment.live_url}/${environment.clients}/${id}/`).subscribe((respData: any) => {
       this.clientFormGroup.patchValue({
@@ -265,11 +262,11 @@ respData?.contact_details?.forEach(({ name, email, phone_number }, index, array)
         this.apiService.showError(error?.error?.detail);
       })
     }
- 
+
     public get f() {
       return this.clientFormGroup.controls;
     }
- 
+
     get contactDetails(): FormArray {
       return this.clientFormGroup.get('contact_details') as FormArray;
     }
@@ -277,9 +274,9 @@ respData?.contact_details?.forEach(({ name, email, phone_number }, index, array)
     get employeeFormArray() {
       return this.clientFormGroup.get('employee_ids') as FormArray;
     }
-  
+
     createEmployeeControl(): FormControl {
-      return this.fb.control(''); 
+      return this.fb.control('');
     }
 
     private createContactGroup(): FormGroup {
@@ -289,9 +286,9 @@ respData?.contact_details?.forEach(({ name, email, phone_number }, index, array)
         phone_number:['',Validators.required],
       });
     }
-  
+
     public joiningDateFun(event: any) {
-  
+
     }
     resetDate() {
       this.clientFormGroup?.get('service_end_date')?.setValue(null);
@@ -309,9 +306,9 @@ respData?.contact_details?.forEach(({ name, email, phone_number }, index, array)
 
       }
     }
-    
-    
-  
+
+
+
     public deleteContact(index: number) {
       if (this.contactDetails.length > 1) {
       this.contactDetails.removeAt(index);
@@ -343,7 +340,7 @@ respData?.contact_details?.forEach(({ name, email, phone_number }, index, array)
     validateKeyPress(event: KeyboardEvent) {
       // Get the key code of the pressed key
       const keyCode = event.which || event.keyCode;
-  
+
       // Allow only digits (0-9), backspace, and arrow keys
       if ((keyCode < 48 || keyCode > 57) && keyCode !== 8 && keyCode !== 37 && keyCode !== 39) {
         event.preventDefault(); // Prevent the default action (i.e., entering the character)
@@ -357,31 +354,31 @@ respData?.contact_details?.forEach(({ name, email, phone_number }, index, array)
       const allowedFormats = ['.xlsx','.xls','doc', 'docx', 'pdf'];;
       const maxSize = 10 * 1024 * 1024; // 10 MB in bytes
       const file = control.value;
-  
+
       if (file) {
         console.log('file',file);
         const fileExtension = (/[.]/.exec(file)) ? file.split('.').pop()?.toLowerCase() : '';
         console.log('fileExtension',fileExtension);
         const fileSize = file.size;
-  
+
           if (allowedFormats.includes(fileExtension)) {
               return of({ accept: false }); // Invalid file format
           }
-  
+
           if (fileSize > maxSize) {
               return of({ maxSize: true }); // File size exceeds the limit
           }
       }
-  
+
       return of(null);
   }
 
   public onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
-  
+
     if (input.files && input.files.length > 0) {
       const selectedFile = input.files[0];
-  
+
       // Validate file type
       if (
         selectedFile.type === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" ||
@@ -407,7 +404,7 @@ respData?.contact_details?.forEach(({ name, email, phone_number }, index, array)
     public backBtnFunc(){
       this.router.navigate(['/client/all-client']);
     }
-  
+
     public deleteClient(){
       if (this.client_id) {
         const modelRef = this.modalService.open(GenericDeleteComponent, {
@@ -424,7 +421,7 @@ respData?.contact_details?.forEach(({ name, email, phone_number }, index, array)
             modelRef.close();
           }
         })
-  
+
       }
     }
       public deleteContent(id: any) {
@@ -438,7 +435,7 @@ respData?.contact_details?.forEach(({ name, email, phone_number }, index, array)
           this.apiService.showError(error?.error?.detail)
         }))
       }
-  
+
       public saveClientDetails(){
         if (this.clientFormGroup.invalid) {
           this.clientFormGroup.markAllAsTouched();
@@ -469,7 +466,7 @@ respData?.contact_details?.forEach(({ name, email, phone_number }, index, array)
           }
       }
   }
-  
+
   public resetFormState() {
     this.formGroupDirective?.resetForm();
     this.isEditItem = false;
@@ -483,7 +480,7 @@ respData?.contact_details?.forEach(({ name, email, phone_number }, index, array)
       this.formData.set("client_file", null);
     }
     let updatedStartDateValue = this.datepipe.transform(this.clientFormGroup?.get('service_start_date')?.value,'YYYY-MM-dd');
-    let updatedEndDateValue = this.datepipe.transform(this.clientFormGroup?.get('service_end_date')?.value,'YYYY-MM-dd');  
+    let updatedEndDateValue = this.datepipe.transform(this.clientFormGroup?.get('service_end_date')?.value,'YYYY-MM-dd');
     this.formData.set("client_number", this.clientFormGroup?.get('client_number')?.value);
       this.formData.set("client_name", this.clientFormGroup?.get('client_name')?.value);
       this.formData.set("email", this.clientFormGroup?.get('email')?.value);
@@ -496,8 +493,8 @@ respData?.contact_details?.forEach(({ name, email, phone_number }, index, array)
       this.formData.set("practice_notes", this.clientFormGroup?.get('practice_notes')?.value || '');
       this.formData.set("allow_sending_status_report_to_client", this.clientFormGroup?.get('allow_sending_status_report_to_client')?.value || false);
       const result = this.clientFormGroup?.get('contact_details')?.getRawValue().map((item:any) => {
-        return { 
-          ...item, 
+        return {
+          ...item,
           phone_number: item?.phone_number?.toString()
         };
       });
@@ -509,10 +506,10 @@ respData?.contact_details?.forEach(({ name, email, phone_number }, index, array)
     if (this.selectedEmployee) {
       console.log(this.selectedEmployee);
       // Check if the selected employee already exists in the employeeFormArray
-      const isEmployeeExists = this.employeeFormArray.controls.some(control => 
+      const isEmployeeExists = this.employeeFormArray.controls.some(control =>
         control.value === this.selectedEmployee
       );
-  
+
       if (!isEmployeeExists) {
         this.employeeFormArray.push(this.createEmployeeControl());
         this.employeeFormArray.at(this.employeeFormArray.length - 1).setValue(this.selectedEmployee);
@@ -522,7 +519,7 @@ respData?.contact_details?.forEach(({ name, email, phone_number }, index, array)
       this.selectedEmployee = null;
     }
   }
-  
+
 
   removeEmployee(index: number) {
     if (this.employeeFormArray.length > 1) {
@@ -552,32 +549,32 @@ respData?.contact_details?.forEach(({ name, email, phone_number }, index, array)
 }
 
   public getFileName(url:any){
-    return url?.split('/')?.pop(); 
+    return url?.split('/')?.pop();
   }
 
   public openFileInNewTab(){
     if(this.selectedFileLink){
       window.open(this.selectedFileLink, '_blank');
     }
-  
+
   }
   private duplicateNameValidator(control: AbstractControl) {
     const formArray = control as FormArray;
     const emailset = new Set<string>();
     const phoneset = new Set<number>();
-  
+
     for (let i = 0; i < formArray?.controls?.length; i++) {
       const emailControl = formArray?.at(i)?.get('email');
       const phoneNumberControl = formArray?.at(i)?.get('phone_number');
-  
+
       if (!emailControl || !phoneNumberControl) continue;
-  
+
       const email = emailControl.value?.trim()?.toLowerCase();
       const value = phoneNumberControl?.value;
-  
+
       const emailErrors = emailControl.errors || {};
       const phoneErrors = phoneNumberControl.errors || {};
-  
+
       // Check for duplicate name
       if (email && emailset.has(email)) {
         emailControl?.setErrors({ ...emailErrors, duplicateEmail: true });
@@ -588,7 +585,7 @@ respData?.contact_details?.forEach(({ name, email, phone_number }, index, array)
           emailControl?.setErrors(Object.keys(emailErrors)?.length ? emailErrors : null);
         }
       }
-  
+
       // Check for duplicate value
       if (value && phoneset.has(value)) {
         phoneNumberControl?.setErrors({ ...phoneErrors, duplicatePhoneNo: true });
@@ -600,7 +597,7 @@ respData?.contact_details?.forEach(({ name, email, phone_number }, index, array)
         }
       }
     }
-  
+
     return null;
   }
 

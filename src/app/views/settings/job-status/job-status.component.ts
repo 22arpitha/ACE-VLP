@@ -7,7 +7,7 @@ import { GenericDeleteComponent } from '../../../generic-components/generic-dele
 import { GenericEditComponent } from '../../../generic-components/generic-edit/generic-edit.component';
 import { environment } from '../../../../environments/environment';
 import { SubModuleService } from 'src/app/service/sub-module.service';
-import { CanComponentDeactivate } from 'src/app/authGuard/can-deactivate.guard';
+import { CanComponentDeactivate } from 'src/app/auth-guard/can-deactivate.guard';
 import { FormErrorScrollUtilityService } from 'src/app/service/form-error-scroll-utility-service.service';
 import { Observable } from 'rxjs';
 
@@ -89,7 +89,7 @@ export class JobStatusComponent implements CanComponentDeactivate, OnInit {
     if (!this.searchStatusGroupText) {
       return this.allStatusGroupList;
     }
-    return this.allStatusGroupList.filter((status:any) => 
+    return this.allStatusGroupList.filter((status:any) =>
       status?.group_name?.toLowerCase()?.includes(this.searchStatusGroupText?.toLowerCase())
     );
   }

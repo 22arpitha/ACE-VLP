@@ -9,7 +9,7 @@ import { GenericDeleteComponent } from '../../../generic-components/generic-dele
 import { SubModuleService } from '../../../service/sub-module.service';
 import { FormErrorScrollUtilityService } from '../../../service/form-error-scroll-utility-service.service';
 import { Observable } from 'rxjs';
-import { CanComponentDeactivate } from 'src/app/authGuard/can-deactivate.guard';
+import { CanComponentDeactivate } from 'src/app/auth-guard/can-deactivate.guard';
 
 @Component({
   selector: 'app-create-update-employee',
@@ -37,7 +37,7 @@ initialFormValue:any;
     private common_service: CommonServiceService,private router:Router,
     private apiService: ApiserviceService,private modalService: NgbModal,
     private accessControlService:SubModuleService,
-    private formErrorScrollService:FormErrorScrollUtilityService) { 
+    private formErrorScrollService:FormErrorScrollUtilityService) {
       this.user_id = sessionStorage.getItem('user_id');
     this.userRole = sessionStorage.getItem('user_role_name');
     if(this.activeRoute.snapshot.paramMap.get('id')){
@@ -97,8 +97,8 @@ this.employeeFormGroup = this.fb.group({
             this.apiService.showError(error?.error?.detail)
           }));
   }
-  
-  // Get All User Role 
+
+  // Get All User Role
   public getUserRoleList(){
     this.allUserRoleList=[];
     this.apiService.getData(`${environment.live_url}/${environment.settings_roles}/`).subscribe((respData: any) => {
@@ -123,7 +123,7 @@ this.employeeFormGroup = this.fb.group({
     }));
   }
 
-  // Get Reporting Manager 
+  // Get Reporting Manager
   public getReportingManagerList(){
     this.reportingManagerId =[];
     this.apiService.getData(`${environment.live_url}/${environment.employee}/?is_active=True&employee=True&designation=manager`).subscribe((respData: any) => {
@@ -136,10 +136,10 @@ this.adminData();
       this.apiService.showError(error?.error?.detail)
     }));
   }
-  // Get Employee Detials 
+  // Get Employee Detials
   public getEmployeeDetails(id:any){
 this.apiService.getData(`${environment.live_url}/${environment.employee}/${id}/`).subscribe((respData: any) => {
-  this.getDesignationList(respData?.designation_id);  
+  this.getDesignationList(respData?.designation_id);
   this.employeeFormGroup.patchValue({
     employee_number:respData?.employee_number,
     first_name:respData?.user__first_name,
@@ -152,7 +152,7 @@ this.apiService.getData(`${environment.live_url}/${environment.employee}/${id}/`
     sub_designation:respData?.sub_designation_id,
     is_active:respData?.is_active,
       });
-      
+
     }, (error: any) => {
       this.apiService.showError(error?.error?.detail);
     })
@@ -178,7 +178,7 @@ this.apiService.getData(`${environment.live_url}/${environment.employee}/${id}/`
         let data = [];
         // data.push({ 'first_name': res.first_name, 'id': res.id });
         res.forEach((element:any) => {
-          data.push({ 'first_name': element?.first_name, 'last_name': element?.last_name || '', 'user_id': element.id }); 
+          data.push({ 'first_name': element?.first_name, 'last_name': element?.last_name || '', 'user_id': element.id });
         });
         this.reportingManagerId = data;
       },
@@ -188,32 +188,32 @@ this.apiService.getData(`${environment.live_url}/${environment.employee}/${id}/`
     )
   }
 
-// search Reporting Manager   
+// search Reporting Manager
 public filteredReportingManagerList() {
   if (!this.searchReportingManagerText) {
     return this.reportingManagerId;
   }
-  return this.reportingManagerId.filter((emp:any) => 
+  return this.reportingManagerId.filter((emp:any) =>
     emp?.user__full_name?.toLowerCase()?.includes(this.searchReportingManagerText?.toLowerCase())
   );
 }
 
-// search User Role   
+// search User Role
 public filteredUserRoleList() {
   if (!this.searchRoleText) {
     return this.allUserRoleList;
   }
-  return this.allUserRoleList.filter((role:any) => 
+  return this.allUserRoleList.filter((role:any) =>
     role?.designation_name?.toLowerCase()?.includes(this.searchRoleText?.toLowerCase())
   );
 }
 
-// search Designation   
+// search Designation
 public filteredDesignationList() {
   if (!this.searchDesignationText) {
     return this.allDesignation;
   }
-  return this.allDesignation.filter((role:any) => 
+  return this.allDesignation.filter((role:any) =>
     role?.sub_designation_name?.toLowerCase()?.includes(this.searchDesignationText?.toLowerCase())
   );
 }

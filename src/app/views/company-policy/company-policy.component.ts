@@ -11,7 +11,7 @@ import { MatDialog } from '@angular/material/dialog';
 import {PdfViewComponent} from '../pdf-view/pdf-view.component'
 import { SubModuleService } from '../../../app/service/sub-module.service';
 import {fullUrlToFile} from '../../shared/fileUtils.utils';
-import { CanComponentDeactivate } from 'src/app/authGuard/can-deactivate.guard';
+import { CanComponentDeactivate } from 'src/app/auth-guard/can-deactivate.guard';
 import { FormErrorScrollUtilityService } from 'src/app/service/form-error-scroll-utility-service.service';
 
 @Component({
@@ -49,7 +49,7 @@ export class CompanyPolicyComponent implements CanComponentDeactivate, OnInit {
   userRole: any;
   initialFormValue:any;
   constructor(private fb: FormBuilder, private modalService: NgbModal,private accessControlService:SubModuleService,
-    private common_service: CommonServiceService, 
+    private common_service: CommonServiceService,
     private apiService: ApiserviceService,
     private formUtilityService:FormErrorScrollUtilityService,
     private dialog: MatDialog) {
@@ -257,7 +257,7 @@ export class CompanyPolicyComponent implements CanComponentDeactivate, OnInit {
       // this.companyPolicyForm.patchValue({ 'policy_file': respData?.policy_file });
       this.companyPolicyForm.patchValue({ 'password': respData?.password });
       this.companyPolicyForm.patchValue({ 'when_to_use': respData?.when_to_use });
-      this.companyPolicyForm.get('policy_file')?.setValidators(null); 
+      this.companyPolicyForm.get('policy_file')?.setValidators(null);
       this.companyPolicyForm.get('policy_file')?.setErrors(null);
 
       console.error('Controls:', this.companyPolicyForm.controls);

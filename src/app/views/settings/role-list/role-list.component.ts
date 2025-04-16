@@ -8,7 +8,7 @@ import { GenericEditComponent } from '../../../generic-components/generic-edit/g
 import { environment } from '../../../../environments/environment';
 import { Router } from '@angular/router';
 import{SubModuleService} from '../../../service/sub-module.service'
-import { CanComponentDeactivate } from 'src/app/authGuard/can-deactivate.guard';
+import { CanComponentDeactivate } from 'src/app/auth-guard/can-deactivate.guard';
 import { FormErrorScrollUtilityService } from 'src/app/service/form-error-scroll-utility-service.service';
 import { Observable } from 'rxjs';
 @Component({
@@ -169,7 +169,7 @@ export class RoleListComponent implements CanComponentDeactivate, OnInit {
             this.router.navigate([`/settings/roles-access/${respData?.result?.id}`])
           }
         }, (error: any) => {
-          this.api.showError(error?.error?.detail);   
+          this.api.showError(error?.error?.detail);
         });
       }
     }

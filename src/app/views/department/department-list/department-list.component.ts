@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ApiserviceService } from '../../../service/apiservice.service';
-import { SortPipe } from 'src/app/sort/sort.pipe';
+import { SortPipe } from 'src/app/shared/sort/sort.pipe';
 import { Location } from '@angular/common';
 import { GenericDeleteComponent } from '../../../generic-components/generic-delete/generic-delete.component';
 import { environment } from '../../../../environments/environment';

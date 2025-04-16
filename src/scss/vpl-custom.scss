@@ -20,7 +20,7 @@
     padding: 8px 20px;
     margin: 5px 10px 10px 10px;
   }
-  
+
   .settings-main-content{
     height: 80vh;
     overflow-x: hidden;
@@ -53,7 +53,7 @@ thead th {
     top: 0;
     z-index: 1; /* Keeps the header above table content */
   }
-   
+
   .table-list > :not(caption) > * > *{
     padding: 0.6rem 0.6rem !important;
   }
@@ -94,11 +94,11 @@ thead th {
   border-radius: 5px;
 }
 ngx-editor-menu {
-  z-index: 10; 
-  position: relative; 
+  z-index: 10;
+  position: relative;
 }
 ngx-editor {
-  flex-grow: 1; 
+  flex-grow: 1;
   overflow: auto;
 }
 .NgxEditor__Popup input{
@@ -112,4 +112,15 @@ height: 25px !important;
 
 .paginationPanelClass{
   margin-top: 30px !important;
+}
+.mat-pseudo-checkbox-checked, .mat-pseudo-checkbox-indeterminate, .mat-accent .mat-pseudo-checkbox-checked, .mat-accent .mat-pseudo-checkbox-indeterminate {
+  background:#126EB4 !important;
+}
+input[type="date"] {
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+  pointer-events: none;
+  z-index: -1;
 }

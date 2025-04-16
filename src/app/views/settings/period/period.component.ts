@@ -2,7 +2,7 @@ import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, FormGroupDirective, Validators } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Observable } from 'rxjs';
-import { CanComponentDeactivate } from 'src/app/authGuard/can-deactivate.guard';
+import { CanComponentDeactivate } from 'src/app/auth-guard/can-deactivate.guard';
 import { GenericDeleteComponent } from 'src/app/generic-components/generic-delete/generic-delete.component';
 import { GenericEditComponent } from 'src/app/generic-components/generic-edit/generic-edit.component';
 import { ApiserviceService } from 'src/app/service/apiservice.service';
@@ -19,7 +19,7 @@ export class PeriodComponent implements CanComponentDeactivate, OnInit {
 
   @ViewChild(FormGroupDirective) formGroupDirective!: FormGroupDirective;
    @ViewChild('formInputField') formInputField: ElementRef;
- 
+
    BreadCrumbsTitle: any = 'Period';
    isEditItem: boolean = false;
    periodForm: FormGroup;
@@ -46,24 +46,24 @@ export class PeriodComponent implements CanComponentDeactivate, OnInit {
      private formUtilityService:FormErrorScrollUtilityService) {
      this.common_service.setTitle(this.BreadCrumbsTitle)
    }
- 
+
    ngOnInit(): void {
      this.initializeForm();
      this.getAllPeriodicity();
      this.getAllPeriod('?page=1&page_size=5');
    }
- 
+
    public initializeForm() {
      this.periodForm = this.fb.group({
       period_name: ['', [Validators.required, Validators.pattern(/^[a-zA-Z0-9]+( [a-zA-Z0-9]+)*$/), , Validators.maxLength(20)]],
-      periodicity: [null, Validators.required], 
+      periodicity: [null, Validators.required],
     });
     this.initialFormValue = this.periodForm?.getRawValue();
    }
    public get f() {
      return this.periodForm?.controls;
    }
- 
+
    public getAllPeriod(pramas: any) {
      this.allPeriodList = [];
      this.apiService.getData(`${environment.live_url}/${environment.settings_period}/${pramas}`).subscribe((respData: any) => {
@@ -73,7 +73,7 @@ export class PeriodComponent implements CanComponentDeactivate, OnInit {
        this.page = respData?.current_page;
      }, (error: any) => {
        this.apiService.showError(error?.error?.detail);
- 
+
      })
    }
 
@@ -90,7 +90,7 @@ export class PeriodComponent implements CanComponentDeactivate, OnInit {
     if (!this.searchPeriodicityText) {
       return this.allPeriodicityList;
     }
-    return this.allPeriodicityList.filter((pc:any) => 
+    return this.allPeriodicityList.filter((pc:any) =>
       pc?.periodicty_name?.toLowerCase()?.includes(this.searchPeriodicityText?.toLowerCase())
     );
   }
@@ -126,24 +126,24 @@ export class PeriodComponent implements CanComponentDeactivate, OnInit {
       }
     }
    }
- 
+
    public resetFormState() {
      this.formGroupDirective.resetForm();
      this.isEditItem = false;
      this.term='';
      this.initialFormValue = this.periodForm?.getRawValue();
    }
- 
+
    sort(direction: string, column: string) {
      this.arrowState[column] = direction === 'asc' ? true : false;
      this.directionValue = direction;
      this.sortValue = column;
    }
    public getContinuousIndex(index: number): number {
- 
+
      return (this.page - 1) * this.tableSize + index + 1;
    }
- 
+
    public onTableDataChange(event: any) {
      this.page = event;
      let query = `?page=${this.page}&page_size=${this.tableSize}`
@@ -154,7 +154,7 @@ export class PeriodComponent implements CanComponentDeactivate, OnInit {
    }
    public onTableSizeChange(event: any): void {
      if (event) {
- 
+
        this.tableSize = Number(event.value);
        let query = `?page=${1}&page_size=${this.tableSize}`
        if (this.term) {
@@ -179,7 +179,7 @@ export class PeriodComponent implements CanComponentDeactivate, OnInit {
            modelRef.close();
          }
        })
- 
+
      }
    }
    public deleteContent(item: any) {
@@ -191,15 +191,15 @@ export class PeriodComponent implements CanComponentDeactivate, OnInit {
          if (this.term) {
            query += `&search=${this.term}`
          }
- 
+
          this.getAllPeriod(query);
        }
- 
+
      }, (error => {
        this.apiService.showError(error?.error?.detail)
      }))
    }
- 
+
    async editContent(item: any) {
      try {
        const modalRef = await this.modalService.open(GenericEditComponent, {
@@ -207,7 +207,7 @@ export class PeriodComponent implements CanComponentDeactivate, OnInit {
          backdrop: 'static',
          centered: true
        });
- 
+
        modalRef.componentInstance.status.subscribe(resp => {
          if (resp === 'ok') {
            this.selectedperiod = item?.id;
@@ -229,7 +229,7 @@ export class PeriodComponent implements CanComponentDeactivate, OnInit {
       this.formInputField?.nativeElement?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   }
- 
+
    public getSelectedPeriod(id: any) {
      this.apiService.getData(`${environment.live_url}/${environment.settings_period}/${id}/`).subscribe((respData: any) => {
        this.periodForm.patchValue({ 'period_name': respData?.period_name });
@@ -239,7 +239,7 @@ export class PeriodComponent implements CanComponentDeactivate, OnInit {
        this.apiService.showError(error?.error?.detail);
      })
    }
- 
+
    public filterSearch(event) {
      const input = event?.target?.value?.trim() || ''; // Fallback to empty string if undefined
      if (input && input.length >= 2) {

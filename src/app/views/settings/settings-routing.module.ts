@@ -15,7 +15,7 @@ import { DesignationsComponent } from './designations/designations.component';
 import { RolesAccessComponent } from './roles-access/roles-access.component';
 import { PeriodicityComponent } from './periodicity/periodicity.component';
 import { PeriodComponent } from './period/period.component';
-import { CanDeactivateGuard } from '../../authGuard/can-deactivate.guard';
+import { CanDeactivateGuard } from '../../auth-guard/can-deactivate.guard';
 
 
 
@@ -66,13 +66,13 @@ const routes: Routes = [
       {
         path: 'create-employee',
         component: CreateUpdateEmployeeComponent,
-        canDeactivate:[CanDeactivateGuard]   
+        canDeactivate:[CanDeactivateGuard]
 
       },
       {
         path: 'update-employee/:id',
         component: CreateUpdateEmployeeComponent,
-        canDeactivate:[CanDeactivateGuard]   
+        canDeactivate:[CanDeactivateGuard]
 
       },
       {
@@ -80,8 +80,8 @@ const routes: Routes = [
         component: RoleListComponent,
         canDeactivate:[CanDeactivateGuard]
       },
-      { path: 'roles-access/:id', 
-        component: RolesAccessComponent 
+      { path: 'roles-access/:id',
+        component: RolesAccessComponent
       },
       {
         path: 'designation',

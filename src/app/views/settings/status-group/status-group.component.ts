@@ -2,7 +2,7 @@ import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, FormGroupDirective } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Observable } from 'rxjs';
-import { CanComponentDeactivate } from '../../../authGuard/can-deactivate.guard';
+import { CanComponentDeactivate } from '../../../auth-guard/can-deactivate.guard';
 import { SubModuleService } from '../../../service/sub-module.service';
 import { FormErrorScrollUtilityService } from '../../../service/form-error-scroll-utility-service.service';
 import { CommonServiceService } from '../../../service/common-service.service';
@@ -215,7 +215,7 @@ export class StatusGroupComponent implements CanComponentDeactivate, OnInit {
     }
   }
 
-  
+
   public scrollToField(){
     if (this.formInputField) {
       this.formInputField?.nativeElement?.scrollIntoView({ behavior: 'smooth', block: 'start' });

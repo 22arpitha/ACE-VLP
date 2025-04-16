@@ -9,7 +9,7 @@ import { environment } from '../../../../environments/environment';
 import { SubModuleService } from 'src/app/service/sub-module.service';
 import { Observable } from 'rxjs';
 import { FormErrorScrollUtilityService } from 'src/app/service/form-error-scroll-utility-service.service';
-import { CanComponentDeactivate } from 'src/app/authGuard/can-deactivate.guard';
+import { CanComponentDeactivate } from 'src/app/auth-guard/can-deactivate.guard';
 @Component({
   selector: 'app-job-type',
   templateUrl: './job-type.component.html',

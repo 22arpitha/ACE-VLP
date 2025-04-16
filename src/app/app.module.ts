@@ -44,7 +44,6 @@ import {
   ListGroupModule,
   NavModule,
   ProgressModule,
-
   SidebarModule,
   TabsModule,
   UtilitiesModule,
@@ -62,10 +61,9 @@ import { HttpErrorInterceptor } from './service/http-error.interceptor';
 const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
   suppressScrollX: true,
 };
-import { VirtualScrollDirective } from './virtualscroll.directive';
 import { SharedModule } from './shared/shared.module';
 import { NgxUiLoaderHttpModule, NgxUiLoaderModule } from "ngx-ui-loader";
-import { AuthGuard } from './auth.guard';
+import { AuthGuard } from './auth-guard/auth.guard';
 import { NgxDaterangepickerMd } from 'ngx-daterangepicker-material';
 import { CommonModule } from '@angular/common';
 import { ModalModule, BsModalService } from 'ngx-bootstrap/modal';
@@ -82,13 +80,12 @@ import { NgxDocViewerModule } from 'ngx-doc-viewer';
 import { MatButtonModule } from '@angular/material/button';
 import { PdfViewComponent } from './views/pdf-view/pdf-view.component';
 import { FormErrorScrollUtilityService } from './service/form-error-scroll-utility-service.service';
-import { ActivateChildGuard } from './authGuard/activate-child.guard';
+import { ActivateChildGuard } from './auth-guard/activate-child.guard';
 
 const APP_CONTAINERS = [
   DefaultFooterComponent,
   DefaultHeaderComponent,
-  DefaultLayoutComponent,
-
+  DefaultLayoutComponent
 ];
 
 @NgModule({
@@ -96,7 +93,6 @@ const APP_CONTAINERS = [
     AppComponent,
     LoginComponent,
     ...APP_CONTAINERS,
-    VirtualScrollDirective,
     UserGuideModalComponent,
     UserWelcomeMsgComponent,
     UseraccessInfoPopupComponent,
@@ -183,13 +179,13 @@ const APP_CONTAINERS = [
       useValue: DEFAULT_PERFECT_SCROLLBAR_CONFIG,
     },
     { provide: HTTP_INTERCEPTORS, useClass: BasicAuthInterceptor, multi: true },
-    
+
       {
         provide: HTTP_INTERCEPTORS,
         useClass: HttpErrorInterceptor,
         multi: true,
       },
-    
+
     IconSetService,
     Title,
     DatePipe,

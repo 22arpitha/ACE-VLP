@@ -9,8 +9,11 @@
   width:100% !important;
 }
 
-.date-picker .mat-form-field-appearance-outline .mat-form-field-prefix, .mat-form-field-appearance-outline .mat-form-field-suffix {
-  top: -5px !important;
+// .date-picker .mat-form-field-appearance-outline .mat-form-field-prefix, .mat-form-field-appearance-outline .mat-form-field-suffix {
+//   top: -5px !important;
+// }
+.mat-form-field-appearance-outline .mat-form-field-infix {
+  padding: 1em 0 1em 0;
 }
   .org-card{
     border-radius: 0 !important;
@@ -27,13 +30,13 @@
     overflow: hidden;
     background-color: #f0f0f0;
   }
-  
+
   .photo {
     width: 100%;
     height: 100%;
     object-fit: cover;
   }
-  
+
   .upload-button {
     position: absolute;
     top: 50%;
@@ -41,8 +44,8 @@
     transform: translate(-50%, -50%);
     display: flex;
     align-items: center;
-    justify-content: center;  
-  
+    justify-content: center;
+
     padding: 10px;
     background-color: rgba(0, 0, 0, 0.5);
     color: white;
@@ -57,7 +60,7 @@
     color: red;
   }
   .image-container{
-    border: 1px solid #e0e0e0; 
+    border: 1px solid #e0e0e0;
     border-radius: 5px;
     position: relative;
     width: 80%;
@@ -78,7 +81,7 @@
       opacity: 0.7;
     }
   }
-  
+
   .img-container-label{
     display: inline-block;
     text-align: center;
@@ -101,7 +104,7 @@
     color: rgb(165, 165, 165);
     font-size: small !important;
   }
- 
+
   .row-container,.row-container2 {
     display: flex;
     //border: 1px solid #ccc;
@@ -112,7 +115,7 @@
     column-gap: 5px;
     padding: 6px 2px 0;
     // margin-bottom: 8px;
-  
+
     .column {
       position: relative;
       flex: 1;
@@ -130,7 +133,7 @@
           width: 100%; // Ensure the width is explicitly set
           border-right: none; // Optional: Remove the border-right for better appearance
         }
-      
+
       .error-text{
         position: absolute;
         top: 3.2rem;
@@ -138,21 +141,21 @@
         font-size: 11px;
         color: red;
       }
-      
+
       ::ng-deep .mat-form-field-appearance-fill .mat-form-field-underline {
-        background-color: gray !important; 
+        background-color: gray !important;
       }
       ::ng-deep .mat-form-field-appearance-fill .mat-form-field-underline::before {
-        background-color: gray !important; 
+        background-color: gray !important;
     }
       ::ng-deep .mat-form-field-appearance-fill .mat-form-field-flex {
         background-color: transparent !important;
       }
       ::ng-deep .mat-form-field-appearance-fill .mat-form-field-flex {
-        padding: 0; 
+        padding: 0;
     }
-     
-  
+
+
       mat-slide-toggle {
         width: 100%;
         display: flex;
@@ -161,7 +164,7 @@
       }
     }
     .mat-form-field-appearance-outline .mat-form-field-infix {
-      padding: 12px !important; 
+      padding: 12px !important;
   }
   }
   .row-container2{
@@ -177,7 +180,7 @@
     .bi-plus-circle:hover{
       opacity: 0.8;
     }
-    
+
     .custom-select-panel {
       min-width: 80% !important;
       width: 80% !important;
@@ -191,7 +194,7 @@
     .mat-select-panel {
       z-index: 900000 !important; /* Set a higher z-index value */
     }
-    
+
     .panel-multiselect{
       position: absolute !important;
       min-width: 80% !important;
@@ -199,13 +202,13 @@
       margin-top: 30px !important;
       transform: scale(0.9) !important;
     }
-    
+
   .mat-form-field-appearance-outline .mat-form-field-wrapper {
     margin: .10em 0 !important;
 }
 app-timesheet,app-applied-approved-leaves{
   .mat-form-field-appearance-outline .mat-form-field-infix {
-    padding: 0px !important; 
+    padding: 0px !important;
 }
 .mat-form-field .mat-icon-button {
   position: absolute;
@@ -215,17 +218,17 @@ app-timesheet,app-applied-approved-leaves{
 
 }
 
- 
+
 app-create-timesheet{
   .date-picker{
    .mat-form-field-infix {
-    padding: 0px !important; 
+    padding: 0px !important;
     height: 55px !important;
    }
-  
- 
+
+
   .c-fill.mat-form-field-wrapper {
-    padding-bottom: 0 !important; 
+    padding-bottom: 0 !important;
    }
    .c-fill.mat-form-field-appearance-legacy .mat-form-field-wrapper {
     padding-bottom: 0 !important;
@@ -252,7 +255,7 @@ app-create-timesheet{
 }
 
 .search-div{
-  
+
   #search-icon-tab {
   position: absolute;
   right: 30px;
