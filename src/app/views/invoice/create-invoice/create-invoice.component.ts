@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -8,14 +8,16 @@ import { CommonServiceService } from '../../../service/common-service.service';
 import { SubModuleService } from '../../../service/sub-module.service';
 import { environment } from '../../../../environments/environment';
 import { forkJoin, map } from 'rxjs';
+import { CanComponentDeactivate } from '../../../authGuard/can-deactivate.guard';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-create-invoice',
   templateUrl: './create-invoice.component.html',
   styleUrls: ['./create-invoice.component.scss']
 })
-export class CreateInvoiceComponent implements OnInit {
-
+export class CreateInvoiceComponent implements CanComponentDeactivate, OnInit {
+ @ViewChild('formInputField') formInputField: ElementRef;
  BreadCrumbsTitle: any = 'Create Invoice';
      term:any='';
      sortValue: string = '';
@@ -48,6 +50,7 @@ total_amount:false,
        private apiService: ApiserviceService,private http: HttpClient) {
        this.common_service.setTitle(this.BreadCrumbsTitle)
       }
+  canDeactivate: () => Observable<boolean> | Promise<boolean> | boolean;
    
      ngOnInit(): void {
        this.user_id = sessionStorage.getItem('user_id');
