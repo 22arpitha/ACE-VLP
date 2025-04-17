@@ -19,7 +19,7 @@ import { EditInvoiceComponent } from '../edit-invoice/edit-invoice.component';
 })
 export class AllInvoiceComponent implements OnInit {
 
-BreadCrumbsTitle: any = 'Invoice';
+BreadCrumbsTitle: any = 'Invoices';
     term:any='';
     sortValue: string = '';
     directionValue: string = '';
@@ -160,7 +160,7 @@ this.apiService.getData(`${environment.live_url}/${environment.client_invoice}/$
     public openEditInvoicePopup(item:any){
       this.dialog.open(EditInvoiceComponent, {
       data: { invoice_id: item?.id,client_id:item?.client_id },
-      width:'75%',
+      width:'75%'
     });
     this.dialog.afterAllClosed.subscribe((resp:any)=>{
       console.log('resp',resp);

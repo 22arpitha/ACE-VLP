@@ -15,7 +15,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
   styleUrls: ['./view-invoice.component.scss'],
 })
 export class ViewInvoiceComponent implements OnInit {
-  BreadCrumbsTitle: any = 'Invoice';
+  BreadCrumbsTitle: any = 'Invoice Details';
       term:any='';
       sortValue: string = '';
       directionValue: string = '';

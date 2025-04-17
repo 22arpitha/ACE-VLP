@@ -106,18 +106,15 @@
                       <td>{{item?.job_price || '-'}}</td>
                       <td>{{item?.total_amount || '-'}}</td>
                     </tr>
+                    <tr class="bg-transparent">
+                      <td colspan="4" class="bg-transparent"></td>
+                      <td class="bg-transparent"><b>TOTAL {{allClientBasedJobsLists[0].total_hours}} hrs</b></td>
+                      <td class="bg-transparent"></td>
+                      <td class="bg-transparent"><b>{{allClientBasedJobsLists[0].total_amount}} /-</b></td>
+                    </tr>
                   </ng-container>
                 </tbody>
               </table>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-sm-12 col-md-6 offset-md-6 mt-3">
-             <div class="d-flex justify-content-between">
-              <h5 class="fw-bold">TOTAL</h5>
-              <h5 class="fw-bold">{{allClientBasedJobsLists[0].total_hours}} hrs</h5>
-              <h5 class="fw-bold">{{allClientBasedJobsLists[0].total_amount}} /-</h5>
-             </div>
             </div>
           </div>
           <div class="row mx-1 my-2 px-0" *ngIf="allClientBasedJobsLists[0]?.client_invoice?.length === 0" >

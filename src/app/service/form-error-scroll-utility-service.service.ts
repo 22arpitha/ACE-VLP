@@ -40,6 +40,12 @@ export class FormErrorScrollUtilityService {
   }
 
 
+  isTableRecordChecked(isItemSelected:boolean): Observable<boolean> {
+    const isDirtyOrInvalid = isItemSelected;
+    return isDirtyOrInvalid ? this.getConfirmationPopup() : of(true);
+  }
+
+
   private getConfirmationPopup(): Observable<boolean> {
     return new Observable<boolean>((observer) => {
       const modelRef = this.modalService.open(GenericRedirectionConfirmationComponent, {
