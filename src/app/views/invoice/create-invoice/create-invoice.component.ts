@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -8,14 +8,16 @@ import { CommonServiceService } from '../../../service/common-service.service';
 import { SubModuleService } from '../../../service/sub-module.service';
 import { environment } from '../../../../environments/environment';
 import { forkJoin, map } from 'rxjs';
+import { CanComponentDeactivate } from '../../../auth-guard/can-deactivate.guard';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-create-invoice',
   templateUrl: './create-invoice.component.html',
   styleUrls: ['./create-invoice.component.scss']
 })
-export class CreateInvoiceComponent implements OnInit {
-
+export class CreateInvoiceComponent implements CanComponentDeactivate, OnInit {
+ @ViewChild('formInputField') formInputField: ElementRef;
  BreadCrumbsTitle: any = 'Create Invoice';
      term:any='';
      sortValue: string = '';
@@ -48,7 +50,8 @@ total_amount:false,
        private apiService: ApiserviceService,private http: HttpClient) {
        this.common_service.setTitle(this.BreadCrumbsTitle)
       }
-   
+  canDeactivate: () => Observable<boolean> | Promise<boolean> | boolean;
+
      ngOnInit(): void {
        this.user_id = sessionStorage.getItem('user_id');
        this.userRole = sessionStorage.getItem('user_role_name');
@@ -86,7 +89,7 @@ total_amount:false,
     public backBtnFunc(){
       this.router.navigate(['/invoice/all-invoice']);
     }
-    
+
     public clearSearch() {
       this.searchClientText = '';
     }
@@ -98,7 +101,7 @@ total_amount:false,
         client?.client_name?.toLowerCase()?.includes(this.searchClientText?.toLowerCase())
       );
     }
- 
+
     public onClientChange(event: any) {
       this.jobSelection=[];
       this.selectedClientId = event?.value;
@@ -141,7 +144,7 @@ total_amount:false,
     this.allClientBasedJobsLists = jobsList;
     this.count = responseData.total_no_of_record || 0;
   }
-  this.page = responseData.current_page || 1;         
+  this.page = responseData.current_page || 1;
  });
     }
 
@@ -182,15 +185,15 @@ const jobsMappedData =  this.jobSelection?.map(({id,
         this.jobSelection?.splice(index, 1);
       }
     }
-  
+
     isAllJobsSelected() {
       return this.jobSelection?.length > 0 ? this.jobSelection?.length === this.allClientBasedJobsLists?.length : false;
     }
-  
+
     isSomeJobsSelected() {
       return this.jobSelection?.length > 0 && !this.isAllJobsSelected();
     }
-  
+
     toggleAllJobs(event: any) {
       if (event.checked) {
         this.jobSelection = [...this.allClientBasedJobsLists];
@@ -222,16 +225,16 @@ const jobsMappedData =  this.jobSelection?.map(({id,
           this.getClientBasedJobsList();
        }
      }
-   
+
      public getFilterBaseUrl(): string {
       if(this.selectedClientId && this.selectedClientId!=null){
         return `?page=${this.page}&page_size=${this.tableSize}&search=${this.term}&job-status=Completed&client=${this.selectedClientId}`;
       }else{
         return `?page=${this.page}&page_size=${this.tableSize}&search=${this.term}&job-status=Completed&client=0`;
-       
+
       }
         }
-   
+
      public sort(direction: string, column: string) {
        Object.keys(this.arrowState).forEach(key => {
          this.arrowState[key] = false;
@@ -240,7 +243,7 @@ const jobsMappedData =  this.jobSelection?.map(({id,
        this.directionValue = direction;
        this.sortValue = column;
      }
-   
+
      public getContinuousIndex(index: number): number {
        return (this.page - 1) * this.tableSize + index + 1;
      }

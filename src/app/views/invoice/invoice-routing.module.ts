@@ -4,6 +4,7 @@ import {InvoiceComponent} from './invoice.component';
 import {AllInvoiceComponent} from './all-invoice/all-invoice.component';
 import {CreateInvoiceComponent} from './create-invoice/create-invoice.component';
 import {ViewInvoiceComponent} from './view-invoice/view-invoice.component';
+import { CanDeactivateGuard } from '../../auth-guard/can-deactivate.guard';
 
 const routes: Routes = [
   {
@@ -12,11 +13,12 @@ const routes: Routes = [
     children:[
       {
         path: 'all-invoice',
-        component:AllInvoiceComponent 
+        component:AllInvoiceComponent
       },
       {
         path: 'create-invoice',
-        component: CreateInvoiceComponent
+        component: CreateInvoiceComponent,
+        canDeactivate:[CanDeactivateGuard]
       },
       {
         path: 'view-invoice/:id',

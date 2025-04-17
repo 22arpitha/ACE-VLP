@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, FormGroupDirective, Validators } from '@angular/forms';
 import { ApiserviceService } from '../../../service/apiservice.service';
 import { environment } from '../../../../environments/environment';
@@ -7,14 +7,17 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { CommonServiceService } from '../../../service/common-service.service';
 import { FormErrorScrollUtilityService } from '../../../service/form-error-scroll-utility-service.service';
 import { DatePipe } from '@angular/common';
+import {CanComponentDeactivate} from '../../../auth-guard/can-deactivate.guard'
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-create-update-timesheet',
   templateUrl: './create-update-timesheet.component.html',
   styleUrls: ['./create-update-timesheet.component.scss']
 })
-export class CreateUpdateTimesheetComponent implements OnInit {
+export class CreateUpdateTimesheetComponent implements CanComponentDeactivate, OnInit {
   @ViewChild(FormGroupDirective) formGroupDirective!: FormGroupDirective;
+   @ViewChild('formInputField') formInputField: ElementRef;
   BreadCrumbsTitle: any = 'Timesheet';
   timesheetFormGroup: FormGroup
   currentDate: any = new Date().toISOString();
@@ -47,6 +50,7 @@ export class CreateUpdateTimesheetComponent implements OnInit {
       this.common_service.setTitle('Create ' + this.BreadCrumbsTitle)
     }
   }
+  canDeactivate: () => Observable<boolean> | Promise<boolean> | boolean;
 
   ngOnInit(): void {
     const now = new Date();

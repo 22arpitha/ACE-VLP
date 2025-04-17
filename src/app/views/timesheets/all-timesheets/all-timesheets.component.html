@@ -2,26 +2,56 @@
     <section class="settings-table-bg px-3"
         *ngIf="userRole !='Admin' && accessPermissions[0]?.view || userRole === 'Admin'">
         <div class="row mx-0 my-1 px-0 py-2">
-            <div class="col-12 mt-2 col-sm-12 col-md-4 col-lg-3 search-div px-0">
+            <div class="col-sm-12 col-md-12 week-picker" *ngIf="userRole !='Admin'">
+                <div class="d-flex align-items-center">
+                    <h5 class="fw-bold">Weekly Timesheet History</h5>
+                    <button mat-raised-button (click)="picker1.open()"><i class="bi bi-calendar-event fs-4"></i></button> 
+                    <p class="mb-0">Select a week of a month</p>
+                </div>
+                <mat-form-field class="example-full-width">
+                    <mat-label> &nbsp; Enter a date range</mat-label >
+                        <mat-date-range-input [rangePicker]="picker1" >
+                            <input matStartDate placeholder="Start date" [(ngModel)]="selectedDate" (dateChange)="weekDatePicker($event)">
+                            <input matEndDate placeholder="End date"  >
+                        </mat-date-range-input>
+                        <mat-datepicker-toggle matIconSuffix [for]="picker1"></mat-datepicker-toggle>
+                        <mat-date-range-picker #picker1></mat-date-range-picker>
+                    </mat-form-field>
+            </div>
+            <div class="col-12 m-0 p-0 " *ngIf="userRole !='Admin'">
+                <div class="d-flex">
+                    <div *ngFor="let i of weekData" class="week-card">
+                        <div class="d-flex d-flex justify-content-around align-items-center">
+                            <div class="text-style">{{i.date | date: 'dd' }}</div>
+                            <div class="text-style">{{i.day.slice(0, 3) | titlecase}}</div>
+                        </div>
+                        <div class="d-flex d-flex justify-content-around align-items-center">
+                            <div class="text-style fw-medium">{{i.month}}</div>
+                            <div style="color: #449dd0; margin-bottom: 4px; font-weight: 600;">{{i.total_time}}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 mt-3 col-sm-12 col-md-4 col-lg-3 search-div px-0">
                 <input type="search" (input)="filterSearch($event)" class="form-control p-2 sizeinput"
                     [(ngModel)]="term" placeholder="Search" aria-describedby="emailHelp" autocomplete="off">
                 <i *ngIf="!term" class="bi bi-search" id="search-icon-tab"></i>
             </div>
-            <div class="col-12 mt-2 col-sm-12 col-md-4 col-lg-3">
+            <div class="col-12 mt-3 col-sm-12 col-md-4 col-lg-3">
                 <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
-                    <mat-label> &nbsp; Enter a date range</mat-label>
-                    <mat-date-range-input [rangePicker]="picker">
-                      <input matStartDate placeholder="Start date">
-                      <input matEndDate placeholder="End date">
+                    <mat-label> &nbsp; Enter a date range</mat-label >
+                    <mat-date-range-input [rangePicker]="picker" >
+                      <input matStartDate placeholder="Start date" (dateChange)="startDatePicker($event)">
+                      <input matEndDate placeholder="End date"  (dateChange)="startAndEndDateFunction($event)">
                     </mat-date-range-input>
                     <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
                     <mat-date-range-picker #picker></mat-date-range-picker>
                   </mat-form-field>
             </div>
-            <div class="col-12 mt-2 col-sm-12 col-md-4 col-lg-6 text-end px-0">
+            <div class="col-12 mt-3 col-sm-12 col-md-4 col-lg-6 text-end px-0">
                 <button mat-raised-button class="proceedbtn mat-btn-s order-sm-1 order-3" type="button"
                     (click)="openCreateEmployeePage()"
-                    *ngIf="userRole !='Admin' && accessPermissions[0]?.create || userRole === 'Admin'">Create
+                    *ngIf="userRole !='Admin' && accessPermissions[0]?.create">Create
                     TimeSheet</button>
             </div>
         </div>

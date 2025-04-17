@@ -3,6 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { TimesheetsComponent } from './timesheets.component';
 import { AllTimesheetsComponent } from './all-timesheets/all-timesheets.component';
 import { CreateUpdateTimesheetComponent } from './create-update-timesheet/create-update-timesheet.component';
+import { CanDeactivateGuard } from '../../auth-guard/can-deactivate.guard';
 
 const routes: Routes = [
   {
@@ -15,11 +16,13 @@ const routes: Routes = [
       },
       {
         path: 'create-timesheet',
-        component: CreateUpdateTimesheetComponent
+        component: CreateUpdateTimesheetComponent,
+        canDeactivate:[CanDeactivateGuard]
       },
       {
         path: 'update-timesheet/:id',
-        component: CreateUpdateTimesheetComponent
+        component: CreateUpdateTimesheetComponent,
+        canDeactivate:[CanDeactivateGuard]
       },
     ]
   }

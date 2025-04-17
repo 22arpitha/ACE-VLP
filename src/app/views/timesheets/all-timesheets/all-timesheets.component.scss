@@ -1,21 +1,61 @@
-.vlp-timesheet .mat-btn-s{
-    margin: 0px 5px;
+.vlp-timesheet .mat-btn-s {
+  margin: 0px 5px;
 }
-.vlp-timesheet .settings-table-bg{
-    max-height: 75vh !important;
+.vlp-timesheet .settings-table-bg {
+  max-height: 75vh !important;
 }
-.vlp-timesheet .table-wrapper{
-    max-height: 55vh !important;
-    overflow-x: auto;
-    margin-bottom: 20px;
+.vlp-timesheet .table-wrapper {
+  max-height: 55vh !important;
+  overflow-x: auto;
+  margin-bottom: 20px;
 }
-::ng-deep .vlp-timesheet .mat-form-field-type-mat-date-range-input .mat-form-field-infix {
-    width: 200px;
-    display: contents !important;
+::ng-deep
+  .vlp-timesheet
+  .mat-form-field-type-mat-date-range-input
+  .mat-form-field-infix {
+  width: 200px;
+  display: contents !important;
 }
-::ng-deep .vlp-timesheet .mat-form-field-appearance-outline .mat-form-field-outline {
-    // background-color: white !important;
+::ng-deep
+  .vlp-timesheet
+  .mat-form-field-appearance-outline
+  .mat-form-field-outline {
+  // background-color: white !important;
 }
-.mat-form-field-wrapper {
-    padding: 0 !important;
+::ng-deep .vlp-timesheet .mat-form-field-wrapper {
+  padding: 0 !important;
+}
+::ng-deep .vlp-timesheet .mat-form-field {
+  background: white !important;
+}
+.week-picker .hidden-date-field .mat-form-field-flex {
+  display: none !important;
+}
+.vlp-timesheet .week-card {
+  margin: 0px 5px;
+  border: 1px solid lightgrey;
+  background: white;
+  border-radius: 8px;
+  width: 100%;
+  padding: 8px 0px;
+}
+.vlp-timesheet .week-card .text-style {
+  // font-weight: 500 !important;
+  margin-bottom: 4px !important;
+}
+::ng-deep .vlp-timesheet .week-picker .mat-form-field-wrapper {
+  padding: 0 !important;
+  visibility: hidden !important;
+}
+::ng-deep .vlp-timesheet .week-picker .mat-form-field {
+    margin-right: 12px !important;
+    background: none !important;
+  }
+::ng-deep .vlp-timesheet .week-picker .mat-raised-button{
+    box-shadow: none;
+    background: none;
+}
+::ng-deep .vlp-timesheet .week-picker .mat-raised-button:hover{
+    box-shadow: none;
+    background: none;
 }

@@ -6,14 +6,26 @@ import { ApiserviceService } from '../../../service/apiservice.service';
 import { CommonServiceService } from '../../../service/common-service.service';
 import { environment } from '../../../../environments/environment';
 import { SubModuleService } from '../../../service/sub-module.service';
-import { GenericDeleteComponent } from 'src/app/generic-components/generic-delete/generic-delete.component';
+import { GenericDeleteComponent } from '../../../generic-components/generic-delete/generic-delete.component';
+import { DatePipe } from '@angular/common';
+import { MAT_DATE_RANGE_SELECTION_STRATEGY } from '@angular/material/datepicker';
+import { WeeklySelectionStrategy } from '../../../shared/weekly-selection-strategy';
 
 @Component({
   selector: 'app-all-timesheets',
   templateUrl: './all-timesheets.component.html',
-  styleUrls: ['./all-timesheets.component.scss']
+  styleUrls: ['./all-timesheets.component.scss'],
+  providers: [
+    DatePipe,
+    WeeklySelectionStrategy,
+    {
+      provide: MAT_DATE_RANGE_SELECTION_STRATEGY,
+      useExisting: WeeklySelectionStrategy
+    }
+  ]
 })
-export class AllTimesheetsComponent implements OnInit {
+export class AllTimesheetsComponent implements  OnInit {
+  selectedDate: Date = new Date();
   BreadCrumbsTitle: any = 'Timesheets';
   term: any = '';
   isCurrent: boolean = true;
@@ -28,6 +40,8 @@ export class AllTimesheetsComponent implements OnInit {
     task_nmae: false,
     notes: false,
   };
+  startDate: any = '';
+  endDate:any = '';
   page = 1;
   count = 0;
   tableSize = 5;
@@ -40,7 +54,7 @@ export class AllTimesheetsComponent implements OnInit {
 
   constructor(private common_service: CommonServiceService,
     private router: Router, private modalService: NgbModal, private accessControlService: SubModuleService,
-    private apiService: ApiserviceService) {
+    private apiService: ApiserviceService, private datePipe:DatePipe) {
     this.common_service.setTitle(this.BreadCrumbsTitle)
     // this.common_service.empolyeeStatus$.subscribe((status: boolean) => {
     //   if (status) {
@@ -56,7 +70,7 @@ export class AllTimesheetsComponent implements OnInit {
     this.userRole = sessionStorage.getItem('user_role_name');
     this.getModuleAccess();
     this.getTimesheets();
-
+    this.getWeekData(this.selectedDate);
   }
 
   access_name: any;
@@ -70,6 +84,18 @@ export class AllTimesheetsComponent implements OnInit {
         console.log('No matching access found.');
       }
     });
+  }
+
+  weekData:any = []
+  getWeekData(date:any){
+    let currentDate = this.datePipe.transform(date,'yyyy-MM-dd');
+    let query =`?timesheet-employee=${this.user_id}&get-cuurent-timesheet-data=True&from-date=${currentDate}`;
+    this.apiService.getData(`${environment.live_url}/${environment.vlp_timesheets}/${query}`).subscribe(
+      (res:any)=>{
+        console.log('week data',res);
+        this.weekData = res.data
+      }
+    )
   }
 
   public openCreateEmployeePage() {
@@ -139,7 +165,7 @@ export class AllTimesheetsComponent implements OnInit {
   }
 
   public getFilterBaseUrl(): string {
-    return `?page=${this.page}&page_size=${this.tableSize}&search=${this.term}`;
+    return `?page=${this.page}&page_size=${this.tableSize}&search=${this.term}&start-date=${this.startDate}&end-date=${this.endDate}`;
   }
 
   public sort(direction: string, column: string) {
@@ -190,5 +216,26 @@ export class AllTimesheetsComponent implements OnInit {
       }, (error => {
         this.apiService.showError(error?.error?.detail)
       }))
+    }
+
+    startDatePicker(event: any) {
+      console.log('start:', event);
+      this.startDate = this.datePipe.transform(event.value,'yyyy-MM-dd');
+      this.getTimesheets()
+      // console.log('Start:', event.value?.start);
+      // console.log('End:', event.value?.end);
+    }
+  
+    startAndEndDateFunction(event: any) {
+      console.log('end:', event);
+      this.endDate = this.datePipe.transform(event.value,'yyyy-MM-dd')
+      this.getTimesheets()
+      // console.log('Start:', event.value?.start);
+      // console.log('End:', event.value?.end);
+    }
+
+    weekDatePicker(event: any){
+      console.log('week:', event);
+      this.getWeekData(event.value);
     }
 }
