@@ -31,6 +31,11 @@
     <div class="col"></div>
 
     <!-- Download Menu -->
+     <div class="col-12 mt-2 col-sm-12 col-md-4 col-lg-3" *ngIf="config?.headerTabs">
+              <button mat-raised-button class="mat-btn-s tab-button-content" [ngClass]="{'isActive': isCurrent}" type="button" type="button" (click)="getCurrentDatasetList()">Current</button> 
+              <button mat-raised-button class="mat-btn-s tab-button-content" [ngClass]="{'isActive': isHistory}" type="button" type="button" (click)="getHistoryDatasetList()">History</button>       
+        </div>
+    <!-- Tab design -->
     <div class="col-auto d-flex justify-content-end">
       <button
         mat-icon-button

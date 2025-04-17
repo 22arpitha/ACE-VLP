@@ -6,6 +6,7 @@ import { ReportsComponent } from './reports.component';
 import { TimesheetDetailedReportComponent } from './timesheet-detailed-report/timesheet-detailed-report.component';
 import { TimesheetSummaryReportComponent } from './timesheet-summary-report/timesheet-summary-report.component';
 import { EmployeeDetailsComponent } from './timesheet-summary-report/employee-details/employee-details.component';
+import { JobStatusReportComponent } from './job-status-report/job-status-report.component';
 
 
 @NgModule({
@@ -13,7 +14,8 @@ import { EmployeeDetailsComponent } from './timesheet-summary-report/employee-de
     ReportsComponent,
     TimesheetDetailedReportComponent,
     TimesheetSummaryReportComponent,
-    EmployeeDetailsComponent
+    EmployeeDetailsComponent,
+    JobStatusReportComponent
   ],
   imports: [
     CommonModule,

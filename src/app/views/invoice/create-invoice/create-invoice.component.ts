@@ -1,15 +1,13 @@
-import { HttpClient } from '@angular/common/http';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { forkJoin, map, Observable } from 'rxjs';
+import { FormErrorScrollUtilityService } from '../../../service/form-error-scroll-utility-service.service';
 import { ApiserviceService } from '../../../service/apiservice.service';
 import { CommonServiceService } from '../../../service/common-service.service';
 import { SubModuleService } from '../../../service/sub-module.service';
 import { environment } from '../../../../environments/environment';
-import { forkJoin, map } from 'rxjs';
 import { CanComponentDeactivate } from '../../../auth-guard/can-deactivate.guard';
-import { Observable } from 'rxjs';
+
 
 @Component({
   selector: 'app-create-invoice',
@@ -46,12 +44,11 @@ total_amount:false,
      selectedClientId:any=null;
      selectedClientName:any='';
      constructor(private common_service: CommonServiceService,private accessControlService:SubModuleService,
-       private router:Router,private modalService: NgbModal,private dialog:MatDialog,
-       private apiService: ApiserviceService,private http: HttpClient) {
+       private router:Router,
+       private apiService: ApiserviceService,private formErrorScrollService:FormErrorScrollUtilityService) {
        this.common_service.setTitle(this.BreadCrumbsTitle)
       }
-  canDeactivate: () => Observable<boolean> | Promise<boolean> | boolean;
-
+   
      ngOnInit(): void {
        this.user_id = sessionStorage.getItem('user_id');
        this.userRole = sessionStorage.getItem('user_role_name');
@@ -247,5 +244,8 @@ const jobsMappedData =  this.jobSelection?.map(({id,
      public getContinuousIndex(index: number): number {
        return (this.page - 1) * this.tableSize + index + 1;
      }
-
+canDeactivate(): Observable<boolean> {
+  const isdirty = this.selectedClientId || this.jobSelection.length>=1 ? true : false;
+return this.formErrorScrollService.isTableRecordChecked(isdirty);
+}
 }

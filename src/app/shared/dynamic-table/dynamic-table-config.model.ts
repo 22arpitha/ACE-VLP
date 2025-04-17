@@ -19,4 +19,5 @@ export interface DynamicTableConfig {
   pagination?: boolean;
   navigation?: boolean;
   dateRangeFilter?:boolean;
+  headerTabs?:boolean;
 }

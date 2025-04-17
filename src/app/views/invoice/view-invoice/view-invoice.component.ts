@@ -15,7 +15,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
   styleUrls: ['./view-invoice.component.scss'],
 })
 export class ViewInvoiceComponent implements OnInit {
-  BreadCrumbsTitle: any = 'Invoice';
+  BreadCrumbsTitle: any = 'Invoice Details';
       term:any='';
       sortValue: string = '';
       directionValue: string = '';
@@ -73,11 +73,11 @@ export class ViewInvoiceComponent implements OnInit {
   this.apiService.getData(`${environment.live_url}/${environment.client_invoice}/${query}`).subscribe(
         (res: any) => {
           console.log(res?.results);
-          this.allClientBasedJobsLists = res?.results;
-          const noOfPages: number = res?.['total_pages']
-          this.count = noOfPages * this.tableSize;
-          this.count = res?.['total_no_of_record']
-          this.page = res?.['current_page'];
+          this.allClientBasedJobsLists = res;
+          // const noOfPages: number = res?.['total_pages']
+          // this.count = noOfPages * this.tableSize;
+          // this.count = res?.['total_no_of_record']
+          // this.page = res?.['current_page'];
         }
       )
       }
@@ -106,7 +106,7 @@ public deleteClient(){
           if (data) {
             this.invoice_id = [];
             this.apiService.showSuccess(data.message);
-            this.router.navigate(['/client/all-client']);
+            this.router.navigate(['invoice/all-invoice']);
           }
         }, (error => {
           this.apiService.showError(error?.error?.detail)
@@ -125,9 +125,9 @@ public deleteClient(){
     
       public getFilterBaseUrl(): string {
         if(this.userRole === 'Admin'){
-          return `?page=${this.page}&page_size=${this.tableSize}&search=${this.term}&invoice-id=${this.invoice_id}`;
+          return `?invoice-id=${this.invoice_id}`;
         }else{
-          return `?page=${this.page}&page_size=${this.tableSize}&search=${this.term}&invoice-id=${this.invoice_id}`;
+          return `?invoice-id=${this.invoice_id}`;
         }
         }
     
@@ -160,8 +160,17 @@ public deleteClient(){
     this.router.navigate(['/invoice/all-invoice']);
   }
 
-  public getConvertedDate(item:any){
-    const cleanedDate = item?.created_date?.replace(/(\.\d{3})\d+/, '$1');
-   return cleanedDate ? this.datePipe.transform(cleanedDate,'dd/MM/yyyy') : '-';
+  public downloadOption(type:any){
+    let query = `?invoice-id=${this.invoice_id}&file-type=${type}`
+    let apiUrl = `${environment.live_url}/${environment.invoice_details}/${query}`;
+    fetch(apiUrl)
+  .then(res => res.blob())
+  .then(blob => {
+    console.log('blob',blob);
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `invoice_details.${type}`;
+    a.click();
+  });
   }
   }

@@ -4,6 +4,8 @@ import { ReportsComponent } from './reports.component';
 import { TimesheetDetailedReportComponent } from './timesheet-detailed-report/timesheet-detailed-report.component';
 import { TimesheetSummaryReportComponent } from './timesheet-summary-report/timesheet-summary-report.component';
 import { EmployeeDetailsComponent } from './timesheet-summary-report/employee-details/employee-details.component'
+import { JobStatusReportComponent } from './job-status-report/job-status-report.component';
+
 const routes: Routes = [
   {
      path:'',component:ReportsComponent, children:[
@@ -11,6 +13,7 @@ const routes: Routes = [
       {path:'timesheet-summary-report', component:TimesheetSummaryReportComponent},
       {path:'employee-details', component:EmployeeDetailsComponent},
       // {path:'job-status-report', component:TimesheetSummaryReportComponent},
+      {path:'job-status-report', component:JobStatusReportComponent},
       // {path:'job-time-report', component:TimesheetSummaryReportComponent},
       // {path:'job-productivity-report', component:TimesheetSummaryReportComponent},
       // {path:'job-leave-report', component:TimesheetSummaryReportComponent},

@@ -41,3 +41,20 @@ mat-form-field{
   background-color: white;
 }
 
+.isActive {
+  background-color: #ebebeb !important;
+  color: #000;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.tab-button-content {
+  background-color: #fff;
+  width: 75px;
+  outline: none;
+  border: none;
+}
+
+.mat-btn-s {
+  margin: 0px 5px;
+}

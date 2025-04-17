@@ -4,13 +4,16 @@ import { Router } from '@angular/router';
 import { Location } from '@angular/common';
 import { ApiserviceService } from 'src/app/service/apiservice.service';
 import { CommonServiceService } from 'src/app/service/common-service.service';
+import { CanComponentDeactivate } from 'src/app/auth-guard/can-deactivate.guard';
+import { Observable } from 'rxjs';
+import { FormErrorScrollUtilityService } from 'src/app/service/form-error-scroll-utility-service.service';
 
 @Component({
   selector: 'app-change-passwords',
   templateUrl: './change-passwords.component.html',
   styleUrls: ['./change-passwords.component.scss']
 })
-export class ChangePasswordsComponent implements OnInit {
+export class ChangePasswordsComponent implements CanComponentDeactivate, OnInit {
   BreadCrumbsTitle: any = 'Change password';
   userId
   changePassword: FormGroup;
@@ -23,12 +26,14 @@ export class ChangePasswordsComponent implements OnInit {
   eyeIcon3 = 'visibility_off'
   passwordType3 = "password";
   eyeState3: boolean = false;
+  initialFormValue:any;
   constructor(
     private builder: FormBuilder,
     private api: ApiserviceService,
     private router: Router,
     private common_service: CommonServiceService,
-    private location: Location
+    private location: Location,
+    private formErrorScrollService: FormErrorScrollUtilityService
   ) { }
 
   ngOnInit(): void {
@@ -44,6 +49,7 @@ export class ChangePasswordsComponent implements OnInit {
         validators: this.passwordMatchValidator
       },
     )
+    this.initialFormValue=this.changePassword.getRawValue();
   }
 
   passwordMatchValidator(control: AbstractControl): { [key: string]: boolean } | null {
@@ -137,4 +143,10 @@ export class ChangePasswordsComponent implements OnInit {
     }
 
   }
+
+  canDeactivate(): Observable<boolean> {
+      const currentFormValue = this.changePassword?.getRawValue();
+      const isFormChanged:boolean =  JSON.stringify(currentFormValue) !== JSON.stringify(this.initialFormValue);
+      return this.formErrorScrollService.isFormDirtyOrInvalidCheck(isFormChanged,this.changePassword);
+    }
 }
