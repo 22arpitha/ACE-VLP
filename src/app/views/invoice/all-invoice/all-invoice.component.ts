@@ -160,7 +160,8 @@ this.apiService.getData(`${environment.live_url}/${environment.client_invoice}/$
     public openEditInvoicePopup(item:any){
       this.dialog.open(EditInvoiceComponent, {
       data: { invoice_id: item?.id,client_id:item?.client_id },
-      width:'75%'
+      width:'75%',
+      disableClose: true
     });
     this.dialog.afterAllClosed.subscribe((resp:any)=>{
       console.log('resp',resp);
@@ -170,10 +171,5 @@ this.apiService.getData(`${environment.live_url}/${environment.client_invoice}/$
 
     public viewInvoiceDetails(item:any){
       this.router.navigate(['/invoice/view-invoice',item?.id]);
-    }
-
-    public getConvertedDate(item:any){
-      const cleanedDate = item?.created_date?.replace(/(\.\d{3})\d+/, '$1');
-     return cleanedDate ? this.datePipe.transform(cleanedDate,'dd/MM/yyyy') : '-';
     }
 }

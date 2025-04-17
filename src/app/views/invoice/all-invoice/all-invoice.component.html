@@ -49,7 +49,7 @@
                              currentPage: page,
                              totalItems: count
                            }; let i=index'>
-                      <td>{{getConvertedDate(item)}}</td>
+                      <td>{{item?.created_date||'-'}}</td>
                       <td>{{item?.invoice_number || '-'}}</td>
                       <td>{{item?.client_name || '-'}}</td>
                       <td>{{item?.total_amount || '-'}}</td>

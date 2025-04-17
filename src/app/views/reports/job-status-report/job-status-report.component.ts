@@ -23,6 +23,7 @@ export class JobStatusReportComponent implements OnInit {
      tableSize: 10,
      pagination: true,
    };
+   tabStatus:any='';
    constructor(private common_service:CommonServiceService) { }
  
    ngOnInit(): void {
@@ -30,10 +31,25 @@ export class JobStatusReportComponent implements OnInit {
      this.tableConfig = tableConfig;
    }
  
-   handleAction(event: { actionType: string; row: any }) {}
+   handleAction(event: { actionType: string; action: any }) {
+    switch (event.actionType) {
+      case 'headerTabs':
+        switch (event.action) {
+          case 'current':
+            this.tabStatus = true;
+            break;
+          case 'history':
+            this.tabStatus = false;
+            break;
+        }
+        this.onTableDataChange(event);
+        console.log('View action triggered for row:', event.action);
+        break;
+    }
+   }
    onTableDataChange(event:any){
      this.page = event;
-     let query = `?page=${this.page}&page_size=${this.tableSize}`
+     let query = `?page=${this.page}&page_size=${this.tableSize}status=${this.tabStatus}`
      if(this.term){
        query +=`&search=${this.term}`
      }

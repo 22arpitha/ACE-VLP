@@ -14,7 +14,7 @@
 <div class="d-flex gap-1 my-1">
     <h5>{{allClientBasedJobsLists[0]?.invoice_number || '-'}}</h5>
     <span>|</span>
-    <h5>{{getConvertedDate(allClientBasedJobsLists[0])}}</h5>
+    <h5>{{allClientBasedJobsLists[0]?.created_date||'-'}}</h5>
 </div>
         </div>
     </div>
@@ -28,21 +28,21 @@
     </div>
     <section class="settings-table-bg px-3">
         <div class="row mx-0 my-1 px-0 py-2">
-            <div class="col-12 mt-2 col-sm-12 col-md-4 col-lg-3 search-div px-0">
+            <!-- <div class="col-12 mt-2 col-sm-12 col-md-4 col-lg-3 search-div px-0">
               <input type="search" (input)="filterSearch($event)" class="form-control p-2 sizeinput" [(ngModel)]="term"
                 placeholder="Search by Jobs " aria-describedby="emailHelp" autocomplete="off">
               <i *ngIf="!term" class="bi bi-search" id="search-icon-tab"></i>
-            </div>
+            </div> -->
 
-            <div class="col-12 mt-2 col-sm-12 col-md-4 col-lg-6"></div>
+            <div class="col-12 mt-2 col-sm-12 col-md-8 col-lg-9"></div>
             <div class="col-12 mt-2 col-sm-12 col-md-4 col-lg-3 text-end px-0">
                 <button *ngIf="userRole !='Admin' && accessPermissions[0]?.update || userRole === 'Admin'" mat-raised-button class="proceedbtn mat-btn-s download-btn" type="button" [matMenuTriggerFor]="downloadMenu"><i class="fa fa-download"></i></button>
               
                 <mat-menu #downloadMenu="matMenu">
-                  <button mat-menu-item>
+                  <button mat-menu-item type="button" (click)="downloadOption('pdf')">
                     <i class="fa fa-file-pdf"></i> PDF
                   </button>
-                  <button mat-menu-item>
+                  <button mat-menu-item type="button" (click)="downloadOption('csv')">
                     <i class="fa fa-file-excel"></i> CSV
                   </button>
                 </mat-menu>  
@@ -122,7 +122,7 @@
           </div>
         
     </section>
-    <div class="row mx-0 px-3" *ngIf="allClientBasedJobsLists[0]?.client_invoice?.length > 0">
+    <!-- <div class="row mx-0 px-3" *ngIf="allClientBasedJobsLists[0]?.client_invoice?.length > 0">
       <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0">
         <div class="pagination-container p-0">
           <pagination-controls previousLabel="Prev" nextLabel="Next" (pageChange)="onTableDataChange($event)">
@@ -136,5 +136,5 @@
           </div>
         </div>
       </div>
-    </div>
+    </div> -->
 </div>

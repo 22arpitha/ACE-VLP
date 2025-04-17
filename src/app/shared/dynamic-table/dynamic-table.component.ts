@@ -12,7 +12,6 @@ import { DatePipe } from '@angular/common';
 export class DynamicTableComponent implements OnInit {
   @Input() config!: DynamicTableConfig;
   @Output() actionEvent = new EventEmitter<any>();
-
   filteredData: any[] = [];
   paginatedData: any[] = [];
   currentPage = 1;
@@ -26,7 +25,8 @@ export class DynamicTableComponent implements OnInit {
   tableSize: number = 10;
   activeDateColumn: string | null = null;
   dateFilterValue: any = null;
-
+  isCurrent:boolean=true;
+  isHistory:boolean=false;
   constructor(private datePipe: DatePipe) {}
   ngOnInit(): void {
     this.filteredData = [...this.config.data];
@@ -161,5 +161,17 @@ navigateToEmployee(event){
   this.actionEvent.emit({ actionType: 'navigate', row: event });
 }
 
+// Header Tabs events
+public getCurrentDatasetList(){
+  this.isHistory = false;
+  this.isCurrent = true;
+  this.actionEvent.emit({ actionType: 'headerTabs', action:'current' });
+}
+
+public getHistoryDatasetList(){
+  this.isCurrent = false;
+  this.isHistory = true;
+  this.actionEvent.emit({ actionType: 'headerTabs', action:'history'});
+}
 
 }
