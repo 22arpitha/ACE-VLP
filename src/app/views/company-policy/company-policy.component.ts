@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormGroupDirective, FormGroup, FormBuilder, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { GenericDeleteComponent } from '../../generic-components/generic-delete/generic-delete.component';
@@ -19,7 +19,7 @@ import { FormErrorScrollUtilityService } from 'src/app/service/form-error-scroll
   templateUrl: './company-policy.component.html',
   styleUrls: ['./company-policy.component.scss']
 })
-export class CompanyPolicyComponent implements CanComponentDeactivate, OnInit {
+export class CompanyPolicyComponent implements CanComponentDeactivate, OnInit,OnDestroy {
   @ViewChild(FormGroupDirective) formGroupDirective!: FormGroupDirective;
   @ViewChild('fileInput') fileInput: ElementRef;
   @ViewChild('formInputField') formInputField: ElementRef;
@@ -63,8 +63,17 @@ export class CompanyPolicyComponent implements CanComponentDeactivate, OnInit {
     this.getModuleAccess();
     this.initializeForm();
     this.getAllCompanyPolicy('?page=1&page_size=5');
+    this.companyPolicyForm?.valueChanges?.subscribe(() => {
+      const currentFormValue = this.companyPolicyForm?.getRawValue();
+      const isInvalid = this.companyPolicyForm.touched && this.companyPolicyForm.invalid;
+     const isFormChanged:boolean =  JSON.stringify(currentFormValue) !== JSON.stringify(this.initialFormValue);
+     let unSavedChanges = isFormChanged || isInvalid;
+     this.formUtilityService.setUnsavedChanges(unSavedChanges);
+    });
   }
-
+  ngOnDestroy(): void {
+this.formUtilityService.resetHasUnsavedValue();
+  }
   getModuleAccess(){
     this.accessControlService.getAccessForActiveUrl(this.user_id).subscribe((access) => {
       if (access) {
@@ -106,6 +115,7 @@ export class CompanyPolicyComponent implements CanComponentDeactivate, OnInit {
   public savePolicyDetails() {
     if (this.companyPolicyForm.invalid) {
       this.companyPolicyForm.markAllAsTouched();
+      this.formUtilityService.setUnsavedChanges(true);
     } else {
       if (this.isEditItem) {
         this.formData = this.createFromData();
@@ -148,6 +158,7 @@ export class CompanyPolicyComponent implements CanComponentDeactivate, OnInit {
   public resetFormState() {
     this.companyPolicyForm.controls['policy_file']?.setValidators([Validators.required]);
     this.formGroupDirective.resetForm();
+    this.formUtilityService.resetHasUnsavedValue();
     this.selectedFile = null;
     this.file = null;
     this.isEditItem = false;

@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, FormGroupDirective, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { forkJoin, map, Observable } from 'rxjs';
@@ -14,7 +14,7 @@ import { CanComponentDeactivate } from '../../../auth-guard/can-deactivate.guard
   templateUrl: './job-kpi.component.html',
   styleUrls: ['./job-kpi.component.scss']
 })
-export class JobKpiComponent implements CanComponentDeactivate, OnInit {
+export class JobKpiComponent implements CanComponentDeactivate, OnInit,OnDestroy {
     @ViewChildren('fileInput') fileInputs: QueryList<ElementRef>;
       @ViewChildren('crpfileInput') crpfileInputs: QueryList<ElementRef>;;
         @ViewChildren('mrpfileInput') mrpfileInputs: QueryList<ElementRef>;;
@@ -57,6 +57,15 @@ initialFormValue:any;
 
   ngOnInit(): void {
   this.intialForm();
+  
+  this.jobKPIFormGroup?.valueChanges?.subscribe(() => {
+    const currentFormValue = this.jobKPIFormGroup?.getRawValue();
+    const isInvalid = this.jobKPIFormGroup?.touched && this.jobKPIFormGroup?.invalid;
+    console.log(this.initialFormValue,currentFormValue);
+    const isFormChanged:boolean =  JSON.stringify(currentFormValue) !== JSON.stringify(this.initialFormValue);
+    let unSavedChanges = isFormChanged || isInvalid;
+   this.formErrorScrollService.setUnsavedChanges(unSavedChanges);
+  });
   }
   public intialForm(){
     this.jobKPIFormGroup = this.fb.group({
@@ -64,6 +73,10 @@ initialFormValue:any;
       data:this.fb.array([this.createEmployeeControl()]),
     });
     this.initialFormValue=this.jobKPIFormGroup?.getRawValue();
+  }
+
+  ngOnDestroy(): void {
+    this.formErrorScrollService.resetHasUnsavedValue();
   }
   public createEmployeeControl(): FormGroup {
     return this.fb.group({
@@ -242,6 +255,7 @@ if(emp?.kpi){
 public async saveJobKPIDetails(){
   if (this.jobKPIFormGroup.invalid) {
     this.jobKPIFormGroup.markAllAsTouched();
+    this.formErrorScrollService.setUnsavedChanges(true);
     this.formErrorScrollService.scrollToFirstError(this.jobKPIFormGroup);
   }else{
     let reqPayload:any={};
@@ -257,6 +271,7 @@ public async saveJobKPIDetails(){
               if (respData) {
                 this.apiService.showSuccess(respData['message']);
                 this.formGroupDirective.resetForm();
+                this.formErrorScrollService.resetHasUnsavedValue();
                 location.reload();
               }
             }, (error: any) => {

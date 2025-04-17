@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, FormGroupDirective } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Observable } from 'rxjs';
@@ -17,7 +17,7 @@ import { environment } from '../../../../environments/environment';
   templateUrl: './status-group.component.html',
   styleUrls: ['./status-group.component.scss']
 })
-export class StatusGroupComponent implements CanComponentDeactivate, OnInit {
+export class StatusGroupComponent implements CanComponentDeactivate, OnInit,OnDestroy {
   @ViewChild(FormGroupDirective) formGroupDirective!: FormGroupDirective;
    @ViewChild('formInputField') formInputField: ElementRef;
   BreadCrumbsTitle: any = 'Status Group';
@@ -54,6 +54,16 @@ export class StatusGroupComponent implements CanComponentDeactivate, OnInit {
     this.getModuleAccess();
     this.initializeForm();
     this.getAllStatusGroup('?page=1&page_size=5');
+    this.statusGroupForm?.valueChanges?.subscribe(() => {
+      const currentFormValue = this.statusGroupForm?.getRawValue();
+      const isInvalid = this.statusGroupForm?.touched && this.statusGroupForm?.invalid;
+     const isFormChanged:boolean =  JSON.stringify(currentFormValue) !== JSON.stringify(this.initialFormValue);
+     let unSavedChanges = isFormChanged || isInvalid;
+     this.formUtilityService.setUnsavedChanges(unSavedChanges);
+    });
+  }
+  ngOnDestroy(): void {
+this.formUtilityService.resetHasUnsavedValue();
   }
   getModuleAccess(){
     this.accessControlService.getAccessForActiveUrl(this.user_id).subscribe((access) => {
@@ -92,6 +102,7 @@ export class StatusGroupComponent implements CanComponentDeactivate, OnInit {
   public saveStatusGroupDetails() {
     if (this.statusGroupForm.invalid) {
       this.statusGroupForm.markAllAsTouched();
+      this.formUtilityService.setUnsavedChanges(true);
     } else {
       if (this.isEditItem) {
         this.apiService.updateData(`${environment.live_url}/${environment.settings_status_group}/${this.selectedStatusGroup}/`, this.statusGroupForm.value).subscribe((respData: any) => {
@@ -120,6 +131,7 @@ export class StatusGroupComponent implements CanComponentDeactivate, OnInit {
 
   public resetFormState() {
     this.formGroupDirective.resetForm();
+    this.formUtilityService.resetHasUnsavedValue();
     this.isEditItem = false;
     this.term='';
     this.initialFormValue = this.statusGroupForm?.getRawValue();

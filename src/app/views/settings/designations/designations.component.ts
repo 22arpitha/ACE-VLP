@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, FormGroupDirective } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { CommonServiceService } from '../../../service/common-service.service';
@@ -17,7 +17,7 @@ import { CanComponentDeactivate } from 'src/app/auth-guard/can-deactivate.guard'
   templateUrl: './designations.component.html',
   styleUrls: ['./designations.component.scss']
 })
-export class DesignationsComponent implements CanComponentDeactivate, OnInit {
+export class DesignationsComponent implements CanComponentDeactivate, OnInit,OnDestroy {
 
   BreadCrumbsTitle: any = 'Designation';
   @ViewChild(FormGroupDirective) formGroupDirective!: FormGroupDirective;
@@ -58,6 +58,16 @@ export class DesignationsComponent implements CanComponentDeactivate, OnInit {
     this.initializeForm();
     this.getAllDesignation('?page=1&page_size=5');
     this.getAllRolesList();
+    this.designationForm?.valueChanges?.subscribe(() => {
+      const currentFormValue = this.designationForm?.getRawValue();
+      const isInvalid = this.designationForm?.touched && this.designationForm?.invalid;
+     const isFormChanged:boolean =  JSON.stringify(currentFormValue) !== JSON.stringify(this.initialFormValue);
+     let unSavedChanges = isFormChanged || isInvalid;
+     this.formUtilityService.setUnsavedChanges(unSavedChanges);
+    });
+  }
+  ngOnDestroy(): void {
+this.formUtilityService.resetHasUnsavedValue();
   }
 
   getModuleAccess(){
@@ -107,6 +117,7 @@ export class DesignationsComponent implements CanComponentDeactivate, OnInit {
     if (this.designationForm.invalid) {
       // this.apiService.showError('Invalid!');
       this.designationForm.markAllAsTouched();
+      this.formUtilityService.setUnsavedChanges(true);
     } else {
       if (this.isEditItem) {
         this.apiService.updateData(`${environment.live_url}/${environment.settings_designation}/${this.selectedDesignationStatus}/`, this.designationForm.value).subscribe((respData: any) => {
@@ -135,6 +146,7 @@ export class DesignationsComponent implements CanComponentDeactivate, OnInit {
 
   public resetFormState() {
     this.formGroupDirective.resetForm();
+    this.formUtilityService.resetHasUnsavedValue();
     this.isEditItem = false;
     this.term='';
     this.initialFormValue = this.designationForm?.getRawValue();

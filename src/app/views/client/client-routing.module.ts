@@ -23,11 +23,9 @@ const routes: Routes = [
       },
       {
         path:'end-client-jobs/:end-client-name/:client-id/:id', component: JobsOfEndclientComponent,
-        canDeactivate:[CanDeactivateGuard]
       },
       {
         path:'client-groups/:group-client-name/:client-id/:id', component: ClientsOfGroupComponent,
-        canDeactivate:[CanDeactivateGuard]
       },
       // {
       //   path:'update/:id', component:UpdateClientComponent

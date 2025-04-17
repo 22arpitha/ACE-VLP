@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, FormGroupDirective, Validators } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ApiserviceService } from '../../../service/apiservice.service';
@@ -16,7 +16,7 @@ import { Observable } from 'rxjs';
   templateUrl: './services.component.html',
   styleUrls: ['./services.component.scss']
 })
-export class ServicesComponent implements CanComponentDeactivate, OnInit {
+export class ServicesComponent implements CanComponentDeactivate, OnInit,OnDestroy {
   BreadCrumbsTitle: any = 'Services';
   @ViewChild(FormGroupDirective) formGroupDirective!: FormGroupDirective;
    @ViewChild('formInputField') formInputField: ElementRef;
@@ -53,6 +53,16 @@ export class ServicesComponent implements CanComponentDeactivate, OnInit {
     this.getModuleAccess();
     this.initializeForm();
     this.getAllServices('?page=1&page_size=5');
+    this.serviceForm?.valueChanges?.subscribe(() => {
+      const currentFormValue = this.serviceForm?.getRawValue();
+      const isInvalid = this.serviceForm?.touched && this.serviceForm?.invalid;
+     const isFormChanged:boolean =  JSON.stringify(currentFormValue) !== JSON.stringify(this.initialFormValue);
+     let unSavedChanges = isFormChanged || isInvalid;
+     this.formUtilityService.setUnsavedChanges(unSavedChanges);
+    });
+  }
+  ngOnDestroy(): void {
+this.formUtilityService.resetHasUnsavedValue();
   }
 
   getModuleAccess(){
@@ -90,6 +100,7 @@ export class ServicesComponent implements CanComponentDeactivate, OnInit {
   public saveServiceDetails() {
     if (this.serviceForm.invalid) {
       this.serviceForm.markAllAsTouched();
+      this.formUtilityService.setUnsavedChanges(true);
     } else {
       if (this.isEditItem) {
         this.apiService.updateData(`${environment.live_url}/${environment.settings_service}/${this.selectedService}/`, this.serviceForm.value).subscribe((respData: any) => {
@@ -118,6 +129,7 @@ export class ServicesComponent implements CanComponentDeactivate, OnInit {
 
   public resetFormState() {
     this.formGroupDirective.resetForm();
+    this.formUtilityService.resetHasUnsavedValue();
     this.isEditItem = false;
     this.initialFormValue = this.serviceForm?.getRawValue();
 

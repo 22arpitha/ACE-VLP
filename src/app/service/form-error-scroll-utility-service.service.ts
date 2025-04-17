@@ -8,8 +8,22 @@ import { GenericRedirectionConfirmationComponent } from '../generic-components/g
   providedIn: 'root',
 })
 export class FormErrorScrollUtilityService {
+  private _hasUnsavedChanges = false;
   constructor(private modalService:NgbModal) {
  }
+ 
+
+  setUnsavedChanges(status: boolean) {
+    this._hasUnsavedChanges = status;
+  }
+
+  get hasUnsavedChanges(): boolean {
+    return this._hasUnsavedChanges;
+  }
+
+  resetHasUnsavedValue() {
+    this._hasUnsavedChanges = false;
+  }
   scrollToFirstError(formGroup: FormGroup): void {
     const firstInvalidControl = this.getFirstInvalidControl(formGroup);
 

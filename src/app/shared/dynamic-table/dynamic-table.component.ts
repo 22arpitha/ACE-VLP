@@ -173,5 +173,12 @@ public getHistoryDatasetList(){
   this.isHistory = true;
   this.actionEvent.emit({ actionType: 'headerTabs', action:'history'});
 }
+// Include All Jobs Checkbo event 
+public onIncludeJobsChange(event:any){
+  this.actionEvent.emit({ actionType: 'includeAllJobs', action:event.checked});
+}
 
+public sendEmailEvent(){
+  this.actionEvent.emit({ actionType: 'sendEmail', action:''});
+}
 }

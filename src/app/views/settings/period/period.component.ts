@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, FormGroupDirective, Validators } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Observable } from 'rxjs';
@@ -15,7 +15,7 @@ import { environment } from 'src/environments/environment';
   templateUrl: './period.component.html',
   styleUrls: ['./period.component.scss']
 })
-export class PeriodComponent implements CanComponentDeactivate, OnInit {
+export class PeriodComponent implements CanComponentDeactivate, OnInit,OnDestroy {
 
   @ViewChild(FormGroupDirective) formGroupDirective!: FormGroupDirective;
    @ViewChild('formInputField') formInputField: ElementRef;
@@ -51,7 +51,17 @@ export class PeriodComponent implements CanComponentDeactivate, OnInit {
      this.initializeForm();
      this.getAllPeriodicity();
      this.getAllPeriod('?page=1&page_size=5');
-   }
+     this.periodForm?.valueChanges?.subscribe(() => {
+      const currentFormValue = this.periodForm?.getRawValue();
+      const isInvalid = this.periodForm?.touched && this.periodForm?.invalid;
+     const isFormChanged:boolean =  JSON.stringify(currentFormValue) !== JSON.stringify(this.initialFormValue);
+     let unSavedChanges = isFormChanged || isInvalid;
+     this.formUtilityService.setUnsavedChanges(unSavedChanges);
+    });
+  }
+  ngOnDestroy(): void {
+this.formUtilityService.resetHasUnsavedValue();
+  }
 
    public initializeForm() {
      this.periodForm = this.fb.group({
@@ -101,6 +111,7 @@ export class PeriodComponent implements CanComponentDeactivate, OnInit {
    public saveleaveTypeDetails() {
     if (this.periodForm.invalid) {
       this.periodForm.markAllAsTouched();
+      this.formUtilityService.setUnsavedChanges(true);
     } else {
       if (this.isEditItem) {
         this.apiService.updateData(`${environment.live_url}/${environment.settings_period}/${this.selectedperiod}/`, this.periodForm.value).subscribe((respData: any) => {
@@ -129,6 +140,7 @@ export class PeriodComponent implements CanComponentDeactivate, OnInit {
 
    public resetFormState() {
      this.formGroupDirective.resetForm();
+     this.formUtilityService.resetHasUnsavedValue();
      this.isEditItem = false;
      this.term='';
      this.initialFormValue = this.periodForm?.getRawValue();

@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { CommonServiceService } from '../../../service/common-service.service';
 import { FormBuilder, FormGroup, FormGroupDirective, Validators } from '@angular/forms';
 import { ApiserviceService } from '../../../service/apiservice.service';
@@ -16,7 +16,7 @@ import { Observable } from 'rxjs';
   templateUrl: './leave-type.component.html',
   styleUrls: ['./leave-type.component.scss']
 })
-export class LeaveTypeComponent implements CanComponentDeactivate, OnInit {
+export class LeaveTypeComponent implements CanComponentDeactivate, OnInit,OnDestroy {
   @ViewChild(FormGroupDirective) formGroupDirective!: FormGroupDirective;
    @ViewChild('formInputField') formInputField: ElementRef;
 
@@ -53,8 +53,17 @@ export class LeaveTypeComponent implements CanComponentDeactivate, OnInit {
     this.getModuleAccess();
     this.initializeForm();
     this.getAllLeaveTypes('?page=1&page_size=5');
+    this.leaveTypeForm?.valueChanges?.subscribe(() => {
+      const currentFormValue = this.leaveTypeForm?.getRawValue();
+      const isInvalid = this.leaveTypeForm?.touched && this.leaveTypeForm?.invalid;
+     const isFormChanged:boolean =  JSON.stringify(currentFormValue) !== JSON.stringify(this.initialFormValue);
+     let unSavedChanges = isFormChanged || isInvalid;
+     this.formUtilityService.setUnsavedChanges(unSavedChanges);
+    });
   }
-
+  ngOnDestroy(): void {
+this.formUtilityService.resetHasUnsavedValue();
+  }
   getModuleAccess(){
     this.accessControlService.getAccessForActiveUrl(this.user_id).subscribe((access) => {
       if (access) {
@@ -91,6 +100,7 @@ export class LeaveTypeComponent implements CanComponentDeactivate, OnInit {
   public saveleaveTypeDetails() {
     if (this.leaveTypeForm.invalid) {
       this.leaveTypeForm.markAllAsTouched();
+      this.formUtilityService.setUnsavedChanges(true);
     } else {
       if (this.isEditItem) {
         this.apiService.updateData(`${environment.live_url}/${environment.settings_leave_type}/${this.selectedleavetype}/`, this.leaveTypeForm.value).subscribe((respData: any) => {
@@ -119,6 +129,7 @@ export class LeaveTypeComponent implements CanComponentDeactivate, OnInit {
 
   public resetFormState() {
     this.formGroupDirective.resetForm();
+    this.formUtilityService.resetHasUnsavedValue();
     this.isEditItem = false;
     this.term='';
     this.initialFormValue = this.leaveTypeForm?.getRawValue();

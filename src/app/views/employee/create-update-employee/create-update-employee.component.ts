@@ -58,8 +58,18 @@ initialFormValue:any;
   ngOnInit(): void {
     this.getModuleAccess();
     this.intialForm();
+    this.employeeFormGroup?.valueChanges?.subscribe(() => {
+      const currentFormValue = this.employeeFormGroup?.getRawValue();
+      const isInvalid = this.employeeFormGroup?.touched && this.employeeFormGroup?.invalid;
+      console.log(this.initialFormValue,currentFormValue);
+      const isFormChanged:boolean =  JSON.stringify(currentFormValue) !== JSON.stringify(this.initialFormValue);
+      let unSavedChanges = isFormChanged || isInvalid;
+     this.formErrorScrollService.setUnsavedChanges(unSavedChanges);
+    });
   }
-
+  ngOnDestroy(): void {
+this.formErrorScrollService.resetHasUnsavedValue();
+  }
   getModuleAccess(){
     this.accessControlService.getAccessForActiveUrl(this.user_id).subscribe(
       (res:any)=>{
@@ -86,13 +96,12 @@ this.employeeFormGroup = this.fb.group({
       role: 2,
       is_active:[true,Validators.required],
     });
-    this.initialFormValue = this.employeeFormGroup?.getRawValue();
-
   }
   // To Get Unique Employee Number
   public getEmployeeUniqueNumber(){
     this.apiService.getData(`${environment.live_url}/${environment.employee}/?get-unique-number=true`).subscribe((respData: any) => {
       this.employeeFormGroup.patchValue({'employee_number': respData?.unique_id});
+      this.initialFormValue = this.employeeFormGroup?.getRawValue();
           },(error => {
             this.apiService.showError(error?.error?.detail)
           }));
@@ -152,7 +161,7 @@ this.apiService.getData(`${environment.live_url}/${environment.employee}/${id}/`
     sub_designation:respData?.sub_designation_id,
     is_active:respData?.is_active,
       });
-
+      this.initialFormValue = this.employeeFormGroup?.getRawValue();
     }, (error: any) => {
       this.apiService.showError(error?.error?.detail);
     })
@@ -260,6 +269,7 @@ this.searchRoleText ='';
     public saveEmployeeDetails(){
       if (this.employeeFormGroup.invalid) {
         this.employeeFormGroup.markAllAsTouched();
+        this.formErrorScrollService.setUnsavedChanges(true);
         this.formErrorScrollService.scrollToFirstError(this.employeeFormGroup);
       } else {
         if (this.isEditItem) {
@@ -292,6 +302,7 @@ this.searchRoleText ='';
 
 public resetFormState() {
   this.formGroupDirective.resetForm();
+  this.formErrorScrollService.resetHasUnsavedValue();
   this.isEditItem = false;
   this.initialFormValue = this.employeeFormGroup?.getRawValue();
 }

@@ -94,11 +94,19 @@ initialFormValue:any;
       this.editor = new Editor();
       this.getModuleAccess()
       this.intialForm();
+      this.clientFormGroup?.valueChanges?.subscribe(() => {
+        const currentFormValue = this.clientFormGroup?.getRawValue();
+        const isInvalid = this.clientFormGroup.touched && this.clientFormGroup.invalid;
+       const isFormChanged:boolean =  JSON.stringify(currentFormValue) !== JSON.stringify(this.initialFormValue);
+       let unSavedChanges = isFormChanged || isInvalid;
+       this.formErrorScrollService.setUnsavedChanges(unSavedChanges);
+      });
     }
 
     ngOnDestroy(): void {
       // Destroy the editor to prevent memory leaks
       this.editor.destroy();
+      this.formErrorScrollService.resetHasUnsavedValue();
     }
 
     getModuleAccess(){
@@ -136,12 +144,12 @@ initialFormValue:any;
         allow_sending_status_report_to_client:[false],
         practice_notes:[''],
       });
-      this.initialFormValue=this.clientFormGroup?.getRawValue();
     }
     // To Get Unique Employee Number
     public getClientUniqueNumber(){
       this.apiService.getData(`${environment.live_url}/${environment.clients}/?get-client-number=true`).subscribe((respData: any) => {
         this.clientFormGroup.patchValue({'client_number': respData?.client_unique_number});
+        this.initialFormValue=this.clientFormGroup?.getRawValue();
             },(error => {
               this.apiService.showError(error?.error?.detail)
             }));
@@ -258,6 +266,7 @@ respData?.contact_details?.forEach(({ name, email, phone_number }, index, array)
   contactDetailsArray.push(contactForm);
 });
 }
+this.initialFormValue=this.clientFormGroup?.getRawValue();
       }, (error: any) => {
         this.apiService.showError(error?.error?.detail);
       })
@@ -439,6 +448,7 @@ respData?.contact_details?.forEach(({ name, email, phone_number }, index, array)
       public saveClientDetails(){
         if (this.clientFormGroup.invalid) {
           this.clientFormGroup.markAllAsTouched();
+          this.formErrorScrollService.setUnsavedChanges(true);
           this.formErrorScrollService.scrollToFirstError(this.clientFormGroup);
         } else {
           if (this.isEditItem) {
@@ -446,7 +456,7 @@ respData?.contact_details?.forEach(({ name, email, phone_number }, index, array)
               this.apiService.updateData(`${environment.live_url}/${environment.clients}/${this.client_id}/`, this.formData).subscribe((respData: any) => {
               if (respData) {
                 this.apiService.showSuccess(respData['message']);
-                // this.resetFormState();
+                this.resetFormState();
                 this.router.navigate(['/client/all-client']);
               }
             }, (error: any) => {
@@ -457,7 +467,7 @@ respData?.contact_details?.forEach(({ name, email, phone_number }, index, array)
             this.apiService.postData(`${environment.live_url}/${environment.clients}/`, this.formData).subscribe((respData: any) => {
               if (respData) {
                 this.apiService.showSuccess(respData['message']);
-                // this.resetFormState();
+                this.resetFormState();
                 this.router.navigate(['/client/all-client']);
               }
             }, (error: any) => {
@@ -469,7 +479,9 @@ respData?.contact_details?.forEach(({ name, email, phone_number }, index, array)
 
   public resetFormState() {
     this.formGroupDirective?.resetForm();
+    this.formErrorScrollService.resetHasUnsavedValue();
     this.isEditItem = false;
+    this.initialFormValue=this.clientFormGroup?.getRawValue();
   }
 
   public createFromData(){

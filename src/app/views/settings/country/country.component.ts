@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, FormGroupDirective, Validators } from '@angular/forms';
 import { ApiserviceService } from '../../../service/apiservice.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -15,7 +15,7 @@ import { Observable } from 'rxjs';
   templateUrl: './country.component.html',
   styleUrls: ['./country.component.scss']
 })
-export class CountryComponent implements CanComponentDeactivate, OnInit {
+export class CountryComponent implements CanComponentDeactivate, OnInit,OnDestroy {
   @ViewChild(FormGroupDirective) formGroupDirective!: FormGroupDirective;
    @ViewChild('formInputField') formInputField: ElementRef;
   BreadCrumbsTitle: any = 'Country';
@@ -52,6 +52,16 @@ export class CountryComponent implements CanComponentDeactivate, OnInit {
     this.getModuleAccess();
     this.intialForm();
     this.getAllCountryList(`?page=${1}&page_size=${5}`);
+    this.countryForm?.valueChanges?.subscribe(() => {
+      const currentFormValue = this.countryForm?.getRawValue();
+      const isInvalid = this.countryForm.touched && this.countryForm.invalid;
+     const isFormChanged:boolean =  JSON.stringify(currentFormValue) !== JSON.stringify(this.initialFormValue);
+     let unSavedChanges = isFormChanged || isInvalid;
+     this.formUtilityService.setUnsavedChanges(unSavedChanges);
+    });
+  }
+  ngOnDestroy(): void {
+this.formUtilityService.resetHasUnsavedValue();
   }
 
   getModuleAccess(){
@@ -146,6 +156,7 @@ export class CountryComponent implements CanComponentDeactivate, OnInit {
     if (this.countryForm.invalid) {
       console.log(this.countryForm.value)
       this.countryForm.markAllAsTouched();
+      this.formUtilityService.setUnsavedChanges(true);
     } else {
       if (this.isEditItem) {
         this.api.updateData(`${environment.live_url}/${environment.settings_country}/${this.selectedItemId}/`, this.countryForm.value).subscribe((respData: any) => {
@@ -172,6 +183,7 @@ export class CountryComponent implements CanComponentDeactivate, OnInit {
   }
   public resetFormState() {
     this.formGroupDirective.resetForm();
+    this.formUtilityService.resetHasUnsavedValue();
     this.isEditItem = false;
     this.term='';
     this.initialFormValue = this.countryForm?.getRawValue();

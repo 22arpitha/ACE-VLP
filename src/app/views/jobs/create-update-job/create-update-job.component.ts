@@ -94,11 +94,20 @@ export class CreateUpdateJobComponent implements CanComponentDeactivate, OnInit,
   ngOnInit(): void {
     this.editor = new Editor();
     this.intialForm();
+    this.jobFormGroup?.valueChanges?.subscribe(() => {
+      const currentFormValue = this.jobFormGroup?.getRawValue();
+      const isInvalid = this.jobFormGroup?.touched && this.jobFormGroup?.invalid;
+      console.log(this.initialFormValue,currentFormValue);
+      const isFormChanged:boolean =  JSON.stringify(currentFormValue) !== JSON.stringify(this.initialFormValue);
+      let unSavedChanges = isFormChanged || isInvalid;
+     this.formErrorScrollService.setUnsavedChanges(unSavedChanges);
+    });
   }
 
   ngOnDestroy(): void {
     // Destroy the editor to prevent memory leaks
     this.editor.destroy();
+    this.formErrorScrollService.resetHasUnsavedValue();
   }
 
   public intialForm() {
@@ -641,6 +650,7 @@ export class CreateUpdateJobComponent implements CanComponentDeactivate, OnInit,
   public saveJobDetails() {
     if (this.jobFormGroup.invalid) {
       this.jobFormGroup.markAllAsTouched();
+      this.formErrorScrollService.setUnsavedChanges(true);
       this.formErrorScrollService.scrollToFirstError(this.jobFormGroup);
     } else {
       if (this.isEditItem) {
@@ -708,7 +718,9 @@ export class CreateUpdateJobComponent implements CanComponentDeactivate, OnInit,
 
   public resetFormState() {
     this.formGroupDirective?.resetForm();
+    this.formErrorScrollService.resetHasUnsavedValue();
     this.isEditItem = false;
+    this.initialFormValue=this.jobFormGroup?.getRawValue();
   }
 
   public deleteJobs() {

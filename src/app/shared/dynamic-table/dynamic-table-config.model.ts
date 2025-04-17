@@ -20,4 +20,6 @@ export interface DynamicTableConfig {
   navigation?: boolean;
   dateRangeFilter?:boolean;
   headerTabs?:boolean;
+  includeAllJobs?:boolean;
+  sendEmail?:boolean;
 }

@@ -60,5 +60,7 @@ actions: [],
 accessConfig: [],
 tableSize: 10,
 pagination: true,
-headerTabs:true
+headerTabs:true,
+includeAllJobs:true,
+sendEmail:true,
 }

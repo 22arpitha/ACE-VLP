@@ -7,7 +7,7 @@
     <div class="modal-body custom-modal" >
         <!-- <p class="title-icon"><i class="bi bi-exclamation-circle"></i></p> -->
         <h4 class="modal-title" *ngIf="!message"><i class="bi bi-exclamation-circle"></i> Delete</h4>
-        <h4 class="modal-title" *ngIf="message"><i class="bi bi-box-arrow-right"></i> {{message}}</h4>
+        <h4 class="modal-title" *ngIf="message"><i [ngClass]="message != 'Confirmation' ? 'bi bi-box-arrow-right' : 'bi bi-exclamation-circle'"></i> {{message}}</h4>
         <p *ngIf="!title"> Are you sure you want to delete ?</p>
         <p *ngIf="title && message !== 'Decline' || message === 'Revoke'" >{{title}}?</p>
         

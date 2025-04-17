@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormGroupDirective, FormGroup, FormBuilder, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { GenericDeleteComponent } from '../../generic-components/generic-delete/generic-delete.component';
@@ -17,7 +17,7 @@ import { FormErrorScrollUtilityService } from 'src/app/service/form-error-scroll
   templateUrl: './templates.component.html',
   styleUrls: ['./templates.component.scss']
 })
-export class TemplatesComponent implements CanComponentDeactivate, OnInit {
+export class TemplatesComponent implements CanComponentDeactivate, OnInit, OnDestroy {
   @ViewChild(FormGroupDirective) formGroupDirective!: FormGroupDirective;
   @ViewChild('fileInput') fileInput: ElementRef;
   @ViewChild('formInputField') formInputField: ElementRef;
@@ -52,13 +52,22 @@ initialFormValue:any;
       this.common_service.setTitle(this.BreadCrumbsTitle)
     }
 
-
   ngOnInit(): void {
     this.user_id = sessionStorage.getItem('user_id');
     this.userRole = sessionStorage.getItem('user_role_name');
     this.getModuleAccess();
     this.initializeForm();
     this.getAllTemplates('?page=1&page_size=5');
+    this.templateForm?.valueChanges?.subscribe(() => {
+      const currentFormValue = this.templateForm?.getRawValue();
+      const isInvalid = this.templateForm.touched && this.templateForm.invalid;
+     const isFormChanged:boolean =  JSON.stringify(currentFormValue) !== JSON.stringify(this.initialFormValue);
+     let unSavedChanges = isFormChanged || isInvalid;
+     this.formUtilityService.setUnsavedChanges(unSavedChanges);
+    });
+  }
+  ngOnDestroy(): void {
+this.formUtilityService.resetHasUnsavedValue();
   }
   getModuleAccess(){
     this.accessControlService.getAccessForActiveUrl(this.user_id).subscribe((access) => {
@@ -101,6 +110,7 @@ initialFormValue:any;
     console.log(this.templateForm.controls)
     if (this.templateForm.invalid) {
       this.templateForm.markAllAsTouched();
+      this.formUtilityService.setUnsavedChanges(true);
     } else {
       if (this.isEditItem) {
         this.formData = this.createFromData();
@@ -144,6 +154,7 @@ public createFromData(){
   public resetFormState() {
     this.templateForm.controls['template_file'].setValidators([Validators.required]);
     this.formGroupDirective.resetForm();
+    this.formUtilityService.resetHasUnsavedValue();
     this.selectedFile =null;
     this.file =null;
     this.isEditItem = false;
