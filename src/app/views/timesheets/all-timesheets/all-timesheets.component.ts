@@ -25,7 +25,7 @@ import { WeeklySelectionStrategy } from '../../../shared/weekly-selection-strate
   ]
 })
 export class AllTimesheetsComponent implements  OnInit {
-  selectedDate: Date = new Date();
+  selectedDate: any;
   BreadCrumbsTitle: any = 'Timesheets';
   term: any = '';
   isCurrent: boolean = true;
@@ -70,7 +70,7 @@ export class AllTimesheetsComponent implements  OnInit {
     this.userRole = sessionStorage.getItem('user_role_name');
     this.getModuleAccess();
     this.getTimesheets();
-    this.getWeekData(this.selectedDate);
+    this.getWeekData();
   }
 
   access_name: any;
@@ -87,15 +87,29 @@ export class AllTimesheetsComponent implements  OnInit {
   }
 
   weekData:any = []
-  getWeekData(date:any){
-    let currentDate = this.datePipe.transform(date,'yyyy-MM-dd');
-    let query =`?timesheet-employee=${this.user_id}&get-cuurent-timesheet-data=True&from-date=${currentDate}`;
+    getWeekData(){
+      let currentDate:any
+      let query:any;
+      if(this.selectedDate){
+        currentDate = this.datePipe.transform(this.selectedDate,'yyyy-MM-dd');
+        query =`?timesheet-employee=${this.user_id}&get-cuurent-timesheet-data=True&from-date=${currentDate}`;
+      } else{
+         query =`?timesheet-employee=${this.user_id}&get-cuurent-timesheet-data=True`
+      }
     this.apiService.getData(`${environment.live_url}/${environment.vlp_timesheets}/${query}`).subscribe(
       (res:any)=>{
         console.log('week data',res);
-        this.weekData = res.data
+        // this.selectedDate = this.convertBackendDateToStandard(res.data[0].date)    
+        // console.log(this.selectedDate)
+        this.weekData = res.data;
       }
     )
+  }
+
+  convertBackendDateToStandard(dateString: string): string {
+    const date = new Date(dateString);
+    date.setHours(0, 0, 0, 0);
+    return date.toString(); 
   }
 
   public openCreateEmployeePage() {
@@ -235,7 +249,8 @@ export class AllTimesheetsComponent implements  OnInit {
     }
 
     weekDatePicker(event: any){
-      console.log('week:', event);
-      this.getWeekData(event.value);
+      // console.log('week:', event);
+      console.log(this.selectedDate)
+      this.getWeekData();
     }
 }
