@@ -67,7 +67,7 @@ export class RolesAccessComponent implements OnInit {
     this.api.getData(`${environment.live_url}/${environment.user_access}/${this.user_id}/`).subscribe(
       (data: any) => {
         console.log('all list', data,)
-        this.mainMenu = data.access_list.filter((module_name) => module_name.name != 'Subscription');
+        this.mainMenu = data.access_list.filter((module_name) => module_name.name != 'Invoicing');
         this.getAccessbilitiesByDesignationId();
       },
       (error: any) => {
