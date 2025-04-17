@@ -157,7 +157,9 @@ onDateSelected(event: any): void {
   }
 }
 
-navigateToEmployee(item){}
+navigateToEmployee(event){
+  this.actionEvent.emit({ actionType: 'navigate', row: event });
+}
 
 
 }

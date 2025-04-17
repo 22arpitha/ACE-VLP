@@ -1,15 +1,16 @@
 import { Component, OnInit } from '@angular/core';
-import { tableConfig } from './timesheet-summary-config';
-import { buildPaginationQuery } from '../../../shared/pagination.util';
-import { CommonServiceService } from 'src/app/service/common-service.service';
 import { Router } from '@angular/router';
+import { CommonServiceService } from 'src/app/service/common-service.service';
+import { tableConfig } from './employee-config';
+import { buildPaginationQuery } from 'src/app/shared/pagination.util';
+
 @Component({
-  selector: 'app-timesheet-summary-report',
-  templateUrl: './timesheet-summary-report.component.html',
-  styleUrls: ['./timesheet-summary-report.component.scss'],
+  selector: 'app-employee-details',
+  templateUrl: './employee-details.component.html',
+  styleUrls: ['./employee-details.component.scss']
 })
-export class TimesheetSummaryReportComponent implements OnInit {
-  BreadCrumbsTitle: any = 'Timesheet Summary Report';
+export class EmployeeDetailsComponent implements OnInit {
+BreadCrumbsTitle: any = 'Employee Details';
   term: string = '';
   tableSize: number = 10;
   page: any = 1;
@@ -80,4 +81,5 @@ export class TimesheetSummaryReportComponent implements OnInit {
   triggerAction(event: any) {
     this.handleAction(event);
   }
+
 }

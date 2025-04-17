@@ -16,15 +16,28 @@
   font-size: 14px !important;
   zoom:95%;
 }
-.search-div #search-icon-tab {
-  position: absolute;
-  right: 30px !important;
-  top: 19px !important;
-  font-size: 15px !important;
-  color: grey;
-  cursor: text !important;
+mat-form-field{
+  border: 0 !important;
+  height: 40px;
 }
 
+::ng-deep .settings-table-bg .mat-form-field-type-mat-date-range-input .mat-form-field-infix {
+  width: 200px;
+  display: contents !important;
+}
 
-
+.mat-form-field-wrapper {
+  padding: 0 !important;
+}
+.menu-trigger {
+  padding: 0;
+  min-width: 0;
+  width: 37px;
+  height: 33px !important;
+  flex-shrink: 0;
+  line-height: 32px;
+  border-radius: 0 !important;
+  border-color: transparent !important;
+  background-color: white;
+}
 

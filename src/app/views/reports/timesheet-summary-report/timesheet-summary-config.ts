@@ -50,7 +50,7 @@ export const tableConfig: DynamicTableConfig = {
       sortable: true
     },
     { label: 'Mon', key: 'mon', sortable: true },
-    { label: 'Tues', key: 'tues', sortable: true },
+    { label: 'Tues',key: 'tues',sortable: true },
     { label: 'Wed', key: 'wed', sortable: true },
     { label: 'Thu', key: 'thu', sortable: true },
     { label: 'Fri', key: 'fri', sortable: true },
@@ -71,5 +71,6 @@ export const tableConfig: DynamicTableConfig = {
   actions: [],
   accessConfig: [],
   tableSize: 10,
-  pagination: true
+  pagination: true,
+  dateRangeFilter:true
 };

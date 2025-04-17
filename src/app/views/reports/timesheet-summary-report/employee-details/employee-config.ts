@@ -1,14 +1,13 @@
-import { DynamicTableConfig } from '../../../shared/dynamic-table/dynamic-table-config.model';
+import { DynamicTableConfig } from '../../../../shared/dynamic-table/dynamic-table-config.model';
 
-// Sample timesheet data
-const reportData = [
+// Sample data
+const employeeData = [
   {
     sl: 1,
     date: '24/03/2025',
     client: 'Vedalakshmi',
     job: 'Vedalakshmi',
     task: 'Processing',
-    employee: 'John',
     start: '09:05',
     end: '09:35',
     spent: '00:25',
@@ -20,7 +19,6 @@ const reportData = [
     client: 'Vedalakshmi',
     job: 'Vedalakshmi',
     task: 'Processing',
-    employee: 'Steve',
     start: '09:05',
     end: '09:45',
     spent: '00:25',
@@ -43,7 +41,7 @@ export const tableConfig: DynamicTableConfig  = {
     key: 'client',
     filterable: true,
     filterType: 'multi-select',
-    filterOptions: getUniqueValues(reportData, 'client'),
+    filterOptions: getUniqueValues(employeeData, 'client'),
     sortable: true
   },
   {
@@ -51,7 +49,7 @@ export const tableConfig: DynamicTableConfig  = {
     key: 'job',
     filterable: true,
     filterType: 'multi-select',
-    filterOptions: getUniqueValues(reportData, 'job'),
+    filterOptions: getUniqueValues(employeeData, 'job'),
     sortable: true
   },
   {
@@ -59,7 +57,7 @@ export const tableConfig: DynamicTableConfig  = {
     key: 'task',
     filterable: true,
     filterType: 'multi-select',
-    filterOptions: getUniqueValues(reportData, 'task'),
+    filterOptions: getUniqueValues(employeeData, 'task'),
     sortable: true
   },
   {
@@ -68,7 +66,7 @@ export const tableConfig: DynamicTableConfig  = {
     navigation:false,
     filterable: true,
     filterType: 'multi-select',
-    filterOptions: getUniqueValues(reportData, 'employee'),
+    filterOptions: getUniqueValues(employeeData, 'employee'),
     sortable: true
   },
   { label: 'Start Time', key: 'start', sortable: true },
@@ -77,7 +75,7 @@ export const tableConfig: DynamicTableConfig  = {
   { label: 'Notes', key: 'notes', sortable: false },
 
 ],
-data: reportData,
+data: employeeData,
 searchTerm: '',
 actions: [],
 accessConfig: [],

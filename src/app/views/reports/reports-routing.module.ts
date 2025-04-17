@@ -3,12 +3,13 @@ import { RouterModule, Routes } from '@angular/router';
 import { ReportsComponent } from './reports.component';
 import { TimesheetDetailedReportComponent } from './timesheet-detailed-report/timesheet-detailed-report.component';
 import { TimesheetSummaryReportComponent } from './timesheet-summary-report/timesheet-summary-report.component';
-
+import { EmployeeDetailsComponent } from './timesheet-summary-report/employee-details/employee-details.component'
 const routes: Routes = [
   {
      path:'',component:ReportsComponent, children:[
       {path:'timesheet-detailed-report', component:TimesheetDetailedReportComponent},
-      {path:'timesheet-summary-report', component:TimesheetSummaryReportComponent}
+      {path:'timesheet-summary-report', component:TimesheetSummaryReportComponent},
+      {path:'employee-details', component:EmployeeDetailsComponent},
       // {path:'job-status-report', component:TimesheetSummaryReportComponent},
       // {path:'job-time-report', component:TimesheetSummaryReportComponent},
       // {path:'job-productivity-report', component:TimesheetSummaryReportComponent},
