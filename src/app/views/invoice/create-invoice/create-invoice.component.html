@@ -7,7 +7,7 @@
               <i *ngIf="!term" class="bi bi-search" id="search-icon-tab"></i>
             </div>
                         <!-- Client Dropdown -->
-<div class="col-12 col-sm-12 col-md-6 col-lg-3 no-padding pl-5 pr-0">
+<div class="col-12 col-sm-12 col-md-6 col-lg-3 no-padding pl-5 pr-0 client-dropdown">
     <mat-form-field appearance="outline" class="w-100 custom-mat-form-field no-padding-bottom">
         <mat-label>Client <b class="r-star">*</b></mat-label>
         <mat-select #clientSelect [(ngModel)]="selectedClientId" [ngModelOptions]="{standalone: true}" autocomplete="off"

@@ -54,4 +54,15 @@
   ::ng-deep .table-master-checkbox.mat-checkbox-indeterminate .mat-checkbox-background {
     border: #fff solid;
   }
-  
+
+  ::ng-deep .client-dropdown .mat-form-field-appearance-outline .mat-form-field-wrapper {
+    margin: 0 !important;
+}
+::ng-deep .client-dropdown .mat-form-field-appearance-outline .mat-form-field-flex {
+  padding: 0 .75em 0 .75em;
+  margin-top: 0em;
+  position: relative;
+}
+::ng-deep .client-dropdown .mat-form-field-appearance-outline .mat-form-field-outline {
+  top: 0.60em !important;
+}

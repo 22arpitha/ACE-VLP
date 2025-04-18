@@ -227,7 +227,12 @@ body {
    cursor: pointer;
    opacity: 0.4;
  }
-
+ .proceedbtn:disabled {
+  background-color: #cccccc;
+  color: #666666;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
  /*Additional properties for button version
  iOS requires the button element instead of an anchor tag.
  If you want the anchor version, it requires `href="#"`.*/
