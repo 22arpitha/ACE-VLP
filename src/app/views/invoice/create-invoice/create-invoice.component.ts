@@ -1,23 +1,23 @@
-import { HttpClient } from '@angular/common/http';
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
+import { Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { forkJoin, map, Observable } from 'rxjs';
+import { FormErrorScrollUtilityService } from '../../../service/form-error-scroll-utility-service.service';
 import { ApiserviceService } from '../../../service/apiservice.service';
 import { CommonServiceService } from '../../../service/common-service.service';
 import { SubModuleService } from '../../../service/sub-module.service';
 import { environment } from '../../../../environments/environment';
-import { forkJoin, map } from 'rxjs';
 import { CanComponentDeactivate } from '../../../auth-guard/can-deactivate.guard';
-import { Observable } from 'rxjs';
+import { MatSelect } from '@angular/material/select';
+
 
 @Component({
   selector: 'app-create-invoice',
   templateUrl: './create-invoice.component.html',
   styleUrls: ['./create-invoice.component.scss']
 })
-export class CreateInvoiceComponent implements CanComponentDeactivate, OnInit {
+export class CreateInvoiceComponent implements CanComponentDeactivate, OnInit,OnDestroy {
  @ViewChild('formInputField') formInputField: ElementRef;
+ @ViewChild('clientSelect') clientSelect!: MatSelect;
  BreadCrumbsTitle: any = 'Create Invoice';
      term:any='';
      sortValue: string = '';
@@ -46,18 +46,22 @@ total_amount:false,
      selectedClientId:any=null;
      selectedClientName:any='';
      constructor(private common_service: CommonServiceService,private accessControlService:SubModuleService,
-       private router:Router,private modalService: NgbModal,private dialog:MatDialog,
-       private apiService: ApiserviceService,private http: HttpClient) {
+       private router:Router,
+       private apiService: ApiserviceService,private formErrorScrollService:FormErrorScrollUtilityService) {
        this.common_service.setTitle(this.BreadCrumbsTitle)
       }
-  canDeactivate: () => Observable<boolean> | Promise<boolean> | boolean;
-
+  
+   
      ngOnInit(): void {
        this.user_id = sessionStorage.getItem('user_id');
        this.userRole = sessionStorage.getItem('user_role_name');
        this.getModuleAccess();
        this.getAllActiveClients();
      }
+     
+     ngOnDestroy(): void {
+      this.formErrorScrollService.resetHasUnsavedValue();
+    }
      access_name:any ;
      getModuleAccess(){
        this.accessControlService.getAccessForActiveUrl(this.user_id).subscribe((access) => {
@@ -109,14 +113,20 @@ total_amount:false,
       this.getClientBasedJobsList();
       const clientName = this.allClientslist.find((c:any)=> c?.id === this.selectedClientId);
       this.selectedClientName = clientName.client_name ? clientName.client_name :'';
+      const isdirty = this.selectedClientId || this.jobSelection.length>=1 ? true : false;
+        this.formErrorScrollService.setUnsavedChanges(isdirty);
       }
     }
 
-    public clearSelection(){
+    public clearSelection(event?: MouseEvent) {
+      if (event) {
+        event.stopPropagation();
+      }
       this.jobSelection=[];
       this.selectedClientId=null;
       this.selectedClientName='';
       this.page = 1;
+      this.formErrorScrollService.resetHasUnsavedValue();
       this.getClientBasedJobsList();
     }
 
@@ -170,7 +180,7 @@ const jobsMappedData =  this.jobSelection?.map(({id,
         this.selectedClientId = null;
         this.selectedClientName='';
         sessionStorage.removeItem("access-name");
-        this.router.navigate(['/invoice/all-invoice']);
+        this.router.navigate(['/invoice/view-invoice',respData?.result?.id]);
       }
     }, (error: any) => {
       this.apiService.showError(error?.error?.detail);
@@ -184,6 +194,8 @@ const jobsMappedData =  this.jobSelection?.map(({id,
       } else {
         this.jobSelection?.splice(index, 1);
       }
+      const isdirty = this.selectedClientId || this.jobSelection.length>=1 ? true : false;
+      this.formErrorScrollService.setUnsavedChanges(isdirty);
     }
 
     isAllJobsSelected() {
@@ -200,6 +212,8 @@ const jobsMappedData =  this.jobSelection?.map(({id,
       } else {
         this.jobSelection = [];
       }
+      const isdirty = this.selectedClientId || this.jobSelection.length>=1 ? true : false;
+      this.formErrorScrollService.setUnsavedChanges(isdirty);
     }
 
 
@@ -247,5 +261,16 @@ const jobsMappedData =  this.jobSelection?.map(({id,
      public getContinuousIndex(index: number): number {
        return (this.page - 1) * this.tableSize + index + 1;
      }
+canDeactivate(): Observable<boolean> {
+  const isdirty = this.selectedClientId || this.jobSelection.length>=1 ? true : false;
+return this.formErrorScrollService.isTableRecordChecked(isdirty);
+}
 
+@HostListener('window:beforeunload', ['$event'])
+unloadNotification($event: BeforeUnloadEvent): void {
+  const isdirty = this.selectedClientId || this.jobSelection.length>=1 ? true : false;
+   if (isdirty) {
+    $event.preventDefault();
+  }
+}
 }

@@ -11,7 +11,7 @@
         <div class="row mx-0 my-1 px-0 py-2">
             <div class="col-12 mt-2 col-sm-12 col-md-4 col-lg-4 search-div px-0">
               <input type="search" (input)="filterSearch($event)" class="form-control p-2 sizeinput" [(ngModel)]="term"
-                placeholder="Search by Invoice " aria-describedby="emailHelp" autocomplete="off">
+                placeholder="Search by Job " aria-describedby="emailHelp" autocomplete="off">
               <i *ngIf="!term" class="bi bi-search" id="search-icon-tab"></i>
             </div>
         </div>
@@ -25,6 +25,7 @@
                         (change)="toggleAllJobs($event)"
                         [checked]="isAllJobsSelected()"
                         [indeterminate]="isSomeJobsSelected()"
+                        class="table-master-checkbox"
                       ></mat-checkbox>
                     </th>
                     <th scope="col">Job Number

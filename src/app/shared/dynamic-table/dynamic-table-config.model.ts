@@ -22,4 +22,7 @@ export interface DynamicTableConfig {
   searchable?:boolean;
   currentPage?:number,
   totalRecords?:number,
+  headerTabs?:boolean;
+  includeAllJobs?:boolean;
+  sendEmail?:boolean;
 }

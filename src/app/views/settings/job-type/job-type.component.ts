@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, FormGroupDirective, Validators } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { CommonServiceService } from '../../../service/common-service.service';
@@ -15,7 +15,7 @@ import { CanComponentDeactivate } from 'src/app/auth-guard/can-deactivate.guard'
   templateUrl: './job-type.component.html',
   styleUrls: ['./job-type.component.scss']
 })
-export class JobTypeComponent implements CanComponentDeactivate, OnInit {
+export class JobTypeComponent implements CanComponentDeactivate, OnInit,OnDestroy {
   @ViewChild(FormGroupDirective) formGroupDirective!: FormGroupDirective;
  @ViewChild('formInputField') formInputField: ElementRef;
   BreadCrumbsTitle: any = 'Job Type';
@@ -54,8 +54,17 @@ export class JobTypeComponent implements CanComponentDeactivate, OnInit {
 
     this.initializeForm();
     this.getAllJobTypes('?page=1&page_size=5');
+    this.jobTypeForm?.valueChanges?.subscribe(() => {
+      const currentFormValue = this.jobTypeForm?.getRawValue();
+      const isInvalid = this.jobTypeForm?.touched && this.jobTypeForm?.invalid;
+     const isFormChanged:boolean =  JSON.stringify(currentFormValue) !== JSON.stringify(this.initialFormValue);
+     let unSavedChanges = isFormChanged || isInvalid;
+     this.formUtilityService.setUnsavedChanges(unSavedChanges);
+    });
   }
-
+  ngOnDestroy(): void {
+this.formUtilityService.resetHasUnsavedValue();
+  }
   getModuleAccess(){
     this.accessControlService.getAccessForActiveUrl(this.user_id).subscribe((access) => {
       if (access) {
@@ -111,6 +120,7 @@ export class JobTypeComponent implements CanComponentDeactivate, OnInit {
   public saveJobTypeDetails() {
     if (this.jobTypeForm.invalid) {
       this.jobTypeForm.markAllAsTouched();
+      this.formUtilityService.setUnsavedChanges(true);
     } else {
       if (this.isEditItem) {
         this.apiService.updateData(`${environment.live_url}/${environment.settings_job_type}/${this.selectedJobtype}/`, this.jobTypeForm.value).subscribe((respData: any) => {
@@ -139,6 +149,7 @@ export class JobTypeComponent implements CanComponentDeactivate, OnInit {
 
   public resetFormState() {
     this.formGroupDirective.resetForm();
+    this.formUtilityService.resetHasUnsavedValue();
     this.isEditItem = false;
     this.term='';
     this.initialFormValue = this.jobTypeForm?.getRawValue();

@@ -48,7 +48,7 @@ export class AllJobsComponent implements OnInit {
   constructor(private common_service: CommonServiceService, private accessControlService: SubModuleService,
     private router: Router, private modalService: NgbModal, private dialog: MatDialog,
     private apiService: ApiserviceService, private fb: FormBuilder) {
-    this.common_service.setTitle(this.BreadCrumbsTitle)
+    this.common_service.setTitle(this.BreadCrumbsTitle);
   }
 
   ngOnInit(): void {

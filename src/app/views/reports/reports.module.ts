@@ -8,6 +8,9 @@ import { TimesheetSummaryReportComponent } from './timesheet-summary-report/time
 import { EmployeeDetailsComponent } from './timesheet-summary-report/employee-details/employee-details.component';
 import { ProductivityReportComponent } from './productivity-report/productivity-report.component';
 import { ProductivityReportModule } from './productivity-report/productivity-report.module';
+import { JobStatusReportComponent } from './job-status-report/job-status-report.component';
+import { JobTimeReportsComponent } from './job-time-reports/job-time-reports.component';
+
 
 @NgModule({
   declarations: [
@@ -15,7 +18,9 @@ import { ProductivityReportModule } from './productivity-report/productivity-rep
     TimesheetDetailedReportComponent,
     TimesheetSummaryReportComponent,
     EmployeeDetailsComponent,
-    ProductivityReportComponent
+    ProductivityReportComponent,
+    JobStatusReportComponent,
+    JobTimeReportsComponent
   ],
   imports: [
     CommonModule,

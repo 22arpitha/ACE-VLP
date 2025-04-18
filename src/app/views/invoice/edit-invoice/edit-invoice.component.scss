@@ -11,3 +11,10 @@
 .proceedbtn{
 margin-right: 10px;
 }
+::ng-deep .table-master-checkbox .mat-checkbox-frame{
+    border-color: #fff !important;
+  }
+  ::ng-deep .table-master-checkbox.mat-checkbox-checked .mat-checkbox-background,
+  ::ng-deep .table-master-checkbox.mat-checkbox-indeterminate .mat-checkbox-background {
+    border: #fff solid;
+  }

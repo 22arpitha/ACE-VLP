@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, FormGroupDirective, Validators } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { GenericDeleteComponent } from '../../../generic-components/generic-delete/generic-delete.component';
@@ -15,7 +15,7 @@ import { Observable } from 'rxjs';
   templateUrl: './periodicity.component.html',
   styleUrls: ['./periodicity.component.scss']
 })
-export class PeriodicityComponent implements CanComponentDeactivate, OnInit {
+export class PeriodicityComponent implements CanComponentDeactivate, OnInit,OnDestroy {
 
    @ViewChild(FormGroupDirective) formGroupDirective!: FormGroupDirective;
    @ViewChild('formInputField') formInputField: ElementRef;
@@ -46,8 +46,17 @@ export class PeriodicityComponent implements CanComponentDeactivate, OnInit {
     ngOnInit(): void {
       this.initializeForm();
       this.getAllPeriodicity('?page=1&page_size=5');
+      this.periodicityForm?.valueChanges?.subscribe(() => {
+        const currentFormValue = this.periodicityForm?.getRawValue();
+        const isInvalid = this.periodicityForm?.touched && this.periodicityForm?.invalid;
+       const isFormChanged:boolean =  JSON.stringify(currentFormValue) !== JSON.stringify(this.initialFormValue);
+       let unSavedChanges = isFormChanged || isInvalid;
+       this.formUtilityService.setUnsavedChanges(unSavedChanges);
+      });
     }
-
+    ngOnDestroy(): void {
+  this.formUtilityService.resetHasUnsavedValue();
+    }
     public initializeForm() {
       this.periodicityForm = this.fb.group({
         periodicty_name: ['', [Validators.required, Validators.pattern(/^[a-zA-Z]+( [a-zA-Z]+)*$/), , Validators.maxLength(20)]],
@@ -73,6 +82,7 @@ export class PeriodicityComponent implements CanComponentDeactivate, OnInit {
     public savePeriodicityDetails() {
       if (this.periodicityForm.invalid) {
         this.periodicityForm.markAllAsTouched();
+        this.formUtilityService.setUnsavedChanges(true);
       } else {
         if (this.isEditItem) {
           this.apiService.updateData(`${environment.live_url}/${environment.settings_periodicty}/${this.selectedPeriodicity}/`, this.periodicityForm.value).subscribe((respData: any) => {
@@ -101,6 +111,7 @@ export class PeriodicityComponent implements CanComponentDeactivate, OnInit {
 
     public resetFormState() {
       this.formGroupDirective.resetForm();
+      this.formUtilityService.resetHasUnsavedValue();
       this.isEditItem = false;
       this.term='';
       this.initialFormValue = this.periodicityForm?.getRawValue();

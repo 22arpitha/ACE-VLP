@@ -13,7 +13,9 @@
       />
       <i *ngIf="!config.searchTerm" class="bi bi-search" id="search-icon-tab"></i>
     </div>
-
+    <div class="col-auto mt-2 col-sm-auto col-md-auto col-lg-2" *ngIf="config?.includeAllJobs">
+      <mat-checkbox color="primary" class="example-margin" (change)="onIncludeJobsChange($event)" ><h5 class="c-header">Include All Jobs</h5></mat-checkbox>
+    </div>
     <!-- Date Range Filter -->
     <div class="col-12 mt-2 col-sm-12 col-md-4 col-lg-3" *ngIf="config.dateRangeFilter">
       <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
@@ -29,9 +31,13 @@
 
     <!-- Spacer -->
     <div class="col"></div>
-
-    <!-- Download Menu -->
-    <div class="col-auto d-flex justify-content-end">
+      <!-- Tab design -->
+     <div class="col-auto mt-2 col-sm-auto col-md-auto col-lg-auto" *ngIf="config?.headerTabs">
+              <button mat-raised-button class="mat-btn-s tab-button-content" [ngClass]="{'isActive': isCurrent}" type="button" type="button" (click)="getCurrentDatasetList()">Current</button> 
+              <button mat-raised-button class="mat-btn-s tab-button-content" [ngClass]="{'isActive': isHistory}" type="button" type="button" (click)="getHistoryDatasetList()">History</button>       
+      </div>
+<!-- Download Menu -->
+    <div class="col-auto mt-2 col-sm-auto col-md-auto col-lg-1">
       <button
         mat-icon-button
         [matMenuTriggerFor]="downloadMenu"
@@ -50,6 +56,9 @@
           <span>PDF</span>
         </button>
       </mat-menu>
+    </div>
+    <div class="col-auto mt-2 col-sm-auto col-md-auto col-lg-2 text-end" *ngIf="config?.sendEmail">
+      <button mat-raised-button class="mat-btn-s proceedbtn" type="button" type="button" (click)="sendEmailEvent()">Send Email</button>       
     </div>
   </div>
 

@@ -1,23 +1,23 @@
 import { Location } from '@angular/common';
 import { ChangeDetectorRef, Component, HostListener, Input, OnInit } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
-
+import { MatDialog } from '@angular/material/dialog';
 import { ClassToggleService, HeaderComponent } from '@coreui/angular';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { BsModalRef, BsModalService, ModalOptions } from 'ngx-bootstrap/modal';
 import { GenericDeleteComponent } from '../../../generic-components/generic-delete/generic-delete.component';
 import { ApiserviceService } from '../../../service/apiservice.service';
 import { CommonServiceService } from '../../../service/common-service.service';
 import { NotificationComponent } from '../../../views/pages/notification/notification.component';
 import { environment } from '../../../../environments/environment';
-import { BsModalRef, BsModalService, ModalOptions } from 'ngx-bootstrap/modal';
 import { UserGuideModalComponent } from '../../../views/user-guide-modal/user-guide-modal.component';
-import { MatDialog } from '@angular/material/dialog';
 import { UserWelcomeMsgComponent } from '../../../views/user-welcome-msg/user-welcome-msg.component';
 import { NotificationService } from '../../../views/pages/notification/notification.service';
 import { WebsocketService } from '../../../service/websocket.service';
 import { EmployeeStatusWebsocketService } from '../../../service/employee-status-websocket.service';
 import { UserAccessWebsocketService } from '../../../service/user-access-websocket.service';
+import { FormErrorScrollUtilityService } from 'src/app/service/form-error-scroll-utility-service.service';
+import { LogoutConfirmationService } from 'src/app/service/logout-confirmation.service';
 
 @Component({
   selector: 'app-default-header',
@@ -75,7 +75,9 @@ export class DefaultHeaderComponent extends HeaderComponent implements OnInit {
    private location:Location, public dialog: MatDialog,
    private notificationServive:NotificationService,
    private webSocket:WebsocketService, private employeeSocket:EmployeeStatusWebsocketService,
-   private useraccessSocket:UserAccessWebsocketService) {
+   private useraccessSocket:UserAccessWebsocketService,
+  private formUtilityService:FormErrorScrollUtilityService,
+  private logoutService: LogoutConfirmationService) {
     super();
     this.getScreenSize()
   }
@@ -144,31 +146,62 @@ export class DefaultHeaderComponent extends HeaderComponent implements OnInit {
       this.openDialogue()
     }
   }
-  openDialogue() {
-    const modelRef = this.modalService.open(GenericDeleteComponent, {
-      size: <any>'sm',
-      backdrop: true,
-      centered: true
-    });
-    modelRef.componentInstance.title = `Are you sure you want to logout`;
-    modelRef.componentInstance.message = `Logout`;
-    modelRef.componentInstance.status.subscribe(resp => {
-      if (resp === "ok") {
-        this.api.showSuccess('You have been logged out!')
-        this.webSocket.closeWebSocket();
-        this.employeeSocket.closeWebSocket();
-        this.useraccessSocket.closeWebSocket();
-        this.router.navigate(['/login']);
-        localStorage.clear();
-        sessionStorage.clear();
-        this.clearCookies();
+  async openDialogue() {
+    this.logoutService.resetLogoutConfirmed();
+    if (this.formUtilityService.hasUnsavedChanges) {
+      const modelRef = this.modalService.open(GenericDeleteComponent, {
+        size: <any>'sm',
+        backdrop: true,
+        centered: true
+      });
+      modelRef.componentInstance.title = `You have unsaved changes. Are you sure you want to logout`;
+      modelRef.componentInstance.message = `Confirmation`;
+      modelRef.componentInstance.status.subscribe(resp => {
+        if (resp === "ok") {
+          this.logoutService.setLogoutConfirmed(true);
+          this.api.showSuccess('You have been logged out!')
+          this.webSocket.closeWebSocket();
+          this.employeeSocket.closeWebSocket();
+          this.useraccessSocket.closeWebSocket();
+          this.router.navigate(['/login']);
+          localStorage.clear();
+          sessionStorage.clear();
+          this.clearCookies();
+          modelRef.close();
+        }
+        else {
+          this.logoutService.resetLogoutConfirmed();
+          modelRef.close();
+        }
         modelRef.close();
-      }
-      else {
+      });
+    }else{
+      this.logoutService.resetLogoutConfirmed();
+      const modelRef = this.modalService.open(GenericDeleteComponent, {
+        size: <any>'sm',
+        backdrop: true,
+        centered: true
+      });
+      modelRef.componentInstance.title = `Are you sure you want to logout`;
+      modelRef.componentInstance.message = `Logout`;
+      modelRef.componentInstance.status.subscribe(resp => {
+        if (resp === "ok") {
+          this.api.showSuccess('You have been logged out!')
+          this.webSocket.closeWebSocket();
+          this.employeeSocket.closeWebSocket();
+          this.useraccessSocket.closeWebSocket();
+          this.router.navigate(['/login']);
+          localStorage.clear();
+          sessionStorage.clear();
+          this.clearCookies();
+          modelRef.close();
+        }
+        else {
+          modelRef.close();
+        }
         modelRef.close();
-      }
-      modelRef.close();
-    })
+      });
+    }
   }
 
   clearCookies(): void {
@@ -315,5 +348,5 @@ export class DefaultHeaderComponent extends HeaderComponent implements OnInit {
       }
     })
   }
-  
+ 
 }

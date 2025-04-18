@@ -1,5 +1,5 @@
 // dynamic-table.component.ts
-import { Component, ElementRef, EventEmitter, Input, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, SimpleChanges } from '@angular/core';
 import { MatMenuTrigger } from '@angular/material/menu';
 import { DynamicTableConfig } from './dynamic-table-config.model';
 import { DatePipe } from '@angular/common';
@@ -12,7 +12,6 @@ import { DatePipe } from '@angular/common';
 export class DynamicTableComponent implements OnInit {
   @Input() config!: DynamicTableConfig;
   @Output() actionEvent = new EventEmitter<any>();
-
   filteredData: any[] = [];
   paginatedData: any[] = [];
   currentPage = 1;
@@ -31,6 +30,8 @@ export class DynamicTableComponent implements OnInit {
     currentPage: 1,
     totalItems: 0
   }
+  isCurrent:boolean=true;
+  isHistory:boolean=false;
   constructor(private datePipe: DatePipe) {}
   ngOnInit(): void { }
   ngOnChanges(changes: SimpleChanges): void {
@@ -180,5 +181,24 @@ navigateToEmployee(event){
   this.actionEvent.emit({ actionType: 'navigate', row: event });
 }
 
+// Header Tabs events
+public getCurrentDatasetList(){
+  this.isHistory = false;
+  this.isCurrent = true;
+  this.actionEvent.emit({ actionType: 'headerTabs', action:'True' });
+}
 
+public getHistoryDatasetList(){
+  this.isCurrent = false;
+  this.isHistory = true;
+  this.actionEvent.emit({ actionType: 'headerTabs', action:'False'});
+}
+// Include All Jobs Checkbo event
+public onIncludeJobsChange(event:any){
+  this.actionEvent.emit({ actionType: 'includeAllJobs', action:event.checked});
+}
+
+public sendEmailEvent(){
+  this.actionEvent.emit({ actionType: 'sendEmail', action:''});
+}
 }

@@ -2,11 +2,13 @@ import { HttpClient } from '@angular/common/http';
 import { ChangeDetectorRef, Component, Inject, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { Router } from '@angular/router';
-import { forkJoin, map } from 'rxjs';
+import { forkJoin, map, Observable } from 'rxjs';
 import { ApiserviceService } from '../../../service/apiservice.service';
 import { CommonServiceService } from '../../../service/common-service.service';
 import { SubModuleService } from '../../../service/sub-module.service';
 import { environment } from '../../../../environments/environment';
+import { GenericRedirectionConfirmationComponent } from 'src/app/generic-components/generic-redirection-confirmation/generic-redirection-confirmation.component';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 
 @Component({
@@ -35,7 +37,7 @@ total_amount:false,
      client_id:any;
      client_name:any;
      invoice_id:any;
-     constructor(private common_service: CommonServiceService,private accessControlService:SubModuleService,
+     constructor(private accessControlService:SubModuleService,
        private router:Router,private cdRef: ChangeDetectorRef,private apiService: ApiserviceService,private http: HttpClient, public dialogRef: MatDialogRef<EditInvoiceComponent>,
               @Inject(MAT_DIALOG_DATA) public data: any){
                 this.invoice_id=data?.invoice_id;
@@ -142,6 +144,7 @@ const jobsMappedData =  this.jobSelection?.map(({id,
         this.client_name='';
         sessionStorage.removeItem("access-name");
         this.dialogRef.close();
+        this.router.navigate(['/invoice/view-invoice',respData?.result?.id]);
       }
     }, (error: any) => {
       this.apiService.showError(error?.error?.detail);
@@ -192,6 +195,6 @@ const jobsMappedData =  this.jobSelection?.map(({id,
      }
 
      public closeEditDetails(){
-        this.dialogRef.close();
+      this.dialogRef.close();
      }
 }

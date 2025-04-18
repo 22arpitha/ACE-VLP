@@ -54,6 +54,7 @@ jobs_kpi:'kpi',
 // timesheet
 vlp_timesheets:`timesheet`,
 client_invoice:'client-invoice',
+invoice_details:'invoice-details',
 
 // project ace
   leave_application: 'leave-application',

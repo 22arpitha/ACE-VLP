@@ -7,10 +7,10 @@
               <i *ngIf="!term" class="bi bi-search" id="search-icon-tab"></i>
             </div>
                         <!-- Client Dropdown -->
-<div class="col-12 col-sm-12 col-md-6 col-lg-3 no-padding pl-5 pr-0">
+<div class="col-12 col-sm-12 col-md-6 col-lg-3 no-padding pl-5 pr-0 client-dropdown">
     <mat-form-field appearance="outline" class="w-100 custom-mat-form-field no-padding-bottom">
         <mat-label>Client <b class="r-star">*</b></mat-label>
-        <mat-select [(ngModel)]="selectedClientId" [ngModelOptions]="{standalone: true}" autocomplete="off"
+        <mat-select #clientSelect [(ngModel)]="selectedClientId" [ngModelOptions]="{standalone: true}" autocomplete="off"
                 placeholder="Client" panelClass="custom-select-panel"
                 [disableOptionCentering]="true" (selectionChange)="onClientChange($event)" >
                 <div class="mat-select-search-wrapper d-flex">
@@ -22,7 +22,7 @@
                     {{item?.client_name}}
                 </mat-option>
         </mat-select>
-        <button mat-icon-button *ngIf="selectedClientId" matSuffix (click)="clearSelection()" tabindex="-1">
+        <button mat-icon-button *ngIf="selectedClientId" matSuffix (click)="clearSelection($event)" tabindex="-1">
           <mat-icon>close</mat-icon>
         </button>
     </mat-form-field>
@@ -44,6 +44,8 @@
                       (change)="toggleAllJobs($event)"
                       [checked]="isAllJobsSelected()"
                       [indeterminate]="isSomeJobsSelected()"
+                      *ngIf="allClientBasedJobsLists.length>=1"
+                      class="table-master-checkbox"
                     ></mat-checkbox>
                   </th>
                     <th scope="col">Job Number

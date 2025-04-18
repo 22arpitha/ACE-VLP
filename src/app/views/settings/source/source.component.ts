@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, FormGroupDirective, Validators } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Observable } from 'rxjs/internal/Observable';
@@ -15,7 +15,7 @@ import { FormErrorScrollUtilityService } from '../../../service/form-error-scrol
   templateUrl: './source.component.html',
   styleUrls: ['./source.component.scss']
 })
-export class SourceComponent implements CanComponentDeactivate, OnInit {
+export class SourceComponent implements CanComponentDeactivate, OnInit,OnDestroy {
   @ViewChild(FormGroupDirective) formGroupDirective!: FormGroupDirective;
    @ViewChild('formInputField') formInputField: ElementRef;
 
@@ -51,6 +51,16 @@ export class SourceComponent implements CanComponentDeactivate, OnInit {
     this.getModuleAccess();
     this.initializeForm();
     this.getAllSource('?page=1&page_size=5');
+    this.sourceForm?.valueChanges?.subscribe(() => {
+      const currentFormValue = this.sourceForm?.getRawValue();
+      const isInvalid = this.sourceForm?.touched && this.sourceForm?.invalid;
+     const isFormChanged:boolean =  JSON.stringify(currentFormValue) !== JSON.stringify(this.initialFormValue);
+     let unSavedChanges = isFormChanged || isInvalid;
+     this.formUtilityService.setUnsavedChanges(unSavedChanges);
+    });
+  }
+  ngOnDestroy(): void {
+this.formUtilityService.resetHasUnsavedValue();
   }
   getModuleAccess(){
     this.accessControlService.getAccessForActiveUrl(this.user_id).subscribe((access) => {
@@ -89,6 +99,7 @@ export class SourceComponent implements CanComponentDeactivate, OnInit {
   public saveSourceDetails() {
     if (this.sourceForm.invalid) {
       this.sourceForm.markAllAsTouched();
+      this.formUtilityService.setUnsavedChanges(true);
     } else {
       if (this.isEditItem) {
         this.apiService.updateData(`${environment.live_url}/${environment.settings_source}/${this.selectedSource}/`, this.sourceForm.value).subscribe((respData: any) => {
@@ -117,6 +128,7 @@ export class SourceComponent implements CanComponentDeactivate, OnInit {
 
   public resetFormState() {
     this.formGroupDirective.resetForm();
+    this.formUtilityService.resetHasUnsavedValue();
     this.isEditItem = false;
     this.term='';
     this.initialFormValue = this.sourceForm?.getRawValue();
