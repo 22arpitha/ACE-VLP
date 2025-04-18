@@ -41,5 +41,17 @@
     width: 24px;
   }
   ::ng-deep .mat-form-field-appearance-outline .mat-form-field-suffix{
-    top: .25em !important;
+    top: .5em !important;
   }
+  ::ng-deep .mat-form-field-appearance-outline .mat-select-arrow-wrapper {
+    transform: translateY(0%) !important;
+}
+
+::ng-deep .table-master-checkbox .mat-checkbox-frame{
+    border-color: #fff !important;
+  }
+  ::ng-deep .table-master-checkbox.mat-checkbox-checked .mat-checkbox-background,
+  ::ng-deep .table-master-checkbox.mat-checkbox-indeterminate .mat-checkbox-background {
+    border: #fff solid;
+  }
+  

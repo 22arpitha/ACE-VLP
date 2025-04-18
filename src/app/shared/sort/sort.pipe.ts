@@ -33,18 +33,21 @@ export class SortPipe implements PipeTransform {
     });
     return sortOrder === 'asc' ? sortedArray : sortedArray.reverse();
   }
+private sortArrayByKey(array: any[], sortOrder: SortOrder, sortKey: string): any[] {
+  const sortedArray = array.slice().sort((a, b) => {
+    const aValue = a?.[sortKey];
+    const bValue = b?.[sortKey];
 
-  private sortArrayByKey(array: any[], sortOrder: SortOrder, sortKey: string): any[] {
-    const sortedArray = array.slice().sort((a, b) => {
-      const aValue = a[sortKey];
-      const bValue = b[sortKey];
+    const aStr = aValue !== undefined && aValue !== null ? aValue.toString() : '';
+    const bStr = bValue !== undefined && bValue !== null ? bValue.toString() : '';
 
-      if (typeof aValue === 'number' && typeof bValue === 'number') {
-        return aValue - bValue;
-      } else {
-        return aValue.toString().localeCompare(bValue.toString());
-      }
-    });
-    return sortOrder === 'asc' ? sortedArray : sortedArray.reverse();
-  }
+    if (typeof aValue === 'number' && typeof bValue === 'number') {
+      return aValue - bValue;
+    } else {
+      return aStr.localeCompare(bStr);
+    }
+  });
+
+  return sortOrder === 'asc' ? sortedArray : sortedArray.reverse();
+}
 }

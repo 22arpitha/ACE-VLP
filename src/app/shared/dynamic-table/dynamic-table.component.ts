@@ -165,13 +165,13 @@ navigateToEmployee(event){
 public getCurrentDatasetList(){
   this.isHistory = false;
   this.isCurrent = true;
-  this.actionEvent.emit({ actionType: 'headerTabs', action:'current' });
+  this.actionEvent.emit({ actionType: 'headerTabs', action:'True' });
 }
 
 public getHistoryDatasetList(){
   this.isCurrent = false;
   this.isHistory = true;
-  this.actionEvent.emit({ actionType: 'headerTabs', action:'history'});
+  this.actionEvent.emit({ actionType: 'headerTabs', action:'False'});
 }
 // Include All Jobs Checkbo event 
 public onIncludeJobsChange(event:any){

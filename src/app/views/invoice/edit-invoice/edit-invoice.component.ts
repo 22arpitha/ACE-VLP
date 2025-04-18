@@ -144,6 +144,7 @@ const jobsMappedData =  this.jobSelection?.map(({id,
         this.client_name='';
         sessionStorage.removeItem("access-name");
         this.dialogRef.close();
+        this.router.navigate(['/invoice/view-invoice',respData?.result?.id]);
       }
     }, (error: any) => {
       this.apiService.showError(error?.error?.detail);

@@ -43,10 +43,10 @@ export const tableConfig: DynamicTableConfig  = {
     filterType: 'date',
     sortable: false,
   },
-  { label: 'Status', key: 'status_name', sortable: true },
+  { label: 'Status', key: 'job_status_name', sortable: true },
   {
     label: 'Status Date',
-    key: 'status_date',
+    key: 'job_status_date',
     filterable: true,
     filterType: 'date',
     sortable: false,

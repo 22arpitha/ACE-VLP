@@ -7,6 +7,7 @@ import { CommonServiceService } from '../../../service/common-service.service';
 import { SubModuleService } from '../../../service/sub-module.service';
 import { environment } from '../../../../environments/environment';
 import { CanComponentDeactivate } from '../../../auth-guard/can-deactivate.guard';
+import { MatSelect } from '@angular/material/select';
 
 
 @Component({
@@ -16,6 +17,7 @@ import { CanComponentDeactivate } from '../../../auth-guard/can-deactivate.guard
 })
 export class CreateInvoiceComponent implements CanComponentDeactivate, OnInit,OnDestroy {
  @ViewChild('formInputField') formInputField: ElementRef;
+ @ViewChild('clientSelect') clientSelect!: MatSelect;
  BreadCrumbsTitle: any = 'Create Invoice';
      term:any='';
      sortValue: string = '';
@@ -116,7 +118,10 @@ total_amount:false,
       }
     }
 
-    public clearSelection(){
+    public clearSelection(event?: MouseEvent) {
+      if (event) {
+        event.stopPropagation();
+      }
       this.jobSelection=[];
       this.selectedClientId=null;
       this.selectedClientName='';
