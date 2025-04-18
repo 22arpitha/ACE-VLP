@@ -143,7 +143,6 @@ export class AllTimesheetsComponent implements  OnInit {
 
   public getTimesheets() {
     let query = this.getFilterBaseUrl()
-    query += `&timesheet-employee=${this.user_id}`;
     this.apiService.getData(`${environment.live_url}/${environment.vlp_timesheets}/${query}`).subscribe(
       (res: any) => {
         this.allTimesheetsList = res?.results;
@@ -179,7 +178,11 @@ export class AllTimesheetsComponent implements  OnInit {
   }
 
   public getFilterBaseUrl(): string {
-    return `?page=${this.page}&page_size=${this.tableSize}&search=${this.term}&start-date=${this.startDate}&end-date=${this.endDate}`;
+    if(this.userRole==='Admin'){
+      return `?page=${this.page}&page_size=${this.tableSize}&search=${this.term}&start-date=${this.startDate}&end-date=${this.endDate}`;
+    } else{
+      return `?timesheet-employee=${this.user_id}&page=${this.page}&page_size=${this.tableSize}&search=${this.term}&start-date=${this.startDate}&end-date=${this.endDate}`;
+    }
   }
 
   public sort(direction: string, column: string) {

@@ -117,12 +117,12 @@
                                 <td> <ng-container>
                                         <img src="../../../../assets/images/Delete.svg" class="icon-image" type="button"
                                             container="body" ngbTooltip="Delete" (click)="delete(item.id)"
-                                            *ngIf="userRole !='Admin' && accessPermissions[0]?.delete || userRole === 'Admin'" />
+                                            *ngIf="userRole !='Admin' && accessPermissions[0]?.delete"/>
                                         <img src="../../../../assets/images/Edit.svg" class="icon-image" type="button"
                                             container="body" ngbTooltip="Edit" (click)="edit(item)"
-                                            *ngIf="userRole !='Admin' && (accessPermissions[0]?.view && accessPermissions[0]?.update) || userRole === 'Admin'" />
+                                            *ngIf="userRole !='Admin' && (accessPermissions[0]?.view && accessPermissions[0]?.update)"/>
                                         <span
-                                            *ngIf="userRole !='Admin' && !accessPermissions[0]?.update && !accessPermissions[0]?.delete">-</span>
+                                            *ngIf="!accessPermissions[0]?.update && !accessPermissions[0]?.delete">-</span>
                                     </ng-container></td>
                             </tr>
                         </ng-container>
