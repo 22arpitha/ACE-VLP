@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnDestroy, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
+import { Component, ElementRef, HostListener, OnDestroy, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, FormGroupDirective, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { forkJoin, map, Observable } from 'rxjs';
@@ -558,4 +558,13 @@ canDeactivate(): Observable<boolean> {
     const isFormChanged:boolean =  JSON.stringify(currentFormValue) !== JSON.stringify(this.initialFormValue);
     return this.formErrorScrollService.isFormDirtyOrInvalidCheck(isFormChanged,this.jobKPIFormGroup);
   }
+
+  @HostListener('window:beforeunload', ['$event'])
+      unloadNotification($event: BeforeUnloadEvent): void {
+        const currentFormValue = this.jobKPIFormGroup.getRawValue();
+        const isFormChanged:boolean =  JSON.stringify(currentFormValue) !== JSON.stringify(this.initialFormValue);
+        if (isFormChanged || this.jobKPIFormGroup.dirty) {
+          $event.preventDefault();
+        }
+      }
 }

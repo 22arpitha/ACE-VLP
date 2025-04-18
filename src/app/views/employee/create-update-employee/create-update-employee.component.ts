@@ -1,5 +1,6 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, HostListener, OnInit, ViewChild } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { Observable } from 'rxjs';
 import { FormBuilder, FormGroup, FormGroupDirective, Validators } from '@angular/forms';
 import { CommonServiceService } from '../../../service/common-service.service';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -8,8 +9,7 @@ import { environment } from '../../../../environments/environment';
 import { GenericDeleteComponent } from '../../../generic-components/generic-delete/generic-delete.component';
 import { SubModuleService } from '../../../service/sub-module.service';
 import { FormErrorScrollUtilityService } from '../../../service/form-error-scroll-utility-service.service';
-import { Observable } from 'rxjs';
-import { CanComponentDeactivate } from 'src/app/auth-guard/can-deactivate.guard';
+import { CanComponentDeactivate } from '../../../auth-guard/can-deactivate.guard';
 
 @Component({
   selector: 'app-create-update-employee',
@@ -314,5 +314,14 @@ canDeactivate(): Observable<boolean> {
   const currentFormValue = this.employeeFormGroup.getRawValue();
   const isFormChanged:boolean =  JSON.stringify(currentFormValue) !== JSON.stringify(this.initialFormValue);
   return this.formErrorScrollService.isFormDirtyOrInvalidCheck(isFormChanged,this.employeeFormGroup);
+}
+
+@HostListener('window:beforeunload', ['$event'])
+unloadNotification($event: BeforeUnloadEvent): void {
+  const currentFormValue = this.employeeFormGroup.getRawValue();
+  const isFormChanged:boolean =  JSON.stringify(currentFormValue) !== JSON.stringify(this.initialFormValue);
+  if (isFormChanged || this.employeeFormGroup.dirty) {
+    $event.preventDefault();
+  }
 }
 }

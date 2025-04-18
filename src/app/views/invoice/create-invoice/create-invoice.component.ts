@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { forkJoin, map, Observable } from 'rxjs';
 import { FormErrorScrollUtilityService } from '../../../service/form-error-scroll-utility-service.service';
@@ -259,5 +259,13 @@ const jobsMappedData =  this.jobSelection?.map(({id,
 canDeactivate(): Observable<boolean> {
   const isdirty = this.selectedClientId || this.jobSelection.length>=1 ? true : false;
 return this.formErrorScrollService.isTableRecordChecked(isdirty);
+}
+
+@HostListener('window:beforeunload', ['$event'])
+unloadNotification($event: BeforeUnloadEvent): void {
+  const isdirty = this.selectedClientId || this.jobSelection.length>=1 ? true : false;
+   if (isdirty) {
+    $event.preventDefault();
+  }
 }
 }

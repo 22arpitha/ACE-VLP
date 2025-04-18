@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import {  Validators, FormBuilder,FormGroup, FormGroupDirective, AbstractControl, ValidationErrors, FormArray, FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatPaginator } from '@angular/material/paginator';
@@ -619,4 +619,12 @@ this.initialFormValue=this.clientFormGroup?.getRawValue();
     return this.formErrorScrollService.isFormDirtyOrInvalidCheck(isFormChanged,this.clientFormGroup);
   }
 
+  @HostListener('window:beforeunload', ['$event'])
+  unloadNotification($event: BeforeUnloadEvent): void {
+    const currentFormValue = this.clientFormGroup.getRawValue();
+    const isFormChanged:boolean =  JSON.stringify(currentFormValue) !== JSON.stringify(this.initialFormValue);
+    if (isFormChanged || this.clientFormGroup.dirty) {
+      $event.preventDefault();
+    }
+  }
   }

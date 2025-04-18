@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, HostListener, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DatePipe } from '@angular/common';
 import { FormBuilder, FormGroup, FormGroupDirective, Validators } from '@angular/forms';
@@ -79,6 +79,17 @@ export class CreateUpdateTimesheetComponent implements CanComponentDeactivate, O
       this.getEmployeeJobsList();
       this.getTaskList();
     }
+    this.timesheetFormGroup?.valueChanges?.subscribe(() => {
+      const currentFormValue = this.timesheetFormGroup?.getRawValue();
+      const isInvalid = this.timesheetFormGroup?.touched && this.timesheetFormGroup?.invalid;
+      console.log(this.initialFormValue,currentFormValue);
+      const isFormChanged:boolean =  JSON.stringify(currentFormValue) !== JSON.stringify(this.initialFormValue);
+      let unSavedChanges = isFormChanged || isInvalid;
+     this.formErrorScrollService.setUnsavedChanges(unSavedChanges);
+    });
+  }
+  ngOnDestroy(): void {
+this.formErrorScrollService.resetHasUnsavedValue();
   }
   initialForm() {
     this.timesheetFormGroup = this.fb.group({
@@ -312,6 +323,7 @@ export class CreateUpdateTimesheetComponent implements CanComponentDeactivate, O
     this.timesheetFormGroup.patchValue({ date: this.datePipe.transform(this.timesheetFormGroup?.get('date')?.value, 'YYYY-MM-dd') })
     if (this.timesheetFormGroup.invalid) {
       this.timesheetFormGroup.markAllAsTouched();
+      this.formErrorScrollService.setUnsavedChanges(true);
       this.formErrorScrollService.scrollToFirstError(this.timesheetFormGroup);
     } else {
       if (this.isEditItem) {
@@ -343,7 +355,9 @@ export class CreateUpdateTimesheetComponent implements CanComponentDeactivate, O
 
   public resetFormState() {
     this.formGroupDirective?.resetForm();
+    this.formErrorScrollService.resetHasUnsavedValue();
     this.isEditItem = false;
+    this.initialFormValue  = this.timesheetFormGroup.getRawValue();
   }
 
   canDeactivate(): Observable<boolean> {
@@ -352,4 +366,12 @@ export class CreateUpdateTimesheetComponent implements CanComponentDeactivate, O
     return this.formErrorScrollService.isFormDirtyOrInvalidCheck(isFormChanged,this.timesheetFormGroup);
   }
 
+  @HostListener('window:beforeunload', ['$event'])
+unloadNotification($event: BeforeUnloadEvent): void {
+  const currentFormValue = this.timesheetFormGroup.getRawValue();
+  const isFormChanged:boolean =  JSON.stringify(currentFormValue) !== JSON.stringify(this.initialFormValue);
+  if (isFormChanged || this.timesheetFormGroup.dirty) {
+    $event.preventDefault();
+  }
+}
 }
