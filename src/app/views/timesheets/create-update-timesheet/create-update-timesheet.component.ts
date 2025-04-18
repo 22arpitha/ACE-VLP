@@ -21,6 +21,7 @@ export class CreateUpdateTimesheetComponent implements CanComponentDeactivate, O
   BreadCrumbsTitle: any = 'Timesheet';
   timesheetFormGroup: FormGroup
   currentDate: any = new Date().toISOString();
+  initialFormValue:any
   currentTime: any
   accessPermissions: any = [];
   employeeData: any = []
@@ -50,7 +51,6 @@ export class CreateUpdateTimesheetComponent implements CanComponentDeactivate, O
       this.common_service.setTitle('Create ' + this.BreadCrumbsTitle)
     }
   }
-  canDeactivate: () => Observable<boolean> | Promise<boolean> | boolean;
 
   ngOnInit(): void {
     const now = new Date();
@@ -93,6 +93,7 @@ export class CreateUpdateTimesheetComponent implements CanComponentDeactivate, O
       notes: [''],
       created_by: [this.user_id, Validators.required],
     })
+    this.initialFormValue  = this.timesheetFormGroup.getRawValue();
   }
   public get f() {
     return this.timesheetFormGroup.controls;
@@ -343,6 +344,12 @@ export class CreateUpdateTimesheetComponent implements CanComponentDeactivate, O
   public resetFormState() {
     this.formGroupDirective?.resetForm();
     this.isEditItem = false;
+  }
+
+  canDeactivate(): Observable<boolean> {
+    const currentFormValue = this.timesheetFormGroup?.getRawValue();
+    const isFormChanged:boolean =  JSON.stringify(currentFormValue) !== JSON.stringify(this.initialFormValue);
+    return this.formErrorScrollService.isFormDirtyOrInvalidCheck(isFormChanged,this.timesheetFormGroup);
   }
 
 }
