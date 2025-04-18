@@ -1,15 +1,16 @@
 import { Component, OnInit } from '@angular/core';
-import { tableConfig } from './timesheet-summary-config';
-import { buildPaginationQuery } from '../../../shared/pagination.util';
 import { CommonServiceService } from '../../../service/common-service.service';
 import { Router } from '@angular/router';
+import { tableConfig } from './productivity-report-config';
+import { buildPaginationQuery } from '../../../shared/pagination.util';
+
 @Component({
-  selector: 'app-timesheet-summary-report',
-  templateUrl: './timesheet-summary-report.component.html',
-  styleUrls: ['./timesheet-summary-report.component.scss'],
+  selector: 'app-productivity-report',
+  templateUrl: './productivity-report.component.html',
+  styleUrls: ['./productivity-report.component.scss']
 })
-export class TimesheetSummaryReportComponent implements OnInit {
-  BreadCrumbsTitle: any = 'Timesheet Summary Report';
+export class ProductivityReportComponent implements OnInit {
+BreadCrumbsTitle: any = 'Productivity Report';
   term: string = '';
   tableSize: number = 10;
   page: any = 1;
@@ -37,16 +38,6 @@ export class TimesheetSummaryReportComponent implements OnInit {
         console.log('View action triggered for row:', event.row);
         this.router.navigate(['/reports/employee-details'])
         break;
-      // case 'edit':
-      //   console.log('Edit action triggered for row:', event.row);
-      //   // Handle edit action here
-      //   break;
-      // case 'delete':
-      //   console.log('Delete action triggered for row:', event.row);
-      //   // Handle delete action here
-      //   break;
-      // default:
-      //   console.log('Unknown action type:', event.actionType);
     }
   }
 
@@ -80,4 +71,5 @@ export class TimesheetSummaryReportComponent implements OnInit {
   triggerAction(event: any) {
     this.handleAction(event);
   }
+
 }

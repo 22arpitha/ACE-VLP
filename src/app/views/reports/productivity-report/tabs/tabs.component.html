@@ -1,0 +1,35 @@
+<div class="tabs">
+  <div class="tab-buttons">
+    <button
+    mat-button
+      *ngFor="let tab of tabs; let i = index"
+      (click)="selectTab(i)"
+      [class.active]="selectedTab === i">
+      {{ tab }}
+    </button>
+  </div>
+
+  <div class="tab-content">
+    <ng-container *ngIf="selectedTab === 0">
+      <app-overall-productivity></app-overall-productivity>
+    </ng-container>
+    <ng-container *ngIf="selectedTab === 1">
+      <app-quantitative-productivity></app-quantitative-productivity>
+    </ng-container>
+    <ng-container *ngIf="selectedTab === 2">
+      <app-qualitative-productivity></app-qualitative-productivity>
+    </ng-container>
+    <!-- <ng-container *ngIf="selectedTab === 3">
+      <app-work-culture-and-work-ethics></app-work-culture-and-work-ethics>
+    </ng-container>
+    <ng-container *ngIf="selectedTab === 4">
+      <app-productive-hours></app-productive-hours>
+    </ng-container>
+    <ng-container *ngIf="selectedTab === 5">
+      <app-non-billable-hours></app-non-billable-hours>
+    </ng-container>
+    <ng-container *ngIf="selectedTab === 6">
+      <app-non-productive-hours></app-non-productive-hours>
+    </ng-container> -->
+  </div>
+</div>

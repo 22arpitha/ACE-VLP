@@ -1,5 +1,5 @@
 // dynamic-table.component.ts
-import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { MatMenuTrigger } from '@angular/material/menu';
 import { DynamicTableConfig } from './dynamic-table-config.model';
 import { DatePipe } from '@angular/common';
@@ -16,7 +16,7 @@ export class DynamicTableComponent implements OnInit {
   filteredData: any[] = [];
   paginatedData: any[] = [];
   currentPage = 1;
-  tableSizes = [10,25,50,100];
+  tableSizes = [5,10,25,50,100];
   columnFilters: { [key: string]: any } = {};
   arrowState: { [key: string]: boolean } = {};
   sortValue: string = '';
@@ -26,23 +26,40 @@ export class DynamicTableComponent implements OnInit {
   tableSize: number = 10;
   activeDateColumn: string | null = null;
   dateFilterValue: any = null;
-
+  paginationConfig: any = {
+    itemsPerPage: 10,
+    currentPage: 1,
+    totalItems: 0
+  }
   constructor(private datePipe: DatePipe) {}
-  ngOnInit(): void {
+  ngOnInit(): void { }
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['config'] && this.config?.data?.length) {
+      this.initializeTable();
+    }
+
+    this.paginationConfig = {
+      totalItems: this.config.totalRecords ?? 0,
+      currentPage: this.config.currentPage ?? 1,
+      itemsPerPage: this.config.tableSize ?? 10
+    };
+  }
+  private initializeTable(): void {
     this.filteredData = [...this.config.data];
+
     this.config.columns.forEach(col => {
       this.arrowState[col.key] = false;
       this.columnFilters[col.key] = col.filterType === 'multi-select' ? [] : '';
     });
+
     this.applyFilters();
   }
-
   get hasColumnFilters(): boolean {
     return this.config.columns.some(col => col.filterable);
   }
 
   onSearch(term: string): void {
-    this.config.searchTerm = term;
+    this.actionEvent.emit({ actionType:'search' , detail:term });
     this.applyFilters();
   }
 
@@ -109,11 +126,11 @@ export class DynamicTableComponent implements OnInit {
   }
 
   downloadCSV(): void {
-    // Add CSV logic
+    this.actionEvent.emit({ actionType:'export_csv' , detail:'csv' });
   }
 
   downloadPDF(): void {
-    // Add PDF logic
+    this.actionEvent.emit({ actionType:'export_pdf' , detail:'pdf' });
   }
 
   triggerAction(actionType: string, row: any): void {
@@ -135,10 +152,12 @@ getFilteredOptions(colKey: string): string[] {
   const search = this.filterSearchText[colKey]?.toLowerCase() || '';
   return options.filter(option => option.toLowerCase().includes(search));
 }
-onTableDataChange(event: any) {}
-onTableSizeChange(event: any): void {}
-
-
+onTableDataChange(event: any) {
+  this.actionEvent.emit({ actionType:'tableDataChange' , detail:event });
+}
+onTableSizeChange(event: any): void {
+  this.actionEvent.emit({ actionType:'tableSizeChange' , detail:event.value });
+}
 
 
 setDateFilterColumn(columnKey: string): void {
@@ -151,7 +170,7 @@ onDateSelected(event: any): void {
   const selectedDate = event.value;
 
   if (selectedDate && this.activeDateColumn) {
-    const formatted = this.datePipe.transform(selectedDate, 'dd/MM/yyyy');
+    const formatted = this.datePipe.transform(selectedDate, 'yyyy-MM-dd');
     this.columnFilters[this.activeDateColumn] = formatted;
     this.applyFilters();
   }

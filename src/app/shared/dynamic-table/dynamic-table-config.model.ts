@@ -19,4 +19,7 @@ export interface DynamicTableConfig {
   pagination?: boolean;
   navigation?: boolean;
   dateRangeFilter?:boolean;
+  searchable?:boolean;
+  currentPage?:number,
+  totalRecords?:number,
 }

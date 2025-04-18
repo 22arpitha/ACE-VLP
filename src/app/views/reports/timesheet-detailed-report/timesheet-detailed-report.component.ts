@@ -1,7 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { tableConfig } from './timesheet-detailed-config';
-import { CommonServiceService } from 'src/app/service/common-service.service';
-
+import { tableColumns } from './timesheet-detailed-config';
+import { CommonServiceService } from '../../../service/common-service.service';
+import { ApiserviceService } from 'src/app/service/apiservice.service';
+import { environment } from 'src/environments/environment';
+import { getUniqueValues } from '../../../shared/unique-values.utils';
+import { buildPaginationQuery } from 'src/app/shared/pagination.util';
+import { downloadFileFromUrl } from '../../../shared/file-download.util';
 @Component({
   selector: 'app-timesheet-detailed-report',
   templateUrl: './timesheet-detailed-report.component.html',
@@ -22,32 +26,118 @@ export class TimesheetDetailedReportComponent implements OnInit {
     tableSize: 10,
     pagination: true,
   };
-  constructor(private common_service:CommonServiceService) { }
+  constructor(
+    private common_service:CommonServiceService,
+    private api:ApiserviceService
+  ) { }
 
   ngOnInit(): void {
     this.common_service.setTitle(this.BreadCrumbsTitle)
-    this.tableConfig = tableConfig;
+    this.tableConfig = tableColumns;
+    this.getTableData()
   }
 
-  handleAction(event: { actionType: string; row: any }) {}
-  onTableDataChange(event:any){
-    this.page = event;
-    let query = `?page=${this.page}&page_size=${this.tableSize}`
-    if(this.term){
-      query +=`&search=${this.term}`
-    }
-  }
-  onTableSizeChange(event:any): void {
-    if(event){
+  // Called when user changes page number from the dynamic table
+onTableDataChange(event: any) {
+  console.log('Page changed to:', event);
+  const page = event;
+  this.page = page;
 
-    this.tableSize = Number(event.value);
-    let query = `?page=${1}&page_size=${this.tableSize}`
-    if(this.term){
-      query +=`&search=${this.term}`
-    }
-    }
+  this.getTableData({
+    page: page,
+    pageSize: this.tableSize,
+    searchTerm: this.term
+  });
+}
+
+// Called when user changes page size from the dynamic table
+onTableSizeChange(event: any): void {
+  if(event){
+    const newSize = Number(event.value || event);
+    this.tableSize = newSize;
+    this.page = 1; // reset to first page
+    this.getTableData({
+      page: this.page,
+      pageSize: this.tableSize,
+      searchTerm: this.term
+    });
   }
-  onChangeSort(event:any){
-    this.onTableDataChange(event)
+
+}
+
+// Called from <app-dynamic-table> via @Output actionEvent
+handleAction(event: { actionType: string; detail: any }) {
+  switch (event.actionType) {
+    case 'tableDataChange':
+      this.onTableDataChange(event.detail);
+      break;
+      case 'tableSizeChange':
+      this.onTableSizeChange(event.detail);
+      break;
+      case 'search':
+      this.onSearch(event.detail);
+      break;
+      case 'export_csv':
+      this.exportCsvOrPdf(event.detail);
+      break;
+      case 'export_pdf':
+      this.exportCsvOrPdf(event.detail);
+      break;
+    default:
+      console.warn('Unhandled action type:', event.actionType);
   }
+}
+exportCsvOrPdf(fileType) {
+  const query = buildPaginationQuery({
+    page: this.page,
+    pageSize: this.tableSize,
+  });
+
+  const url = `${environment.live_url}/${environment.timesheet_reports}/${query}&file-type=${fileType}&timsheet-type=detailed`;
+  downloadFileFromUrl({
+    url,
+    fileName: 'timesheet_details',
+    fileType
+  });
+}
+
+// Fetch table data from API with given params
+getTableData(params?: { page?: number; pageSize?: number; searchTerm?: string }) {
+  const page = params?.page ?? this.page;
+  const pageSize = params?.pageSize ?? this.tableSize;
+  const searchTerm = params?.searchTerm ?? this.term;
+
+  const query = buildPaginationQuery({ page, pageSize, searchTerm });
+  this.api.getData(`${environment.live_url}/${environment.timesheet}/${query}`).subscribe((res: any) => {
+    const formattedData = res.results.map((item: any, i: number) => ({
+      sl: (page - 1) * pageSize + i + 1,
+      ...item
+    }));
+    this.tableConfig = {
+      columns: tableColumns.map(col => ({
+        ...col,
+        filterOptions: col.filterable ? getUniqueValues(formattedData, col.key) : []
+      })),
+
+      data: formattedData,
+      searchTerm: this.term,
+      actions: [],
+      accessConfig: [],
+      tableSize: pageSize,
+      pagination: true,
+      searchable: true,
+      currentPage:page,
+      totalRecords: res.total_no_of_record
+    };
+  });
+}
+  onSearch(term: string): void {
+    this.term = term;
+    this.getTableData({
+      page: 1,
+      pageSize: this.tableSize,
+      searchTerm: term
+    });
+  }
+
 }

@@ -2,13 +2,13 @@ export const environment = {
   production: false,
   Razorpay_test_key:'rzp_test_GxaJhvoS78ZpIz',
   Razorpay_live_key:'rzp_test_Z6PoT6HRL71TiC',
-   
+
   // Testing url
   media_url: 'https://vlp.thestorywallcafe.com',
   live_url:'https://vlp.thestorywallcafe.com/api-vlp',
   socket_url:'projectacedevelop.thestorywallcafe.com',
 
-  // UAT url 
+  // UAT url
   // media_url: 'https://vlpuat.thestorywallcafe.com',
   // live_url:'https://vlpuat.thestorywallcafe.com/api-vlp',
   // socket_url:'projectacedevelop.thestorywallcafe.com',
@@ -40,7 +40,7 @@ templates:`templates`,
 employee:`user`,
 // vlp company policy
 company_policy:`company-policy`,
-// vlp clients 
+// vlp clients
 clients:'clients',
 clients_details:'clients-details',
 job_details:'job-details',
@@ -55,7 +55,7 @@ jobs_kpi:'kpi',
 vlp_timesheets:`timesheet`,
 client_invoice:'client-invoice',
 
-// project ace 
+// project ace
   leave_application: 'leave-application',
   timesheetCalender: 'time-sheets-calender',
   taskProjectCategories: 'task-project-categories',
@@ -117,9 +117,8 @@ client_invoice:'client-invoice',
   cancel_my_subscription:`cancel-my-subscription`,
   plan_types:`plan-types`,
  working_hour_config: `super-admin-conf-working-hour`,
-
-
-
+ timesheet:`timesheet`,
+ timesheet_reports:`timesheet-reports`
 };
 
 /*

@@ -1,4 +1,4 @@
-import { DynamicTableConfig } from '../../../shared/dynamic-table/dynamic-table-config.model';
+import { DynamicTableConfig } from '../../../../shared/dynamic-table/dynamic-table-config.model';
 
 // Sample raw data
 const summaryData = [
@@ -71,7 +71,5 @@ export const tableConfig: DynamicTableConfig = {
   actions: [],
   accessConfig: [],
   tableSize: 10,
-  pagination: true,
-  dateRangeFilter:true,
-  searchable:true
+  pagination: true
 };

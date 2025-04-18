@@ -1,88 +1,37 @@
-import { DynamicTableConfig } from '../../../shared/dynamic-table/dynamic-table-config.model';
-
-// Sample timesheet data
-const reportData = [
-  {
-    sl: 1,
-    date: '24/03/2025',
-    client: 'Vedalakshmi',
-    job: 'Vedalakshmi',
-    task: 'Processing',
-    employee: 'John',
-    start: '09:05',
-    end: '09:35',
-    spent: '00:25',
-    notes: 'Lorem ipsum'
-  },
-  {
-    sl: 2,
-    date: '24/03/2025',
-    client: 'Vedalakshmi',
-    job: 'Vedalakshmi',
-    task: 'Processing',
-    employee: 'Steve',
-    start: '09:05',
-    end: '09:45',
-    spent: '00:25',
-    notes: 'Lorem ipsum'
-  }
-];
-
-// Utility to get unique values for filters
-const getUniqueValues = (data: any[], key: string): string[] => {
-  return [...new Set(data.map(item => item[key]).filter(Boolean))];
-};
-
-// Column Definitions
-export const tableConfig: DynamicTableConfig  = {
-  columns:[
+export const tableColumns = [
   { label: 'Sl No', key: 'sl', sortable: true },
   { label: 'Date', key: 'date', sortable: true, filterable: true, filterType: 'date' },
   {
-    label: 'Client',
-    key: 'client',
+    label: 'Client Name',
+    key: 'client_name',
     filterable: true,
     filterType: 'multi-select',
-    filterOptions: getUniqueValues(reportData, 'client'),
     sortable: true
   },
   {
     label: 'Job Name',
-    key: 'job',
+    key: 'job_name',
     filterable: true,
     filterType: 'multi-select',
-    filterOptions: getUniqueValues(reportData, 'job'),
     sortable: true
   },
   {
-    label: 'Task',
-    key: 'task',
+    label: 'Task Name',
+    key: 'task_name',
     filterable: true,
     filterType: 'multi-select',
-    filterOptions: getUniqueValues(reportData, 'task'),
     sortable: true
   },
   {
-    label: 'Employee',
-    key: 'employee',
-    navigation:false,
+    label: 'Employee Name',
+    key: 'employee_name',
+    navigation: false,
     filterable: true,
     filterType: 'multi-select',
-    filterOptions: getUniqueValues(reportData, 'employee'),
     sortable: true
   },
-  { label: 'Start Time', key: 'start', sortable: true },
-  { label: 'End Time', key: 'end', sortable: true },
-  { label: 'Time Spent', key: 'spent', sortable: true },
-  { label: 'Notes', key: 'notes', sortable: false },
-
-],
-data: reportData,
-searchTerm: '',
-actions: [],
-accessConfig: [],
-tableSize: 10,
-pagination: true
-}
-
-
+  { label: 'start_time', key: 'start_time', sortable: true },
+  { label: 'End time', key: 'end_time', sortable: true },
+  { label: 'Time spent', key: 'time_spent', sortable: true },
+  { label: 'Notes', key: 'notes', sortable: false }
+];

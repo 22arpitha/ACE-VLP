@@ -19,7 +19,7 @@ export class ApiserviceService {
   ngOnInit() {
     this.token = sessionStorage.getItem('token')
     this.org_id = sessionStorage.getItem('org_id')
-    // this.headers = {'Authorization':this.token} 
+    // this.headers = {'Authorization':this.token}
   }
 
   private isComponentLoadedSubject = new BehaviorSubject<boolean>(false);
@@ -122,7 +122,7 @@ export class ApiserviceService {
   updateDepartmant(id: any, data: any) {
     return this.http.put(`${this.baseurl}/organization-department/${id}`, data)
   }
-  // Department 
+  // Department
 
   // new department api
   postDepartmentList(data:any){
@@ -164,11 +164,11 @@ export class ApiserviceService {
   // Industry Sector
 
   // Client
-  
+
   // addClientDetails(data: any) {
   //   return this.http.post(`${this.baseurl}/clients`, data)
   // }
- 
+
   getClientDetails(params, org) {
     return this.http.get(`${this.baseurl}/clients?page_number=1&data_per_page=2&pagination=${params.pagination}&org_ref_id=${org}`)
   }
@@ -306,7 +306,7 @@ export class ApiserviceService {
   }
   // Leave/Holiday List
 
-  //time Sheet master 
+  //time Sheet master
   addTimeSheetDetails(data: any) {
     return this.http.post(`${this.baseurl}/time-sheet`, data)
   }
@@ -316,7 +316,7 @@ export class ApiserviceService {
   deleteTimeSheeteDetails(id: any, params) {
     return this.http.delete(`${this.baseurl}/time-sheets/${id}?module=${params.module}&menu=${params.menu}&method=${params.method}&user_id=${params.user_id}`)
   }
-  //time Sheet master 
+  //time Sheet master
 
   //Leave Details
   addLeaveTypeDetails(data: any) {
@@ -339,7 +339,7 @@ export class ApiserviceService {
   }
   //Leave Details
 
-  // Project Task Category 
+  // Project Task Category
   addProjectTaskCategoryDetails(data: any) {
     return this.http.post(`${this.baseurl}/task-project-categories`, data)
   }
@@ -368,7 +368,7 @@ export class ApiserviceService {
     return this.http.put(`${this.baseurl}/task-project-categories/${id}`, data)
   }
 
-  // Project Task Category 
+  // Project Task Category
 
 
   // new project category
@@ -623,7 +623,7 @@ export class ApiserviceService {
   deleteEmployees(id:any){
     return this.http.delete(`${this.baseurl}/user/${id}/`)
   }
-  
+
   deleteMultiple(url,data) {
     return this.http.delete(url, data)
   }
@@ -646,7 +646,7 @@ export class ApiserviceService {
   postdesignationRoleAccess(data:any){
     return this.http.post(`${this.baseurl}/designation-access/`,data)
   }
-  
+
   putdesignationRoleAccess(data:any,id:any){
     return this.http.put(`${this.baseurl}/designation-access/${id}/`,data)
   }

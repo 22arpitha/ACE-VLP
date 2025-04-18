@@ -1,7 +1,7 @@
 <div class="px-4 settings-table-bg">
   <div class="row mx-0 my-3 px-0 align-items-center">
     <!-- Search Field -->
-    <div class="col-12 mt-2 col-sm-12 col-md-4 col-lg-3 search-div px-0 position-relative">
+    <div class="col-12 mt-2 col-sm-12 col-md-4 col-lg-3 search-div px-0 position-relative" *ngIf="config.searchable">
       <input
         type="search"
         class="form-control p-2 sizeinput"
@@ -114,7 +114,7 @@
           *ngFor="
             let item of paginatedData
               | customSort: directionValue : sortValue
-              | paginate: { itemsPerPage: tableSize, currentPage: 1, totalItems: 10 }
+              | paginate: paginationConfig
           "
         >
           <td *ngFor="let col of config.columns">
