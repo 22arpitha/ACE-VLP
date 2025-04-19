@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { CommonServiceService } from 'src/app/service/common-service.service';
+import { CommonServiceService } from '../../../../service/common-service.service';
 import { tableConfig } from './employee-config';
-import { buildPaginationQuery } from 'src/app/shared/pagination.util';
+import { buildPaginationQuery } from '../../../../shared/pagination.util';
 
 @Component({
   selector: 'app-employee-details',

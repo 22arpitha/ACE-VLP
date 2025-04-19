@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { CommonServiceService } from 'src/app/service/common-service.service';
-import { buildPaginationQuery } from 'src/app/shared/pagination.util';
+import { CommonServiceService } from '../../../../service/common-service.service';
+import { buildPaginationQuery } from '../../../../shared/pagination.util';
 import { tableConfig } from './quantitative-productivity-config';
 
 @Component({
@@ -10,8 +10,7 @@ import { tableConfig } from './quantitative-productivity-config';
   styleUrls: ['./quantitative-productivity.component.scss']
 })
 export class QuantitativeProductivityComponent implements OnInit {
-
-  BreadCrumbsTitle: any = 'Non Billable Hours';
+  BreadCrumbsTitle: any = 'Quantitative Productivity';
         term: string = '';
         tableSize: number = 10;
         page: any = 1;
@@ -38,7 +37,7 @@ export class QuantitativeProductivityComponent implements OnInit {
           switch (event.actionType) {
             case 'navigate':
               console.log('View action triggered for row:', event.row);
-              this.router.navigate(['/reports/employee-details'])
+              //this.router.navigate(['/reports/employee-details'])
               break;
           }
         }

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { CommonServiceService } from 'src/app/service/common-service.service';
-import { buildPaginationQuery } from 'src/app/shared/pagination.util';
+import { CommonServiceService } from '../../../../service/common-service.service';
+import { buildPaginationQuery } from '../../../../shared/pagination.util';
 import { tableConfig } from './overall-productivity-config';
 
 @Component({
@@ -11,7 +11,7 @@ import { tableConfig } from './overall-productivity-config';
 })
 export class OverallProductivityComponent implements OnInit {
 
-  BreadCrumbsTitle: any = 'Non Billable Hours';
+  BreadCrumbsTitle: any = 'Overall Productivity';
         term: string = '';
         tableSize: number = 10;
         page: any = 1;

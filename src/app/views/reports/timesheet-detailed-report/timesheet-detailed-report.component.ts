@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { tableColumns } from './timesheet-detailed-config';
 import { CommonServiceService } from '../../../service/common-service.service';
-import { ApiserviceService } from 'src/app/service/apiservice.service';
-import { environment } from 'src/environments/environment';
+import { ApiserviceService } from '../../../service/apiservice.service';
+import { environment } from '../../../../environments/environment';
 import { getUniqueValues } from '../../../shared/unique-values.utils';
-import { buildPaginationQuery } from 'src/app/shared/pagination.util';
+import { buildPaginationQuery } from '../../../shared/pagination.util';
 import { downloadFileFromUrl } from '../../../shared/file-download.util';
 @Component({
   selector: 'app-timesheet-detailed-report',
