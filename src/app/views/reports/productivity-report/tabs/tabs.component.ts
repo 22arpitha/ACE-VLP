@@ -22,5 +22,5 @@ tabs:string[] = ['Overall Productivity', 'Quantitative Productivity', 'Qualitati
 
   ngOnInit(): void {
   }
-
+  applySearch(){}
 }

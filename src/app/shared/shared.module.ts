@@ -34,13 +34,19 @@ import {NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 import {MatDialogModule} from '@angular/material/dialog';
 import {AlphabetOnlyDirective } from './alphabet-only.directive';
 import { DynamicTableComponent } from './dynamic-table/dynamic-table.component';
+import { PeriodComponent } from './period/period.component';
+import { PeriodicityComponent } from './periodicity/periodicity.component';
+import { EmployeeListComponent } from './employee-list/employee-list.component';
 @NgModule({
   declarations: [
     SortPipe,
     GenericNorecardsComponent,
     HypenDirective,
     AlphabetOnlyDirective,
-    DynamicTableComponent
+    DynamicTableComponent,
+    PeriodComponent,
+    PeriodicityComponent,
+    EmployeeListComponent
   ],
   imports: [
     CommonModule,
@@ -110,7 +116,10 @@ import { DynamicTableComponent } from './dynamic-table/dynamic-table.component';
     NgxPaginationModule,
     NgbTooltipModule,
     MatDialogModule,
-    DynamicTableComponent
+    DynamicTableComponent,
+    EmployeeListComponent,
+    PeriodicityComponent,
+    PeriodComponent
    ],
 
 })

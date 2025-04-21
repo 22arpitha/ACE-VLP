@@ -1,0 +1,16 @@
+<form [formGroup]="periodForm" class="period-field">
+<mat-form-field appearance="outline" class="w-100 p-0 custom-mat-form-field">
+  <mat-label>Period</mat-label>
+  <mat-select formControlName="period" required
+  panelClass="custom-select-panel" [disableOptionCentering]="true" class="w-100">
+    <mat-option value="" disabled>Select Period</mat-option>
+    <mat-option value="DAILY">Daily</mat-option>
+    <mat-option value="WEEKLY">Weekly</mat-option>
+    <mat-option value="MONTHLY">Monthly</mat-option>
+    <mat-option value="YEARLY">Yearly</mat-option>
+  </mat-select>
+  <mat-error *ngIf="f['period'].touched && f['period'].invalid">
+   Period is required.
+  </mat-error>
+</mat-form-field>
+</form>

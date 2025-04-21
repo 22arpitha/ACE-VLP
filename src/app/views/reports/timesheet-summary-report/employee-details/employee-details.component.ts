@@ -12,7 +12,7 @@ import { buildPaginationQuery } from '../../../../shared/pagination.util';
 export class EmployeeDetailsComponent implements OnInit {
 BreadCrumbsTitle: any = 'Employee Details';
   term: string = '';
-  tableSize: number = 10;
+  tableSize: number = 5;
   page: any = 1;
   tableSizes = [5, 10, 25, 50, 100];
 
@@ -22,7 +22,7 @@ BreadCrumbsTitle: any = 'Employee Details';
     searchTerm: '',
     actions: [],
     accessConfig: [],
-    tableSize: 12,
+    tableSize: 5,
     pagination: true,
   };
   constructor(private common_service:CommonServiceService,private router:Router) {}
@@ -34,20 +34,10 @@ BreadCrumbsTitle: any = 'Employee Details';
 
   handleAction(event: { actionType: string; row: any }) {
     switch (event.actionType) {
-      case 'navigate':
-        console.log('View action triggered for row:', event.row);
-        this.router.navigate(['/reports/employee-details'])
-        break;
-      // case 'edit':
-      //   console.log('Edit action triggered for row:', event.row);
-      //   // Handle edit action here
+      // case 'navigate':
+      //   console.log('View action triggered for row:', event.row);
+      //   this.router.navigate(['/reports/employee-details'])
       //   break;
-      // case 'delete':
-      //   console.log('Delete action triggered for row:', event.row);
-      //   // Handle delete action here
-      //   break;
-      // default:
-      //   console.log('Unknown action type:', event.actionType);
     }
   }
 
@@ -58,10 +48,6 @@ BreadCrumbsTitle: any = 'Employee Details';
       pageSize: this.tableSize,
       searchTerm: this.term
     });
-
-    console.log('Pagination Query:', query);
-    // use this query in your API call
-    // this.apiService.getData(`your-api-endpoint${query}`).subscribe(...)
   }
   onTableSizeChange(event: any): void {
     if (event) {
@@ -72,9 +58,6 @@ BreadCrumbsTitle: any = 'Employee Details';
         pageSize: this.tableSize,
         searchTerm: this.term
       });
-
-      console.log('Page Size Change Query:', query);
-      // use this query in your API call
     }
 
   }

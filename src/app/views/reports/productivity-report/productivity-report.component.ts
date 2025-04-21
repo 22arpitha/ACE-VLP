@@ -34,10 +34,10 @@ BreadCrumbsTitle: any = 'Productivity Report';
 
   handleAction(event: { actionType: string; row: any }) {
     switch (event.actionType) {
-      case 'navigate':
-        console.log('View action triggered for row:', event.row);
-        this.router.navigate(['/reports/employee-details'])
-        break;
+      // case 'navigate':
+      //   console.log('View action triggered for row:', event.row);
+      //   this.router.navigate(['/reports/employee-details'])
+      //   break;
     }
   }
 
@@ -48,8 +48,6 @@ BreadCrumbsTitle: any = 'Productivity Report';
       pageSize: this.tableSize,
       searchTerm: this.term
     });
-
-    console.log('Pagination Query:', query);
     // use this query in your API call
     // this.apiService.getData(`your-api-endpoint${query}`).subscribe(...)
   }
@@ -62,9 +60,6 @@ BreadCrumbsTitle: any = 'Productivity Report';
         pageSize: this.tableSize,
         searchTerm: this.term
       });
-
-      console.log('Page Size Change Query:', query);
-      // use this query in your API call
     }
 
   }

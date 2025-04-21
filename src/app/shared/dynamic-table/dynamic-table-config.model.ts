@@ -25,4 +25,7 @@ export interface DynamicTableConfig {
   headerTabs?:boolean;
   includeAllJobs?:boolean;
   sendEmail?:boolean;
+  estimationDetails?:boolean;
+  hideDownload?:boolean;
+  averageProductivity?:boolean;
 }

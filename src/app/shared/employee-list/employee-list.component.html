@@ -1,0 +1,12 @@
+<form [formGroup]="employeeForm" class="employee-field">
+<mat-form-field appearance="outline" class="w-100 p-0 custom-mat-form-field">
+  <mat-label>Employee</mat-label>
+  <mat-select formControlName="employee" required
+  panelClass="custom-select-panel" [disableOptionCentering]="true" class="w-100">
+    <mat-option value="" disabled>Select employee</mat-option>
+  </mat-select>
+  <mat-error *ngIf="f['employee'].touched && f['employee'].invalid">
+    Employee is required.
+  </mat-error>
+</mat-form-field>
+</form>

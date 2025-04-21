@@ -22,11 +22,11 @@ export class DynamicTableComponent implements OnInit {
   directionValue: string;
   filterTriggers: { [key: string]: MatMenuTrigger } = {};
   filterSearchText: { [key: string]: string } = {};
-  tableSize: number = 10;
+  tableSize: number = 5;
   activeDateColumn: string | null = null;
   dateFilterValue: any = null;
   paginationConfig: any = {
-    itemsPerPage: 10,
+    itemsPerPage: 5,
     currentPage: 1,
     totalItems: 0
   }
@@ -42,7 +42,7 @@ export class DynamicTableComponent implements OnInit {
     this.paginationConfig = {
       totalItems: this.config.totalRecords ?? 0,
       currentPage: this.config.currentPage ?? 1,
-      itemsPerPage: this.config.tableSize ?? 10
+      itemsPerPage: this.config.tableSize ?? 5
     };
   }
   private initializeTable(): void {
@@ -142,10 +142,13 @@ export class DynamicTableComponent implements OnInit {
 openFilterMenu(event: MouseEvent, colKey: string) {
   event.stopPropagation();
   this.activeFilterColumn = colKey;
-  const trigger = this.filterTriggers[colKey];
-  if (trigger) {
-    trigger.openMenu();
+  if(colKey){
+    const trigger = this.filterTriggers[colKey];
+    if (trigger) {
+      trigger.openMenu();
+    }
   }
+
 }
 
 getFilteredOptions(colKey: string): string[] {
@@ -201,4 +204,25 @@ public onIncludeJobsChange(event:any){
 public sendEmailEvent(){
   this.actionEvent.emit({ actionType: 'sendEmail', action:''});
 }
+get estimatedTotal(): number {
+  return this.paginatedData.reduce((sum, item) => sum + parseFloat(item.estimatedTime), 0);
+}
+
+get actualTotal(): number {
+  return this.paginatedData.reduce((sum, item) => sum + parseFloat(item.actualTime), 0);
+}
+
+get averageProductivity(): number {
+  const estimated = this.estimatedTotal;
+  const actual = this.actualTotal;
+  return estimated > 0 ? (actual / estimated) * 100 : 0;
+}
+selectAll(columnKey: string) {
+  this.columnFilters[columnKey] = [...this.getFilteredOptions(columnKey)];
+}
+
+clearAll(columnKey: string) {
+  this.columnFilters[columnKey] = [];
+}
+
 }

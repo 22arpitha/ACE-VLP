@@ -14,7 +14,7 @@ import { downloadFileFromUrl } from '../../../shared/file-download.util';
 export class TimesheetDetailedReportComponent implements OnInit {
   BreadCrumbsTitle: any = 'Timesheet Detailed Report';
   term: string = '';
-  tableSize: number = 10;
+  tableSize: number = 5;
   page: any = 1;
   tableSizes = [5,10,25,50,100];
   tableConfig:any = {
@@ -23,7 +23,7 @@ export class TimesheetDetailedReportComponent implements OnInit {
     searchTerm: '',
     actions: [],
     accessConfig: [],
-    tableSize: 10,
+    tableSize: 5,
     pagination: true,
   };
   constructor(

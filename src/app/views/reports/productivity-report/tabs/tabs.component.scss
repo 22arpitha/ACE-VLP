@@ -2,14 +2,14 @@
   display: flex;
   flex-direction: column;
   font-size: 11px !important;
-  margin: 14px 14px 0;
+  margin: 0px 14px 0;
 }
 
 .tab-buttons {
   display: flex;
   flex-wrap: wrap;
 }
-
+.tab-buttons{
 button {
   background: none;
   border: 1px solid #ccc;
@@ -17,19 +17,25 @@ button {
   cursor: pointer;
   margin: 5px;
   padding: 0 5px;
+  zoom:86%;
 }
 
 button.active {
-  background-color: #007bff;
+  background-color:#126EB4;
   color: white;
 }
 
 button:hover {
-  background-color: #0056b3;
+  background-color: #126EB4;
+  opacity: 0.9;
   color: white;
 }
-
+}
 .tab-content {
   // padding: 15px;
   border-top: 1px solid #ccc;
+}
+.bg{
+  height: 60vh !important;
+  overflow-x: hidden !important;
 }

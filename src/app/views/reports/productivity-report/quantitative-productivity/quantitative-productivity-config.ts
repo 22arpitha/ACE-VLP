@@ -88,4 +88,6 @@ export const tableConfig: DynamicTableConfig = {
   accessConfig: [],
   tableSize: 10,
   pagination: true,
+  estimationDetails:true,
+  hideDownload:true
 };

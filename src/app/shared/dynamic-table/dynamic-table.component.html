@@ -33,11 +33,11 @@
     <div class="col"></div>
       <!-- Tab design -->
      <div class="col-auto mt-2 col-sm-auto col-md-auto col-lg-auto" *ngIf="config?.headerTabs">
-              <button mat-raised-button class="mat-btn-s tab-button-content" [ngClass]="{'isActive': isCurrent}" type="button" type="button" (click)="getCurrentDatasetList()">Current</button> 
-              <button mat-raised-button class="mat-btn-s tab-button-content" [ngClass]="{'isActive': isHistory}" type="button" type="button" (click)="getHistoryDatasetList()">History</button>       
+        <button mat-raised-button class="mat-btn-s tab-button-content" [ngClass]="{'isActive': isCurrent}" type="button" type="button" (click)="getCurrentDatasetList()">Current</button>
+        <button mat-raised-button class="mat-btn-s tab-button-content" [ngClass]="{'isActive': isHistory}" type="button" type="button" (click)="getHistoryDatasetList()">History</button>
       </div>
 <!-- Download Menu -->
-    <div class="col-auto mt-2 col-sm-auto col-md-auto col-lg-1">
+    <div class="col-auto mt-2 col-sm-auto col-md-auto col-lg-1" *ngIf="!config?.hideDownload">
       <button
         mat-icon-button
         [matMenuTriggerFor]="downloadMenu"
@@ -58,7 +58,7 @@
       </mat-menu>
     </div>
     <div class="col-auto mt-2 col-sm-auto col-md-auto col-lg-2 text-end" *ngIf="config?.sendEmail">
-      <button mat-raised-button class="mat-btn-s proceedbtn" type="button" type="button" (click)="sendEmailEvent()">Send Email</button>       
+      <button mat-raised-button class="mat-btn-s proceedbtn" type="button" type="button" (click)="sendEmailEvent()">Send Email</button>
     </div>
   </div>
 
@@ -175,34 +175,56 @@
     </div>
   </div>
 
-  <!-- Pagination -->
-  <div class="pagination-container pt-4">
-    <!-- Pagination Controls (Center-Aligned) -->
-    <pagination-controls
-      previousLabel="Prev"
-      nextLabel="Next"
-      (pageChange)="onTableDataChange($event)"
-    >
-    </pagination-controls>
+    <div class="row m-0 text-end pt-2" *ngIf="config?.estimationDetails">
+      <div class="col-3"></div>
+      <div class="col-3">
+        <span class="fw-bold">Estimated (hrs) : {{ estimatedTotal.toFixed(2) }}</span>
+      </div>
+      <div class="col-3">
+        <span class="fw-bold">Actual Time (hrs) : {{ actualTotal.toFixed(2) }}</span>
+      </div>
+      <div class="col-3">
+        <span class="fw-bold">Average Productivity : {{ averageProductivity.toFixed(2) }}%</span>
+      </div>
 
-    <!-- Items Per Page Selector (Right-Aligned) -->
-    <div class="items-per-page-container px-1">
-      <div>Items per page</div>
-      <mat-select
-        [(ngModel)]="tableSize"
-        (selectionChange)="onTableSizeChange($event)"
-        placeholder="10"
-        class="page-size"
-      >
-        <mat-option *ngFor="let size of tableSizes" [value]="size">{{size}}</mat-option>
-      </mat-select>
     </div>
-  </div>
+
+
+    <div class="row m-0 text-end pt-2" *ngIf="config?.averageProductivity">
+      <div class="col-9"></div>
+      <div class="col-3">
+        <span class="fw-bold">Average Productivity : {{ 'NA' }}</span>
+      </div>
+    </div>
+
 </div>
 
+<!-- Pagination -->
+<div class="pagination-container pt-4">
+  <!-- Pagination Controls (Center-Aligned) -->
+  <pagination-controls
+    previousLabel="Prev"
+    nextLabel="Next"
+    (pageChange)="onTableDataChange($event)"
+  >
+  </pagination-controls>
 
+  <!-- Items Per Page Selector (Right-Aligned) -->
+  <div class="items-per-page-container px-1">
+    <div>Items per page</div>
+    <mat-select
+      [(ngModel)]="tableSize"
+      (selectionChange)="onTableSizeChange($event)"
+      placeholder="10"
+      class="page-size"
+    >
+      <mat-option *ngFor="let size of tableSizes" [value]="size">{{size}}</mat-option>
+    </mat-select>
+  </div>
+</div>
 <!-- Multi-select Filter Menu -->
-<mat-menu #filterMenu="matMenu" class="p-2" xPosition="after" yPosition="below">
+
+<mat-menu #filterMenu="matMenu" class="p-2" xPosition="after" yPosition="below" >
   <ng-container *ngIf="activeFilterColumn as columnKey">
     <div class="position-relative mb-2" (click)="$event.stopPropagation()">
       <i
@@ -236,3 +258,4 @@
     </mat-selection-list>
   </ng-container>
 </mat-menu>
+

@@ -15,7 +15,7 @@ export class ProductiveHoursComponent implements OnInit {
 
   BreadCrumbsTitle: any = 'Productive Hours';
   term: string = '';
-  tableSize: number = 10;
+  tableSize: number = 5;
   page: any = 1;
   tableSizes = [5,10,25,50,100];
   tableConfig:any = {
@@ -24,7 +24,7 @@ export class ProductiveHoursComponent implements OnInit {
     searchTerm: '',
     actions: [],
     accessConfig: [],
-    tableSize: 10,
+    tableSize: 5,
     pagination: true,
   };
   data = [
@@ -146,10 +146,10 @@ getTableData(params?: { page?: number; pageSize?: number; searchTerm?: string })
     accessConfig: [],
     tableSize: pageSize,
     pagination: true,
-    searchable: true,
     currentPage:page,
     // totalRecords: res.total_no_of_record
-    totalRecords:this.tableConfig.data.length
+    totalRecords:this.tableConfig.data.length,
+    hideDownload:true
   };
 }
   onSearch(term: string): void {

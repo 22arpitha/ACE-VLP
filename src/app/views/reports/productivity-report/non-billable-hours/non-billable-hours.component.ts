@@ -14,7 +14,7 @@ import { ApiserviceService } from '../../../../service/apiservice.service';
 export class NonBillableHoursComponent implements OnInit {
 BreadCrumbsTitle: any = 'Non Billable Hours';
  term: string = '';
-      tableSize: number = 10;
+      tableSize: number = 5;
       page: any = 1;
       tableSizes = [5,10,25,50,100];
       tableConfig:any = {
@@ -148,10 +148,10 @@ BreadCrumbsTitle: any = 'Non Billable Hours';
         accessConfig: [],
         tableSize: pageSize,
         pagination: true,
-        searchable: true,
         currentPage:page,
         // totalRecords: res.total_no_of_record
-        totalRecords:this.tableConfig.data.length
+        totalRecords:this.tableConfig.data.length,
+        hideDownload:true
       };
     }
       onSearch(term: string): void {

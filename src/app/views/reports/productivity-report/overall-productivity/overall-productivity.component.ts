@@ -13,7 +13,7 @@ export class OverallProductivityComponent implements OnInit {
 
   BreadCrumbsTitle: any = 'Overall Productivity';
         term: string = '';
-        tableSize: number = 10;
+        tableSize: number = 5;
         page: any = 1;
         tableSizes = [5, 10, 25, 50, 100];
 
@@ -23,7 +23,7 @@ export class OverallProductivityComponent implements OnInit {
           searchTerm: '',
           actions: [],
           accessConfig: [],
-          tableSize: 12,
+          tableSize: 5,
           pagination: true,
         };
         constructor(private common_service:CommonServiceService,private router:Router) {}

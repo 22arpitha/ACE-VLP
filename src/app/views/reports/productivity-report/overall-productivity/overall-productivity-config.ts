@@ -53,7 +53,8 @@ searchTerm: '',
 actions: [],
 accessConfig: [],
 tableSize: 10,
-pagination: true
+pagination: true,
+hideDownload:true
 }
 
 

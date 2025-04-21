@@ -93,5 +93,7 @@ export const tableConfig: DynamicTableConfig = {
   actions: [],
   accessConfig: [],
   tableSize: 10,
-  pagination: true
+  pagination: true,
+  hideDownload:true,
+  averageProductivity:true
 };
