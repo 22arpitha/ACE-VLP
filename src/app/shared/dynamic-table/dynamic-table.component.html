@@ -13,8 +13,8 @@
       />
       <i *ngIf="!config.searchTerm" class="bi bi-search" id="search-icon-tab"></i>
     </div>
-    <div class="col-auto mt-2 col-sm-auto col-md-auto col-lg-2" *ngIf="config?.includeAllJobs">
-      <mat-checkbox color="primary" class="example-margin" (change)="onIncludeJobsChange($event)" ><h5 class="c-header">Include All Jobs</h5></mat-checkbox>
+    <div class="col-auto mt-2 col-sm-auto col-md-auto col-lg-2" *ngIf="config?.showIncludeAllJobs">
+      <mat-checkbox color="primary" class="example-margin" [(ngModel)]="config.includeAllJobsValue" [ngModelOptions]="{standalone: true}" [disabled]="config.includeAllJobsEnable" (change)="onIncludeJobsChange($event)" ><h5 class="c-headerss">Include All Jobs</h5></mat-checkbox>
     </div>
     <!-- Date Range Filter -->
     <div class="col-12 mt-2 col-sm-12 col-md-4 col-lg-3" *ngIf="config.dateRangeFilter">
@@ -58,7 +58,7 @@
       </mat-menu>
     </div>
     <div class="col-auto mt-2 col-sm-auto col-md-auto col-lg-2 text-end" *ngIf="config?.sendEmail">
-      <button mat-raised-button class="mat-btn-s proceedbtn" type="button" type="button" (click)="sendEmailEvent()">Send Email</button>       
+      <button mat-raised-button class="mat-btn-s proceedbtn" type="button" type="button" (click)="sendEmailEvent()" [disabled]="!config.includeAllJobsValue">Send Email</button>       
     </div>
   </div>
 

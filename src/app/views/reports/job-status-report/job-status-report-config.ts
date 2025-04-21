@@ -1,8 +1,4 @@
-import { DynamicTableConfig } from '../../../shared/dynamic-table/dynamic-table-config.model';
-
-// Column Definitions
-export const tableConfig: DynamicTableConfig  = {
-  columns:[
+export const tableConfig: any  = [
   { label: 'Sl No', key: 'sl', sortable: false },
   {
     label: 'Client',
@@ -53,14 +49,4 @@ export const tableConfig: DynamicTableConfig  = {
   },
   { label: 'Primary Employee', key: 'is_primary', sortable: true },
 
-],
-data: [],
-searchTerm: '',
-actions: [],
-accessConfig: [],
-tableSize: 10,
-pagination: true,
-headerTabs:true,
-includeAllJobs:true,
-sendEmail:true,
-}
+]

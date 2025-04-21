@@ -57,9 +57,9 @@ export const tableConfig: DynamicTableConfig  = {
     filterOptions: getUniqueValues(reportData, 'task'),
     sortable: true
   },
-  { label: 'Start Time', key: 'estimated_time', sortable: true },
-  { label: 'Actual Time', key: 'actual_time', sortable: true },
-  { label: 'excess Spent', key: 'excess_time', sortable: true },
+  { label: 'Estimated Time (hrs)', key: 'estimated_time', sortable: true },
+  { label: 'Actual Time (hrs)', key: 'actual_time', sortable: true },
+  { label: 'Remaining/(Excess) Time (hrs)', key: 'excess_time', sortable: true },
   
 ],
 data: reportData,
@@ -69,7 +69,9 @@ accessConfig: [],
 tableSize: 10,
 pagination: true,
 headerTabs:true,
-includeAllJobs:true,
+showIncludeAllJobs:true,
+includeAllJobsEnable:true,
+includeAllJobsValue:false,
 sendEmail:true,
 }
 

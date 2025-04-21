@@ -32,6 +32,7 @@ export class DynamicTableComponent implements OnInit {
   }
   isCurrent:boolean=true;
   isHistory:boolean=false;
+  selected_client_id:any=null;
   constructor(private datePipe: DatePipe) {}
   ngOnInit(): void { }
   ngOnChanges(changes: SimpleChanges): void {
@@ -66,11 +67,10 @@ export class DynamicTableComponent implements OnInit {
 
   applyFilters(): void {
     this.filteredData = this.config.data.filter(row => {
-      const matchSearch = !this.config.searchTerm || this.config.columns.some(col =>
-        row[col.key]?.toString().toLowerCase().includes(this.config.searchTerm!.toLowerCase())
+      const matchSearch = !this.config.searchTerm || this.config.columns?.some(col =>
+        row[col.key]?.toString()?.toLowerCase()?.includes(this.config.searchTerm!?.toLowerCase())
       );
-
-      const matchColumns = Object.keys(this.columnFilters).every(key => {
+      const matchColumns = Object.keys(this.columnFilters)?.every(key => {
         const filterVal = this.columnFilters[key];
         const cellVal = row[key];
 
@@ -79,20 +79,24 @@ export class DynamicTableComponent implements OnInit {
         }
 
         if (Array.isArray(filterVal)) {
-          return filterVal.includes(cellVal);
+          return filterVal?.includes(cellVal);
         }
 
-        const col = this.config.columns.find(c => c.key === key);
+        const col = this.config.columns?.find(c => c.key === key);
 
         if (!cellVal || !filterVal) return false;
 
         // Normalize both by removing time and trimming whitespace
-        const cleanCellVal = cellVal.toString().trim().split(' ')[0];
-        const cleanFilterVal = filterVal.toString().trim().split(' ')[0];
+        const cleanCellVal = cellVal?.toString()?.trim()?.split(' ')[0];
+        const cleanFilterVal = filterVal?.toString()?.trim()?.split(' ')[0];
         return cleanCellVal === cleanFilterVal;
       });
-
+      if(this.config.showIncludeAllJobs){
+        this.isIncludeFlagEnableLogic();
+      }
+     
       return matchSearch && matchColumns;
+      
     });
 
     this.updatePagination();
@@ -140,7 +144,7 @@ export class DynamicTableComponent implements OnInit {
   activeFilterColumn: string | null = null;
 
 openFilterMenu(event: MouseEvent, colKey: string) {
-  event.stopPropagation();
+  event?.stopPropagation();
   this.activeFilterColumn = colKey;
   const trigger = this.filterTriggers[colKey];
   if (trigger) {
@@ -195,10 +199,26 @@ public getHistoryDatasetList(){
 }
 // Include All Jobs Checkbo event
 public onIncludeJobsChange(event:any){
-  this.actionEvent.emit({ actionType: 'includeAllJobs', action:event.checked});
+  this.config.includeAllJobsValue=event.checked;
+  this.actionEvent.emit({ actionType: 'includeAllJobs', action:event.checked,client_id:this.selected_client_id});
 }
 
 public sendEmailEvent(){
-  this.actionEvent.emit({ actionType: 'sendEmail', action:''});
+  this.actionEvent.emit({ actionType: 'sendEmail', action:this.filteredData});
+}
+
+private isIncludeFlagEnableLogic(){
+  const clientNameFilter = this.columnFilters['client_name'];
+  if (clientNameFilter) {
+    const isSingleClient = clientNameFilter?.length === 1;
+    this.config.includeAllJobsEnable = !isSingleClient;
+    if (!isSingleClient) {
+      this.config.includeAllJobsValue = false;
+      this.selected_client_id=null;
+    }else{
+      const matchedClient = this.filteredData?.find((obj:any) => obj['client_name'] === clientNameFilter[0]);
+      this.selected_client_id = matchedClient?.client;
+    }
+  }
 }
 }
