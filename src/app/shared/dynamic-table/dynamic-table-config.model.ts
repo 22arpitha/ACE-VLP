@@ -23,7 +23,9 @@ export interface DynamicTableConfig {
   currentPage?:number,
   totalRecords?:number,
   headerTabs?:boolean;
-  includeAllJobs?:boolean;
+  showIncludeAllJobs?:boolean;
+  includeAllJobsValue?:boolean;
+  includeAllJobsEnable?:boolean;
   sendEmail?:boolean;
   estimationDetails?:boolean;
   hideDownload?:boolean;

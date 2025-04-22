@@ -70,3 +70,6 @@ mat-form-field{
 .p-r{
   position: relative !important;
 }
+button.proceedbtn:disabled{
+  color: #fff;
+}

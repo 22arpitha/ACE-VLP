@@ -55,6 +55,7 @@ jobs_kpi:'kpi',
 vlp_timesheets:`timesheet`,
 client_invoice:'client-invoice',
 invoice_details:'invoice-details',
+job_reports:'job-reports',
 
 // project ace
   leave_application: 'leave-application',
@@ -119,7 +120,7 @@ invoice_details:'invoice-details',
   plan_types:`plan-types`,
  working_hour_config: `super-admin-conf-working-hour`,
  timesheet:`timesheet`,
- timesheet_reports:`timesheet-reports`
+ timesheet_reports:`timesheet-reports`,
 };
 
 /*
