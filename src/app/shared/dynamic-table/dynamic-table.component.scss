@@ -58,3 +58,15 @@ mat-form-field{
 .mat-btn-s {
   margin: 0px 5px;
 }
+.set-position{
+  position: absolute;
+  top:10px;
+}
+.scroll-h{
+  height: 40vh;
+  overflow-y: auto;
+  padding-right: 10px;
+}
+.p-r{
+  position: relative !important;
+}

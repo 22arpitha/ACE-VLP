@@ -37,7 +37,7 @@
         <button mat-raised-button class="mat-btn-s tab-button-content" [ngClass]="{'isActive': isHistory}" type="button" type="button" (click)="getHistoryDatasetList()">History</button>
       </div>
 <!-- Download Menu -->
-    <div class="col-auto mt-2 col-sm-auto col-md-auto col-lg-1" *ngIf="!config?.hideDownload">
+    <div class="col-auto col-sm-auto col-md-auto mt-2 col-lg-1" *ngIf="!config?.hideDownload" >
       <button
         mat-icon-button
         [matMenuTriggerFor]="downloadMenu"
@@ -63,6 +63,7 @@
   </div>
 
   <!-- Data Table -->
+   <div [ngClass]="!config?.hideDownload ? 'scroll-h' : ''">
   <div class="table-responsive">
     <table class="table table-hover table-list">
       <thead>
@@ -111,6 +112,42 @@
                   <ng-container *ngIf="!filterTriggers[col.key]">
                     {{ (filterTriggers[col.key] = trigger) }}
                   </ng-container>
+                  <!-- Multi-select Filter Menu -->
+
+                  <mat-menu #filterMenu="matMenu" class="p-2" xPosition="after" yPosition="below" >
+                    <ng-container *ngIf="activeFilterColumn as columnKey">
+                      <div class="position-relative mb-2" (click)="$event.stopPropagation()">
+                        <i
+                          class="bi text-secondary position-absolute top-50 end-0 translate-middle-y me-2"
+                          [ngClass]="{
+                            'bi-x-lg': filterSearchText[columnKey],
+                            'bi-search': !filterSearchText[columnKey]
+                          }"
+                          style="cursor: pointer"
+                          (click)="filterSearchText[columnKey] && (filterSearchText[columnKey] = '')"
+                        ></i>
+                        <input
+                          type="text"
+                          class="form-control"
+                          placeholder="Search"
+                          [(ngModel)]="filterSearchText[columnKey]"
+                        />
+                      </div>
+
+                      <mat-selection-list
+                        [(ngModel)]="columnFilters[columnKey]"
+                        (ngModelChange)="applyFilters()"
+                        [multiple]="true"
+                      >
+                        <mat-list-option
+                          *ngFor="let option of getFilteredOptions(columnKey)"
+                          [value]="option"
+                        >
+                          {{ option }}
+                        </mat-list-option>
+                      </mat-selection-list>
+                    </ng-container>
+                  </mat-menu>
                 </ng-container>
               </ng-container>
             </ng-container>
@@ -174,7 +211,7 @@
       <app-generic-norecards></app-generic-norecards>
     </div>
   </div>
-
+  </div>
     <div class="row m-0 text-end pt-2" *ngIf="config?.estimationDetails">
       <div class="col-3"></div>
       <div class="col-3">
@@ -222,40 +259,5 @@
     </mat-select>
   </div>
 </div>
-<!-- Multi-select Filter Menu -->
 
-<mat-menu #filterMenu="matMenu" class="p-2" xPosition="after" yPosition="below" >
-  <ng-container *ngIf="activeFilterColumn as columnKey">
-    <div class="position-relative mb-2" (click)="$event.stopPropagation()">
-      <i
-        class="bi text-secondary position-absolute top-50 end-0 translate-middle-y me-2"
-        [ngClass]="{
-          'bi-x-lg': filterSearchText[columnKey],
-          'bi-search': !filterSearchText[columnKey]
-        }"
-        style="cursor: pointer"
-        (click)="filterSearchText[columnKey] && (filterSearchText[columnKey] = '')"
-      ></i>
-      <input
-        type="text"
-        class="form-control"
-        placeholder="Search"
-        [(ngModel)]="filterSearchText[columnKey]"
-      />
-    </div>
-
-    <mat-selection-list
-      [(ngModel)]="columnFilters[columnKey]"
-      (ngModelChange)="applyFilters()"
-      [multiple]="true"
-    >
-      <mat-list-option
-        *ngFor="let option of getFilteredOptions(columnKey)"
-        [value]="option"
-      >
-        {{ option }}
-      </mat-list-option>
-    </mat-selection-list>
-  </ng-container>
-</mat-menu>
 
