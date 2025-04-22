@@ -17,10 +17,21 @@
       <mat-checkbox color="primary" class="example-margin" [(ngModel)]="config.includeAllJobsValue" [ngModelOptions]="{standalone: true}" [disabled]="config.includeAllJobsEnable" (change)="onIncludeJobsChange($event)" ><h5 class="c-headerss">Include All Jobs</h5></mat-checkbox>
     </div>
     <!-- Date Range Filter -->
-    <div class="col-12 mt-2 col-sm-12 col-md-4 col-lg-3" *ngIf="config.dateRangeFilter">
+    <!-- <div class="col-12 mt-2 col-sm-12 col-md-4 col-lg-3" *ngIf="config.dateRangeFilter">
       <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
         <mat-label>&nbsp; Enter a date range</mat-label>
         <mat-date-range-input [rangePicker]="picker">
+          <input matStartDate placeholder="Start date" />
+          <input matEndDate placeholder="End date" />
+        </mat-date-range-input>
+        <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-date-range-picker #picker></mat-date-range-picker>
+      </mat-form-field>
+    </div> -->
+    <div class="col-12 mt-2 col-sm-12 col-md-4 col-lg-3" *ngIf="config.dateRangeFilter">
+      <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+        <mat-label>&nbsp; Enter a date range</mat-label>
+        <mat-date-range-input [rangePicker]="picker" [(ngModel)]="selectedDateRange" (dateChange)="onDateRangeChange($event)">
           <input matStartDate placeholder="Start date" />
           <input matEndDate placeholder="End date" />
         </mat-date-range-input>
@@ -37,7 +48,9 @@
         <button mat-raised-button class="mat-btn-s tab-button-content" [ngClass]="{'isActive': isHistory}" type="button" type="button" (click)="getHistoryDatasetList()">History</button>
       </div>
 <!-- Download Menu -->
-    <div class="col-auto col-sm-auto col-md-auto mt-2 col-lg-1" *ngIf="!config?.hideDownload" >
+
+    <div class="col-auto col-sm-auto col-md-auto col-lg-1"  [ngClass]="config?.hideDownload ? 'p-r' : 'mt-2'">
+     <div [ngClass]="config?.hideDownload ? 'set-position' : 'my-1'">
       <button
         mat-icon-button
         [matMenuTriggerFor]="downloadMenu"
@@ -56,6 +69,7 @@
           <span>PDF</span>
         </button>
       </mat-menu>
+    </div>
     </div>
     <div class="col-auto mt-2 col-sm-auto col-md-auto col-lg-2 text-end" *ngIf="config?.sendEmail">
       <button mat-raised-button class="mat-btn-s proceedbtn" type="button" type="button" (click)="sendEmailEvent()">Send Email</button>

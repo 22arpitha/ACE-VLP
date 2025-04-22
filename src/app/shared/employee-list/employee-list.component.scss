@@ -1,14 +1,14 @@
 .employee-field ::ng-deep .mat-form-field-wrapper{
   padding:15px 0 !important;
 }
-::ng-deep .mat-form-field-infix{
+::ng-deep .employee-field .mat-form-field-infix{
   padding: 0.5em 0 !important;
   padding-bottom: 1em !important;
 }
-::ng-deep .mat-form-field-wrapper{
+::ng-deep .employee-field .mat-form-field-wrapper{
   padding: 15px 0 !important;
 }
-::ng-deep .mat-form-field-appearance-outline .mat-form-field-prefix,
-::ng-deep .mat-form-field-appearance-outline .mat-form-field-suffix {
+::ng-deep .employee-field .mat-form-field-appearance-outline .mat-form-field-prefix,
+::ng-deep .employee-field .mat-form-field-appearance-outline .mat-form-field-suffix {
   top: .25em !important;
 }

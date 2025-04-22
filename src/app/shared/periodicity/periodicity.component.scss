@@ -1,20 +1,20 @@
-.periodicity-field ::ng-deep .mat-form-field-wrapper{
+ ::ng-deep .periodicity-field .mat-form-field-wrapper{
   padding:15px 0 !important;
 }
 
-::ng-deep .mat-form-field-infix{
+::ng-deep .periodicity-field .mat-form-field-infix{
   padding: 0.5em 0 !important;
   padding-bottom: 1em !important;
 }
-::ng-deep .mat-form-field-wrapper{
+::ng-deep .periodicity-field .mat-form-field-wrapper{
   padding: 15px 0 !important;
 }
-::ng-deep .mat-form-field-appearance-outline .mat-form-field-prefix,
-::ng-deep .mat-form-field-appearance-outline .mat-form-field-suffix {
+::ng-deep .periodicity-field .mat-form-field-appearance-outline .mat-form-field-prefix,
+::ng-deep .periodicity-field .mat-form-field-appearance-outline .mat-form-field-suffix {
   top: .25em !important;
 }
 
-::ng-deep .year-only-datepicker .mat-calendar-period-button,
+::ng-deep .periodicity-field .year-only-datepicker .mat-calendar-period-button,
 ::ng-deep .year-only-datepicker .mat-calendar-arrow {
   display: none;
 }

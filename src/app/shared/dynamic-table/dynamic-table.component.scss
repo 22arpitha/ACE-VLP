@@ -22,7 +22,7 @@ mat-form-field{
 }
 
 ::ng-deep .settings-table-bg .mat-form-field-type-mat-date-range-input .mat-form-field-infix {
-  width: 200px;
+  width: 250px;
   display: contents !important;
 }
 
@@ -60,12 +60,11 @@ mat-form-field{
 }
 .set-position{
   position: absolute;
-  top:10px;
+  top:-20px;
 }
 .scroll-h{
   height: 40vh;
   overflow-y: auto;
-  padding-right: 10px;
 }
 .p-r{
   position: relative !important;

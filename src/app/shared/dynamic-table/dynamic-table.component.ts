@@ -33,6 +33,7 @@ export class DynamicTableComponent implements OnInit {
   isCurrent:boolean=true;
   isHistory:boolean=false;
   selected_client_id:any=null;
+  selectedDateRange;
   constructor(private datePipe: DatePipe) {}
   ngOnInit(): void { }
   ngOnChanges(changes: SimpleChanges): void {
@@ -94,9 +95,9 @@ export class DynamicTableComponent implements OnInit {
       if(this.config.showIncludeAllJobs){
         this.isIncludeFlagEnableLogic();
       }
-     
+
       return matchSearch && matchColumns;
-      
+
     });
 
     this.updatePagination();
@@ -237,12 +238,8 @@ get averageProductivity(): number {
   const actual = this.actualTotal;
   return estimated > 0 ? (actual / estimated) * 100 : 0;
 }
-selectAll(columnKey: string) {
-  this.columnFilters[columnKey] = [...this.getFilteredOptions(columnKey)];
+clearDate(){}
+onDateRangeChange(event){
+  this.actionEvent.emit({ actionType: 'date_range', details:event.value});
 }
-
-clearAll(columnKey: string) {
-  this.columnFilters[columnKey] = [];
-}
-
 }
