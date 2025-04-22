@@ -72,6 +72,11 @@ export class AllTimesheetsComponent implements  OnInit {
     this.getTimesheets();
     this.getWeekData();
   }
+  isTodayFriday(): boolean {
+    const today = new Date();
+    console.log(today)
+    return today.getDay() === 5; // 0 = Sunday, 5 = Friday
+  }
 
   access_name: any;
   getModuleAccess() {
@@ -98,7 +103,7 @@ export class AllTimesheetsComponent implements  OnInit {
       }
     this.apiService.getData(`${environment.live_url}/${environment.vlp_timesheets}/${query}`).subscribe(
       (res:any)=>{
-        console.log('week data',res);
+        // console.log('week data',res);
         // this.selectedDate = this.convertBackendDateToStandard(res.data[0].date)    
         // console.log(this.selectedDate)
         this.weekData = res.data;
