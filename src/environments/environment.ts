@@ -121,6 +121,7 @@ job_reports:'job-reports',
  working_hour_config: `super-admin-conf-working-hour`,
  timesheet:`timesheet`,
  timesheet_reports:`timesheet-reports`,
+ timesheet_summary:`timesheet-summary`
 };
 
 /*
