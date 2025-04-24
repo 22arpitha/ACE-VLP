@@ -24,24 +24,15 @@ const tableColumns = [
     filterType: 'multi-select',
     sortable: true
   },
-  {
-    label: 'Employee Name',
-    key: 'employee_name',
-    navigation: false,
-    filterable: true,
-    filterType: 'multi-select',
-    sortable: true
-  },
   { label: 'start_time', key: 'start_time', sortable: true },
   { label: 'End time', key: 'end_time', sortable: true },
   { label: 'Time spent', key: 'time_spent', sortable: true },
   { label: 'Notes', key: 'notes', sortable: false }
 ];
-if (role === 'admin') {
+if (role !== 'Accountant' ) {
   tableColumns.splice(5, 0, {
     label: 'Employee Name',
     key: 'employee_name',
-    navigation: false,
     filterable: true,
     filterType: 'multi-select',
     sortable: true

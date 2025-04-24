@@ -39,8 +39,7 @@ export class TimesheetDetailedReportComponent implements OnInit {
 
   ngOnInit(): void {
     this.common_service.setTitle(this.BreadCrumbsTitle)
-    this.userRole = sessionStorage.getItem('user_role_name')
-    this.tableConfig.tableColumns = getTableColumns(this.userRole);
+    this.tableConfig.tableColumns = getTableColumns(this.user_role_name);
     this.getTableData()
   }
 
@@ -95,7 +94,7 @@ handleAction(event: { actionType: string; detail: any }) {
   }
 }
 exportCsvOrPdf(fileType) {
-  const query = buildPaginationQuery({
+  let query = buildPaginationQuery({
     page: this.page,
     pageSize: this.tableSize,
   });
