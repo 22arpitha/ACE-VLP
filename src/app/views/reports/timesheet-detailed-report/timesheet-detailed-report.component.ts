@@ -29,23 +29,23 @@ export class TimesheetDetailedReportComponent implements OnInit {
   userRole: string;
   user_role_name: string;
   user_id: string;
+  tableData: ({ label: string; key: string; sortable: boolean; filterable?: undefined; filterType?: undefined; } | { label: string; key: string; sortable: boolean; filterable: boolean; filterType: string; })[];
   constructor(
     private common_service:CommonServiceService,
     private api:ApiserviceService
   ) {
-    this.user_id = sessionStorage.getItem('user_id')
-    this.user_role_name = sessionStorage.getItem('user_role_name')
+    this.user_id = sessionStorage.getItem('user_id') || '' ;
+    this.user_role_name = sessionStorage.getItem('user_role_name') || '';
   }
 
   ngOnInit(): void {
     this.common_service.setTitle(this.BreadCrumbsTitle)
-    this.tableConfig.tableColumns = getTableColumns(this.user_role_name);
+    this.tableData = getTableColumns(this.user_role_name);
     this.getTableData()
   }
 
-  // Called when user changes page number from the dynamic table
+
 onTableDataChange(event: any) {
-  console.log('Page changed to:', event);
   const page = event;
   this.page = page;
 
@@ -55,7 +55,6 @@ onTableDataChange(event: any) {
     searchTerm: this.term
   });
 }
-
 // Called when user changes page size from the dynamic table
 onTableSizeChange(event: any): void {
   if(event){
@@ -123,7 +122,7 @@ getTableData(params?: { page?: number; pageSize?: number; searchTerm?: string })
       ...item
     }));
     this.tableConfig = {
-      columns:  this.tableConfig.tableColumns.map(col => ({
+      columns:  this.tableData?.map(col => ({
         ...col,
         filterOptions: col.filterable ? getUniqueValues(formattedData, col.key) : []
       })),
