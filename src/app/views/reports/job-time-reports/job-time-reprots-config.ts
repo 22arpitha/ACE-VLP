@@ -19,6 +19,14 @@ export const tableConfig: any  = [
     sortable: true
   },
   {
+    label: 'Client Name',
+    key: 'client_name',
+    filterable: true,
+    filterType: 'multi-select',
+    filterOptions: [],
+    sortable: true
+  },
+  {
     label: 'Status',
     key: 'job_status_name',
     filterable: true,
@@ -36,7 +44,7 @@ export const tableConfig: any  = [
   },
   { label: 'Estimated Time (hrs)', key: 'estimated_time', sortable: true },
   { label: 'Actual Time (hrs)', key: 'actual_time', sortable: true },
-  { label: 'Remaining/(Excess) Time (hrs)', key: 'excess_time', sortable: true },
+  { label: 'Remaining/(Excess) Time (hrs)', key: 'remaining_time', sortable: true },
   
 ]
 
