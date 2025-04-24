@@ -76,8 +76,8 @@ export class JobTimeReportsComponent implements OnInit {
     this.jobStatusList(this.tabStatus);
     finalQuery = query;
     finalQuery = query + `&job-status=[${this.statusList}]`;
-     finalQuery += this.userRole ==='Admin' ? '':`&employee-id=${this.user_id}`;
-     finalQuery += this.client_id ? `&client=${this.client_id}` : '';
+    finalQuery += this.userRole === 'Admin' ? '' : `&employee-id=${this.user_id}`;
+    finalQuery += this.client_id ? `&client=${this.client_id}` : '';
     this.api.getData(`${environment.live_url}/${environment.jobs}/${finalQuery}`).subscribe((res: any) => {
       const formattedData = res?.results.map((item: any, i: number) => ({
         sl: (page - 1) * pageSize + i + 1,
@@ -116,6 +116,19 @@ export class JobTimeReportsComponent implements OnInit {
       .map((status: any) => status?.status_name);
   }
 
+  // Send Email Action Button event  
+public sendEamils(){
+  // Yet to integrate 
+  if(this.selectedJobIds){
+    this.api.postData(`${environment.live_url}/${environment}/`,this.selectedJobIds).subscribe((respData: any) => {
+      if (respData) {
+        this.api.showSuccess(respData['message']);
+        this.getTableData();
+      }
+    }
+  )
+  }
+}
 
   onSearch(term: string): void {
     this.term = term;
@@ -137,10 +150,10 @@ export class JobTimeReportsComponent implements OnInit {
         this.onSearch(event.detail);
         break;
       case 'export_csv':
-        // this.exportCsvOrPdf(event.detail);
+        this.exportCsvOrPdf(event.detail);
         break;
       case 'export_pdf':
-        // this.exportCsvOrPdf(event.detail);
+        this.exportCsvOrPdf(event.detail);
         break;
       case 'headerTabs':
         this.tabStatus = event['action'];
@@ -153,6 +166,7 @@ export class JobTimeReportsComponent implements OnInit {
         });
         break;
       case 'includeAllJobs':
+        console.log(event,'include jobs')
         this.isIncludeAllJobEnable = !event['action'];
         this.isIncludeAllJobValue = event['action'];
         this.tableConfig['includeAllJobsValue'] = this.isIncludeAllJobValue;
@@ -177,6 +191,20 @@ export class JobTimeReportsComponent implements OnInit {
         });
     }
   }
+
+  exportCsvOrPdf(fileType) {
+    const query = buildPaginationQuery({
+      page: this.page,
+      pageSize: this.tableSize,
+    }); 
+    const url = `${environment.live_url}/${environment.job_reports}/${query}&job-status=[${this.statusList}]&type=job-status-report&file-type=${fileType}`;
+    downloadFileFromUrl({
+      url,
+      fileName: 'job_time_report',
+      fileType
+    });
+  }
+
   onTableDataChange(event: any) {
     const page = event;
     this.page = page;
