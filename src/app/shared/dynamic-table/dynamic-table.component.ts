@@ -1,8 +1,10 @@
 // dynamic-table.component.ts
 import { Component, EventEmitter, Input, OnInit, Output, SimpleChanges } from '@angular/core';
 import { MatMenuTrigger } from '@angular/material/menu';
-import { DynamicTableConfig } from './dynamic-table-config.model';
 import { DatePipe } from '@angular/common';
+import { DynamicTableConfig } from './dynamic-table-config.model';
+import { ApiserviceService } from '../../service/apiservice.service';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-dynamic-table',
@@ -35,12 +37,21 @@ export class DynamicTableComponent implements OnInit {
   isCurrent:boolean=true;
   isHistory:boolean=false;
   selected_client_id:any=null;
+  user_id:any;
+  userRole:any;
+  allow_sending_status:boolean=false;
+  previousFilters: { [key: string]: any[] } = {};
   selectedDateRange;
-  constructor(
-    private datePipe: DatePipe) {}
-  ngOnInit(): void { }
+  constructor(private datePipe: DatePipe,private api:ApiserviceService) {
+    this.user_id = sessionStorage.getItem('user_id');
+    this.userRole = sessionStorage.getItem('user_role_name');
+  }
+  ngOnInit(): void {
+
+   }
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['config'] && this.config?.data?.length) {
+      console.log('changed',changes['config']['currentValue']);
       this.initializeTable();
     }
 
@@ -52,7 +63,6 @@ export class DynamicTableComponent implements OnInit {
   }
   private initializeTable(): void {
     this.filteredData = [...this.config.data];
-
     this.config.columns.forEach(col => {
       this.arrowState[col.key] = false;
       this.columnFilters[col.key] = col.filterType === 'multi-select' ? [] : '';
@@ -70,14 +80,17 @@ export class DynamicTableComponent implements OnInit {
   }
 
   applyFilters(): void {
-    this.filteredData = this.config.data.filter(row => {
+  const showIncludeLogic = this.config.showIncludeAllJobs && this.columnFilters['client_name'];
+  if (showIncludeLogic) {
+    this.isIncludeFlagEnableLogic();
+  }     
+  this.filteredData = this.config.data.filter(row => {
       const matchSearch = !this.config.searchTerm || this.config.columns?.some(col =>
         row[col.key]?.toString()?.toLowerCase()?.includes(this.config.searchTerm!?.toLowerCase())
       );
       const matchColumns = Object.keys(this.columnFilters)?.every(key => {
         const filterVal = this.columnFilters[key];
         const cellVal = row[key];
-
         if (!filterVal || (Array.isArray(filterVal) && filterVal.length === 0)) {
           return true;
         }
@@ -85,24 +98,15 @@ export class DynamicTableComponent implements OnInit {
         if (Array.isArray(filterVal)) {
           return filterVal?.includes(cellVal);
         }
-
         const col = this.config.columns?.find(c => c.key === key);
-
         if (!cellVal || !filterVal) return false;
-
         // Normalize both by removing time and trimming whitespace
         const cleanCellVal = cellVal?.toString()?.trim()?.split(' ')[0];
         const cleanFilterVal = filterVal?.toString()?.trim()?.split(' ')[0];
         return cleanCellVal === cleanFilterVal;
       });
-      if(this.config.showIncludeAllJobs){
-        this.isIncludeFlagEnableLogic();
-      }
-
       return matchSearch && matchColumns;
-
     });
-
     this.updatePagination();
   }
 
@@ -150,10 +154,12 @@ export class DynamicTableComponent implements OnInit {
 openFilterMenu(event: MouseEvent, colKey: string) {
   event?.stopPropagation();
   this.activeFilterColumn = colKey;
-  if(colKey){
+  if (colKey) {
     const trigger = this.filterTriggers[colKey];
-    if (trigger) {
-      trigger.openMenu();
+
+    // Check if the menu is already open
+    if (trigger && !trigger?.menuOpen) {
+      trigger?.openMenu();
     }
   }
 
@@ -206,28 +212,61 @@ public getHistoryDatasetList(){
 }
 // Include All Jobs Checkbo event
 public onIncludeJobsChange(event:any){
-  this.config.includeAllJobsValue=event.checked;
   this.actionEvent.emit({ actionType: 'includeAllJobs', action:event.checked,client_id:this.selected_client_id});
 }
 
 public sendEmailEvent(){
-  this.actionEvent.emit({ actionType: 'sendEmail', action:this.filteredData});
+  this.actionEvent.emit({ actionType: 'sendEmail', action:this.filteredData,client_id:this.selected_client_id});
 }
 
-private isIncludeFlagEnableLogic(){
+private isIncludeFlagEnableLogic(): void {
+  
   const clientNameFilter = this.columnFilters['client_name'];
-  if (clientNameFilter) {
-    const isSingleClient = clientNameFilter?.length === 1;
-    this.config.includeAllJobsEnable = !isSingleClient;
-    if (!isSingleClient) {
-      this.config.includeAllJobsValue = false;
-      this.selected_client_id=null;
-    }else{
-      const matchedClient = this.filteredData?.find((obj:any) => obj['client_name'] === clientNameFilter[0]);
-      this.selected_client_id = matchedClient?.client;
+  if (this.config.selectedClientId) {
+    const clientObj = this.filteredData?.find(
+      (obj: any) => obj['client'] === this.config.selectedClientId
+    );
+    if (clientObj) {
+      this.columnFilters['client_name'] = [clientObj.client_name];
+      this.selected_client_id = clientObj.client;
+      if(this.selected_client_id){
+        this.allow_sending_status=false;
+        this.getClientDetails();
+      }
     }
+    return;
+  }
+
+  // Case 2: No client selected — clear everything
+  if (!clientNameFilter || clientNameFilter.length === 0) {
+    this.allow_sending_status=false;
+    this.selected_client_id = null;
+    this.config.includeAllJobsEnable = true;
+    this.config.includeAllJobsValue = false;
+    return;
+  }
+
+  // Case 3: Multiple clients selected
+  if (clientNameFilter.length > 1) {
+    this.allow_sending_status=false;
+    this.config.includeAllJobsEnable = true;
+    this.config.includeAllJobsValue = false;
+    this.selected_client_id = null;
+    return;
+  }
+
+  // Case 4: Exactly one client selected
+  const matchedClient = this.filteredData?.find(
+    (obj: any) => obj['client_name'] === clientNameFilter[0]
+  );
+  this.selected_client_id = matchedClient?.client ?? null;
+  this.config.includeAllJobsEnable = false;
+  if(this.selected_client_id){
+    this.allow_sending_status=false;
+    this.getClientDetails();
   }
 }
+
 get estimatedTotal(): number {
   return this.paginatedData.reduce((sum, item) => sum + parseFloat(item.estimatedTime), 0);
 }
@@ -246,6 +285,25 @@ onDateRangeChange(event,endDate) {
   if(endDate){
   let startDate = this.datePipe.transform(event,'yyyy-MM-dd')
   this.actionEvent.emit({ actionType: 'date_range', detail: startDate });
+  }
+}
+public getClientDetails(){
+  this.api.getData(`${environment.live_url}/${environment.clients}/${this.selected_client_id}/`).subscribe((respData: any) => {
+if(respData){
+  this.allow_sending_status = respData?.allow_sending_status_report_to_client;
+}
+}, (error: any) => {
+  this.api.showError(error?.error?.detail);
+})
+     
+}
+get isDisabled(): boolean {
+  if (!this.allow_sending_status) return true;
+  if (this.filteredData.length===0) return true;
+  if (this.userRole !== 'Admin') {
+    return !this.config.includeAllJobsValue;
+  } else {
+    return !this.selected_client_id;
   }
 }
 
