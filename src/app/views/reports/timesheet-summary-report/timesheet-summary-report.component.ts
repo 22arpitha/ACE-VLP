@@ -29,13 +29,14 @@ export class TimesheetSummaryReportComponent implements OnInit {
     };
   user_id: string | null;
   user_role_name: string;
+  fromDate: string;
     constructor(
       private common_service:CommonServiceService,
       private api:ApiserviceService,
       private datepipe:DatePipe
     ) {
       this.user_id = sessionStorage.getItem('user_id')
-      this.user_role_name = sessionStorage.getItem('user_role_name')
+      this.user_role_name = sessionStorage.getItem('user_role_name') || ''
     }
 
     ngOnInit(): void {
@@ -91,6 +92,7 @@ export class TimesheetSummaryReportComponent implements OnInit {
         this.exportCsvOrPdf(event.detail);
         break;
         case 'date_range':
+        this.fromDate = event.detail;
         this.filterByDate(event.detail);
         break
       default:
@@ -98,11 +100,15 @@ export class TimesheetSummaryReportComponent implements OnInit {
     }
   }
   exportCsvOrPdf(fileType) {
-    const query = buildPaginationQuery({
+    let query = buildPaginationQuery({
       page: this.page,
       pageSize: this.tableSize,
     });
-
+    if(this.fromDate){
+      query += `&from-date=${this.fromDate}`
+    }if(this.user_role_name !== 'Admin'){
+      query += `&employee-id=${this.user_id}`
+      }
     const url = `${environment.live_url}/${environment.timesheet_reports}/${query}&file-type=${fileType}&timsheet-type=summary`;
     downloadFileFromUrl({
       url,
@@ -111,7 +117,6 @@ export class TimesheetSummaryReportComponent implements OnInit {
     });
   }
   filterByDate(date){
-      alert(date)
     this.getTableData({
       page:this.page,
       pageSize: this.tableSize,
@@ -124,13 +129,13 @@ export class TimesheetSummaryReportComponent implements OnInit {
     const page = params?.page ?? this.page;
     const pageSize = params?.pageSize ?? this.tableSize;
     const searchTerm = params?.searchTerm ?? this.term;
-    const fromDate = params?.fromdate;
+
     let query = buildPaginationQuery({ page, pageSize, searchTerm });
 
     if(this.user_role_name !== 'Admin'){
     query +=`&employee-id=${this.user_id}`
     }if(params?.fromdate){
-      query += `&from-date=${fromDate}`
+      query += `&from-date=${params?.fromdate}`
     }
     this.api.getData(`${environment.live_url}/${environment.timesheet_summary}/${query}`).subscribe((res: any) => {
       const formattedData = res.results[0].timesheet_data.map((item: any, i: number) => ({
