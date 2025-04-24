@@ -1,0 +1,15 @@
+<div class="">
+    <button mat-raised-button (click)="picker1.open()">
+      <i class="bi bi-calendar-event fs-4"></i>
+    </button>
+  
+    <mat-form-field class="example-full-width mb-0">
+      <mat-date-range-input [rangePicker]="picker1">
+        <input matStartDate placeholder="Start date" (dateChange)="onDateChange($event)">
+        <input matEndDate placeholder="End date">
+      </mat-date-range-input>
+      <mat-datepicker-toggle matIconSuffix [for]="picker1"></mat-datepicker-toggle>
+      <mat-date-range-picker #picker1></mat-date-range-picker>
+    </mat-form-field>
+  </div>
+  

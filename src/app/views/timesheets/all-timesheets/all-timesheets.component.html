@@ -2,12 +2,13 @@
     <section class="settings-table-bg px-3"
         *ngIf="userRole !='Admin' && accessPermissions[0]?.view || userRole === 'Admin'">
         <div class="row mx-0 my-1 px-0 py-2">
-            <div class="col-sm-12 col-md-12 week-picker" *ngIf="userRole !='Admin'">
-                <div class="d-flex  justify-content-between align-items-center"> 
+            <div class="col-sm-12 col-md-12 week-picker mb-3" *ngIf="userRole !='Admin'">
+                <div class="d-block d-md-flex  justify-content-between align-items-center"> 
                     <div class="d-flex align-items-center">
                         <h5 class="fw-bold">Weekly Timesheet History</h5>
-                        <button mat-raised-button (click)="picker1.open()"><i class="bi bi-calendar-event fs-4"></i></button> 
-                        <p class="mb-0">Select a week of a month</p>
+                        <app-week-datepicker (weekSelected)="weekDatePicker($event)"></app-week-datepicker>
+                        <!-- <button mat-raised-button (click)="picker1.open()"><i class="bi bi-calendar-event fs-4"></i></button>  -->
+                        <!-- <p class="mb-0">Select a week of a month</p> -->
                     </div>
                     <div>
                         <button mat-raised-button class="proceedbtn mat-btn-s order-sm-1 order-3" type="button"
@@ -16,15 +17,15 @@
                         TimeSheet</button>
                     </div>
                 </div>
-                <mat-form-field class="example-full-width">
-                    <mat-label> &nbsp; Enter a date range</mat-label >
-                        <mat-date-range-input [rangePicker]="picker1" >
+                <!-- <app-week-datepicker (weekSelected)="weekDatePicker($event)"></app-week-datepicker> -->
+                <!-- <mat-form-field class="example-full-width">
+                        <mat-date-range-input [rangePicker]="picker1">
                             <input matStartDate placeholder="Start date" [(ngModel)]="selectedDate" (dateChange)="weekDatePicker($event)">
                             <input matEndDate placeholder="End date"  >
                         </mat-date-range-input>
                         <mat-datepicker-toggle matIconSuffix [for]="picker1"></mat-datepicker-toggle>
                         <mat-date-range-picker #picker1></mat-date-range-picker>
-                    </mat-form-field>
+                    </mat-form-field> -->
             </div>
             <div class="col-12 m-0 p-0 " *ngIf="userRole !='Admin'">
                 <div class="d-flex">
@@ -48,12 +49,12 @@
             <div class="col-12 mt-3 col-sm-12 col-md-4 col-lg-3">
                 <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
                     <mat-label> &nbsp; Enter a date range</mat-label >
-                    <mat-date-range-input [rangePicker]="picker" >
+                    <mat-date-range-input [rangePicker]="picker">
                       <input matStartDate placeholder="Start date" (dateChange)="startDatePicker($event)">
                       <input matEndDate placeholder="End date"  (dateChange)="startAndEndDateFunction($event)">
                     </mat-date-range-input>
                     <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
-                    <mat-date-range-picker #picker></mat-date-range-picker>
+                    <mat-date-range-picker #picker ></mat-date-range-picker>
                   </mat-form-field>
             </div>
             <div class="col-12 mt-3 col-sm-12 col-md-4 col-lg-6 text-end px-0">
@@ -128,6 +129,7 @@
                                         <img src="../../../../assets/images/Edit.svg" class="icon-image" type="button"
                                             container="body" ngbTooltip="Edit" (click)="edit(item)"
                                             *ngIf="userRole !='Admin' && (accessPermissions[0]?.view && accessPermissions[0]?.update)"/>
+                                        <mat-icon  *ngIf="userRole ==='Admin'">lock</mat-icon>
                                         <span
                                             *ngIf="!accessPermissions[0]?.update && !accessPermissions[0]?.delete">-</span>
                                     </ng-container></td>

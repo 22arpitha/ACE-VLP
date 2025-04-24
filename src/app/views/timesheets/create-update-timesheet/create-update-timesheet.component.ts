@@ -76,7 +76,7 @@ export class CreateUpdateTimesheetComponent implements CanComponentDeactivate, O
       this.getModuleAccess();
       this.getEmployeeData();
       this.getEmployeeClientData();
-      this.getEmployeeJobsList();
+      // this.getEmployeeJobsList();
       this.getTaskList();
     }
     this.timesheetFormGroup?.valueChanges?.subscribe(() => {
@@ -147,6 +147,12 @@ this.formErrorScrollService.resetHasUnsavedValue();
       }
     )
   }
+
+  onClientChange(event:any){
+    console.log(event)
+    this.getEmployeeJobsList(event.value)
+  }
+
   filteredClientList() {
     if (!this.searchClientText) {
       return this.clientList;
@@ -156,8 +162,8 @@ this.formErrorScrollService.resetHasUnsavedValue();
     );
   }
 
-  getEmployeeJobsList() {
-    let queryparams = `?status=True&employee-id=${this.user_id}`
+  getEmployeeJobsList(id) {
+    let queryparams = `?client=${id}`
     this.apiService.getData(`${environment.live_url}/${environment.jobs}/${queryparams}`).subscribe(
       (res: any) => {
         // console.log('jobs data', res)
@@ -297,6 +303,7 @@ this.formErrorScrollService.resetHasUnsavedValue();
     this.apiService.getData(`${environment.live_url}/${environment.vlp_timesheets}/${id}/`).subscribe(
       (res: any) => {
         // console.log(res);
+        this.getEmployeeJobsList(res.client_id)
         this.timesheetFormGroup.patchValue({
           date: res.date,
           employee_id: res.employee_id,
