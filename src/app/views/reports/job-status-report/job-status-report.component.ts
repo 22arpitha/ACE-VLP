@@ -17,7 +17,7 @@ export class JobStatusReportComponent implements OnInit {
 
  BreadCrumbsTitle: any = 'Job Status Report';
    term: string = '';
-   tableSize: number = 10;
+   tableSize: number = 5;
    page: any = 1;
    tableSizes = [5,10,25,50,100];
    tableConfig:any = {

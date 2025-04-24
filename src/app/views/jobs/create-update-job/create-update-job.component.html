@@ -338,7 +338,7 @@
               </div>      
             </td>
             <td>
-              <mat-checkbox color="primary" class="example-margin" [disabled]="user_role_name != 'Admin' ? true : false"  formControlName="is_primary" (change)="isPrimarySelection($event,i)" ></mat-checkbox>
+              <mat-checkbox color="primary" class="example-margin" [disabled]="user_role_name === 'Accountant' ? true : false"  formControlName="is_primary" (change)="isPrimarySelection($event,i)" ></mat-checkbox>
             </td>
             <td>
               <ng-container *ngIf="user_role_name != 'Employee'">

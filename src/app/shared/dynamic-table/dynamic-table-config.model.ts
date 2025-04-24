@@ -29,6 +29,7 @@ export interface DynamicTableConfig {
   selectedClientId?:number;
   sendEmail?:boolean;
   estimationDetails?:boolean;
+  tableFooterContent?:any;
   hideDownload?:boolean;
   averageProductivity?:boolean;
 }
