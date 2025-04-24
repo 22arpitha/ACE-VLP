@@ -6,6 +6,7 @@ import { downloadFileFromUrl } from '../../../shared/file-download.util'
 import { environment } from '../../../../environments/environment';
 import { getUniqueValues } from '../../../shared/unique-values.utils';
 import { ApiserviceService } from '../../../service/apiservice.service';
+import { DatePipe } from '@angular/common';
 @Component({
   selector: 'app-timesheet-summary-report',
   templateUrl: './timesheet-summary-report.component.html',
@@ -27,12 +28,14 @@ export class TimesheetSummaryReportComponent implements OnInit {
       pagination: true,
     };
   user_id: string | null;
+  user_role_name: string;
     constructor(
       private common_service:CommonServiceService,
-      private api:ApiserviceService
+      private api:ApiserviceService,
+      private datepipe:DatePipe
     ) {
       this.user_id = sessionStorage.getItem('user_id')
-      console.log(this.user_id,"this.user_id")
+      this.user_role_name = sessionStorage.getItem('user_role_name')
     }
 
     ngOnInit(): void {
@@ -108,7 +111,7 @@ export class TimesheetSummaryReportComponent implements OnInit {
     });
   }
   filterByDate(date){
-
+      alert(date)
     this.getTableData({
       page:this.page,
       pageSize: this.tableSize,
@@ -121,10 +124,15 @@ export class TimesheetSummaryReportComponent implements OnInit {
     const page = params?.page ?? this.page;
     const pageSize = params?.pageSize ?? this.tableSize;
     const searchTerm = params?.searchTerm ?? this.term;
+    const fromDate = params?.fromdate;
+    let query = buildPaginationQuery({ page, pageSize, searchTerm });
 
-    const query = buildPaginationQuery({ page, pageSize, searchTerm });
-
-    this.api.getData(`${environment.live_url}/${environment.timesheet_summary}/${query}&employee-id=${152}`).subscribe((res: any) => {
+    if(this.user_role_name !== 'Admin'){
+    query +=`&employee-id=${this.user_id}`
+    }if(params?.fromdate){
+      query += `&from-date=${fromDate}`
+    }
+    this.api.getData(`${environment.live_url}/${environment.timesheet_summary}/${query}`).subscribe((res: any) => {
       const formattedData = res.results[0].timesheet_data.map((item: any, i: number) => ({
         sl: (page - 1) * pageSize + i + 1,
         ...item

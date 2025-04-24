@@ -14,6 +14,8 @@ export class DynamicTableComponent implements OnInit {
   @Output() actionEvent = new EventEmitter<any>();
   filteredData: any[] = [];
   paginatedData: any[] = [];
+  startDate;
+  endDate;
   currentPage = 1;
   tableSizes = [5,10,25,50,100];
   columnFilters: { [key: string]: any } = {};
@@ -34,7 +36,8 @@ export class DynamicTableComponent implements OnInit {
   isHistory:boolean=false;
   selected_client_id:any=null;
   selectedDateRange;
-  constructor(private datePipe: DatePipe) {}
+  constructor(
+    private datePipe: DatePipe) {}
   ngOnInit(): void { }
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['config'] && this.config?.data?.length) {
@@ -239,7 +242,11 @@ get averageProductivity(): number {
   return estimated > 0 ? (actual / estimated) * 100 : 0;
 }
 clearDate(){}
-onDateRangeChange(event){
-  this.actionEvent.emit({ actionType: 'date_range', details:event.value});
+onDateRangeChange(event,endDate) {
+  if(endDate){
+  let startDate = this.datePipe.transform(event,'yyyy-MM-dd')
+  this.actionEvent.emit({ actionType: 'date_range', detail: startDate });
+  }
 }
+
 }

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { tableColumns } from './timesheet-detailed-config';
+import { getTableColumns } from './timesheet-detailed-config';
 import { CommonServiceService } from '../../../service/common-service.service';
 import { ApiserviceService } from '../../../service/apiservice.service';
 import { environment } from '../../../../environments/environment';
@@ -26,14 +26,21 @@ export class TimesheetDetailedReportComponent implements OnInit {
     tableSize: 5,
     pagination: true,
   };
+  userRole: string;
+  user_role_name: string;
+  user_id: string;
   constructor(
     private common_service:CommonServiceService,
     private api:ApiserviceService
-  ) { }
+  ) {
+    this.user_id = sessionStorage.getItem('user_id')
+    this.user_role_name = sessionStorage.getItem('user_role_name')
+  }
 
   ngOnInit(): void {
     this.common_service.setTitle(this.BreadCrumbsTitle)
-    this.tableConfig = tableColumns;
+    this.userRole = sessionStorage.getItem('user_role_name')
+    this.tableConfig.tableColumns = getTableColumns(this.userRole);
     this.getTableData()
   }
 
@@ -107,14 +114,17 @@ getTableData(params?: { page?: number; pageSize?: number; searchTerm?: string })
   const pageSize = params?.pageSize ?? this.tableSize;
   const searchTerm = params?.searchTerm ?? this.term;
 
-  const query = buildPaginationQuery({ page, pageSize, searchTerm });
+  let query = buildPaginationQuery({ page, pageSize, searchTerm });
+  if(this.user_role_name !== 'Admin'){
+    query +=`&employee-id=${this.user_id}`
+    }
   this.api.getData(`${environment.live_url}/${environment.timesheet}/${query}`).subscribe((res: any) => {
     const formattedData = res.results.map((item: any, i: number) => ({
       sl: (page - 1) * pageSize + i + 1,
       ...item
     }));
     this.tableConfig = {
-      columns: tableColumns.map(col => ({
+      columns:  this.tableConfig.tableColumns.map(col => ({
         ...col,
         filterOptions: col.filterable ? getUniqueValues(formattedData, col.key) : []
       })),
