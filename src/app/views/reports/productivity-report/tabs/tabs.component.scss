@@ -33,9 +33,11 @@ button:hover {
 }
 .tab-content {
   border-top: 1px solid #ccc;
-  height: 40vh !important;
+  // height: 45vh !important;
 }
-.bg{
-  height: 80vh !important;
-  overflow-x: hidden !important;
+.settings-main-content {
+  height: 58vh;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
+

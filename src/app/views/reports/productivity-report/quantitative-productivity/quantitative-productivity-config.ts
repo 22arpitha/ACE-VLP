@@ -1,63 +1,25 @@
-import { DynamicTableConfig } from '../../../../shared/dynamic-table/dynamic-table-config.model';
-
-// Sample raw data
-const summaryData = [
-  {
-    sl: 1,
-    clientName: 'Acme Corp',
-    jobNumber: 'JOB-001',
-    jobName: 'Quarterly Report',
-    task: 'Data Collection',
-    estimatedTime: '4.00',
-    actualTime: '3.50',
-    remainingTime: '0.50'
-  },
-  {
-    sl: 2,
-    clientName: 'Globex Ltd',
-    jobNumber: 'JOB-002',
-    jobName: 'Annual Audit',
-    task: 'Reconciliation',
-    estimatedTime: '6.00',
-    actualTime: '7.00',
-    remainingTime: '(1.00)' // Excess time
-  },
-  {
-    sl: 3,
-    clientName: 'Soylent Inc',
-    jobNumber: 'JOB-003',
-    jobName: 'Budget Forecast',
-    task: 'Analysis',
-    estimatedTime: '5.00',
-    actualTime: '5.00',
-    remainingTime: '0.00'
-  }
-];
-
-
-export const tableConfig: DynamicTableConfig = {
-  columns: [
+export const tableConfig = [
     { label: 'Sl No',
       key: 'sl'
     },
     {
       label: 'Client Name',
-      key: 'clientName',
-      sortable: true
-    },
-    {
-      label: 'Client Name',
-      key: 'clientName',
-      sortable: true
-    },
-    {
-      label: 'Job Number',
-      key: 'jobNumber',
+      key: 'client_name',
       sortable: true
     },
     {
       label: 'Job Name',
-      key: 'jobName',
+      key: 'job_name',
+      sortable: true
+    },
+    {
+      label: 'Job Number',
+      key: 'job_number',
+      sortable: true
+    },
+    {
+      label: 'Job Status',
+      key: 'job_status_name',
       sortable: true
     },
     {
@@ -67,27 +29,17 @@ export const tableConfig: DynamicTableConfig = {
     },
     {
       label: 'Estimated Time (hrs)',
-      key: 'estimatedTime',
+      key: 'estimated_time',
       sortable: true
     },
     {
       label: 'Actual Time (hrs)',
-      key: 'actualTime',
+      key: 'actual_time',
       sortable: true
     },
     {
       label: 'Remaining Time / (Excess) (hrs)',
-      key: 'remainingTime',
+      key: 'remaining_time',
       sortable: true
     }
-  ],
-  data: summaryData,
-  searchTerm: '',
-  searchable:false,
-  actions: [],
-  accessConfig: [],
-  tableSize: 10,
-  pagination: true,
-  estimationDetails:true,
-  hideDownload:true
-};
+  ]
