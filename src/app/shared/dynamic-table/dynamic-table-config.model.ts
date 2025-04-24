@@ -26,6 +26,7 @@ export interface DynamicTableConfig {
   showIncludeAllJobs?:boolean;
   includeAllJobsValue?:boolean;
   includeAllJobsEnable?:boolean;
+  selectedClientId?:number;
   sendEmail?:boolean;
   estimationDetails?:boolean;
   hideDownload?:boolean;
