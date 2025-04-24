@@ -26,12 +26,13 @@ export class JobStatusReportComponent implements OnInit {
      searchTerm: '',
      actions: [],
      accessConfig: [],
-     tableSize: 10,
+     tableSize: 5,
      pagination: true,
      headerTabs:true,
      showIncludeAllJobs:true,
      includeAllJobsEnable:false,
      includeAllJobsValue:false,
+     selectedClientId:null,
      sendEmail:true,
    };
    tabStatus:any='True';
@@ -39,10 +40,9 @@ export class JobStatusReportComponent implements OnInit {
    statusList:String[]=[];
     user_id:any;
    userRole:any;
+   client_id:any;
    isIncludeAllJobEnable:boolean=true;
    isIncludeAllJobValue:boolean=false;
-   client_id:any;
-   selectedJobIds:any=[];
  constructor(
      private common_service:CommonServiceService,
      private api:ApiserviceService
@@ -64,6 +64,9 @@ export class JobStatusReportComponent implements OnInit {
           this.allJobStatus = resData;
           this.getTableData();
         }
+      },
+      (error:any)=>{
+        this.api.showError(error?.error?.detail);
       }
     )
   }
@@ -124,11 +127,9 @@ export class JobStatusReportComponent implements OnInit {
         });
        break;
        case 'includeAllJobs':
-        this.isIncludeAllJobEnable = !event['action'];
         this.isIncludeAllJobValue= event['action'];
-        this.tableConfig['includeAllJobsValue'] = this.isIncludeAllJobValue;
-        this.tableConfig['includeAllJobsEnable'] = this.isIncludeAllJobEnable;
-        this.client_id = event['client_id'];
+        this.client_id = event['action'] && event['client_id'] ? event['client_id'] : null;
+        this.isIncludeAllJobEnable = event['action']  || (!event['action'] && event['client_id'])  ? false : true;
         this.page=1;
         this.getTableData({
           page: this.page,
@@ -137,7 +138,7 @@ export class JobStatusReportComponent implements OnInit {
         });
       break;
       case 'sendEmail':
-        console.log('Filtered Data:',event['action']);
+      this.client_id = event['client_id'] ? event['client_id'] : null;
       this.sendEamils();
       break;
      default:
@@ -150,10 +151,11 @@ export class JobStatusReportComponent implements OnInit {
  }
 
  exportCsvOrPdf(fileType) {
-   const query = buildPaginationQuery({
+   let query = buildPaginationQuery({
      page: this.page,
      pageSize: this.tableSize,
    }); 
+   query += this.client_id ? `&client=${this.client_id}` : '';
    const url = `${environment.live_url}/${environment.job_reports}/${query}&job-status=[${this.statusList}]&type=job-status-report&file-type=${fileType}`;
    downloadFileFromUrl({
      url,
@@ -171,34 +173,55 @@ export class JobStatusReportComponent implements OnInit {
    const query = buildPaginationQuery({ page, pageSize, searchTerm });
    this.jobStatusList(this.tabStatus);
    finalQuery = query + `&job-status=[${this.statusList}]`;
-   finalQuery += this.userRole ==='Admin' ? '':`&employee-id=${this.user_id}`;
+   finalQuery += (this.userRole ==='Admin' || (this.userRole !='Admin' && this.client_id)) ? '':`&employee-id=${this.user_id}`;
    finalQuery += this.client_id ? `&client=${this.client_id}` : '';
    this.api.getData(`${environment.live_url}/${environment.jobs}/${finalQuery}`).subscribe((res: any) => {
-     const formattedData = res.results.map((item: any, i: number) => ({
-       sl: (page - 1) * pageSize + i + 1,
-       ...item,
-       is_primary:item?.employees?.find((emp: any) => emp?.is_primary === true)?.employee_name || '',
-     }));
-     this.tableConfig = {
-       columns: tableConfig.map(col => ({
-         ...col,
-         filterOptions: col.filterable ? getUniqueValues(formattedData, col.key) : []
-       })),
-      data: formattedData,
-      searchTerm: this.term,
-      actions: [],
-      accessConfig: [],
-      tableSize: pageSize,
-      pagination: true,
-      searchable: true,
-      headerTabs:true,
-      showIncludeAllJobs:true,
-      includeAllJobsEnable:this.isIncludeAllJobEnable,
-      includeAllJobsValue:this.isIncludeAllJobValue,
-      sendEmail:true,
-      currentPage:page,
-      totalRecords: res.total_no_of_record
-     };
+    if(res.results && res.results?.length>=1){
+      const formattedData = res.results.map((item: any, i: number) => ({
+        sl: (page - 1) * pageSize + i + 1,
+        ...item,
+        is_primary:item?.employees?.find((emp: any) => emp?.is_primary === true)?.employee_name || '',
+      }));
+      console.log('B this.tableConfig',this.tableConfig);
+      this.tableConfig = {
+        columns: tableConfig.map(col => ({
+          ...col,
+          filterOptions: col.filterable ? getUniqueValues(formattedData, col.key) : []
+        })),
+       data: formattedData,
+       searchTerm: this.term,
+       actions: [],
+       accessConfig: [],
+       tableSize: pageSize,
+       pagination: true,
+       searchable: true,
+       headerTabs:true,
+       showIncludeAllJobs:true,
+       includeAllJobsEnable:this.isIncludeAllJobEnable ? this.isIncludeAllJobEnable : false,
+       includeAllJobsValue:this.isIncludeAllJobValue ? this.isIncludeAllJobValue : false,
+       selectedClientId:this.client_id ? this.client_id:null,
+       sendEmail:true,
+       currentPage:page,
+       totalRecords: res.total_no_of_record
+      };
+    }else{
+      this.tableConfig = {
+        columns: [],
+        data: [],
+        searchTerm: '',
+        actions: [],
+        accessConfig: [],
+        tableSize: 5,
+        pagination: true,
+        headerTabs:true,
+        showIncludeAllJobs:true,
+        includeAllJobsEnable:false,
+        includeAllJobsValue:false,
+        selectedClientId:null,
+        sendEmail:true,
+      };
+    }
+   },(error:any)=>{  this.api.showError(error?.error?.detail);
    });
  }
 
@@ -222,16 +245,22 @@ jobStatusList(status:any){
 }
 // Send Email Action Button event  
 public sendEamils(){
-  // Yet to integrate 
-  if(this.selectedJobIds){
-    this.api.postData(`${environment.live_url}/${environment}/`,this.selectedJobIds).subscribe((respData: any) => {
-      if (respData) {
-        this.api.showSuccess(respData['message']);
-        this.getTableData();
-      }
-    }
-  )
-  }
-}
+   let finalQuery = `?send_mail=True&file-type=pdf&report-type=job-status-report`;  
+   finalQuery += this.client_id ? `&client=${this.client_id}` : ''; 
+   this.jobStatusList(this.tabStatus);
+   finalQuery += `&job-status=[${this.statusList}]`;
+    // Yet to integrate 
+      if(this.client_id){  
+              this.api.getData(`${environment.live_url}/${environment.jobs}/${finalQuery}`).subscribe((respData: any) => {    
+                  if (respData) {  
+              this.api.showSuccess(respData['message']);     
+               }
+                },
+                (error:any)=>{
+                  this.api.showError(error?.error?.detail);
 
+} 
+) 
+}
+}
 }
