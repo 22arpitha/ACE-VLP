@@ -52,10 +52,15 @@ export class NonProductiveHoursComponent implements OnInit {
         actual_time:'20'
       },
      ]
+  user_id: string;
+  user_role_name: string;
      constructor(
        private common_service:CommonServiceService,
        private api:ApiserviceService
-     ) { }
+     ) {
+      this.user_id = sessionStorage.getItem('user_id') || '' ;
+      this.user_role_name = sessionStorage.getItem('user_role_name') || '';
+      }
 
      ngOnInit(): void {
        this.common_service.setTitle(this.BreadCrumbsTitle)
@@ -121,7 +126,7 @@ export class NonProductiveHoursComponent implements OnInit {
      const url = `${environment.live_url}/${environment.timesheet_reports}/${query}&file-type=${fileType}&timsheet-type=detailed`;
      downloadFileFromUrl({
        url,
-       fileName: 'productive_hours',
+       fileName: 'non_productive_hours',
        fileType
      });
    }
@@ -132,27 +137,29 @@ export class NonProductiveHoursComponent implements OnInit {
      const pageSize = params?.pageSize ?? this.tableSize;
      const searchTerm = params?.searchTerm ?? this.term;
 
-     const query = buildPaginationQuery({ page, pageSize, searchTerm });
-     this.api.getData(`${environment.live_url}/${environment.timesheet}/${query}`).subscribe((res: any) => {
+     let query = buildPaginationQuery({ page, pageSize, searchTerm });
+     if(this.user_role_name !== 'Admin'){
+      query +=`&employee-id=${this.user_id}`
+      }
+     this.api.getData(`${environment.live_url}/${environment.jobs}/${query}&client-name=Vedalekha professionals`).subscribe((res: any) => {
        const formattedData = res.results.map((item: any, i: number) => ({
          sl: (page - 1) * pageSize + i + 1,
          ...item
        }));
-
+       this.tableConfig = {
+        columns: tableColumns,
+        data: formattedData,
+        searchTerm: this.term,
+        actions: [],
+        accessConfig: [],
+        tableSize: pageSize,
+        pagination: true,
+        currentPage:page,
+        totalRecords: res.total_no_of_record,
+        hideDownload:true
+      };
      });
-     this.tableConfig = {
-       columns: tableColumns,
-       data: this.data,
-       searchTerm: this.term,
-       actions: [],
-       accessConfig: [],
-       tableSize: pageSize,
-       pagination: true,
-       currentPage:page,
-       // totalRecords: res.total_no_of_record
-       totalRecords:this.tableConfig.data.length,
-       hideDownload:true
-     };
+
    }
      onSearch(term: string): void {
        this.term = term;
