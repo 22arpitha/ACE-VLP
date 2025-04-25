@@ -26,20 +26,17 @@ $secondary-color:#FFFFFF4D;
     opacity: 0.9;
 }
 .nonemployee{
-    top: 12px;  
+    top: 12px;
 }
 .employee{
-    top: 19px;  
+    top: 19px;
 }
 .role-name{
     font-size: 10px;
     font-weight: bold;
 }
 
-// .p-r{
-//     position: relative;
-//     margin-right: 16px;
-// }
+
 h1.breadcrumb-title{
     margin: 0px !important;
     font-weight: 700;
@@ -75,7 +72,7 @@ opacity: 0.7;
     .p-r{
         right: 0px;
         margin-right: 0px;
-    } 
+    }
     .header-content{
         justify-content: space-between;
     }
@@ -84,25 +81,25 @@ opacity: 0.7;
     }
 }
 @media(min-width:768px) and (max-width:1023px){
-    
+
     .w-27{
         width:29% !important;
-    } 
+    }
     .desktop-hide-content{
         display: block;
     }
 }
 @media(min-width:1024px) and (max-width:1033px){
-    
+
     .w-27{
         width:52% !important;
-    } 
+    }
 }
 @media(min-width:1034px){
-    
+
     .w-27{
         width:64% !important;
-    } 
+    }
 }
 mat-card{
     box-shadow: none !important;
@@ -116,7 +113,7 @@ mat-card{
 }
 h1.breadcrumb-title{
     font-size: 18px !important;
-} 
+}
 }
 .notification-container{
     border: 1px solid #efeeee;
@@ -138,11 +135,11 @@ h1.breadcrumb-title{
 .settings-btn{
     padding: 3px 10px;
     &:hover{
-        background-color: #126EB4 !important; 
+        background-color: #126EB4 !important;
         color:white;
         opacity: 1;
     }
-   
+
 }
 
 .user-guide-btn{
@@ -170,40 +167,34 @@ h1.breadcrumb-title{
     border: 1px solid #000000;
     box-shadow: 0px 4px 0px 0px #0000004D;
   }
- 
-
-
-
-
 .header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    width: 100%;
-    // padding: 0.5rem 1rem;
-    // background-color: #fff;
-    // border-bottom: 1px solid #ddd;
-    // box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    --cui-header-border: none !important;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  --cui-header-border: none !important;
+  min-height: 49px !important;
+  height: 20px;
+  padding-top: 5px;
     .menu-icon {
-      
-  
+
+
       button {
         background: transparent;
         border: none;
       }
     }
-  
+
     .title {
       flex-grow: 1;
     //   text-align: center;
-  
+
       h1 {
         font-size: 1.25rem;
         margin: 0;
       }
     }
-  
+
     .actions {
       display: flex;
       align-items: center;
@@ -216,12 +207,12 @@ h1.breadcrumb-title{
         // background: transparent;
         border: none;
         cursor: pointer;
-  
+
         mat-icon {
           font-size: 1.5rem;
           color: #555;
         }
-  
+
         &:hover {
           mat-icon {
             color: #000;
@@ -230,25 +221,25 @@ h1.breadcrumb-title{
       }
     }
   }
-  
+
   // Media queries for responsiveness
   @media (max-width: 768px) {
     .title {
     //   text-align: center;
       flex-grow: 0;
     }
-  
+
     .actions {
       gap: 0.25rem;
-      
+
     }
   }
   .icon-button {
     position: relative;
     display: inline-block;
   }
- 
-  
+
+
   .custom-badge {
     position: absolute;
     top: 0;
@@ -267,4 +258,3 @@ h1.breadcrumb-title{
   .cs-notification-pad{
     padding: 0 12px 0 14px;
   }
-  
