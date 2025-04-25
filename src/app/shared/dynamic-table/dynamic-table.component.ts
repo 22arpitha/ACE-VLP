@@ -306,5 +306,16 @@ get isDisabled(): boolean {
     return !this.selected_client_id;
   }
 }
+get tooltipMessage(): string | null {
+  if (!this.allow_sending_status) return 'Allow sending the status report to client is not enabled.';
+  if (this.filteredData.length === 0) return 'There is no data to send.';
+  if (this.userRole !== 'Admin' && !this.config.includeAllJobsValue) {
+    return 'You must include all jobs to proceed.';
+  }
+  if (this.userRole === 'Admin' && !this.selected_client_id) {
+    return 'Please select a client first.';
+  }
+  return null;
+}
 
 }

@@ -400,7 +400,7 @@ export class CreateUpdateJobComponent implements CanComponentDeactivate, OnInit,
 
   private getPeroidicityBasedPeroid(id: any) {
     this.peroidslist = [];
-    this.apiService.getData(`${environment.live_url}/${environment.settings_period}/?periodicity-id=${id}`).subscribe(
+    this.apiService.getData(`${environment.live_url}/${environment.settings_period}/?periodicity=${id}`).subscribe(
       (res: any) => {
         this.peroidslist = res;
       }, (error: any) => {

@@ -109,10 +109,13 @@ export class QuantitativeProductivityComponent implements OnInit {
              page: this.page,
              pageSize: this.tableSize,
            }); 
-           const url = `${environment.live_url}/${environment.job_reports}/${query}&type=job-time-report&file-type=${fileType}`;
+           if(query){
+            query += this.userRole ==='Admin' ? '':`&employee-id=${this.user_id}`;
+           }
+           const url = `${environment.live_url}/${environment.productivity_reports}/${query}&productivity-type=quantitative&file-type=${fileType}`;
            downloadFileFromUrl({
              url,
-             fileName: 'job_time_report',
+             fileName: 'productivity_quantitative_report',
              fileType
            });
          }
@@ -155,7 +158,7 @@ export class QuantitativeProductivityComponent implements OnInit {
               this.tableConfig = {
                 columns: [],
                 data: [],
-                searchTerm: '',
+                searchTerm: this.term,
                 actions: [],
                 accessConfig: [],
                 tableSize: 5,
