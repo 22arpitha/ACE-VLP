@@ -9,7 +9,7 @@
                             <mat-form-field appearance="outline" class="w-100 p-0 custom-mat-form-field">
                                 <mat-label>Date <b class="r-star">*</b></mat-label>
                                 <input matInput [matDatepicker]="picker2" placeholder="Enter Date"
-                                    formControlName="date" autocomplete="off">
+                                    formControlName="date" autocomplete="off" [max]="currentDate">
                                 <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
                                 <mat-datepicker #picker2></mat-datepicker>
                                 <mat-error *ngIf="f['date']?.invalid && f['date']?.touched || f['date']?.dirty">
@@ -41,7 +41,7 @@
                             <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
                                 <mat-label>Client <b class="r-star">*</b></mat-label>
                                 <mat-select formControlName="client_id" autocomplete="off" placeholder="Select client"
-                                    panelClass="custom-select-panel" [disableOptionCentering]="true">
+                                    panelClass="custom-select-panel" [disableOptionCentering]="true" (selectionChange)="onClientChange($event)">
                                     <div class="mat-select-search-wrapper d-flex">
                                         <input matInput [(ngModel)]="searchClientText" autofocus
                                             [ngModelOptions]="{standalone: true}" placeholder="Search Client"

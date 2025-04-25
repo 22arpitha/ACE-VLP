@@ -37,6 +37,7 @@ import { DynamicTableComponent } from './dynamic-table/dynamic-table.component';
 import { PeriodComponent } from './period/period.component';
 import { PeriodicityComponent } from './periodicity/periodicity.component';
 import { EmployeeListComponent } from './employee-list/employee-list.component';
+import { WeekDatepickerComponent } from './week-datepicker/week-datepicker.component';
 @NgModule({
   declarations: [
     SortPipe,
@@ -46,7 +47,8 @@ import { EmployeeListComponent } from './employee-list/employee-list.component';
     DynamicTableComponent,
     PeriodComponent,
     PeriodicityComponent,
-    EmployeeListComponent
+    EmployeeListComponent,
+    WeekDatepickerComponent
   ],
   imports: [
     CommonModule,
@@ -119,6 +121,7 @@ import { EmployeeListComponent } from './employee-list/employee-list.component';
     DynamicTableComponent,
     EmployeeListComponent,
     PeriodicityComponent,
+    WeekDatepickerComponent,
     PeriodComponent
    ],
 

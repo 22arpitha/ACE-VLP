@@ -8,21 +8,11 @@ import { environment } from '../../../../environments/environment';
 import { SubModuleService } from '../../../service/sub-module.service';
 import { GenericDeleteComponent } from '../../../generic-components/generic-delete/generic-delete.component';
 import { DatePipe } from '@angular/common';
-import { MAT_DATE_RANGE_SELECTION_STRATEGY } from '@angular/material/datepicker';
-import { WeeklySelectionStrategy } from '../../../shared/weekly-selection-strategy';
 
 @Component({
   selector: 'app-all-timesheets',
   templateUrl: './all-timesheets.component.html',
   styleUrls: ['./all-timesheets.component.scss'],
-  providers: [
-    DatePipe,
-    WeeklySelectionStrategy,
-    {
-      provide: MAT_DATE_RANGE_SELECTION_STRATEGY,
-      useExisting: WeeklySelectionStrategy
-    }
-  ]
 })
 export class AllTimesheetsComponent implements  OnInit {
   selectedDate: any;
@@ -74,7 +64,7 @@ export class AllTimesheetsComponent implements  OnInit {
   }
   isTodayFriday(): boolean {
     const today = new Date();
-    console.log(today)
+    // console.log(today)
     return today.getDay() === 5; // 0 = Sunday, 5 = Friday
   }
 
@@ -109,6 +99,7 @@ export class AllTimesheetsComponent implements  OnInit {
         this.weekData = res.data;
       }
     )
+    // this.getTimesheets()
   }
 
   convertBackendDateToStandard(dateString: string): string {
@@ -186,6 +177,11 @@ export class AllTimesheetsComponent implements  OnInit {
     if(this.userRole==='Admin'){
       return `?page=${this.page}&page_size=${this.tableSize}&search=${this.term}&start-date=${this.startDate}&end-date=${this.endDate}`;
     } else{
+      // if(this.selectedDate){
+
+      // } else{
+
+      // }
       return `?timesheet-employee=${this.user_id}&page=${this.page}&page_size=${this.tableSize}&search=${this.term}&start-date=${this.startDate}&end-date=${this.endDate}`;
     }
   }
@@ -258,7 +254,8 @@ export class AllTimesheetsComponent implements  OnInit {
 
     weekDatePicker(event: any){
       // console.log('week:', event);
-      console.log(this.selectedDate)
+      this.selectedDate = event
+      // console.log('this.selectedDate',this.selectedDate)
       this.getWeekData();
     }
 }
