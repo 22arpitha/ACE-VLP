@@ -23,6 +23,7 @@ export class QuantitativeProductivityComponent implements OnInit {
              data: [],
              searchTerm: '',
              actions: [],
+             searchable:true,
              accessConfig: [],
              tableSize: 5,
              pagination: true,
@@ -158,11 +159,11 @@ export class QuantitativeProductivityComponent implements OnInit {
                 actions: [],
                 accessConfig: [],
                 tableSize: 5,
-                pagination: true,
-                headerTabs:true,
-                estimationDetails:true,
-                hideDownload:true,
-                estimationData:'',
+                searchable:true,
+                pagination: false,
+                estimationDetails:false,
+                hideDownload:false,
+                tableFooterContent:'',
               };
             }
            },(error:any)=>{  this.api.showError(error?.error?.detail);
