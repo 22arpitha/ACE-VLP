@@ -1,5 +1,5 @@
-<div class="container-wrapper settings-main-content vlp-timesheet px-0">
-    <section class="settings-table-bg px-3"
+<div class="container-wrapper settings-main-content  px-0">
+    <section class="settings-table-bg px-3 vlp-timesheet"
         *ngIf="userRole !='Admin' && accessPermissions[0]?.view || userRole === 'Admin'">
         <div class="row mx-0 my-1 px-0 py-2">
             <div class="col-sm-12 col-md-12 week-picker mb-3" *ngIf="userRole !='Admin'">
@@ -131,7 +131,7 @@
                                             *ngIf="userRole !='Admin' && (accessPermissions[0]?.view && accessPermissions[0]?.update)"/>
                                         <mat-icon  *ngIf="userRole ==='Admin'">lock</mat-icon>
                                         <span
-                                            *ngIf="!accessPermissions[0]?.update && !accessPermissions[0]?.delete">-</span>
+                                            *ngIf="userRole !='Admin' && !accessPermissions[0]?.update && !accessPermissions[0]?.delete">-</span>
                                     </ng-container></td>
                             </tr>
                         </ng-container>

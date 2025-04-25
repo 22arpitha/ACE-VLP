@@ -82,7 +82,7 @@ export class CreateUpdateTimesheetComponent implements CanComponentDeactivate, O
     this.timesheetFormGroup?.valueChanges?.subscribe(() => {
       const currentFormValue = this.timesheetFormGroup?.getRawValue();
       const isInvalid = this.timesheetFormGroup?.touched && this.timesheetFormGroup?.invalid;
-      console.log(this.initialFormValue,currentFormValue);
+      // console.log(this.initialFormValue,currentFormValue);
       const isFormChanged:boolean =  JSON.stringify(currentFormValue) !== JSON.stringify(this.initialFormValue);
       let unSavedChanges = isFormChanged || isInvalid;
      this.formErrorScrollService.setUnsavedChanges(unSavedChanges);
@@ -149,7 +149,7 @@ this.formErrorScrollService.resetHasUnsavedValue();
   }
 
   onClientChange(event:any){
-    console.log(event)
+    // console.log(event)
     this.getEmployeeJobsList(event.value)
   }
 
@@ -202,14 +202,32 @@ this.formErrorScrollService.resetHasUnsavedValue();
       }
     )
   }
+  dateSelected(event){
+    this.getStartTimePreviousData()
+  }
 
   getStartTimePreviousData() {
-    let queryparams = `?timesheet-employee=${this.user_id}&higest-end-time=True`
+   let date =  this.datePipe.transform(this.timesheetFormGroup.value.date, 'YYYY-MM-dd')
+    let queryparams = `?timesheet-employee=${this.user_id}&higest-end-time=True&date=${date}`
     this.apiService.getData(`${environment.live_url}/${environment.vlp_timesheets}/${queryparams}`).subscribe(
       (res: any) => {
-        // console.log('perious time data', res)
-        if (res) {
-          this.timesheetFormGroup.patchValue({ start_time: res.higest_end_time })
+        if (res?.higest_end_time) {
+          let currentDate = this.datePipe.transform(new Date().toDateString(), 'YYYY-MM-dd')
+          if (date === currentDate) {
+            // console.log('Selected date is today.');
+            this.timesheetFormGroup.patchValue({end_time:this.currentTime})
+          } else {
+            // console.log('Selected date is NOT today.');
+            this.timesheetFormGroup.patchValue({end_time:''})
+          }
+          this.timesheetFormGroup.patchValue({ start_time: res?.higest_end_time })
+          // console.log('perious time data', res)
+          this.updateDuration();
+        } 
+        else{
+          // console.log('no time data', res)
+          this.timesheetFormGroup.patchValue({start_time:''});
+          this.timesheetFormGroup.patchValue({end_time:''})
           this.updateDuration();
         }
       },
