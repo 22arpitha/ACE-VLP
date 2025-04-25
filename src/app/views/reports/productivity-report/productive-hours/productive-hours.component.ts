@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonServiceService } from '../../../../service/common-service.service';
 import { buildPaginationQuery } from '../../../../shared/pagination.util';
@@ -11,8 +11,8 @@ import { downloadFileFromUrl } from '../../../../shared/file-download.util';
   templateUrl: './productive-hours.component.html',
   styleUrls: ['./productive-hours.component.scss']
 })
-export class ProductiveHoursComponent implements OnInit {
-
+export class ProductiveHoursComponent implements OnInit,OnChanges {
+@Input() dropdwonFilterData:any;
   BreadCrumbsTitle: any = 'Productive Hours';
   term: string = '';
   tableSize: number = 5;
@@ -54,6 +54,11 @@ export class ProductiveHoursComponent implements OnInit {
     private common_service:CommonServiceService,
     private api:ApiserviceService
   ) { }
+  ngOnChanges(changes: SimpleChanges): void {
+    if(changes['dropdwonFilterData']){
+      this.dropdwonFilterData=changes['dropdwonFilterData']?.currentValue;
+    }
+  }
 
   ngOnInit(): void {
     this.common_service.setTitle(this.BreadCrumbsTitle)

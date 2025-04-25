@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { CommonServiceService } from '../../../../service/common-service.service';
 import { buildPaginationQuery } from '../../../../shared/pagination.util';
 import { tableConfig } from './quantitative-productivity-config';
@@ -12,8 +12,9 @@ import { getUniqueValues } from '../../../../shared/unique-values.utils';
   templateUrl: './quantitative-productivity.component.html',
   styleUrls: ['./quantitative-productivity.component.scss']
 })
-export class QuantitativeProductivityComponent implements OnInit {
+export class QuantitativeProductivityComponent implements OnInit,OnChanges {
   BreadCrumbsTitle: any = 'Quantitative Productivity';
+  @Input() dropdwonFilterData:any;
         term: string = '';
         tableSize: number = 5;
            page: any = 1;
@@ -40,7 +41,17 @@ export class QuantitativeProductivityComponent implements OnInit {
             this.user_id = sessionStorage.getItem('user_id');
             this.userRole = sessionStorage.getItem('user_role_name');
             }
-         
+         ngOnChanges(changes: SimpleChanges): void {
+          if(changes['dropdwonFilterData']){
+            this.dropdwonFilterData=changes['dropdwonFilterData'].currentValue;
+            this.getTableData({
+              page: this.page,
+              pageSize: this.tableSize,
+              searchTerm: this.term
+            });
+          }
+           }
+
            ngOnInit(): void {
              this.common_service.setTitle(this.BreadCrumbsTitle)
              this.tableConfig = tableConfig;
@@ -49,7 +60,8 @@ export class QuantitativeProductivityComponent implements OnInit {
               pageSize: this.tableSize,
               searchTerm: this.term
             });
-           }        
+           }    
+
            // Called when user changes page number from the dynamic table
          onTableDataChange(event: any) {
            const page = event;
@@ -129,6 +141,11 @@ export class QuantitativeProductivityComponent implements OnInit {
            const query = buildPaginationQuery({ page, pageSize, searchTerm });
            finalQuery=query;
            finalQuery += this.userRole ==='Admin' ? '':`&employee-id=${this.user_id}`;
+           if(this.dropdwonFilterData){
+            finalQuery+= this.dropdwonFilterData.employee_id ? `&employee-id=${this.dropdwonFilterData.employee_id}`:'';
+            finalQuery+= this.dropdwonFilterData.periodicity ? `&periodicity=${this.dropdwonFilterData.periodicity}`:'';
+            finalQuery+= this.dropdwonFilterData.period ? `&period=${this.dropdwonFilterData.period}`:'';
+           }
            this.api.getData(`${environment.live_url}/${environment.jobs}/${finalQuery}`).subscribe((res: any) => {
             if(res.results && res.results?.length>=1){
               const formattedData = res.results.map((item: any, i: number) => ({

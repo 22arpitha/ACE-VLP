@@ -1,12 +1,16 @@
-<form [formGroup]="periodicityForm" class="periodicity-field">
-<mat-form-field appearance="outline" class="w-100 p-0 custom-mat-form-field">
-  <mat-label>Periodicity</mat-label>
-  <input matInput [matDatepicker]="picker1" placeholder="Enter Periodicity"
-      formControlName="periodicity" autocomplete="off" (dateInput)="joiningDateFun($event)">
-      <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
-       <mat-datepicker #picker1></mat-datepicker>
-       <mat-error *ngIf="f['periodicity']?.invalid && f['periodicity']?.touched || f['periodicity']?.dirty">
-          <span  *ngIf="f['periodicity']?.errors?.['required']">Periodicity is required</span>
-    </mat-error>
+
+  <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+    <mat-label>Periodicity <b class="r-star">*</b></mat-label>
+    <mat-select  [(ngModel)]="selectedPeriodicityVal" [ngModelOptions]="{standalone: true}" autocomplete="off"
+            placeholder="Periodicity" panelClass="custom-select-panel"
+            [disableOptionCentering]="true" (selectionChange)="onPeroidicityChange($event)">
+            <div class="mat-select-search-wrapper d-flex">
+              <input matInput [(ngModel)]="searchPeroidicityText" autofocus [ngModelOptions]="{standalone: true}" placeholder="Search Periodicity" class="mat-select-search">
+              <mat-icon class="search-icon" *ngIf="!searchPeroidicityText">search</mat-icon>
+              <mat-icon class="search-icon" *ngIf="searchPeroidicityText" type="button" (click)="clearSearch()">close</mat-icon>
+            </div>
+            <mat-option *ngFor="let item of filteredPeriodicityList()" [value]="item?.id">
+                {{item?.periodicty_name}}
+            </mat-option>
+    </mat-select>
 </mat-form-field>
-</form>

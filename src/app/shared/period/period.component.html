@@ -1,16 +1,16 @@
-<form [formGroup]="periodForm" class="period-field">
-<mat-form-field appearance="outline" class="w-100 p-0 custom-mat-form-field">
-  <mat-label>Period</mat-label>
-  <mat-select formControlName="period" required
-  panelClass="custom-select-panel" [disableOptionCentering]="true" class="w-100">
-    <mat-option value="" disabled>Select Period</mat-option>
-    <mat-option value="DAILY">Daily</mat-option>
-    <mat-option value="WEEKLY">Weekly</mat-option>
-    <mat-option value="MONTHLY">Monthly</mat-option>
-    <mat-option value="YEARLY">Yearly</mat-option>
-  </mat-select>
-  <mat-error *ngIf="f['period'].touched && f['period'].invalid">
-   Period is required.
-  </mat-error>
-</mat-form-field>
-</form>
+
+  <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+    <mat-label>Period <b class="r-star">*</b></mat-label>
+    <mat-select [(ngModel)]="selectedPeriodVal" [ngModelOptions]="{standalone: true}" autocomplete="off"
+            placeholder="Period" panelClass="custom-select-panel"
+            [disableOptionCentering]="true" (selectionChange)="onPeroidChange($event)">
+            <div class="mat-select-search-wrapper d-flex">
+              <input matInput [(ngModel)]="searchPeroidText" autofocus [ngModelOptions]="{standalone: true}" placeholder="Search Period" class="mat-select-search" >
+              <mat-icon class="search-icon" *ngIf="!searchPeroidText">search</mat-icon>
+              <mat-icon class="search-icon" *ngIf="searchPeroidText" type="button" (click)="clearSearch()">close</mat-icon>
+            </div>
+            <mat-option *ngFor="let item of filteredPeriodList()" [value]="item?.id">
+                {{item?.period_name}}
+            </mat-option>
+    </mat-select>
+</mat-form-field> 

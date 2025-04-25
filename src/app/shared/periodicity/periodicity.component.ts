@@ -1,39 +1,57 @@
-import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { MatDatepicker } from '@angular/material/datepicker';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
+import { ApiserviceService } from 'src/app/service/apiservice.service';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-periodicity',
   templateUrl: './periodicity.component.html',
   styleUrls: ['./periodicity.component.scss']
 })
-export class PeriodicityComponent implements OnInit {
-  periodicityForm:FormGroup;
-  selectedYear: Date;
-  dateRange = {
-    start: null as Date | null,
-    end: null as Date | null
-  };
+export class PeriodicityComponent implements OnInit,OnChanges {
+  searchPeroidicityText:any;
+  allPeroidicitylist:any=[];
+  @Input() resetFilterField:any;
+  selectedPeriodicityVal:any;
+  @Output() selectPeriodicity :EventEmitter<any> = new EventEmitter<any>();
+  constructor(private apiService: ApiserviceService) { }
 
-  constructor(private fb:FormBuilder) { }
-
+   ngOnChanges(changes: SimpleChanges): void {
+    if(changes['resetFilterField'] && changes['resetFilterField'].currentValue !== undefined){
+      this.resetFilterField = changes['resetFilterField'].currentValue
+        this.selectedPeriodicityVal=null;
+        this.selectPeriodicity.emit();
+    }
+  }
   ngOnInit(): void {
-    this.initForm()
-  }
-  initForm(){
-    this.periodicityForm = this.fb.group({
-      periodicity : ['',Validators.required]
-    })
-  }
-  joiningDateFun(event){}
-
-  get f (){
-    return this.periodicityForm.controls;
+    this.getAllPeriodicity();
   }
 
-  chosenYearHandler(normalizedYear: Date) {
-    this.selectedYear = new Date(normalizedYear);
+
+  public getAllPeriodicity() {
+    this.allPeroidicitylist = [];
+    this.apiService.getData(`${environment.live_url}/${environment.settings_periodicty}/`).subscribe(
+      (res: any) => {
+        this.allPeroidicitylist = res;
+      }, (error: any) => {
+        this.apiService.showError(error?.error?.detail);
+      });
   }
 
+  public onPeroidicityChange(event: any) {
+    this.selectPeriodicity.emit(event.value);
+  }
+
+public clearSearch(){
+  this.searchPeroidicityText='';
+}
+
+public filteredPeriodicityList() {
+  if (!this.searchPeroidicityText) {
+    return this.allPeroidicitylist;
+  }
+  return this.allPeroidicitylist.filter((peroidicity: any) =>
+    peroidicity?.periodicty_name?.toLowerCase()?.includes(this.searchPeroidicityText?.toLowerCase())
+  );
+}
 
 }
