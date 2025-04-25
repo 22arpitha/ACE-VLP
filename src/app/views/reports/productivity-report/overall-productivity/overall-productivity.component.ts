@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonServiceService } from '../../../../service/common-service.service';
 import { buildPaginationQuery } from '../../../../shared/pagination.util';
@@ -9,8 +9,8 @@ import { tableConfig } from './overall-productivity-config';
   templateUrl: './overall-productivity.component.html',
   styleUrls: ['./overall-productivity.component.scss']
 })
-export class OverallProductivityComponent implements OnInit {
-
+export class OverallProductivityComponent implements OnInit,OnChanges {
+@Input() dropdwonFilterData:any;
   BreadCrumbsTitle: any = 'Overall Productivity';
         term: string = '';
         tableSize: number = 5;
@@ -27,6 +27,11 @@ export class OverallProductivityComponent implements OnInit {
           pagination: true,
         };
         constructor(private common_service:CommonServiceService,private router:Router) {}
+        ngOnChanges(changes: SimpleChanges): void {
+          if(changes['dropdwonFilterData']){
+            this.dropdwonFilterData=changes['dropdwonFilterData']?.currentValue;
+          }
+        }
 
         ngOnInit(): void {
           this.common_service.setTitle(this.BreadCrumbsTitle)

@@ -18,3 +18,20 @@
 ::ng-deep .year-only-datepicker .mat-calendar-arrow {
   display: none;
 }
+.mat-select-search-wrapper {
+  padding: 8px;
+  background-color: #fff;
+}
+
+.mat-select-search {
+  width: 100%;
+}
+
+.custom-select-panel {
+  max-height: 300px; /* Set a max height for the dropdown */
+  overflow-y: auto; /* Make sure dropdown scrolls if it overflows */
+}
+.search-icon{
+  font-size:x-large;
+  color: #ccc;
+}

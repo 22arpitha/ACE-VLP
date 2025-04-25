@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonServiceService } from '../../../../service/common-service.service';
 import { buildPaginationQuery } from '../../../../shared/pagination.util';
@@ -8,9 +8,10 @@ import { tableConfig } from './qualitative-productivity-config';
   templateUrl: './qualitative-productivity.component.html',
   styleUrls: ['./qualitative-productivity.component.scss']
 })
-export class QualitativeProductivityComponent implements OnInit {
+export class QualitativeProductivityComponent implements OnInit,OnChanges {
 
 BreadCrumbsTitle: any = 'Qualitative Productivity';
+@Input() dropdwonFilterData:any;
       term: string = '';
       tableSize: number = 5;
       page: any = 1;
@@ -26,6 +27,11 @@ BreadCrumbsTitle: any = 'Qualitative Productivity';
         pagination: true,
       };
       constructor(private common_service:CommonServiceService,private router:Router) {}
+      ngOnChanges(changes: SimpleChanges): void {
+        if(changes['dropdwonFilterData']){
+          this.dropdwonFilterData=changes['dropdwonFilterData']?.currentValue;
+        }
+      }
 
       ngOnInit(): void {
         this.common_service.setTitle(this.BreadCrumbsTitle)
