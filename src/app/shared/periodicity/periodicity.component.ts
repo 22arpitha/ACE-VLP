@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
-import { ApiserviceService } from 'src/app/service/apiservice.service';
-import { environment } from 'src/environments/environment';
+import { ApiserviceService } from '../../service/apiservice.service';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-periodicity',
@@ -19,7 +19,7 @@ export class PeriodicityComponent implements OnInit,OnChanges {
     if(changes['resetFilterField'] && changes['resetFilterField'].currentValue !== undefined){
       this.resetFilterField = changes['resetFilterField'].currentValue
         this.selectedPeriodicityVal=null;
-        this.selectPeriodicity.emit();
+        this.selectPeriodicity.emit(null);
     }
   }
   ngOnInit(): void {

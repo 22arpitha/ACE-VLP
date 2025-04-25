@@ -140,11 +140,12 @@ export class QuantitativeProductivityComponent implements OnInit,OnChanges {
            const searchTerm = params?.searchTerm ?? this.term;
            const query = buildPaginationQuery({ page, pageSize, searchTerm });
            finalQuery=query;
-           finalQuery += this.userRole ==='Admin' ? '':`&employee-id=${this.user_id}`;
            if(this.dropdwonFilterData){
-            finalQuery+= this.dropdwonFilterData.employee_id ? `&employee-id=${this.dropdwonFilterData.employee_id}`:'';
+            finalQuery+= this.dropdwonFilterData.employee_id ? `&employee-id=${this.dropdwonFilterData.employee_id}`:this.userRole ==='Admin' ? '':`&employee-id=${this.user_id}`;
             finalQuery+= this.dropdwonFilterData.periodicity ? `&periodicity=${this.dropdwonFilterData.periodicity}`:'';
             finalQuery+= this.dropdwonFilterData.period ? `&period=${this.dropdwonFilterData.period}`:'';
+           }else{
+            finalQuery += this.userRole ==='Admin' ? '':`&employee-id=${this.user_id}`;
            }
            this.api.getData(`${environment.live_url}/${environment.jobs}/${finalQuery}`).subscribe((res: any) => {
             if(res.results && res.results?.length>=1){

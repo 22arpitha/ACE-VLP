@@ -30,6 +30,9 @@ tabs:string[] = ['Overall Productivity', 'Quantitative Productivity', 'Qualitati
   resetSearch(){
     this.commonFilterData={'employee_id':'','periodicity':'','period':''};
     this.resetFilter=true;
+    setTimeout(() => {
+      this.resetFilter=false;
+    }, 100);
   }
 
   selectedEmployee(event:any){

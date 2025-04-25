@@ -1,5 +1,4 @@
 import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
-import { Router } from '@angular/router';
 import { CommonServiceService } from '../../../../service/common-service.service';
 import { buildPaginationQuery } from '../../../../shared/pagination.util';
 import { tableColumns } from './productive-hours-config';
@@ -27,50 +26,39 @@ export class ProductiveHoursComponent implements OnInit,OnChanges {
     tableSize: 5,
     pagination: true,
   };
-  data = [
-    {
-      sl:1,
-      job_name:'Testing',
-      estimated_time:'10',
-      percentage_of_Completion:'5',
-      productive_hours:'2'
-    },
-    {
-      sl:2,
-      job_name:'Testing',
-      estimated_time:'10',
-      percentage_of_Completion:'5',
-      productive_hours:'2'
-    },
-    {
-      sl:3,
-      job_name:'Testing',
-      estimated_time:'10',
-      percentage_of_Completion:'5',
-      productive_hours:'2'
-    }
-  ]
+  user_id:any;
+  userRole:any;
   constructor(
     private common_service:CommonServiceService,
     private api:ApiserviceService
-  ) { }
+  ) { 
+    this.user_id = sessionStorage.getItem('user_id');
+    this.userRole = sessionStorage.getItem('user_role_name');
+  }
   ngOnChanges(changes: SimpleChanges): void {
     if(changes['dropdwonFilterData']){
       this.dropdwonFilterData=changes['dropdwonFilterData']?.currentValue;
+      this.getTableData({
+        page: this.page,
+        pageSize: this.tableSize,
+        searchTerm: this.term
+      });
     }
   }
 
   ngOnInit(): void {
     this.common_service.setTitle(this.BreadCrumbsTitle)
-    this.getTableData()
+    this.getTableData({
+      page: 1,
+      pageSize: this.tableSize,
+      searchTerm: this.term
+    });
   }
 
   // Called when user changes page number from the dynamic table
 onTableDataChange(event: any) {
-  console.log('Page changed to:', event);
   const page = event;
   this.page = page;
-
   this.getTableData({
     page: page,
     pageSize: this.tableSize,
@@ -121,50 +109,81 @@ exportCsvOrPdf(fileType) {
     pageSize: this.tableSize,
   });
 
-  const url = `${environment.live_url}/${environment.timesheet_reports}/${query}&file-type=${fileType}&timsheet-type=detailed`;
+  const url = `${environment.live_url}/${environment.productivity_reports}/${query}&file-type=${fileType}&productivity-type=productive-hour`;
   downloadFileFromUrl({
     url,
-    fileName: 'productive_hours',
+    fileName: 'productive_hours_report',
     fileType
   });
 }
-
-// Fetch table data from API with given params
-getTableData(params?: { page?: number; pageSize?: number; searchTerm?: string }) {
-  const page = params?.page ?? this.page;
-  const pageSize = params?.pageSize ?? this.tableSize;
-  const searchTerm = params?.searchTerm ?? this.term;
-
-  const query = buildPaginationQuery({ page, pageSize, searchTerm });
-  this.api.getData(`${environment.live_url}/${environment.timesheet}/${query}`).subscribe((res: any) => {
-    const formattedData = res.results.map((item: any, i: number) => ({
-      sl: (page - 1) * pageSize + i + 1,
-      ...item
-    }));
-
-  });
-  this.tableConfig = {
-    columns: tableColumns,
-    data: this.data,
-    searchTerm: this.term,
-    actions: [],
-    accessConfig: [],
-    tableSize: pageSize,
-    pagination: true,
-    currentPage:page,
-    // totalRecords: res.total_no_of_record
-    totalRecords:this.tableConfig.data.length,
-    hideDownload:true
-  };
-}
-  onSearch(term: string): void {
-    this.term = term;
-    this.getTableData({
-      page: 1,
-      pageSize: this.tableSize,
-      searchTerm: term
-    });
-  }
+ // Fetch table data from API with given params
+         getTableData(params?: { page?: number; pageSize?: number; searchTerm?: string }) {
+          let finalQuery;
+           const page = params?.page ?? this.page;
+           const pageSize = params?.pageSize ?? this.tableSize;
+           const searchTerm = params?.searchTerm ?? this.term;
+           const query = buildPaginationQuery({ page, pageSize, searchTerm });
+           finalQuery=query;
+           if(this.dropdwonFilterData){
+            finalQuery+= this.dropdwonFilterData.employee_id ? `&employee-id=${this.dropdwonFilterData.employee_id}`:this.userRole ==='Admin' ? '':`&employee-id=${this.user_id}`;
+            finalQuery+= this.dropdwonFilterData.periodicity ? `&periodicity=${this.dropdwonFilterData.periodicity}`:'';
+            finalQuery+= this.dropdwonFilterData.period ? `&period=${this.dropdwonFilterData.period}`:'';
+           }else{
+            finalQuery += this.userRole ==='Admin' ? '':`&employee-id=${this.user_id}`;
+           }
+           this.api.getData(`${environment.live_url}/${environment.jobs}/${finalQuery}`).subscribe((res: any) => {
+            if(res.results && res.results?.length>=1){
+              const formattedData = res.results.map((item: any, i: number) => ({
+                sl: (page - 1) * pageSize + i + 1,
+                ...item,
+                is_primary:item?.employees?.find((emp: any) => emp?.is_primary === true)?.employee_name || '',
+              }));
+              let tableFooterContent = {'total_estimated_time':res?.total_estimated_time,'total_actual_time':res?.total_actual_time,'avg_quantitative_productivity':res?.avg_quantitative_productivity}
+              this.tableConfig = {
+                columns: tableColumns.map(col => ({
+                  ...col,
+                })),
+               data: formattedData,
+               searchTerm: this.term,
+               actions: [],
+               accessConfig: [],
+               tableSize: pageSize,
+               pagination: true,
+               searchable: true,
+               currentPage:page,
+               totalRecords: res.total_no_of_record,
+               hideDownload:true
+              };
+            }else{
+              this.tableConfig = {
+                columns: [],
+                data: [],
+                searchTerm: this.term,
+                actions: [],
+                accessConfig: [],
+                tableSize: 5,
+                searchable:true,
+                pagination: false,
+                estimationDetails:false,
+                hideDownload:false,
+              };
+            }
+           },(error:any)=>{  this.api.showError(error?.error?.detail);
+           });
+         }
+        
+           onSearch(term: string): void {
+             this.term = term;
+             this.getTableData({
+               page: 1,
+               pageSize: this.tableSize,
+               searchTerm: term
+             });
+           }
+        
+      ngOnDestroy(): void {
+        this.tableConfig=null
+      }
 
 
 }

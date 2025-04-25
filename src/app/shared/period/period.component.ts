@@ -25,7 +25,8 @@ export class PeriodComponent implements OnInit,OnChanges {
     }
    }
    if(changes['resetFilterField'] && changes['resetFilterField'].currentValue !== undefined){
-    this.resetFilterField = changes['resetFilterField'].currentValue
+    this.resetFilterField = changes['resetFilterField'].currentValue;
+    console.log('this.resetFilterField ',this.resetFilterField );
       this.selectedPeriodVal=null;    
   }
     
