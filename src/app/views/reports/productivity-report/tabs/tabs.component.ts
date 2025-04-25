@@ -7,6 +7,7 @@ import { Component, ContentChildren, OnInit, QueryList } from '@angular/core';
 })
 export class TabsComponent implements OnInit {
 periodicityId:any;
+userRole:any
 period:any;
 employee:any;
 resetFilter:boolean=false;
@@ -20,7 +21,9 @@ tabs:string[] = ['Overall Productivity', 'Quantitative Productivity', 'Qualitati
     //    i === index;
     // });
   }
-  constructor() { }
+  constructor() {
+    this.userRole = sessionStorage.getItem('user_role_name')
+   }
 
   ngOnInit(): void {
   }
