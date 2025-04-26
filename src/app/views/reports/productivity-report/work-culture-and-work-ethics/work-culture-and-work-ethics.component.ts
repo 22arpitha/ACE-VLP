@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonServiceService } from '../../../../service/common-service.service';
 import { buildPaginationQuery } from '../../../../shared/pagination.util';
@@ -12,9 +12,10 @@ import { ApiserviceService } from '../../../../service/apiservice.service';
   templateUrl: './work-culture-and-work-ethics.component.html',
   styleUrls: ['./work-culture-and-work-ethics.component.scss']
 })
-export class WorkCultureAndWorkEthicsComponent implements OnInit {
+export class WorkCultureAndWorkEthicsComponent implements OnInit,OnChanges {
 
  BreadCrumbsTitle: any = 'Work Culture and Work Ethics';
+ @Input() dropdwonFilterData:any;
       term: string = '';
       tableSize: number = 5;
       page: any = 1;
@@ -55,6 +56,11 @@ export class WorkCultureAndWorkEthicsComponent implements OnInit {
         private common_service:CommonServiceService,
         private api:ApiserviceService
       ) { }
+      ngOnChanges(changes: SimpleChanges): void {
+        if(changes['dropdwonFilterData']){
+          this.dropdwonFilterData=changes['dropdwonFilterData']?.currentValue;
+        }
+      }
 
       ngOnInit(): void {
         this.common_service.setTitle(this.BreadCrumbsTitle)

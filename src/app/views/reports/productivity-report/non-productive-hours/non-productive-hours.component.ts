@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { CommonServiceService } from '../../../../service/common-service.service';
 import { buildPaginationQuery } from '../../../../shared/pagination.util';
 import { tableColumns } from './non-productive-hours-config';
@@ -10,8 +10,8 @@ import { downloadFileFromUrl } from '../../../../shared/file-download.util';
   templateUrl: './non-productive-hours.component.html',
   styleUrls: ['./non-productive-hours.component.scss']
 })
-export class NonProductiveHoursComponent implements OnInit {
-
+export class NonProductiveHoursComponent implements OnInit,OnChanges {
+@Input() dropdwonFilterData:any;
   BreadCrumbsTitle: any = 'Non Productive Hours';
    term: string = '';
      tableSize: number = 5;
@@ -35,6 +35,11 @@ export class NonProductiveHoursComponent implements OnInit {
      ) {
       this.user_id = sessionStorage.getItem('user_id') || '' ;
       this.user_role_name = sessionStorage.getItem('user_role_name') || '';
+      }
+      ngOnChanges(changes: SimpleChanges): void {
+        if(changes['dropdwonFilterData']){
+          this.dropdwonFilterData=changes['dropdwonFilterData']?.currentValue;
+        }
       }
 
      ngOnInit(): void {

@@ -57,7 +57,7 @@ vlp_timesheets:`timesheet`,
 client_invoice:'client-invoice',
 invoice_details:'invoice-details',
 job_reports:'job-reports',
-
+productivity_reports:'productivity-reports',
 
   leave_application: 'leave-application',
   timesheetCalender: 'time-sheets-calender',

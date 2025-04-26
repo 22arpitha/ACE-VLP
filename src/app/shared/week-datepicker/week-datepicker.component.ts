@@ -21,8 +21,18 @@ export class WeekDatepickerComponent implements OnInit {
   ngOnInit(): void {
   }
   
+  time={
+    start_date:'',
+    end_date:''
+  }
+  
   onDateChange(event: any) {
-    // console.log(event)
-    this.weekSelected.emit(event.value);
+    // console.log('satrt date',event)
+    this.time.start_date = event.value
+  }
+  onEndDateChange(event:any){
+    // console.log('end date',event);
+    this.time.end_date = event.value
+    this.weekSelected.emit(this.time);
   }
 }

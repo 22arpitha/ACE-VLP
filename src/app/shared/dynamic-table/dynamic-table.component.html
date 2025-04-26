@@ -50,7 +50,7 @@
         </div>
   <!-- Download Menu -->
   
-      <div class="col-auto col-sm-auto col-md-auto col-lg-1"  [ngClass]="config?.hideDownload ? 'p-r' : 'mt-2'">
+      <div class="col-auto col-sm-auto col-md-auto col-lg-auto px-0 mx-0 my-1"  [ngClass]="config?.hideDownload ? 'p-r' : 'mt-2'">
        <div [ngClass]="config?.hideDownload ? 'set-position' : 'my-1'">
         <button
           mat-icon-button
@@ -72,8 +72,11 @@
         </mat-menu>
       </div>
       </div>
-      <div class="col-auto mt-2 col-sm-auto col-md-auto col-lg-2 text-end" *ngIf="config?.sendEmail">
-        <button mat-raised-button class="mat-btn-s proceedbtn" type="button" [disabled]="isDisabled" type="button" (click)="sendEmailEvent()">Send Email</button>
+      <div class="col-auto mt-2 col-sm-auto col-md-auto col-lg-auto text-end" *ngIf="config?.sendEmail">
+        <span
+        [ngbTooltip]="tooltipMessage" placement="top">
+        <button mat-raised-button class="mat-btn-s proceedbtn"  [disabled]="isDisabled" type="button" (click)="sendEmailEvent()">Send Email</button>
+      </span>
       </div>
     </div>
 <!-- Data Table -->

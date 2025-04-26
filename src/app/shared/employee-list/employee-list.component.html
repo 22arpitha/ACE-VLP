@@ -1,12 +1,17 @@
-<form [formGroup]="employeeForm" class="employee-field">
-<mat-form-field appearance="outline" class="w-100 p-0 custom-mat-form-field">
-  <mat-label>Employee</mat-label>
-  <mat-select formControlName="employee" required
-  panelClass="custom-select-panel" [disableOptionCentering]="true" class="w-100">
-    <mat-option value="" disabled>Select employee</mat-option>
+<mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+  <mat-label>Select Employee</mat-label>
+  <mat-select [(ngModel)]="selectedEmployeeVal" [ngModelOptions]="{standalone: true}" [disableOptionCentering]="true" autocomplete="off" placeholder="Select" panelClass="custom-select-panel" (selectionChange)="onSelectedEmployee($event)">
+    
+    <!-- Search input field inside the panel -->
+    <div class="mat-select-search-wrapper d-flex">
+      <input matInput [(ngModel)]="searchEmployeeText" [ngModelOptions]="{standalone: true}" placeholder="Search Employee" class="mat-select-search">
+      <mat-icon class="search-icon" *ngIf="!searchEmployeeText">search</mat-icon>
+      <mat-icon class="search-icon" *ngIf="searchEmployeeText" type="button" (click)="clearSearch()">close</mat-icon>
+    </div>
+
+    <!-- Filtered options -->
+    <mat-option *ngFor="let emp of filteredEmployeeList()" [value]="emp?.user_id">
+      {{ emp?.user__full_name }}
+    </mat-option>
   </mat-select>
-  <mat-error *ngIf="f['employee'].touched && f['employee'].invalid">
-    Employee is required.
-  </mat-error>
 </mat-form-field>
-</form>

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { CommonServiceService } from '../../../../service/common-service.service';
 import { buildPaginationQuery } from '../../../../shared/pagination.util';
 import { tableColumns } from './non-billable-hours-config';
@@ -11,8 +11,9 @@ import { ApiserviceService } from '../../../../service/apiservice.service';
   templateUrl: './non-billable-hours.component.html',
   styleUrls: ['./non-billable-hours.component.scss']
 })
-export class NonBillableHoursComponent implements OnInit {
+export class NonBillableHoursComponent implements OnInit,OnChanges {
 BreadCrumbsTitle: any = 'Non Billable Hours';
+@Input() dropdwonFilterData:any;
  term: string = '';
       tableSize: number = 5;
       page: any = 1;
@@ -56,6 +57,11 @@ BreadCrumbsTitle: any = 'Non Billable Hours';
         private common_service:CommonServiceService,
         private api:ApiserviceService
       ) { }
+      ngOnChanges(changes: SimpleChanges): void {
+        if(changes['dropdwonFilterData']){
+          this.dropdwonFilterData=changes['dropdwonFilterData']?.currentValue;
+        }
+      }
 
       ngOnInit(): void {
         this.common_service.setTitle(this.BreadCrumbsTitle)

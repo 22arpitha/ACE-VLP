@@ -177,11 +177,6 @@ export class AllTimesheetsComponent implements  OnInit {
     if(this.userRole==='Admin'){
       return `?page=${this.page}&page_size=${this.tableSize}&search=${this.term}&start-date=${this.startDate}&end-date=${this.endDate}`;
     } else{
-      // if(this.selectedDate){
-
-      // } else{
-
-      // }
       return `?timesheet-employee=${this.user_id}&page=${this.page}&page_size=${this.tableSize}&search=${this.term}&start-date=${this.startDate}&end-date=${this.endDate}`;
     }
   }
@@ -237,7 +232,7 @@ export class AllTimesheetsComponent implements  OnInit {
     }
 
     startDatePicker(event: any) {
-      console.log('start:', event);
+      // console.log('start:', event);
       this.startDate = this.datePipe.transform(event.value,'yyyy-MM-dd');
       this.getTimesheets()
       // console.log('Start:', event.value?.start);
@@ -245,7 +240,7 @@ export class AllTimesheetsComponent implements  OnInit {
     }
   
     startAndEndDateFunction(event: any) {
-      console.log('end:', event);
+      // console.log('end:', event);
       this.endDate = this.datePipe.transform(event.value,'yyyy-MM-dd')
       this.getTimesheets()
       // console.log('Start:', event.value?.start);
@@ -254,8 +249,11 @@ export class AllTimesheetsComponent implements  OnInit {
 
     weekDatePicker(event: any){
       // console.log('week:', event);
-      this.selectedDate = event
+      this.selectedDate = event.start_date;
+      this.startDate = this.datePipe.transform(event.start_date,'yyyy-MM-dd');
+      this.endDate = this.datePipe.transform(event.end_date,'yyyy-MM-dd');
       // console.log('this.selectedDate',this.selectedDate)
       this.getWeekData();
+      this.getTimesheets();
     }
 }

@@ -1,16 +1,18 @@
 
 <div class="row ms-2 d-flex align-items-center">
-  <div class="col-sm-12 col-md-4 col-lg-3 text-end">
-    <app-employee-list></app-employee-list>
+  <div class="col-sm-12 col-md-4 col-lg-3 text-end" *ngIf="userRole != 'Accountant'">
+    <app-employee-list (selectEmployee)="selectedEmployee($event)" [resetFilterField]="resetFilter"></app-employee-list>
   </div>
   <div class="col-sm-12 col-md-4 col-lg-3">
-    <app-period></app-period>
+    <app-periodicity (selectPeriodicity)="selectedPeriodicity($event)" [resetFilterField]="resetFilter"></app-periodicity>
   </div>
   <div class="col-sm-12 col-md-4 col-lg-3">
-    <app-periodicity></app-periodicity>
+    <app-period (selectPeriod)="selectedPeriod($event)" [periodicity_id]="periodicityId" [resetFilterField]="resetFilter"></app-period>
   </div>
-  <div class="col-sm-12 col-md-4 col-lg-3">
-    <button mat-raised-button class="proceedbtn mat-btn-s" type="button" (click)="applySearch()">Search</button>
+  <div class="col-sm-12 col-md-4 col-lg-3 d-flex justify-content-evenly">
+    <button mat-raised-button class="proceedbtn mat-btn-s mr-2" type="button" (click)="applySearch()">Search</button>
+    <button mat-raised-button class="cancel-button mat-btn-s" type="button" (click)="resetSearch()">
+      Reset</button>
   </div>
 </div>
 <div class="row ms-2 d-flex align-items-center">
@@ -29,25 +31,25 @@
   <div class="tabs">
     <div class="tab-content">
       <ng-container *ngIf="selectedTab === 0">
-        <app-overall-productivity></app-overall-productivity>
+        <app-overall-productivity [dropdwonFilterData]="commonFilterData"></app-overall-productivity>
       </ng-container>
       <ng-container *ngIf="selectedTab === 1">
-        <app-quantitative-productivity></app-quantitative-productivity>
+        <app-quantitative-productivity [dropdwonFilterData]="commonFilterData"></app-quantitative-productivity>
       </ng-container>
       <ng-container *ngIf="selectedTab === 2">
-        <app-qualitative-productivity></app-qualitative-productivity>
+        <app-qualitative-productivity [dropdwonFilterData]="commonFilterData"></app-qualitative-productivity>
       </ng-container>
       <ng-container *ngIf="selectedTab === 3">
-        <app-work-culture-and-work-ethics></app-work-culture-and-work-ethics>
+        <app-work-culture-and-work-ethics [dropdwonFilterData]="commonFilterData"></app-work-culture-and-work-ethics>
       </ng-container>
       <ng-container *ngIf="selectedTab === 4">
-        <app-productive-hours></app-productive-hours>
+        <app-productive-hours [dropdwonFilterData]="commonFilterData"></app-productive-hours>
       </ng-container>
       <ng-container *ngIf="selectedTab === 5">
-        <app-non-billable-hours></app-non-billable-hours>
+        <app-non-billable-hours [dropdwonFilterData]="commonFilterData"></app-non-billable-hours>
       </ng-container>
       <ng-container *ngIf="selectedTab === 6">
-        <app-non-productive-hours></app-non-productive-hours>
+        <app-non-productive-hours [dropdwonFilterData]="commonFilterData"></app-non-productive-hours>
       </ng-container>
     </div>
   </div>

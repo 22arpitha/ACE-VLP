@@ -1,19 +1,21 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonServiceService } from '../../../../service/common-service.service';
 import { buildPaginationQuery } from '../../../../shared/pagination.util';
 import { tableColumns } from './qualitative-productivity-config';
-import { environment } from 'src/environments/environment';
-import { downloadFileFromUrl } from 'src/app/shared/file-download.util';
-import { ApiserviceService } from 'src/app/service/apiservice.service';
+import { environment } from '../../../../../environments/environment';
+import { downloadFileFromUrl } from '../../../../shared/file-download.util';
+import { ApiserviceService } from '../../../../service/apiservice.service';
+
 @Component({
   selector: 'app-qualitative-productivity',
   templateUrl: './qualitative-productivity.component.html',
   styleUrls: ['./qualitative-productivity.component.scss']
 })
-export class QualitativeProductivityComponent implements OnInit {
+export class QualitativeProductivityComponent implements OnInit,OnChanges {
 
 BreadCrumbsTitle: any = 'Qualitative Productivity';
+@Input() dropdwonFilterData:any;
       term: string = '';
           tableSize: number = 5;
           page: any = 1;
@@ -37,7 +39,11 @@ BreadCrumbsTitle: any = 'Qualitative Productivity';
            this.user_id = sessionStorage.getItem('user_id') || '' ;
            this.user_role_name = sessionStorage.getItem('user_role_name') || '';
            }
-
+          ngOnChanges(changes: SimpleChanges): void {
+            if(changes['dropdwonFilterData']){
+              this.dropdwonFilterData=changes['dropdwonFilterData']?.currentValue;
+            }
+          }
           ngOnInit(): void {
             this.common_service.setTitle(this.BreadCrumbsTitle)
             this.getTableData()
