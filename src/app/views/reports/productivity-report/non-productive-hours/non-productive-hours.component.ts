@@ -26,32 +26,7 @@ export class NonProductiveHoursComponent implements OnInit {
        tableSize: 10,
        pagination: true,
      };
-     data = [
-       {
-         sl:1,
-         client_name:'Abin Joy',
-         job_number:'10',
-         job_name:'Development',
-         task:'Testing',
-         actual_time:'20'
-       },
-       {
-        sl:2,
-        client_name:'Abin Joy',
-        job_number:'10',
-        job_name:'Development',
-        task:'Testing',
-        actual_time:'20'
-      },
-      {
-        sl:3,
-        client_name:'Abin Joy',
-        job_number:'10',
-        job_name:'Development',
-        task:'Testing',
-        actual_time:'20'
-      },
-     ]
+
   user_id: string;
   user_role_name: string;
      constructor(
@@ -121,9 +96,10 @@ export class NonProductiveHoursComponent implements OnInit {
      const query = buildPaginationQuery({
        page: this.page,
        pageSize: this.tableSize,
+       searchTerm:this.term
      });
 
-     const url = `${environment.live_url}/${environment.timesheet_reports}/${query}&file-type=${fileType}&timsheet-type=detailed`;
+     const url = `${environment.live_url}/${environment.productivity_reports}/${query}&file-type=${fileType}&productivity-type=non-productive-hour`;
      downloadFileFromUrl({
        url,
        fileName: 'non_productive_hours',
