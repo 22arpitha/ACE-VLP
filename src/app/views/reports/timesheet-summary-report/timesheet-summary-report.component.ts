@@ -42,7 +42,11 @@ export class TimesheetSummaryReportComponent implements OnInit {
     ngOnInit(): void {
       this.common_service.setTitle(this.BreadCrumbsTitle);
       this.tableConfig = tableColumns;
-      this.getTableData()
+      this.getTableData({
+        page: 1,
+        pageSize: this.tableSize,
+        searchTerm: this.term
+      });
     }
 
     // Called when user changes page number from the dynamic table
@@ -96,7 +100,11 @@ export class TimesheetSummaryReportComponent implements OnInit {
         this.filterByDate(event.detail);
         break
       default:
-        console.warn('Unhandled action type:', event.actionType);
+        this.getTableData({
+          page: 1,
+          pageSize: this.tableSize,
+          searchTerm: this.term
+        });
     }
   }
   exportCsvOrPdf(fileType) {

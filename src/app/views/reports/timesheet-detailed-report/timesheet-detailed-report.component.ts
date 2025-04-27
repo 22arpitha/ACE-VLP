@@ -89,7 +89,11 @@ handleAction(event: { actionType: string; detail: any }) {
       this.exportCsvOrPdf(event.detail);
       break;
     default:
-      console.warn('Unhandled action type:', event.actionType);
+      this.getTableData({
+        page: 1,
+        pageSize: this.tableSize,
+        searchTerm: this.term
+      });
   }
 }
 exportCsvOrPdf(fileType) {
