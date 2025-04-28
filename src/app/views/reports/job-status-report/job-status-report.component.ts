@@ -205,24 +205,6 @@ export class JobStatusReportComponent implements OnInit {
        totalRecords: res.total_no_of_record
       };
     }
-    // else{
-    //   this.tableConfig = {
-    //     columns: [],
-    //     data: [],
-    //     searchTerm: this.term,
-    //     actions: [],
-    //     accessConfig: [],
-    //     tableSize: 5,
-    //     pagination: true,
-    //     headerTabs:true,
-    //     searchable: true,
-    //     showIncludeAllJobs:true,
-    //     includeAllJobsEnable:false,
-    //     includeAllJobsValue:false,
-    //     selectedClientId:null,
-    //     sendEmail:true,
-    //   };
-    // }
    },(error:any)=>{  this.api.showError(error?.error?.detail);
    });
  }

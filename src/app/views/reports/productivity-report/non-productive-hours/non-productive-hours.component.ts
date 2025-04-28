@@ -140,7 +140,7 @@ export class NonProductiveHoursComponent implements OnInit,OnChanges {
       }else{
        finalQuery += this.user_role_name ==='Admin' ? '':`&employee-id=${this.user_id}`;
       }
-     this.api.getData(`${environment.live_url}/${environment.jobs}/${finalQuery}&client-name=Vedalekha professionals`).subscribe((res: any) => {
+     this.api.getData(`${environment.live_url}/${environment.timesheet}/${finalQuery}&client-name=Vedalekha professionals`).subscribe((res: any) => {
        const formattedData = res.results.map((item: any, i: number) => ({
          sl: (page - 1) * pageSize + i + 1,
          ...item
