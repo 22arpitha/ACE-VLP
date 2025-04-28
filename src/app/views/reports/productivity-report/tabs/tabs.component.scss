@@ -41,3 +41,6 @@ button:hover {
   overflow-y: auto;
 }
 
+::ng-deep .common-filters .mat-form-field-appearance-outline .mat-form-field-outline {
+  height: 80% !important;
+}
