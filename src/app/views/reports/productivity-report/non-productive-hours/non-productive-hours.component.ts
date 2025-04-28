@@ -26,32 +26,7 @@ export class NonProductiveHoursComponent implements OnInit,OnChanges {
        tableSize: 10,
        pagination: true,
      };
-     data = [
-       {
-         sl:1,
-         client_name:'Abin Joy',
-         job_number:'10',
-         job_name:'Development',
-         task:'Testing',
-         actual_time:'20'
-       },
-       {
-        sl:2,
-        client_name:'Abin Joy',
-        job_number:'10',
-        job_name:'Development',
-        task:'Testing',
-        actual_time:'20'
-      },
-      {
-        sl:3,
-        client_name:'Abin Joy',
-        job_number:'10',
-        job_name:'Development',
-        task:'Testing',
-        actual_time:'20'
-      },
-     ]
+
   user_id: string;
   user_role_name: string;
      constructor(
@@ -65,11 +40,20 @@ export class NonProductiveHoursComponent implements OnInit,OnChanges {
         if(changes['dropdwonFilterData']){
           this.dropdwonFilterData=changes['dropdwonFilterData']?.currentValue;
         }
+        this.getTableData({
+          page: this.page,
+          pageSize: this.tableSize,
+          searchTerm: this.term
+        })
       }
 
      ngOnInit(): void {
        this.common_service.setTitle(this.BreadCrumbsTitle)
-       this.getTableData()
+       this.getTableData({
+        page: this.page,
+        pageSize: this.tableSize,
+        searchTerm: this.term
+      });
      }
 
      // Called when user changes page number from the dynamic table
@@ -119,16 +103,21 @@ export class NonProductiveHoursComponent implements OnInit,OnChanges {
          this.exportCsvOrPdf(event.detail);
          break;
        default:
-         console.warn('Unhandled action type:', event.actionType);
+        this.getTableData({
+          page: 1,
+          pageSize: this.tableSize,
+          searchTerm: this.term
+        });
      }
    }
    exportCsvOrPdf(fileType) {
      const query = buildPaginationQuery({
        page: this.page,
        pageSize: this.tableSize,
+       searchTerm:this.term
      });
 
-     const url = `${environment.live_url}/${environment.timesheet_reports}/${query}&file-type=${fileType}&timsheet-type=detailed`;
+     const url = `${environment.live_url}/${environment.productivity_reports}/${query}&file-type=${fileType}&productivity-type=non-productive-hour`;
      downloadFileFromUrl({
        url,
        fileName: 'non_productive_hours',
@@ -143,10 +132,15 @@ export class NonProductiveHoursComponent implements OnInit,OnChanges {
      const searchTerm = params?.searchTerm ?? this.term;
 
      let query = buildPaginationQuery({ page, pageSize, searchTerm });
-     if(this.user_role_name !== 'Admin'){
-      query +=`&employee-id=${this.user_id}`
+     let finalQuery = query;
+      if(this.dropdwonFilterData){
+       finalQuery += this.dropdwonFilterData.employee_id ? `&employee-id=${this.dropdwonFilterData.employee_id}`:this.user_role_name ==='Admin' ? '':`&employee-id=${this.user_id}`;
+       finalQuery += this.dropdwonFilterData.periodicity ? `&periodicity=${this.dropdwonFilterData.periodicity}`:'';
+       finalQuery += this.dropdwonFilterData.period ? `&period=${this.dropdwonFilterData.period}`:'';
+      }else{
+       finalQuery += this.user_role_name ==='Admin' ? '':`&employee-id=${this.user_id}`;
       }
-     this.api.getData(`${environment.live_url}/${environment.jobs}/${query}&client-name=Vedalekha professionals`).subscribe((res: any) => {
+     this.api.getData(`${environment.live_url}/${environment.jobs}/${finalQuery}&client-name=Vedalekha professionals`).subscribe((res: any) => {
        const formattedData = res.results.map((item: any, i: number) => ({
          sl: (page - 1) * pageSize + i + 1,
          ...item
