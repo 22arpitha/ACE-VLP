@@ -123,7 +123,7 @@ exportCsvOrPdf(fileType) {
            const pageSize = params?.pageSize ?? this.tableSize;
            const searchTerm = params?.searchTerm ?? this.term;
            const query = buildPaginationQuery({ page, pageSize, searchTerm });
-           finalQuery=query;
+           finalQuery=query+ `&productivity-type=productive-hour`;
            if(this.dropdwonFilterData){
             finalQuery+= this.dropdwonFilterData.employee_id ? `&employee-id=${this.dropdwonFilterData.employee_id}`:this.userRole ==='Admin' ? '':`&employee-id=${this.user_id}`;
             finalQuery+= this.dropdwonFilterData.periodicity ? `&periodicity=${this.dropdwonFilterData.periodicity}`:'';
@@ -136,9 +136,7 @@ exportCsvOrPdf(fileType) {
               const formattedData = res.results.map((item: any, i: number) => ({
                 sl: (page - 1) * pageSize + i + 1,
                 ...item,
-                is_primary:item?.employees?.find((emp: any) => emp?.is_primary === true)?.employee_name || '',
               }));
-              let tableFooterContent = {'total_estimated_time':res?.total_estimated_time,'total_actual_time':res?.total_actual_time,'avg_quantitative_productivity':res?.avg_quantitative_productivity}
               this.tableConfig = {
                 columns: tableColumns.map(col => ({
                   ...col,
@@ -184,6 +182,5 @@ exportCsvOrPdf(fileType) {
       ngOnDestroy(): void {
         this.tableConfig=null
       }
-
 
 }

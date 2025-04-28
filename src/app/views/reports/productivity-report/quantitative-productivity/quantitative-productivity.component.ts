@@ -139,7 +139,7 @@ export class QuantitativeProductivityComponent implements OnInit,OnChanges {
            const pageSize = params?.pageSize ?? this.tableSize;
            const searchTerm = params?.searchTerm ?? this.term;
            const query = buildPaginationQuery({ page, pageSize, searchTerm });
-           finalQuery=query;
+           finalQuery=query+ `&productivity-type=quantitative`;
            if(this.dropdwonFilterData){
             finalQuery+= this.dropdwonFilterData.employee_id ? `&employee-id=${this.dropdwonFilterData.employee_id}`:this.userRole ==='Admin' ? '':`&employee-id=${this.user_id}`;
             finalQuery+= this.dropdwonFilterData.periodicity ? `&periodicity=${this.dropdwonFilterData.periodicity}`:'';
