@@ -247,7 +247,7 @@
     <div class="row m-0 text-end pt-2" *ngIf="config?.averageProductivity">
       <div class="col-9"></div>
       <div class="col-3">
-        <span class="fw-bold">Average Productivity : {{ 'NA' }}</span>
+        <span class="fw-bold">Average Productivity : {{ config?.tableFooterContent?.avg_qualitative_productivity || 'NA'}}</span>
       </div>
     </div>
   </section>

@@ -28,6 +28,7 @@ BreadCrumbsTitle: any = 'Qualitative Productivity';
             accessConfig: [],
             tableSize: 10,
             pagination: true,
+            averageProductivity:true,
           };
 
        user_id: string;
@@ -109,10 +110,10 @@ BreadCrumbsTitle: any = 'Qualitative Productivity';
             pageSize: this.tableSize,
           });
 
-          const url = `${environment.live_url}/${environment.timesheet_reports}/${query}&file-type=${fileType}&timsheet-type=detailed`;
+          const url = `${environment.live_url}/${environment.timesheet_reports}/${query}&file-type=${fileType}&productivity-type=qualitative`;
           downloadFileFromUrl({
             url,
-            fileName: 'non_productive_hours',
+            fileName: 'qualitative_report',
             fileType
           });
         }
@@ -124,6 +125,7 @@ BreadCrumbsTitle: any = 'Qualitative Productivity';
           const searchTerm = params?.searchTerm ?? this.term;
 
           let query = buildPaginationQuery({ page, pageSize, searchTerm });
+          query+=`&productivity-type=qualitative`;
           if(this.user_role_name !== 'Admin'){
            query +=`&employee-id=${this.user_id}`
            }
@@ -132,12 +134,15 @@ BreadCrumbsTitle: any = 'Qualitative Productivity';
               sl: (page - 1) * pageSize + i + 1,
               ...item
             }));
+            let tableFooterContent = {'avg_qualitative_productivity':res?.avg_qualitative_productivity}
             this.tableConfig = {
              columns: tableColumns,
              data: formattedData,
              searchTerm: this.term,
              actions: [],
              accessConfig: [],
+             averageProductivity:true,
+             tableFooterContent:tableFooterContent,
              tableSize: pageSize,
              pagination: true,
              currentPage:page,
