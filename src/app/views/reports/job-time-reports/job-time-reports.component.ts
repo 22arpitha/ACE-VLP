@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { tableConfig } from '../job-time-reports/job-time-reprots-config'
+import { tableColumns } from '../job-time-reports/job-time-reprots-config'
 import { CommonServiceService } from '../../../service/common-service.service';
 import { ApiserviceService } from '../../../service/apiservice.service';
 import { downloadFileFromUrl } from '../../../shared/file-download.util';
@@ -48,19 +48,28 @@ tableSize: number = 5;
     this.user_id = sessionStorage.getItem('user_id');
     this.userRole = sessionStorage.getItem('user_role_name');
     }
- 
+
    ngOnInit(): void {
     this.getJobStatusList()
      this.common_service.setTitle(this.BreadCrumbsTitle)
-     this.tableConfig = tableConfig;
+     this.tableConfig = tableColumns;
+     this.getTableData({
+      page: this.page,
+      pageSize: this.tableSize,
+      searchTerm: this.term
+    });
    }
- 
+
    getJobStatusList() {
     this.api.getData(`${environment.live_url}/${environment.settings_job_status}/`).subscribe(
       (resData: any) => {
         if(resData){
           this.allJobStatus = resData;
-          this.getTableData();
+          this.getTableData({
+            page: this.page,
+            pageSize: this.tableSize,
+            searchTerm: this.term
+          });
         }
       },
       (error:any)=>{
@@ -73,14 +82,14 @@ tableSize: number = 5;
  onTableDataChange(event: any) {
    const page = event;
    this.page = page;
- 
+
    this.getTableData({
      page: page,
      pageSize: this.tableSize,
      searchTerm: this.term
    });
  }
- 
+
  // Called when user changes page size from the dynamic table
  onTableSizeChange(event: any): void {
    if(event){
@@ -93,9 +102,9 @@ tableSize: number = 5;
        searchTerm: this.term
      });
    }
- 
+
  }
- 
+
  // Called from <app-dynamic-table> via @Output actionEvent
  handleAction(event: { actionType: string; detail: any, }) {
    switch (event.actionType) {
@@ -152,7 +161,7 @@ tableSize: number = 5;
    let query = buildPaginationQuery({
      page: this.page,
      pageSize: this.tableSize,
-   }); 
+   });
    query += this.client_id ? `&client=${this.client_id}` : '';
    const url = `${environment.live_url}/${environment.job_reports}/${query}&job-status=[${this.statusList}]&type=job-time-report&file-type=${fileType}`;
    downloadFileFromUrl({
@@ -161,7 +170,7 @@ tableSize: number = 5;
      fileType
    });
  }
- 
+
  // Fetch table data from API with given params
  getTableData(params?: { page?: number; pageSize?: number; searchTerm?: string }) {
   let finalQuery;
@@ -182,9 +191,9 @@ tableSize: number = 5;
       }));
       console.log('B this.tableConfig',this.tableConfig);
       this.tableConfig = {
-        columns: tableConfig.map(col => ({
+        columns: tableColumns.map(col => ({
           ...col,
-          filterOptions: col.filterable ? getUniqueValues(formattedData, col.key) : []
+          filterOptions: col.filterable ? getUniqueValues(formattedData, col.key) : tableColumns
         })),
        data: formattedData,
        searchTerm: this.term,
@@ -202,24 +211,25 @@ tableSize: number = 5;
        currentPage:page,
        totalRecords: res.total_no_of_record
       };
-    }else{
-      this.tableConfig = {
-        columns: [],
-        data: [],
-        searchTerm: this.term,
-        actions: [],
-        accessConfig: [],
-        tableSize: 5,
-        pagination: true,
-        headerTabs:true,
-        searchable: true,
-        showIncludeAllJobs:true,
-        includeAllJobsEnable:false,
-        includeAllJobsValue:false,
-        selectedClientId:null,
-        sendEmail:true,
-      };
     }
+    // else{
+    //   this.tableConfig = {
+    //     // columns: [],
+    //     // data: [],
+    //     searchTerm: this.term,
+    //     actions: [],
+    //     accessConfig: [],
+    //     tableSize: 5,
+    //     pagination: true,
+    //     headerTabs:true,
+    //     searchable: true,
+    //     showIncludeAllJobs:true,
+    //     includeAllJobsEnable:false,
+    //     includeAllJobsValue:false,
+    //     selectedClientId:null,
+    //     sendEmail:true,
+    //   };
+    // }
    },(error:any)=>{  this.api.showError(error?.error?.detail);
    });
  }
@@ -242,24 +252,24 @@ jobStatusList(status:any){
       : jobstatus?.status_name === "Cancelled" || jobstatus?.status_name === "Completed")
     .map((status: any) => status?.status_name);
 }
-// Send Email Action Button event  
+// Send Email Action Button event
 public sendEamils(){
-   let finalQuery = `?send_mail=True&file-type=pdf&report-type=job-time-report`;  
-   finalQuery += this.client_id ? `&client=${this.client_id}` : ''; 
+   let finalQuery = `?send_mail=True&file-type=pdf&report-type=job-time-report`;
+   finalQuery += this.client_id ? `&client=${this.client_id}` : '';
    this.jobStatusList(this.tabStatus);
    finalQuery += `&job-status=[${this.statusList}]`;
-    // Yet to integrate 
-      if(this.client_id){  
-              this.api.getData(`${environment.live_url}/${environment.jobs}/${finalQuery}`).subscribe((respData: any) => {    
-                  if (respData) {  
-              this.api.showSuccess(respData['message']);     
+    // Yet to integrate
+      if(this.client_id){
+              this.api.getData(`${environment.live_url}/${environment.jobs}/${finalQuery}`).subscribe((respData: any) => {
+                  if (respData) {
+              this.api.showSuccess(respData['message']);
                }
                 },
                 (error:any)=>{
                   this.api.showError(error?.error?.detail);
 
-} 
-) 
+}
+)
 }
 }
 

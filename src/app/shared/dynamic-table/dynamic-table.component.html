@@ -40,7 +40,7 @@
           <mat-date-range-picker #picker></mat-date-range-picker>
         </mat-form-field>
       </div>
-  
+
       <!-- Spacer -->
       <div class="col"></div>
         <!-- Tab design -->
@@ -49,8 +49,9 @@
           <button mat-raised-button class="mat-btn-s tab-button-content" [ngClass]="{'isActive': isHistory}" type="button" type="button" (click)="getHistoryDatasetList()">History</button>
         </div>
   <!-- Download Menu -->
-  
-      <div class="col-auto col-sm-auto col-md-auto col-lg-auto px-0 mx-0 my-1"  [ngClass]="config?.hideDownload ? 'p-r' : 'mt-2'">
+
+      <div class="col-auto col-sm-auto col-md-auto col-lg-auto px-0 mx-0 my-1"  [ngClass]="config?.hideDownload ? 'p-r' : 'mt-2'"
+      *ngIf="paginatedData?.length > 0">
        <div [ngClass]="config?.hideDownload ? 'set-position' : 'my-1'">
         <button
           mat-icon-button
@@ -251,7 +252,7 @@
     </div>
   </section>
   <!-- Pagination -->
-  <div class="pagination-container pt-1">
+  <div class="pagination-container pt-1" *ngIf="paginatedData?.length > 0">
     <!-- Pagination Controls (Center-Aligned) -->
     <pagination-controls
       previousLabel="Prev"
@@ -259,7 +260,7 @@
       (pageChange)="onTableDataChange($event)"
     >
     </pagination-controls>
-  
+
     <!-- Items Per Page Selector (Right-Aligned) -->
     <div class="items-per-page-container px-1">
       <div>Items per page</div>

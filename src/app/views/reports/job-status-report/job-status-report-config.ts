@@ -1,4 +1,4 @@
-export const tableConfig: any  = [
+export const tableColumns  = [
   { label: 'Sl No', key: 'sl', sortable: false },
   {
     label: 'Client',

@@ -96,7 +96,11 @@ BreadCrumbsTitle: any = 'Qualitative Productivity';
               this.exportCsvOrPdf(event.detail);
               break;
             default:
-              console.warn('Unhandled action type:', event.actionType);
+              this.getTableData({
+                page: this.page,
+                pageSize: this.tableSize,
+                searchTerm: this.term
+              });
           }
         }
         exportCsvOrPdf(fileType) {

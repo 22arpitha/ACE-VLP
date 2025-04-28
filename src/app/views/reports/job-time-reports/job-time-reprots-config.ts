@@ -1,6 +1,6 @@
 
 // Column Definitions
-export const tableConfig: any  = [
+export const tableColumns  = [
   { label: 'Sl No', key: 'sl', sortable: true },
   {
     label: 'Client Name',
@@ -45,7 +45,7 @@ export const tableConfig: any  = [
   { label: 'Estimated Time (hrs)', key: 'estimated_time', sortable: true },
   { label: 'Actual Time (hrs)', key: 'actual_time', sortable: true },
   { label: 'Remaining/(Excess) Time (hrs)', key: 'remaining_time', sortable: true },
-  
+
 ]
 
 
