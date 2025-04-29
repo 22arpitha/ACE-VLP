@@ -132,40 +132,28 @@ exportCsvOrPdf(fileType) {
             finalQuery += this.userRole ==='Admin' ? '':`&employee-id=${this.user_id}`;
            }
            this.api.getData(`${environment.live_url}/${environment.jobs}/${finalQuery}`).subscribe((res: any) => {
-            if(res.results && res.results?.length>=1){
-              const formattedData = res.results.map((item: any, i: number) => ({
-                sl: (page - 1) * pageSize + i + 1,
-                ...item,
-              }));
-              this.tableConfig = {
-                columns: tableColumns.map(col => ({
-                  ...col,
-                })),
-               data: formattedData,
-               searchTerm: this.term,
-               actions: [],
-               accessConfig: [],
-               tableSize: pageSize,
-               pagination: true,
-               searchable: true,
-               currentPage:page,
-               totalRecords: res.total_no_of_record,
-               hideDownload:true
-              };
-            }else{
-              this.tableConfig = {
-                columns: [],
-                data: [],
-                searchTerm: this.term,
-                actions: [],
-                accessConfig: [],
-                tableSize: 5,
-                searchable:true,
-                pagination: false,
-                estimationDetails:false,
-                hideDownload:false,
-              };
-            }
+            const formattedData = res.results.map((item: any, i: number) => ({
+              sl: (page - 1) * pageSize + i + 1,
+              ...item,
+            }));
+            let tableFooterContent = {'total_estimated_time':res?.total_estimated_time,'total_actual_time':res?.total_actual_time,'total_productive_hour':res?.total_productive_hour}
+            this.tableConfig = {
+              columns: tableColumns.map(col => ({
+                ...col,
+              })),
+             data: formattedData,
+             searchTerm: this.term,
+             actions: [],
+             accessConfig: [],
+             tableSize: pageSize,
+             pagination: true,
+             searchable: true,
+             average_productive_hour:true,
+             currentPage:page,
+             totalRecords: res.total_no_of_record,
+             hideDownload:true,
+             tableFooterContent:tableFooterContent,
+            };
            },(error:any)=>{  this.api.showError(error?.error?.detail);
            });
          }

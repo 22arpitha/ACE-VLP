@@ -220,8 +220,23 @@
             </ng-container>
           </td>
         </tr>
-
-
+      <tr *ngIf="config?.estimationDetails" class="bg-transparent">
+          <td colspan="6" class="bg-transparent"></td>
+          <td class="bg-transparent"><b>Estimated (hrs) : {{ config?.tableFooterContent?.total_estimated_time || 'NA' }}</b></td>
+          <td class="bg-transparent"><b>Actual Time (hrs) : {{ config?.tableFooterContent?.total_actual_time || 'NA'}}</b></td>
+          <td class="bg-transparent"><b>Average Productivity (hrs): {{ config?.tableFooterContent?.avg_quantitative_productivity || 'NA'}}</b></td>
+      </tr>
+      <tr *ngIf="config?.averageProductivity" class="bg-transparent" >
+        <td colspan="7" class="bg-transparent"></td>
+        <td  class="bg-transparent"><b>Average Productivity: {{ config?.tableFooterContent?.avg_qualitative_productivity || 'NA'}}</b></td>
+      </tr>
+      <tr *ngIf="config?.average_productive_hour"  class="bg-transparent">
+        <td colspan="6" class="bg-transparent"></td>
+        <td class="bg-transparent"><b>Total Estimated (hrs) : {{ config?.tableFooterContent?.total_estimated_time || 'NA' }}</b></td>
+        <td class="bg-transparent"></td>
+        <td class="bg-transparent"><b>Total Productivity (hrs) : {{ config?.tableFooterContent?.total_productive_hour || 'NA'}}</b></td>
+        <td class="bg-transparent"><b>Total Actual Time (hrs): {{ config?.tableFooterContent?.total_actual_time || 'NA'}}</b></td>
+      </tr>
       </tbody>
     </table>
 
@@ -230,26 +245,6 @@
     </div>
   </div>
   </div>
-    <div class="row m-0 text-end pt-2" *ngIf="config?.estimationDetails">
-      <div class="col-3"></div>
-      <div class="col-3">
-        <span class="fw-bold">Estimated (hrs) : {{ config?.tableFooterContent?.total_estimated_time || 'NA' }}</span>
-      </div>
-      <div class="col-3">
-        <span class="fw-bold">Actual Time (hrs) : {{ config?.tableFooterContent?.total_actual_time || 'NA'}}</span>
-      </div>
-      <div class="col-3">
-        <span class="fw-bold">Average Productivity : {{ config?.tableFooterContent?.avg_quantitative_productivity || 'NA'}}% </span>
-      </div>
-
-    </div>
-
-    <div class="row m-0 text-end pt-2" *ngIf="config?.averageProductivity">
-      <div class="col-9"></div>
-      <div class="col-3">
-        <span class="fw-bold">Average Productivity : {{ config?.tableFooterContent?.avg_qualitative_productivity || 'NA'}}</span>
-      </div>
-    </div>
   </section>
   <!-- Pagination -->
   <div class="pagination-container pt-1" *ngIf="paginatedData?.length > 0">
