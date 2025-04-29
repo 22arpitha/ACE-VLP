@@ -29,29 +29,6 @@ export class WorkCultureAndWorkEthicsComponent implements OnInit,OnChanges {
         tableSize: 5,
         pagination: true,
       };
-      data = [
-        {
-          sl:1,
-          employee_name:'John Doe',
-          month:'January',
-          points:'5',
-          upload_assessment_file:''
-        },
-        {
-          sl:1,
-          employee_name:'John Doe2',
-          month:'January',
-          points:'5',
-          upload_assessment_file:''
-        },
-        {
-          sl:1,
-          employee_name:'John Doe3',
-          month:'January',
-          points:'5',
-          upload_assessment_file:''
-        }
-      ]
       constructor(
         private common_service:CommonServiceService,
         private api:ApiserviceService
@@ -59,12 +36,71 @@ export class WorkCultureAndWorkEthicsComponent implements OnInit,OnChanges {
       ngOnChanges(changes: SimpleChanges): void {
         if(changes['dropdwonFilterData']){
           this.dropdwonFilterData=changes['dropdwonFilterData']?.currentValue;
+          console.log('selected values',this.dropdwonFilterData)
+          this.defaultData()
         }
       }
 
       ngOnInit(): void {
         this.common_service.setTitle(this.BreadCrumbsTitle)
-        this.getTableData()
+        // this.getTableData();
+        if(this.dropdwonFilterData?.period){
+          this.defaultData()
+        }
+      }
+
+      workCultureData:any =[]
+      defaultData(){
+        // let finalQuery = this.dropdwonFilterData.period
+        this.api.getData(`${environment.live_url}/${environment.settings_period}/${this.dropdwonFilterData.period}/`).subscribe(
+          (res:any)=>{
+            console.log(res,'period')
+           this.workCultureData =   this.generateMonthlyData('rrrr',res)
+           console.log(this.workCultureData)
+           const formattedData = this.workCultureData.map((item: any, i: number) => ({
+            sl: (this.page - 1) * this.tableSize + i + 1,
+            ...item
+          }));
+           this.tableConfig = {
+            columns: tableColumns,
+            data: formattedData,
+            searchTerm: this.term,
+            actions: [],
+            accessConfig: [],
+            // tableSize: pageSize,
+            pagination: true,
+            // currentPage:page,
+            // totalRecords: res.total_no_of_record
+            totalRecords:this.workCultureData.length,
+            hideDownload:true
+          };
+          },
+          (error)=>{
+            console.log(error)
+          }
+        )
+       }
+
+       generateMonthlyData(employeeName: string, keyword: any): any[] {
+        let monthsOrPeriods: string[] = [];
+        
+        if (keyword?.periodicty_name === 'Monthly') {
+          if (keyword?.period_name) {
+            monthsOrPeriods = [keyword.period_name];
+          }
+        } else {
+          monthsOrPeriods = keyword?.month_data || [];
+        }
+      
+        // Create a new independent array
+        const result = monthsOrPeriods.map(monthOrPeriod => ({
+          employee_name: employeeName,
+          month: monthOrPeriod,
+          points: '',
+          file_data: ''
+        }));
+      
+        return result;
       }
 
       // Called when user changes page number from the dynamic table
@@ -147,7 +183,7 @@ export class WorkCultureAndWorkEthicsComponent implements OnInit,OnChanges {
       });
       this.tableConfig = {
         columns: tableColumns,
-        data: this.data,
+        // data: this.data,
         searchTerm: this.term,
         actions: [],
         accessConfig: [],
