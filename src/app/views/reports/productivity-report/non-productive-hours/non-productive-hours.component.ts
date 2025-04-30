@@ -37,14 +37,21 @@ export class NonProductiveHoursComponent implements OnInit,OnChanges {
       this.user_role_name = sessionStorage.getItem('user_role_name') || '';
       }
       ngOnChanges(changes: SimpleChanges): void {
-        if(changes['dropdwonFilterData']){
-          this.dropdwonFilterData=changes['dropdwonFilterData']?.currentValue;
+        if (changes['dropdwonFilterData']) {
+          const prev = changes['dropdwonFilterData'].previousValue || {};
+          const current = changes['dropdwonFilterData'].currentValue;
+          const employeeIdChanged = prev.employee_id !== current.employee_id;
+          const periodicityChanged = prev.periodicity !== current.periodicity;
+          const periodChanged = prev.period !== current.period;
+          if (employeeIdChanged || periodicityChanged || periodChanged) {
+            this.dropdwonFilterData = current;
+            this.getTableData({
+              page: this.page,
+              pageSize: this.tableSize,
+              searchTerm: this.term
+            });
+          }
         }
-        this.getTableData({
-          page: this.page,
-          pageSize: this.tableSize,
-          searchTerm: this.term
-        })
       }
 
      ngOnInit(): void {

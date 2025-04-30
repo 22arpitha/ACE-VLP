@@ -184,6 +184,8 @@
           <td *ngFor="let col of config.columns">
             <div *ngIf="!col.navigation">
               {{ col.type === 'date' ? (item[col.key] | date: 'dd-MM-yyyy') : item[col.key] || 'NA' }}
+              <!--col.input  -->
+               <!--col.file -->
             </div>
             <ng-container *ngIf="col.navigation">
               <a
@@ -247,7 +249,7 @@
   </div>
   </section>
   <!-- Pagination -->
-  <div class="pagination-container pt-1" *ngIf="paginatedData?.length > 0">
+  <div class="pagination-container pt-1" *ngIf="paginatedData?.length > 0 && config?.pagination">
     <!-- Pagination Controls (Center-Aligned) -->
     <pagination-controls
       previousLabel="Prev"

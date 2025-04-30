@@ -23,6 +23,7 @@ export class EmployeeListComponent implements OnInit,OnChanges {
     if(changes['resetFilterField'] && changes['resetFilterField'].currentValue !== undefined){
       this.resetFilterField = changes['resetFilterField'].currentValue
         this.selectedEmployeeVal=null;
+        this.selectEmployee.emit(null);
     }
   }
 
@@ -39,7 +40,7 @@ export class EmployeeListComponent implements OnInit,OnChanges {
     }
     this.allEmployeeList =[];
     this.apiService.getData(`${environment.live_url}/${environment.employee}/${queryparams}`).subscribe((respData: any) => {
-  this.allEmployeeList = respData;
+     this.allEmployeeList = respData;
     },(error => {
       this.apiService.showError(error?.error?.detail)
     }));

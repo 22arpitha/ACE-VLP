@@ -4,10 +4,10 @@
     <app-employee-list (selectEmployee)="selectedEmployee($event)" [resetFilterField]="resetFilter"></app-employee-list>
   </div>
   <div class="col-sm-12 col-md-4 col-lg-3">
-    <app-periodicity (selectPeriodicity)="selectedPeriodicity($event)" [resetFilterField]="resetFilter"></app-periodicity>
+    <app-periodicity (selectPeriodicity)="selectedPeriodicity($event)" [defaultSelection]="ondefaultSelection" [resetFilterField]="resetFilter"></app-periodicity>
   </div>
   <div class="col-sm-12 col-md-4 col-lg-3">
-    <app-period (selectPeriod)="selectedPeriod($event)" [periodicity_id]="periodicityId" [resetFilterField]="resetFilter"></app-period>
+    <app-period (selectPeriod)="selectedPeriod($event)" [periodicity_id]="periodicityId" [defaultSelection]="ondefaultSelection" [resetFilterField]="resetFilter"></app-period>
   </div>
   <div class="col-sm-12 col-md-4 col-lg-3 d-flex justify-content-evenly">
     <button mat-raised-button class="proceedbtn mat-btn-s mr-2" type="button" (click)="applySearch()">Search</button>
