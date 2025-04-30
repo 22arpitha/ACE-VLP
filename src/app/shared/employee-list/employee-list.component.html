@@ -1,6 +1,7 @@
 <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
   <mat-label>Select Employee</mat-label>
-  <mat-select [(ngModel)]="selectedEmployeeVal" [ngModelOptions]="{standalone: true}" [disableOptionCentering]="true" autocomplete="off" placeholder="Select" panelClass="custom-select-panel" (selectionChange)="onSelectedEmployee($event)">
+  <mat-select [(ngModel)]="selectedEmployeeVal" [ngModelOptions]="{standalone: true}" [disableOptionCentering]="true" [disabled]="user_role_name==='Accountant'? true : false"
+    autocomplete="off" placeholder="Select" panelClass="custom-select-panel" (selectionChange)="onSelectedEmployee($event)">
     
     <!-- Search input field inside the panel -->
     <div class="mat-select-search-wrapper d-flex">

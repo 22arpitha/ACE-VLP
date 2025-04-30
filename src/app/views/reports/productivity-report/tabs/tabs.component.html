@@ -1,6 +1,6 @@
 
 <div class="row ms-2 d-flex align-items-center my-3 common-filters">
-  <div class="col-sm-12 col-md-4 col-lg-3 text-end" *ngIf="userRole != 'Accountant'">
+  <div class="col-sm-12 col-md-4 col-lg-3 text-end">
     <app-employee-list (selectEmployee)="selectedEmployee($event)" [resetFilterField]="resetFilter"></app-employee-list>
   </div>
   <div class="col-sm-12 col-md-4 col-lg-3">
