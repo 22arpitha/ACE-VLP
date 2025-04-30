@@ -32,8 +32,7 @@ export class TimesheetSummaryReportComponent implements OnInit {
   fromDate: string;
     constructor(
       private common_service:CommonServiceService,
-      private api:ApiserviceService,
-      private datepipe:DatePipe
+      private api:ApiserviceService
     ) {
       this.user_id = sessionStorage.getItem('user_id')
       this.user_role_name = sessionStorage.getItem('user_role_name') || ''
@@ -165,12 +164,10 @@ export class TimesheetSummaryReportComponent implements OnInit {
         return row;
       });
 
-      console.log('formattedData', formattedData);
-
       this.tableConfig = {
         columns: tableColumns.map(col => ({
           ...col,
-          filterOptions: col.filterable ? getUniqueValues(formattedData, col.key) : []
+          filterOptions: col.filterable ? getUniqueValues(formattedData, col.key) : tableColumns
         })),
         data: formattedData,
         searchTerm: this.term,
