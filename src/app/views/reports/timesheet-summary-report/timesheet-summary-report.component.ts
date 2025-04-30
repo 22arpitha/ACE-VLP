@@ -133,29 +133,45 @@ export class TimesheetSummaryReportComponent implements OnInit {
     });
   }
   // Fetch table data from API with given params
-  getTableData(params?: { page?: number; pageSize?: number; searchTerm?: string,fromdate?:string }) {
+  getTableData(params?: { page?: number; pageSize?: number; searchTerm?: string, fromdate?: string }) {
     const page = params?.page ?? this.page;
     const pageSize = params?.pageSize ?? this.tableSize;
     const searchTerm = params?.searchTerm ?? this.term;
 
     let query = buildPaginationQuery({ page, pageSize, searchTerm });
 
-    if(this.user_role_name !== 'Admin'){
-    query +=`&employee-id=${this.user_id}`
-    }if(params?.fromdate){
-      query += `&from-date=${params?.fromdate}`
+    if (this.user_role_name !== 'Admin') {
+      query += `&employee-id=${this.user_id}`;
     }
+    if (params?.fromdate) {
+      query += `&from-date=${params.fromdate}`;
+    }
+
     this.api.getData(`${environment.live_url}/${environment.timesheet_summary}/${query}`).subscribe((res: any) => {
-      const formattedData = res.results[0].timesheet_data.map((item: any, i: number) => ({
-        sl: (page - 1) * pageSize + i + 1,
-        ...item
-      }));
+      const employees = res.results;
+
+      const formattedData = employees.map((employee: any, index: number) => {
+        const row: any = {
+          sl: (page - 1) * pageSize + index + 1,
+          employee_name: employee.employee_name,
+          employee_worked_hours: employee.employee_worked_hours,
+          short_fall: employee.short_fall
+        };
+
+        employee.timesheet_data.forEach((entry: any) => {
+          row[entry.day] = entry.total_time;
+        });
+
+        return row;
+      });
+
+      console.log('formattedData', formattedData);
+
       this.tableConfig = {
         columns: tableColumns.map(col => ({
           ...col,
           filterOptions: col.filterable ? getUniqueValues(formattedData, col.key) : []
         })),
-
         data: formattedData,
         searchTerm: this.term,
         actions: [],
@@ -163,12 +179,13 @@ export class TimesheetSummaryReportComponent implements OnInit {
         tableSize: pageSize,
         pagination: true,
         searchable: true,
-        currentPage:page,
+        currentPage: page,
         totalRecords: res.total_no_of_record,
-        dateRangeFilter:true
+        dateRangeFilter: true
       };
     });
   }
+
     onSearch(term: string): void {
       this.term = term;
       this.getTableData({
