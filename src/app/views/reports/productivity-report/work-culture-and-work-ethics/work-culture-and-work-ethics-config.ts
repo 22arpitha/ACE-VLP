@@ -20,7 +20,7 @@ export const tableColumns = [
     },
     {
       label: 'Upload Assessment File',
-      key: 'upload_assessment_file',
+      key: 'file_data',
       sortable: true
     }
   ]

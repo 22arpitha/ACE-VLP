@@ -1,0 +1,11 @@
+<div class="container-fluid">
+    <div class="modal-body custom-modal" >
+        <h4 class="modal-title"><i class="bi bi-exclamation-circle"></i> {{message}}</h4>
+        <p >{{title}}?</p>
+    </div>
+    <div class="modal-footer">
+        <button mat-button type="button"  class="btn-cancel"  (click)="modalStatus('cancel')">Back</button>
+        <button mat-button type="button" class="btn-yes" (click)="modalStatus('ok')" >{{buttonName}}</button>
+    </div>
+</div>
+

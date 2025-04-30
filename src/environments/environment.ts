@@ -53,6 +53,7 @@ jobs:`jobs`,
 jobs_kpi:'kpi',
 // timesheet
 vlp_timesheets:`timesheet`,
+submit_weekly_timesheet:`submit-weekly-timesheet`,
 client_invoice:'client-invoice',
 invoice_details:'invoice-details',
 job_reports:'job-reports',

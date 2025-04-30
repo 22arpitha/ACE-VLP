@@ -81,6 +81,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { PdfViewComponent } from './views/pdf-view/pdf-view.component';
 import { FormErrorScrollUtilityService } from './service/form-error-scroll-utility-service.service';
 import { ActivateChildGuard } from './auth-guard/activate-child.guard';
+import { GenericTimesheetConfirmationComponent } from './generic-components/generic-timesheet-confirmation/generic-timesheet-confirmation.component';
 
 const APP_CONTAINERS = [
   DefaultFooterComponent,
@@ -98,7 +99,8 @@ const APP_CONTAINERS = [
     UseraccessInfoPopupComponent,
     TemplatesComponent,
     CompanyPolicyComponent,
-    PdfViewComponent
+    PdfViewComponent,
+    GenericTimesheetConfirmationComponent,
   ],
   imports: [
     // ChartsModule,

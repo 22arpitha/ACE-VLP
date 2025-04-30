@@ -211,8 +211,8 @@ this.formErrorScrollService.resetHasUnsavedValue();
     let queryparams = `?timesheet-employee=${this.user_id}&higest-end-time=True&date=${date}`
     this.apiService.getData(`${environment.live_url}/${environment.vlp_timesheets}/${queryparams}`).subscribe(
       (res: any) => {
+        let currentDate = this.datePipe.transform(new Date().toDateString(), 'YYYY-MM-dd')
         if (res?.higest_end_time) {
-          let currentDate = this.datePipe.transform(new Date().toDateString(), 'YYYY-MM-dd')
           if (date === currentDate) {
             // console.log('Selected date is today.');
             this.timesheetFormGroup.patchValue({end_time:this.currentTime})
@@ -226,8 +226,14 @@ this.formErrorScrollService.resetHasUnsavedValue();
         } 
         else{
           // console.log('no time data', res)
-          this.timesheetFormGroup.patchValue({start_time:''});
-          this.timesheetFormGroup.patchValue({end_time:''})
+          if (date === currentDate) {
+            // console.log('Selected date is today.');
+            this.timesheetFormGroup.patchValue({end_time:this.currentTime})
+          } else {
+            // console.log('Selected date is NOT today.');
+            this.timesheetFormGroup.patchValue({start_time:''});
+            this.timesheetFormGroup.patchValue({end_time:''})
+          }
           this.updateDuration();
         }
       },

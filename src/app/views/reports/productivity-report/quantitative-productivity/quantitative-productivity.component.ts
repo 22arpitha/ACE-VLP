@@ -148,45 +148,29 @@ export class QuantitativeProductivityComponent implements OnInit,OnChanges {
             finalQuery += this.userRole ==='Admin' ? '':`&employee-id=${this.user_id}`;
            }
            this.api.getData(`${environment.live_url}/${environment.jobs}/${finalQuery}`).subscribe((res: any) => {
-            if(res.results && res.results?.length>=1){
-              const formattedData = res.results.map((item: any, i: number) => ({
-                sl: (page - 1) * pageSize + i + 1,
-                ...item,
-                is_primary:item?.employees?.find((emp: any) => emp?.is_primary === true)?.employee_name || '',
-              }));
-              let tableFooterContent = {'total_estimated_time':res?.total_estimated_time,'total_actual_time':res?.total_actual_time,'avg_quantitative_productivity':res?.avg_quantitative_productivity}
-              this.tableConfig = {
-                columns: tableConfig.map(col => ({
-                  ...col,
-                })),
-               data: formattedData,
-               searchTerm: this.term,
-               actions: [],
-               accessConfig: [],
-               tableSize: pageSize,
-               pagination: true,
-               searchable: true,
-               currentPage:page,
-               totalRecords: res.total_no_of_record,
-               estimationDetails:true,
-               tableFooterContent:tableFooterContent,
-               hideDownload:true
-              };
-            }else{
-              this.tableConfig = {
-                columns: [],
-                data: [],
-                searchTerm: this.term,
-                actions: [],
-                accessConfig: [],
-                tableSize: 5,
-                searchable:true,
-                pagination: false,
-                estimationDetails:false,
-                hideDownload:false,
-                tableFooterContent:'',
-              };
-            }
+            const formattedData = res.results.map((item: any, i: number) => ({
+              sl: (page - 1) * pageSize + i + 1,
+              ...item,
+              is_primary:item?.employees?.find((emp: any) => emp?.is_primary === true)?.employee_name || '',
+            }));
+            let tableFooterContent = {'total_estimated_time':res?.total_estimated_time,'total_actual_time':res?.total_actual_time,'avg_quantitative_productivity':res?.avg_quantitative_productivity}
+            this.tableConfig = {
+              columns: tableConfig.map(col => ({
+                ...col,
+              })),
+             data: formattedData,
+             searchTerm: this.term,
+             actions: [],
+             accessConfig: [],
+             tableSize: pageSize,
+             pagination: true,
+             searchable: true,
+             currentPage:page,
+             totalRecords: res.total_no_of_record,
+             estimationDetails:true,
+             tableFooterContent:tableFooterContent,
+             hideDownload:true
+            };
            },(error:any)=>{  this.api.showError(error?.error?.detail);
            });
          }
