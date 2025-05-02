@@ -59,6 +59,7 @@ client_invoice:'client-invoice',
 invoice_details:'invoice-details',
 job_reports:'job-reports',
 productivity_reports:'productivity-reports',
+upload_assessment:'upload-assessment',
 
   leave_application: 'leave-application',
   timesheetCalender: 'time-sheets-calender',

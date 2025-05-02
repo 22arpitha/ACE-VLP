@@ -251,7 +251,7 @@
   </div>
   </section>
   <!-- Pagination -->
-  <div class="pagination-container pt-1" *ngIf="paginatedData?.length > 0">
+  <div class="pagination-container pt-1" *ngIf="paginatedData?.length > 0 && config?.pagination">
     <!-- Pagination Controls (Center-Aligned) -->
     <pagination-controls
       previousLabel="Prev"
