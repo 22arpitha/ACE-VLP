@@ -8,8 +8,8 @@
             </div>
             <div class="col-12 mt-2 col-sm-12 col-md-4 col-lg-3"></div>
             <div class="col-12 mt-2 col-sm-12 col-md-4 col-lg-6 text-end px-0">
-                <button mat-raised-button class="mat-btn-s tab-button-content" [ngClass]="{'isActive': isCurrent}" type="button" (click)="getCurrentJobs()">Current</button> 
-                <button mat-raised-button class="mat-btn-s tab-button-content" [ngClass]="{'isActive': isHistory}" type="button" (click)="getJobsHistory()">History</button> 
+                <button mat-raised-button class="mat-btn-s tab-button-content" [ngClass]="{'isActive': isCurrent}" type="button" (click)="getCurrentJobs()">Current</button>
+                <button mat-raised-button class="mat-btn-s tab-button-content" [ngClass]="{'isActive': isHistory}" type="button" (click)="getJobsHistory()">History</button>
                 <button mat-raised-button class="proceedbtn mat-btn-s download-btn" type="button" [matMenuTriggerFor]="downloadMenu"><i class="fa fa-download"></i></button>
                 <button mat-raised-button class="proceedbtn mat-btn-s" type="button" (click)="openCreateClientPage()"
                 *ngIf="userRole !='Admin' && accessPermissions[0]?.create || userRole === 'Admin'">Create
@@ -21,7 +21,7 @@
                     <button mat-menu-item (click)="downloadOption('csv')">
                       <i class="fa fa-file-excel"></i> CSV
                     </button>
-                  </mat-menu>    
+                  </mat-menu>
               </div>
           </div>
           <div class="row mx-1 my-2 px-0 table-wrapper">
@@ -44,11 +44,36 @@
                       <i *ngIf="!arrowState['job_type_name']" (click)="sort('asc','job_type_name')" class="bi bi-arrow-down"></i>
                       <i (click)="sort('desc','job_type_name')" *ngIf="arrowState['job_type_name']"
                         class="bi bi-arrow-up"></i>
+                        <!-- Filter Trigger -->
+                      <button mat-icon-button [matMenuTriggerFor]="jobTypeFilterMenu">
+                        <i class="bi bi-toggles"></i>
+                      </button>
+
+                      <mat-menu #jobTypeFilterMenu="matMenu">
+                        <app-generic-table-filter
+                          [options]="allJobTypeNames"
+                          [(selectedOptions)]="filters.job_type_name"
+                          (selectedOptionsChange)="filterData()"
+                        ></app-generic-table-filter>
+                      </mat-menu>
                     </th>
                     <th scope="col">Client
                       <i *ngIf="!arrowState['client_name']" (click)="sort('asc','client_name')" class="bi bi-arrow-down"></i>
                       <i (click)="sort('desc','client_name')" *ngIf="arrowState['client_name']"
                         class="bi bi-arrow-up"></i>
+                        <!-- Filter Trigger -->
+                        <button mat-icon-button [matMenuTriggerFor]="clientFilterMenu">
+                          <i class="bi bi-toggles"></i>
+                        </button>
+
+
+                        <mat-menu #clientFilterMenu="matMenu">
+                          <app-generic-table-filter
+                            [options]="allClientNames"
+                            [(selectedOptions)]="filters.client_name"
+                            (selectedOptionsChange)="onFilterChange($event, 'client_name')"
+                          ></app-generic-table-filter>
+                        </mat-menu>
                     </th>
                     <th scope="col">Job Allocation Date</th>
                     <th scope="col">Employee</th>
@@ -60,8 +85,8 @@
                   </tr>
                 </thead>
                 <tbody>
-      
-                  <ng-container *ngIf="(allJobsList) as result">
+
+                  <ng-container *ngIf="(filteredList) as result">
                     <tr *ngFor='let item of result | customSort:directionValue:sortValue
                     |paginate : {
                              itemsPerPage: tableSize,
@@ -109,11 +134,11 @@
               </table>
             </div>
           </div>
-          
+
           <div class="row mx-1 my-2 px-0" *ngIf="allJobsList?.length === 0" >
             <app-generic-norecards></app-generic-norecards>
           </div>
-        
+
     </section>
     <div class="row mx-0 px-3" *ngIf="allJobsList?.length > 0">
         <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0">
@@ -131,5 +156,4 @@
         </div>
       </div>
     </div>
-  
-  
+

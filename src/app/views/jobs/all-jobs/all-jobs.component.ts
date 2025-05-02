@@ -45,6 +45,14 @@ export class AllJobsComponent implements OnInit {
   userRole: any;
   allEmployeelist:any=[];
   allManagerlist:any=[];
+  filters: { job_type_name: string[]; client_name: string[] } = {
+    job_type_name: [],
+    client_name: []
+  };
+
+  allClientNames: string[] = [];
+  allJobTypeNames: string[] = [];
+  filteredList = [];
   constructor(private common_service: CommonServiceService, private accessControlService: SubModuleService,
     private router: Router, private modalService: NgbModal, private dialog: MatDialog,
     private apiService: ApiserviceService, private fb: FormBuilder) {
@@ -65,11 +73,42 @@ export class AllJobsComponent implements OnInit {
         console.log(status)
         this.getJobsHistoryList();
       }else{
-        this.getCurrentJobsList();        
+        this.getCurrentJobsList();
       }
     })
   }
   access_name:any ;
+
+  getUniqueValues(field: string):any {
+    return [...new Set(this.allJobsList.map(job => job[field]).filter(Boolean))];
+  }
+  applyClientFilter() {
+    this.filterData();
+  }
+  applyJobTypeFilter() {
+    this.filterData();
+  }
+
+  filterData() {
+    this.filteredList = this.allJobsList.filter(job => {
+      const jobTypeName = job?.job_type_name?.trim();
+      const clientName = job?.client_name?.trim();
+
+      const jobTypeMatch =
+        !this.filters.job_type_name.length ||
+        this.filters.job_type_name.includes(jobTypeName);
+
+      const clientMatch =
+        !this.filters.client_name.length ||
+        this.filters.client_name.includes(clientName);
+
+      const matched = clientMatch && jobTypeMatch;
+
+      return matched;
+    });
+    this.count = this.filteredList.length;
+  }
+
   getModuleAccess() {
     this.accessControlService.getAccessForActiveUrl(this.user_id).subscribe((access) => {
       if (access) {
@@ -102,7 +141,7 @@ export class AllJobsComponent implements OnInit {
       this.apiService.showError(error?.error?.detail)
     }));
   }
-  
+
   public getAllActiveManagerList(){
     this.allManagerlist =[];
     this.apiService.getData(`${environment.live_url}/${environment.employee}/?is_active=True&employee=True&designation=manager`).subscribe((respData: any) => {
@@ -111,7 +150,11 @@ export class AllJobsComponent implements OnInit {
       this.apiService.showError(error?.error?.detail)
     }));
   }
-
+  onFilterChange(event: any, filterType: string) {
+    const selectedOptions = event;
+    this.filters[filterType] = selectedOptions;
+    this.filterData();
+  }
   initialForm() {
     this.jobStatusForm = this.fb.group({
       status_name: [''],
@@ -154,10 +197,14 @@ export class AllJobsComponent implements OnInit {
     this.apiService.getData(`${environment.live_url}/${environment.jobs}/${query}`).subscribe(
       (res: any) => {
         this.allJobsList = res?.results;
+        this.filteredList = res?.results;
         const noOfPages: number = res?.['total_pages']
         this.count = noOfPages * this.tableSize;
         this.count = res?.['total_no_of_record']
         this.page = res?.['current_page'];
+        this.allClientNames = this.getUniqueValues('client_name');
+        this.allJobTypeNames = this.getUniqueValues('job_type_name');
+        console.log(this.allClientNames, this.allJobTypeNames,"allClientNames, allJobTypeNames)");
       }
     )
   }
@@ -232,7 +279,7 @@ export class AllJobsComponent implements OnInit {
     return `?page=${this.page}&page_size=${this.tableSize}&search=${this.term}`;
   }else {
     return `?page=${this.page}&page_size=${this.tableSize}&search=${this.term}&employee-id=${this.user_id}`;
-  } 
+  }
   }
 
   public sort(direction: string, column: string) {
@@ -275,7 +322,7 @@ export class AllJobsComponent implements OnInit {
     if (percentage === null || percentage === undefined || percentage === '') {
       item.isInvalid = true;
       item.errorType = 'required';
-    } else if (!/^(100|[1-9]?\d?)$/.test(percentage.toString())) { 
+    } else if (!/^(100|[1-9]?\d?)$/.test(percentage.toString())) {
       item.isInvalid = true;
       item.errorType = 'pattern';
     } else if (Number(percentage) > 100) {
@@ -290,14 +337,14 @@ export class AllJobsComponent implements OnInit {
       item.errorType = null; // Clear errors when valid
     }
   }
-  
+
 
   saveJobStausPercentage(item: any) {
     if(!item.isInvalid){
       console.log(item)
       if(!this.changedStatusName){
         this.changedStatusName = item.job_status_name
-      } 
+      }
       let temp_status=this.changedStatusName.toLowerCase();
       let formData:any= {'job_status':item?.job_status,'percentage_of_completion':item.percentage_of_completion,
         status: (temp_status === 'cancelled' || temp_status === 'completed') ? false : true
@@ -332,7 +379,7 @@ export class AllJobsComponent implements OnInit {
   }
 
   public downloadOption(type:any){
-  let status:any 
+  let status:any
     if(this.isCurrent){
       status = 'True';
     }
@@ -352,4 +399,4 @@ export class AllJobsComponent implements OnInit {
     a.click();
   });
   }
-} 
+}

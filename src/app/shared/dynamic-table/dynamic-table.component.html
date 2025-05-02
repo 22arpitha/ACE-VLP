@@ -167,6 +167,7 @@
                     </ng-container>
                   </mat-menu>
                 </ng-container>
+
               </ng-container>
             </ng-container>
           </th>
@@ -181,20 +182,23 @@
               | paginate: paginationConfig
           "
         >
-          <td *ngFor="let col of config.columns">
-            <div *ngIf="!col.navigation">
-              {{ col.type === 'date' ? (item[col.key] | date: 'dd-MM-yyyy') : item[col.key] || 'NA' }}
-            </div>
-            <ng-container *ngIf="col.navigation">
-              <a
-                (click)="navigateToEmployee(item[col.key])"
-                class="text-primary text-decoration-underline"
-                style="cursor: pointer"
-              >
-                {{ item[col.key] || 'NA' }}
-              </a>
-            </ng-container>
-          </td>
+        <td *ngFor="let col of config.columns">
+          <div *ngIf="!col.navigation">
+            {{ col.type === 'date'
+              ? (item[col.key] | date: 'dd-MM-yyyy')
+              : (item[col.key] !== null && item[col.key] !== undefined ? item[col.key] : 'NA') }}
+          </div>
+          <ng-container *ngIf="col.navigation">
+            <a
+              (click)="navigateToEmployee(item[col.key])"
+              class="text-primary text-decoration-underline"
+              style="cursor: pointer"
+            >
+              {{ item[col.key] !== null && item[col.key] !== undefined ? item[col.key] : 'NA' }}
+            </a>
+          </ng-container>
+        </td>
+
 
           <td *ngIf="config.actions?.length">
             <ng-container *ngFor="let act of config.accessConfig">

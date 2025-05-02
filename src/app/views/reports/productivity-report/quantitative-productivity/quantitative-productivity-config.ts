@@ -1,4 +1,4 @@
-export const tableConfig = [
+export const tableColumns = [
     { label: 'Sl No',
       key: 'sl'
     },

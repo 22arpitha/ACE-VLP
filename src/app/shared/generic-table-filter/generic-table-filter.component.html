@@ -1,0 +1,26 @@
+<div class="p-2" (click)="$event.stopPropagation()">
+  <div class="position-relative mb-2">
+    <i class="bi position-absolute end-0 top-50 translate-middle-y me-2 text-secondary"
+       [ngClass]="filterSearchText ? 'bi-x-lg' : 'bi-search'"
+       style="cursor: pointer;"
+       (click)="clearSearch()">
+    </i>
+    <input
+      type="text"
+      class="form-control"
+      placeholder="Search"
+      [(ngModel)]="filterSearchText"
+      (ngModelChange)="filterOptions()"
+    />
+  </div>
+
+  <mat-selection-list
+    [(ngModel)]="selectedOptions"
+    (ngModelChange)="onSelectionChange()"
+    [multiple]="true"
+  >
+    <mat-list-option *ngFor="let option of filteredOptions" [value]="option">
+      {{ option }}
+    </mat-list-option>
+  </mat-selection-list>
+</div>

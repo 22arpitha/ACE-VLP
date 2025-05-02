@@ -38,6 +38,8 @@ import { PeriodComponent } from './period/period.component';
 import { PeriodicityComponent } from './periodicity/periodicity.component';
 import { EmployeeListComponent } from './employee-list/employee-list.component';
 import { WeekDatepickerComponent } from './week-datepicker/week-datepicker.component';
+import { GenericTableFilterComponent } from './generic-table-filter/generic-table-filter.component';
+import { GenericTableCalendarComponent } from './generic-table-calendar/generic-table-calendar.component';
 @NgModule({
   declarations: [
     SortPipe,
@@ -48,7 +50,9 @@ import { WeekDatepickerComponent } from './week-datepicker/week-datepicker.compo
     PeriodComponent,
     PeriodicityComponent,
     EmployeeListComponent,
-    WeekDatepickerComponent
+    WeekDatepickerComponent,
+    GenericTableFilterComponent,
+    GenericTableCalendarComponent
   ],
   imports: [
     CommonModule,
@@ -122,7 +126,8 @@ import { WeekDatepickerComponent } from './week-datepicker/week-datepicker.compo
     EmployeeListComponent,
     PeriodicityComponent,
     WeekDatepickerComponent,
-    PeriodComponent
+    PeriodComponent,
+    GenericTableFilterComponent
    ],
 
 })

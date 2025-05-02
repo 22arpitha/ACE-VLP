@@ -1,7 +1,7 @@
 import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { CommonServiceService } from '../../../../service/common-service.service';
 import { buildPaginationQuery } from '../../../../shared/pagination.util';
-import { tableConfig } from './quantitative-productivity-config';
+import { tableColumns } from './quantitative-productivity-config';
 import { environment } from '../../../../../environments/environment';
 import { ApiserviceService } from '../../../../service/apiservice.service';
 import { downloadFileFromUrl } from '../../../../shared/file-download.util';
@@ -54,26 +54,26 @@ export class QuantitativeProductivityComponent implements OnInit,OnChanges {
 
            ngOnInit(): void {
              this.common_service.setTitle(this.BreadCrumbsTitle)
-             this.tableConfig = tableConfig;
+             this.tableConfig = tableColumns;
              this.getTableData({
               page: 1,
               pageSize: this.tableSize,
               searchTerm: this.term
             });
-           }    
+           }
 
            // Called when user changes page number from the dynamic table
          onTableDataChange(event: any) {
            const page = event;
            this.page = page;
-         
+
            this.getTableData({
              page: page,
              pageSize: this.tableSize,
              searchTerm: this.term
            });
          }
-         
+
          // Called when user changes page size from the dynamic table
          onTableSizeChange(event: any): void {
            if(event){
@@ -86,9 +86,9 @@ export class QuantitativeProductivityComponent implements OnInit,OnChanges {
                searchTerm: this.term
              });
            }
-         
+
          }
-         
+
          // Called from <app-dynamic-table> via @Output actionEvent
          handleAction(event: { actionType: string; detail: any, }) {
            switch (event.actionType) {
@@ -115,23 +115,23 @@ export class QuantitativeProductivityComponent implements OnInit,OnChanges {
               });
            }
          }
-        
+
          exportCsvOrPdf(fileType) {
            let query = buildPaginationQuery({
              page: this.page,
              pageSize: this.tableSize,
-           }); 
+           });
            if(query){
             query += this.userRole ==='Admin' ? '':`&employee-id=${this.user_id}`;
            }
            const url = `${environment.live_url}/${environment.productivity_reports}/${query}&productivity-type=quantitative&file-type=${fileType}`;
            downloadFileFromUrl({
              url,
-             fileName: 'productivity_quantitative_report',
+             fileName: 'quantitative_report',
              fileType
            });
          }
-         
+
          // Fetch table data from API with given params
          getTableData(params?: { page?: number; pageSize?: number; searchTerm?: string }) {
           let finalQuery;
@@ -155,7 +155,7 @@ export class QuantitativeProductivityComponent implements OnInit,OnChanges {
             }));
             let tableFooterContent = {'total_estimated_time':res?.total_estimated_time,'total_actual_time':res?.total_actual_time,'avg_quantitative_productivity':res?.avg_quantitative_productivity}
             this.tableConfig = {
-              columns: tableConfig.map(col => ({
+              columns: tableColumns.map(col => ({
                 ...col,
               })),
              data: formattedData,
@@ -174,7 +174,7 @@ export class QuantitativeProductivityComponent implements OnInit,OnChanges {
            },(error:any)=>{  this.api.showError(error?.error?.detail);
            });
          }
-        
+
            onSearch(term: string): void {
              this.term = term;
              this.getTableData({
@@ -183,7 +183,7 @@ export class QuantitativeProductivityComponent implements OnInit,OnChanges {
                searchTerm: term
              });
            }
-        
+
       ngOnDestroy(): void {
         this.tableConfig=null
       }
