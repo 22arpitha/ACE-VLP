@@ -17,13 +17,13 @@ export class PeriodicityComponent implements OnInit,OnChanges {
   constructor(private apiService: ApiserviceService) { }
 
    ngOnChanges(changes: SimpleChanges): void {
+    console.log('changes',changes);
     if(changes['resetFilterField'] && changes['resetFilterField'].currentValue !== undefined){
       this.resetFilterField = changes['resetFilterField'].currentValue
         this.selectedPeriodicityVal=null;
         this.selectPeriodicity.emit(null);
     }
     if(changes['defaultSelection'] && changes['defaultSelection'].currentValue !== undefined){
-      console.log(changes['defaultSelection']);
       if(this.allPeroidicitylist && this.allPeroidicitylist?.length>=1){
         this.selectedPeriodicityVal = this.allPeroidicitylist?.find((element):any => element?.periodicty_name ==='Monthly')?.id;
         this.selectPeriodicity.emit(this.selectedPeriodicityVal);

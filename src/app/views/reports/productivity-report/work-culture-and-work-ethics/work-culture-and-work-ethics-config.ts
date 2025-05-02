@@ -16,12 +16,14 @@ export const tableColumns = [
     {
       label: 'Points',
       key: 'points',
-      sortable: true
+      sortable: false,
+      inputField:true,
     },
     {
       label: 'Upload Assessment File',
       key: 'file_data',
-      sortable: true
+      sortable: false,
+      fileInputField:true,
     }
   ]
 

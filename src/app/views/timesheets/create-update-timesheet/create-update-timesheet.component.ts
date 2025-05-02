@@ -37,6 +37,8 @@ export class CreateUpdateTimesheetComponent implements CanComponentDeactivate, O
   timesheet_id: any;
   minstartTime: any
   minEndTime: string = '';
+  statusList:any=[];
+allJobStatus:any=[];
   constructor(private fb: FormBuilder, private apiService: ApiserviceService, private datePipe: DatePipe,
     private accessControlService: SubModuleService, private router: Router, private common_service: CommonServiceService,
     private activeRoute: ActivatedRoute, private formErrorScrollService: FormErrorScrollUtilityService
@@ -57,7 +59,8 @@ export class CreateUpdateTimesheetComponent implements CanComponentDeactivate, O
     const hours = now.getHours().toString().padStart(2, '0');
     const minutes = now.getMinutes().toString().padStart(2, '0');
     this.currentTime = `${hours}:${minutes}`;
-    this.initialForm()
+    this.initialForm();
+    this.getJobStatusList();
     this.getAllDropdownData();
     if (this.isEditItem) {
       this.getTimesheetDetails(this.timesheet_id);
@@ -163,7 +166,7 @@ this.formErrorScrollService.resetHasUnsavedValue();
   }
 
   getEmployeeJobsList(id) {
-    let queryparams = `?client=${id}`
+    let queryparams = `?client=${id}&job-status=[${this.statusList}]`;
     this.apiService.getData(`${environment.live_url}/${environment.jobs}/${queryparams}`).subscribe(
       (res: any) => {
         // console.log('jobs data', res)
@@ -404,5 +407,20 @@ unloadNotification($event: BeforeUnloadEvent): void {
   if (isFormChanged || this.timesheetFormGroup.dirty) {
     $event.preventDefault();
   }
+}
+getJobStatusList() {
+  this.apiService.getData(`${environment.live_url}/${environment.settings_job_status}/`).subscribe(
+    (resData: any) => {
+      if(resData){
+        this.allJobStatus = resData;
+        this.statusList = this.allJobStatus
+        ?.filter((jobstatus: any) =>jobstatus?.status_name !== "Cancelled" && jobstatus?.status_name !== "Completed")?.map((status: any) => status?.status_name);
+    
+      }
+    },
+    (error:any)=>{
+      this.apiService.showError(error?.error?.detail);
+    }
+  )
 }
 }

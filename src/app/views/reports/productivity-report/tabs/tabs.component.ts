@@ -18,7 +18,7 @@ tabs:string[] = ['Overall Productivity', 'Quantitative Productivity', 'Qualitati
   commonFilterData:any={'employee_id':'','periodicity':'','period':''};
   selectTab(index: number): void {
     this.selectedTab = index;
-    if(this.selectedTab ===  3 && !this.periodicityId){
+    if(this.selectedTab ===  3 && !this.periodicityId && !this.employee && !this.period){
       this.ondefaultSelection=true;
       setTimeout(() => {
         this.applySearch();
@@ -36,13 +36,28 @@ tabs:string[] = ['Overall Productivity', 'Quantitative Productivity', 'Qualitati
   applySearch(){
     this.commonFilterData={'employee_id':this.employee,'periodicity':this.periodicityId,'period':this.period};
   }
-  resetSearch(){
-    this.commonFilterData={'employee_id':'','periodicity':'','period':''};
-    this.resetFilter=true;
+  resetSearch(): void {
+    this.commonFilterData = {
+      employee_id: '',
+      periodicity: '',
+      period: ''
+    };
+    this.resetFilter = true;
+    const noFiltersSelected = !this.periodicityId && !this.employee && !this.period;
+    const isTab3 = this.selectedTab === 3;
+    if (isTab3 && noFiltersSelected) {
+      this.ondefaultSelection = true;
+      setTimeout(() => this.applySearch(), 300);
+    }
     setTimeout(() => {
-      this.resetFilter=false;
+      this.resetFilter = false;
+      if (!this.resetFilter) {
+        this.ondefaultSelection = isTab3 && noFiltersSelected;
+      }
     }, 100);
   }
+  
+  
 
   selectedEmployee(event:any){
 this.employee=event;

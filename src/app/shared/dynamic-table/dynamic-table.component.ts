@@ -1,10 +1,12 @@
 // dynamic-table.component.ts
-import { Component, EventEmitter, Input, OnInit, Output, SimpleChanges } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnInit, Output, QueryList, SimpleChanges, ViewChildren } from '@angular/core';
 import { MatMenuTrigger } from '@angular/material/menu';
 import { DatePipe } from '@angular/common';
 import { DynamicTableConfig } from './dynamic-table-config.model';
 import { ApiserviceService } from '../../service/apiservice.service';
 import { environment } from '../../../environments/environment';
+import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
+import { fileToBase64 } from '../fileUtils.utils';
 
 @Component({
   selector: 'app-dynamic-table',
@@ -14,6 +16,7 @@ import { environment } from '../../../environments/environment';
 export class DynamicTableComponent implements OnInit {
   @Input() config!: DynamicTableConfig;
   @Output() actionEvent = new EventEmitter<any>();
+  @ViewChildren('fileInput') fileInputs: QueryList<ElementRef>;
   filteredData: any[] = [];
   paginatedData: any[] = [];
   startDate;
@@ -42,13 +45,24 @@ export class DynamicTableComponent implements OnInit {
   allow_sending_status:boolean=false;
   previousFilters: { [key: string]: any[] } = {};
   selectedDateRange;
-  constructor(private datePipe: DatePipe,private api:ApiserviceService) {
+  tableFormGroup:FormGroup;
+  isEditBtn:boolean=false;
+file: any=[];
+fileLink: any=[];
+selectedFile:(File | null)[] = [];
+  constructor(private fb:FormBuilder,private datePipe: DatePipe,private api:ApiserviceService) {
     this.user_id = sessionStorage.getItem('user_id');
     this.userRole = sessionStorage.getItem('user_role_name');
   }
   ngOnInit(): void {
 
    }
+
+
+   get rows(): FormArray {
+    return this.tableFormGroup.get('rows') as FormArray;
+  }
+  
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['config'] && this.config?.data?.length) {
       console.log('changed',changes['config']['currentValue']);
@@ -67,7 +81,13 @@ export class DynamicTableComponent implements OnInit {
       this.arrowState[col.key] = false;
       this.columnFilters[col.key] = col.filterType === 'multi-select' ? [] : '';
     });
-
+    if(this.config.formContent){
+      this.isEditBtn=false;
+      this.tableFormGroup = this.fb.group({
+        rows: this.fb.array([])
+      });
+      this.buildDynamicTableForm(this.config.data);
+    }
     this.applyFilters();
   }
   get hasColumnFilters(): boolean {
@@ -218,7 +238,29 @@ public onIncludeJobsChange(event:any){
 public sendEmailEvent(){
   this.actionEvent.emit({ actionType: 'sendEmail', action:this.filteredData,client_id:this.selected_client_id});
 }
+public enableFormFields(){
+  this.isEditBtn=true;
+  this.rows.controls?.forEach((control) => {
+    (control as FormGroup).enable();
+  });
+}
 
+public async submitWorkCultureDetails(){
+  if(this.rows.valid){
+    let reqPayload:any={};
+    let workCultureData:any = this.rows.getRawValue();
+    reqPayload['period_id']=this.config.data[0].period_id,
+    reqPayload['periodicity_id']=this.config.data[0].periodicity_id,
+    await this.UpdateFileFieldData(workCultureData).then((updatedData) => {
+      reqPayload['data']=updatedData;
+    }).catch((error) => {
+      reqPayload['data']=[];
+    });
+    console.log('Form Data',reqPayload);
+this.actionEvent.emit({ actionType: 'submitWorkCulture', action:reqPayload});
+  }
+  
+}
 private isIncludeFlagEnableLogic(): void {
   
   const clientNameFilter = this.columnFilters['client_name'];
@@ -288,7 +330,7 @@ onDateRangeChange(event,endDate) {
   }
 }
 public getClientDetails(){
-  this.api.getData(`${environment.live_url}/${environment.clients}/${this.selected_client_id}/`).subscribe((respData: any) => {
+this.api.getData(`${environment.live_url}/${environment.clients}/${this.selected_client_id}/`).subscribe((respData: any) => {
 if(respData){
   this.allow_sending_status = respData?.allow_sending_status_report_to_client;
 }
@@ -318,4 +360,81 @@ get tooltipMessage(): string | null {
   return null;
 }
 
+getFormGroup(index: number): FormGroup {
+  return this.rows.at(index) as FormGroup;
+}
+
+buildDynamicTableForm(tableData){
+  this.rows.clear();
+  tableData?.forEach(item => {
+    this.rows.push(this.fb.group({
+      employee_name:[item?.employee_name],
+      employee_id:[item?.employee_id],
+      month:[item?.month],
+      work_ethics_file: [item?.work_ethics_file],
+      points: [item?.points],
+    }));
+  });
+  this.rows.controls?.forEach((control) => {
+    (control as FormGroup).disable();
+  });
+}
+
+public validateKeyPress(event: KeyboardEvent) {
+  // Get the key code of the pressed key
+  const keyCode = event.which || event.keyCode;
+
+  // Allow only digits (0-9), backspace, and arrow keys
+  if ((keyCode < 48 || keyCode > 57) && keyCode !== 8 && keyCode !== 37 && keyCode !== 39 && keyCode !== 46) {
+    event.preventDefault(); // Prevent the default action (i.e., entering the character)
+  }
+}
+
+public onFileSelected(event: Event,index:any): void {
+  const input = event.target as HTMLInputElement;
+  if (input.files && input.files.length > 0) {
+    const selectedFile = input.files[0];
+    this.file[index] = selectedFile;
+    this.selectedFile[index] = this.file[index];
+    this.fileLink[index]=null;
+    // Reset input value after a slight delay to allow re-selection
+    setTimeout(() => {
+      input.value = "";
+    }, 100); // Small delay to ensure the selection is registered
+ 
+  }
+}
+
+public triggerFileInput(index:any) {
+  const fileInput = this.fileInputs?.toArray()[index];
+  if (fileInput) {
+    fileInput?.nativeElement?.click();
+  }
+ }
+
+public openFileInNewTab(index:any){
+window.open(this.fileLink[index], '_blank');
+}
+public async UpdateFileFieldData(workCulData: any) {
+  if (workCulData && workCulData.length >= 1) {
+    // Use for...of to ensure we await properly inside the loop
+    for (let index = 0; index < workCulData.length; index++) {
+      // Handle each file type asynchronously
+      if (this.file && this.file[index]) {
+        workCulData[index].work_ethics_file = await this.convertFileToBase64(this.file[index]);
+      }
+    }
+  }
+  return workCulData;
+}
+
+private async convertFileToBase64(file: File): Promise<string | null> {
+  try {
+    const base64 = await fileToBase64(file);
+    return base64;
+  } catch (error) {
+    console.error('Error converting file to base64', error);
+    return null;
+  }
+}
 }

@@ -6,6 +6,7 @@ import { tableColumns } from './work-culture-and-work-ethics-config';
 import { environment } from '../../../../../environments/environment';
 import { downloadFileFromUrl } from '../../../../shared/file-download.util';
 import { ApiserviceService } from '../../../../service/apiservice.service';
+import { log } from 'console';
 
 @Component({
   selector: 'app-work-culture-and-work-ethics',
@@ -16,191 +17,194 @@ export class WorkCultureAndWorkEthicsComponent implements OnInit,OnChanges {
 
  BreadCrumbsTitle: any = 'Work Culture and Work Ethics';
  @Input() dropdwonFilterData:any;
+ allEmployeesList:any=[];
+ selectedEmployeesList:any=[];
+ selectedPeriodictyDetails:any;
+ selectedPeriodDetails:any;
       term: string = '';
-      tableSize: number = 5;
-      page: any = 1;
-      tableSizes = [5,10,25,50,100];
       tableConfig:any = {
         columns: [],
         data: [],
-        searchTerm: '',
         actions: [],
         accessConfig: [],
-        tableSize: 5,
-        pagination: true,
+        pagination: false,
       };
+      user_role_name:any;
+      user_id:any;
       constructor(
         private common_service:CommonServiceService,
         private api:ApiserviceService
-      ) { }
+      ) { 
+        this.user_role_name = sessionStorage.getItem('user_role_name');
+        this.user_id = sessionStorage.getItem('user_id');
+      }
+
       ngOnChanges(changes: SimpleChanges): void {
-        if(changes['dropdwonFilterData']){
-          this.dropdwonFilterData=changes['dropdwonFilterData']?.currentValue;
-          console.log('selected values',this.dropdwonFilterData)
-          this.defaultData()
+        if (changes['dropdwonFilterData']) {
+          const prev = changes['dropdwonFilterData'].previousValue || {};
+          const current = changes['dropdwonFilterData'].currentValue;
+          const employeeIdChanged = prev.employee_id !== current.employee_id;
+          const periodicityChanged = prev.periodicity !== current.periodicity;
+          const periodChanged = prev.period !== current.period;
+          if (employeeIdChanged || periodicityChanged || periodChanged) {
+            this.dropdwonFilterData = current;
+            if(this.dropdwonFilterData.period){
+            this.getSelectedPeriod(this.dropdwonFilterData.period);
+            }
+            setTimeout(() => {
+              this.getWorkCultureAndEthicsList();
+            }, 100);
+          }
         }
       }
 
       ngOnInit(): void {
-        this.common_service.setTitle(this.BreadCrumbsTitle)
-        // this.getTableData();
-        if(this.dropdwonFilterData?.period){
-          this.defaultData()
+        this.common_service.setTitle(this.BreadCrumbsTitle);
+        this.getAllEmployeeList();
+      }
+
+      public getAllEmployeeList(){
+        let queryparams=`?is_active=True&employee=True`;
+        if (this.user_role_name === 'Accountant') {
+          queryparams += `&employee_id=${this.user_id}`;
+        } else if (this.user_role_name === 'Manager') {
+          queryparams += `&reporting_manager_id=${this.user_id}`;
         }
+        this.allEmployeesList =[];
+        this.selectedEmployeesList=[];
+        this.api.getData(`${environment.live_url}/${environment.employee}/${queryparams}`).subscribe((respData: any) => {
+         this.allEmployeesList = respData;
+         this.selectedEmployeesList=this.allEmployeesList;
+        },(error => {
+          this.api.showError(error?.error?.detail)
+        }));
+      }
+
+      public getSelectedPeriod(id: any) {
+        this.selectedPeriodDetails='';
+        this.api.getData(`${environment.live_url}/${environment.settings_period}/${id}/`).subscribe((respData: any) => {
+        this.selectedPeriodDetails = respData;
+        console.log(this.selectedPeriodDetails);
+        }, (error: any) => {
+          this.api.showError(error?.error?.detail);
+        })
       }
 
       workCultureData:any =[]
-      defaultData(){
-        // let finalQuery = this.dropdwonFilterData.period
-        this.api.getData(`${environment.live_url}/${environment.settings_period}/${this.dropdwonFilterData.period}/`).subscribe(
+      getWorkCultureAndEthicsList(){
+        let query = '';
+        if (this.dropdwonFilterData) {
+          const params = [];
+          if (this.dropdwonFilterData.periodicity) {
+            params.push(`periodicity=${this.dropdwonFilterData.periodicity}`);
+          }
+          if (this.dropdwonFilterData.period) {
+            params.push(`period=${this.dropdwonFilterData.period}`);
+          }
+          if (this.dropdwonFilterData.employee_id) {
+            this.selectedEmployeesList=[];
+            params.push(`employee_id=${this.dropdwonFilterData.employee_id}`);
+            this.selectedEmployeesList = [this.allEmployeesList?.find((emp:any)=>(emp?.user_id === this.dropdwonFilterData?.employee_id))];
+          }else{
+            this.selectedEmployeesList = this.allEmployeesList;
+          }
+          if (params.length) {
+            query = '?' + params.join('&');
+          }
+        }
+        this.api.getData(`${environment.live_url}/${environment.upload_assessment}/${query}`).subscribe(
           (res:any)=>{
-            console.log(res,'period')
-           this.workCultureData =   this.generateMonthlyData('rrrr',res)
-           console.log(this.workCultureData)
-           const formattedData = this.workCultureData.map((item: any, i: number) => ({
-            sl: (this.page - 1) * this.tableSize + i + 1,
-            ...item
-          }));
-           this.tableConfig = {
-            columns: tableColumns,
-            data: formattedData,
-            searchTerm: this.term,
-            actions: [],
-            accessConfig: [],
-            // tableSize: pageSize,
-            pagination: true,
-            // currentPage:page,
-            // totalRecords: res.total_no_of_record
-            totalRecords:this.workCultureData.length,
-            hideDownload:true
-          };
-          },
-          (error)=>{
-            console.log(error)
+            console.log('res',res)
+                        const formattedData = this.constructTableForm(this.selectedPeriodDetails);
+                        console.log(formattedData);
+                        this.tableConfig = {
+                          columns: tableColumns.map(col => ({
+                            ...col,
+                          })),
+                         data: formattedData,
+                         actions: [],
+                         accessConfig: [],
+                         pagination: false,
+                         searchable: false,
+                         formContent:true,
+                         sendWorkCulture:true,
+                         tableSize: formattedData.length,
+                         totalRecords: formattedData.length
+                        };
+                    },
+                              (error)=>{
+                                this.api.showError(error?.error?.detail);
           }
         )
        }
 
-       generateMonthlyData(employeeName: string, keyword: any): any[] {
-        let monthsOrPeriods: string[] = [];
-        
-        if (keyword?.periodicty_name === 'Monthly') {
-          if (keyword?.period_name) {
-            monthsOrPeriods = [keyword.period_name];
-          }
-        } else {
-          monthsOrPeriods = keyword?.month_data || [];
-        }
-      
-        // Create a new independent array
-        const result = monthsOrPeriods.map(monthOrPeriod => ({
-          employee_name: employeeName,
-          month: monthOrPeriod,
-          points: '',
-          file_data: ''
-        }));
-      
-        return result;
-      }
-
-      // Called when user changes page number from the dynamic table
-    onTableDataChange(event: any) {
-      console.log('Page changed to:', event);
-      const page = event;
-      this.page = page;
-
-      this.getTableData({
-        page: page,
-        pageSize: this.tableSize,
-        searchTerm: this.term
-      });
-    }
-
-    // Called when user changes page size from the dynamic table
-    onTableSizeChange(event: any): void {
-      if(event){
-        const newSize = Number(event.value || event);
-        this.tableSize = newSize;
-        this.page = 1; // reset to first page
-        this.getTableData({
-          page: this.page,
-          pageSize: this.tableSize,
-          searchTerm: this.term
-        });
-      }
-
-    }
-
-    // Called from <app-dynamic-table> via @Output actionEvent
+   // Called from <app-dynamic-table> via @Output actionEvent
     handleAction(event: { actionType: string; detail: any }) {
       switch (event.actionType) {
-        case 'tableDataChange':
-          this.onTableDataChange(event.detail);
-          break;
-          case 'tableSizeChange':
-          this.onTableSizeChange(event.detail);
-          break;
-          case 'search':
-          this.onSearch(event.detail);
-          break;
           case 'export_csv':
           this.exportCsvOrPdf(event.detail);
           break;
           case 'export_pdf':
           this.exportCsvOrPdf(event.detail);
           break;
+          case 'submitWorkCulture':
+          this.submitWorkCultureDetails(event['action']);
+          break;
         default:
           console.warn('Unhandled action type:', event.actionType);
       }
     }
     exportCsvOrPdf(fileType) {
-      const query = buildPaginationQuery({
-        page: this.page,
-        pageSize: this.tableSize,
-      });
-
-      const url = `${environment.live_url}/${environment.timesheet_reports}/${query}&file-type=${fileType}&timsheet-type=detailed`;
+      const url = `${environment.live_url}/${environment.timesheet_reports}/?file-type=${fileType}&timsheet-type=detailed`;
       downloadFileFromUrl({
         url,
         fileName: 'timesheet_details',
         fileType
       });
     }
-
-    // Fetch table data from API with given params
-    getTableData(params?: { page?: number; pageSize?: number; searchTerm?: string }) {
-      const page = params?.page ?? this.page;
-      const pageSize = params?.pageSize ?? this.tableSize;
-      const searchTerm = params?.searchTerm ?? this.term;
-
-      const query = buildPaginationQuery({ page, pageSize, searchTerm });
-      this.api.getData(`${environment.live_url}/${environment.timesheet}/${query}`).subscribe((res: any) => {
-        const formattedData = res.results.map((item: any, i: number) => ({
-          sl: (page - 1) * pageSize + i + 1,
-          ...item
-        }));
-
-      });
-      this.tableConfig = {
-        columns: tableColumns,
-        // data: this.data,
-        searchTerm: this.term,
-        actions: [],
-        accessConfig: [],
-        tableSize: pageSize,
-        pagination: true,
-        currentPage:page,
-        // totalRecords: res.total_no_of_record
-        totalRecords:this.tableConfig.data.length,
-        hideDownload:true
-      };
-    }
       onSearch(term: string): void {
         this.term = term;
-        this.getTableData({
-          page: 1,
-          pageSize: this.tableSize,
-          searchTerm: term
+      }
+
+      public submitWorkCultureDetails(data:any){
+        this.api.postData(`${environment.live_url}/${environment.upload_assessment}/`, data).subscribe((respData: any) => {
+          if (respData) {
+            this.api.showSuccess(respData['message']);
+            this.getWorkCultureAndEthicsList();
+          }
+        }, (error: any) => {
+          this.api.showError(error?.error?.detail);
         });
+      }
+      constructTableForm(selectedPeriodDetails){
+        this.workCultureData=[];
+        const hasMonthData = selectedPeriodDetails && selectedPeriodDetails.month_data != null;
+        let index = 1;
+        this.workCultureData = hasMonthData
+          ? selectedPeriodDetails.month_data.flatMap(month =>
+              this.selectedEmployeesList?.map(emp => ({
+                sl: index++,
+                employee_name: emp?.user__full_name,
+                employee_id:emp?.user_id,
+                month: month,
+                points: null,
+                work_ethics_file: null,
+                periodicity_id:this.dropdwonFilterData.periodicity,
+                period_id:this.dropdwonFilterData.period
+              }))
+            )
+          : this.selectedEmployeesList?.map((emp, idx) => ({
+              sl: (idx+1),
+              employee_name: emp?.user__full_name,
+              employee_id:emp?.user_id,
+              month: selectedPeriodDetails?.period_name,
+              points: null,
+              work_ethics_file: null,
+              periodicity_id:this.dropdwonFilterData.periodicity,
+              period_id:this.dropdwonFilterData.period
+            }));
+            
+            return this.workCultureData ? this.workCultureData : [];
+
       }
 }

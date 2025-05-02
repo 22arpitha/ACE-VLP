@@ -24,7 +24,7 @@ export class PeriodComponent implements OnInit,OnChanges {
   constructor(private apiService: ApiserviceService) { }
   
   ngOnChanges(changes: SimpleChanges): void {
-   if(changes['periodicity_id']){
+   if(changes && changes['periodicity_id']){
     this.periodicity_id = changes['periodicity_id'].currentValue;
     if(this.periodicity_id){
       this.getPeroidicityBasedPeroid();  
