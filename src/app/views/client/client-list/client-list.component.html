@@ -38,18 +38,18 @@
                     <i (click)="sort('desc','client_name')" *ngIf="arrowState['client_name']"
                       class="bi bi-arrow-up"></i>
                    <!-- Filter Trigger -->
-                   <button mat-icon-button [matMenuTriggerFor]="clientFilterMenu">
+                   <!-- <button mat-icon-button [matMenuTriggerFor]="clientFilterMenu">
                     <i class="bi bi-toggles"></i>
-                  </button>
+                  </button> -->
 
 
-                  <mat-menu #clientFilterMenu="matMenu">
+                  <!-- <mat-menu #clientFilterMenu="matMenu">
                     <app-generic-table-filter
                       [options]="allClientNames"
                       [(selectedOptions)]="filters.client_name"
                       (selectedOptionsChange)="onFilterChange($event, 'client_name')"
                     ></app-generic-table-filter>
-                  </mat-menu>
+                  </mat-menu> -->
                     </th>
                   <th scope="col">Country
                     <i *ngIf="!arrowState['country']" (click)="sort('asc','country')" class="bi bi-arrow-down"></i>

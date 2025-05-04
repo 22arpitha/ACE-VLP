@@ -12,12 +12,17 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { DatePipe } from '@angular/common';
 
-
+export interface IdNamePair {
+  id: any;
+  name: string;
+}
 @Component({
   selector: 'app-all-jobs',
   templateUrl: './all-jobs.component.html',
   styleUrls: ['./all-jobs.component.scss']
 })
+
+
 export class AllJobsComponent implements OnInit {
   jobStatusForm: FormGroup
   BreadCrumbsTitle: any = 'Jobs';
@@ -54,12 +59,17 @@ export class AllJobsComponent implements OnInit {
     manager:[]
   };
 
-  allClientNames: string[] = [];
-  allJobTypeNames: string[] = [];
-  allManagerNames: string[] = [];
-  allEmployeeNames: string[] = [];
+
+  allClientNames: IdNamePair[] = [];
+  allJobTypeNames: IdNamePair[] = [];
+  allManagerNames: IdNamePair[] = [];
+  allEmployeeNames: IdNamePair[] = [];
   filteredList = [];
   datepicker:any;
+  filterQuery: string;
+  jobList:any = [];
+  jobAllocationDate: string | null;
+  statusDate: any;
   constructor(
     private common_service: CommonServiceService,
     private accessControlService: SubModuleService,
@@ -70,25 +80,29 @@ export class AllJobsComponent implements OnInit {
     private fb: FormBuilder,
     private datePipe: DatePipe) {
     this.common_service.setTitle(this.BreadCrumbsTitle);
-
+    this.user_id = sessionStorage.getItem('user_id');
+    this.userRole = sessionStorage.getItem('user_role_name')?.toLowerCase();
+     this.common_service.jobStatus$.subscribe((status:boolean)=>{
+      if(status){
+         this.getJobsHistoryList();
+      }else{
+        this.getCurrentJobsList();
+      }
+    })
   }
 
-  ngOnInit(): void {
-    this.user_id = sessionStorage.getItem('user_id');
-    this.userRole = sessionStorage.getItem('user_role_name');
+  async ngOnInit() {
+
     this.getModuleAccess();
     this.getAllEmployeeList();
     this.getAllActiveManagerList();
     // this.getCurrentJobsList();
     this.getJobStatusList();
     this.initialForm();
-    this.common_service.jobStatus$.subscribe((status:boolean)=>{
-      if(status){
-        this.getJobsHistoryList();
-      }else{
-        this.getCurrentJobsList();
-      }
-    })
+
+
+
+    await this.getJobsFilterList();
   }
   access_name:any ;
 
@@ -99,8 +113,8 @@ export class AllJobsComponent implements OnInit {
     extractor: (item: any) => { id: any; name: string }
   ): { id: any; name: string }[] {
     const seen = new Map();
-
-    this.allJobsList.forEach(job => {
+    console.log(this.jobList,"jobList");
+    this.jobList?.forEach(job => {
       const value = extractor(job);
       if (value && value.id && !seen.has(value.id)) {
         seen.set(value.id, value.name);
@@ -117,24 +131,63 @@ export class AllJobsComponent implements OnInit {
     this.filterData();
   }
 
+  // filterData() {
+  //   console.log(this.filters.job_type_name)
+  //   this.filteredList = this.allJobsList.filter(job => {
+  //     const jobTypeName = job?.job_type_name?.trim();
+  //     const clientName = job?.client_name?.trim();
+  //     const employeeName = job?.employees?.find((e: any) => e?.is_primary)?.employee_name?.trim();
+  //     const managerName = job?.employees?.find((e: any) => e?.is_primary)?.manager_name?.trim();
+
+  //     const jobTypeMatch = !this.filters.job_type_name.length || this.filters.job_type_name.includes(jobTypeName);
+  //     const clientMatch = !this.filters.client_name.length || this.filters.client_name.includes(clientName);
+  //     const employeeMatch = !this.filters.employees.length || this.filters.employees.includes(employeeName);
+  //     const managerMatch = !this.filters.manager.length || this.filters.manager.includes(managerName);
+
+  //     return jobTypeMatch && clientMatch && employeeMatch && managerMatch;
+  //   });
+
+  //   this.count = this.filteredList.length;
+  // }
   filterData() {
-    console.log(this.filters.job_type_name)
-    this.filteredList = this.allJobsList.filter(job => {
-      const jobTypeName = job?.job_type_name?.trim();
-      const clientName = job?.client_name?.trim();
-      const employeeName = job?.employees?.find((e: any) => e?.is_primary)?.employee_name?.trim();
-      const managerName = job?.employees?.find((e: any) => e?.is_primary)?.manager_name?.trim();
+    this.filterQuery = this.getFilterBaseUrl()
+    if (this.filters.client_name.length) {
+      this.filterQuery += `&client-ids=[${this.filters.client_name.join(',')}]`;
+    }
 
-      const jobTypeMatch = !this.filters.job_type_name.length || this.filters.job_type_name.includes(jobTypeName);
-      const clientMatch = !this.filters.client_name.length || this.filters.client_name.includes(clientName);
-      const employeeMatch = !this.filters.employees.length || this.filters.employees.includes(employeeName);
-      const managerMatch = !this.filters.manager.length || this.filters.manager.includes(managerName);
+    if (this.filters.job_type_name.length) {
+      this.filterQuery += `&job-type-ids=[${this.filters.job_type_name.join(',')}]`;
+    }
 
-      return jobTypeMatch && clientMatch && employeeMatch && managerMatch;
+    if (this.filters.employees.length || this.filters.manager.length) {
+      this.userRole === 'accountant' ? this.filterQuery += `&employee-ids=[${this.filters.employees.join(',')}]&em_designation=70` :
+      this.userRole === 'manager' ? this.filterQuery += `&employee-ids=[${this.filters.employees.join(',')}]&em_designation=69`:
+      this.filterQuery += `&employee-ids=[${this.filters.employees.join(',')}]` ;
+    }
+
+
+    if (this.jobAllocationDate) {
+      this.filterQuery += `&job-allocation-date=[${this.jobAllocationDate}]`;
+    }
+    if (this.statusDate) {
+      this.filterQuery += `&job-status-date=[${this.statusDate}]`;
+    }
+    if(this.isCurrent){
+      this.filterQuery += `&status=True`;
+    }
+    else{
+      this.filterQuery += `&status=False`;
+    }
+    this.apiService.getData(`${environment.live_url}/${environment.jobs}/${this.filterQuery}`).subscribe((res: any) => {
+      this.allJobsList = res?.results;
+      this.filteredList = res?.results;
+      this.count = res?.['total_no_of_record'];
+      this.page = res?.['current_page'];
+
+
     });
-
-    this.count = this.filteredList.length;
   }
+
 
 
   getModuleAccess() {
@@ -160,26 +213,25 @@ export class AllJobsComponent implements OnInit {
     )
   }
 
-  public getAllEmployeeList(){
+  getAllEmployeeList(){
     this.allEmployeelist =[];
     this.apiService.getData(`${environment.live_url}/${environment.employee}/?is_active=True&employee=True`).subscribe((respData: any) => {
-  this.allEmployeelist = respData;
+    this.allEmployeelist = respData;
     },(error => {
       this.apiService.showError(error?.error?.detail)
     }));
   }
 
-  public getAllActiveManagerList(){
+  getAllActiveManagerList(){
     this.allManagerlist =[];
     this.apiService.getData(`${environment.live_url}/${environment.employee}/?is_active=True&employee=True&designation=manager`).subscribe((respData: any) => {
-  this.allManagerlist = respData;
+    this.allManagerlist = respData;
     },(error => {
       this.apiService.showError(error?.error?.detail)
     }));
   }
   onFilterChange(event: any, filterType: string) {
     const selectedOptions = event;
-    console.log(selectedOptions,'selectedOptions')
     this.filters[filterType] = selectedOptions;
     this.filterData();
   }
@@ -189,7 +241,7 @@ export class AllJobsComponent implements OnInit {
       percentage: []
     })
   }
-  public openCreateClientPage() {
+  openCreateClientPage() {
      sessionStorage.setItem('access-name', this.access_name?.name)
     this.router.navigate(['/jobs/create-job']);
 
@@ -217,94 +269,101 @@ export class AllJobsComponent implements OnInit {
     //  console.error('Error opening modal:', error);
     }
   }
-  public getCurrentJobsList() {
+   getCurrentJobsList() {
     this.isHistory = false;
     this.isCurrent = true;
-    let query = this.getFilterBaseUrl()
-    query += `&status=True`;
-    this.apiService.getData(`${environment.live_url}/${environment.jobs}/${query}`).subscribe(
+    let query = `${this.getFilterBaseUrl()}&status=True`;
+
+    this.apiService.getData(`${environment.live_url}/${environment.jobs}/${query}`).subscribe((res: any) => {
+      this.allJobsList = res?.results;
+      this.filteredList = res?.results;
+      this.count = res?.['total_no_of_record'];
+      this.page = res?.['current_page'];
+
+    });
+  }
+
+  getJobsFilterList() {
+    // this.isCurrent = false;
+    // this.isHistory = true;
+    // let query = `${this.getFilterBaseUrl()}`;
+
+    this.apiService.getData(`${environment.live_url}/${environment.jobs}/?status=True`).subscribe(
       (res: any) => {
-        this.allJobsList = res?.results;
-        this.filteredList = res?.results;
-        const noOfPages: number = res?.['total_pages']
-        this.count = noOfPages * this.tableSize;
-        this.count = res?.['total_no_of_record']
-        this.page = res?.['current_page'];
-        this.allClientNames = this.getUniqueValues(job => ({ id: job.client, name: job.client_name })).map(client => client.name);
-        this.allJobTypeNames = this.getUniqueValues(job => ({ id: job.job_type, name: job.job_type_name })).map(jobType => jobType.name);
+        this.jobList = res;
+        this.allClientNames = this.getUniqueValues(job => ({ id: job.client, name: job.client_name }));
+        this.allJobTypeNames = this.getUniqueValues(job => ({ id: job.job_type, name: job.job_type_name }));
+        this.allEmployeeNames = this.getUniqueValues(job => {
+          const emp = job.employees?.find((e: any) => e.is_primary);
+          return { id: emp?.employee || '', name: emp?.employee_name || '' };
+        });
 
-        this.allEmployeeNames = [...new Set<string>(
-          this.allJobsList
-            .map((job: any) => job.employees?.find((emp: any) => emp.is_primary)?.employee_name as string)
-            .filter((name): name is string => Boolean(name))
-        )];
+        this.allManagerNames = this.getUniqueValues(job => {
+          const mgr = job.employees?.find((e: any) => e.is_primary);
+          return { id: mgr?.manager || '', name: mgr?.manager_name || '' };
+        });
 
-        this.allManagerNames = [
-          ...new Set<string>(
-            this.allJobsList
-              .map((job: any) => job.employees?.find((emp: any) => emp.is_primary)?.manager_name as string)
-              .filter((name): name is string => Boolean(name))
-          ),
-        ];
       }
     )
   }
-
-  public getJobsHistoryList() {
+   getJobsHistoryList() {
     this.isCurrent = false;
     this.isHistory = true;
-    let query = this.getFilterBaseUrl()
-    query += `&status=False`;
+    let query = `${this.getFilterBaseUrl()}`;
+
     this.apiService.getData(`${environment.live_url}/${environment.jobs}/${query}`).subscribe(
       (res: any) => {
         this.allJobsList = res.results;
+        this.filteredList = res?.results;
         const noOfPages: number = res?.['total_pages']
         this.count = noOfPages * this.tableSize;
-        this.count = res?.['total_no_of_record']
+        this.count = res?.['total_no_of_record'];
         this.page = res?.['current_page'];
       }
     )
   }
-  public getCurrentJobs() {
+  getCurrentJobs() {
     this.page = 1;
     this.tableSize = 5;
     this.getCurrentJobsList();
   }
-  public getJobsHistory() {
+  getJobsHistory() {
     this.page = 1;
     this.tableSize = 5;
     this.getJobsHistoryList();
   }
 
-  public onTableSizeChange(event: any): void {
+  onTableSizeChange(event: any): void {
     if (event) {
       this.page = 1;
       this.tableSize = Number(event.value);
-      if (this.isCurrent) {
-        this.getCurrentJobsList()
-      } else {
-        this.getJobsHistoryList();
-      }
+       this.filterData()
+      // if (this.isCurrent) {
+      //   this.getCurrentJobsList()
+      // } else {
+      //   this.getJobsHistoryList();
+      // }
     }
   }
-  public onTableDataChange(event: any) {
+  onTableDataChange(event: any) {
     this.page = event;
-    if (this.isCurrent) {
-      this.getCurrentJobsList()
-    } else {
-      this.getJobsHistoryList();
-    }
-
+    // if (this.isCurrent) {
+    //   this.getCurrentJobsList()
+    // } else {
+    //   this.getJobsHistoryList();
+    // }
+     this.filterData();
   }
-  public filterSearch(event: any) {
+  filterSearch(event: any) {
     this.term = event.target.value?.trim();
     if (this.term && this.term.length >= 2) {
       this.page = 1;
-      if (this.isCurrent) {
-        this.getCurrentJobsList()
-      } else {
-        this.getJobsHistoryList();
-      }
+      // if (this.isCurrent) {
+      //   this.getCurrentJobsList()
+      // } else {
+      //   this.getJobsHistoryList();
+      // }
+      this.filterData()
     }
     else if (!this.term) {
       if (this.isCurrent) {
@@ -315,15 +374,15 @@ export class AllJobsComponent implements OnInit {
     }
   }
 
-  public getFilterBaseUrl(): string {
-  if(this.userRole === 'Admin'){
+  getFilterBaseUrl(): string {
+  if(this.userRole === 'admin'){
     return `?page=${this.page}&page_size=${this.tableSize}&search=${this.term}`;
   }else {
     return `?page=${this.page}&page_size=${this.tableSize}&search=${this.term}&employee-id=${this.user_id}`;
   }
   }
 
-  public sort(direction: string, column: string) {
+  sort(direction: string, column: string) {
     Object.keys(this.arrowState).forEach(key => {
       this.arrowState[key] = false;
     });
@@ -332,7 +391,7 @@ export class AllJobsComponent implements OnInit {
     this.sortValue = column;
   }
 
-  public getContinuousIndex(index: number): number {
+  getContinuousIndex(index: number): number {
     return (this.page - 1) * this.tableSize + index + 1;
   }
 
@@ -352,7 +411,7 @@ export class AllJobsComponent implements OnInit {
     this.saveJobStausPercentage(item)
 
   }
-  public validateKeyPress(event: KeyboardEvent) {
+  validateKeyPress(event: KeyboardEvent) {
     const keyCode = event.which || event.keyCode;
     if ((keyCode < 48 || keyCode > 57) && keyCode !== 8 && keyCode !== 37 && keyCode !== 39) {
     }
@@ -382,7 +441,6 @@ export class AllJobsComponent implements OnInit {
 
   saveJobStausPercentage(item: any) {
     if(!item.isInvalid){
-      console.log(item)
       if(!this.changedStatusName){
         this.changedStatusName = item.job_status_name
       }
@@ -419,7 +477,7 @@ export class AllJobsComponent implements OnInit {
     return manager ? manager?.manager_name : '';
   }
 
-  public downloadOption(type:any){
+  downloadOption(type:any){
   let status:any
     if(this.isCurrent){
       status = 'True';
@@ -427,31 +485,31 @@ export class AllJobsComponent implements OnInit {
     else{
       status = 'False';
     }
-    console.log(status)
     let query = `?page=${this.page}&page_size=${this.tableSize}&file-type=${type}&is-active=${status}`
     let apiUrl = `${environment.live_url}/${environment.job_details}/${query}`;
     fetch(apiUrl)
-  .then(res => res.blob())
-  .then(blob => {
-    //console.log('blob',blob);
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = `job_details.${type}`;
-    a.click();
-  });
+    .then(res => res.blob())
+    .then(blob => {
+      //console.log('blob',blob);
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `job_details.${type}`;
+      a.click();
+    });
   }
   setDateFilterColumn(event){
     const selectedDate = event.value;
   if (selectedDate) {
-    const formatted = this.datePipe.transform(selectedDate, 'yyyy-MM-dd');
+    this.statusDate = this.datePipe.transform(selectedDate, 'yyyy-MM-dd');
   }
+  this.filterData()
   }
   onDateSelected(event: any): void {
     const selectedDate = event.value;
-
     if (selectedDate) {
-      const formatted = this.datePipe.transform(selectedDate, 'yyyy-MM-dd');
+     this.jobAllocationDate = this.datePipe.transform(selectedDate, 'yyyy-MM-dd');
     }
+    this.filterData()
   }
 
 }

@@ -19,8 +19,8 @@
     (ngModelChange)="onSelectionChange()"
     [multiple]="true"
   >
-    <mat-list-option *ngFor="let option of filteredOptions" [value]="option">
-      {{ option }}
+    <mat-list-option *ngFor="let option of filteredOptions" [value]="option.id">
+      {{ option.name }}
     </mat-list-option>
   </mat-selection-list>
 </div>

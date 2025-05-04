@@ -7,17 +7,15 @@ import { Component, EventEmitter, Input, OnInit, Output, SimpleChanges } from '@
 })
 export class GenericTableFilterComponent implements OnInit {
 
-  @Input() selectedOptions: string[] = [];
-  @Output() selectedOptionsChange = new EventEmitter<string[]>(); // 🔧 Required for two-way binding
+  @Input() options: { id: any, name: string }[] = [];
+  @Input() selectedOptions: any[] = [];
+  @Output() selectedOptionsChange = new EventEmitter<any[]>();
 
-  @Input() options: string[] = [];
+  filterSearchText: string = '';
+  filteredOptions: { id: any, name: string }[] = [];
 
-  filterSearchText = '';
-  filteredOptions: string[] = [];
 
-  ngOnInit() {
-
-  }
+  ngOnInit() {}
   ngOnChanges(event:SimpleChanges) {
     this.filteredOptions = [...this.options];
     this.filterOptions();
@@ -25,7 +23,7 @@ export class GenericTableFilterComponent implements OnInit {
   filterOptions() {
     const text = this.filterSearchText.toLowerCase();
     this.filteredOptions = this.options.filter(opt =>
-      opt.toLowerCase().includes(text)
+      opt.name.toLowerCase().includes(text)
     );
   }
 
@@ -35,7 +33,6 @@ export class GenericTableFilterComponent implements OnInit {
   }
 
   onSelectionChange() {
-    console.log('Selected:', this.selectedOptions);
     this.selectedOptionsChange.emit(this.selectedOptions);
   }
 
