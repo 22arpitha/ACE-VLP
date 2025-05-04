@@ -134,7 +134,6 @@ export class AllJobsComponent implements OnInit {
     });
 
     this.count = this.filteredList.length;
-    console.log('filteredList',this.filteredList);
   }
 
 
@@ -258,15 +257,11 @@ export class AllJobsComponent implements OnInit {
     query += `&status=False`;
     this.apiService.getData(`${environment.live_url}/${environment.jobs}/${query}`).subscribe(
       (res: any) => {
-        this.allJobsList = res?.results;
-        this.filteredList = res?.results;
+        this.allJobsList = res.results;
         const noOfPages: number = res?.['total_pages']
         this.count = noOfPages * this.tableSize;
         this.count = res?.['total_no_of_record']
         this.page = res?.['current_page'];
-        this.allClientNames = this.getUniqueValues('client_name');
-        this.allJobTypeNames = this.getUniqueValues('job_type_name');
-        console.log(this.allClientNames, this.allJobTypeNames,"allClientNames, allJobTypeNames)");
       }
     )
   }
