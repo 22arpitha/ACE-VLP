@@ -6,10 +6,10 @@ import { Component, ContentChildren, OnInit, QueryList } from '@angular/core';
   styleUrls: ['./tabs.component.scss']
 })
 export class TabsComponent implements OnInit {
-periodicityId:any;
+periodicityId:number | null = null;
 userRole:any
-period:any;
-employee:any;
+period:number | null = null;
+employee:number | null = null;
 resetFilter:boolean=false;
 ondefaultSelection:boolean =false;
 tabs:string[] = ['Overall Productivity', 'Quantitative Productivity', 'Qualitative Productivity','Work Culture and Work Ethics',
@@ -18,8 +18,8 @@ tabs:string[] = ['Overall Productivity', 'Quantitative Productivity', 'Qualitati
   commonFilterData:any={'employee_id':'','periodicity':'','period':''};
   selectTab(index: number): void {
     this.selectedTab = index;
-    if(this.selectedTab ===  3 && !this.periodicityId){
-      this.ondefaultSelection=true;
+    if(this.selectedTab ===  3 && ((this.userRole ==='Accountant' && !this.periodicityId && !this.period)||(!this.employee && !this.periodicityId && !this.period))){
+      this.ondefaultSelection=true; 
       setTimeout(() => {
         this.applySearch();
       }, 300);
@@ -36,13 +36,28 @@ tabs:string[] = ['Overall Productivity', 'Quantitative Productivity', 'Qualitati
   applySearch(){
     this.commonFilterData={'employee_id':this.employee,'periodicity':this.periodicityId,'period':this.period};
   }
-  resetSearch(){
-    this.commonFilterData={'employee_id':'','periodicity':'','period':''};
-    this.resetFilter=true;
+  resetSearch(): void {
+    this.commonFilterData = {
+      employee_id: '',
+      periodicity: '',
+      period: ''
+    };
+    this.resetFilter = true;
+    const noFiltersSelected = ((this.userRole ==='Accountant' && !this.periodicityId && !this.period) || (!this.employee && !this.periodicityId && !this.period));
+    console.log('noFiltersSelected',noFiltersSelected);
+    const isTab3 = this.selectedTab === 3;
+    if (isTab3 && noFiltersSelected) {
+      this.ondefaultSelection = true;
+      setTimeout(() => this.applySearch(), 300);
+    }
     setTimeout(() => {
-      this.resetFilter=false;
+      this.resetFilter = false;
+      if (!this.resetFilter) {
+        this.ondefaultSelection = isTab3 && noFiltersSelected;
+      }
     }, 100);
   }
+  
 
   selectedEmployee(event:any){
 this.employee=event;

@@ -7,6 +7,8 @@ export interface TableColumn {
   filterType?: 'text' | 'date' | 'multi-select';
   filterOptions?: string[];
   navigation?: boolean;
+  inputField?:boolean;
+  fileInputField?:boolean;
 }
 
 export interface DynamicTableConfig {
@@ -18,6 +20,7 @@ export interface DynamicTableConfig {
   tableSize?: number;
   pagination?: boolean;
   navigation?: boolean;
+  formContent?:boolean;
   dateRangeFilter?:boolean;
   searchable?:boolean;
   currentPage?:number,
@@ -28,6 +31,7 @@ export interface DynamicTableConfig {
   includeAllJobsEnable?:boolean;
   selectedClientId?:number;
   sendEmail?:boolean;
+  sendWorkCulture?:boolean;
   estimationDetails?:boolean;
   tableFooterContent?:any;
   hideDownload?:boolean;
