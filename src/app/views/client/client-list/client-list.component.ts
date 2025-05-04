@@ -10,6 +10,7 @@ import { CommonServiceService } from '../../../service/common-service.service';
 import { SubModuleService } from '../../../service/sub-module.service';
 import { environment } from '../../../../environments/environment';
 import { ClientContactDetailsPopupComponent } from '../client-contact-details-popup/client-contact-details-popup.component';
+import { DatePipe } from '@angular/common';
 
 
 
@@ -45,13 +46,22 @@ export class ClientListComponent implements OnInit {
     accessPermissions = []
     user_id: any;
     userRole: any;
-
-    constructor(private common_service: CommonServiceService,private accessControlService:SubModuleService,
-      private router:Router,private modalService: NgbModal,private dialog:MatDialog,
-      private apiService: ApiserviceService,private http: HttpClient) {
+    filters: { client_name: string[]} = {
+      client_name: []
+    }
+    allClientNames:string[] = []
+    constructor(
+      private common_service: CommonServiceService,
+      private accessControlService:SubModuleService,
+      private router:Router,
+      private modalService: NgbModal,
+      private dialog:MatDialog,
+      private apiService: ApiserviceService,
+      private http: HttpClient,
+      private datePipe:DatePipe) {
       this.common_service.setTitle(this.BreadCrumbsTitle)
      }
-  
+
     ngOnInit(): void {
       this.user_id = sessionStorage.getItem('user_id');
       this.userRole = sessionStorage.getItem('user_role_name');
@@ -59,6 +69,10 @@ export class ClientListComponent implements OnInit {
 
       this.getCurrentClientList()
     }
+
+  getUniqueValues(field: string):any {
+    return [...new Set(this.allClientList.map(job => job[field]).filter(Boolean))];
+  }
     access_name:any ;
     getModuleAccess(){
       this.accessControlService.getAccessForActiveUrl(this.user_id).subscribe((access) => {
@@ -71,11 +85,11 @@ export class ClientListComponent implements OnInit {
         }
       });
     }
-  
+
     public openCreateClientPage(){
       sessionStorage.setItem('access-name', this.access_name?.name)
       this.router.navigate(['/client/create']);
-  
+
     }
     async edit(item: any) {
       this.selectedItemId = item?.id;
@@ -85,14 +99,14 @@ export class ClientListComponent implements OnInit {
           backdrop: 'static',
           centered: true
         });
-  
+
         modalRef.componentInstance.status.subscribe(resp => {
           if (resp === 'ok') {
             modalRef.dismiss();
             sessionStorage.setItem('access-name', this.access_name?.name)
             this.common_service.setClientActiveTabindex(0);
             this.router.navigate(['/client/update-client/',this.selectedItemId]);
-  
+
           } else {
             modalRef.dismiss();
           }
@@ -113,11 +127,12 @@ export class ClientListComponent implements OnInit {
           this.count = noOfPages * this.tableSize;
           this.count = res?.['total_no_of_record']
           this.page = res?.['current_page'];
+          this.allClientNames = this.getUniqueValues('client_name');
         },(error: any) => {
           this.apiService.showError(error?.error?.detail);
         });
     }
-  
+
     public getClientHistoryList(){
       this.isCurrent = false;
       this.isHistory=true;
@@ -132,18 +147,18 @@ export class ClientListComponent implements OnInit {
           this.page = res?.['current_page'];
         },(error: any) => {
           this.apiService.showError(error?.error?.detail);
-    
+
         });
     }
     public getCurrentClients(){
       this.page = 1;
       this.tableSize = 5;
-    this.getCurrentClientList();  
+    this.getCurrentClientList();
     }
     public getClientsHistory(){
       this.page = 1;
       this.tableSize = 5;
-    this.getClientHistoryList();  
+    this.getClientHistoryList();
     }
 
     public onTableSizeChange(event: any): void {
@@ -164,7 +179,7 @@ export class ClientListComponent implements OnInit {
         }else{
           this.getClientHistoryList();
         }
-  
+
     }
     public filterSearch(event: any) {
       this.term = event.target.value?.trim();
@@ -184,7 +199,7 @@ export class ClientListComponent implements OnInit {
         }
       }
     }
-  
+
     public getFilterBaseUrl(): string {
       if(this.userRole === 'Admin'){
         return `?page=${this.page}&page_size=${this.tableSize}&search=${this.term}`;
@@ -192,7 +207,7 @@ export class ClientListComponent implements OnInit {
         return `?page=${this.page}&page_size=${this.tableSize}&search=${this.term}&employee-id=${this.user_id}`;
       }
       }
-  
+
     public sort(direction: string, column: string) {
       Object.keys(this.arrowState).forEach(key => {
         this.arrowState[key] = false;
@@ -201,7 +216,7 @@ export class ClientListComponent implements OnInit {
       this.directionValue = direction;
       this.sortValue = column;
     }
-  
+
     public getContinuousIndex(index: number): number {
       return (this.page - 1) * this.tableSize + index + 1;
     }
@@ -215,7 +230,7 @@ export class ClientListComponent implements OnInit {
 
 
     public downloadOption(type:any){
-      let status:any 
+      let status:any
       if(this.isCurrent){
         status = 'True';
       }
@@ -233,5 +248,23 @@ export class ClientListComponent implements OnInit {
       a.download = `client_details.${type}`;
       a.click();
     });
+    }
+    setDateFilterColumn(event){
+      const selectedDate = event.value;
+    if (selectedDate) {
+      const formatted = this.datePipe.transform(selectedDate, 'yyyy-MM-dd');
+    }
+    }
+    onDateSelected(event: any): void {
+      const selectedDate = event.value;
+
+      if (selectedDate) {
+        const formatted = this.datePipe.transform(selectedDate, 'yyyy-MM-dd');
+      }
+    }
+    onFilterChange(event: any, filterType: string) {
+      const selectedOptions = event;
+      // this.filters[filterType] = selectedOptions;
+      // this.filterData();
     }
   }

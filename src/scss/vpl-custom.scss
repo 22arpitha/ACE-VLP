@@ -124,3 +124,9 @@ input[type="date"] {
   pointer-events: none;
   z-index: -1;
 }
+.mat-selection-list.mat-selection-list.mat-list-base{
+  height: fit-content;
+  max-height: 200px;
+  overflow-y: auto;
+}
+

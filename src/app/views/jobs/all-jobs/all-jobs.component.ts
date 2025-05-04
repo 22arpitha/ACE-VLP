@@ -9,7 +9,8 @@ import { CommonServiceService } from '../../../service/common-service.service';
 import { SubModuleService } from '../../../service/sub-module.service';
 import { environment } from '../../../../environments/environment';
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
+import { DatePipe } from '@angular/common';
 
 
 @Component({
@@ -45,18 +46,31 @@ export class AllJobsComponent implements OnInit {
   userRole: any;
   allEmployeelist:any=[];
   allManagerlist:any=[];
-  filters: { job_type_name: string[]; client_name: string[] } = {
+  dateFilterValue: any = null;
+  filters: { job_type_name: string[]; client_name: string[];employees:string[];manager:string[] } = {
     job_type_name: [],
-    client_name: []
+    client_name: [],
+    employees:[],
+    manager:[]
   };
 
   allClientNames: string[] = [];
   allJobTypeNames: string[] = [];
+  allManagerNames: string[] = [];
+  allEmployeeNames: string[] = [];
   filteredList = [];
-  constructor(private common_service: CommonServiceService, private accessControlService: SubModuleService,
-    private router: Router, private modalService: NgbModal, private dialog: MatDialog,
-    private apiService: ApiserviceService, private fb: FormBuilder) {
+  datepicker:any;
+  constructor(
+    private common_service: CommonServiceService,
+    private accessControlService: SubModuleService,
+    private router: Router,
+    private modalService: NgbModal,
+    private dialog: MatDialog,
+    private apiService: ApiserviceService,
+    private fb: FormBuilder,
+    private datePipe: DatePipe) {
     this.common_service.setTitle(this.BreadCrumbsTitle);
+
   }
 
   ngOnInit(): void {
@@ -70,7 +84,6 @@ export class AllJobsComponent implements OnInit {
     this.initialForm();
     this.common_service.jobStatus$.subscribe((status:boolean)=>{
       if(status){
-        console.log(status)
         this.getJobsHistoryList();
       }else{
         this.getCurrentJobsList();
@@ -79,9 +92,24 @@ export class AllJobsComponent implements OnInit {
   }
   access_name:any ;
 
-  getUniqueValues(field: string):any {
-    return [...new Set(this.allJobsList.map(job => job[field]).filter(Boolean))];
+  // getUniqueValues(field: string):any {
+  //   return [...new Set(this.allJobsList.map(job => job[field]).filter(Boolean))];
+  // }
+  getUniqueValues(
+    extractor: (item: any) => { id: any; name: string }
+  ): { id: any; name: string }[] {
+    const seen = new Map();
+
+    this.allJobsList.forEach(job => {
+      const value = extractor(job);
+      if (value && value.id && !seen.has(value.id)) {
+        seen.set(value.id, value.name);
+      }
+    });
+
+    return Array.from(seen, ([id, name]) => ({ id, name }));
   }
+
   applyClientFilter() {
     this.filterData();
   }
@@ -90,31 +118,30 @@ export class AllJobsComponent implements OnInit {
   }
 
   filterData() {
+    console.log(this.filters.job_type_name)
     this.filteredList = this.allJobsList.filter(job => {
       const jobTypeName = job?.job_type_name?.trim();
       const clientName = job?.client_name?.trim();
+      const employeeName = job?.employees?.find((e: any) => e?.is_primary)?.employee_name?.trim();
+      const managerName = job?.employees?.find((e: any) => e?.is_primary)?.manager_name?.trim();
 
-      const jobTypeMatch =
-        !this.filters.job_type_name.length ||
-        this.filters.job_type_name.includes(jobTypeName);
+      const jobTypeMatch = !this.filters.job_type_name.length || this.filters.job_type_name.includes(jobTypeName);
+      const clientMatch = !this.filters.client_name.length || this.filters.client_name.includes(clientName);
+      const employeeMatch = !this.filters.employees.length || this.filters.employees.includes(employeeName);
+      const managerMatch = !this.filters.manager.length || this.filters.manager.includes(managerName);
 
-      const clientMatch =
-        !this.filters.client_name.length ||
-        this.filters.client_name.includes(clientName);
-
-      const matched = clientMatch && jobTypeMatch;
-
-      return matched;
+      return jobTypeMatch && clientMatch && employeeMatch && managerMatch;
     });
+
     this.count = this.filteredList.length;
   }
+
 
   getModuleAccess() {
     this.accessControlService.getAccessForActiveUrl(this.user_id).subscribe((access) => {
       if (access) {
         this.access_name=access[0]
         this.accessPermissions = access[0].operations;
-       console.log('Access Permissions:', access);
       } else {
       //  console.log('No matching access found.');
       }
@@ -124,7 +151,7 @@ export class AllJobsComponent implements OnInit {
   getJobStatusList() {
     this.apiService.getData(`${environment.live_url}/${environment.settings_job_status}/`).subscribe(
       (resData: any) => {
-        console.log(resData);
+        // console.log(resData);
         resData.forEach((element:any)=>{
           element['valueChanged']=false
         })
@@ -152,6 +179,7 @@ export class AllJobsComponent implements OnInit {
   }
   onFilterChange(event: any, filterType: string) {
     const selectedOptions = event;
+    console.log(selectedOptions,'selectedOptions')
     this.filters[filterType] = selectedOptions;
     this.filterData();
   }
@@ -202,9 +230,22 @@ export class AllJobsComponent implements OnInit {
         this.count = noOfPages * this.tableSize;
         this.count = res?.['total_no_of_record']
         this.page = res?.['current_page'];
-        this.allClientNames = this.getUniqueValues('client_name');
-        this.allJobTypeNames = this.getUniqueValues('job_type_name');
-        console.log(this.allClientNames, this.allJobTypeNames,"allClientNames, allJobTypeNames)");
+        this.allClientNames = this.getUniqueValues(job => ({ id: job.client, name: job.client_name })).map(client => client.name);
+        this.allJobTypeNames = this.getUniqueValues(job => ({ id: job.job_type, name: job.job_type_name })).map(jobType => jobType.name);
+
+        this.allEmployeeNames = [...new Set<string>(
+          this.allJobsList
+            .map((job: any) => job.employees?.find((emp: any) => emp.is_primary)?.employee_name as string)
+            .filter((name): name is string => Boolean(name))
+        )];
+
+        this.allManagerNames = [
+          ...new Set<string>(
+            this.allJobsList
+              .map((job: any) => job.employees?.find((emp: any) => emp.is_primary)?.manager_name as string)
+              .filter((name): name is string => Boolean(name))
+          ),
+        ];
       }
     )
   }
@@ -299,7 +340,7 @@ export class AllJobsComponent implements OnInit {
   onStatusChange(item: any, event: any) {
     const selectedStatusId = event.value;
     const selectedStatus = this.allJobStatus.find(status => status.id == selectedStatusId);
-    console.log(selectedStatus)
+    // console.log(selectedStatus)
     this.changedStatusName = selectedStatus.status_name
     if (selectedStatus) {
       item.job_status = event.value;
@@ -399,4 +440,18 @@ export class AllJobsComponent implements OnInit {
     a.click();
   });
   }
+  setDateFilterColumn(event){
+    const selectedDate = event.value;
+  if (selectedDate) {
+    const formatted = this.datePipe.transform(selectedDate, 'yyyy-MM-dd');
+  }
+  }
+  onDateSelected(event: any): void {
+    const selectedDate = event.value;
+
+    if (selectedDate) {
+      const formatted = this.datePipe.transform(selectedDate, 'yyyy-MM-dd');
+    }
+  }
+
 }
