@@ -6,7 +6,7 @@ import { DynamicTableConfig } from './dynamic-table-config.model';
 import { ApiserviceService } from '../../service/apiservice.service';
 import { environment } from '../../../environments/environment';
 import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
-import { fileToBase64 } from '../fileUtils.utils';
+import { fileToBase64, urlToFile } from '../fileUtils.utils';
 
 @Component({
   selector: 'app-dynamic-table',
@@ -60,7 +60,7 @@ selectedFile:(File | null)[] = [];
 
 
    get rows(): FormArray {
-    return this.tableFormGroup.get('rows') as FormArray;
+    return this.tableFormGroup?.get('rows') as FormArray;
   }
   
   ngOnChanges(changes: SimpleChanges): void {
@@ -81,12 +81,14 @@ selectedFile:(File | null)[] = [];
       this.arrowState[col.key] = false;
       this.columnFilters[col.key] = col.filterType === 'multi-select' ? [] : '';
     });
-    if(this.config.formContent){
+    if(this.config.formContent && this.config.data){
       this.isEditBtn=false;
       this.tableFormGroup = this.fb.group({
         rows: this.fb.array([])
       });
       this.buildDynamicTableForm(this.config.data);
+    }else{
+      this.rows?.clear();
     }
     this.applyFilters();
   }
@@ -366,14 +368,34 @@ getFormGroup(index: number): FormGroup {
 
 buildDynamicTableForm(tableData){
   this.rows.clear();
-  tableData?.forEach(item => {
+  tableData?.forEach((item,index) => {
     this.rows.push(this.fb.group({
       employee_name:[item?.employee_name],
       employee_id:[item?.employee_id],
       month:[item?.month],
-      work_ethics_file: [item?.work_ethics_file],
+      work_ethics_file: [null],
       points: [item?.points],
     }));
+    if(item && item?.work_ethics_file){
+      urlToFile(item?.work_ethics_file, this.getFileName(item?.work_ethics_file))
+      .then(file => {
+        if(file){
+          this.file[index] = file;
+          this.selectedFile[index] = this.file[index];
+          this.fileLink[index]=`${environment.media_url+item?.work_ethics_file}`
+        }else{
+        this.file[index] = null;
+        this.selectedFile[index] = null;
+        this.fileLink[index]=null;
+        this.rows?.at(index)?.patchValue({'work_ethics_file':null});
+        }
+      }
+  
+      )
+      .catch(error => console.error('Error:', error));
+      }else{
+        this.rows?.at(index)?.patchValue({'work_ethics_file':null});
+      }
   });
   this.rows.controls?.forEach((control) => {
     (control as FormGroup).disable();
@@ -388,6 +410,9 @@ public validateKeyPress(event: KeyboardEvent) {
   if ((keyCode < 48 || keyCode > 57) && keyCode !== 8 && keyCode !== 37 && keyCode !== 39 && keyCode !== 46) {
     event.preventDefault(); // Prevent the default action (i.e., entering the character)
   }
+}
+public getFileName(url:any){
+  return url?.split('/')?.pop();
 }
 
 public onFileSelected(event: Event,index:any): void {

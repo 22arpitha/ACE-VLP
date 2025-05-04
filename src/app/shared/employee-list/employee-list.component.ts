@@ -13,14 +13,14 @@ export class EmployeeListComponent implements OnInit, OnChanges {
   allEmployeeList: any = [];
   searchEmployeeText: any;
   selectedEmployeeVal: any;
-  @Input() resetFilterField: any;
+  @Input() resetFilterField: boolean = false;
   @Output() selectEmployee: EventEmitter<any> = new EventEmitter<any>();
   constructor(private apiService: ApiserviceService) {
     this.user_role_name = sessionStorage.getItem('user_role_name');
     this.user_id = sessionStorage.getItem('user_id');
   }
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['resetFilterField'] && changes['resetFilterField'].currentValue !== undefined) {
+    if (changes['resetFilterField'] && changes['resetFilterField'].currentValue ===true) {
       this.resetFilterField = changes['resetFilterField'].currentValue
       if (this.user_role_name === 'Accountant') {
         this.selectedEmployeeVal = this.allEmployeeList[0]?.user_id;

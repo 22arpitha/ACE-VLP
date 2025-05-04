@@ -6,10 +6,10 @@ import { Component, ContentChildren, OnInit, QueryList } from '@angular/core';
   styleUrls: ['./tabs.component.scss']
 })
 export class TabsComponent implements OnInit {
-periodicityId:any;
+periodicityId:number | null = null;
 userRole:any
-period:any;
-employee:any;
+period:number | null = null;
+employee:number | null = null;
 resetFilter:boolean=false;
 ondefaultSelection:boolean =false;
 tabs:string[] = ['Overall Productivity', 'Quantitative Productivity', 'Qualitative Productivity','Work Culture and Work Ethics',
@@ -18,8 +18,8 @@ tabs:string[] = ['Overall Productivity', 'Quantitative Productivity', 'Qualitati
   commonFilterData:any={'employee_id':'','periodicity':'','period':''};
   selectTab(index: number): void {
     this.selectedTab = index;
-    if(this.selectedTab ===  3 && !this.periodicityId && !this.employee && !this.period){
-      this.ondefaultSelection=true;
+    if(this.selectedTab ===  3 && ((this.userRole ==='Accountant' && !this.periodicityId && !this.period)||(!this.employee && !this.periodicityId && !this.period))){
+      this.ondefaultSelection=true; 
       setTimeout(() => {
         this.applySearch();
       }, 300);
@@ -43,7 +43,8 @@ tabs:string[] = ['Overall Productivity', 'Quantitative Productivity', 'Qualitati
       period: ''
     };
     this.resetFilter = true;
-    const noFiltersSelected = !this.periodicityId && !this.employee && !this.period;
+    const noFiltersSelected = ((this.userRole ==='Accountant' && !this.periodicityId && !this.period) || (!this.employee && !this.periodicityId && !this.period));
+    console.log('noFiltersSelected',noFiltersSelected);
     const isTab3 = this.selectedTab === 3;
     if (isTab3 && noFiltersSelected) {
       this.ondefaultSelection = true;
@@ -56,7 +57,6 @@ tabs:string[] = ['Overall Productivity', 'Quantitative Productivity', 'Qualitati
       }
     }, 100);
   }
-  
   
 
   selectedEmployee(event:any){

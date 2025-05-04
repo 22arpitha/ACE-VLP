@@ -115,7 +115,10 @@ export class WorkCultureAndWorkEthicsComponent implements OnInit,OnChanges {
         this.api.getData(`${environment.live_url}/${environment.upload_assessment}/${query}`).subscribe(
           (res:any)=>{
             console.log('res',res)
-                        const formattedData = this.constructTableForm(this.selectedPeriodDetails);
+                        const formattedData = res.data && res.data?.length ? res.data?.map((item: any, i: number) => ({
+                          sl: i + 1,
+                          ...item,
+                        })): this.constructTableForm(this.selectedPeriodDetails);
                         console.log(formattedData);
                         this.tableConfig = {
                           columns: tableColumns.map(col => ({
@@ -205,6 +208,5 @@ export class WorkCultureAndWorkEthicsComponent implements OnInit,OnChanges {
             }));
             
             return this.workCultureData ? this.workCultureData : [];
-
       }
 }

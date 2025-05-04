@@ -73,7 +73,7 @@
         </mat-menu>
       </div>
       </div>
-      <div class="col-auto mt-2 col-sm-auto col-md-auto col-lg-auto text-end" *ngIf="config?.sendWorkCulture">
+      <div class="col-auto mt-2 col-sm-auto col-md-auto col-lg-auto text-end" *ngIf="config?.sendWorkCulture && userRole!='Accountant'">
         <button mat-raised-button class="mat-btn-s proceedbtn" type="button"  (click)="isEditBtn ? submitWorkCultureDetails() : enableFormFields()"><span *ngIf="!isEditBtn">Edit</span><span *ngIf="isEditBtn">Submit</span></button>
       </div>
       <div class="col-auto mt-2 col-sm-auto col-md-auto col-lg-auto text-end" *ngIf="config?.sendEmail">
@@ -194,21 +194,21 @@
                 <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
                   <mat-label>Points</mat-label>
                   <input matInput type="number" placeholder="Enter points" maxlength="3" minlength="1" max="100" min="0" formControlName="points" autocomplete="off" (keypress)="validateKeyPress($event)">
-                  <mat-error *ngIf="rows.at(i)?.get('points')?.errors?.['invalid'] && rows.at(i)?.get('points')?.errors?.['touched'] || rows.at(i)?.get('points')?.['dirty']">
-                    <span *ngIf="rows.at(i)?.get('points')?.errors?.['maxlength']">
-                      Points cannot exceed 10 characters.
-                    </span>
-                    <span *ngIf="rows.at(i)?.get('points')?.errors?.['pattern']">
-                      Please enter a number with up to 2 decimal places.
-                        </span>
-                    <span *ngIf="rows.at(i)?.get('points')?.errors?.['minlength']">
-                      Points must be at least 1 character.
-                    </span>
-                    <span *ngIf="rows.at(i)?.get('points')?.errors?.['min']">
-                      Points must be at least 0.
-                    </span>
-                  </mat-error>
                 </mat-form-field>
+                <div style="font-size: 11px;padding-left: 10px;margin-top: 5px;color:#f44336;" *ngIf="rows.at(i)?.get('points')?.errors?.['invalid'] && rows.at(i)?.get('points')?.errors?.['touched'] || rows.at(i)?.get('points')?.['dirty']">
+                  <span *ngIf="rows.at(i)?.get('points')?.errors?.['maxlength']">
+                    Points cannot exceed 3 characters.
+                  </span>
+                  <span *ngIf="rows.at(i)?.get('points')?.errors?.['max']">
+                    Please enter a number with up to 100.
+                      </span>
+                  <span *ngIf="rows.at(i)?.get('points')?.errors?.['minlength']">
+                    Points must be at least 1 character.
+                  </span>
+                  <span *ngIf="rows.at(i)?.get('points')?.errors?.['min']">
+                    Points must be at least 0.
+                  </span>
+                </div>
                </ng-container>
                <ng-container *ngIf="col.fileInputField"> 
                 <input type="file" accept="*" formControlName="work_ethics_file" #fileInput
@@ -224,8 +224,8 @@
                     id="edit-or-upload-icon"></i>
                 </button>
               </div>
-              <div *ngIf="rows.at(i)?.get('work_ethics_file')?.['touched'] && rows.at(i)?.get('work_ethics_file')?.['invalid']"
-                style="font-size: 11px;padding-left: 10px;color:#f44336">
+              <div  *ngIf="rows.at(i)?.get('work_ethics_file')?.['touched'] && rows.at(i)?.get('work_ethics_file')?.['invalid']"
+                style="font-size: 11px;padding-left: 10px;margin-top: 5px;color:#f44336">
                 <span *ngIf="rows.at(i)?.get('work_ethics_file')?.errors?.['maxSize']">File size exceeds 10MB.</span>
               </div>
                </ng-container>

@@ -11,11 +11,11 @@ import { environment } from '../../../environments/environment';
 export class PeriodComponent implements OnInit,OnChanges {
   searchPeroidText:any;
   peroidslist:any=[];
-  @Input() periodicity_id:any;
-  @Input() defaultSelection:any;
+  @Input() periodicity_id: number | null = null;
+  @Input() defaultSelection: boolean = false;
+  @Input() resetFilterField: boolean = false;
   @Output() selectPeriod :EventEmitter<any> = new EventEmitter<any>();
   selectedPeriodVal:any;
-  @Input() resetFilterField:any;
   currentDate = new Date();
   monthNames = [
     "January", "February", "March", "April", "May", "June",
@@ -24,20 +24,24 @@ export class PeriodComponent implements OnInit,OnChanges {
   constructor(private apiService: ApiserviceService) { }
   
   ngOnChanges(changes: SimpleChanges): void {
-   if(changes && changes['periodicity_id']){
+   
+   if (changes['resetFilterField'] && changes['resetFilterField']?.currentValue === true) {
+    this.selectedPeriodVal=null;   
+      this.selectPeriod.emit(null); 
+  }
+  if(changes['defaultSelection'] && changes['defaultSelection']?.currentValue === true){
+    this.defaultSelection = changes['defaultSelection']?.currentValue;
+    if(this.periodicity_id){
+      this.getPeroidicityBasedPeroid();  
+    }
+  }
+
+  if(changes['periodicity_id'] && changes['periodicity_id']?.currentValue !=null){
     this.periodicity_id = changes['periodicity_id'].currentValue;
     if(this.periodicity_id){
       this.getPeroidicityBasedPeroid();  
     }
    }
-   if(changes['resetFilterField'] && changes['resetFilterField'].currentValue !== undefined){
-    this.resetFilterField = changes['resetFilterField'].currentValue;
-      this.selectedPeriodVal=null;   
-      this.selectPeriod.emit(null); 
-  }
-  if(changes['defaultSelection'] && changes['defaultSelection'].currentValue !== undefined){
-    this.defaultSelection = changes['defaultSelection'].currentValue;
-  }
   }
   ngOnInit(): void {
 
