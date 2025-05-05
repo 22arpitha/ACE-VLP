@@ -20,8 +20,30 @@
                   <tr>
                     <th scope="col">Invoice Date
                       <i *ngIf="!arrowState['created_date']" (click)="sort('asc','created_date')" class="bi bi-arrow-down"></i>
-                <i (click)="sort('desc','created_date')" *ngIf="arrowState['created_date']"
-                  class="bi bi-arrow-up"></i>
+                        <i (click)="sort('desc','created_date')" *ngIf="arrowState['created_date']"
+                          class="bi bi-arrow-up"></i>
+                          <button *ngIf="!dateFilterValue"
+                          mat-icon-button
+                          (click)="setDateFilterColumn($event); datepicker.open()"
+                          class="ms-1 btn-menu-trigger"
+                        >
+                        <i class="bi bi-calendar"></i>
+                      </button>
+                      <button mat-icon-button container="body"
+                      ngbTooltip="Clear Invoice Date" placement="top"  *ngIf="dateFilterValue" (click)="clearDateFilter()" class="ms-1 btn-menu-trigger">
+                        <i class="bi bi-x-circle"></i>
+                      </button>
+                      <mat-form-field class="opacity-0 position-absolute">
+                        <mat-label>Choose a date</mat-label>
+                        <input
+                          matInput
+                          [matDatepicker]="datepicker"
+                          [(ngModel)]="dateFilterValue"
+                          (dateChange)="onDateSelected($event)"
+                        />
+                        <mat-hint>MM/DD/YYYY</mat-hint>
+                        <mat-datepicker #datepicker></mat-datepicker>
+                      </mat-form-field>
                     </th>
                     <th scope="col">Invoice Number
                       <i *ngIf="!arrowState['invoice_number']" (click)="sort('asc','invoice_number')" class="bi bi-arrow-down"></i>
@@ -32,6 +54,17 @@
                       <i *ngIf="!arrowState['client_name']" (click)="sort('asc','client_name')" class="bi bi-arrow-down"></i>
                       <i (click)="sort('desc','client_name')" *ngIf="arrowState['client_name']"
                         class="bi bi-arrow-up"></i>
+                        <button mat-icon-button [matMenuTriggerFor]="clientFilterMenu">
+                          <i class="bi bi-toggles"></i>
+                        </button>
+
+                        <mat-menu #clientFilterMenu="matMenu">
+                          <app-generic-table-filter
+                            [options]="allClientNames"
+                            [(selectedOptions)]="filters.client_name"
+                            (selectedOptionsChange)="filterData()"
+                          ></app-generic-table-filter>
+                        </mat-menu>
                     </th>
                     <th scope="col">Amount
                       <i *ngIf="!arrowState['total_amount']" (click)="sort('asc','total_amount')" class="bi bi-arrow-down"></i>
@@ -42,7 +75,7 @@
                   </tr>
                 </thead>
                 <tbody>
-      
+
                   <ng-container *ngIf="(allInvoiceList) as result">
                     <tr *ngFor='let item of result | customSort:directionValue:sortValue|paginate : {
                              itemsPerPage: tableSize,
@@ -53,7 +86,7 @@
                       <td>{{item?.invoice_number || '-'}}</td>
                       <td>{{item?.client_name || '-'}}</td>
                       <td>{{item?.total_amount || '-'}}</td>
-                      <td> 
+                      <td>
                         <ng-container *ngIf="item">
                         <img src="../../../../assets/images/Edit.svg" class="icon-image" type="button" container="body"
                           ngbTooltip="Edit" (click)="edit(item)" *ngIf="userRole !='Admin' && (accessPermissions[0]?.view || accessPermissions[0]?.update) || userRole === 'Admin'"/>
@@ -69,11 +102,11 @@
               </table>
             </div>
           </div>
-          
+
           <div class="row mx-1 my-2 px-0" *ngIf="allInvoiceList?.length === 0" >
             <app-generic-norecards></app-generic-norecards>
           </div>
-        
+
     </section>
     <div class="row mx-0 px-3" *ngIf="allInvoiceList?.length > 0">
         <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0">

@@ -38,14 +38,23 @@ BreadCrumbsTitle: any = 'Invoices';
     accessPermissions = [];
     user_id: any;
     userRole: any;
-
+    invoiceDate: string | null;
+    dateFilterValue: string | null = null;
+    filterQuery: string;
+    filters: {client_name: string[]} = {
+      client_name: []
+    };
+    allClientNames: any[] = [];
+  filteredList: any = [];
+  datepicker: null;
     constructor(private common_service: CommonServiceService,private accessControlService:SubModuleService,
       private router:Router,private modalService: NgbModal,private dialog:MatDialog,
       private datePipe:DatePipe,
       private apiService: ApiserviceService,private http: HttpClient) {
       this.common_service.setTitle(this.BreadCrumbsTitle)
-     }
-  
+      this.getAllInvoiceList();
+    }
+
     ngOnInit(): void {
       this.initalCall();
     }
@@ -54,7 +63,7 @@ BreadCrumbsTitle: any = 'Invoices';
       this.user_id = sessionStorage.getItem('user_id');
       this.userRole = sessionStorage.getItem('user_role_name');
       this.getModuleAccess();
-      this.getAllInvoiceList();
+      this.getFilterList();
     }
 
     access_name:any ;
@@ -69,14 +78,14 @@ BreadCrumbsTitle: any = 'Invoices';
         }
       });
     }
-  
 
-    
+
+
 
     public openCreateInvoicePage(){
       sessionStorage.setItem('access-name', this.access_name?.name)
       this.router.navigate(['/invoice/create-invoice']);
-  
+
     }
     async edit(item: any) {
       this.selectedItemId = item?.id;
@@ -86,7 +95,7 @@ BreadCrumbsTitle: any = 'Invoices';
           backdrop: 'static',
           centered: true
         });
-  
+
         modalRef.componentInstance.status.subscribe(resp => {
           if (resp === 'ok') {
             modalRef.dismiss();
@@ -100,9 +109,29 @@ BreadCrumbsTitle: any = 'Invoices';
         console.error('Error opening modal:', error);
       }
     }
-  public getAllInvoiceList(){
-    let query = this.getFilterBaseUrl();
-this.apiService.getData(`${environment.live_url}/${environment.client_invoice}/${query}`).subscribe(
+    getFilterList(){
+      this.apiService.getData(`${environment.live_url}/${environment.client_invoice}/`).subscribe(
+        (res: any) => {
+          this.filteredList = res;
+          this.allClientNames = this.getUniqueValues(job => ({ id: job.client_id, name: job.client_name }));
+      })
+      }
+    getUniqueValues(
+      extractor: (item: any) => { id: any; name: string }
+    ): { id: any; name: string }[] {
+      const seen = new Map();
+      this.filteredList?.forEach(job => {
+        const value = extractor(job);
+        if (value && value.id && !seen.has(value.id)) {
+          seen.set(value.id, value.name);
+        }
+      });
+
+      return Array.from(seen, ([id, name]) => ({ id, name }));
+    }
+      public getAllInvoiceList(){
+        let query = this.getFilterBaseUrl();
+        this.apiService.getData(`${environment.live_url}/${environment.client_invoice}/${query}`).subscribe(
       (res: any) => {
         this.allInvoiceList = res?.results;
         const noOfPages: number = res?.['total_pages']
@@ -118,32 +147,32 @@ this.apiService.getData(`${environment.live_url}/${environment.client_invoice}/$
       if (event) {
         this.page = 1;
         this.tableSize = Number(event.value);
-          this.getAllInvoiceList()
+          this.filterData()
       }
     }
     public onTableDataChange(event: any) {
       this.page = event;
-          this.getAllInvoiceList()
+      this.filterData()
     }
     public filterSearch(event: any) {
       this.term = event.target.value?.trim();
       if (this.term && this.term.length >= 2) {
         this.page = 1;
-          this.getAllInvoiceList()
+          this.filterData()
       }
       else if (!this.term) {
-          this.getAllInvoiceList()
+        this.filterData()
       }
     }
-  
-    public getFilterBaseUrl(): string {
-      if(this.userRole === 'Admin'){
-        return `?page=${this.page}&page_size=${this.tableSize}&search=${this.term}`;
-      }else{
-        return `?page=${this.page}&page_size=${this.tableSize}&search=${this.term}`;
-      }
-      }
-  
+
+    getFilterBaseUrl(): string {
+      const base = `?page=${this.page}&page_size=${this.tableSize}`;
+      const searchParam = this.term?.trim().length >= 2 ? `&search=${this.term.trim()}` : '';
+      const employeeParam = this.userRole !== 'Admin' ? `&employee-id=${this.user_id}` : '';
+
+      return `${base}${searchParam}${employeeParam}`;
+    }
+
     public sort(direction: string, column: string) {
       Object.keys(this.arrowState).forEach(key => {
         this.arrowState[key] = false;
@@ -152,7 +181,7 @@ this.apiService.getData(`${environment.live_url}/${environment.client_invoice}/$
       this.directionValue = direction;
       this.sortValue = column;
     }
-  
+
     public getContinuousIndex(index: number): number {
       return (this.page - 1) * this.tableSize + index + 1;
     }
@@ -171,5 +200,42 @@ this.apiService.getData(`${environment.live_url}/${environment.client_invoice}/$
 
     public viewInvoiceDetails(item:any){
       this.router.navigate(['/invoice/view-invoice',item?.id]);
+    }
+    setDateFilterColumn(event){
+      const selectedDate = event.value;
+    if (selectedDate) {
+      this.invoiceDate = this.datePipe.transform(selectedDate, 'yyyy-MM-dd');
+    }
+    this.filterData()
+    }
+    onDateSelected(event: any): void {
+      const selectedDate = event.value;
+      if (selectedDate) {
+       this.invoiceDate = this.datePipe.transform(selectedDate, 'yyyy-MM-dd');
+      }
+      this.filterData()
+    }
+
+
+    filterData() {
+      this.filterQuery = this.getFilterBaseUrl()
+      if (this.filters.client_name.length) {
+        this.filterQuery += `&client-ids=[${this.filters.client_name.join(',')}]`;
+      }
+      if (this.invoiceDate) {
+        this.filterQuery += `&dates=[${this.invoiceDate}]`;
+      }
+      this.apiService.getData(`${environment.live_url}/${environment.client_invoice}/${this.filterQuery}`).subscribe((res: any) => {
+        this.allInvoiceList = res?.results;
+        const noOfPages: number = res?.['total_pages']
+        this.count = noOfPages * this.tableSize;
+        this.count = res?.['total_no_of_record']
+        this.page = res?.['current_page'];
+      });
+    }
+    clearDateFilter(){
+      this.invoiceDate = null;
+      this.dateFilterValue = null;
+      this.filterData()
     }
 }

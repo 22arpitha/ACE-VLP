@@ -96,24 +96,20 @@ export class AllJobsComponent implements OnInit {
     this.getModuleAccess();
     this.getAllEmployeeList();
     this.getAllActiveManagerList();
-    // this.getCurrentJobsList();
+
     this.getJobStatusList();
     this.initialForm();
 
 
 
-    await this.getJobsFilterList();
+    await this.getJobsFilterList('True');
   }
   access_name:any ;
 
-  // getUniqueValues(field: string):any {
-  //   return [...new Set(this.allJobsList.map(job => job[field]).filter(Boolean))];
-  // }
   getUniqueValues(
     extractor: (item: any) => { id: any; name: string }
   ): { id: any; name: string }[] {
     const seen = new Map();
-    console.log(this.jobList,"jobList");
     this.jobList?.forEach(job => {
       const value = extractor(job);
       if (value && value.id && !seen.has(value.id)) {
@@ -131,24 +127,6 @@ export class AllJobsComponent implements OnInit {
     this.filterData();
   }
 
-  // filterData() {
-  //   console.log(this.filters.job_type_name)
-  //   this.filteredList = this.allJobsList.filter(job => {
-  //     const jobTypeName = job?.job_type_name?.trim();
-  //     const clientName = job?.client_name?.trim();
-  //     const employeeName = job?.employees?.find((e: any) => e?.is_primary)?.employee_name?.trim();
-  //     const managerName = job?.employees?.find((e: any) => e?.is_primary)?.manager_name?.trim();
-
-  //     const jobTypeMatch = !this.filters.job_type_name.length || this.filters.job_type_name.includes(jobTypeName);
-  //     const clientMatch = !this.filters.client_name.length || this.filters.client_name.includes(clientName);
-  //     const employeeMatch = !this.filters.employees.length || this.filters.employees.includes(employeeName);
-  //     const managerMatch = !this.filters.manager.length || this.filters.manager.includes(managerName);
-
-  //     return jobTypeMatch && clientMatch && employeeMatch && managerMatch;
-  //   });
-
-  //   this.count = this.filteredList.length;
-  // }
   filterData() {
     this.filterQuery = this.getFilterBaseUrl()
     if (this.filters.client_name.length) {
@@ -159,10 +137,14 @@ export class AllJobsComponent implements OnInit {
       this.filterQuery += `&job-type-ids=[${this.filters.job_type_name.join(',')}]`;
     }
 
-    if (this.filters.employees.length || this.filters.manager.length) {
-      this.userRole === 'accountant' ? this.filterQuery += `&employee-ids=[${this.filters.employees.join(',')}]&em_designation=70` :
-      this.userRole === 'manager' ? this.filterQuery += `&employee-ids=[${this.filters.employees.join(',')}]&em_designation=69`:
+    if (this.filters.employees.length) {
+      this.userRole === 'accountant' ? this.filterQuery += `&employee-ids=[${this.filters.employees.join(',')}]` :
       this.filterQuery += `&employee-ids=[${this.filters.employees.join(',')}]` ;
+    }
+    if (this.filters.manager.length) {
+
+      this.userRole === 'manager' ? this.filterQuery += `&manager-ids=[${this.filters.manager.join(',')}]`:
+      this.filterQuery += `&manager-ids=[${this.filters.manager.join(',')}]` ;
     }
 
 
@@ -283,12 +265,13 @@ export class AllJobsComponent implements OnInit {
     });
   }
 
-  getJobsFilterList() {
-    // this.isCurrent = false;
-    // this.isHistory = true;
-    // let query = `${this.getFilterBaseUrl()}`;
+  getJobsFilterList(status?:string) {
+    let query = '';
+    if(status){
+      query = `?status=${status}`;
+    }
 
-    this.apiService.getData(`${environment.live_url}/${environment.jobs}/?status=True`).subscribe(
+    this.apiService.getData(`${environment.live_url}/${environment.jobs}/${query}`).subscribe(
       (res: any) => {
         this.jobList = res;
         this.allClientNames = this.getUniqueValues(job => ({ id: job.client, name: job.client_name }));
@@ -338,31 +321,16 @@ export class AllJobsComponent implements OnInit {
       this.page = 1;
       this.tableSize = Number(event.value);
        this.filterData()
-      // if (this.isCurrent) {
-      //   this.getCurrentJobsList()
-      // } else {
-      //   this.getJobsHistoryList();
-      // }
     }
   }
   onTableDataChange(event: any) {
     this.page = event;
-    // if (this.isCurrent) {
-    //   this.getCurrentJobsList()
-    // } else {
-    //   this.getJobsHistoryList();
-    // }
      this.filterData();
   }
   filterSearch(event: any) {
     this.term = event.target.value?.trim();
     if (this.term && this.term.length >= 2) {
       this.page = 1;
-      // if (this.isCurrent) {
-      //   this.getCurrentJobsList()
-      // } else {
-      //   this.getJobsHistoryList();
-      // }
       this.filterData()
     }
     else if (!this.term) {
@@ -375,12 +343,13 @@ export class AllJobsComponent implements OnInit {
   }
 
   getFilterBaseUrl(): string {
-  if(this.userRole === 'admin'){
-    return `?page=${this.page}&page_size=${this.tableSize}&search=${this.term}`;
-  }else {
-    return `?page=${this.page}&page_size=${this.tableSize}&search=${this.term}&employee-id=${this.user_id}`;
+    const base = `?page=${this.page}&page_size=${this.tableSize}`;
+    const searchParam = this.term?.trim().length >= 2 ? `&search=${this.term.trim()}` : '';
+    const employeeParam = this.userRole !== 'admin' ? `&employee-id=${this.user_id}` : '';
+
+    return `${base}${searchParam}${employeeParam}`;
   }
-  }
+
 
   sort(direction: string, column: string) {
     Object.keys(this.arrowState).forEach(key => {
@@ -456,11 +425,6 @@ export class AllJobsComponent implements OnInit {
             this.getJobsHistoryList();
           } else{
             this.getCurrentJobsList()
-            // if (this.isCurrent) {
-            //   this.getCurrentJobsList()
-            // } else {
-            //   this.getJobsHistoryList();
-            // }
           }
     }},(error: any) => {
       this.apiService.showError(error?.error?.detail);
@@ -485,7 +449,13 @@ export class AllJobsComponent implements OnInit {
     else{
       status = 'False';
     }
-    let query = `?page=${this.page}&page_size=${this.tableSize}&file-type=${type}&is-active=${status}`
+    let query = '';
+    if(this.filterQuery){
+      query = this.filterQuery + `&file-type=${type}&is-active=${status}`
+    }else{
+      query = `?page=${this.page}&page_size=${this.tableSize}&file-type=${type}&is-active=${status}`
+    }
+
     let apiUrl = `${environment.live_url}/${environment.job_details}/${query}`;
     fetch(apiUrl)
     .then(res => res.blob())
@@ -511,5 +481,17 @@ export class AllJobsComponent implements OnInit {
     }
     this.filterData()
   }
-
+  clearDateFilter(){
+    this.jobAllocationDate = null;
+    this.dateFilterValue = null;
+    this.statusDate = null;
+    this.datepicker = null;
+    this.filterData()
+  }
+  clearStatusDateFilter(){
+    this.statusDate = null;
+    this.dateFilterValue = null;
+    this.datepicker = null;
+    this.filterData()
+  }
 }
