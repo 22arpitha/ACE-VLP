@@ -5,7 +5,7 @@ export const tableColumns = [
     },
     {
       label: 'Employee',
-      key: 'employee_name',
+      key: 'full_name',
       sortable: true
     },
     {

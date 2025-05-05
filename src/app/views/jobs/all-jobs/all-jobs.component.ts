@@ -309,11 +309,11 @@ export class AllJobsComponent implements OnInit {
    getJobsHistoryList() {
     this.isCurrent = false;
     this.isHistory = true;
-    let query = `${this.getFilterBaseUrl()}`;
+    let query = `${this.getFilterBaseUrl()}&status=False`;
 
     this.apiService.getData(`${environment.live_url}/${environment.jobs}/${query}`).subscribe(
       (res: any) => {
-        this.allJobsList = res.results;
+        this.allJobsList = res?.results;
         this.filteredList = res?.results;
         const noOfPages: number = res?.['total_pages']
         this.count = noOfPages * this.tableSize;

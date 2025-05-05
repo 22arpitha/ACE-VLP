@@ -108,17 +108,22 @@ export class WorkCultureAndWorkEthicsComponent implements OnInit,OnChanges {
           }else{
             this.selectedEmployeesList = this.allEmployeesList;
           }
+          if(this.user_role_name !='Admin')
+            {
+              params.push(`logged-in-user-id=${this.user_id}`);
+            }else{
+              params.push(`admin=True`);
+            }
           if (params.length) {
             query = '?' + params.join('&');
           }
         }
         this.api.getData(`${environment.live_url}/${environment.upload_assessment}/${query}`).subscribe(
           (res:any)=>{
-            console.log('res',res)
-                        const formattedData = res.data && res.data?.length ? res.data?.map((item: any, i: number) => ({
+                        const formattedData = res.data?.map((item: any, i: number) => ({
                           sl: i + 1,
                           ...item,
-                        })): this.constructTableForm(this.selectedPeriodDetails);
+                        }));
                         console.log(formattedData);
                         this.tableConfig = {
                           columns: tableColumns.map(col => ({
@@ -158,10 +163,10 @@ export class WorkCultureAndWorkEthicsComponent implements OnInit,OnChanges {
       }
     }
     exportCsvOrPdf(fileType) {
-      const url = `${environment.live_url}/${environment.timesheet_reports}/?file-type=${fileType}&timsheet-type=detailed`;
+      const url = `${environment.live_url}/${environment.upload_assessment}/?file-type=${fileType}&productivity-type=upload_assessment`;
       downloadFileFromUrl({
         url,
-        fileName: 'timesheet_details',
+        fileName: 'work_culture_and_ethics_details',
         fileType
       });
     }
@@ -178,35 +183,5 @@ export class WorkCultureAndWorkEthicsComponent implements OnInit,OnChanges {
         }, (error: any) => {
           this.api.showError(error?.error?.detail);
         });
-      }
-      constructTableForm(selectedPeriodDetails){
-        this.workCultureData=[];
-        const hasMonthData = selectedPeriodDetails && selectedPeriodDetails.month_data != null;
-        let index = 1;
-        this.workCultureData = hasMonthData
-          ? selectedPeriodDetails.month_data.flatMap(month =>
-              this.selectedEmployeesList?.map(emp => ({
-                sl: index++,
-                employee_name: emp?.user__full_name,
-                employee_id:emp?.user_id,
-                month: month,
-                points: null,
-                work_ethics_file: null,
-                periodicity_id:this.dropdwonFilterData.periodicity,
-                period_id:this.dropdwonFilterData.period
-              }))
-            )
-          : this.selectedEmployeesList?.map((emp, idx) => ({
-              sl: (idx+1),
-              employee_name: emp?.user__full_name,
-              employee_id:emp?.user_id,
-              month: selectedPeriodDetails?.period_name,
-              points: null,
-              work_ethics_file: null,
-              periodicity_id:this.dropdwonFilterData.periodicity,
-              period_id:this.dropdwonFilterData.period
-            }));
-            
-            return this.workCultureData ? this.workCultureData : [];
       }
 }
