@@ -13,11 +13,7 @@ import { downloadFileFromUrl } from 'src/app/shared/file-download.util';
 })
 export class OverallProductivityComponent implements OnInit,OnChanges {
 @Input() dropdwonFilterData:any;
-allEmployeesList:any=[];
- selectedEmployeesList:any=[];
- selectedPeriodictyDetails:any;
- selectedPeriodDetails:any;
-  BreadCrumbsTitle: any = 'Overall Productivity';
+BreadCrumbsTitle: any = 'Overall Productivity';
         tableConfig:any = {
           columns: [],
           data: [],
@@ -85,11 +81,7 @@ getOverAllProductivity(){
             params.push(`period=${this.dropdwonFilterData.period}`);
           }
           if (this.dropdwonFilterData.employee_id) {
-            this.selectedEmployeesList=[];
             params.push(`employee_id=${this.dropdwonFilterData.employee_id}`);
-            this.selectedEmployeesList = [this.allEmployeesList?.find((emp:any)=>(emp?.user_id === this.dropdwonFilterData?.employee_id))];
-          }else{
-            this.selectedEmployeesList = this.allEmployeesList;
           }
           if(this.user_role_name !='Admin')
             {

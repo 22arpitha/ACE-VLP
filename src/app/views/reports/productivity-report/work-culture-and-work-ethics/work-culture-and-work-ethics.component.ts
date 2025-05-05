@@ -1,12 +1,9 @@
 import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
-import { Router } from '@angular/router';
 import { CommonServiceService } from '../../../../service/common-service.service';
-import { buildPaginationQuery } from '../../../../shared/pagination.util';
 import { tableColumns } from './work-culture-and-work-ethics-config';
 import { environment } from '../../../../../environments/environment';
 import { downloadFileFromUrl } from '../../../../shared/file-download.util';
 import { ApiserviceService } from '../../../../service/apiservice.service';
-import { log } from 'console';
 
 @Component({
   selector: 'app-work-culture-and-work-ethics',
@@ -17,9 +14,6 @@ export class WorkCultureAndWorkEthicsComponent implements OnInit,OnChanges {
 
  BreadCrumbsTitle: any = 'Work Culture and Work Ethics';
  @Input() dropdwonFilterData:any;
- allEmployeesList:any=[];
- selectedEmployeesList:any=[];
- selectedPeriodictyDetails:any;
  selectedPeriodDetails:any;
       term: string = '';
       tableConfig:any = {
@@ -57,24 +51,6 @@ export class WorkCultureAndWorkEthicsComponent implements OnInit,OnChanges {
 
       ngOnInit(): void {
         this.common_service.setTitle(this.BreadCrumbsTitle);
-        this.getAllEmployeeList();
-      }
-
-      public getAllEmployeeList(){
-        let queryparams=`?is_active=True&employee=True`;
-        if (this.user_role_name === 'Accountant') {
-          queryparams += `&employee_id=${this.user_id}`;
-        } else if (this.user_role_name === 'Manager') {
-          queryparams += `&reporting_manager_id=${this.user_id}`;
-        }
-        this.allEmployeesList =[];
-        this.selectedEmployeesList=[];
-        this.api.getData(`${environment.live_url}/${environment.employee}/${queryparams}`).subscribe((respData: any) => {
-         this.allEmployeesList = respData;
-         this.selectedEmployeesList=this.allEmployeesList;
-        },(error => {
-          this.api.showError(error?.error?.detail)
-        }));
       }
 
       public getSelectedPeriod(id: any) {
@@ -102,12 +78,8 @@ export class WorkCultureAndWorkEthicsComponent implements OnInit,OnChanges {
             params.push(`period=${this.dropdwonFilterData.period}`);
           }
           if (this.dropdwonFilterData.employee_id) {
-            this.selectedEmployeesList=[];
             params.push(`employee_id=${this.dropdwonFilterData.employee_id}`);
-            this.selectedEmployeesList = [this.allEmployeesList?.find((emp:any)=>(emp?.user_id === this.dropdwonFilterData?.employee_id))];
-          }else{
-            this.selectedEmployeesList = this.allEmployeesList;
-          }
+           }
           if(this.user_role_name !='Admin')
             {
               params.push(`logged-in-user-id=${this.user_id}`);
