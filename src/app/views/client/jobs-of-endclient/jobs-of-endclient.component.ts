@@ -3,6 +3,11 @@ import { CommonServiceService } from '../../../service/common-service.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ApiserviceService } from '../../../service/apiservice.service';
 import { environment } from '../../../../environments/environment';
+import { DatePipe } from '@angular/common';
+export interface IdNamePair {
+  id: any;
+  name: string;
+}
 @Component({
   selector: 'app-jobs-of-endclient',
   templateUrl: './jobs-of-endclient.component.html',
@@ -28,8 +33,14 @@ export class JobsOfEndclientComponent implements OnInit {
   term: any = '';
   client_id:any;
   end_client_id:any
-
-  constructor(private common_service: CommonServiceService,private activateRoute:ActivatedRoute,private router: Router,
+  filters: {employees:string[];status:string[] } = {
+    employees:[],
+    status:[]
+  };
+  allEmployeeNames: IdNamePair[] = [];
+  allStatusNames: IdNamePair[] = [];
+  dateFilterValue: any = null;
+  constructor( private datePipe: DatePipe,private common_service: CommonServiceService,private activateRoute:ActivatedRoute,private router: Router,
     private api: ApiserviceService,
   ) {
      this.endClientData = this.activateRoute.snapshot.paramMap.get('end-client-name');
@@ -62,6 +73,12 @@ export class JobsOfEndclientComponent implements OnInit {
           this.count = noOfPages * this.tableSize;
           this.count = res?.['total_no_of_record']
           this.page = res?.['current_page'];
+          this.allEmployeeNames = this.getUniqueValues(job => {
+            const emp = job.employees?.find((e: any) => e.is_primary);
+            return { id: emp?.employee || '', name: emp?.employee_name || '' };
+          });
+          this.allStatusNames = this.getUniqueValues(job => ({ id: job.job_status, name: job.job_status_name }));
+
         },(error: any) => {
           this.api.showError(error?.error?.detail);
         });
@@ -115,5 +132,32 @@ export class JobsOfEndclientComponent implements OnInit {
       this.common_service.setClientActiveTabindex(id);
       this.router.navigate([`/client/update-client/${this.client_id}`])
     }
+    getUniqueValues(
+      extractor: (item: any) => { id: any; name: string }
+    ): { id: any; name: string }[] {
+      const seen = new Map();
+  
+      this.allJobs.forEach(job => {
+        const value = extractor(job);
+        if (value && value.id && !seen.has(value.id)) {
+          seen.set(value.id, value.name);
+        }
+      });
+  
+      return Array.from(seen, ([id, name]) => ({ id, name }));
+    }
 
+    setDateFilterColumn(event){
+      const selectedDate = event.value;
+    if (selectedDate) {
+      const formatted = this.datePipe.transform(selectedDate, 'yyyy-MM-dd');
+    }
+    }
+    onDateSelected(event: any): void {
+      const selectedDate = event.value;
+  
+      if (selectedDate) {
+        const formatted = this.datePipe.transform(selectedDate, 'yyyy-MM-dd');
+      }
+    }
 }

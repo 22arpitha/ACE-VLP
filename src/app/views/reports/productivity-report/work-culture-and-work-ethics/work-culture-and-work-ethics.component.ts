@@ -51,9 +51,6 @@ export class WorkCultureAndWorkEthicsComponent implements OnInit,OnChanges {
             if(this.dropdwonFilterData.period){
             this.getSelectedPeriod(this.dropdwonFilterData.period);
             }
-            setTimeout(() => {
-              this.getWorkCultureAndEthicsList();
-            }, 100);
           }
         }
       }
@@ -84,7 +81,9 @@ export class WorkCultureAndWorkEthicsComponent implements OnInit,OnChanges {
         this.selectedPeriodDetails='';
         this.api.getData(`${environment.live_url}/${environment.settings_period}/${id}/`).subscribe((respData: any) => {
         this.selectedPeriodDetails = respData;
-        console.log(this.selectedPeriodDetails);
+        if(respData){
+          this.getWorkCultureAndEthicsList();
+        }
         }, (error: any) => {
           this.api.showError(error?.error?.detail);
         })
@@ -93,6 +92,7 @@ export class WorkCultureAndWorkEthicsComponent implements OnInit,OnChanges {
       workCultureData:any =[]
       getWorkCultureAndEthicsList(){
         let query = '';
+        console.log('this.dropdwonFilterData',this.dropdwonFilterData);
         if (this.dropdwonFilterData) {
           const params = [];
           if (this.dropdwonFilterData.periodicity) {

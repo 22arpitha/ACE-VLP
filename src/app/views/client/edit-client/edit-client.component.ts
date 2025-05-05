@@ -10,7 +10,10 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { CanComponentDeactivate } from 'src/app/auth-guard/can-deactivate.guard';
 import { FormErrorScrollUtilityService } from 'src/app/service/form-error-scroll-utility-service.service';
 import { Observable } from 'rxjs';
-
+export interface IdNamePair {
+  id: any;
+  name: string;
+}
 @Component({
   selector: 'app-edit-client',
   templateUrl: './edit-client.component.html',
@@ -36,6 +39,10 @@ export class EditClientComponent implements CanComponentDeactivate, OnInit {
     group_name:false,
 
   };
+  filters: { group_name: string[]} = {
+    group_name: [],
+  }
+  allGroupsNames:IdNamePair[] = [];
   arrow: boolean = false;
   term: any;
   client_id:any;
@@ -93,6 +100,8 @@ export class EditClientComponent implements CanComponentDeactivate, OnInit {
       const noOfPages: number = respData.total_pages
       this.count = noOfPages * this.tableSize;
       this.page = respData.current_page;
+      this.allGroupsNames = this.getUniqueValues(endClient => ({ id: endClient.group, name: endClient.group_name }));
+
     }, (error: any) => {
       this.apiService.showError(error?.error?.detail);
     })
@@ -107,8 +116,24 @@ export class EditClientComponent implements CanComponentDeactivate, OnInit {
       group?.group_name?.toLowerCase()?.includes(this.searchGroupText?.toLowerCase())
     );
   }
+
 public clearSearch(){
   this.searchGroupText='';
+}
+
+getUniqueValues(
+  extractor: (item: any) => { id: any; name: string }
+): { id: any; name: string }[] {
+  const seen = new Map();
+
+  this.allEndClients.forEach(endClient => {
+    const value = extractor(endClient);
+    if (value && value.id && !seen.has(value.id)) {
+      seen.set(value.id, value.name);
+    }
+  });
+
+  return Array.from(seen, ([id, name]) => ({ id, name }));
 }
 
 
@@ -298,6 +323,12 @@ public clearSearch(){
       const currentFormValue = this.endClientForm?.getRawValue();
       const isFormChanged:boolean =  JSON.stringify(currentFormValue) !== JSON.stringify(this.initialFormValue);
       return this.formErrorScrollService.isFormDirtyOrInvalidCheck(isFormChanged,this.endClientForm);
+    }
+
+    onFilterChange(event: any, filterType: string) {
+      const selectedOptions = event;
+      // this.filters[filterType] = selectedOptions;
+      // this.filterData();
     }
 }
 

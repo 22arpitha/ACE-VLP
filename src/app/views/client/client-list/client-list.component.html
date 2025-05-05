@@ -55,11 +55,33 @@
                     <i *ngIf="!arrowState['country']" (click)="sort('asc','country')" class="bi bi-arrow-down"></i>
                     <i (click)="sort('desc','country')" *ngIf="arrowState['country']"
                       class="bi bi-arrow-up"></i>
+                      <button mat-icon-button [matMenuTriggerFor]="countryFilterMenu">
+                        <i class="bi bi-toggles"></i>
+                      </button>
+
+                      <mat-menu #countryFilterMenu="matMenu">
+                        <app-generic-table-filter
+                        [options]="allCountriesNames"
+                        [(selectedOptions)]="filters.country"
+                        (selectedOptionsChange)="onFilterChange($event, 'country')"
+                        ></app-generic-table-filter>
+                      </mat-menu>
                   </th>
                   <th scope="col">Source
                     <i *ngIf="!arrowState['source']" (click)="sort('asc','source')" class="bi bi-arrow-down"></i>
                     <i (click)="sort('desc','source')" *ngIf="arrowState['source']"
                       class="bi bi-arrow-up"></i>
+                      <button mat-icon-button [matMenuTriggerFor]="sourceFilterMenu">
+                        <i class="bi bi-toggles"></i>
+                      </button>
+
+                      <mat-menu #sourceFilterMenu="matMenu">
+                        <app-generic-table-filter
+                        [options]="allSourceNames"
+                        [(selectedOptions)]="filters.source"
+                        (selectedOptionsChange)="onFilterChange($event, 'client_name')"
+                        ></app-generic-table-filter>
+                      </mat-menu>
                   </th>
                   <th scope="col">Status</th>
                   <th scope="col">Contact Person</th>
