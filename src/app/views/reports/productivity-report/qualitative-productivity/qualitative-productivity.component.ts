@@ -117,11 +117,21 @@ BreadCrumbsTitle: any = 'Qualitative Productivity';
           }
         }
         exportCsvOrPdf(fileType) {
-          const query = buildPaginationQuery({
+          let query = buildPaginationQuery({
             page: this.page,
             pageSize: this.tableSize,
+            searchTerm :this.term
           });
 
+          if(query){
+            if(this.dropdwonFilterData){
+              query+= this.dropdwonFilterData.employee_id ? `&employee-id=${this.dropdwonFilterData.employee_id}`:this.user_role_name ==='Admin' ? '':`&employee-id=${this.user_id}`;
+              query+= this.dropdwonFilterData.periodicity ? `&periodicity=${this.dropdwonFilterData.periodicity}`:'';
+              query+= this.dropdwonFilterData.period ? `&period=${this.dropdwonFilterData.period}`:'';
+             }else{
+              query += this.user_role_name ==='Admin' ? '':`&employee-id=${this.user_id}`;
+             }
+           }
           const url = `${environment.live_url}/${environment.timesheet_reports}/${query}&file-type=${fileType}&productivity-type=qualitative`;
           downloadFileFromUrl({
             url,

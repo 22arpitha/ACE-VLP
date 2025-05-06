@@ -127,10 +127,19 @@ export class QuantitativeProductivityComponent implements OnInit,OnChanges {
            let query = buildPaginationQuery({
              page: this.page,
              pageSize: this.tableSize,
+             searchTerm :this.term
            });
+
            if(query){
-            query += this.userRole ==='Admin' ? '':`&employee-id=${this.user_id}`;
+            if(this.dropdwonFilterData){
+              query+= this.dropdwonFilterData.employee_id ? `&employee-id=${this.dropdwonFilterData.employee_id}`:this.userRole ==='Admin' ? '':`&employee-id=${this.user_id}`;
+              query+= this.dropdwonFilterData.periodicity ? `&periodicity=${this.dropdwonFilterData.periodicity}`:'';
+              query+= this.dropdwonFilterData.period ? `&period=${this.dropdwonFilterData.period}`:'';
+             }else{
+              query += this.userRole ==='Admin' ? '':`&employee-id=${this.user_id}`;
+             }
            }
+
            const url = `${environment.live_url}/${environment.productivity_reports}/${query}&productivity-type=quantitative&file-type=${fileType}`;
            downloadFileFromUrl({
              url,

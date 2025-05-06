@@ -59,7 +59,9 @@ BreadCrumbsTitle: any = 'Overall Productivity';
               }
             }
             exportCsvOrPdf(fileType) {
-              const url = `${environment.live_url}/${environment.over_all_productivity_reports}/?file-type=${fileType}&productivity-type=over-all-productivity-reports`;
+              let query= this.getUpdateFilterQueryParams();
+              query+=`&file-type=${fileType}&download=True`;
+              const url = `${environment.live_url}/${environment.over_all_productivity_reports}/${query}`;
               downloadFileFromUrl({
                 url,
                 fileName: 'over_all_productivity_reports',
@@ -71,28 +73,7 @@ BreadCrumbsTitle: any = 'Overall Productivity';
           this.handleAction(event);
         }
 getOverAllProductivity(){
-        let query = '';
-        if (this.dropdwonFilterData) {
-          const params = [];
-          if (this.dropdwonFilterData.periodicity) {
-            params.push(`periodicity=${this.dropdwonFilterData.periodicity}`);
-          }
-          if (this.dropdwonFilterData.period) {
-            params.push(`period=${this.dropdwonFilterData.period}`);
-          }
-          if (this.dropdwonFilterData.employee_id) {
-            params.push(`employee_id=${this.dropdwonFilterData.employee_id}`);
-          }
-          if(this.user_role_name !='Admin')
-            {
-              params.push(`logged-in-user-id=${this.user_id}`);
-            }else{
-              params.push(`admin=True`);
-            }
-          if (params.length) {
-            query = '?' + params.join('&');
-          }
-        }
+        let query = this.getUpdateFilterQueryParams();
         this.api.getData(`${environment.live_url}/${environment.over_all_productivity_reports}/${query}`).subscribe(
           (res:any)=>{
                         this.tableConfig = {
@@ -111,7 +92,29 @@ getOverAllProductivity(){
           }
         )
        }
-
-
-
+public getUpdateFilterQueryParams(){
+  let query ='';
+  if (this.dropdwonFilterData) {
+    const params = [];
+    if (this.dropdwonFilterData.periodicity) {
+      params.push(`periodicity=${this.dropdwonFilterData.periodicity}`);
+    }
+    if (this.dropdwonFilterData.period) {
+      params.push(`period=${this.dropdwonFilterData.period}`);
+    }
+    if (this.dropdwonFilterData.employee_id) {
+      params.push(`employee_id=${this.dropdwonFilterData.employee_id}`);
+    }
+    if(this.user_role_name !='Admin')
+      {
+        params.push(`logged-in-user-id=${this.user_id}`);
+      }else{
+        params.push(`admin=True`);
+      }
+    if (params.length) {
+      query = '?' + params.join('&');
+    }
+  }
+  return query;
+}
 }
