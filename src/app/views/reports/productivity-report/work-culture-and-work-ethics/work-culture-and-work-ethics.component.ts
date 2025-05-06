@@ -1,12 +1,9 @@
 import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
-import { Router } from '@angular/router';
 import { CommonServiceService } from '../../../../service/common-service.service';
-import { buildPaginationQuery } from '../../../../shared/pagination.util';
 import { tableColumns } from './work-culture-and-work-ethics-config';
 import { environment } from '../../../../../environments/environment';
 import { downloadFileFromUrl } from '../../../../shared/file-download.util';
 import { ApiserviceService } from '../../../../service/apiservice.service';
-import { log } from 'console';
 
 @Component({
   selector: 'app-work-culture-and-work-ethics',
@@ -17,9 +14,6 @@ export class WorkCultureAndWorkEthicsComponent implements OnInit,OnChanges {
 
  BreadCrumbsTitle: any = 'Work Culture and Work Ethics';
  @Input() dropdwonFilterData:any;
- allEmployeesList:any=[];
- selectedEmployeesList:any=[];
- selectedPeriodictyDetails:any;
  selectedPeriodDetails:any;
       term: string = '';
       tableConfig:any = {
@@ -51,40 +45,21 @@ export class WorkCultureAndWorkEthicsComponent implements OnInit,OnChanges {
             if(this.dropdwonFilterData.period){
             this.getSelectedPeriod(this.dropdwonFilterData.period);
             }
-            setTimeout(() => {
-              this.getWorkCultureAndEthicsList();
-            }, 100);
           }
         }
       }
 
       ngOnInit(): void {
         this.common_service.setTitle(this.BreadCrumbsTitle);
-        this.getAllEmployeeList();
-      }
-
-      public getAllEmployeeList(){
-        let queryparams=`?is_active=True&employee=True`;
-        if (this.user_role_name === 'Accountant') {
-          queryparams += `&employee_id=${this.user_id}`;
-        } else if (this.user_role_name === 'Manager') {
-          queryparams += `&reporting_manager_id=${this.user_id}`;
-        }
-        this.allEmployeesList =[];
-        this.selectedEmployeesList=[];
-        this.api.getData(`${environment.live_url}/${environment.employee}/${queryparams}`).subscribe((respData: any) => {
-         this.allEmployeesList = respData;
-         this.selectedEmployeesList=this.allEmployeesList;
-        },(error => {
-          this.api.showError(error?.error?.detail)
-        }));
       }
 
       public getSelectedPeriod(id: any) {
         this.selectedPeriodDetails='';
         this.api.getData(`${environment.live_url}/${environment.settings_period}/${id}/`).subscribe((respData: any) => {
         this.selectedPeriodDetails = respData;
-        console.log(this.selectedPeriodDetails);
+        if(respData){
+          this.getWorkCultureAndEthicsList();
+        }
         }, (error: any) => {
           this.api.showError(error?.error?.detail);
         })
@@ -93,6 +68,7 @@ export class WorkCultureAndWorkEthicsComponent implements OnInit,OnChanges {
       workCultureData:any =[]
       getWorkCultureAndEthicsList(){
         let query = '';
+        console.log('this.dropdwonFilterData',this.dropdwonFilterData);
         if (this.dropdwonFilterData) {
           const params = [];
           if (this.dropdwonFilterData.periodicity) {
@@ -102,23 +78,24 @@ export class WorkCultureAndWorkEthicsComponent implements OnInit,OnChanges {
             params.push(`period=${this.dropdwonFilterData.period}`);
           }
           if (this.dropdwonFilterData.employee_id) {
-            this.selectedEmployeesList=[];
             params.push(`employee_id=${this.dropdwonFilterData.employee_id}`);
-            this.selectedEmployeesList = [this.allEmployeesList?.find((emp:any)=>(emp?.user_id === this.dropdwonFilterData?.employee_id))];
-          }else{
-            this.selectedEmployeesList = this.allEmployeesList;
-          }
+           }
+          if(this.user_role_name !='Admin')
+            {
+              params.push(`logged-in-user-id=${this.user_id}`);
+            }else{
+              params.push(`admin=True`);
+            }
           if (params.length) {
             query = '?' + params.join('&');
           }
         }
         this.api.getData(`${environment.live_url}/${environment.upload_assessment}/${query}`).subscribe(
           (res:any)=>{
-            console.log('res',res)
-                        const formattedData = res.data && res.data?.length ? res.data?.map((item: any, i: number) => ({
+                        const formattedData = res.data?.map((item: any, i: number) => ({
                           sl: i + 1,
                           ...item,
-                        })): this.constructTableForm(this.selectedPeriodDetails);
+                        }));
                         console.log(formattedData);
                         this.tableConfig = {
                           columns: tableColumns.map(col => ({
@@ -158,10 +135,10 @@ export class WorkCultureAndWorkEthicsComponent implements OnInit,OnChanges {
       }
     }
     exportCsvOrPdf(fileType) {
-      const url = `${environment.live_url}/${environment.timesheet_reports}/?file-type=${fileType}&timsheet-type=detailed`;
+      const url = `${environment.live_url}/${environment.upload_assessment}/?file-type=${fileType}&productivity-type=upload_assessment`;
       downloadFileFromUrl({
         url,
-        fileName: 'timesheet_details',
+        fileName: 'work_culture_and_ethics_details',
         fileType
       });
     }
@@ -178,35 +155,5 @@ export class WorkCultureAndWorkEthicsComponent implements OnInit,OnChanges {
         }, (error: any) => {
           this.api.showError(error?.error?.detail);
         });
-      }
-      constructTableForm(selectedPeriodDetails){
-        this.workCultureData=[];
-        const hasMonthData = selectedPeriodDetails && selectedPeriodDetails.month_data != null;
-        let index = 1;
-        this.workCultureData = hasMonthData
-          ? selectedPeriodDetails.month_data.flatMap(month =>
-              this.selectedEmployeesList?.map(emp => ({
-                sl: index++,
-                employee_name: emp?.user__full_name,
-                employee_id:emp?.user_id,
-                month: month,
-                points: null,
-                work_ethics_file: null,
-                periodicity_id:this.dropdwonFilterData.periodicity,
-                period_id:this.dropdwonFilterData.period
-              }))
-            )
-          : this.selectedEmployeesList?.map((emp, idx) => ({
-              sl: (idx+1),
-              employee_name: emp?.user__full_name,
-              employee_id:emp?.user_id,
-              month: selectedPeriodDetails?.period_name,
-              points: null,
-              work_ethics_file: null,
-              periodicity_id:this.dropdwonFilterData.periodicity,
-              period_id:this.dropdwonFilterData.period
-            }));
-            
-            return this.workCultureData ? this.workCultureData : [];
       }
 }

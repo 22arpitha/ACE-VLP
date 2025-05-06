@@ -21,16 +21,74 @@
                     <i *ngIf="!arrowState['job_name']" (click)="sort('asc', 'job_name')" class="bi bi-arrow-down"></i>
                     <i *ngIf="arrowState['job_name']" (click)="sort('desc', 'job_name')" class="bi bi-arrow-up"></i>  
                   </th>
-                  <th scope="col">Job Allocation Date</th>
+                  <th scope="col">Job Allocation Date
+                    <button
+                    mat-icon-button
+                    (click)="setDateFilterColumn($event); picker.open()"
+                    class="ms-1 btn-menu-trigger"
+                  >
+                  <i class="bi bi-calendar"></i>
+                </button>
+                <mat-form-field class="opacity-0 position-absolute">
+                  <mat-label>Choose a date</mat-label>
+                  <input
+                    matInput
+                    [matDatepicker]="picker"
+                    [(ngModel)]="dateFilterValue"
+                    (dateChange)="onDateSelected($event)"
+                  />
+                  <mat-hint>MM/DD/YYYY</mat-hint>
+                  <mat-datepicker #picker></mat-datepicker>
+                </mat-form-field>
+                  </th>
                   <th scope="col">Employee 
                     <i *ngIf="!arrowState['employee_name']" (click)="sort('asc', 'employee_name')" class="bi bi-arrow-down"></i>
                     <i *ngIf="arrowState['employee_name']" (click)="sort('desc', 'employee_name')" class="bi bi-arrow-up"></i>  
+                    <button mat-icon-button [matMenuTriggerFor]="employeesFilterMenu">
+                      <i class="bi bi-toggles"></i>
+                    </button>
+  
+                    <mat-menu #employeesFilterMenu="matMenu">
+                      <app-generic-table-filter
+                        [options]="allEmployeeNames"
+                        [(selectedOptions)]="filters.employees"
+                      ></app-generic-table-filter>
+                    </mat-menu>
                   </th>
                   <th scope="col">Status 
                     <i *ngIf="!arrowState['status']" (click)="sort('asc', 'status')" class="bi bi-arrow-down"></i>
                     <i *ngIf="arrowState['status']" (click)="sort('desc', 'status')" class="bi bi-arrow-up"></i>  
+                    <button mat-icon-button [matMenuTriggerFor]="statusFilterMenu">
+                      <i class="bi bi-toggles"></i>
+                    </button>
+  
+                    <mat-menu #statusFilterMenu="matMenu">
+                      <app-generic-table-filter
+                        [options]="allStatusNames"
+                        [(selectedOptions)]="filters.status"
+                      ></app-generic-table-filter>
+                    </mat-menu>
                   </th>
-                  <th scope="col">Status Date</th>
+                  <th scope="col">Status Date
+                    <button
+                    mat-icon-button
+                    (click)="setDateFilterColumn($event); picker.open()"
+                    class="ms-1 btn-menu-trigger"
+                  >
+                  <i class="bi bi-calendar"></i>
+                </button>
+                <mat-form-field class="opacity-0 position-absolute">
+                  <mat-label>Choose a date</mat-label>
+                  <input
+                    matInput
+                    [matDatepicker]="picker"
+                    [(ngModel)]="dateFilterValue"
+                    (dateChange)="onDateSelected($event)"
+                  />
+                  <mat-hint>MM/DD/YYYY</mat-hint>
+                  <mat-datepicker #picker></mat-datepicker>
+                </mat-form-field>
+                  </th>
                   <!-- <th scope="col">Action </th> -->
                 </tr>
               </thead>

@@ -370,7 +370,7 @@ buildDynamicTableForm(tableData){
   this.rows.clear();
   tableData?.forEach((item,index) => {
     this.rows.push(this.fb.group({
-      employee_name:[item?.employee_name],
+      full_name:[item?.full_name],
       employee_id:[item?.employee_id],
       month:[item?.month],
       work_ethics_file: [null],

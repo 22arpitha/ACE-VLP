@@ -25,9 +25,6 @@ export class PeriodicityComponent implements OnInit,OnChanges {
       if(this.allPeroidicitylist && this.allPeroidicitylist?.length>=1){
         this.selectedPeriodicityVal = this.allPeroidicitylist?.find((element):any => element?.periodicty_name ==='Monthly')?.id;
         this.selectPeriodicity.emit(this.selectedPeriodicityVal);
-      }else{
-        this.selectedPeriodicityVal=null;
-        this.selectPeriodicity.emit(null);
       }
     }
 

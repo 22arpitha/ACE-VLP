@@ -75,7 +75,7 @@ initialFormValue:any;
       this.user_role_name = sessionStorage.getItem('user_role_name');
       if(this.activeRoute.snapshot.paramMap.get('id')){
         this.common_service.setTitle('Update ' + this.BreadCrumbsTitle)
-        this.client_id= this.activeRoute.snapshot.paramMap.get('id')
+        this.client_id= this.activeRoute.snapshot.paramMap?.get('id')
         this.isEditItem = true;
         this.getCountryList();
         this.getSourceList();
@@ -257,7 +257,7 @@ if (respData?.contact_details && Array.isArray(respData?.contact_details) && res
   const contactDetailsArray = this.clientFormGroup.get('contact_details') as FormArray;
   contactDetailsArray.clear();
 respData?.contact_details?.forEach(({ name, email, phone_number }, index, array) => {
-  const isLastItem = index === array.length - 1;
+  const isLastItem = index === array?.length - 1;
   const contactForm = this.fb.group({
     name: [{ value: name, disabled: !isLastItem }],
     email: [{ value: email, disabled: !isLastItem }],
@@ -277,11 +277,11 @@ this.initialFormValue=this.clientFormGroup?.getRawValue();
     }
 
     get contactDetails(): FormArray {
-      return this.clientFormGroup.get('contact_details') as FormArray;
+      return this.clientFormGroup?.get('contact_details') as FormArray;
     }
 
     get employeeFormArray() {
-      return this.clientFormGroup.get('employee_ids') as FormArray;
+      return this.clientFormGroup?.get('employee_ids') as FormArray;
     }
 
     createEmployeeControl(): FormControl {
@@ -303,12 +303,12 @@ this.initialFormValue=this.clientFormGroup?.getRawValue();
       this.clientFormGroup?.get('service_end_date')?.setValue(null);
     }
     public addContact() {
-      console.log(this.contactDetails.controls);
-      let lastItemIndex = this.contactDetails.length - 1;
+      console.log(this.contactDetails?.controls);
+      let lastItemIndex = this.contactDetails?.length - 1;
       // Disable the previous contact group before adding a new one
-      if (this.contactDetails?.at(lastItemIndex)?.valid && this.contactDetails.length < 5) {
-        const contact = this.contactDetails.at(lastItemIndex);
-        ['name', 'email', 'phone_number'].forEach(field => contact?.get(field)?.disable());
+      if (this.contactDetails?.at(lastItemIndex)?.valid && this.contactDetails?.length < 5) {
+        const contact = this.contactDetails?.at(lastItemIndex);
+        ['name', 'email', 'phone_number']?.forEach(field => contact?.get(field)?.disable());
         // Add the new contact group after disabling the previous one
         this.contactDetails.push(this.createContactGroup());
         this.contactDetails.markAllAsTouched();
@@ -319,26 +319,26 @@ this.initialFormValue=this.clientFormGroup?.getRawValue();
 
 
     public deleteContact(index: number) {
-      if (this.contactDetails.length > 1) {
-      this.contactDetails.removeAt(index);
-    const lastItemIndex = this.contactDetails.length - 1;
-    const lastItem = this.contactDetails.at(lastItemIndex);
+      if (this.contactDetails?.length > 1) {
+      this.contactDetails?.removeAt(index);
+    const lastItemIndex = this.contactDetails?.length - 1;
+    const lastItem = this.contactDetails?.at(lastItemIndex);
     if (lastItem) {
-      ['name', 'email', 'phone_number'].forEach(field => lastItem.get(field)?.enable());
+      ['name', 'email', 'phone_number']?.forEach(field => lastItem?.get(field)?.enable());
     }
       }
     }
 
     public editContact(index: number) {
-      const contact = this.contactDetails.at(index);
+      const contact = this.contactDetails?.at(index);
       contact?.get('name')?.enable();
       contact?.get('email')?.enable();
       contact?.get('phone_number')?.enable();
     }
 
     saveChanges(index: number) {
-      const contact = this.contactDetails.at(index);
-      if(index <=4 && contact.valid){
+      const contact = this.contactDetails?.at(index);
+      if(index <=4 && contact?.valid){
         contact?.get('name')?.disable();
         contact?.get('email')?.disable();
         contact?.get('phone_number')?.disable();
@@ -385,7 +385,7 @@ this.initialFormValue=this.clientFormGroup?.getRawValue();
   public onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
 
-    if (input.files && input.files.length > 0) {
+    if (input.files && input.files?.length > 0) {
       const selectedFile = input.files[0];
 
       // Validate file type
@@ -518,13 +518,13 @@ this.initialFormValue=this.clientFormGroup?.getRawValue();
     if (this.selectedEmployee) {
       console.log(this.selectedEmployee);
       // Check if the selected employee already exists in the employeeFormArray
-      const isEmployeeExists = this.employeeFormArray.controls.some(control =>
+      const isEmployeeExists = this.employeeFormArray.controls?.some(control =>
         control.value === this.selectedEmployee
       );
 
       if (!isEmployeeExists) {
         this.employeeFormArray.push(this.createEmployeeControl());
-        this.employeeFormArray.at(this.employeeFormArray.length - 1).setValue(this.selectedEmployee);
+        this.employeeFormArray?.at(this.employeeFormArray?.length - 1)?.setValue(this.selectedEmployee);
       }else{
         this.apiService.showWarning('Employee already exists in the list.');
       }
@@ -534,20 +534,20 @@ this.initialFormValue=this.clientFormGroup?.getRawValue();
 
 
   removeEmployee(index: number) {
-    if (this.employeeFormArray.length > 1) {
-      this.employeeFormArray.removeAt(index);
+    if (this.employeeFormArray?.length > 1) {
+      this.employeeFormArray?.removeAt(index);
     }
   }
 
   getEmployeeName(userId: number): string {
-    const employee = this.allEmployeeList.find((emp:any) => emp?.user_id === userId);
+    const employee = this.allEmployeeList?.find((emp:any) => emp?.user_id === userId);
     return employee ? employee?.user__full_name : '';
   }
 
   get currentPageRows() {
     const startIndex = (this.currentPage - 1) * this.pageSize;
     const endIndex = startIndex + this.pageSize;
-    return this.employeeFormArray.controls.slice(startIndex, endIndex);
+    return this.employeeFormArray?.controls?.slice(startIndex, endIndex);
 }
 
   onPageChanged(event: any) {

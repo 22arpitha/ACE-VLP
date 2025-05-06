@@ -1,16 +1,18 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { DatePipe } from '@angular/common';
 import { GenericEditComponent } from '../../../generic-components/generic-edit/generic-edit.component';
 import { ApiserviceService } from '../../../service/apiservice.service';
 import { CommonServiceService } from '../../../service/common-service.service';
 import { environment } from '../../../../environments/environment';
 import { SubModuleService } from '../../../service/sub-module.service';
 import { GenericDeleteComponent } from '../../../generic-components/generic-delete/generic-delete.component';
-import { DatePipe } from '@angular/common';
-import { error } from 'console';
 import { GenericTimesheetConfirmationComponent } from 'src/app/generic-components/generic-timesheet-confirmation/generic-timesheet-confirmation.component';
-
+export interface IdNamePair {
+  id: any;
+  name: string;
+}
 @Component({
   selector: 'app-all-timesheets',
   templateUrl: './all-timesheets.component.html',
@@ -44,7 +46,17 @@ export class AllTimesheetsComponent implements OnInit {
   accessPermissions = []
   user_id: any;
   userRole: any;
-
+  filters: { client_name: string[],job_name: string[],employee_name:string[],task_nmae:string[]} = {
+    client_name: [],
+    job_name:[],
+    employee_name:[],
+    task_nmae:[],
+  }
+  allClientNames:IdNamePair[] = [];
+  allJobsNames:IdNamePair[] = [];
+  allEmployeeNames:IdNamePair[] = [];
+  allTaskNames:IdNamePair[] = [];
+  dateFilterValue: any = null;
   constructor(private common_service: CommonServiceService,
     private router: Router, private modalService: NgbModal, private accessControlService: SubModuleService,
     private apiService: ApiserviceService, private datePipe: DatePipe) {
@@ -208,7 +220,7 @@ export class AllTimesheetsComponent implements OnInit {
   }
 
   public getTimesheets() {
-    let query = this.getFilterBaseUrl()
+    let query = this.getFilterBaseUrl();
     this.apiService.getData(`${environment.live_url}/${environment.vlp_timesheets}/${query}`).subscribe(
       (res: any) => {
         this.allTimesheetsList = res?.results;
@@ -223,6 +235,10 @@ export class AllTimesheetsComponent implements OnInit {
         this.count = noOfPages * this.tableSize;
         this.count = res?.['total_no_of_record']
         this.page = res?.['current_page'];
+        this.allClientNames = this.getUniqueValues(client => ({ id: client.client_id, name: client.client_name }));
+        this.allJobsNames =  this.getUniqueValues(jobs => ({ id: jobs.job_id, name: jobs.job_name }));
+        this.allEmployeeNames =  this.getUniqueValues(emps => ({ id: emps.employee_id, name: emps.employee_name }));
+        this.allTaskNames = this.getUniqueValues(tasks => ({ id: tasks.task, name: tasks.task_name }));
       }
     )
   }
@@ -402,5 +418,42 @@ export class AllTimesheetsComponent implements OnInit {
       }
     })
     
+  }
+
+  // Filter related
+
+  setDateFilterColumn(event){
+    const selectedDate = event.value;
+  if (selectedDate) {
+    const formatted = this.datePipe.transform(selectedDate, 'yyyy-MM-dd');
+  }
+  }
+  onDateSelected(event: any): void {
+    const selectedDate = event.value;
+
+    if (selectedDate) {
+      const formatted = this.datePipe.transform(selectedDate, 'yyyy-MM-dd');
+    }
+  }
+
+  onFilterChange(event: any, filterType: string) {
+    const selectedOptions = event;
+    // this.filters[filterType] = selectedOptions;
+    // this.filterData();
+  }
+
+  getUniqueValues(
+    extractor: (item: any) => { id: any; name: string }
+  ): { id: any; name: string }[] {
+    const seen = new Map();
+
+    this.allTimesheetsList.forEach(item => {
+      const value = extractor(item);
+      if (value && value.id && !seen.has(value.id)) {
+        seen.set(value.id, value.name);
+      }
+    });
+
+    return Array.from(seen, ([id, name]) => ({ id, name }));
   }
 }

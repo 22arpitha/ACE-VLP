@@ -1,60 +1,24 @@
-import { DynamicTableConfig } from '../../../../shared/dynamic-table/dynamic-table-config.model';
-
-// Sample data updated to match tableConfig
-const data = [
-  {
-    sl: 1,
-    quantitativeProductivity: 'High',
-    qualitativeProductivity: 'Excellent',
-    workCultureandWorkEthics: 'Good',
-    overallProductivity: '90%',
-  },
-  {
-    sl: 2,
-    quantitativeProductivity: 'Medium',
-    qualitativeProductivity: 'Good',
-    workCultureandWorkEthics: 'Average',
-    overallProductivity: '75%',
-  }
-];
-
-
-
-
-// Column Definitions
-export const tableConfig: DynamicTableConfig  = {
-  columns:[
-  { label: 'Sl No',
-    key: 'sl',
-    sortable: true
-  },
-  { label: 'Quantitative Productivity',
-    key: 'quantitativeProductivity',
-    sortable: true
-  },
-  {
-    label: 'Qualitative Productivity',
-    key: 'qualitativeProductivity',
-    sortable: true
-  },
-  {
-    label: 'Work Culture and Work Ethics',
-    key: 'workCultureandWorkEthics',
-    sortable: true
-  },
-  {
-    label: 'Overall Productivity',
-    key: 'overallProductivity',
-    sortable: true
-  }
-],
-data: data,
-searchTerm: '',
-actions: [],
-accessConfig: [],
-tableSize: 10,
-pagination: true,
-hideDownload:true
+export const tableColumns =[{
+  label: 'Quantitative Productivity',
+  key: 'avg_quantitative_productivity',
+  sortable: false
+},
+{
+  label: 'Qualitative Productivity',
+  key: 'avg_qualitative_productivity',
+  sortable: false
+},
+{
+  label: 'Work Culture and Work Ethics',
+  key: 'total_work_culture_points',
+  sortable: false
+},
+{
+  label: 'Overall Productivity',
+  key: 'overall_productivity',
+  sortable: false
 }
+]
+
 
 

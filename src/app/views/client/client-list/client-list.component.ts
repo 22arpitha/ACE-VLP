@@ -13,7 +13,10 @@ import { ClientContactDetailsPopupComponent } from '../client-contact-details-po
 import { DatePipe } from '@angular/common';
 
 
-
+export interface IdNamePair {
+  id: any;
+  name: string;
+}
 @Component({
   selector: 'app-client-list',
   templateUrl: './client-list.component.html',
@@ -46,10 +49,14 @@ export class ClientListComponent implements OnInit {
     accessPermissions = []
     user_id: any;
     userRole: any;
-    filters: { client_name: string[]} = {
-      client_name: []
+    filters: { client_name: string[],country: string[],source: string[]} = {
+      client_name: [],
+      country:[],
+      source:[],
     }
-    allClientNames:string[] = []
+    allClientNames:IdNamePair[] = [];
+    allCountriesNames:IdNamePair[] = [];
+    allSourceNames:IdNamePair[] = []
     constructor(
       private common_service: CommonServiceService,
       private accessControlService:SubModuleService,
@@ -70,9 +77,21 @@ export class ClientListComponent implements OnInit {
       this.getCurrentClientList()
     }
 
-  getUniqueValues(field: string):any {
-    return [...new Set(this.allClientList.map(job => job[field]).filter(Boolean))];
-  }
+    getUniqueValues(
+      extractor: (item: any) => { id: any; name: string }
+    ): { id: any; name: string }[] {
+      const seen = new Map();
+  
+      this.allClientList.forEach(client => {
+        const value = extractor(client);
+        if (value && value.id && !seen.has(value.id)) {
+          seen.set(value.id, value.name);
+        }
+      });
+  
+      return Array.from(seen, ([id, name]) => ({ id, name }));
+    }
+
     access_name:any ;
     getModuleAccess(){
       this.accessControlService.getAccessForActiveUrl(this.user_id).subscribe((access) => {
@@ -127,7 +146,10 @@ export class ClientListComponent implements OnInit {
           this.count = noOfPages * this.tableSize;
           this.count = res?.['total_no_of_record']
           this.page = res?.['current_page'];
-          this.allClientNames = this.getUniqueValues('client_name');
+          this.allClientNames = this.getUniqueValues(client => ({ id: client.id, name: client.client_name }));
+          this.allCountriesNames = this.getUniqueValues(con => ({ id: con.country_id, name: con.country }));
+          this.allSourceNames = this.getUniqueValues(sou => ({ id: sou.source_id, name: sou.source }));
+        
         },(error: any) => {
           this.apiService.showError(error?.error?.detail);
         });
@@ -140,11 +162,14 @@ export class ClientListComponent implements OnInit {
       query += `&status=False`;
       this.apiService.getData(`${environment.live_url}/${environment.clients}/${query}`).subscribe(
         (res: any) => {
-          this.allClientList = res.results;
+          this.allClientList = res?.results;
           const noOfPages: number = res?.['total_pages']
           this.count = noOfPages * this.tableSize;
           this.count = res?.['total_no_of_record']
           this.page = res?.['current_page'];
+          this.allClientNames = this.getUniqueValues(client => ({ id: client.id, name: client.client_name }));
+          this.allCountriesNames = this.getUniqueValues(con => ({ id: con.country_id, name: con.country }));
+          this.allSourceNames = this.getUniqueValues(sou => ({ id: sou.source_id, name: sou.source }));
         },(error: any) => {
           this.apiService.showError(error?.error?.detail);
 

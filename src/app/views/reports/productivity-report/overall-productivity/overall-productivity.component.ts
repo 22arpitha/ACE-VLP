@@ -1,8 +1,10 @@
 import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonServiceService } from '../../../../service/common-service.service';
-import { buildPaginationQuery } from '../../../../shared/pagination.util';
-import { tableConfig } from './overall-productivity-config';
+import { tableColumns} from './overall-productivity-config';
+import { environment } from 'src/environments/environment';
+import { ApiserviceService } from 'src/app/service/apiservice.service';
+import { downloadFileFromUrl } from 'src/app/shared/file-download.util';
 
 @Component({
   selector: 'app-overall-productivity',
@@ -11,72 +13,104 @@ import { tableConfig } from './overall-productivity-config';
 })
 export class OverallProductivityComponent implements OnInit,OnChanges {
 @Input() dropdwonFilterData:any;
-  BreadCrumbsTitle: any = 'Overall Productivity';
-        term: string = '';
-        tableSize: number = 5;
-        page: any = 1;
-        tableSizes = [5, 10, 25, 50, 100];
-
+BreadCrumbsTitle: any = 'Overall Productivity';
         tableConfig:any = {
           columns: [],
           data: [],
-          searchTerm: '',
           actions: [],
           accessConfig: [],
-          tableSize: 5,
-          pagination: true,
+          pagination: false,
         };
-        constructor(private common_service:CommonServiceService,private router:Router) {}
+        user_role_name:any;
+      user_id:any;
+        constructor(private common_service:CommonServiceService,private router:Router, private api:ApiserviceService) { 
+                this.user_role_name = sessionStorage.getItem('user_role_name');
+                this.user_id = sessionStorage.getItem('user_id');
+              }
         ngOnChanges(changes: SimpleChanges): void {
           if(changes['dropdwonFilterData']){
-            this.dropdwonFilterData=changes['dropdwonFilterData']?.currentValue;
+          const prev = changes['dropdwonFilterData'].previousValue || {};
+          const current = changes['dropdwonFilterData'].currentValue;
+          const employeeIdChanged = prev.employee_id !== current.employee_id;
+          const periodicityChanged = prev.periodicity !== current.periodicity;
+          const periodChanged = prev.period !== current.period;
+          if (employeeIdChanged || periodicityChanged || periodChanged) {
+            this.dropdwonFilterData = current;
+            this.getOverAllProductivity();
+          }
           }
         }
 
         ngOnInit(): void {
-          this.common_service.setTitle(this.BreadCrumbsTitle)
-          this.tableConfig = tableConfig;
+          this.common_service.setTitle(this.BreadCrumbsTitle);
         }
 
-        handleAction(event: { actionType: string; row: any }) {
-          switch (event.actionType) {
-            case '':
-              console.log('View action triggered for row:', event.row);
-             // this.router.navigate(['/reports/employee-details'])
-              break;
-          }
-        }
+         // Called from <app-dynamic-table> via @Output actionEvent
+            handleAction(event: { actionType: string; detail: any }) {
+              switch (event.actionType) {
+                  case 'export_csv':
+                  this.exportCsvOrPdf(event.detail);
+                  break;
+                  case 'export_pdf':
+                  this.exportCsvOrPdf(event.detail);
+                  break;
+                default:
+                  console.warn('Unhandled action type:', event.actionType);
+              }
+            }
+            exportCsvOrPdf(fileType) {
+              const url = `${environment.live_url}/${environment.over_all_productivity_reports}/?file-type=${fileType}&productivity-type=over-all-productivity-reports`;
+              downloadFileFromUrl({
+                url,
+                fileName: 'over_all_productivity_reports',
+                fileType
+              });
+            }
 
-        onTableDataChange(event: any) {
-          this.page = event;
-          const query = buildPaginationQuery({
-            page: this.page,
-            pageSize: this.tableSize,
-            searchTerm: this.term
-          });
-
-          console.log('Pagination Query:', query);
-          // use this query in your API call
-          // this.apiService.getData(`your-api-endpoint${query}`).subscribe(...)
-        }
-        onTableSizeChange(event: any): void {
-          if (event) {
-            this.tableSize = Number(event.value);
-            this.page = 1;
-            const query = buildPaginationQuery({
-              page: this.page,
-              pageSize: this.tableSize,
-              searchTerm: this.term
-            });
-
-            console.log('Page Size Change Query:', query);
-            // use this query in your API call
-          }
-
-        }
         triggerAction(event: any) {
           this.handleAction(event);
         }
+getOverAllProductivity(){
+        let query = '';
+        if (this.dropdwonFilterData) {
+          const params = [];
+          if (this.dropdwonFilterData.periodicity) {
+            params.push(`periodicity=${this.dropdwonFilterData.periodicity}`);
+          }
+          if (this.dropdwonFilterData.period) {
+            params.push(`period=${this.dropdwonFilterData.period}`);
+          }
+          if (this.dropdwonFilterData.employee_id) {
+            params.push(`employee_id=${this.dropdwonFilterData.employee_id}`);
+          }
+          if(this.user_role_name !='Admin')
+            {
+              params.push(`logged-in-user-id=${this.user_id}`);
+            }else{
+              params.push(`admin=True`);
+            }
+          if (params.length) {
+            query = '?' + params.join('&');
+          }
+        }
+        this.api.getData(`${environment.live_url}/${environment.over_all_productivity_reports}/${query}`).subscribe(
+          (res:any)=>{
+                        this.tableConfig = {
+                          columns: tableColumns.map(col => ({
+                            ...col,
+                          })),
+                         data: res.report_data ? [res.report_data] : [],
+                         actions: [],
+                         accessConfig: [],
+                         pagination: false,
+                         searchable: false,
+                        };
+                    },
+                              (error)=>{
+                                this.api.showError(error?.error?.detail);
+          }
+        )
+       }
 
 
 

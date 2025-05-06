@@ -31,9 +31,6 @@ export class PeriodComponent implements OnInit,OnChanges {
   }
   if(changes['defaultSelection'] && changes['defaultSelection']?.currentValue === true){
     this.defaultSelection = changes['defaultSelection']?.currentValue;
-    if(this.periodicity_id){
-      this.getPeroidicityBasedPeroid();  
-    }
   }
 
   if(changes['periodicity_id'] && changes['periodicity_id']?.currentValue !=null){
@@ -66,9 +63,9 @@ export class PeriodComponent implements OnInit,OnChanges {
         (res: any) => {
           this.peroidslist = res;
           if(this.defaultSelection){
-            this.selectedPeriodVal = this.peroidslist?.find((element):any => element.period_name === this.monthNames[this.currentDate.getMonth()])?.id;
-            this.selectPeriod.emit(this.selectedPeriodVal);
+            this.selectedPeriodVal = this.peroidslist?.find((element):any => element.period_name === this.monthNames[this.currentDate.getMonth()])?.id; 
           }
+          this.selectPeriod.emit(this.selectedPeriodVal);
         }, (error: any) => {
           this.apiService.showError(error?.error?.detail);
         });
