@@ -81,7 +81,7 @@ export class AllJobsComponent implements OnInit {
     private datePipe: DatePipe) {
     this.common_service.setTitle(this.BreadCrumbsTitle);
     this.user_id = sessionStorage.getItem('user_id');
-    this.userRole = sessionStorage.getItem('user_role_name')?.toLowerCase();
+    this.userRole = sessionStorage.getItem('user_role_name');
      this.common_service.jobStatus$.subscribe((status:boolean)=>{
       if(status){
          this.getJobsHistoryList();
@@ -259,18 +259,18 @@ export class AllJobsComponent implements OnInit {
     this.apiService.getData(`${environment.live_url}/${environment.jobs}/${query}`).subscribe((res: any) => {
       this.allJobsList = res?.results;
       this.filteredList = res?.results;
+      const noOfPages: number = res?.['total_pages']
+      this.count = noOfPages * this.tableSize;
       this.count = res?.['total_no_of_record'];
-      this.page = res?.['current_page'];
-
-    });
+      this.page = res?.['current_page'];    });
   }
 
   getJobsFilterList(status?:string) {
-    let query = '';
+    let query = this.getFilterBaseUrl();
     if(status){
       query = `?status=${status}`;
+      query += this.userRole !== 'Admin' ? `&employee-id=${this.user_id}` : '';
     }
-
     this.apiService.getData(`${environment.live_url}/${environment.jobs}/${query}`).subscribe(
       (res: any) => {
         this.jobList = res;
@@ -345,7 +345,7 @@ export class AllJobsComponent implements OnInit {
   getFilterBaseUrl(): string {
     const base = `?page=${this.page}&page_size=${this.tableSize}`;
     const searchParam = this.term?.trim().length >= 2 ? `&search=${this.term.trim()}` : '';
-    const employeeParam = this.userRole !== 'admin' ? `&employee-id=${this.user_id}` : '';
+    const employeeParam = this.userRole !== 'Admin' ? `&employee-id=${this.user_id}` : '';
 
     return `${base}${searchParam}${employeeParam}`;
   }

@@ -44,10 +44,13 @@ export class EditClientComponent implements CanComponentDeactivate, OnInit {
   }
   allGroupsNames:IdNamePair[] = [];
   arrow: boolean = false;
-  term: any;
+  term: any='';
   client_id:any;
   searchGroupText:any;
   initialFormValue:any;
+  filteredList = [];
+    filterQuery: string;
+    endclientList:any=[];
   constructor(private fb: FormBuilder,
      private modalService: NgbModal,
     private router:Router,private activeRoute:ActivatedRoute,
@@ -64,11 +67,10 @@ export class EditClientComponent implements CanComponentDeactivate, OnInit {
       });
   }
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
     this.initializeForm();
     this.getAllEndClients(`?page=1&page_size=5&client=${this.client_id}`);
     this.getGroupList();
-
   }
 
   public initializeForm() {
@@ -97,10 +99,10 @@ export class EditClientComponent implements CanComponentDeactivate, OnInit {
     this.allEndClients = [];
     this.apiService.getData(`${environment.live_url}/${environment.end_clients}/${pramas}`).subscribe((respData: any) => {
       this.allEndClients = respData.results;
+      this.filteredList = respData.results;
       const noOfPages: number = respData.total_pages
       this.count = noOfPages * this.tableSize;
       this.page = respData.current_page;
-      this.allGroupsNames = this.getUniqueValues(endClient => ({ id: endClient.group, name: endClient.group_name }));
 
     }, (error: any) => {
       this.apiService.showError(error?.error?.detail);
@@ -126,7 +128,7 @@ getUniqueValues(
 ): { id: any; name: string }[] {
   const seen = new Map();
 
-  this.allEndClients.forEach(endClient => {
+  this.endclientList.forEach(endClient => {
     const value = extractor(endClient);
     if (value && value.id && !seen.has(value.id)) {
       seen.set(value.id, value.name);
@@ -139,11 +141,7 @@ getUniqueValues(
 
   public onTableDataChange(event: any) {
     this.page = event;
-    let query = this.getFilterBaseUrl();
-    if (this.term) {
-      query += `&search=${this.term}`
-    }
-    this.getAllEndClients(query);
+    this.filterData();
   }
   public saveEndClientDetails() {
     if (this.endClientForm.invalid) {
@@ -155,7 +153,7 @@ getUniqueValues(
             this.apiService.showSuccess(respData['message']);
             this.resetFormState();
             this.common_service.setEndClientCreationState(true);
-            this.getAllEndClients(`?page=1&page_size=5&client=${this.client_id}`);
+            this.filterData();;
           }
         }, (error: any) => {
           this.apiService.showError(error?.error?.detail);
@@ -166,7 +164,7 @@ getUniqueValues(
             this.apiService.showSuccess(respData['message']);
             this.resetFormState();
             this.common_service.setEndClientCreationState(true);
-            this.getAllEndClients(`?page=1&page_size=5&client=${this.client_id}`);
+            this.filterData();
           }
 
         }, (error: any) => {
@@ -197,13 +195,8 @@ getUniqueValues(
   }
   public onTableSizeChange(event: any): void {
     if (event) {
-
       this.tableSize = Number(event.value);
-      let query = this.getFilterBaseUrl();
-      if (this.term) {
-        query += `&search=${this.term}`
-      }
-      this.getAllEndClients(query);
+      this.filterData();
     }
   }
   public confirmDelete(content: any) {
@@ -237,8 +230,7 @@ getUniqueValues(
         if (this.term) {
           query += `&search=${this.term}`
         }
-
-        this.getAllEndClients(query)
+        this.filterData();
       }
 
     }, (error => {
@@ -286,21 +278,19 @@ getUniqueValues(
   }
   public filterSearch(event) {
     const input = event?.target?.value?.trim() || ''; // Fallback to empty string if undefined
-    if (input && input.length >= 2) {
-      this.term = input;
-      this.page = 1;
-      let query = this.getFilterBaseUrl();
-      query += `&search=${this.term}`
-      this.getAllEndClients(query);
-    } if (!input) {
-      let query = this.getFilterBaseUrl();
-      this.getAllEndClients(query);
-    }
+    this.term = event.target.value?.trim();
+      if (this.term && this.term.length >= 2) {
+        this.page = 1;
+        this.filterData();
+      }
   }
   public getGroupList() {
     this.allGroupList = [];
     this.apiService.getData(`${environment.live_url}/${environment.clients_group}/?client=${this.client_id}`).subscribe((respData: any) => {
       this.allGroupList = respData;
+      this.endclientList = respData;
+      this.allGroupsNames = this.getUniqueValues(endClient => ({ id: endClient.id, name: endClient.group_name }));
+
     }, (error: any) => {
       this.apiService.showError(error?.error?.detail);
 
@@ -317,7 +307,7 @@ getUniqueValues(
   }
 
   getFilterBaseUrl(): string {
-    return `?page=${this.page}&page_size=${this.tableSize}&client=${this.client_id}`;
+    return `?page=${this.page}&page_size=${this.tableSize}&client=${this.client_id}&search=${this.term}`;
   }
   canDeactivate(): Observable<boolean> {
       const currentFormValue = this.endClientForm?.getRawValue();
@@ -325,10 +315,23 @@ getUniqueValues(
       return this.formErrorScrollService.isFormDirtyOrInvalidCheck(isFormChanged,this.endClientForm);
     }
 
+    filterData() {
+      this.filterQuery = this.getFilterBaseUrl()
+      if (this.filters.group_name.length) {
+        this.filterQuery += `&group-ids=[${this.filters.group_name.join(',')}]`;
+      }
+      this.apiService.getData(`${environment.live_url}/${environment.end_clients}/${this.filterQuery}`).subscribe((res: any) => {
+        this.allEndClients = res?.results;
+        this.filteredList = res?.results;
+        this.count = res?.['total_no_of_record'];
+        this.page = res?.['current_page'];  
+      });
+    }
+  
     onFilterChange(event: any, filterType: string) {
       const selectedOptions = event;
-      // this.filters[filterType] = selectedOptions;
-      // this.filterData();
+      this.filters[filterType] = selectedOptions;
+      this.filterData();
     }
 }
 

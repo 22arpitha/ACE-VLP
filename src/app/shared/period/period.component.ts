@@ -27,6 +27,7 @@ export class PeriodComponent implements OnInit,OnChanges {
    
    if (changes['resetFilterField'] && changes['resetFilterField']?.currentValue === true) {
     this.selectedPeriodVal=null;   
+    this.peroidslist=[];
       this.selectPeriod.emit(null); 
   }
   if(changes['defaultSelection'] && changes['defaultSelection']?.currentValue === true){

@@ -272,6 +272,7 @@ public async saveJobKPIDetails(){
                 this.apiService.showSuccess(respData['message']);
                 this.formGroupDirective.resetForm();
                 this.formErrorScrollService.resetHasUnsavedValue();
+                this.initialFormValue=this.jobKPIFormGroup?.getRawValue();
                 location.reload();
               }
             }, (error: any) => {

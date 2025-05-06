@@ -149,7 +149,7 @@ export class NonProductiveHoursComponent implements OnInit,OnChanges {
      let query = buildPaginationQuery({ page, pageSize, searchTerm });
      let finalQuery = query;
       if(this.dropdwonFilterData){
-       finalQuery += this.dropdwonFilterData.employee_id ? `&employee-id=${this.dropdwonFilterData.employee_id}`:this.user_role_name ==='Admin' ? '':`&employee-id=${this.user_id}`;
+       finalQuery += this.dropdwonFilterData.employee_id ? `&timesheet-employee=${this.dropdwonFilterData.employee_id}`:this.user_role_name ==='Admin' ? '':`&employee-id=${this.user_id}`;
        finalQuery += this.dropdwonFilterData.periodicity ? `&periodicity=${this.dropdwonFilterData.periodicity}`:'';
        finalQuery += this.dropdwonFilterData.period ? `&period=${this.dropdwonFilterData.period}`:'';
       }else{

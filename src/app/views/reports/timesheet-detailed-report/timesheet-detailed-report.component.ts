@@ -101,7 +101,9 @@ exportCsvOrPdf(fileType) {
     page: this.page,
     pageSize: this.tableSize,
   });
-
+  if(this.user_role_name !== 'Admin'){
+    query +=`&timesheet-employee=${this.user_id}`
+    }
   const url = `${environment.live_url}/${environment.timesheet_reports}/${query}&file-type=${fileType}&timsheet-type=detailed`;
   downloadFileFromUrl({
     url,
@@ -118,7 +120,7 @@ getTableData(params?: { page?: number; pageSize?: number; searchTerm?: string })
 
   let query = buildPaginationQuery({ page, pageSize, searchTerm });
   if(this.user_role_name !== 'Admin'){
-    query +=`&employee-id=${this.user_id}`
+    query +=`&timesheet-employee=${this.user_id}`
     }
   this.api.getData(`${environment.live_url}/${environment.timesheet}/${query}`).subscribe((res: any) => {
     const formattedData = res.results.map((item: any, i: number) => ({
