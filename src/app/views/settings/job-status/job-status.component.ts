@@ -6,9 +6,9 @@ import { ApiserviceService } from '../../../service/apiservice.service';
 import { GenericDeleteComponent } from '../../../generic-components/generic-delete/generic-delete.component';
 import { GenericEditComponent } from '../../../generic-components/generic-edit/generic-edit.component';
 import { environment } from '../../../../environments/environment';
-import { SubModuleService } from 'src/app/service/sub-module.service';
-import { CanComponentDeactivate } from 'src/app/auth-guard/can-deactivate.guard';
-import { FormErrorScrollUtilityService } from 'src/app/service/form-error-scroll-utility-service.service';
+import { SubModuleService } from '../../../service/sub-module.service';
+import { CanComponentDeactivate } from '../../../auth-guard/can-deactivate.guard';
+import { FormErrorScrollUtilityService } from '../../../service/form-error-scroll-utility-service.service';
 import { Observable } from 'rxjs';
 
 @Component({
@@ -45,6 +45,12 @@ export class JobStatusComponent implements CanComponentDeactivate, OnInit,OnDest
   userRole: any;
   searchStatusGroupText:any;
   initialFormValue:any;
+  filterQuery: string;
+  filters: {status_group_name: string[]} = {
+    status_group_name: []
+  };
+  filteredList: any;
+  allJobStatusName: { id: any; name: string; }[];
   constructor(private fb: FormBuilder, private modalService: NgbModal,private accessControlService:SubModuleService,
     private common_service: CommonServiceService, private apiService: ApiserviceService,
     private formUtilityService:FormErrorScrollUtilityService
@@ -67,9 +73,10 @@ export class JobStatusComponent implements CanComponentDeactivate, OnInit,OnDest
      let unSavedChanges = isFormChanged || isInvalid;
      this.formUtilityService.setUnsavedChanges(unSavedChanges);
     });
+    this.getFilterList();
   }
   ngOnDestroy(): void {
-this.formUtilityService.resetHasUnsavedValue();
+    this.formUtilityService.resetHasUnsavedValue();
   }
 
   getModuleAccess(){
@@ -136,7 +143,8 @@ this.formUtilityService.resetHasUnsavedValue();
     if (this.term) {
       query += `&search=${this.term}`
     }
-    this.getAllJobStatus(query);
+    // this.getAllJobStatus(query);
+    this.filterData()
   }
   public saveJobTypeDetails() {
     if (this.jobStatusForm.invalid) {
@@ -172,7 +180,7 @@ this.formUtilityService.resetHasUnsavedValue();
     this.formGroupDirective.resetForm();
     this.formUtilityService.resetHasUnsavedValue();
     this.isEditItem = false;
-    this.term='';
+    this.term ='';
     this.initialFormValue = this.jobStatusForm?.getRawValue();
   }
 
@@ -196,7 +204,8 @@ this.formUtilityService.resetHasUnsavedValue();
       if (this.term) {
         query += `&search=${this.term}`
       }
-      this.getAllJobStatus(query);
+      // this.getAllJobStatus(query);
+      this.filterData()
     }
   }
   public confirmDelete(content: any) {
@@ -230,7 +239,8 @@ this.formUtilityService.resetHasUnsavedValue();
           query += `&search=${this.term}`
         }
 
-        this.getAllJobStatus(query)
+        // this.getAllJobStatus(query)
+        this.filterData()
       }
 
     }, (error => {
@@ -282,10 +292,10 @@ this.formUtilityService.resetHasUnsavedValue();
       this.term = input;
       this.page = 1;
       const query = `?page=${this.page}&page_size=${this.tableSize}&search=${this.term}`;
-      this.getAllJobStatus(query);
+      this.filterData()
     } if (!input) {
       const query = `?page=${this.page}&page_size=${this.tableSize}`;
-      this.getAllJobStatus(query);
+      this.filterData()
     }
   }
   public getStatusGroupList() {
@@ -308,6 +318,47 @@ this.formUtilityService.resetHasUnsavedValue();
     const currentFormValue = this.jobStatusForm?.getRawValue();
     const isFormChanged:boolean =  JSON.stringify(currentFormValue) !== JSON.stringify(this.initialFormValue);
     return this.formUtilityService.isFormDirtyOrInvalidCheck(isFormChanged,this.jobStatusForm);
+  }
+  getFilterBaseUrl(): string {
+    const base = `?page=${this.page}&page_size=${this.tableSize}`;
+    const searchParam = this.term?.trim().length >= 2 ? `&search=${this.term.trim()}` : '';
+
+    return `${base}${searchParam}`;
+  }
+  filterData() {
+    this.filterQuery = this.getFilterBaseUrl()
+    if (this.filters.status_group_name.length) {
+      this.filterQuery += `&status-group-ids=[${this.filters.status_group_name.join(',')}]`;
+    }
+
+    this.apiService.getData(`${environment.live_url}/${environment.settings_job_status}/${this.filterQuery}`).subscribe((res: any) => {
+      this.allJobStatusList = res?.results;
+      this.filteredList = res?.results;
+      const noOfPages: number = res?.['total_pages']
+      this.count = noOfPages * this.tableSize;
+      this.count = res?.['total_no_of_record']
+      this.page = res?.['current_page'];
+    });
+  }
+  getFilterList(){
+    this.apiService.getData(`${environment.live_url}/${environment.settings_job_status}/`).subscribe(
+      (res: any) => {
+        this.filteredList = res;
+        this.allJobStatusName = this.getUniqueValues(job => ({ id: job.id, name: job.status_group_name }));
+    })
+    }
+  getUniqueValues(
+    extractor: (item: any) => { id: any; name: string }
+  ): { id: any; name: string }[] {
+    const seen = new Map();
+    this.filteredList?.forEach(job => {
+      const value = extractor(job);
+      if (value && value.id && !seen.has(value.id)) {
+        seen.set(value.id, value.name);
+      }
+    });
+
+    return Array.from(seen, ([id, name]) => ({ id, name }));
   }
 }
 
