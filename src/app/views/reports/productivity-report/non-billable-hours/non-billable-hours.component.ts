@@ -110,11 +110,20 @@ BreadCrumbsTitle: any = 'Non Billable Hours';
       }
     }
 exportCsvOrPdf(fileType) {
-  const query = buildPaginationQuery({
+  let query = buildPaginationQuery({
     page: this.page,
     pageSize: this.tableSize,
+    searchTerm :this.term
   });
-
+  if(query){
+    if(this.dropdwonFilterData){
+      query+= this.dropdwonFilterData.employee_id ? `&employee-id=${this.dropdwonFilterData.employee_id}`:this.userRole ==='Admin' ? '':`&employee-id=${this.user_id}`;
+      query+= this.dropdwonFilterData.periodicity ? `&periodicity=${this.dropdwonFilterData.periodicity}`:'';
+      query+= this.dropdwonFilterData.period ? `&period=${this.dropdwonFilterData.period}`:'';
+     }else{
+      query += this.userRole ==='Admin' ? '':`&employee-id=${this.user_id}`;
+     }
+   }
   const url = `${environment.live_url}/${environment.productivity_reports}/${query}&file-type=${fileType}&productivity-type=non-billable`;
   downloadFileFromUrl({
     url,

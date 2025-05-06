@@ -67,29 +67,7 @@ export class WorkCultureAndWorkEthicsComponent implements OnInit,OnChanges {
 
       workCultureData:any =[]
       getWorkCultureAndEthicsList(){
-        let query = '';
-        console.log('this.dropdwonFilterData',this.dropdwonFilterData);
-        if (this.dropdwonFilterData) {
-          const params = [];
-          if (this.dropdwonFilterData.periodicity) {
-            params.push(`periodicity=${this.dropdwonFilterData.periodicity}`);
-          }
-          if (this.dropdwonFilterData.period) {
-            params.push(`period=${this.dropdwonFilterData.period}`);
-          }
-          if (this.dropdwonFilterData.employee_id) {
-            params.push(`employee_id=${this.dropdwonFilterData.employee_id}`);
-           }
-          if(this.user_role_name !='Admin')
-            {
-              params.push(`logged-in-user-id=${this.user_id}`);
-            }else{
-              params.push(`admin=True`);
-            }
-          if (params.length) {
-            query = '?' + params.join('&');
-          }
-        }
+        let query = this.getUpdateFilterQueryParams();
         this.api.getData(`${environment.live_url}/${environment.upload_assessment}/${query}`).subscribe(
           (res:any)=>{
                         const formattedData = res.data?.map((item: any, i: number) => ({
@@ -135,7 +113,9 @@ export class WorkCultureAndWorkEthicsComponent implements OnInit,OnChanges {
       }
     }
     exportCsvOrPdf(fileType) {
-      const url = `${environment.live_url}/${environment.upload_assessment}/?file-type=${fileType}&productivity-type=upload_assessment`;
+      let query= this.getUpdateFilterQueryParams();
+      query+=`&file-type=${fileType}&download=True`;
+      const url = `${environment.live_url}/${environment.upload_assessment}/${query}`;
       downloadFileFromUrl({
         url,
         fileName: 'work_culture_and_ethics_details',
@@ -155,5 +135,31 @@ export class WorkCultureAndWorkEthicsComponent implements OnInit,OnChanges {
         }, (error: any) => {
           this.api.showError(error?.error?.detail);
         });
+      }
+
+      public getUpdateFilterQueryParams(){
+        let query ='';
+        if (this.dropdwonFilterData) {
+          const params = [];
+          if (this.dropdwonFilterData.periodicity) {
+            params.push(`periodicity=${this.dropdwonFilterData.periodicity}`);
+          }
+          if (this.dropdwonFilterData.period) {
+            params.push(`period=${this.dropdwonFilterData.period}`);
+          }
+          if (this.dropdwonFilterData.employee_id) {
+            params.push(`employee_id=${this.dropdwonFilterData.employee_id}`);
+          }
+          if(this.user_role_name !='Admin')
+            {
+              params.push(`logged-in-user-id=${this.user_id}`);
+            }else{
+              params.push(`admin=True`);
+            }
+          if (params.length) {
+            query = '?' + params.join('&');
+          }
+        }
+        return query;
       }
 }
