@@ -216,11 +216,7 @@ export class ClientListComponent implements OnInit {
         this.filterData();
       }
       else if (!this.term) {
-        if(this.isCurrent){
-          this.getCurrentClientList()
-        }else{
-          this.getClientHistoryList();
-        }
+        this.filterData();
       }
     }
 

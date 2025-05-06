@@ -334,11 +334,7 @@ export class AllJobsComponent implements OnInit {
       this.filterData()
     }
     else if (!this.term) {
-      if (this.isCurrent) {
-        this.getCurrentJobsList()
-      } else {
-        this.getJobsHistoryList();
-      }
+      this.filterData();
     }
   }
 
