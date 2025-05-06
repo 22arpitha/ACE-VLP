@@ -8,7 +8,7 @@ import { CommonServiceService } from '../../../service/common-service.service';
 import { environment } from '../../../../environments/environment';
 import { SubModuleService } from '../../../service/sub-module.service';
 import { GenericDeleteComponent } from '../../../generic-components/generic-delete/generic-delete.component';
-import { GenericTimesheetConfirmationComponent } from 'src/app/generic-components/generic-timesheet-confirmation/generic-timesheet-confirmation.component';
+import { GenericTimesheetConfirmationComponent } from '../../../generic-components/generic-timesheet-confirmation/generic-timesheet-confirmation.component';
 export interface IdNamePair {
   id: any;
   name: string;
@@ -57,6 +57,7 @@ export class AllTimesheetsComponent implements OnInit {
   allEmployeeNames:IdNamePair[] = [];
   allTaskNames:IdNamePair[] = [];
   dateFilterValue: any = null;
+  resetWeekDate: boolean = false;
   constructor(private common_service: CommonServiceService,
     private router: Router, private modalService: NgbModal, private accessControlService: SubModuleService,
     private apiService: ApiserviceService, private datePipe: DatePipe) {
@@ -429,6 +430,7 @@ export class AllTimesheetsComponent implements OnInit {
             this.endDate = '';
             this.selectedDate = '';
             this.getWeekData();
+            this.resetWeekDate = true
           },
           (error) => {
             console.log(error);
