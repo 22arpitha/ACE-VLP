@@ -3,7 +3,7 @@
         *ngIf="userRole !='Admin' && accessPermissions[0]?.view || userRole === 'Admin'">
         <div class="row mx-0 my-1 px-0 py-2">
             <div class="col-sm-12 col-md-12 week-picker mb-3" *ngIf="userRole !='Admin'">
-                <div class="d-block d-md-flex  justify-content-between align-items-center"> 
+                <div class="d-block d-md-flex  justify-content-between align-items-center">
                     <div class="d-flex align-items-center">
                         <h5 class="fw-bold">Weekly Timesheet History</h5>
                         <app-week-datepicker (weekSelected)="weekDatePicker($event)"></app-week-datepicker>
@@ -46,7 +46,7 @@
                     [(ngModel)]="term" placeholder="Search" aria-describedby="emailHelp" autocomplete="off">
                 <i *ngIf="!term" class="bi bi-search" id="search-icon-tab"></i>
             </div>
-            <div class="col-12 mt-3 col-sm-12 col-md-4 col-lg-3">
+            <!-- <div class="col-12 mt-3 col-sm-12 col-md-4 col-lg-3">
                 <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
                     <mat-label> &nbsp; Enter a date range</mat-label >
                     <mat-date-range-input [rangePicker]="picker">
@@ -56,12 +56,12 @@
                     <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
                     <mat-date-range-picker #picker ></mat-date-range-picker>
                   </mat-form-field>
-            </div>
+            </div> -->
             <div class="col-12 mt-3 col-sm-12 col-md-4 col-lg-6 text-end px-0">
                 <button mat-raised-button class="mat-btn-s order-sm-1 order-3" type="button" [disabled]="isTodayFriday()"
-                    *ngIf="userRole !='Admin' && accessPermissions[0]?.create" (click)="submitWeekTimesheet()">Submit Week
+                    *ngIf="userRole !='Admin' && accessPermissions[0]?.create" (click)="submitWeekTimesheet();this.getTimesheetsIDs()">Submit Week
                     TimeSheet</button>
-            </div>
+                  </div>
         </div>
         <div class="row mx-1 my-2 px-0 table-wrapper">
             <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0 ">
@@ -97,8 +97,8 @@
                                     <button mat-icon-button [matMenuTriggerFor]="employeeFilterMenu">
                                         <i class="bi bi-toggles"></i>
                                       </button>
-                    
-                    
+
+
                                       <mat-menu #employeeFilterMenu="matMenu">
                                         <app-generic-table-filter
                                           [options]="allEmployeeNames"
@@ -115,8 +115,8 @@
                                     <button mat-icon-button [matMenuTriggerFor]="clientFilterMenu">
                                         <i class="bi bi-toggles"></i>
                                       </button>
-                    
-                    
+
+
                                       <mat-menu #clientFilterMenu="matMenu">
                                         <app-generic-table-filter
                                           [options]="allClientNames"
@@ -133,8 +133,8 @@
                                     <button mat-icon-button [matMenuTriggerFor]="jobFilterMenu">
                                         <i class="bi bi-toggles"></i>
                                       </button>
-                    
-                    
+
+
                                       <mat-menu #jobFilterMenu="matMenu">
                                         <app-generic-table-filter
                                           [options]="allClientNames"
@@ -142,7 +142,7 @@
                                           (selectedOptionsChange)="onFilterChange($event, 'job_name')"
                                         ></app-generic-table-filter>
                                       </mat-menu>
-                            
+
                             </th>
                             <th scope="col">Task
                                 <i *ngIf="!arrowState['task_nmae']" (click)="sort('asc','task_nmae')"
@@ -152,8 +152,8 @@
                                     <button mat-icon-button [matMenuTriggerFor]="taskFilterMenu">
                                         <i class="bi bi-toggles"></i>
                                       </button>
-                    
-                    
+
+
                                       <mat-menu #taskFilterMenu="matMenu">
                                         <app-generic-table-filter
                                           [options]="allTaskNames"
@@ -192,10 +192,10 @@
                                 <td> <ng-container>
                                         <img src="../../../../assets/images/Delete.svg" class="icon-image" type="button"
                                             container="body" ngbTooltip="Delete" (click)="delete(item.id)"
-                                            *ngIf="!weekTimesheetSubmitted && userRole !='Admin' && accessPermissions[0]?.delete"/>
+                                            *ngIf="userRole !='Admin' && accessPermissions[0]?.delete && !item.is_locked"/>
                                         <img src="../../../../assets/images/Edit.svg" class="icon-image" type="button"
                                             container="body" ngbTooltip="Edit" (click)="edit(item)"
-                                            *ngIf="!weekTimesheetSubmitted && userRole !='Admin' && (accessPermissions[0]?.view && accessPermissions[0]?.update)"/>
+                                            *ngIf="userRole !='Admin' && (accessPermissions[0]?.view && accessPermissions[0]?.update) && !item.is_locked"/>
                                         <button mat-raised-button class="proceedbtn" *ngIf="userRole ==='Admin' && item.is_locked" (click)="unlockTimesheet(item)">Unlock</button>
                                         <span *ngIf="userRole ==='Admin' && !item.is_locked">Not Locked Yet</span>
                                         <span

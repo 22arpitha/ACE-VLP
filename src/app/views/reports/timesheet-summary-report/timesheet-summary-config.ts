@@ -1,23 +1,8 @@
 
-// export const tableColumns = [
-//     { label: 'Sl No',
-//       key: 'sl'
-//     },
-//     {
-//       label: 'Day',
-//       key: 'day',
-//       filterable: true,
-//       filterType: 'multi-select',
-//       sortable: true
-//     },
-//     { label: 'Date', key: 'date', sortable: true },
-//     { label: 'Month',key: 'month',sortable: true },
-//     { label: 'Total Time', key: 'total_time', sortable: true }
-//   ]
 
   export const tableColumns = [
     { label: 'Sl No', key: 'sl' },
-    { label: 'Employee', key: 'employee_name', sortable: true ,filterable: true, filterType: 'multi-select' },
+    { label: 'Employee', key: 'employee_name', keyId:'employee_id', sortable: true ,filterable: true, filterType: 'multi-select' },
     { label: 'Sun', key: 'Sunday', sortable: true },
     { label: 'Mon', key: 'Monday', sortable: true },
     { label: 'Tues', key: 'Tuesday', sortable: true },

@@ -79,6 +79,7 @@ export class AllTimesheetsComponent implements OnInit {
     } else {
       this.getTimesheets();
     }
+    this.getTimesheetsIDs();
   }
   // isTodayFriday(): boolean {
   //   const today = new Date();
@@ -86,47 +87,81 @@ export class AllTimesheetsComponent implements OnInit {
   // }
 
 
-  isDateInCurrentWeek(dateToCheck: Date): boolean {
-    const today = new Date();
-    const currentDay = today.getDay();
+  // isDateInCurrentWeek(dateToCheck: Date): boolean {
+  //   const today = new Date();
+  //   const currentDay = today.getDay();
 
-    const startOfWeek = new Date(today);
-    startOfWeek.setDate(today.getDate() - currentDay);
+  //   const startOfWeek = new Date(today);
+  //   startOfWeek.setDate(today.getDate() - currentDay);
+  //   startOfWeek.setHours(0, 0, 0, 0);
+
+  //   const endOfWeek = new Date(startOfWeek);
+  //   endOfWeek.setDate(startOfWeek.getDate() + 6);
+  //   endOfWeek.setHours(23, 59, 59, 999);
+
+  //   const date = new Date(dateToCheck);
+  //   date.setHours(0, 0, 0, 0);
+
+  //   return date >= startOfWeek && date <= endOfWeek;
+  // }
+
+  // isTodayFriday(): boolean {
+  //   let storeDate: any
+  //   if (this.selectedDate) {
+  //     storeDate = this.selectedDate;
+  //     console.log('storeDate', storeDate)
+  //   }
+
+  //   else {
+  //     storeDate = new Date();
+  //   }
+  //   if (this.allTimesheetsList && this.allTimesheetsList.length > 0) {
+  //     if (!this.weekTimesheetSubmitted) {
+  //       if (this.isDateInCurrentWeek(storeDate)) {
+  //         const isFriday = storeDate.getDay() === 5;
+  //         return !isFriday;
+  //       } else {
+  //         return this.weekTimesheetSubmitted;
+  //       }
+  //     } else {
+  //       return this.weekTimesheetSubmitted;
+  //     }
+  //   } else {
+  //     return true;
+  //   }
+  // }
+  isTodayFriday(): boolean {
+    const storeDate = this.selectedDate ? new Date(this.selectedDate) : new Date();
+    const today = new Date();
+    const isSameWeek = this.isDateInCurrentWeek(storeDate);
+    const isToday = storeDate.toDateString() === today.toDateString();
+    const isFriday = today.getDay() === 5;
+
+    // Disable if selected date is in current week AND today is not Friday
+    if (this.allTimesheetsList && this.allTimesheetsList.length > 0) {
+    if (isSameWeek && !isFriday) {
+      return true; // Disable button
+    }
+  }
+    return false; // Enable button in all other cases
+  }
+  isDateInCurrentWeek(date: Date): boolean {
+    const now = new Date();
+    const startOfWeek = new Date(now);
+    const endOfWeek = new Date(now);
+
+    // Set to Sunday
+    startOfWeek.setDate(now.getDate() - now.getDay());
     startOfWeek.setHours(0, 0, 0, 0);
 
-    const endOfWeek = new Date(startOfWeek);
-    endOfWeek.setDate(startOfWeek.getDate() + 6);
+    // Set to Saturday
+    endOfWeek.setDate(now.getDate() + (6 - now.getDay()));
     endOfWeek.setHours(23, 59, 59, 999);
-
-    const date = new Date(dateToCheck);
-    date.setHours(0, 0, 0, 0);
 
     return date >= startOfWeek && date <= endOfWeek;
   }
 
-  isTodayFriday(): boolean {
-    let storeDate: any
-    if (this.selectedDate) {
-      storeDate = this.selectedDate;
-    }
-    else {
-      storeDate = new Date();
-    }
-    if (this.allTimesheetsList && this.allTimesheetsList.length > 0) {
-      if (!this.weekTimesheetSubmitted) {
-        if (this.isDateInCurrentWeek(storeDate)) {
-          const isFriday = storeDate.getDay() === 5;
-          return !isFriday;
-        } else {
-          return this.weekTimesheetSubmitted;
-        }
-      } else {
-        return this.weekTimesheetSubmitted;
-      }
-    } else {
-      return true;
-    }
-  }
+
 
 
   access_name: any;
@@ -155,7 +190,7 @@ export class AllTimesheetsComponent implements OnInit {
     this.apiService.getData(`${environment.live_url}/${environment.vlp_timesheets}/${query}`).subscribe(
       (res: any) => {
         // console.log('week data',res);
-        // this.selectedDate = this.convertBackendDateToStandard(res.data[0].date)    
+        // this.selectedDate = this.convertBackendDateToStandard(res.data[0].date)
         // console.log(this.selectedDate)
         this.weekData = res.data;
         if (res.data.length > 0) {
@@ -224,13 +259,13 @@ export class AllTimesheetsComponent implements OnInit {
     this.apiService.getData(`${environment.live_url}/${environment.vlp_timesheets}/${query}`).subscribe(
       (res: any) => {
         this.allTimesheetsList = res?.results;
-        if (this.allTimesheetsList.length > 0) {
-          this.idsOfTimesheet = [];
-          res.results.forEach((element: any) => {
-            this.idsOfTimesheet.push(element.id)
-          })
+        // if (this.allTimesheetsList.length > 0) {
+        //   this.idsOfTimesheet = [];
+        //   res.results.forEach((element: any) => {
+        //     this.idsOfTimesheet.push(element.id)
+        //   })
           // console.log('this.idsOfTimesheet', this.idsOfTimesheet)
-        }
+        //}
         const noOfPages: number = res?.['total_pages']
         this.count = noOfPages * this.tableSize;
         this.count = res?.['total_no_of_record']
@@ -242,7 +277,29 @@ export class AllTimesheetsComponent implements OnInit {
       }
     )
   }
-
+  public getTimesheetsIDs() {
+   // let query = this.getFilterBaseUrl();
+    this.apiService.getData(`${environment.live_url}/${environment.vlp_timesheets}/?timesheet-employee=${this.user_id}&start-date=${this.startDate}&end-date=${this.endDate}`).subscribe(
+      (res: any) => {
+        // this.allTimesheetsList = res;
+        if (res.length > 0) {
+          this.idsOfTimesheet = [];
+          res?.forEach((element: any) => {
+            this.idsOfTimesheet.push(element.id)
+          })
+          // console.log('this.idsOfTimesheet', this.idsOfTimesheet)
+        }
+        // const noOfPages: number = res?.['total_pages']
+        // this.count = noOfPages * this.tableSize;
+        // this.count = res?.['total_no_of_record']
+        // this.page = res?.['current_page'];
+        // this.allClientNames = this.getUniqueValues(client => ({ id: client.client_id, name: client.client_name }));
+        // this.allJobsNames =  this.getUniqueValues(jobs => ({ id: jobs.job_id, name: jobs.job_name }));
+        // this.allEmployeeNames =  this.getUniqueValues(emps => ({ id: emps.employee_id, name: emps.employee_name }));
+        // this.allTaskNames = this.getUniqueValues(tasks => ({ id: tasks.task, name: tasks.task_name }));
+      }
+    )
+  }
   public onTableSizeChange(event: any): void {
     if (event) {
       this.page = 1;
@@ -363,7 +420,7 @@ export class AllTimesheetsComponent implements OnInit {
           "from_date": this.startDate,
           "to_date": this.endDate
         }
-        
+
         this.apiService.postData(`${environment.live_url}/${environment.submit_weekly_timesheet}/`, data).subscribe(
           (res: any) => {
             // console.log(res)
@@ -384,7 +441,7 @@ export class AllTimesheetsComponent implements OnInit {
         modelRef.close();
       }
     })
-    
+
   }
   unlockTimesheet(data: any) {
     const modelRef = this.modalService.open(GenericTimesheetConfirmationComponent, {
@@ -417,7 +474,7 @@ export class AllTimesheetsComponent implements OnInit {
         modelRef.close();
       }
     })
-    
+
   }
 
   // Filter related
