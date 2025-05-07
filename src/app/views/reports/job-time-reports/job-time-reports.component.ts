@@ -6,6 +6,8 @@ import { downloadFileFromUrl } from '../../../shared/file-download.util';
 import { buildPaginationQuery } from '../../../shared/pagination.util';
 import { getUniqueValues } from '../../../shared/unique-values.utils';
 import { environment } from '../../../../environments/environment';
+import { JobTimeSheetDetailsPopupComponent } from '../common/job-time-sheet-details-popup/job-time-sheet-details-popup.component';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-job-time-reports',
@@ -32,6 +34,7 @@ tableSize: number = 5;
      includeAllJobsValue:false,
      selectedClientId:null,
      sendEmail:true,
+     showDownload:true,
    };
    tabStatus:any='True';
    allJobStatus:any=[];
@@ -43,7 +46,8 @@ tableSize: number = 5;
    isIncludeAllJobValue:boolean=false;
  constructor(
      private common_service:CommonServiceService,
-     private api:ApiserviceService
+     private api:ApiserviceService,
+     private dialog:MatDialog,
    ) {
     this.user_id = sessionStorage.getItem('user_id');
     this.userRole = sessionStorage.getItem('user_role_name');
@@ -108,7 +112,10 @@ tableSize: number = 5;
  // Called from <app-dynamic-table> via @Output actionEvent
  handleAction(event: { actionType: string; detail: any, }) {
    switch (event.actionType) {
-     case 'tableDataChange':
+      case 'navigate':
+        this.viewtimesheetDetails(event['row']);
+       break;
+      case 'tableDataChange':
        this.onTableDataChange(event.detail);
        break;
        case 'tableSizeChange':
@@ -209,7 +216,8 @@ tableSize: number = 5;
        selectedClientId:this.client_id ? this.client_id:null,
        sendEmail:true,
        currentPage:page,
-       totalRecords: res.total_no_of_record
+       totalRecords: res.total_no_of_record,
+       showDownload:true,
       };
     }
     
@@ -255,5 +263,10 @@ public sendEamils(){
 )
 }
 }
-
+public viewtimesheetDetails(item:any){
+      this.dialog.open(JobTimeSheetDetailsPopupComponent, {
+      width: '900px',
+      data: { 'job_id': item?.id,'job_name':item?.job_name }
+    });
+    }
 }

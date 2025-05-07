@@ -26,6 +26,7 @@ BreadCrumbsTitle: any = 'Non Billable Hours';
         accessConfig: [],
         tableSize: 10,
         pagination: true,
+        showDownload:true,
       };
       user_id:any;
       userRole:any;
@@ -165,7 +166,8 @@ exportCsvOrPdf(fileType) {
                searchable: true,
                currentPage:page,
                totalRecords: res.total_no_of_record,
-               hideDownload:true
+               hideDownload:true,
+               showDownload:true,
               };
             }else{
               this.tableConfig = {

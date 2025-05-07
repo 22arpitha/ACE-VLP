@@ -5,6 +5,8 @@ import { tableColumns } from './non-productive-hours-config';
 import { environment } from '../../../../../environments/environment';
 import { ApiserviceService } from '../../../../service/apiservice.service';
 import { downloadFileFromUrl } from '../../../../shared/file-download.util';
+import { JobTimeSheetDetailsPopupComponent } from '../../common/job-time-sheet-details-popup/job-time-sheet-details-popup.component';
+import { MatDialog } from '@angular/material/dialog';
 @Component({
   selector: 'app-non-productive-hours',
   templateUrl: './non-productive-hours.component.html',
@@ -25,13 +27,15 @@ export class NonProductiveHoursComponent implements OnInit,OnChanges {
        accessConfig: [],
        tableSize: 10,
        pagination: true,
+       showDownload:true,
      };
 
   user_id: string;
   user_role_name: string;
      constructor(
        private common_service:CommonServiceService,
-       private api:ApiserviceService
+       private api:ApiserviceService,
+       private dialog:MatDialog,
      ) {
       this.user_id = sessionStorage.getItem('user_id') || '' ;
       this.user_role_name = sessionStorage.getItem('user_role_name') || '';
@@ -94,6 +98,9 @@ export class NonProductiveHoursComponent implements OnInit,OnChanges {
    // Called from <app-dynamic-table> via @Output actionEvent
    handleAction(event: { actionType: string; detail: any }) {
      switch (event.actionType) {
+      case 'navigate':
+        this.viewtimesheetDetails(event['row']);
+       break;
        case 'tableDataChange':
          this.onTableDataChange(event.detail);
          break;
@@ -170,7 +177,8 @@ export class NonProductiveHoursComponent implements OnInit,OnChanges {
         pagination: true,
         currentPage:page,
         totalRecords: res.total_no_of_record,
-        hideDownload:true
+        hideDownload:true,
+        showDownload:true,
       };
      });
 
@@ -183,6 +191,11 @@ export class NonProductiveHoursComponent implements OnInit,OnChanges {
          searchTerm: term
        });
      }
-
+public viewtimesheetDetails(item:any){
+      this.dialog.open(JobTimeSheetDetailsPopupComponent, {
+      width: '900px',
+      data: { 'job_id': item?.id,'job_name':item?.job_name },
+    });
+    }
   }
 

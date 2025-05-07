@@ -20,6 +20,7 @@ BreadCrumbsTitle: any = 'Overall Productivity';
           actions: [],
           accessConfig: [],
           pagination: false,
+          showDownload:true,
         };
         user_role_name:any;
       user_id:any;
@@ -85,6 +86,7 @@ getOverAllProductivity(){
                          accessConfig: [],
                          pagination: false,
                          searchable: false,
+                         showDownload:true,
                         };
                     },
                               (error)=>{

@@ -43,7 +43,7 @@ export const tableColumns  = [
     sortable: true
   },
   { label: 'Estimated Time (hrs)', key: 'estimated_time', sortable: true },
-  { label: 'Actual Time (hrs)', key: 'actual_time', sortable: true },
+  { label: 'Actual Time (hrs)', key: 'actual_time', sortable: true ,navigation:true},
   { label: 'Remaining/(Excess) Time (hrs)', key: 'remaining_time', sortable: true },
 
 ]

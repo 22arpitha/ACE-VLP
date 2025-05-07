@@ -29,6 +29,7 @@ BreadCrumbsTitle: any = 'Qualitative Productivity';
             tableSize: 10,
             pagination: true,
             averageProductivity:true,
+            showDownload:true,
           };
 
        user_id: string;
@@ -173,7 +174,8 @@ BreadCrumbsTitle: any = 'Qualitative Productivity';
              pagination: true,
              currentPage:page,
              totalRecords: res.total_no_of_record,
-             hideDownload:true
+             hideDownload:true,
+             showDownload:true,
            };
           });
 

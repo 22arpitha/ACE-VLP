@@ -10,6 +10,9 @@ import { ProductivityReportComponent } from './productivity-report/productivity-
 import { ProductivityReportModule } from './productivity-report/productivity-report.module';
 import { JobStatusReportComponent } from './job-status-report/job-status-report.component';
 import { JobTimeReportsComponent } from './job-time-reports/job-time-reports.component';
+import { JobTimeSheetDetailsPopupComponent } from './common/job-time-sheet-details-popup/job-time-sheet-details-popup.component';
+
+
 @NgModule({
   declarations: [
     ReportsComponent,
@@ -18,7 +21,8 @@ import { JobTimeReportsComponent } from './job-time-reports/job-time-reports.com
     EmployeeDetailsComponent,
     ProductivityReportComponent,
     JobStatusReportComponent,
-    JobTimeReportsComponent
+    JobTimeReportsComponent,
+    JobTimeSheetDetailsPopupComponent
   ],
   imports: [
     CommonModule,

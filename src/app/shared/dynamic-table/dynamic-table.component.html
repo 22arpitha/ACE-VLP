@@ -51,8 +51,8 @@
         </div>
   <!-- Download Menu -->
 
-      <div class="col-auto col-sm-auto col-md-auto col-lg-auto px-0 mx-0 my-1"  [ngClass]="config?.hideDownload ? 'p-r' : 'mt-2'"
-      *ngIf="paginatedData?.length > 0">
+      <div class="col-auto col-sm-auto col-md-auto col-lg-auto px-0 mx-0 my-1" [ngClass]="config?.hideDownload ? 'p-r' : 'mt-2'"
+      *ngIf="config?.showDownload && paginatedData?.length > 0">
        <div [ngClass]="config?.hideDownload ? 'set-position' : 'my-1'">
         <button
           mat-icon-button
@@ -235,11 +235,11 @@
 
             <ng-container *ngIf="col.navigation">
               <a
-                (click)="navigateToEmployee(col)"
+                (click)="navigateToEmployee(item)"
                 class="text-primary text-decoration-underline"
                 style="cursor: pointer"
               >
-                {{ item[col.key] || 'NA' }}
+                {{ item[col.key] !== null && item[col.key] !== undefined ? item[col.key] : 'NA' }}
               </a>
             </ng-container>
           </td>
@@ -276,7 +276,7 @@
 
             <ng-container *ngIf="col.navigation">
               <a
-                (click)="navigateToEmployee(item[col.key])"
+                (click)="navigateToEmployee(item)"
                 class="text-primary text-decoration-underline"
                 style="cursor: pointer"
               >
