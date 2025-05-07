@@ -24,7 +24,7 @@ const tableColumns = [
     filterType: 'multi-select',
     sortable: true
   },
-  { label: 'start_time', key: 'start_time', sortable: true },
+  { label: 'Start time', key: 'start_time', sortable: true },
   { label: 'End time', key: 'end_time', sortable: true },
   { label: 'Time spent', key: 'time_spent', sortable: true },
   { label: 'Notes', key: 'notes', sortable: false }
