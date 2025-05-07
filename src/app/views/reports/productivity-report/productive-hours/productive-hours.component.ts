@@ -25,6 +25,7 @@ export class ProductiveHoursComponent implements OnInit,OnChanges {
     accessConfig: [],
     tableSize: 5,
     pagination: true,
+    showDownload:true,
   };
   user_id:any;
   userRole:any;
@@ -169,6 +170,7 @@ exportCsvOrPdf(fileType) {
              totalRecords: res.total_no_of_record,
              hideDownload:true,
              tableFooterContent:tableFooterContent,
+             showDownload:true,
             };
            },(error:any)=>{  this.api.showError(error?.error?.detail);
            });

@@ -31,6 +31,7 @@ export class QuantitativeProductivityComponent implements OnInit,OnChanges {
             estimationDetails:true,
             hideDownload:true,
             estimationData:'',
+            showDownload:true,
            };
             user_id:any;
            userRole:any;;
@@ -185,7 +186,8 @@ export class QuantitativeProductivityComponent implements OnInit,OnChanges {
              totalRecords: res.total_no_of_record,
              estimationDetails:true,
              tableFooterContent:tableFooterContent,
-             hideDownload:true
+             hideDownload:true,
+             showDownload:true,
             };
            },(error:any)=>{  this.api.showError(error?.error?.detail);
            });

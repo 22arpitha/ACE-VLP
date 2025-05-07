@@ -1,7 +1,7 @@
 import { Component, ElementRef, HostListener, OnDestroy, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, FormGroupDirective, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { forkJoin, map, Observable } from 'rxjs';
+import { forkJoin, map, Observable, of } from 'rxjs';
 import { ApiserviceService } from '../../../service/apiservice.service';
 import { CommonServiceService } from '../../../service/common-service.service';
 import { FormErrorScrollUtilityService } from '../../../service/form-error-scroll-utility-service.service';
@@ -272,6 +272,7 @@ public async saveJobKPIDetails(){
                 this.apiService.showSuccess(respData['message']);
                 this.formGroupDirective.resetForm();
                 this.formErrorScrollService.resetHasUnsavedValue();
+                this.initialFormValue=this.jobKPIFormGroup?.getRawValue();
                 location.reload();
               }
             }, (error: any) => {
@@ -556,7 +557,7 @@ public formatReviewingTime(event: any,index:any): void {
 canDeactivate(): Observable<boolean> {
     const currentFormValue = this.jobKPIFormGroup?.getRawValue();
     const isFormChanged:boolean =  JSON.stringify(currentFormValue) !== JSON.stringify(this.initialFormValue);
-    return this.formErrorScrollService.isFormDirtyOrInvalidCheck(isFormChanged,this.jobKPIFormGroup);
+    return this.isEditItem ? this.formErrorScrollService.isFormDirtyOrInvalidCheck(isFormChanged,this.jobKPIFormGroup) : of(true);
   }
 
   @HostListener('window:beforeunload', ['$event'])

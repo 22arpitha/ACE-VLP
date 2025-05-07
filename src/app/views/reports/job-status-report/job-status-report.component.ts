@@ -34,6 +34,7 @@ export class JobStatusReportComponent implements OnInit {
      includeAllJobsValue:false,
      selectedClientId:null,
      sendEmail:true,
+     showDownload:true,
    };
    tabStatus:any='True';
    allJobStatus:any=[];
@@ -202,7 +203,8 @@ export class JobStatusReportComponent implements OnInit {
        selectedClientId:this.client_id ? this.client_id:null,
        sendEmail:true,
        currentPage:page,
-       totalRecords: res.total_no_of_record
+       totalRecords: res.total_no_of_record,
+       showDownload:true,
       };
     }
    },(error:any)=>{  this.api.showError(error?.error?.detail);

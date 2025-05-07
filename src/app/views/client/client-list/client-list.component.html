@@ -8,9 +8,9 @@
           </div>
           <div class="col-12 mt-2 col-sm-12 col-md-4 col-lg-3"></div>
           <div class="col-12 mt-2 col-sm-12 col-md-4 col-lg-6 text-end px-0">
-              <button mat-raised-button class="mat-btn-s tab-button-content" [ngClass]="{'isActive': isCurrent}" type="button" (click)="getCurrentClients()">Current</button>
-              <button mat-raised-button class="mat-btn-s tab-button-content" [ngClass]="{'isActive': isHistory}" type="button" (click)="getClientsHistory()">History</button>
-              <button mat-raised-button class="proceedbtn mat-btn-s download-btn" type="button" [matMenuTriggerFor]="downloadMenu"><i class="fa fa-download"></i></button>
+              <button mat-raised-button class="mat-btn-s tab-button-content" [ngClass]="{'isActive': isCurrent}" type="button" (click)="getCurrentClients();getClientFilterList('True');">Current</button>
+              <button mat-raised-button class="mat-btn-s tab-button-content" [ngClass]="{'isActive': isHistory}" type="button" (click)="getClientsHistory();getClientFilterList();">History</button>
+              <button mat-raised-button class="proceedbtn mat-btn-s download-btn" type="button" [disabled]="filteredList?.length === 0" [matMenuTriggerFor]="downloadMenu"><i class="fa fa-download"></i></button>
               <button mat-raised-button class="proceedbtn mat-btn-s" type="button" (click)="openCreateClientPage()" *ngIf="userRole !='Admin' && accessPermissions[0]?.create || userRole === 'Admin'">Create
                 Client</button>
             </div>
@@ -90,7 +90,7 @@
               </thead>
               <tbody>
 
-                <ng-container *ngIf="(allClientList) as result">
+                <ng-container *ngIf="(filteredList) as result">
                   <tr *ngFor='let item of result | customSort:directionValue:sortValue
                   |paginate : {
                            itemsPerPage: tableSize,
@@ -121,12 +121,12 @@
           </div>
         </div>
 
-        <div class="row mx-1 my-2 px-0" *ngIf="allClientList?.length === 0" >
+        <div class="row mx-1 my-2 px-0" *ngIf="filteredList?.length === 0" >
           <app-generic-norecards></app-generic-norecards>
         </div>
 
   </section>
-  <div class="row mx-0 px-3" *ngIf="allClientList?.length > 0">
+  <div class="row mx-0 px-3" *ngIf="filteredList?.length > 0">
       <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0">
         <div class="pagination-container p-0">
           <pagination-controls previousLabel="Prev" nextLabel="Next" (pageChange)="onTableDataChange($event)">

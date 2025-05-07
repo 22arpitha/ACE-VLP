@@ -46,17 +46,18 @@ export class ClientListComponent implements OnInit {
     tableSizes = [5, 10, 25, 50, 100];
     currentIndex: any;
     allClientList:any=[];
+    clientList:any=[];
     accessPermissions = []
     user_id: any;
     userRole: any;
-    filters: { client_name: string[],country: string[],source: string[]} = {
-      client_name: [],
+    filters: {country: string[],source: string[]} = {
       country:[],
       source:[],
     }
-    allClientNames:IdNamePair[] = [];
     allCountriesNames:IdNamePair[] = [];
-    allSourceNames:IdNamePair[] = []
+    allSourceNames:IdNamePair[] = [];
+    filteredList = [];
+    filterQuery: string;
     constructor(
       private common_service: CommonServiceService,
       private accessControlService:SubModuleService,
@@ -66,23 +67,41 @@ export class ClientListComponent implements OnInit {
       private apiService: ApiserviceService,
       private http: HttpClient,
       private datePipe:DatePipe) {
-      this.common_service.setTitle(this.BreadCrumbsTitle)
+        this.user_id = sessionStorage.getItem('user_id');
+        this.userRole = sessionStorage.getItem('user_role_name');
+  
+      this.common_service.setTitle(this.BreadCrumbsTitle);
+      this.getCurrentClientList();
      }
 
-    ngOnInit(): void {
-      this.user_id = sessionStorage.getItem('user_id');
-      this.userRole = sessionStorage.getItem('user_role_name');
+    async ngOnInit(): Promise<void> {
       this.getModuleAccess();
 
-      this.getCurrentClientList()
+      // this.getCurrentClientList()
+      await this.getClientFilterList('True');
     }
 
+    public getClientFilterList(status?:string){
+      let query='';
+      if(status){
+        query = `?status=${status}`;
+        query += this.userRole !== 'Admin' ? `&employee-id=${this.user_id}` : '';
+      }
+  this.apiService.getData(`${environment.live_url}/${environment.clients}/${query}`).subscribe(
+        (res: any) => {
+          this.clientList = res;
+          this.allCountriesNames = this.getUniqueValues(con => ({ id: con.country_id, name: con.country }));
+          this.allSourceNames = this.getUniqueValues(sou => ({ id: sou.source_id, name: sou.source }));
+        },(error: any) => {
+          this.apiService.showError(error?.error?.detail);
+        });
+    }
     getUniqueValues(
       extractor: (item: any) => { id: any; name: string }
     ): { id: any; name: string }[] {
       const seen = new Map();
   
-      this.allClientList.forEach(client => {
+      this.clientList.forEach(client => {
         const value = extractor(client);
         if (value && value.id && !seen.has(value.id)) {
           seen.set(value.id, value.name);
@@ -137,19 +156,15 @@ export class ClientListComponent implements OnInit {
   public getCurrentClientList(){
   this.isHistory=false;
   this.isCurrent = true;
-   let query = this.getFilterBaseUrl()
-        query += `&status=True`;
+  let query = `${this.getFilterBaseUrl()}&status=True`;
   this.apiService.getData(`${environment.live_url}/${environment.clients}/${query}`).subscribe(
         (res: any) => {
           this.allClientList = res?.results;
+          this.filteredList = res?.results;
           const noOfPages: number = res?.['total_pages']
           this.count = noOfPages * this.tableSize;
           this.count = res?.['total_no_of_record']
           this.page = res?.['current_page'];
-          this.allClientNames = this.getUniqueValues(client => ({ id: client.id, name: client.client_name }));
-          this.allCountriesNames = this.getUniqueValues(con => ({ id: con.country_id, name: con.country }));
-          this.allSourceNames = this.getUniqueValues(sou => ({ id: sou.source_id, name: sou.source }));
-        
         },(error: any) => {
           this.apiService.showError(error?.error?.detail);
         });
@@ -158,18 +173,15 @@ export class ClientListComponent implements OnInit {
     public getClientHistoryList(){
       this.isCurrent = false;
       this.isHistory=true;
-      let query = this.getFilterBaseUrl()
-      query += `&status=False`;
+      let query = `${this.getFilterBaseUrl()}&status=False`;
       this.apiService.getData(`${environment.live_url}/${environment.clients}/${query}`).subscribe(
         (res: any) => {
           this.allClientList = res?.results;
+          this.filteredList = res?.results;
           const noOfPages: number = res?.['total_pages']
           this.count = noOfPages * this.tableSize;
           this.count = res?.['total_no_of_record']
           this.page = res?.['current_page'];
-          this.allClientNames = this.getUniqueValues(client => ({ id: client.id, name: client.client_name }));
-          this.allCountriesNames = this.getUniqueValues(con => ({ id: con.country_id, name: con.country }));
-          this.allSourceNames = this.getUniqueValues(sou => ({ id: sou.source_id, name: sou.source }));
         },(error: any) => {
           this.apiService.showError(error?.error?.detail);
 
@@ -190,38 +202,21 @@ export class ClientListComponent implements OnInit {
       if (event) {
         this.page = 1;
         this.tableSize = Number(event.value);
-        if(this.isCurrent){
-          this.getCurrentClientList()
-        }else{
-          this.getClientHistoryList();
-        }
+        this.filterData()
       }
     }
     public onTableDataChange(event: any) {
       this.page = event;
-        if(this.isCurrent){
-          this.getCurrentClientList()
-        }else{
-          this.getClientHistoryList();
-        }
-
+      this.filterData()
     }
     public filterSearch(event: any) {
       this.term = event.target.value?.trim();
       if (this.term && this.term.length >= 2) {
         this.page = 1;
-        if(this.isCurrent){
-          this.getCurrentClientList()
-        }else{
-          this.getClientHistoryList();
-        }
+        this.filterData();
       }
       else if (!this.term) {
-        if(this.isCurrent){
-          this.getCurrentClientList()
-        }else{
-          this.getClientHistoryList();
-        }
+        this.filterData();
       }
     }
 
@@ -256,14 +251,19 @@ export class ClientListComponent implements OnInit {
 
     public downloadOption(type:any){
       let status:any
-      if(this.isCurrent){
-        status = 'True';
-      }
-      else{
-        status = 'False';
-      }
-      let query = `?page=${this.page}&page_size=${this.tableSize}&file-type=${type}&is-active=${status}`
-      let apiUrl = `${environment.live_url}/${environment.clients_details}/${query}`;
+    if(this.isCurrent){
+      status = 'True';
+    }
+    else{
+      status = 'False';
+    }
+    let query = '';
+    if(this.filterQuery){
+      query = this.filterQuery + `&file-type=${type}&is-active=${status}`
+    }else{
+      query = `?page=${this.page}&page_size=${this.tableSize}&file-type=${type}&is-active=${status}`
+    }
+    let apiUrl = `${environment.live_url}/${environment.clients_details}/${query}`;
       fetch(apiUrl)
     .then(res => res.blob())
     .then(blob => {
@@ -274,22 +274,33 @@ export class ClientListComponent implements OnInit {
       a.click();
     });
     }
-    setDateFilterColumn(event){
-      const selectedDate = event.value;
-    if (selectedDate) {
-      const formatted = this.datePipe.transform(selectedDate, 'yyyy-MM-dd');
-    }
-    }
-    onDateSelected(event: any): void {
-      const selectedDate = event.value;
-
-      if (selectedDate) {
-        const formatted = this.datePipe.transform(selectedDate, 'yyyy-MM-dd');
+   
+    filterData() {
+      this.filterQuery = this.getFilterBaseUrl()
+      if (this.filters.country.length) {
+        this.filterQuery += `&country-ids=[${this.filters.country.join(',')}]`;
       }
+  
+      if (this.filters.source.length) {
+        this.filterQuery += `&source-ids=[${this.filters.source.join(',')}]`;
+      }
+      if(this.isCurrent){
+        this.filterQuery += `&status=True`;
+      }
+      else{
+        this.filterQuery += `&status=False`;
+      }
+      this.apiService.getData(`${environment.live_url}/${environment.clients}/${this.filterQuery}`).subscribe((res: any) => {
+        this.allClientList = res?.results;
+        this.filteredList = res?.results;
+        this.count = res?.['total_no_of_record'];
+        this.page = res?.['current_page'];  
+      });
     }
+  
     onFilterChange(event: any, filterType: string) {
       const selectedOptions = event;
-      // this.filters[filterType] = selectedOptions;
-      // this.filterData();
+      this.filters[filterType] = selectedOptions;
+      this.filterData();
     }
   }

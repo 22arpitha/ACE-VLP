@@ -276,7 +276,6 @@ onDateSelected(event: any): void {
 }
 
 navigateToEmployee(event){
-  console.log('event:', event);
   this.actionEvent.emit({ actionType: 'navigate', row: event });
 }
 
@@ -311,8 +310,6 @@ public async submitWorkCultureDetails(){
   if(this.rows.valid){
     let reqPayload:any={};
     let workCultureData:any = this.rows.getRawValue();
-    reqPayload['period_id']=this.config.data[0].period_id,
-    reqPayload['periodicity_id']=this.config.data[0].periodicity_id,
     await this.UpdateFileFieldData(workCultureData).then((updatedData) => {
       reqPayload['data']=updatedData;
     }).catch((error) => {
@@ -498,6 +495,7 @@ public triggerFileInput(index:any) {
  }
 
 public openFileInNewTab(index:any){
+  console.log(this.fileLink[index]);
 window.open(this.fileLink[index], '_blank');
 }
 public async UpdateFileFieldData(workCulData: any) {

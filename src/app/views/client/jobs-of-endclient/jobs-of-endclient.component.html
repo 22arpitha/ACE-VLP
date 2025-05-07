@@ -26,23 +26,30 @@
                 </th>
                 <th scope="col">Job Allocation Date
                   <button
-                        mat-icon-button
-                        (click)="setDateFilterColumn($event); jobAllocationpicker.open()"
-                        class="ms-1 btn-menu-trigger"
-                      >
-                      <i class="bi bi-calendar"></i>
-                    </button>
-                    <mat-form-field class="opacity-0 position-absolute">
-                      <mat-label>Choose a date</mat-label>
-                      <input
-                        matInput
-                        [matDatepicker]="jobAllocationpicker"
-                        [(ngModel)]="dateFilterValue"
-                        (dateChange)="onDateSelected($event)"
-                      />
-                      <mat-hint>MM/DD/YYYY</mat-hint>
-                      <mat-datepicker #jobAllocationpicker></mat-datepicker>
-                    </mat-form-field>
+                    mat-icon-button
+                    (click)="setDateFilterColumn($event); picker.open()"
+                    class="ms-1 btn-menu-trigger"
+                    *ngIf="!dateFilterValue">
+                  <i class="bi bi-calendar"></i>
+
+                </button>
+                  <button mat-icon-button container="body"
+                  ngbTooltip="Clear Job Allocation Date" placement="top"  *ngIf="dateFilterValue" (click)="clearDateFilter()" class="ms-1 btn-menu-trigger">
+                    <i class="bi bi-x-circle"></i>
+                  </button>
+
+                <mat-form-field class="opacity-0 position-absolute">
+                  <mat-label>Choose a date</mat-label>
+                  <input
+                    matInput
+                    [matDatepicker]="picker"
+                    [(ngModel)]="dateFilterValue"
+                    (dateChange)="onDateSelected($event)"
+                  />
+                  <mat-hint>MM/DD/YYYY</mat-hint>
+                  <mat-datepicker #picker></mat-datepicker>
+                </mat-form-field>
+
                 </th>
                 <th scope="col">Employee 
                   <i *ngIf="!arrowState['employee_name']" (click)="sort('asc', 'employee_name')" class="bi bi-arrow-down"></i>
@@ -55,6 +62,7 @@
                     <app-generic-table-filter
                       [options]="allEmployeeNames"
                       [(selectedOptions)]="filters.employees"
+                      (selectedOptionsChange)="filterData()"
                     ></app-generic-table-filter>
                   </mat-menu>
                 </th>
@@ -69,27 +77,31 @@
                     <app-generic-table-filter
                       [options]="allStatusNames"
                       [(selectedOptions)]="filters.status"
+                      (selectedOptionsChange)="filterData()"
                     ></app-generic-table-filter>
                   </mat-menu>
                 </th>
                 <th scope="col">Status Date 
                   <button
                   mat-icon-button
-                  (click)="setDateFilterColumn($event); statusDatepicker.open()"
+                  (click)="setDateFilterColumn($event); datepicker.open()"
                   class="ms-1 btn-menu-trigger"
-                >
+                  *ngIf="!dateFilterValue">
                 <i class="bi bi-calendar"></i>
               </button>
+               <button mat-icon-button  *ngIf="dateFilterValue" (click)="clearDateFilter()" class="ms-1 btn-menu-trigger">
+                    <i class="bi bi-x-circle"></i>
+               </button>
               <mat-form-field class="opacity-0 position-absolute">
                 <mat-label>Choose a date</mat-label>
                 <input
                   matInput
-                  [matDatepicker]="statusDatepicker"
+                  [matDatepicker]="datepicker"
                   [(ngModel)]="dateFilterValue"
                   (dateChange)="onDateSelected($event)"
                 />
                 <mat-hint>MM/DD/YYYY</mat-hint>
-                <mat-datepicker #statusDatepicker></mat-datepicker>
+                <mat-datepicker #datepicker></mat-datepicker>
               </mat-form-field>
             </th>
                 
@@ -98,7 +110,7 @@
             </thead>
             <tbody>
   
-              <ng-container *ngIf="(allJobs) as result">
+              <ng-container *ngIf="(filteredList) as result">
                 <tr *ngFor='let item of result | customSort:directionValue:sortValue
                            |paginate : {
                                     itemsPerPage: tableSize,
@@ -136,12 +148,12 @@
           </table>
         </div>
       </div>
-      <div class="col-12" *ngIf="allJobs.length === 0">
+      <div class="col-12" *ngIf="filteredList.length === 0">
         <app-generic-norecards></app-generic-norecards>
       </div>
     </section>
     <div class="row mx-0 my-2 px-2" >
-      <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0" *ngIf="allJobs.length > 0">
+      <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0" *ngIf="filteredList.length > 0">
         <div class="pagination-container p-0 pt-2">
           <pagination-controls previousLabel="Prev" nextLabel="Next" (pageChange)="onTableDataChange($event)">
           </pagination-controls>
