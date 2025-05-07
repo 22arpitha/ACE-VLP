@@ -30,7 +30,7 @@
         </mat-form-field>
       </div> -->
       <div class="col-12 mt-2 col-sm-12 col-md-4 col-lg-3" *ngIf="config.dateRangeFilter">
-        <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+        <!-- <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
           <mat-label>&nbsp; Enter a date range</mat-label>
           <mat-date-range-input [rangePicker]="picker">
             <input matStartDate placeholder="Start date" [(ngModel)]="startDate" />
@@ -38,7 +38,8 @@
           </mat-date-range-input>
           <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
           <mat-date-range-picker #picker></mat-date-range-picker>
-        </mat-form-field>
+        </mat-form-field> -->
+        <app-week-picker (weekSelected)="weekDatePicker($event)" [resetWeek]="resetWeekDate"></app-week-picker>
       </div>
 
       <!-- Spacer -->
@@ -124,7 +125,7 @@
                   <button
                     mat-icon-button
                     [matMenuTriggerFor]="filterMenu"
-                    (click)="openFilterMenu($event, col.key)"
+                    (click)="openFilterMenu($event, col.key);"
                     #trigger="matMenuTrigger"
                     class="ms-1 btn-menu-trigger"
                   >
@@ -162,9 +163,9 @@
                       >
                         <mat-list-option
                           *ngFor="let option of getFilteredOptions(columnKey)"
-                          [value]="option"
+                          [value]="option.id"
                         >
-                          {{ option }}
+                          {{ option.name }}
                         </mat-list-option>
                       </mat-selection-list>
                     </ng-container>
@@ -210,7 +211,7 @@
                   </span>
                 </div>
                </ng-container>
-               <ng-container *ngIf="col.fileInputField"> 
+               <ng-container *ngIf="col.fileInputField">
                 <input type="file" accept="*" formControlName="work_ethics_file" #fileInput
                 (change)="onFileSelected($event,i)" hidden>
               <div class="image-container w-100 d-flex justify-content-between align-items-center"
@@ -230,8 +231,8 @@
               </div>
                </ng-container>
             </div>
-            
-            
+
+
             <ng-container *ngIf="col.navigation">
               <a
                 (click)="navigateToEmployee(item[col.key])"
@@ -272,7 +273,7 @@
             <div *ngIf="!col.navigation">
               {{ col.type === 'date' ? (item[col.key] | date: 'dd-MM-yyyy') : item[col.key] !== null && item[col.key] !== undefined ? item[col.key] : 'NA'}}
             </div>
-    
+
             <ng-container *ngIf="col.navigation">
               <a
                 (click)="navigateToEmployee(item[col.key])"

@@ -1,0 +1,10 @@
+<div class="">
+  <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+    <mat-date-range-input [rangePicker]="picker1">
+      <input matStartDate placeholder="Start date" [(ngModel)]="startDate" (dateChange)="onDateChange($event)">
+      <input matEndDate placeholder="End date" [(ngModel)]="endDate" (dateChange)="onEndDateChange($event)">
+    </mat-date-range-input>
+    <mat-datepicker-toggle matIconSuffix [for]="picker1"></mat-datepicker-toggle>
+    <mat-date-range-picker #picker1></mat-date-range-picker>
+  </mat-form-field>
+</div>

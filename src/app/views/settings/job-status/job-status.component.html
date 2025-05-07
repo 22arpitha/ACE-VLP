@@ -103,17 +103,7 @@
                 Status Group
                 <i *ngIf="!arrowState['status_group_name']" (click)="sort('asc', 'status_group_name')" class="bi bi-arrow-down"></i>
                 <i *ngIf="arrowState['status_group_name']" (click)="sort('desc', 'status_group_name')" class="bi bi-arrow-up"></i>
-                <button mat-icon-button [matMenuTriggerFor]="statusGroupFilterMenu">
-                  <i class="bi bi-toggles"></i>
-                </button>
-
-                <mat-menu #statusGroupFilterMenu="matMenu">
-                  <app-generic-table-filter
-                    [options]="allJobStatusName"
-                    [(selectedOptions)]="filters.status_group_name"
-                    (selectedOptionsChange)="filterData()"
-                  ></app-generic-table-filter>
-                </mat-menu>
+               
               </th>
               <th>Job Status
                 <i *ngIf="!arrowState['status_name']" (click)="sort('asc', 'status_name')" class="bi bi-arrow-down"></i>
