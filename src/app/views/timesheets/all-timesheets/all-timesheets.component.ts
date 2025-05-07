@@ -58,6 +58,11 @@ export class AllTimesheetsComponent implements OnInit {
   allTaskNames:IdNamePair[] = [];
   dateFilterValue: any = null;
   resetWeekDate: boolean = false;
+  filteredList:any = [];
+  datepicker:any;
+  filterQuery: string;
+  initalTimesheetList:any = [];
+  timesheetDate: string | null;
   constructor(private common_service: CommonServiceService,
     private router: Router, private modalService: NgbModal, private accessControlService: SubModuleService,
     private apiService: ApiserviceService, private datePipe: DatePipe) {
@@ -69,15 +74,16 @@ export class AllTimesheetsComponent implements OnInit {
     //     this.getInActiveEmployeeList();
     //   }
     // })
-  }
-
-  ngOnInit(): void {
     this.user_id = sessionStorage.getItem('user_id');
     this.userRole = sessionStorage.getItem('user_role_name');
+  }
+
+  async ngOnInit(): Promise<void> {
     this.getModuleAccess();
     if (this.userRole != 'Admin') {
       this.getWeekData();
     } else {
+      await this.getAllTimesheet();
       this.getTimesheets();
     }
     this.getTimesheetsIDs();
@@ -189,7 +195,7 @@ export class AllTimesheetsComponent implements OnInit {
       query = `?timesheet-employee=${this.user_id}&get-cuurent-timesheet-data=True`
     }
     this.apiService.getData(`${environment.live_url}/${environment.vlp_timesheets}/${query}`).subscribe(
-      (res: any) => {
+      async (res: any) => {
         // console.log('week data',res);
         // this.selectedDate = this.convertBackendDateToStandard(res.data[0].date)
         // console.log(this.selectedDate)
@@ -198,6 +204,7 @@ export class AllTimesheetsComponent implements OnInit {
           this.startDate = res.data[0].date;
           this.endDate = res.data[res.data.length - 1].date;
         }
+        await this.getAllTimesheet();
         this.getTimesheets();
         this.checkTimesheetSubmission();
       }
@@ -260,6 +267,7 @@ export class AllTimesheetsComponent implements OnInit {
     this.apiService.getData(`${environment.live_url}/${environment.vlp_timesheets}/${query}`).subscribe(
       (res: any) => {
         this.allTimesheetsList = res?.results;
+        this.filteredList=res?.results;
         // if (this.allTimesheetsList.length > 0) {
         //   this.idsOfTimesheet = [];
         //   res.results.forEach((element: any) => {
@@ -305,22 +313,22 @@ export class AllTimesheetsComponent implements OnInit {
     if (event) {
       this.page = 1;
       this.tableSize = Number(event.value);
-      this.getTimesheets()
+      this.filterData();
     }
   }
   public onTableDataChange(event: any) {
     this.page = event;
-    this.getTimesheets()
+    this.filterData();
 
   }
   public filterSearch(event: any) {
     this.term = event.target.value?.trim();
     if (this.term && this.term.length >= 2) {
       this.page = 1;
-      this.getTimesheets()
+      this.filterData();
     }
     else if (!this.term) {
-      this.getTimesheets()
+      this.filterData();
     }
   }
 
@@ -374,7 +382,7 @@ export class AllTimesheetsComponent implements OnInit {
           query += `&search=${this.term}`
         }
 
-        this.getTimesheets()
+        this.filterData();
       }
 
     }, (error => {
@@ -385,13 +393,13 @@ export class AllTimesheetsComponent implements OnInit {
   startDatePicker(event: any) {
     // console.log('start:', event);
     this.startDate = this.datePipe.transform(event.value, 'yyyy-MM-dd');
-    this.getTimesheets()
+    this.filterData();
   }
 
   startAndEndDateFunction(event: any) {
     // console.log('end:', event);
     this.endDate = this.datePipe.transform(event.value, 'yyyy-MM-dd')
-    this.getTimesheets()
+    this.filterData();
   }
 
   weekDatePicker(event: any) {
@@ -480,33 +488,81 @@ export class AllTimesheetsComponent implements OnInit {
   }
 
   // Filter related
-
-  setDateFilterColumn(event){
-    const selectedDate = event.value;
-  if (selectedDate) {
-    const formatted = this.datePipe.transform(selectedDate, 'yyyy-MM-dd');
+  getAllTimesheet(){
+    let query = '';
+    if (this.userRole === 'Admin') {
+      query = `?start-date=${this.startDate}&end-date=${this.endDate}`;
+    } else {
+      query =`?timesheet-employee=${this.user_id}&start-date=${this.startDate}&end-date=${this.endDate}`;
+    }
+    this.apiService.getData(`${environment.live_url}/${environment.vlp_timesheets}/${query}`).subscribe(
+      (res: any) => {
+        this.filteredList = res;
+        this.allClientNames = this.getUniqueValues(client => ({ id: client.client_id, name: client.client_name }));
+        this.allJobsNames =  this.getUniqueValues(jobs => ({ id: jobs.job_id, name: jobs.job_name }));
+        this.allEmployeeNames =  this.getUniqueValues(emps => ({ id: emps.employee_id, name: emps.employee_name }));
+        this.allTaskNames = this.getUniqueValues(tasks => ({ id: tasks.task, name: tasks.task_name }));
+      }
+    )
   }
+  
+  clearDateFilter(){
+    this.timesheetDate = null;
+    this.dateFilterValue = null;
+    this.datepicker = null;
+    this.filterData();
   }
   onDateSelected(event: any): void {
     const selectedDate = event.value;
-
     if (selectedDate) {
-      const formatted = this.datePipe.transform(selectedDate, 'yyyy-MM-dd');
+     this.timesheetDate = this.datePipe.transform(selectedDate, 'yyyy-MM-dd');
     }
+    this.filterData();
   }
 
   onFilterChange(event: any, filterType: string) {
     const selectedOptions = event;
-    // this.filters[filterType] = selectedOptions;
-    // this.filterData();
+    this.filters[filterType] = selectedOptions;
+    this.filterData();
   }
 
+
+  filterData() {
+    this.filterQuery = this.getFilterBaseUrl()
+    if (this.filters.client_name.length) {
+      this.filterQuery += `&client-ids=[${this.filters.client_name.join(',')}]`;
+    }
+
+    if (this.filters.job_name.length) {
+      this.filterQuery += `&job-ids=[${this.filters.job_name.join(',')}]`;
+    }
+    if (this.filters.employee_name.length) {
+      this.userRole === 'accountant' ? this.filterQuery += `&timesheet-employee-ids=[${this.filters.employee_name.join(',')}]` :
+      this.filterQuery += `&timesheet-employee-ids=[${this.filters.employee_name.join(',')}]` ;
+    }
+    if (this.filters.task_nmae.length) {
+      this.filterQuery += `&timesheet-task-ids=[${this.filters.task_nmae.join(',')}]`;
+    }
+
+    if (this.timesheetDate) {
+      this.filterQuery += `&timesheet-dates=[${this.timesheetDate}]`;
+    }
+    this.apiService.getData(`${environment.live_url}/${environment.vlp_timesheets}/${this.filterQuery}`).subscribe(
+      (res: any) => {
+    this.allTimesheetsList = res?.results;
+      this.filteredList = res?.results;
+      this.count = res?.['total_no_of_record'];
+      this.page = res?.['current_page'];
+
+
+    });
+  }
   getUniqueValues(
     extractor: (item: any) => { id: any; name: string }
   ): { id: any; name: string }[] {
     const seen = new Map();
 
-    this.allTimesheetsList.forEach(item => {
+    this.filteredList.forEach(item => {
       const value = extractor(item);
       if (value && value.id && !seen.has(value.id)) {
         seen.set(value.id, value.name);
