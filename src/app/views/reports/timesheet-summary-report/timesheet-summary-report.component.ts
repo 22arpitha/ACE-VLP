@@ -6,6 +6,7 @@ import { downloadFileFromUrl } from '../../../shared/file-download.util';
 import { environment } from '../../../../environments/environment';
 import { getUniqueValues, getUniqueValues2 } from '../../../shared/unique-values.utils';
 import { ApiserviceService } from '../../../service/apiservice.service';
+import { Router } from '@angular/router';
 @Component({
   selector: 'app-timesheet-summary-report',
   templateUrl: './timesheet-summary-report.component.html',
@@ -26,6 +27,7 @@ export class TimesheetSummaryReportComponent implements OnInit {
     accessConfig: [],
     tableSize: 5,
     pagination: true,
+    navigation:true
   };
   user_id: string | null;
   user_role_name: string;
@@ -33,7 +35,8 @@ export class TimesheetSummaryReportComponent implements OnInit {
 
   constructor(
     private common_service: CommonServiceService,
-    private api: ApiserviceService
+    private api: ApiserviceService,
+    private router:Router
   ) {
     this.user_id = sessionStorage.getItem('user_id');
     this.user_role_name = sessionStorage.getItem('user_role_name') || '';
@@ -73,13 +76,15 @@ export class TimesheetSummaryReportComponent implements OnInit {
         this.exportCsvOrPdf(event.detail);
         break;
         case 'filter':
-          console.log(event.detail.value,'event.detail')
           this.getTableData({ page: 1, pageSize: this.tableSize, searchTerm: this.term , employee_ids: event.detail.value });
           this.getFilterData(event.detail.value)
           break;
       case 'weekDate':
         this.fromDate = event.detail;
         this.filterByDate(this.fromDate);
+        break;
+      case 'navigate':
+        this.router.navigate([`/reports/employee-details`]);
         break;
       default:
         this.getTableData({ page: 1, pageSize: this.tableSize, searchTerm: this.term });
@@ -166,7 +171,8 @@ export class TimesheetSummaryReportComponent implements OnInit {
         searchable: true,
         currentPage: page,
         totalRecords: res.total_no_of_record,
-        dateRangeFilter: true
+        dateRangeFilter: true,
+        navigation: true,
       };
     });
   }

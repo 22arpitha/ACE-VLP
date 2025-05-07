@@ -276,6 +276,7 @@ onDateSelected(event: any): void {
 }
 
 navigateToEmployee(event){
+  console.log('event:', event);
   this.actionEvent.emit({ actionType: 'navigate', row: event });
 }
 
