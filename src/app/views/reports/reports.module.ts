@@ -10,8 +10,6 @@ import { ProductivityReportComponent } from './productivity-report/productivity-
 import { ProductivityReportModule } from './productivity-report/productivity-report.module';
 import { JobStatusReportComponent } from './job-status-report/job-status-report.component';
 import { JobTimeReportsComponent } from './job-time-reports/job-time-reports.component';
-
-
 @NgModule({
   declarations: [
     ReportsComponent,

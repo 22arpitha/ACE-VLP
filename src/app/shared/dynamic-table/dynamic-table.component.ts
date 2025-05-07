@@ -1,5 +1,5 @@
 // dynamic-table.component.ts
-import { Component, ElementRef, EventEmitter, Input, OnInit, Output, QueryList, SimpleChanges, ViewChildren } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnInit, Output, QueryList, SimpleChanges, ViewChildren, ViewContainerRef } from '@angular/core';
 import { MatMenuTrigger } from '@angular/material/menu';
 import { DatePipe } from '@angular/common';
 import { DynamicTableConfig } from './dynamic-table-config.model';
@@ -7,7 +7,8 @@ import { ApiserviceService } from '../../service/apiservice.service';
 import { environment } from '../../../environments/environment';
 import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
 import { fileToBase64, urlToFile } from '../fileUtils.utils';
-
+import { Overlay, OverlayRef } from '@angular/cdk/overlay';
+import { TemplatePortal } from '@angular/cdk/portal';
 @Component({
   selector: 'app-dynamic-table',
   templateUrl: './dynamic-table.component.html',
@@ -15,6 +16,9 @@ import { fileToBase64, urlToFile } from '../fileUtils.utils';
 })
 export class DynamicTableComponent implements OnInit {
   @Input() config!: DynamicTableConfig;
+  overlayRef: OverlayRef | null = null;
+  filterTriggers: { [key: string]: MatMenuTrigger } = {};
+  activeFilterColumn: string | null = null;
   @Output() actionEvent = new EventEmitter<any>();
   @ViewChildren('fileInput') fileInputs: QueryList<ElementRef>;
   filteredData: any[] = [];
@@ -27,7 +31,6 @@ export class DynamicTableComponent implements OnInit {
   arrowState: { [key: string]: boolean } = {};
   sortValue: string = '';
   directionValue: string;
-  filterTriggers: { [key: string]: MatMenuTrigger } = {};
   filterSearchText: { [key: string]: string } = {};
   tableSize: number = 5;
   activeDateColumn: string | null = null;
@@ -47,10 +50,21 @@ export class DynamicTableComponent implements OnInit {
   selectedDateRange;
   tableFormGroup:FormGroup;
   isEditBtn:boolean=false;
+  resetWeekDate:boolean=false;
 file: any=[];
 fileLink: any=[];
 selectedFile:(File | null)[] = [];
-  constructor(private fb:FormBuilder,private datePipe: DatePipe,private api:ApiserviceService) {
+  filterMenuTemplate: any;
+  selectedValue: any;
+  selectedKey: string;
+  selectedDate: any;
+  constructor(
+    private fb:FormBuilder,
+    private datePipe: DatePipe,
+    private api:ApiserviceService,
+    private overlay: Overlay,
+    private viewContainerRef: ViewContainerRef
+  ) {
     this.user_id = sessionStorage.getItem('user_id');
     this.userRole = sessionStorage.getItem('user_role_name');
   }
@@ -62,7 +76,7 @@ selectedFile:(File | null)[] = [];
    get rows(): FormArray {
     return this.tableFormGroup?.get('rows') as FormArray;
   }
-  
+
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['config'] && this.config?.data?.length) {
       console.log('changed',changes['config']['currentValue']);
@@ -101,37 +115,70 @@ selectedFile:(File | null)[] = [];
     this.applyFilters();
   }
 
-  applyFilters(): void {
-  const showIncludeLogic = this.config.showIncludeAllJobs && this.columnFilters['client_name'];
-  if (showIncludeLogic) {
-    this.isIncludeFlagEnableLogic();
-  }     
-  this.filteredData = this.config.data.filter(row => {
-      const matchSearch = !this.config.searchTerm || this.config.columns?.some(col =>
-        row[col.key]?.toString()?.toLowerCase()?.includes(this.config.searchTerm!?.toLowerCase())
-      );
-      const matchColumns = Object.keys(this.columnFilters)?.every(key => {
-        const filterVal = this.columnFilters[key];
-        const cellVal = row[key];
-        if (!filterVal || (Array.isArray(filterVal) && filterVal.length === 0)) {
-          return true;
-        }
+  private filterEmitInProgress = false;
 
-        if (Array.isArray(filterVal)) {
-          return filterVal?.includes(cellVal);
-        }
-        const col = this.config.columns?.find(c => c.key === key);
-        if (!cellVal || !filterVal) return false;
-        // Normalize both by removing time and trimming whitespace
-        const cleanCellVal = cellVal?.toString()?.trim()?.split(' ')[0];
-        const cleanFilterVal = filterVal?.toString()?.trim()?.split(' ')[0];
-        return cleanCellVal === cleanFilterVal;
-      });
-      return matchSearch && matchColumns;
-    });
-    this.updatePagination();
+onFilterChange(selectedValue: any, selectedKey: string): void {
+  if (this.filterEmitInProgress) {
+    return;
   }
 
+  if (selectedValue && selectedKey) {
+    this.filterEmitInProgress = true;
+    this.actionEvent.emit({ actionType: 'filter', detail: { key: selectedKey, value: selectedValue } });
+
+    // Reset the flag after a small timeout
+    setTimeout(() => this.filterEmitInProgress = false);
+  }
+}
+
+    applyFilters(): void {
+      const showIncludeLogic = this.config.showIncludeAllJobs && this.columnFilters['client_name'];
+      if (showIncludeLogic) {
+        this.isIncludeFlagEnableLogic();
+      }
+
+      this.filteredData = this.config.data.filter(row => {
+        const matchSearch = !this.config.searchTerm || this.config.columns?.some(col =>
+          row[col.key]?.toString()?.toLowerCase()?.includes(this.config.searchTerm!?.toLowerCase())
+        );
+
+        const matchColumns = Object.keys(this.columnFilters)?.every(key => {
+          const filterVal = this.columnFilters[key];
+          this.selectedValue = filterVal;
+          this.selectedKey = key;
+          const cellVal = row[key];
+
+          if (!filterVal || (Array.isArray(filterVal) && filterVal.length === 0)) {
+            return true;
+          }
+
+          if (Array.isArray(filterVal)) {
+            return filterVal?.includes(cellVal);
+          }
+
+          const cleanCellVal = cellVal?.toString()?.trim()?.split(' ')[0];
+          const cleanFilterVal = filterVal?.toString()?.trim()?.split(' ')[0];
+          return cleanCellVal === cleanFilterVal;
+        });
+
+        return matchSearch && matchColumns;
+      });
+
+      // Only emit if not already emitting
+      if (!this.filterEmitInProgress) {
+        this.onFilterChange(this.selectedValue, this.selectedKey);
+      }
+
+      this.updatePagination();
+    }
+  weekDatePicker(event: any) {
+    // console.log('week:', event);
+    this.selectedDate = event.start_date;
+    console.log('week:', this.selectedDate);
+    const formatted = this.datePipe.transform(this.selectedDate, 'yyyy-MM-dd');
+    this.actionEvent.emit({ actionType: 'weekDate', detail: formatted });
+    this.resetWeekDate = true;
+  }
 
   sort(direction: string, column: string) {
     // Reset the state of all columns except the one being sorted
@@ -171,26 +218,38 @@ selectedFile:(File | null)[] = [];
   triggerAction(actionType: string, row: any): void {
     this.actionEvent.emit({ actionType, row });
   }
-  activeFilterColumn: string | null = null;
 
-openFilterMenu(event: MouseEvent, colKey: string) {
-  event?.stopPropagation();
-  this.activeFilterColumn = colKey;
-  if (colKey) {
-    const trigger = this.filterTriggers[colKey];
 
-    // Check if the menu is already open
-    if (trigger && !trigger?.menuOpen) {
-      trigger?.openMenu();
+openFilterMenu(event: MouseEvent, colKey: string): void {
+  event.stopPropagation();
+
+  // Close all open menus first
+  Object.keys(this.filterTriggers).forEach(key => {
+    if (this.filterTriggers[key]?.menuOpen && key !== colKey) {
+      this.filterTriggers[key].closeMenu();
     }
-  }
+  });
 
+  const trigger = this.filterTriggers[colKey];
+
+  if (trigger) {
+    if (trigger.menuOpen) {
+      trigger.closeMenu();
+      return; // Exit early if menu was already open
+    }
+
+    this.activeFilterColumn = colKey;
+    trigger.openMenu();
+  }
 }
 
-getFilteredOptions(colKey: string): string[] {
+
+getFilteredOptions(colKey: string): { id: any; name: string }[] {
   const options = this.config.columns.find(c => c.key === colKey)?.filterOptions || [];
   const search = this.filterSearchText[colKey]?.toLowerCase() || '';
-  return options.filter(option => option.toLowerCase().includes(search));
+  return options
+    .filter((option: any) => typeof option === 'string' || (typeof option === 'object' && option.name?.toLowerCase().includes(search)))
+    .map((option: any) => typeof option === 'string' ? { id: null, name: option } : option);
 }
 onTableDataChange(event: any) {
   this.actionEvent.emit({ actionType:'tableDataChange' , detail:event });
@@ -217,6 +276,7 @@ onDateSelected(event: any): void {
 }
 
 navigateToEmployee(event){
+  console.log('event:', event);
   this.actionEvent.emit({ actionType: 'navigate', row: event });
 }
 
@@ -261,10 +321,10 @@ public async submitWorkCultureDetails(){
     console.log('Form Data',reqPayload);
 this.actionEvent.emit({ actionType: 'submitWorkCulture', action:reqPayload});
   }
-  
+
 }
 private isIncludeFlagEnableLogic(): void {
-  
+
   const clientNameFilter = this.columnFilters['client_name'];
   if (this.config.selectedClientId) {
     const clientObj = this.filteredData?.find(
@@ -339,7 +399,7 @@ if(respData){
 }, (error: any) => {
   this.api.showError(error?.error?.detail);
 })
-     
+
 }
 get isDisabled(): boolean {
   if (!this.allow_sending_status) return true;
@@ -390,7 +450,7 @@ buildDynamicTableForm(tableData){
         this.rows?.at(index)?.patchValue({'work_ethics_file':null});
         }
       }
-  
+
       )
       .catch(error => console.error('Error:', error));
       }else{
@@ -426,7 +486,7 @@ public onFileSelected(event: Event,index:any): void {
     setTimeout(() => {
       input.value = "";
     }, 100); // Small delay to ensure the selection is registered
- 
+
   }
 }
 
@@ -462,4 +522,66 @@ private async convertFileToBase64(file: File): Promise<string | null> {
     return null;
   }
 }
+
+ngOnDestroy() {
+  if (this.overlayRef) {
+    this.overlayRef.dispose();
+  }
+}
+
+// onFilterChange(selectedValue: any, selectedKey: string): void {
+//   if (this.filterEmitInProgress) {
+//     return;
+//   }
+
+//   if (selectedValue && selectedKey) {
+//     this.filterEmitInProgress = true;
+//     this.actionEvent.emit({ actionType: 'filter', detail: { key: selectedKey, value: selectedValue } });
+
+//     // Reset the flag after a small timeout
+//     setTimeout(() => this.filterEmitInProgress = false);
+//   }
+// }
+
+// applyFilters(): void {
+//   const showIncludeLogic = this.config.showIncludeAllJobs && this.columnFilters['client_name'];
+//   if (showIncludeLogic) {
+//     this.isIncludeFlagEnableLogic();
+//   }
+
+//   this.filteredData = this.config.data.filter(row => {
+//     const matchSearch = !this.config.searchTerm || this.config.columns?.some(col =>
+//       row[col.key]?.toString()?.toLowerCase()?.includes(this.config.searchTerm!?.toLowerCase())
+//     );
+
+//     const matchColumns = Object.keys(this.columnFilters)?.every(key => {
+//       const filterVal = this.columnFilters[key];
+//       this.selectedValue = filterVal;
+//       this.selectedKey = key;
+//       const cellVal = row[key];
+
+//       if (!filterVal || (Array.isArray(filterVal) && filterVal.length === 0)) {
+//         return true;
+//       }
+
+//       if (Array.isArray(filterVal)) {
+//         return filterVal?.includes(cellVal);
+//       }
+
+//       const cleanCellVal = cellVal?.toString()?.trim()?.split(' ')[0];
+//       const cleanFilterVal = filterVal?.toString()?.trim()?.split(' ')[0];
+//       return cleanCellVal === cleanFilterVal;
+//     });
+
+//     return matchSearch && matchColumns;
+//   });
+
+//   // Only emit if not already emitting
+//   if (!this.filterEmitInProgress) {
+//     this.onFilterChange(this.selectedValue, this.selectedKey);
+//   }
+
+//   this.updatePagination();
+// }
+
 }
