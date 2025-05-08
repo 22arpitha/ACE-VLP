@@ -7,22 +7,22 @@ export function getTableColumns(role: string) {
   {
     label: 'Client',
     key: 'client_name',
-    filterable: true,
-    filterType: 'multi-select',
+    // filterable: true,
+    // filterType: 'multi-select',
     sortable: true
   },
   {
     label: 'Job Name',
     key: 'job_name',
-    filterable: true,
-    filterType: 'multi-select',
+    // filterable: true,
+    // filterType: 'multi-select',
     sortable: true
   },
   {
     label: 'Task',
     key: 'task_name',
-    filterable: true,
-    filterType: 'multi-select',
+    // filterable: true,
+    // filterType: 'multi-select',
     sortable: true
   },
 
@@ -36,8 +36,8 @@ if (role !== 'Accountant' ) {
   tableColumns.splice(5, 0, {
     label: 'Employee Name',
     key: 'employee_name',
-    filterable: true,
-    filterType: 'multi-select',
+    // filterable: true,
+    // filterType: 'multi-select',
     sortable: true
   });
 }
