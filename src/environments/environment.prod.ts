@@ -61,6 +61,7 @@ job_reports:'job-reports',
 productivity_reports:'productivity-reports',
 upload_assessment:'upload-assessment',
 over_all_productivity_reports:'over-all-productivity-reports',
+download_excel :'download-excel',
 
   leave_application: 'leave-application',
   timesheetCalender: 'time-sheets-calender',

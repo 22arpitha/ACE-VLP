@@ -85,7 +85,7 @@ this.formUtilityService.resetHasUnsavedValue();
       template_name: ['', [Validators.required, Validators.pattern(/^[a-zA-Z0-9]+( [a-zA-Z0-9]+)*$/)]],
       template_file: ['',Validators.required,this.fileFormatValidator],
       password: ['', [Validators.pattern(/^[a-zA-Z0-9!@#$%^&*()_+{}\[\]:;"'<>,.?/\\|`~\-]+( [a-zA-Z0-9!@#$%^&*()_+{}\[\]:;"'<>,.?/\\|`~\-]+)*$/),Validators.maxLength(20)]],
-      when_to_use: ['', [Validators.pattern(/^[a-zA-Z0-9]+( [a-zA-Z0-9]+)*$/),Validators.maxLength(20)]],
+      when_to_use: ['', [Validators.pattern(/^[a-zA-Z0-9]+( [a-zA-Z0-9]+)*$/),Validators.maxLength(100)]],
     });
     this.initialFormValue=this.templateForm?.getRawValue();
   }
