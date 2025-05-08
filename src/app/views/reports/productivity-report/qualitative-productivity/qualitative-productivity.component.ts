@@ -164,7 +164,7 @@ BreadCrumbsTitle: any = 'Qualitative Productivity';
             let tableFooterContent = {'avg_qualitative_productivity':res?.avg_qualitative_productivity}
             this.tableConfig = {
              columns: tableColumns,
-             data: formattedData,
+             data: formattedData ? formattedData : [],
              searchTerm: this.term,
              actions: [],
              accessConfig: [],

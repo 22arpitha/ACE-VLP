@@ -189,7 +189,7 @@ export class JobStatusReportComponent implements OnInit {
           ...col,
           filterOptions: col.filterable ? getUniqueValues(formattedData, col.key) : tableColumns
         })),
-       data: formattedData,
+       data: formattedData ? formattedData : [],
        searchTerm: this.term,
        actions: [],
        accessConfig: [],

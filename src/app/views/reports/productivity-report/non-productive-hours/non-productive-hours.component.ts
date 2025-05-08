@@ -169,7 +169,7 @@ export class NonProductiveHoursComponent implements OnInit,OnChanges {
        }));
        this.tableConfig = {
         columns: tableColumns,
-        data: formattedData,
+        data: formattedData ? formattedData : [],
         searchTerm: this.term,
         actions: [],
         accessConfig: [],

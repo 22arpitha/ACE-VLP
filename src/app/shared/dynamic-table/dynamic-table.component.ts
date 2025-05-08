@@ -78,7 +78,7 @@ selectedFile:(File | null)[] = [];
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['config'] && this.config?.data?.length) {
+    if (changes && changes['config'] && this.config?.data?.length) {
       console.log('changed',changes['config']['currentValue']);
       this.initializeTable();
     }
@@ -90,6 +90,7 @@ selectedFile:(File | null)[] = [];
     };
   }
   private initializeTable(): void {
+    console.log(this.config.data);
     this.filteredData = [...this.config.data];
     this.config.columns.forEach(col => {
       this.arrowState[col.key] = false;

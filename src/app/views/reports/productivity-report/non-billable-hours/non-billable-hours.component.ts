@@ -157,7 +157,7 @@ exportCsvOrPdf(fileType) {
                 columns: tableColumns.map(col => ({
                   ...col,
                 })),
-               data: formattedData,
+               data: formattedData ? formattedData : [],
                searchTerm: this.term,
                actions: [],
                accessConfig: [],

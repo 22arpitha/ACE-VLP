@@ -139,7 +139,7 @@ export class EmployeeDetailsComponent implements OnInit {
          filterOptions: col.filterable ? getUniqueValues(formattedData, col.key) : []
        })),
 
-       data: formattedData,
+       data: formattedData ? formattedData : [],
        searchTerm: this.term,
        actions: [],
        accessConfig: [],

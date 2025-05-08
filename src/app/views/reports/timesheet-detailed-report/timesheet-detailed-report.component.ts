@@ -133,7 +133,7 @@ getTableData(params?: { page?: number; pageSize?: number; searchTerm?: string })
         filterOptions: col.filterable ? getUniqueValues(formattedData, col.key) : []
       })),
 
-      data: formattedData,
+      data: formattedData ? formattedData : [],
       searchTerm: this.term,
       actions: [],
       accessConfig: [],

@@ -213,7 +213,7 @@ export class TimesheetSummaryReportComponent implements OnInit {
         ...col,
         filterOptions: tableColumns
       })),
-      data: formattedData,
+      data: formattedData ? formattedData : [],
       searchTerm: this.term,
       actions: [],
       accessConfig: [],

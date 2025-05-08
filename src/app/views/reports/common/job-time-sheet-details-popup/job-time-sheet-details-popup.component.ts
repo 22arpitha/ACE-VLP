@@ -52,7 +52,7 @@ export class JobTimeSheetDetailsPopupComponent implements OnInit {
          columns:  this.tableData?.map(col => ({
            ...col
          })),
-         data: formattedData,
+         data: formattedData ? formattedData : [],
          showDownload:false,
        };
      });
