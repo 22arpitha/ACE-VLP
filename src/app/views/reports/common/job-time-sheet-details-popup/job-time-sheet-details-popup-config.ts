@@ -1,7 +1,6 @@
 
 export function getTableColumns(role: string) {
     const tableColumns = [
-      { label: 'Sl No', key: 'sl', sortable: true },
       { label: 'Date', key: 'date', sortable: true },
       {
         label: 'Client Name',
@@ -30,6 +29,6 @@ export function getTableColumns(role: string) {
         sortable: true
       });
     }
-    
+
     return tableColumns;
     }

@@ -173,10 +173,9 @@ onFilterChange(selectedValue: any, selectedKey: string): void {
     }
   weekDatePicker(event: any) {
     // console.log('week:', event);
-    this.selectedDate = event.start_date;
-    console.log('week:', this.selectedDate);
-    const formatted = this.datePipe.transform(this.selectedDate, 'yyyy-MM-dd');
-    this.actionEvent.emit({ actionType: 'weekDate', detail: formatted });
+    this.selectedDate = event;
+
+    this.actionEvent.emit({ actionType: 'weekDate', detail: this.selectedDate });
     this.resetWeekDate = true;
   }
 
@@ -276,6 +275,7 @@ onDateSelected(event: any): void {
 }
 
 navigateToEmployee(event){
+  console.log(event)
   this.actionEvent.emit({ actionType: 'navigate', row: event });
 }
 

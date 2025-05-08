@@ -1,11 +1,13 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
 import { CommonServiceService } from '../../../../service/common-service.service';
 import { getTableColumns } from './employee-config';
 import { buildPaginationQuery } from '../../../../shared/pagination.util';
-import { environment } from 'src/environments/environment';
+import { environment } from '../../../../../environments/environment';
 import { getUniqueValues } from 'src/app/shared/unique-values.utils';
 import { downloadFileFromUrl } from 'src/app/shared/file-download.util';
 import { ApiserviceService } from 'src/app/service/apiservice.service';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-employee-details',
@@ -13,7 +15,6 @@ import { ApiserviceService } from 'src/app/service/apiservice.service';
   styleUrls: ['./employee-details.component.scss']
 })
 export class EmployeeDetailsComponent implements OnInit {
-BreadCrumbsTitle: any = 'Employee Details';
  term: string = '';
    tableSize: number = 5;
    page: any = 1;
@@ -33,14 +34,16 @@ BreadCrumbsTitle: any = 'Employee Details';
    tableData: ({ label: string; key: string; sortable: boolean; filterable?: undefined; filterType?: undefined; } | { label: string; key: string; sortable: boolean; filterable: boolean; filterType: string; })[];
    constructor(
      private common_service:CommonServiceService,
-     private api:ApiserviceService
+     private api:ApiserviceService,
+      public dialogRef: MatDialogRef<EmployeeDetailsComponent>,
+           @Inject(MAT_DIALOG_DATA) public data: any,
+      private datePipe:DatePipe
    ) {
      this.user_id = sessionStorage.getItem('user_id') || '' ;
      this.user_role_name = sessionStorage.getItem('user_role_name') || '';
    }
 
    ngOnInit(): void {
-     this.common_service.setTitle(this.BreadCrumbsTitle)
      this.tableData = getTableColumns(this.user_role_name)
      this.getTableData()
    }
@@ -116,15 +119,14 @@ BreadCrumbsTitle: any = 'Employee Details';
    const page = params?.page ?? this.page;
    const pageSize = params?.pageSize ?? this.tableSize;
    const searchTerm = params?.searchTerm ?? this.term;
-   const startDate = params?.startDate || '2025-04-08'
-   const endDate = params?.endDate || '2025-04-08'
+   const startDate = this.datePipe.transform(this.data.dateRange?.start_date, 'yyyy-MM-dd')
+   const endDate = this.datePipe.transform(this.data.dateRange?.end_date, 'yyyy-MM-dd')
 
    let query = buildPaginationQuery({ page, pageSize, searchTerm });
    if(this.user_role_name !== 'Admin'){
      query +=`&employee-id=${this.user_id}`
      }
-      query +=`&timesheet-employee=145`
-    // query += `&start-date=${startDate}&end-date=${endDate}`
+      query +=`&timesheet-employee=${this.data?.employee.keyId}&start-date=${startDate}&end-date=${endDate}`
 
    this.api.getData(`${environment.live_url}/${environment.timesheet}/${query}`).subscribe((res: any) => {
      const formattedData = res.results.map((item: any, i: number) => ({
@@ -142,7 +144,7 @@ BreadCrumbsTitle: any = 'Employee Details';
        actions: [],
        accessConfig: [],
        tableSize: pageSize,
-       pagination: true,
+       pagination: false,
        searchable: true,
        currentPage:page,
        totalRecords: res.total_no_of_record

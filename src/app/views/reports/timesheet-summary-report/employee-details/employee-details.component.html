@@ -1,5 +1,17 @@
-<div class="container-wrapper settings-main-content px-0">
+
+
+<div class="row mx-0 my-1 px-0">
+  <div class="col-12 col-sm-12 col-md-12 col-lg-12 py-1 pl-2 pr-0">
+      <h4 mat-dialog-title><b>{{'Emplyee Deatils' || 'NA'}}</b></h4>
+  </div>
+</div>
+<div mat-dialog-content>
+  <div class="container-wrapper settings-main-content px-0">
     <app-dynamic-table
     [config]="tableConfig" (actionEvent)="handleAction($event)">
     </app-dynamic-table>
+</div>
+</div>
+<div mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close>Close</button>
 </div>
