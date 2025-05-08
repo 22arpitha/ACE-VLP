@@ -148,7 +148,7 @@ exportCsvOrPdf(fileType) {
             finalQuery += this.userRole ==='Admin' ? '':`&employee-id=${this.user_id}`;
            }
            this.api.getData(`${environment.live_url}/${environment.jobs}/${finalQuery}`).subscribe((res: any) => {
-            if(res.results && res.results?.length>=1){
+      
               const formattedData = res.results.map((item: any, i: number) => ({
                 sl: (page - 1) * pageSize + i + 1,
                 ...item,
@@ -169,20 +169,6 @@ exportCsvOrPdf(fileType) {
                hideDownload:true,
                showDownload:true,
               };
-            }else{
-              this.tableConfig = {
-                columns: [],
-                data: [],
-                searchTerm: this.term,
-                actions: [],
-                accessConfig: [],
-                tableSize: 5,
-                searchable:true,
-                pagination: false,
-                estimationDetails:false,
-                hideDownload:false,
-              };
-            }
            },(error:any)=>{  this.api.showError(error?.error?.detail);
            });
          }

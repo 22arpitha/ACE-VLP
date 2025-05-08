@@ -175,6 +175,7 @@ export class NonProductiveHoursComponent implements OnInit,OnChanges {
         accessConfig: [],
         tableSize: pageSize,
         pagination: true,
+        searchable: true,
         currentPage:page,
         totalRecords: res.total_no_of_record,
         hideDownload:true,

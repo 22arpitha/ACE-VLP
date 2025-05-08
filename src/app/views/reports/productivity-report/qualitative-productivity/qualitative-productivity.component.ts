@@ -172,6 +172,7 @@ BreadCrumbsTitle: any = 'Qualitative Productivity';
              tableFooterContent:tableFooterContent,
              tableSize: pageSize,
              pagination: true,
+             searchable: true,
              currentPage:page,
              totalRecords: res.total_no_of_record,
              hideDownload:true,
