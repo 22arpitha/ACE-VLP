@@ -1,7 +1,7 @@
 export const tableColumns  = [
   { label: 'Sl No', key: 'sl', sortable: false },
   {
-    label: 'Client',
+    label: 'Client Name',
     key: 'client_name',
     filterable: true,
     filterType: 'multi-select',

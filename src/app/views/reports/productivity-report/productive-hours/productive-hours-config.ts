@@ -1,7 +1,7 @@
 export const tableColumns = [
     { label: 'Sl No',key: 'sl'},
     {
-      label: 'Client',
+      label: 'Client Name',
       key: 'client_name',
       sortable: true
     },

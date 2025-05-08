@@ -5,7 +5,7 @@ export function getTableColumns(role: string) {
   { label: 'Sl No', key: 'sl', sortable: true },
   { label: 'Date', key: 'date', sortable: true, filterable: true, filterType: 'date' },
   {
-    label: 'Client',
+    label: 'Client Name',
     key: 'client_name',
     // filterable: true,
     // filterType: 'multi-select',

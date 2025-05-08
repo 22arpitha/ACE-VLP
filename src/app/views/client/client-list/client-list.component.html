@@ -33,7 +33,7 @@
               <i (click)="sort('desc','client_number')" *ngIf="arrowState['client_number']"
                 class="bi bi-arrow-up"></i>
                   </th>
-                  <th scope="col">Client Name
+                  <th scope="col" class="name-col">Client Name
                     <i *ngIf="!arrowState['client_name']" (click)="sort('asc','client_name')" class="bi bi-arrow-down"></i>
                     <i (click)="sort('desc','client_name')" *ngIf="arrowState['client_name']"
                       class="bi bi-arrow-up"></i>
@@ -84,7 +84,7 @@
                       </mat-menu>
                   </th>
                   <th scope="col">Status</th>
-                  <th scope="col">Contact Person</th>
+                  <th scope="col">Contact<br>Person</th>
                   <th scope="col">Action </th>
                 </tr>
               </thead>

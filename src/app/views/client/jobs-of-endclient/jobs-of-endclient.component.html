@@ -20,7 +20,7 @@
                   <i *ngIf="!arrowState['job_number']" (click)="sort('asc', 'job_number')" class="bi bi-arrow-down"></i>
                   <i *ngIf="arrowState['job_number']" (click)="sort('desc', 'job_number')" class="bi bi-arrow-up"></i>  
                 </th>
-                <th scope="col">Job Name
+                <th scope="col" class="name-col">Job Name
                   <i *ngIf="!arrowState['job_name']" (click)="sort('asc', 'job_name')" class="bi bi-arrow-down"></i>
                   <i *ngIf="arrowState['job_name']" (click)="sort('desc', 'job_name')" class="bi bi-arrow-up"></i>  
                 </th>
