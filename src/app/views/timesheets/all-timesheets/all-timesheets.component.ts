@@ -141,31 +141,57 @@ export class AllTimesheetsComponent implements OnInit {
     const storeDate = this.selectedDate ? new Date(this.selectedDate) : new Date();
     const today = new Date();
     const isSameWeek = this.isDateInCurrentWeek(storeDate);
-    const isToday = storeDate.toDateString() === today.toDateString();
+    const isPastWeek = storeDate < this.getStartOfCurrentWeek();
+    const isFuture = storeDate > this.getEndOfCurrentWeek();
     const isFriday = today.getDay() === 5;
-
-    // Disable if selected date is in current week AND today is not Friday
-    if (this.allTimesheetsList && this.allTimesheetsList.length > 0) {
-    if (isSameWeek && !isFriday) {
-      return true; // Disable button
+    const hasData = this.allTimesheetsList && this.allTimesheetsList.length > 0;
+  
+    if(this.weekTimesheetSubmitted){
+      return true;
     }
+    // 1. Current week and today is Friday, and has data => enable (return false)
+    if (isSameWeek && isFriday && hasData) {
+      return false;
+    }
+  
+    // 2. Past week and has data => enable
+    if (isPastWeek && hasData) {
+      return false;
+    }
+  
+    // 3. Past or future week and no data => disable
+    if ((isPastWeek || isFuture) && !hasData) {
+      return true;
+    }
+  
+    // 4. Future week with data => disable
+    if (isFuture && hasData) {
+      return true;
+    }
+  
+    // Default: disable
+    return true;
   }
-    return false; // Enable button in all other cases
-  }
-  isDateInCurrentWeek(date: Date): boolean {
+  getStartOfCurrentWeek(): Date {
     const now = new Date();
     const startOfWeek = new Date(now);
-    const endOfWeek = new Date(now);
-
-    // Set to Sunday
-    startOfWeek.setDate(now.getDate() - now.getDay());
+    startOfWeek.setDate(now.getDate() - now.getDay()); // Sunday
     startOfWeek.setHours(0, 0, 0, 0);
-
-    // Set to Saturday
-    endOfWeek.setDate(now.getDate() + (6 - now.getDay()));
+    return startOfWeek;
+  }
+  
+  getEndOfCurrentWeek(): Date {
+    const now = new Date();
+    const endOfWeek = new Date(now);
+    endOfWeek.setDate(now.getDate() + (6 - now.getDay())); // Saturday
     endOfWeek.setHours(23, 59, 59, 999);
-
-    return date >= startOfWeek && date <= endOfWeek;
+    return endOfWeek;
+  }
+  
+  isDateInCurrentWeek(date: Date): boolean {
+    const start = this.getStartOfCurrentWeek();
+    const end = this.getEndOfCurrentWeek();
+    return date >= start && date <= end;
   }
 
 

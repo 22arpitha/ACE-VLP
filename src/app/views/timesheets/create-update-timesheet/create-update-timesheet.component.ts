@@ -166,7 +166,7 @@ this.formErrorScrollService.resetHasUnsavedValue();
   }
 
   getEmployeeJobsList(id) {
-    let queryparams = `?client=${id}&job-status=[${this.statusList}]`;
+    let queryparams = `?client=${id}&job-status=[${this.statusList}]&employee-id=${this.user_id}`;
     this.apiService.getData(`${environment.live_url}/${environment.jobs}/${queryparams}`).subscribe(
       (res: any) => {
         // console.log('jobs data', res)

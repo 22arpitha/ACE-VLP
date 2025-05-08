@@ -206,6 +206,7 @@
                                             *ngIf="userRole !='Admin' && (accessPermissions[0]?.view && accessPermissions[0]?.update) && !item.is_locked"/>
                                         <button mat-raised-button class="proceedbtn" *ngIf="userRole ==='Admin' && item.is_locked" (click)="unlockTimesheet(item)">Unlock</button>
                                         <span *ngIf="userRole ==='Admin' && !item.is_locked">Not Locked Yet</span>
+                                        <span *ngIf="userRole !='Admin' && item.is_locked">Locked</span>
                                         <span
                                             *ngIf="userRole !='Admin' && !accessPermissions[0]?.update && !accessPermissions[0]?.delete">-</span>
                                     </ng-container></td>
