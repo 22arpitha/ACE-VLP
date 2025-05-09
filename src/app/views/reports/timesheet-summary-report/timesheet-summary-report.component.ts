@@ -40,6 +40,8 @@ export class TimesheetSummaryReportComponent implements OnInit {
     start_date: '',
     end_date: ''
   };
+  employees: any = [];
+  filterOptions: { id: any; name: string; }[];
 
   constructor(
     private common_service: CommonServiceService,
@@ -90,7 +92,7 @@ export class TimesheetSummaryReportComponent implements OnInit {
         break;
         case 'filter':
           this.getTableData({ page: 1, pageSize: this.tableSize, searchTerm: this.term , employee_ids: event.detail.value,fromdate: this.selectedDate['start_date'] });
-          this.getFilterData(event.detail.value)
+          // this.getFilterData(event.detail.value)
           break;
       case 'weekDate':
         this.fromDate = event.detail;
@@ -133,7 +135,7 @@ export class TimesheetSummaryReportComponent implements OnInit {
     // console.log('Selected Date Range:', this.time);
     this.getTableData({ page: this.page, pageSize: this.tableSize, searchTerm: this.term , fromdate: date });
   }
-  getFilterData(filteredId?): void {
+  getFilterData(filteredId?) {
     let query = '';
     if (this.user_role_name !== 'Admin') {
       query += `?employee-id=${this.user_id}`;
@@ -143,17 +145,18 @@ export class TimesheetSummaryReportComponent implements OnInit {
 
     this.api.getData(`${environment.live_url}/${environment.timesheet_summary}/${query}`)
       .subscribe((res: any) => {
-        const employees = res;
-        const filterOptions = getUniqueValues2(employees, 'employee_name', 'employee_id');
+        this.employees = res;
+        this.filterOptions = getUniqueValues2(this.employees, 'employee_name', 'employee_id');
 
-        // Only update filters, not full tableConfig
-        this.tableConfig.columns = tableColumns?.map(col => {
-          if (col.filterable && col.key === 'employee_name') {
-            return { ...col, filterOptions };
-          }
-          return col;
-        });
+        // // Only update filters, not full tableConfig
+        // this.tableConfig.columns = tableColumns?.map(col => {
+        //   if (col.filterable && col.key === 'employee_name') {
+        //     return { ...col, filterOptions };
+        //   }
+        //   return col;
+        // });
       });
+      return this.filterOptions;
   }
 
 
@@ -207,12 +210,15 @@ export class TimesheetSummaryReportComponent implements OnInit {
       });
       return row;
     });
+    const filterOptions = this.getFilterData();
 
     this.tableConfig = {
-      columns: tableColumns.map(col => ({
-        ...col,
-        filterOptions: tableColumns
-      })),
+      columns:  tableColumns?.map(col => {
+        if (col.filterable && col.key === 'employee_name') {
+          return { ...col, filterOptions };
+        }
+        return col;
+      }),
       data: formattedData,
       searchTerm: this.term,
       actions: [],
@@ -226,6 +232,7 @@ export class TimesheetSummaryReportComponent implements OnInit {
       navigation: true,
     };
   });
+
 }
 
 

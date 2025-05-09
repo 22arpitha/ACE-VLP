@@ -40,6 +40,7 @@ import { EmployeeListComponent } from './employee-list/employee-list.component';
 import { WeekDatepickerComponent } from './week-datepicker/week-datepicker.component';
 import { GenericTableFilterComponent } from './generic-table-filter/generic-table-filter.component';
 import { WeekPickerComponent } from './week-picker/week-picker.component';
+import { NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
 @NgModule({
   declarations: [
     SortPipe,
@@ -85,7 +86,8 @@ import { WeekPickerComponent } from './week-picker/week-picker.component';
     ReactiveFormsModule,
     NgxPaginationModule,
     NgbTooltipModule,
-    MatDialogModule
+    MatDialogModule,
+    NgbDropdownModule
   ],
   exports:[
     AlphabetOnlyDirective,
@@ -128,7 +130,8 @@ import { WeekPickerComponent } from './week-picker/week-picker.component';
     WeekDatepickerComponent,
     PeriodComponent,
     GenericTableFilterComponent,
-    WeekPickerComponent
+    WeekPickerComponent,
+    NgbDropdownModule
    ],
 
 })
