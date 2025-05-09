@@ -17,16 +17,16 @@ export class QualitativeProductivityComponent implements OnInit,OnChanges {
 BreadCrumbsTitle: any = 'Qualitative Productivity';
 @Input() dropdwonFilterData:any;
       term: string = '';
-          tableSize: number = 5;
-          page: any = 1;
-          tableSizes = [5,10,25,50,100];
+         tableSize: number = 50;
+        page: any = 1;
+        tableSizes = [50,75,100];
           tableConfig:any = {
             columns: [],
             data: [],
             searchTerm: '',
             actions: [],
             accessConfig: [],
-            tableSize: 10,
+            tableSize: this.tableSize,
             pagination: true,
             averageProductivity:true,
             showDownload:true,

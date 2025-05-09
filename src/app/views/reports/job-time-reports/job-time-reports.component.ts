@@ -17,16 +17,16 @@ import { MatDialog } from '@angular/material/dialog';
 export class JobTimeReportsComponent implements OnInit {
   BreadCrumbsTitle: any = 'Job Time Report';
 term: string = '';
-tableSize: number = 5;
+tableSize: number = 50;
    page: any = 1;
-   tableSizes = [5,10,25,50,100];
+  tableSizes = [50,75,100];
    tableConfig:any = {
      columns: [],
      data: [],
      searchTerm: '',
      actions: [],
      accessConfig: [],
-     tableSize: 5,
+     tableSize: this.tableSize,
      pagination: true,
      headerTabs:true,
      showIncludeAllJobs:true,

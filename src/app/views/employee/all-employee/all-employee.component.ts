@@ -32,8 +32,8 @@ is_active:false,
   };
   page = 1;
   count = 0;
-  tableSize = 5;
-  tableSizes = [5, 10, 25, 50, 100];
+  tableSize = 50;
+  tableSizes = [50,75,100];
   currentIndex: any;
   allEmployeeList:any=[];
   accessPermissions = []
@@ -124,13 +124,13 @@ public  initialGetAllEmployeelist(is_active?:string){
   // Current Btn event
   getCurrentEmployeeList(){
     this.page = 1;
-    this.tableSize = 5;
+    this.tableSize = 50;
   this.getActiveEmployeeList();    
   }
 // History btn event 
   getEmployeeHistoryList(){
     this.page = 1;
-    this.tableSize = 5;
+    this.tableSize = 50;
     this.getInActiveEmployeeList();
   }
 

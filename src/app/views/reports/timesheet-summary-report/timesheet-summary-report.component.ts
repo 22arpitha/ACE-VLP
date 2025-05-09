@@ -30,7 +30,8 @@ export class TimesheetSummaryReportComponent implements OnInit {
     accessConfig: [],
     tableSize: 5,
     pagination: true,
-    navigation:true
+    navigation:true,
+    showDownload:true,
   };
   user_id: string | null;
   user_role_name: string;
@@ -224,6 +225,7 @@ export class TimesheetSummaryReportComponent implements OnInit {
       totalRecords: res.total_no_of_record,
       dateRangeFilter: true,
       navigation: true,
+      showDownload:true,
     };
   });
 }

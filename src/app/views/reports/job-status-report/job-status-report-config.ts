@@ -1,7 +1,7 @@
 export const tableColumns  = [
   { label: 'Sl No', key: 'sl', sortable: false },
   {
-    label: 'Client Name',
+    label: 'Client',
     key: 'client_name',
     filterable: true,
     filterType: 'multi-select',
@@ -17,7 +17,7 @@ export const tableColumns  = [
     sortable: true
   },
   {
-    label: 'Job Number',
+    label: 'Job Id',
     key: 'job_number',
     filterable: true,
     filterType: 'multi-select',
@@ -25,7 +25,7 @@ export const tableColumns  = [
     sortable: true
   },
   {
-    label: 'Job Name',
+    label: 'Job',
     key: 'job_name',
     filterable: true,
     filterType: 'multi-select',
@@ -33,7 +33,7 @@ export const tableColumns  = [
     sortable: true
   },
   {
-    label: 'Job Allocation Date',
+    label: 'Alloc. Date',
     key: 'job_allocation_date',
     filterable: true,
     filterType: 'date',
@@ -47,6 +47,6 @@ export const tableColumns  = [
     filterType: 'date',
     sortable: false,
   },
-  { label: 'Primary Employee', key: 'is_primary', sortable: true },
+  { label: 'Pri Emp', key: 'is_primary', sortable: true },
 
 ]

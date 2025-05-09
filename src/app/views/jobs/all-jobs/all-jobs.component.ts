@@ -41,8 +41,8 @@ export class AllJobsComponent implements OnInit {
   };
   page = 1;
   count = 0;
-  tableSize = 5;
-  tableSizes = [5, 10, 25, 50, 100];
+  tableSize = 50;
+  tableSizes = [50,75,100];
   currentIndex: any;
   allJobsList: any = [];
   allJobStatus: any = [];
@@ -307,12 +307,12 @@ export class AllJobsComponent implements OnInit {
   }
   getCurrentJobs() {
     this.page = 1;
-    this.tableSize = 5;
+    this.tableSize = 50;
     this.getCurrentJobsList();
   }
   getJobsHistory() {
     this.page = 1;
-    this.tableSize = 5;
+    this.tableSize = 50;
     this.getJobsHistoryList();
   }
 

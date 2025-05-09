@@ -25,17 +25,18 @@ export class DynamicTableComponent implements OnInit {
   startDate;
   endDate;
   currentPage = 1;
-  tableSizes = [5,10,25,50,100];
+  tableSize: number = 50;
+  page: any = 1;
+  tableSizes = [50,75,100];
   columnFilters: { [key: string]: any } = {};
   arrowState: { [key: string]: boolean } = {};
   sortValue: string = '';
   directionValue: string;
   filterSearchText: { [key: string]: string } = {};
-  tableSize: number = 5;
   activeDateColumn: string | null = null;
   dateFilterValue: any = null;
   paginationConfig: any = {
-    itemsPerPage: 5,
+    itemsPerPage: 50,
     currentPage: 1,
     totalItems: 0
   }

@@ -3,7 +3,7 @@
 export const tableColumns  = [
   { label: 'Sl No', key: 'sl', sortable: true },
   {
-    label: 'Client Name',
+    label: 'Client',
     key: 'client_name',
     filterable: true,
     filterType: 'multi-select',
@@ -11,7 +11,7 @@ export const tableColumns  = [
     sortable: true
   },
   {
-    label: 'Job Number',
+    label: 'Job id',
     key: 'job_number',
     filterable: true,
     filterType: 'multi-select',
@@ -19,7 +19,7 @@ export const tableColumns  = [
     sortable: true
   },
   {
-    label: 'Job Name',
+    label: 'Job',
     key: 'job_name',
     filterable: true,
     filterType: 'multi-select',
@@ -42,9 +42,9 @@ export const tableColumns  = [
     filterOptions: [],
     sortable: true
   },
-  { label: 'Estimated Time (hrs)', key: 'estimated_time', sortable: true },
-  { label: 'Actual Time (hrs)', key: 'actual_time', sortable: true ,navigation:true},
-  { label: 'Remaining/(Excess) Time (hrs)', key: 'remaining_time', sortable: true },
+  { label: 'Est. Hrs', key: 'estimated_time', sortable: true },
+  { label: 'Act. Hrs', key: 'actual_time', sortable: true ,navigation:true},
+  { label: 'Rem./Ex. Hrs', key: 'remaining_time', sortable: true },
 
 ]
 

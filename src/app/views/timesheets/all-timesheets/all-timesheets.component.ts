@@ -38,8 +38,8 @@ export class AllTimesheetsComponent implements OnInit {
   endDate: any = '';
   page = 1;
   count = 0;
-  tableSize = 5;
-  tableSizes = [5, 10, 25, 50, 100];
+  tableSize = 50;
+  tableSizes = [50,75,100];
   currentIndex: any;
   allTimesheetsList: any = [];
   idsOfTimesheet: any = [];

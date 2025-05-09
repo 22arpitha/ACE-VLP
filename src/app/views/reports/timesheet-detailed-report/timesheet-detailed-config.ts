@@ -4,21 +4,21 @@ const tableColumns = [
   { label: 'Sl No', key: 'sl', sortable: true },
   { label: 'Date', key: 'date', sortable: true, filterable: true, filterType: 'date' },
   {
-    label: 'Client Name',
+    label: 'Client',
     key: 'client_name',
     filterable: true,
     filterType: 'multi-select',
     sortable: true
   },
   {
-    label: 'Job Name',
+    label: 'Job',
     key: 'job_name',
     filterable: true,
     filterType: 'multi-select',
     sortable: true
   },
   {
-    label: 'Task Name',
+    label: 'Task',
     key: 'task_name',
     filterable: true,
     filterType: 'multi-select',
@@ -31,7 +31,7 @@ const tableColumns = [
 ];
 if (role !== 'Accountant' ) {
   tableColumns.splice(5, 0, {
-    label: 'Employee Name',
+    label: 'Employee',
     key: 'employee_name',
     filterable: true,
     filterType: 'multi-select',

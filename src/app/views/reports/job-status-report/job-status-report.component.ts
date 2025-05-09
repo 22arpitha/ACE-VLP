@@ -17,16 +17,16 @@ export class JobStatusReportComponent implements OnInit {
 
  BreadCrumbsTitle: any = 'Job Status Report';
    term: string = '';
-   tableSize: number = 5;
    page: any = 1;
-   tableSizes = [5,10,25,50,100];
+  tableSize = 50;
+  tableSizes = [50,75,100];
    tableConfig:any = {
      columns: [],
      data: [],
      searchTerm: '',
      actions: [],
      accessConfig: [],
-     tableSize: 5,
+     tableSize: this.tableSize,
      pagination: true,
      headerTabs:true,
      showIncludeAllJobs:true,

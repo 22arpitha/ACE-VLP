@@ -25,6 +25,7 @@ export class TimesheetDetailedReportComponent implements OnInit {
     accessConfig: [],
     tableSize: 5,
     pagination: true,
+    showDownload:true,
   };
   userRole: string;
   user_role_name: string;
@@ -141,7 +142,8 @@ getTableData(params?: { page?: number; pageSize?: number; searchTerm?: string })
       pagination: true,
       searchable: true,
       currentPage:page,
-      totalRecords: res.total_no_of_record
+      totalRecords: res.total_no_of_record,
+      showDownload:true,
     };
   });
 }

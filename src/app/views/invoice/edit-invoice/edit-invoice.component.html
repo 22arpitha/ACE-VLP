@@ -28,12 +28,12 @@
                         class="table-master-checkbox"
                       ></mat-checkbox>
                     </th>
-                    <th scope="col">Job Number
+                    <th scope="col">Job Id
                       <i *ngIf="!arrowState['job_number']" (click)="sort('asc','job_number')" class="bi bi-arrow-down"></i>
                 <i (click)="sort('desc','job_number')" *ngIf="arrowState['job_number']"
                   class="bi bi-arrow-up"></i>
                     </th>
-                    <th scope="col" class="name-col">Job Name
+                    <th scope="col" class="name-col">Job
                       <i *ngIf="!arrowState['job_name']" (click)="sort('asc','job_name')" class="bi bi-arrow-down"></i>
                       <i (click)="sort('desc','job_name')" *ngIf="arrowState['job_name']"
                         class="bi bi-arrow-up"></i>

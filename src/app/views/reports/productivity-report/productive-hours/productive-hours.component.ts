@@ -14,16 +14,16 @@ export class ProductiveHoursComponent implements OnInit,OnChanges {
 @Input() dropdwonFilterData:any;
   BreadCrumbsTitle: any = 'Productive Hours';
   term: string = '';
-  tableSize: number = 5;
+ tableSize: number = 50;
   page: any = 1;
-  tableSizes = [5,10,25,50,100];
+  tableSizes = [50,75,100];
   tableConfig:any = {
     columns: [],
     data: [],
     searchTerm: '',
     actions: [],
     accessConfig: [],
-    tableSize: 5,
+    tableSize: this.tableSize,
     pagination: true,
     showDownload:true,
   };

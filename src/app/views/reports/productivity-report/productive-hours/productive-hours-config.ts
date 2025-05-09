@@ -1,7 +1,7 @@
 export const tableColumns = [
     { label: 'Sl No',key: 'sl'},
     {
-      label: 'Client Name',
+      label: 'Client',
       key: 'client_name',
       sortable: true
     },
@@ -11,12 +11,12 @@ export const tableColumns = [
       sortable: true
     },
     {
-      label: 'Job Number',
+      label: 'Job Id',
       key: 'job_number',
       sortable: true
     },
     {
-      label: 'Job Name',
+      label: 'Job',
       key: 'job_name',
       sortable: true
     },

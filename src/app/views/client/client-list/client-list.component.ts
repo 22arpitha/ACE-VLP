@@ -42,8 +42,8 @@ export class ClientListComponent implements OnInit {
     };
     page = 1;
     count = 0;
-    tableSize = 5;
-    tableSizes = [5, 10, 25, 50, 100];
+    tableSize = 50;
+    tableSizes = [50,75,100];
     currentIndex: any;
     allClientList:any=[];
     clientList:any=[];
@@ -189,12 +189,12 @@ export class ClientListComponent implements OnInit {
     }
     public getCurrentClients(){
       this.page = 1;
-      this.tableSize = 5;
+      this.tableSize = 50;
     this.getCurrentClientList();
     }
     public getClientsHistory(){
       this.page = 1;
-      this.tableSize = 5;
+      this.tableSize = 50;
     this.getClientHistoryList();
     }
 
