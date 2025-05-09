@@ -195,7 +195,8 @@ export class NonProductiveHoursComponent implements OnInit,OnChanges {
 public viewtimesheetDetails(item:any){
       this.dialog.open(JobTimeSheetDetailsPopupComponent, {
       width: '900px',
-      data: { 'job_id': item?.job_id,'job_name':item?.job_name },
+      data: { 'job_id': item?.job_id,'job_name':item?.job_name,'employee_id':item.employee_id
+},
     });
     }
   }

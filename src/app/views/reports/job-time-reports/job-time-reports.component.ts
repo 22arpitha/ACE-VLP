@@ -266,7 +266,7 @@ public sendEamils(){
 public viewtimesheetDetails(item:any){
       this.dialog.open(JobTimeSheetDetailsPopupComponent, {
       width: '900px',
-      data: { 'job_id': item?.id,'job_name':item?.job_name }
+      data: { 'job_id': item?.id,'job_name':item?.job_name}
     });
     }
 }
