@@ -3,7 +3,7 @@ import { getTableColumns } from './timesheet-detailed-config';
 import { CommonServiceService } from '../../../service/common-service.service';
 import { ApiserviceService } from '../../../service/apiservice.service';
 import { environment } from '../../../../environments/environment';
-import { getUniqueValues } from '../../../shared/unique-values.utils';
+import { getUniqueValues, getUniqueValues2 } from '../../../shared/unique-values.utils';
 import { buildPaginationQuery } from '../../../shared/pagination.util';
 import { downloadFileFromUrl } from '../../../shared/file-download.util';
 @Component({
@@ -82,6 +82,10 @@ handleAction(event: { actionType: string; detail: any }) {
       case 'search':
       this.onSearch(event.detail);
       break;
+      case 'filter':
+        this.getTableData({ page: 1, pageSize: this.tableSize, searchTerm: this.term , employee_ids: event.detail.value});
+        this.getFilterData(event.detail.value)
+        break;
       case 'export_csv':
       this.exportCsvOrPdf(event.detail);
       break;
@@ -111,9 +115,31 @@ exportCsvOrPdf(fileType) {
     fileType
   });
 }
+getFilterData(filteredId?): void {
+  let query = '';
+  if (this.user_role_name !== 'Admin') {
+    query += `?employee-id=${this.user_id}`;
+  }
+  // if (this.fromDate) query += `&from-date=${this.fromDate}`;
+  if (filteredId) query += `&employee-ids=[${filteredId}]`;
+
+  this.api.getData(`${environment.live_url}/${environment.timesheet}/${query}`)
+    .subscribe((res: any) => {
+      const employees = res;
+      const filterOptions = getUniqueValues2(employees, 'employee_name', 'employee_id');
+
+      // Only update filters, not full tableConfig
+      this.tableConfig.columns = this.tableData?.map(col => {
+        if (col.filterable && col.key === 'employee_name') {
+          return { ...col, filterOptions };
+        }
+        return col;
+      });
+    });
+}
 
 // Fetch table data from API with given params
-getTableData(params?: { page?: number; pageSize?: number; searchTerm?: string }) {
+getTableData(params?: { page?: number; pageSize?: number; searchTerm?: string,employee_ids?: string}): void {
   const page = params?.page ?? this.page;
   const pageSize = params?.pageSize ?? this.tableSize;
   const searchTerm = params?.searchTerm ?? this.term;

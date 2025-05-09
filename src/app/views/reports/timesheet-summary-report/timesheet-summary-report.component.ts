@@ -48,16 +48,17 @@ export class TimesheetSummaryReportComponent implements OnInit {
     private dialog: MatDialog,
     private datePipe:DatePipe
   ) {
+
+
+  }
+
+  async ngOnInit() {
+    this.common_service.setTitle(this.BreadCrumbsTitle);
     this.user_id = sessionStorage.getItem('user_id');
     this.user_role_name = sessionStorage.getItem('user_role_name') || '';
 
-
     this.getTableData({ page: 1, pageSize: this.tableSize, searchTerm: this.term });
-  }
-
-  ngOnInit(): void {
-    this.common_service.setTitle(this.BreadCrumbsTitle);
-    this.getFilterData();
+    this.filterData()
   }
 
   onTableDataChange(event: number): void {
@@ -88,10 +89,24 @@ export class TimesheetSummaryReportComponent implements OnInit {
       case 'export_pdf':
         this.exportCsvOrPdf(event.detail);
         break;
+
         case 'filter':
-          this.getTableData({ page: 1, pageSize: this.tableSize, searchTerm: this.term , employee_ids: event.detail.value,fromdate: this.selectedDate['start_date'] });
-          this.getFilterData(event.detail.value)
+          const filters = event.detail;
+
+
+          this.getTableData({
+            page: 1,
+            pageSize: this.tableSize,
+            searchTerm: this.term,
+            employee_ids: filters,  // 👈 join IDs properly
+          });
+
+          // this.filterData(employeeIds);
           break;
+        // case 'filter':
+        //   this.getTableData({ page: 1, pageSize: this.tableSize, searchTerm: this.term , employee_ids: event.detail.value});
+
+        //   break;
       case 'weekDate':
         this.fromDate = event.detail;
         this.filterByDate(this.fromDate);
@@ -100,8 +115,8 @@ export class TimesheetSummaryReportComponent implements OnInit {
         this.getEmployeeDetails(event['row'])
         break;
       default:
-        this.getTableData({ page: 1, pageSize: this.tableSize, searchTerm: this.term, fromdate: this.selectedDate['start_date'] });
-    }
+        this.getTableData({ page: 1, pageSize: this.tableSize, searchTerm: this.term});
+      }
   }
   getEmployeeDetails(employee): void {
     const filteredDate = this.fromDate || this.time
@@ -133,13 +148,40 @@ export class TimesheetSummaryReportComponent implements OnInit {
     // console.log('Selected Date Range:', this.time);
     this.getTableData({ page: this.page, pageSize: this.tableSize, searchTerm: this.term , fromdate: date });
   }
-  getFilterData(filteredId?): void {
+
+  // getFilterData(filteredId?): void {
+  //   let query = '';
+  //   if (this.user_role_name !== 'Admin') {
+  //     query += `?employee-id=${this.user_id}`;
+  //   }
+  //   if (filteredId) {
+  //     query += `?employee-ids=[${filteredId}]`;
+  //   }
+
+  //   this.api.getData(`${environment.live_url}/${environment.timesheet_summary}/${query}`)
+  //     .subscribe((res: any) => {
+  //       const employees = res;
+  //       const filterOptions = getUniqueValues2(employees, 'employee_name', 'employee_id');
+
+  //       // Only update filters, not full tableConfig
+  //       this.tableConfig.columns = tableColumns?.map(col => {
+  //         if (col.filterable && col.key === 'employee_name') {
+  //           return { ...col, filterOptions };
+  //         }
+  //         return col;
+
+  //       });
+  //     });
+  //     // this.getFilterData()
+  // }
+  filterData(filteredId?): void {
     let query = '';
     if (this.user_role_name !== 'Admin') {
       query += `?employee-id=${this.user_id}`;
     }
-    if (this.fromDate) query += `&from-date=${this.fromDate}`;
-    if (filteredId) query += `&employee-ids=[${filteredId}]`;
+    if (filteredId) {
+      query += `?employee-ids=[${filteredId}]`;
+    }
 
     this.api.getData(`${environment.live_url}/${environment.timesheet_summary}/${query}`)
       .subscribe((res: any) => {
@@ -152,10 +194,11 @@ export class TimesheetSummaryReportComponent implements OnInit {
             return { ...col, filterOptions };
           }
           return col;
+
         });
       });
+      // this.getFilterData()
   }
-
 
   getTableData(params?: { page?: number; pageSize?: number; searchTerm?: string; fromdate?: string; employee_ids?: any; startDate?; endDate? }): void {
   const page = params?.page ?? this.page;
@@ -225,13 +268,13 @@ export class TimesheetSummaryReportComponent implements OnInit {
       dateRangeFilter: true,
       navigation: true,
     };
+    this.filterData()
   });
 }
 
 
   onSearch(term: string): void {
     this.term = term;
-
     this.getTableData({ page: 1, pageSize: this.tableSize, searchTerm: term });
   }
   getCurrentWeekDates() {
