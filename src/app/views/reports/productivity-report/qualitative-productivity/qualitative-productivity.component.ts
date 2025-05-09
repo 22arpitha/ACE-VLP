@@ -129,7 +129,8 @@ BreadCrumbsTitle: any = 'Qualitative Productivity';
               query+= this.dropdwonFilterData.employee_id ? `&employee-id=${this.dropdwonFilterData.employee_id}`:this.user_role_name ==='Admin' ? '':`&employee-id=${this.user_id}`;
               query+= this.dropdwonFilterData.periodicity ? `&periodicity=${this.dropdwonFilterData.periodicity}`:'';
               query+= this.dropdwonFilterData.period ? `&period=${this.dropdwonFilterData.period}`:'';
-             }else{
+              query+= this.dropdwonFilterData.employee_id || this.dropdwonFilterData.periodicity || this.dropdwonFilterData.period ? '&is_dropdown_selected=True' :'';
+              }else{
               query += this.user_role_name ==='Admin' ? '':`&employee-id=${this.user_id}`;
              }
            }
@@ -153,7 +154,8 @@ BreadCrumbsTitle: any = 'Qualitative Productivity';
             query+= this.dropdwonFilterData.employee_id ? `&employee-id=${this.dropdwonFilterData.employee_id}`:this.user_role_name ==='Admin' ? '':`&employee-id=${this.user_id}`;
             query+= this.dropdwonFilterData.periodicity ? `&periodicity=${this.dropdwonFilterData.periodicity}`:'';
             query+= this.dropdwonFilterData.period ? `&period=${this.dropdwonFilterData.period}`:'';
-           }else{
+            query+= this.dropdwonFilterData.employee_id || this.dropdwonFilterData.periodicity || this.dropdwonFilterData.period ? '&is_dropdown_selected=True' :'';
+            }else{
             query += this.user_role_name ==='Admin' ? '':`&employee-id=${this.user_id}`;
            }
           this.api.getData(`${environment.live_url}/${environment.jobs}/${query}`).subscribe((res: any) => {

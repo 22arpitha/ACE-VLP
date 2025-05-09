@@ -8,7 +8,6 @@ import { environment } from '../../../environments/environment';
 import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
 import { fileToBase64, urlToFile } from '../fileUtils.utils';
 import { Overlay, OverlayRef } from '@angular/cdk/overlay';
-import { TemplatePortal } from '@angular/cdk/portal';
 @Component({
   selector: 'app-dynamic-table',
   templateUrl: './dynamic-table.component.html',
@@ -78,8 +77,7 @@ selectedFile:(File | null)[] = [];
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes && changes['config'] && this.config?.data?.length) {
-      console.log('changed',changes['config']['currentValue']);
+    if (changes && changes['config']) {
       this.initializeTable();
     }
 
@@ -583,4 +581,16 @@ ngOnDestroy() {
 //   this.updatePagination();
 // }
 
+isPositiveOrNegative(value: string): string {
+    const number = parseFloat(value);
+    if (isNaN(number)) {
+        return "";
+    } else if (number >= 0) {
+        return "positiveText";
+    } else if (number < 0) {
+        return "negativeText";
+    } else {
+        return "";
+    }
+}
 }
