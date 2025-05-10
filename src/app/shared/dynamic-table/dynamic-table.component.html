@@ -121,48 +121,46 @@
                   </mat-form-field>
                 </ng-container>
 
+                <ng-container *ngSwitchCase="'multi-select'">
+                  <div ngbDropdown class="d-inline-block" container="body">
+                    <button id="dropdownBasic1" mat-icon-button style="outline: none;background: transparent;border:0" ngbDropdownToggle><i class="bi bi-toggles" style="color:white"></i></button>
+                    <div ngbDropdownMenu aria-labelledby="dropdownBasic1" class="p-2">
+                      <ng-container *ngIf="col.key as columnKey" >
+                        <div class="position-relative mb-2" >
+                          <i
+                            class="bi text-secondary position-absolute top-50 end-0 translate-middle-y me-2"
+                            [ngClass]="{
+                              'bi-x-lg': filterSearchText[columnKey],
+                              'bi-search': !filterSearchText[columnKey]
+                            }"
+                            style="cursor: pointer"
+                            (click)="filterSearchText[columnKey] && (filterSearchText[columnKey] = '')"
+                          ></i>
+                          <input
+                            type="text"
+                            class="form-control"
+                            placeholder="Search"
+                            [(ngModel)]="filterSearchText[columnKey]"
+                          />
+                        </div>
 
-                <div class="row">
-                  <div class="col">
-                    <div ngbDropdown class="d-inline-block" container="body">
-                     <button  id="dropdownBasic1" style="outline: none;background: transparent;border:0" ngbDropdownToggle><i class="bi bi-toggles" style="color:white"></i></button>
-                      <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
-                        <ng-container *ngIf="col.key as columnKey" >
-                          <div class="position-relative mb-2" >
-                            <i
-                              class="bi text-secondary position-absolute top-50 end-0 translate-middle-y me-2"
-                              [ngClass]="{
-                                'bi-x-lg': filterSearchText[columnKey],
-                                'bi-search': !filterSearchText[columnKey]
-                              }"
-                              style="cursor: pointer"
-                              (click)="filterSearchText[columnKey] && (filterSearchText[columnKey] = '')"
-                            ></i>
-                            <input
-                              type="text"
-                              class="form-control"
-                              placeholder="Search"
-                              [(ngModel)]="filterSearchText[columnKey]"
-                            />
-                          </div>
-
-                          <mat-selection-list
-                            [(ngModel)]="columnFilters[columnKey]"
-                            (ngModelChange)="applyFilters()"
-                            [multiple]="true"
-                            >
-                            <mat-list-option
-                              *ngFor="let option of getFilteredOptions(columnKey)"
-                              [value]="option.id"
-                            >
-                              {{ option.name }}
-                            </mat-list-option>
-                          </mat-selection-list>
-                        </ng-container>
-                      </div>
+                        <mat-selection-list
+                          [(ngModel)]="columnFilters[columnKey]"
+                          (ngModelChange)="onFilterChange(columnFilters[columnKey],col)"
+                          [multiple]="true"
+                          >
+                          <mat-list-option
+                            *ngFor="let option of getFilteredOptions(columnKey)"
+                            [value]="option.id"
+                          >
+                            {{ option.name }}
+                          </mat-list-option>
+                        </mat-selection-list>
+                       
+                      </ng-container>
                     </div>
                   </div>
-                  </div>
+                </ng-container>
               </ng-container>
             </ng-container>
           </th>

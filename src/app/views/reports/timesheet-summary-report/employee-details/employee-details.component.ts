@@ -16,16 +16,16 @@ import { DatePipe } from '@angular/common';
 })
 export class EmployeeDetailsComponent implements OnInit {
  term: string = '';
-   tableSize: number = 5;
+   tableSize: number = 50;
    page: any = 1;
-   tableSizes = [5,10,25,50,100];
+   tableSizes = [50,100,200];
    tableConfig:any = {
      columns: [],
      data: [],
      searchTerm: '',
      actions: [],
      accessConfig: [],
-     tableSize: 5,
+     tableSize: 50,
      pagination: true,
    };
    userRole: string;
@@ -119,8 +119,9 @@ export class EmployeeDetailsComponent implements OnInit {
    const page = params?.page ?? this.page;
    const pageSize = params?.pageSize ?? this.tableSize;
    const searchTerm = params?.searchTerm ?? this.term;
-   const startDate = this.datePipe.transform(this.data.dateRange?.start_date, 'yyyy-MM-dd')
-   const endDate = this.datePipe.transform(this.data.dateRange?.end_date, 'yyyy-MM-dd')
+   console.log(this.data,"this.data")
+   const startDate = this.datePipe.transform(this.data?.dateRange.start_date, 'yyyy-MM-dd')
+   const endDate = this.datePipe.transform(this.data?.dateRange.end_date, 'yyyy-MM-dd')
 
    let query = buildPaginationQuery({ page, pageSize, searchTerm });
    if(this.user_role_name !== 'Admin'){

@@ -3,7 +3,10 @@ export function getTableColumns(role: string) {
   const tableColumns = [
 
   { label: 'Sl No', key: 'sl', sortable: true },
-  { label: 'Date', key: 'date', sortable: true, filterable: true, filterType: 'date' },
+  { label: 'Date', key: 'date', sortable: true,
+    // filterable: true,
+    // filterType: 'date'
+  },
   {
     label: 'Client',
     key: 'client_name',

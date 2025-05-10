@@ -6,6 +6,8 @@ const tableColumns = [
   {
     label: 'Client Name',
     key: 'client_name',
+    keyId:'client_id',
+    paramskeyId: 'client-ids',
     filterable: true,
     filterType: 'multi-select',
     sortable: true
@@ -13,6 +15,8 @@ const tableColumns = [
   {
     label: 'Job Name',
     key: 'job_name',
+    keyId:'job_id',
+    paramskeyId: 'job-ids',
     filterable: true,
     filterType: 'multi-select',
     sortable: true
@@ -20,6 +24,8 @@ const tableColumns = [
   {
     label: 'Task Name',
     key: 'task_name',
+    keyId:'id',
+    paramskeyId: 'timesheet-task-ids',
     filterable: true,
     filterType: 'multi-select',
     sortable: true
@@ -33,6 +39,8 @@ if (role !== 'Accountant' ) {
   tableColumns.splice(5, 0, {
     label: 'Employee Name',
     key: 'employee_name',
+    keyId:'employee_id',
+    paramskeyId: 'timesheet-employee-ids',
     filterable: true,
     filterType: 'multi-select',
     sortable: true

@@ -7,12 +7,13 @@ import { ApiserviceService } from '../../service/apiservice.service';
 import { environment } from '../../../environments/environment';
 import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
 import { fileToBase64, urlToFile } from '../fileUtils.utils';
-import { Overlay, OverlayRef } from '@angular/cdk/overlay';
-import { TemplatePortal } from '@angular/cdk/portal';
+import { OverlayRef } from '@angular/cdk/overlay';
+import { NgbDropdownConfig } from '@ng-bootstrap/ng-bootstrap';
 @Component({
   selector: 'app-dynamic-table',
   templateUrl: './dynamic-table.component.html',
-  styleUrls: ['./dynamic-table.component.scss']
+  styleUrls: ['./dynamic-table.component.scss'],
+  providers: [NgbDropdownConfig],
 })
 export class DynamicTableComponent implements OnInit {
   @Input() config!: DynamicTableConfig;
@@ -26,17 +27,17 @@ export class DynamicTableComponent implements OnInit {
   startDate;
   endDate;
   currentPage = 1;
-  tableSizes = [5,10,25,50,100];
+  tableSizes = [50,100,200];
   columnFilters: { [key: string]: any } = {};
   arrowState: { [key: string]: boolean } = {};
   sortValue: string = '';
   directionValue: string;
   filterSearchText: { [key: string]: string } = {};
-  tableSize: number = 5;
+  tableSize: number = 50;
   activeDateColumn: string | null = null;
   dateFilterValue: any = null;
   paginationConfig: any = {
-    itemsPerPage: 5,
+    itemsPerPage: 50,
     currentPage: 1,
     totalItems: 0
   }
@@ -62,9 +63,9 @@ selectedFile:(File | null)[] = [];
     private fb:FormBuilder,
     private datePipe: DatePipe,
     private api:ApiserviceService,
-    private overlay: Overlay,
-    private viewContainerRef: ViewContainerRef
+    private ngbConfig: NgbDropdownConfig
   ) {
+		this.ngbConfig.autoClose = false;
     this.user_id = sessionStorage.getItem('user_id');
     this.userRole = sessionStorage.getItem('user_role_name');
   }
@@ -79,21 +80,20 @@ selectedFile:(File | null)[] = [];
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['config'] && this.config?.data?.length) {
-      console.log('changed',changes['config']['currentValue']);
       this.initializeTable();
     }
 
     this.paginationConfig = {
       totalItems: this.config.totalRecords ?? 0,
       currentPage: this.config.currentPage ?? 1,
-      itemsPerPage: this.config.tableSize ?? 5
+      itemsPerPage: this.config.tableSize ?? 50
     };
   }
   private initializeTable(): void {
     this.filteredData = [...this.config.data];
     this.config.columns.forEach(col => {
       this.arrowState[col.key] = false;
-      this.columnFilters[col.key] = col.filterType === 'multi-select' ? [] : '';
+      //this.columnFilters[col.key] = col.filterType === 'multi-select' ? [] : '';
     });
     if(this.config.formContent && this.config.data){
       this.isEditBtn=false;
@@ -101,10 +101,12 @@ selectedFile:(File | null)[] = [];
         rows: this.fb.array([])
       });
       this.buildDynamicTableForm(this.config.data);
-    }else{
+    }
+    else{
       this.rows?.clear();
     }
-    this.applyFilters();
+    // this.applyFilters();
+    this.updatePagination()
   }
   get hasColumnFilters(): boolean {
     return this.config.columns.some(col => col.filterable);
@@ -115,21 +117,14 @@ selectedFile:(File | null)[] = [];
     this.applyFilters();
   }
 
-  private filterEmitInProgress = false;
+  async onFilterChange(selectedValue: any,columnKey) {
+    console.log(columnKey.paramskeyId)
+    if (selectedValue) {
+      this.actionEvent.emit({ actionType: 'filter', detail:selectedValue , key:columnKey.paramskeyId  });
+      await this.updatePagination();
+    }
 
-onFilterChange(selectedValue: any, selectedKey: string): void {
-  if (this.filterEmitInProgress) {
-    return;
   }
-
-  if (selectedValue && selectedKey) {
-    this.filterEmitInProgress = true;
-    this.actionEvent.emit({ actionType: 'filter', detail: { key: selectedKey, value: selectedValue } });
-
-    // Reset the flag after a small timeout
-    setTimeout(() => this.filterEmitInProgress = false);
-  }
-}
 
     applyFilters(): void {
       const showIncludeLogic = this.config.showIncludeAllJobs && this.columnFilters['client_name'];
@@ -144,8 +139,8 @@ onFilterChange(selectedValue: any, selectedKey: string): void {
 
         const matchColumns = Object.keys(this.columnFilters)?.every(key => {
           const filterVal = this.columnFilters[key];
-          this.selectedValue = filterVal;
-          this.selectedKey = key;
+          // this.selectedValue = filterVal;
+          // this.selectedKey = key;
           const cellVal = row[key];
 
           if (!filterVal || (Array.isArray(filterVal) && filterVal.length === 0)) {
@@ -164,17 +159,15 @@ onFilterChange(selectedValue: any, selectedKey: string): void {
         return matchSearch && matchColumns;
       });
 
-      // Only emit if not already emitting
-      if (!this.filterEmitInProgress) {
-        this.onFilterChange(this.selectedValue, this.selectedKey);
-      }
+      // // Only emit if not already emitting
+      // if (!this.filterEmitInProgress) {
+      //   this.onFilterChange(this.selectedValue, this.selectedKey);
+      // }
 
       this.updatePagination();
     }
   weekDatePicker(event: any) {
-    // console.log('week:', event);
     this.selectedDate = event;
-
     this.actionEvent.emit({ actionType: 'weekDate', detail: this.selectedDate });
     this.resetWeekDate = true;
   }
@@ -219,37 +212,29 @@ onFilterChange(selectedValue: any, selectedKey: string): void {
   }
 
 
-openFilterMenu(event: MouseEvent, colKey: string): void {
-  event.stopPropagation();
 
-  // Close all open menus first
-  Object.keys(this.filterTriggers).forEach(key => {
-    if (this.filterTriggers[key]?.menuOpen && key !== colKey) {
-      this.filterTriggers[key].closeMenu();
-    }
-  });
+// getFilteredOptions(colKey: string): { id: any; name: string }[] {
+//   const options = this.config.columns.find(c => c.key === colKey)?.filterOptions || [];
+//   const search = this.filterSearchText[colKey]?.toLowerCase() || '';
+//   return options
+//     .filter((option: any) => typeof option === 'string' || (typeof option === 'object' && option.name?.toLowerCase().includes(search)))
+//     .map((option: any) => typeof option === 'string' ? { id: null, name: option } : option);
+// }
+  getFilteredOptions(colKey: string): { id: any; name: string }[] {
+    const options = this.config.columns.find(c => c.key === colKey)?.filterOptions || [];
+    const search = this.filterSearchText[colKey]?.toLowerCase() || '';
 
-  const trigger = this.filterTriggers[colKey];
-
-  if (trigger) {
-    if (trigger.menuOpen) {
-      trigger.closeMenu();
-      return; // Exit early if menu was already open
-    }
-
-    this.activeFilterColumn = colKey;
-    trigger.openMenu();
+    const filtered = options
+      .filter((option: any) =>
+        typeof option === 'string' ||
+        (typeof option === 'object' && option.name?.toLowerCase().includes(search))
+      )
+      .map((option: any) =>
+        typeof option === 'string' ? { id: null, name: option } : option
+      );
+    return filtered;
   }
-}
 
-
-getFilteredOptions(colKey: string): { id: any; name: string }[] {
-  const options = this.config.columns.find(c => c.key === colKey)?.filterOptions || [];
-  const search = this.filterSearchText[colKey]?.toLowerCase() || '';
-  return options
-    .filter((option: any) => typeof option === 'string' || (typeof option === 'object' && option.name?.toLowerCase().includes(search)))
-    .map((option: any) => typeof option === 'string' ? { id: null, name: option } : option);
-}
 onTableDataChange(event: any) {
   this.actionEvent.emit({ actionType:'tableDataChange' , detail:event });
 }
@@ -275,7 +260,6 @@ onDateSelected(event: any): void {
 }
 
 navigateToEmployee(event){
-  console.log(event)
   this.actionEvent.emit({ actionType: 'navigate', row: event });
 }
 
@@ -291,7 +275,7 @@ public getHistoryDatasetList(){
   this.isHistory = true;
   this.actionEvent.emit({ actionType: 'headerTabs', action:'False'});
 }
-// Include All Jobs Checkbo event
+// Include All Jobs Checkbox event
 public onIncludeJobsChange(event:any){
   this.actionEvent.emit({ actionType: 'includeAllJobs', action:event.checked,client_id:this.selected_client_id});
 }
@@ -315,7 +299,6 @@ public async submitWorkCultureDetails(){
     }).catch((error) => {
       reqPayload['data']=[];
     });
-    console.log('Form Data',reqPayload);
 this.actionEvent.emit({ actionType: 'submitWorkCulture', action:reqPayload});
   }
 
@@ -495,7 +478,6 @@ public triggerFileInput(index:any) {
  }
 
 public openFileInNewTab(index:any){
-  console.log(this.fileLink[index]);
 window.open(this.fileLink[index], '_blank');
 }
 public async UpdateFileFieldData(workCulData: any) {
@@ -526,60 +508,4 @@ ngOnDestroy() {
     this.overlayRef.dispose();
   }
 }
-
-// onFilterChange(selectedValue: any, selectedKey: string): void {
-//   if (this.filterEmitInProgress) {
-//     return;
-//   }
-
-//   if (selectedValue && selectedKey) {
-//     this.filterEmitInProgress = true;
-//     this.actionEvent.emit({ actionType: 'filter', detail: { key: selectedKey, value: selectedValue } });
-
-//     // Reset the flag after a small timeout
-//     setTimeout(() => this.filterEmitInProgress = false);
-//   }
-// }
-
-// applyFilters(): void {
-//   const showIncludeLogic = this.config.showIncludeAllJobs && this.columnFilters['client_name'];
-//   if (showIncludeLogic) {
-//     this.isIncludeFlagEnableLogic();
-//   }
-
-//   this.filteredData = this.config.data.filter(row => {
-//     const matchSearch = !this.config.searchTerm || this.config.columns?.some(col =>
-//       row[col.key]?.toString()?.toLowerCase()?.includes(this.config.searchTerm!?.toLowerCase())
-//     );
-
-//     const matchColumns = Object.keys(this.columnFilters)?.every(key => {
-//       const filterVal = this.columnFilters[key];
-//       this.selectedValue = filterVal;
-//       this.selectedKey = key;
-//       const cellVal = row[key];
-
-//       if (!filterVal || (Array.isArray(filterVal) && filterVal.length === 0)) {
-//         return true;
-//       }
-
-//       if (Array.isArray(filterVal)) {
-//         return filterVal?.includes(cellVal);
-//       }
-
-//       const cleanCellVal = cellVal?.toString()?.trim()?.split(' ')[0];
-//       const cleanFilterVal = filterVal?.toString()?.trim()?.split(' ')[0];
-//       return cleanCellVal === cleanFilterVal;
-//     });
-
-//     return matchSearch && matchColumns;
-//   });
-
-//   // Only emit if not already emitting
-//   if (!this.filterEmitInProgress) {
-//     this.onFilterChange(this.selectedValue, this.selectedKey);
-//   }
-
-//   this.updatePagination();
-// }
-
 }

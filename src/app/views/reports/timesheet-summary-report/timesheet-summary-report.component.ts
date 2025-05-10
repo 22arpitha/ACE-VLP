@@ -34,7 +34,7 @@ export class TimesheetSummaryReportComponent implements OnInit {
   };
   user_id: string | null;
   user_role_name: string;
-  fromDate: string = '';
+  fromDate:any = {};
   selectedDate: any;
   time = {
     start_date: '',
@@ -42,6 +42,7 @@ export class TimesheetSummaryReportComponent implements OnInit {
   };
   employees: any = [];
   filterOptions: { id: any; name: string; }[];
+  selectedEmployeeId: any = [];
 
   constructor(
     private common_service: CommonServiceService,
@@ -50,29 +51,28 @@ export class TimesheetSummaryReportComponent implements OnInit {
     private dialog: MatDialog,
     private datePipe:DatePipe
   ) {
+
+  }
+
+  async ngOnInit(){
+    this.common_service.setTitle(this.BreadCrumbsTitle);
     this.user_id = sessionStorage.getItem('user_id');
     this.user_role_name = sessionStorage.getItem('user_role_name') || '';
 
-
     this.getTableData({ page: 1, pageSize: this.tableSize, searchTerm: this.term });
-  }
-
-  ngOnInit(): void {
-    this.common_service.setTitle(this.BreadCrumbsTitle);
-    this.getFilterData();
+  //  await this.getFilterData();
   }
 
   onTableDataChange(event: number): void {
     this.page = event;
-
-    this.getTableData({ page: this.page, pageSize: this.tableSize, searchTerm: this.term });
+    this.getTableData({ page: this.page, pageSize: this.tableSize, searchTerm: this.term,employee_ids:this.selectedEmployeeId, fromdate: this.fromDate });
   }
 
   onTableSizeChange(event: any): void {
     const newSize = Number(event.value || event);
     this.tableSize = newSize;
     this.page = 1;
-    this.getTableData({ page: this.page, pageSize: this.tableSize, searchTerm: this.term });
+    this.getTableData({ page: this.page, pageSize: this.tableSize, searchTerm: this.term, employee_ids:this.selectedEmployeeId, fromdate: this.fromDate });
   }
 
   handleAction(event: { actionType: string; detail: any }): void {
@@ -91,22 +91,36 @@ export class TimesheetSummaryReportComponent implements OnInit {
         this.exportCsvOrPdf(event.detail);
         break;
         case 'filter':
-          this.getTableData({ page: 1, pageSize: this.tableSize, searchTerm: this.term , employee_ids: event.detail.value,fromdate: this.selectedDate['start_date'] });
-          // this.getFilterData(event.detail.value)
-          break;
+        this.selectedEmployeeId = event.detail;
+        this.getTableData({ page: 1, pageSize: this.tableSize, searchTerm: this.term , employee_ids: event.detail});
+        break;
       case 'weekDate':
         this.fromDate = event.detail;
-        this.filterByDate(this.fromDate);
+        this.getTableData({ page: this.page, pageSize: this.tableSize, searchTerm: this.term , employee_ids:this.selectedEmployeeId, fromdate: this.fromDate })
         break;
       case 'navigate':
         this.getEmployeeDetails(event['row'])
         break;
       default:
-        this.getTableData({ page: 1, pageSize: this.tableSize, searchTerm: this.term, fromdate: this.selectedDate['start_date'] });
+        this.getTableData({ page: 1, pageSize: this.tableSize, searchTerm: this.term});
     }
   }
   getEmployeeDetails(employee): void {
-    const filteredDate = this.fromDate || this.time
+    const today = new Date();
+        const dayOfWeek = today.getDay(); // Sunday = 0, Saturday = 6
+
+        const startOfWeek = new Date(today);
+        startOfWeek.setDate(today.getDate() - dayOfWeek);
+
+        const endOfWeek = new Date(today);
+        endOfWeek.setDate(today.getDate() + (6 - dayOfWeek));
+
+        // Save the week range in 'time'
+        this.time.start_date = startOfWeek.toISOString();
+        this.time.end_date = endOfWeek.toISOString();
+
+        const isEmpty = Object.keys(this.fromDate).length === 0;
+        const filteredDate = isEmpty ? this.time : this.fromDate;
          this.dialog.open(EmployeeDetailsComponent, {
          width: '900px',
          data: { employee:employee,dateRange:filteredDate }
@@ -116,130 +130,123 @@ export class TimesheetSummaryReportComponent implements OnInit {
   exportCsvOrPdf(fileType: string): void {
     let query = buildPaginationQuery({ page: this.page, pageSize: this.tableSize });
 
-    if (this.fromDate) {
-      const date = this.datePipe.transform(this.fromDate, 'yyyy-MM-dd');
-      query += `&from-date=${date}`;
-    }else{
-      const date = this.datePipe.transform(this.time.start_date, 'yyyy-MM-dd');
-      query += `&from-date=${date}`;
-    }
     if (this.user_role_name !== 'Admin') {
       query += `&employee-id=${this.user_id}`;
     }
+    const startDate = this.fromDate?.start_date ?? this.time.start_date;
+    const formattedStartDate = this.datePipe.transform(startDate, 'yyyy-MM-dd');
+    query += `&from-date=${formattedStartDate}`;
 
+    if (this.selectedEmployeeId.length > 0) {
+      query += `&employee-ids=[${this.selectedEmployeeId}]`;
+    }
     const url = `${environment.live_url}/${environment.timesheet_reports}/${query}&file-type=${fileType}&timsheet-type=summary`;
     downloadFileFromUrl({ url, fileName: 'timesheet_summary', fileType: fileType as 'csv' | 'pdf' });
   }
 
   filterByDate(date: string): void {
-    // console.log('Selected Date Range:', this.time);
-    this.getTableData({ page: this.page, pageSize: this.tableSize, searchTerm: this.term , fromdate: date });
-  }
-  getFilterData(filteredId?) {
-    let query = '';
-    if (this.user_role_name !== 'Admin') {
-      query += `?employee-id=${this.user_id}`;
-    }
-    if (this.fromDate) query += `&from-date=${this.fromDate}`;
-    if (filteredId) query += `&employee-ids=[${filteredId}]`;
-
-    this.api.getData(`${environment.live_url}/${environment.timesheet_summary}/${query}`)
-      .subscribe((res: any) => {
-        this.employees = res;
-        this.filterOptions = getUniqueValues2(this.employees, 'employee_name', 'employee_id');
-
-        // // Only update filters, not full tableConfig
-        // this.tableConfig.columns = tableColumns?.map(col => {
-        //   if (col.filterable && col.key === 'employee_name') {
-        //     return { ...col, filterOptions };
-        //   }
-        //   return col;
-        // });
-      });
-      return this.filterOptions;
+    this.getTableData({ page: this.page, pageSize: this.tableSize, searchTerm: this.term ,employee_ids:this.selectedEmployeeId, fromdate: date });
   }
 
 
-  getTableData(params?: { page?: number; pageSize?: number; searchTerm?: string; fromdate?: string; employee_ids?: any; startDate?; endDate? }): void {
-  const page = params?.page ?? this.page;
-  const pageSize = params?.pageSize ?? this.tableSize;
-  const searchTerm = params?.searchTerm ?? this.term;
-  const employeeIds = params?.employee_ids ?? null;
+  async getTableData(params?: { page?: number; pageSize?: number; searchTerm?: string; fromdate?:any; employee_ids?: any; startDate?; endDate? }) {
+  let query = '';
+  if (this.user_role_name !== 'Admin') {
+    query += `?employee-id=${this.user_id}`;
+  }
+ await this.api.getData(`${environment.live_url}/${environment.timesheet_summary}/${query}`)
+    .subscribe(async (res: any) => {
+      if(res){
+      this.employees = res;
+      this.filterOptions = getUniqueValues2(this.employees, 'employee_name', 'employee_id');
 
-  // Get current week's start and end date
-  const today = new Date();
-  const dayOfWeek = today.getDay(); // Sunday = 0, Saturday = 6
+      if(this.filterOptions && this.filterOptions.length > 0){
+        this.selectedEmployeeId = params?.employee_ids
+        const page = params?.page ?? this.page;
+        const pageSize = params?.pageSize ?? this.tableSize;
+        const searchTerm = params?.searchTerm ?? this.term;
+        const employeeIds = params?.employee_ids ?? this.selectedEmployeeId;
 
-  const startOfWeek = new Date(today);
-  startOfWeek.setDate(today.getDate() - dayOfWeek);
+        // Get current week's start and end date
+        const today = new Date();
+        const dayOfWeek = today.getDay(); // Sunday = 0, Saturday = 6
 
-  const endOfWeek = new Date(today);
-  endOfWeek.setDate(today.getDate() + (6 - dayOfWeek));
+        const startOfWeek = new Date(today);
+        startOfWeek.setDate(today.getDate() - dayOfWeek);
 
-  // Save the week range in 'time'
-  this.time.start_date = startOfWeek.toISOString();
-  this.time.end_date = endOfWeek.toISOString();
-  this.selectedDate = this.fromDate ? { start_date: this.fromDate } : this.time;
-  // Build query params
-  let query = buildPaginationQuery({ page, pageSize, searchTerm });
-  if (employeeIds) query += `&employee-ids=[${employeeIds}]`;
-  if (this.user_role_name !== 'Admin') query += `&employee-id=${this.user_id}`;
+        const endOfWeek = new Date(today);
+        endOfWeek.setDate(today.getDate() + (6 - dayOfWeek));
 
-    if(params?.fromdate){
-      const date = this.datePipe.transform(params.fromdate['start_date'], 'yyyy-MM-dd');
-      query += `&from-date=${date}`;
-    }else{
-      const date = this.datePipe.transform(this.time.start_date, 'yyyy-MM-dd');
-      query += `&from-date=${date}`;
-    }
+        // Save the week range in 'time'
+        this.time.start_date = startOfWeek.toISOString();
+        this.time.end_date = endOfWeek.toISOString();
 
-  // API call
-  this.api.getData(`${environment.live_url}/${environment.timesheet_summary}/${query}`).subscribe((res: any) => {
-    const employees = res?.results;
+        // Build query params
+        let query = buildPaginationQuery({ page, pageSize, searchTerm });
 
-    const formattedData = employees?.map((employee: any, index: number) => {
-      const row: any = {
-        sl: (page - 1) * pageSize + index + 1,
-        employee_name: employee?.employee_name,
-        employee_worked_hours: employee?.employee_worked_hours,
-        short_fall: employee?.short_fall,
-        keyId: employee?.employee_id
-      };
-      employee?.timesheet_data?.forEach((entry: any) => {
-        row[entry.day] = entry?.total_time;
-      });
-      return row;
-    });
-    const filterOptions = this.getFilterData();
+        const employeeIdsList = employeeIds ?? this.selectedEmployeeId;
 
-    this.tableConfig = {
-      columns:  tableColumns?.map(col => {
-        if (col.filterable && col.key === 'employee_name') {
-          return { ...col, filterOptions };
+        if (employeeIdsList && employeeIdsList.length > 0) {
+          query += `&employee-ids=[${employeeIdsList}]`;
         }
-        return col;
-      }),
-      data: formattedData,
-      searchTerm: this.term,
-      actions: [],
-      accessConfig: [],
-      tableSize: pageSize,
-      pagination: true,
-      searchable: true,
-      currentPage: page,
-      totalRecords: res.total_no_of_record,
-      dateRangeFilter: true,
-      navigation: true,
-    };
-  });
+        if (this.user_role_name !== 'Admin') {
+          query += `&employee-id=${this.user_id}`;
+        }
 
-}
+      const startDate = params?.fromdate?.start_date ?? this.time.start_date;
+      const formattedStartDate = this.datePipe.transform(startDate, 'yyyy-MM-dd');
+      query += `&from-date=${formattedStartDate}`;
+
+      await this.api.getData(`${environment.live_url}/${environment.timesheet_summary}/${query}`)
+        .subscribe(async (res: any) => {
+         if(res){
+           const employees = res?.results;
+
+           const formattedData = employees?.map((employee: any, index: number) => {
+             const row: any = {
+               sl: (page - 1) * pageSize + index + 1,
+               employee_name: employee?.employee_name,
+               employee_worked_hours: employee?.employee_worked_hours,
+               short_fall: employee?.short_fall,
+               keyId: employee?.employee_id
+             };
+             employee?.timesheet_data?.forEach((entry: any) => {
+               row[entry.day] = entry?.total_time;
+             });
+             return row;
+           });
+               this.tableConfig = {
+                 columns:  tableColumns?.map(col => {
+                   if (col.filterable && col.key === 'employee_name') {
+                     return { ...col, filterOptions: this.filterOptions };
+                   }
+                   return col;
+                 }),
+                 data: formattedData,
+                 searchTerm: this.term,
+                 actions: [],
+                 accessConfig: [],
+                 tableSize: pageSize,
+                 pagination: true,
+                 searchable: true,
+                 currentPage: page,
+                 totalRecords: res.total_no_of_record,
+                 dateRangeFilter: true,
+                 navigation: true,
+                 showDownload:true
+               };
+             }
+         });
+       }
+
+      }
+    });
+  }
 
 
   onSearch(term: string): void {
     this.term = term;
-
-    this.getTableData({ page: 1, pageSize: this.tableSize, searchTerm: term });
+    this.getTableData({ page: 1, pageSize: this.tableSize, searchTerm: term, employee_ids:this.selectedEmployeeId, fromdate: this.fromDate });
   }
   getCurrentWeekDates() {
     this.selectedDate = this.fromDate || JSON.stringify(this.time);
