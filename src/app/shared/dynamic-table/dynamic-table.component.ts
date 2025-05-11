@@ -86,10 +86,7 @@ selectedFile:(File | null)[] = [];
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['config'] && this.config?.data?.length) {
-      this.initializeTable();
-    }
-
+    this.initializeTable();
     this.paginationConfig = {
       totalItems: this.config.totalRecords ?? 0,
       currentPage: this.config.currentPage ?? 1,
@@ -97,7 +94,12 @@ selectedFile:(File | null)[] = [];
     };
   }
   private initializeTable(): void {
-    this.filteredData = [...this.config.data];
+    if(this.config.data && this.config.data.length > 0){
+     this.filteredData = this.config.data;
+    }else{
+      this.filteredData = [];
+    }
+    console.log('Filtered Data:', this.config.data);
     this.config.columns.forEach(col => {
       this.arrowState[col.key] = false;
       //this.columnFilters[col.key] = col.filterType === 'multi-select' ? [] : '';
@@ -162,8 +164,6 @@ selectedFile:(File | null)[] = [];
 
         const matchColumns = Object.keys(this.columnFilters)?.every(key => {
           const filterVal = this.columnFilters[key];
-          // this.selectedValue = filterVal;
-          // this.selectedKey = key;
           const cellVal = row[key];
 
           if (!filterVal || (Array.isArray(filterVal) && filterVal.length === 0)) {
@@ -181,12 +181,6 @@ selectedFile:(File | null)[] = [];
 
         return matchSearch && matchColumns;
       });
-
-      // // Only emit if not already emitting
-      // if (!this.filterEmitInProgress) {
-      //   this.onFilterChange(this.selectedValue, this.selectedKey);
-      // }
-
       this.updatePagination();
     }
   weekDatePicker(event: any) {
@@ -215,7 +209,7 @@ selectedFile:(File | null)[] = [];
   private updatePagination(): void {
     // Determine the page size, defaulting to 50 if config.tableSize is not a positive number.
     const pageSize = (this.config?.tableSize && this.config.tableSize > 0) ? this.config.tableSize : 50;
-    
+
     const start = (this.currentPage - 1) * pageSize;
     // Ensure filteredData is an array.
     const dataToPaginate = Array.isArray(this.filteredData) ? this.filteredData : [];
@@ -274,18 +268,40 @@ onTableSizeChange(event: any): void {
 
 setDateFilterColumn(columnKey: string): void {
   this.activeDateColumn = columnKey;
-  this.dateFilterValue = this.columnFilters[columnKey] || '';
+  // Initialize dateFilterValue with the current filter for this column, if any.
+  // Use null for the datepicker model if no value is set.
+  this.dateFilterValue = this.columnFilters[columnKey] ? new Date(this.columnFilters[columnKey]) : null;
 }
 
 // On date selection from calendar
 onDateSelected(event: any): void {
-  const selectedDate = event.value;
+  const selectedValue = event.value; // This is a Date object or null
 
-  if (selectedDate && this.activeDateColumn) {
-    const formatted = this.datePipe.transform(selectedDate, 'yyyy-MM-dd');
-    this.columnFilters[this.activeDateColumn] = formatted;
-    this.applyFilters();
+  if (this.activeDateColumn) {
+    const formattedDate = selectedValue ? this.datePipe.transform(selectedValue, 'yyyy-MM-dd') : null;
+
+    this.columnFilters[this.activeDateColumn] = formattedDate;
+    // Keep dateFilterValue (the ngModel for the picker) in sync.
+    // It should already be `selectedValue` due to two-way binding, but explicit set is fine.
+    this.dateFilterValue = selectedValue;
+
+    this.actionEvent.emit({ actionType:'dateFilter' , detail:formattedDate, key:this.activeDateColumn });
+    // Parent component is expected to handle the data refresh.
   }
+}
+
+clearDateFilter(columnKey: string): void {
+  this.columnFilters[columnKey] = null; // Clear the stored filter for this specific column
+  this.actionEvent.emit({ actionType:'dateFilter' , detail: null, key:columnKey });
+
+  // If the column being cleared is the one currently active in the datepicker, reset dateFilterValue
+  if (this.activeDateColumn === columnKey) {
+    this.dateFilterValue = null;
+    // Optionally, you might want to set this.activeDateColumn = null if no date column should be considered active.
+    // However, the UI now shows calendar/clear per column based on columnFilters[col.key],
+    // so activeDateColumn is mainly for which column the #picker is currently controlling.
+  }
+  // Parent component is expected to handle the data refresh.
 }
 
 navigateToEmployee(event){
@@ -393,7 +409,7 @@ get averageProductivity(): number {
   const actual = this.actualTotal;
   return estimated > 0 ? (actual / estimated) * 100 : 0;
 }
-clearDate(){}
+
 onDateRangeChange(event,endDate) {
   if(endDate){
   let startDate = this.datePipe.transform(event,'yyyy-MM-dd')

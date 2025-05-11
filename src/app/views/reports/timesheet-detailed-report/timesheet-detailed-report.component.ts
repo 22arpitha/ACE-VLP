@@ -16,7 +16,7 @@ export class TimesheetDetailedReportComponent implements OnInit {
   term: string = '';
   tableSize: number = 50;
   page: any = 1;
-  tableSizes = [50,100,200];
+  tableSizes = [50,75,100,150,200];
   tableConfig:any = {
     columns: [],
     data: [],
@@ -39,6 +39,7 @@ export class TimesheetDetailedReportComponent implements OnInit {
   selectedJobIds: any = [];
   selectedTaskIds: any = [];
   selectedEmployeeIds: any = [];
+  selectedDate: any;
   constructor(
     private common_service:CommonServiceService,
     private api:ApiserviceService
@@ -108,7 +109,10 @@ handleAction(event: { actionType: string; detail: any,key:string }) {
       case 'filter':
       this.onApplyFilter(event.detail,event.key);
       break;
-
+      case 'dateFilter':
+        console.log(event.detail, event.key);
+      this.onApplyDateFilter(event.detail,event.key);
+      break;
     default:
       this.getTableData({
         page: 1,
@@ -117,7 +121,8 @@ handleAction(event: { actionType: string; detail: any,key:string }) {
         client_ids: this.selectedClientIds,
         job_ids: this.selectedJobIds,
         task_ids: this.selectedTaskIds,
-        employee_ids: this.selectedEmployeeIds
+        employee_ids: this.selectedEmployeeIds,
+        timesheet_dates: this.selectedDate
       });
   }
 }
@@ -144,7 +149,25 @@ onApplyFilter(filteredData: any[], filteredKey: string): void {
     client_ids: this.selectedClientIds,
     job_ids: this.selectedJobIds,
     task_ids: this.selectedTaskIds,
-    employee_ids: this.selectedEmployeeIds
+    employee_ids: this.selectedEmployeeIds,
+    timesheet_dates: this.selectedDate
+  });
+}
+onApplyDateFilter(filteredDate:string, filteredKey: string): void {
+  console.log(filteredDate, filteredKey);
+
+  if (filteredKey === 'date') {
+    this.selectedDate = filteredDate;
+  }
+  this.getTableData({
+    page: 1,
+    pageSize: this.tableSize,
+    searchTerm: this.term,
+    client_ids: this.selectedClientIds,
+    job_ids: this.selectedJobIds,
+    task_ids: this.selectedTaskIds,
+    employee_ids: this.selectedEmployeeIds,
+    timesheet_dates: this.selectedDate
   });
 }
 
@@ -169,6 +192,8 @@ exportCsvOrPdf(fileType) {
         query += `&timesheet-employee-ids=[${this.selectedEmployeeIds.join(',')}]`;
       }if(this.term){
         query += `&search=${this.term}`
+      }if(this.selectedDate){
+        query += `&timesheet-dates=[${this.selectedDate}]`
       }
   const url = `${environment.live_url}/${environment.timesheet_reports}/${query}&file-type=${fileType}&timsheet-type=detailed`;
   downloadFileFromUrl({
@@ -179,7 +204,7 @@ exportCsvOrPdf(fileType) {
 }
 
 // Fetch table data from API with given params
-async getTableData(params?: { page?: number; pageSize?: number; searchTerm?: string;client_ids?:any;job_ids?:any;task_ids?:any;employee_ids?:any }) {
+async getTableData(params?: { page?: number; pageSize?: number; searchTerm?: string;client_ids?:any;job_ids?:any;task_ids?:any;employee_ids?:any,timesheet_dates?:any }) {
 
   await this.api.getData(`${environment.live_url}/${environment.timesheet}/`).subscribe(async (res: any) => {
   if(res){
@@ -209,6 +234,9 @@ async getTableData(params?: { page?: number; pageSize?: number; searchTerm?: str
       }
       if (params?.employee_ids?.length) {
         query += `&timesheet-employee-ids=[${params.employee_ids.join(',')}]`;
+      }
+      if(params?.timesheet_dates){
+        query += `&timesheet-dates=[${params.timesheet_dates}]`
       }
       await this.api.getData(`${environment.live_url}/${environment.timesheet}/${query}`).subscribe((res: any) => {
      if(res){
@@ -264,7 +292,12 @@ async getTableData(params?: { page?: number; pageSize?: number; searchTerm?: str
     this.getTableData({
       page: 1,
       pageSize: this.tableSize,
-      searchTerm: term
+      searchTerm: term,
+      client_ids: this.selectedClientIds,
+      job_ids: this.selectedJobIds,
+      task_ids: this.selectedTaskIds,
+      employee_ids: this.selectedEmployeeIds,
+      timesheet_dates: this.selectedDate
     });
   }
 

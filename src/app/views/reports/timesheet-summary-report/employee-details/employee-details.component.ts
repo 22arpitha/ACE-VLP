@@ -3,9 +3,9 @@ import { CommonServiceService } from '../../../../service/common-service.service
 import { getTableColumns } from './employee-config';
 import { buildPaginationQuery } from '../../../../shared/pagination.util';
 import { environment } from '../../../../../environments/environment';
-import { getUniqueValues } from 'src/app/shared/unique-values.utils';
-import { downloadFileFromUrl } from 'src/app/shared/file-download.util';
-import { ApiserviceService } from 'src/app/service/apiservice.service';
+import { getUniqueValues } from '../../../../shared/unique-values.utils';
+import { downloadFileFromUrl } from '../../../../shared/file-download.util';
+import { ApiserviceService } from '../../../../service/apiservice.service';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { DatePipe } from '@angular/common';
 

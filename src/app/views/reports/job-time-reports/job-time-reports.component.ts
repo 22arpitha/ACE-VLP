@@ -4,7 +4,7 @@ import { CommonServiceService } from '../../../service/common-service.service';
 import { ApiserviceService } from '../../../service/apiservice.service';
 import { downloadFileFromUrl } from '../../../shared/file-download.util';
 import { buildPaginationQuery } from '../../../shared/pagination.util';
-import { getUniqueValues } from '../../../shared/unique-values.utils';
+import { getUniqueValues, getUniqueValues3 } from '../../../shared/unique-values.utils';
 import { environment } from '../../../../environments/environment';
 import { JobTimeSheetDetailsPopupComponent } from '../common/job-time-sheet-details-popup/job-time-sheet-details-popup.component';
 import { MatDialog } from '@angular/material/dialog';
@@ -17,16 +17,16 @@ import { MatDialog } from '@angular/material/dialog';
 export class JobTimeReportsComponent implements OnInit {
   BreadCrumbsTitle: any = 'Job Time Report';
 term: string = '';
-tableSize: number = 5;
+tableSize: number = 50;
    page: any = 1;
-   tableSizes = [5,10,25,50,100];
+   tableSizes = [50,75,100,150,200];
    tableConfig:any = {
      columns: [],
      data: [],
      searchTerm: '',
      actions: [],
      accessConfig: [],
-     tableSize: 5,
+     tableSize: 50,
      pagination: true,
      headerTabs:true,
      showIncludeAllJobs:true,
@@ -44,6 +44,13 @@ tableSize: number = 5;
    client_id:any;
    isIncludeAllJobEnable:boolean=true;
    isIncludeAllJobValue:boolean=false;
+  jobFilterList: any = [];
+  clientName: { id: any; name: string; }[];
+  jobName: { id: any; name: string; }[];
+  statusName: { id: any; name: string; }[];
+  selectedClientIds: any = [];
+  selectedJobIds: any = [] ;
+  selectedStatusIds: any = [];
  constructor(
      private common_service:CommonServiceService,
      private api:ApiserviceService,
@@ -103,14 +110,17 @@ tableSize: number = 5;
      this.getTableData({
        page: this.page,
        pageSize: this.tableSize,
-       searchTerm: this.term
+       searchTerm: this.term,
+       client_ids: this.selectedClientIds,
+       job_ids: this.selectedJobIds,
+       job_status: this.selectedStatusIds,
      });
    }
 
  }
 
  // Called from <app-dynamic-table> via @Output actionEvent
- handleAction(event: { actionType: string; detail: any, }) {
+ handleAction(event: { actionType: string; detail: any,key:any}) {
    switch (event.actionType) {
       case 'navigate':
         this.viewtimesheetDetails(event['row']);
@@ -137,9 +147,15 @@ tableSize: number = 5;
         this.getTableData({
           page: this.page,
           pageSize: this.tableSize,
-          searchTerm: this.term
+          searchTerm: this.term,
+          client_ids: this.selectedClientIds,
+          job_ids: this.selectedJobIds,
+          job_status: this.selectedStatusIds,
         });
        break;
+       case 'filter':
+        this.onApplyFilter(event.detail,event.key);
+        break;
        case 'includeAllJobs':
         this.isIncludeAllJobValue= event['action'];
         this.client_id = event['action'] && event['client_id'] ? event['client_id'] : null;
@@ -148,7 +164,10 @@ tableSize: number = 5;
         this.getTableData({
           page: this.page,
           pageSize: this.tableSize,
-          searchTerm: this.term
+          searchTerm: this.term,
+          client_ids: this.selectedClientIds,
+          job_ids: this.selectedJobIds,
+          job_status: this.selectedStatusIds,
         });
       break;
       case 'sendEmail':
@@ -159,17 +178,50 @@ tableSize: number = 5;
       this.getTableData({
         page: 1,
         pageSize: this.tableSize,
-        searchTerm: this.term
+        searchTerm: this.term,
+        client_ids: this.selectedClientIds,
+        job_ids: this.selectedJobIds,
+        job_status: this.selectedStatusIds,
       });
    }
  }
+onApplyFilter(filteredData: any[], filteredKey: string): void {
 
+  if (filteredKey === 'client-ids') {
+    this.selectedClientIds = filteredData;
+  }
+  if (filteredKey === 'job-ids') {
+    this.selectedJobIds = filteredData;
+  }
+  if (filteredKey === 'job-status-ids') {
+    this.selectedStatusIds = filteredData;
+  }
+
+
+  this.getTableData({
+    page: 1,
+    pageSize: this.tableSize,
+    searchTerm: this.term,
+    client_ids: this.selectedClientIds,
+    job_ids: this.selectedJobIds,
+    job_status: this.selectedStatusIds,
+  });
+}
  exportCsvOrPdf(fileType) {
    let query = buildPaginationQuery({
      page: this.page,
      pageSize: this.tableSize,
    });
    query += this.client_id ? `&client=${this.client_id}` : '';
+      if (this.selectedClientIds?.length) {
+        query += `&client-ids=[${this.selectedClientIds.join(',')}]`;
+      }
+      if (this.selectedJobIds?.length) {
+        query += `&job-ids=[${this.selectedJobIds.join(',')}]`;
+      }
+      if (this.selectedStatusIds?.length) {
+        query += `&job-status-ids=[${this.selectedStatusIds.join(',')}]`;
+      }
    const url = `${environment.live_url}/${environment.job_reports}/${query}&job-status=[${this.statusList}]&type=job-time-report&file-type=${fileType}`;
    downloadFileFromUrl({
      url,
@@ -179,29 +231,72 @@ tableSize: number = 5;
  }
 
  // Fetch table data from API with given params
- getTableData(params?: { page?: number; pageSize?: number; searchTerm?: string }) {
+ getTableData(params?: { page?: number; pageSize?: number; searchTerm?: string;client_ids?: any[]; job_ids?: any[]; job_status?: any[]; }) {
   let finalQuery;
+  let filterQuery = '';
+
    const page = params?.page ?? this.page;
    const pageSize = params?.pageSize ?? this.tableSize;
    const searchTerm = params?.searchTerm ?? this.term;
    const query = buildPaginationQuery({ page, pageSize, searchTerm });
    this.jobStatusList(this.tabStatus);
-   finalQuery = query + `&job-status=[${this.statusList}]`;
-   finalQuery += (this.userRole ==='Admin' || (this.userRole !='Admin' && this.client_id)) ? '':`&employee-id=${this.user_id}`;
-   finalQuery += this.client_id ? `&client=${this.client_id}` : '';
-   this.api.getData(`${environment.live_url}/${environment.jobs}/${finalQuery}`).subscribe((res: any) => {
-    if(res.results && res.results?.length>=1){
+
+   filterQuery = `?job-status=[${this.statusList}]`;
+   filterQuery += (this.userRole ==='Admin' || (this.userRole !='Admin' && this.client_id)) ? '':`&employee-id=${this.user_id}`;
+   filterQuery += this.client_id ? `&client=${this.client_id}` : '';
+
+   this.api.getData(`${environment.live_url}/${environment.jobs}/${filterQuery}`).subscribe((response: any) => {
+    if(response){
+
+    this.jobFilterList = response;
+
+    this.clientName = getUniqueValues3(this.jobFilterList, 'client_name', 'client')
+    this.jobName = getUniqueValues3(this.jobFilterList, 'job_name', 'id')
+    this.statusName = getUniqueValues3(this.jobFilterList, 'job_status_name', 'job_status')
+
+    console.log('statusName',this.statusName);
+
+    finalQuery = query + `&job-status=[${this.statusList}]`;
+    finalQuery += (this.userRole ==='Admin' || (this.userRole !='Admin' && this.client_id)) ? '':`&employee-id=${this.user_id}`;
+    finalQuery += this.client_id ? `&client=${this.client_id}` : '';
+      if (params?.client_ids?.length) {
+        finalQuery += `&client-ids=[${params.client_ids.join(',')}]`;
+      }
+      if (params?.job_ids?.length) {
+        finalQuery += `&job-ids=[${params.job_ids.join(',')}]`;
+      }
+      if (params?.job_status?.length) {
+        finalQuery += `&job-status-ids=[${params.job_status.join(',')}]`;
+      }
+    this.api.getData(`${environment.live_url}/${environment.jobs}/${finalQuery}`).subscribe((res: any) => {
+
+      if(res.results && res.results?.length>=1){
       const formattedData = res.results.map((item: any, i: number) => ({
         sl: (page - 1) * pageSize + i + 1,
         ...item,
         is_primary:item?.employees?.find((emp: any) => emp?.is_primary === true)?.employee_name || '',
       }));
-      console.log('B this.tableConfig',this.tableConfig);
-      this.tableConfig = {
-        columns: tableColumns.map(col => ({
-          ...col,
-          filterOptions: col.filterable ? getUniqueValues(formattedData, col.key) : tableColumns
-        })),
+
+        this.tableConfig = {
+            columns: tableColumns?.map(col => {
+               let filterOptions:any = [];
+
+               if (col.filterable) {
+                 if (col.key === 'client_name') {
+                   filterOptions = this.clientName;
+                 }else if (col.key === 'job_name') {
+                   filterOptions = this.jobName;
+                 }else if (col.key === 'job_status_name') {
+                   filterOptions = this.statusName;
+                 }
+               }
+
+               return {
+                 ...col,
+                 filterOptions
+               };
+             }),
+
        data: formattedData,
        searchTerm: this.term,
        actions: [],
@@ -220,9 +315,11 @@ tableSize: number = 5;
        showDownload:true,
       };
     }
-    
+
    },(error:any)=>{  this.api.showError(error?.error?.detail);
    });
+  }
+  })
  }
 
    onSearch(term: string): void {
@@ -230,7 +327,10 @@ tableSize: number = 5;
      this.getTableData({
        page: 1,
        pageSize: this.tableSize,
-       searchTerm: term
+       searchTerm: term,
+       client_ids: this.selectedClientIds,
+       job_ids: this.selectedJobIds,
+       job_status: this.selectedStatusIds,
      });
    }
 

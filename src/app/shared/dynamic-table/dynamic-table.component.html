@@ -100,22 +100,38 @@
             <ng-container *ngIf="col.filterable">
               <ng-container [ngSwitch]="col.filterType">
                 <ng-container *ngSwitchCase="'date'">
+                  <!-- Show calendar icon to set/change date if no filter is set for this column -->
                   <button
                     mat-icon-button
+                    *ngIf="!columnFilters[col.key]"
                     (click)="setDateFilterColumn(col.key); picker.open()"
                     class="ms-1 btn-menu-trigger"
+                    [attr.aria-label]="'Set date filter for ' + col.label"
                   >
                     <i class="bi bi-calendar"></i>
                   </button>
-                  <mat-form-field class="opacity-0 position-absolute">
-                    <mat-label>Choose a date</mat-label>
+                  <!-- Show clear icon if a filter is set for this column -->
+                  <button
+                    mat-icon-button
+                    *ngIf="columnFilters[col.key]"
+                    (click)="clearDateFilter(col.key)"
+                    class="ms-1 btn-menu-trigger"
+                    [attr.aria-label]="'Clear date filter for ' + col.label"
+                  >
+                    <i class="bi bi-x-circle"></i>
+                  </button>
+
+                  <!-- Hidden Datepicker Input: Always in DOM, visually hidden by CSS. picker.open() targets this. -->
+                  <!-- Removed *ngIf from mat-form-field. Added more robust hiding style for clarity. -->
+                  <mat-form-field class="opacity-0 position-absolute" >
+                    <mat-label>Choose a date for {{col.label}}</mat-label> <!-- Label for accessibility -->
                     <input
                       matInput
                       [matDatepicker]="picker"
                       [(ngModel)]="dateFilterValue"
                       (dateChange)="onDateSelected($event)"
+                      [attr.aria-label]="'Date input for ' + col.label"
                     />
-                    <mat-hint>MM/DD/YYYY</mat-hint>
                     <mat-datepicker #picker></mat-datepicker>
                   </mat-form-field>
                 </ng-container>
