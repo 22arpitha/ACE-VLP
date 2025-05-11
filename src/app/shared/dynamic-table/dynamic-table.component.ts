@@ -59,13 +59,16 @@ selectedFile:(File | null)[] = [];
   selectedValue: any;
   selectedKey: string;
   selectedDate: any;
+
+  private lastEmittedFilters: { [key: string]: string } = {}; // To store JSON string of last emitted filter value per key
+
   constructor(
     private fb:FormBuilder,
     private datePipe: DatePipe,
     private api:ApiserviceService,
     private ngbConfig: NgbDropdownConfig
   ) {
-		this.ngbConfig.autoClose = false;
+		this.ngbConfig.autoClose = 'outside'; // Changed from false to 'outside'
     this.user_id = sessionStorage.getItem('user_id');
     this.userRole = sessionStorage.getItem('user_role_name');
   }
@@ -73,6 +76,10 @@ selectedFile:(File | null)[] = [];
 
    }
 
+  // Add this trackBy function
+  trackByColumnKey(index: number, col: any): string {
+    return col.key; // Or any unique identifier for the column
+  }
 
    get rows(): FormArray {
     return this.tableFormGroup?.get('rows') as FormArray;
@@ -117,13 +124,29 @@ selectedFile:(File | null)[] = [];
     this.applyFilters();
   }
 
-  async onFilterChange(selectedValue: any,columnKey) {
-    console.log(columnKey.paramskeyId)
-    if (selectedValue) {
-      this.actionEvent.emit({ actionType: 'filter', detail:selectedValue , key:columnKey.paramskeyId  });
-      await this.updatePagination();
-    }
+  // Removed async, added guard based on lastEmittedFilters
+  onFilterChange(selectedValue: any, columnConfig: any) {
+    const filterKey = columnConfig.key; // The key used for columnFilters
+    const backendParamKey = columnConfig.paramskeyId || filterKey; // The key to be sent to backend
 
+    // console.log(`onFilterChange candidate for ${filterKey}. Selected:`, selectedValue);
+
+    const currentFilterValueStr = JSON.stringify(selectedValue);
+    const lastEmittedValueStr = this.lastEmittedFilters[filterKey];
+
+    // Only emit if the filter value has actually changed since the last emission for this key
+    if (currentFilterValueStr !== lastEmittedValueStr) {
+      this.lastEmittedFilters[filterKey] = currentFilterValueStr;
+
+      // console.log(`Emitting filter change for ${filterKey} (backend key: ${backendParamKey}). Value:`, selectedValue);
+      this.actionEvent.emit({
+        actionType: 'filter',
+        detail: selectedValue,
+        key: backendParamKey
+      });
+    } else {
+      // console.log(`Filter value for ${filterKey} (backend key: ${backendParamKey}) has not changed since last emit. Emission skipped.`);
+    }
   }
 
     applyFilters(): void {
@@ -190,8 +213,13 @@ selectedFile:(File | null)[] = [];
   }
 
   private updatePagination(): void {
-    const start = (this.currentPage - 1) * (this.config.tableSize || 10);
-    this.paginatedData = this.filteredData.slice(start, start + (this.config.tableSize || 10));
+    // Determine the page size, defaulting to 50 if config.tableSize is not a positive number.
+    const pageSize = (this.config?.tableSize && this.config.tableSize > 0) ? this.config.tableSize : 50;
+    
+    const start = (this.currentPage - 1) * pageSize;
+    // Ensure filteredData is an array.
+    const dataToPaginate = Array.isArray(this.filteredData) ? this.filteredData : [];
+    this.paginatedData = dataToPaginate.slice(start, start + pageSize);
   }
 
   onColumnFilterChange(columnKey: string, value: any): void {
@@ -221,16 +249,17 @@ selectedFile:(File | null)[] = [];
 //     .map((option: any) => typeof option === 'string' ? { id: null, name: option } : option);
 // }
   getFilteredOptions(colKey: string): { id: any; name: string }[] {
-    const options = this.config.columns.find(c => c.key === colKey)?.filterOptions || [];
+    const column = this.config.columns.find(c => c.key === colKey);
+    const options = column?.filterOptions || [];
     const search = this.filterSearchText[colKey]?.toLowerCase() || '';
 
     const filtered = options
-      .filter((option: any) =>
-        typeof option === 'string' ||
-        (typeof option === 'object' && option.name?.toLowerCase().includes(search))
-      )
+      .filter((option: any) => {
+        const optionName = typeof option === 'string' ? option : option?.name;
+        return optionName?.toLowerCase().includes(search);
+      })
       .map((option: any) =>
-        typeof option === 'string' ? { id: null, name: option } : option
+        typeof option === 'string' ? { id: option, name: option } : option
       );
     return filtered;
   }

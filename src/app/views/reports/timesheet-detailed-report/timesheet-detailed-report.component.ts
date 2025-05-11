@@ -61,7 +61,11 @@ onTableDataChange(event: any) {
   this.getTableData({
     page: page,
     pageSize: this.tableSize,
-    searchTerm: this.term
+    searchTerm: this.term,
+    client_ids: this.selectedClientIds,
+    job_ids: this.selectedJobIds,
+    task_ids: this.selectedTaskIds,
+    employee_ids: this.selectedEmployeeIds
   });
 }
 // Called when user changes page size from the dynamic table
@@ -73,7 +77,11 @@ onTableSizeChange(event: any): void {
     this.getTableData({
       page: this.page,
       pageSize: this.tableSize,
-      searchTerm: this.term
+      searchTerm: this.term,
+      client_ids: this.selectedClientIds,
+      job_ids: this.selectedJobIds,
+      task_ids: this.selectedTaskIds,
+      employee_ids: this.selectedEmployeeIds
     });
   }
 
@@ -105,7 +113,11 @@ handleAction(event: { actionType: string; detail: any,key:string }) {
       this.getTableData({
         page: 1,
         pageSize: this.tableSize,
-        searchTerm: this.term
+        searchTerm: this.term,
+        client_ids: this.selectedClientIds,
+        job_ids: this.selectedJobIds,
+        task_ids: this.selectedTaskIds,
+        employee_ids: this.selectedEmployeeIds
       });
   }
 }
@@ -137,13 +149,27 @@ onApplyFilter(filteredData: any[], filteredKey: string): void {
 }
 
 exportCsvOrPdf(fileType) {
-  let query = buildPaginationQuery({
-    page: this.page,
-    pageSize: this.tableSize,
-  });
+  // let query = buildPaginationQuery({
+  //   page: this.page,
+  //   pageSize: this.tableSize
+  // });
+  let query = `?page=1`;
   if(this.user_role_name !== 'Admin'){
     query +=`&timesheet-employee=${this.user_id}`
-    }
+    }if (this.selectedClientIds.length) {
+        query += `&client-ids=[${this.selectedClientIds.join(',')}]`;
+      }
+      if (this.selectedJobIds.length) {
+        query += `&job-ids=[${this.selectedJobIds.join(',')}]`;
+      }
+      if ( this.selectedTaskIds.length) {
+        query += `&timesheet-task-ids=[${this.selectedTaskIds.join(',')}]`;
+      }
+      if (this.selectedEmployeeIds.length) {
+        query += `&timesheet-employee-ids=[${this.selectedEmployeeIds.join(',')}]`;
+      }if(this.term){
+        query += `&search=${this.term}`
+      }
   const url = `${environment.live_url}/${environment.timesheet_reports}/${query}&file-type=${fileType}&timsheet-type=detailed`;
   downloadFileFromUrl({
     url,

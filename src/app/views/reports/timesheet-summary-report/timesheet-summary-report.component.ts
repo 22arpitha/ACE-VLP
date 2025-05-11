@@ -19,16 +19,16 @@ import { DatePipe } from '@angular/common';
 export class TimesheetSummaryReportComponent implements OnInit {
   BreadCrumbsTitle: string = 'Timesheet Summary Report';
   term: string = '';
-  tableSize: number = 5;
+  tableSize: number = 50;
   page: number = 1;
-  tableSizes = [5, 10, 25, 50, 100];
+  tableSizes = [50, 100,150,200];
   tableConfig: any = {
     columns: [],
     data: [],
     searchTerm: '',
     actions: [],
     accessConfig: [],
-    tableSize: 5,
+    tableSize: 50,
     pagination: true,
     navigation:true
   };

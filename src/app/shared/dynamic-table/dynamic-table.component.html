@@ -1,5 +1,4 @@
-
-  <section class="settings-table-bg px-3">
+<section class="settings-table-bg px-3">
     <div class="row mx-0 my-3 px-0 align-items-center">
       <!-- Search Field -->
       <div class="col-12 mt-2 col-sm-12 col-md-4 col-lg-3 search-div px-0 position-relative" *ngIf="config.searchable">
@@ -26,7 +25,7 @@
             <input matEndDate placeholder="End date" />
           </mat-date-range-input>
           <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
-          <mat-date-range-picker #picker></mat-date-range-picker>
+          <mat-date-range-picker #picker></mat-datepicker-toggle>
         </mat-form-field>
       </div> -->
       <div class="col-12 mt-2 col-sm-12 col-md-4 col-lg-3" *ngIf="config.dateRangeFilter">
@@ -90,7 +89,7 @@
     <table class="table table-hover table-list">
       <thead>
         <tr>
-          <th *ngFor="let col of config.columns" style="cursor: pointer;">
+          <th *ngFor="let col of config.columns; trackBy: trackByColumnKey" style="cursor: pointer;">
             {{ col.label }}
 
             <!-- Sort Icons -->
@@ -124,7 +123,7 @@
                 <ng-container *ngSwitchCase="'multi-select'">
                   <div ngbDropdown class="d-inline-block" container="body">
                     <button id="dropdownBasic1" mat-icon-button style="outline: none;background: transparent;border:0" ngbDropdownToggle><i class="bi bi-toggles" style="color:white"></i></button>
-                    <div ngbDropdownMenu aria-labelledby="dropdownBasic1" class="p-2">
+                    <div ngbDropdownMenu aria-labelledby="dropdownBasic1" class="p-2" (click)="$event.stopPropagation()">
                       <ng-container *ngIf="col.key as columnKey" >
                         <div class="position-relative mb-2" >
                           <i
@@ -156,7 +155,7 @@
                             {{ option.name }}
                           </mat-list-option>
                         </mat-selection-list>
-                       
+
                       </ng-container>
                     </div>
                   </div>
