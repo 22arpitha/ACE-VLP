@@ -166,7 +166,7 @@ export class TimesheetSummaryReportComponent implements OnInit {
         const page = params?.page ?? this.page;
         const pageSize = params?.pageSize ?? this.tableSize;
         const searchTerm = params?.searchTerm ?? this.term;
-        const employeeIds = params?.employee_ids ?? this.selectedEmployeeId;
+       // const employeeIds = params?.employee_ids ?? this.selectedEmployeeId;
 
         // Get current week's start and end date
         const today = new Date();
@@ -199,20 +199,17 @@ export class TimesheetSummaryReportComponent implements OnInit {
 
                 // Only add the parameter if the set is not empty after processing
                 if (idsForQuery.size > 0) {
-                  if (this.user_id != null) {
-                    idsForQuery.add(String(this.user_id));
-                }
                     query += `&employee-ids=[${Array.from(idsForQuery).join(',')}]`;
                 }else{
                   // If no filters are selected, use the logged-in user's ID
                   if (this.user_id != null) {
-                    query += `&employee-id=${this.user_id}`;
+                    query += `&employee-id=${this.user_id}&timesheet-report-type=detailed`;
                   }
                 }
             } else {
                 // If no filters are selected by a non-admin, query by their own ID using employee-id
                 if (this.user_id != null) {
-                    query += `&employee-id=${this.user_id}`;
+                    query += `&employee-id=${this.user_id}&timesheet-report-type=detailed`;
                 }
             }
         } else {
