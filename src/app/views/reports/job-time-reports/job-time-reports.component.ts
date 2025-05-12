@@ -51,6 +51,7 @@ tableSize: number = 50;
   selectedClientIds: any = [];
   selectedJobIds: any = [] ;
   selectedStatusIds: any = [];
+  formattedData: any = [];
  constructor(
      private common_service:CommonServiceService,
      private api:ApiserviceService,
@@ -231,10 +232,10 @@ onApplyFilter(filteredData: any[], filteredKey: string): void {
  }
 
  // Fetch table data from API with given params
- getTableData(params?: { page?: number; pageSize?: number; searchTerm?: string;client_ids?: any[]; job_ids?: any[]; job_status?: any[]; }) {
+ async getTableData(params?: { page?: number; pageSize?: number; searchTerm?: string;client_ids?: any[]; job_ids?: any[]; job_status?: any[]; }) {
   let finalQuery;
   let filterQuery = '';
-
+  this.formattedData = [];
    const page = params?.page ?? this.page;
    const pageSize = params?.pageSize ?? this.tableSize;
    const searchTerm = params?.searchTerm ?? this.term;
@@ -245,7 +246,7 @@ onApplyFilter(filteredData: any[], filteredKey: string): void {
    filterQuery += (this.userRole ==='Admin' || (this.userRole !='Admin' && this.client_id)) ? '':`&employee-id=${this.user_id}`;
    filterQuery += this.client_id ? `&client=${this.client_id}` : '';
 
-   this.api.getData(`${environment.live_url}/${environment.jobs}/${filterQuery}`).subscribe((response: any) => {
+   await this.api.getData(`${environment.live_url}/${environment.jobs}/${filterQuery}`).subscribe(async (response: any) => {
     if(response){
 
     this.jobFilterList = response;
@@ -253,9 +254,6 @@ onApplyFilter(filteredData: any[], filteredKey: string): void {
     this.clientName = getUniqueValues3(this.jobFilterList, 'client_name', 'client')
     this.jobName = getUniqueValues3(this.jobFilterList, 'job_name', 'id')
     this.statusName = getUniqueValues3(this.jobFilterList, 'job_status_name', 'job_status')
-
-    console.log('statusName',this.statusName);
-
     finalQuery = query + `&job-status=[${this.statusList}]`;
     finalQuery += (this.userRole ==='Admin' || (this.userRole !='Admin' && this.client_id)) ? '':`&employee-id=${this.user_id}`;
     finalQuery += this.client_id ? `&client=${this.client_id}` : '';
@@ -268,10 +266,10 @@ onApplyFilter(filteredData: any[], filteredKey: string): void {
       if (params?.job_status?.length) {
         finalQuery += `&job-status-ids=[${params.job_status.join(',')}]`;
       }
-    this.api.getData(`${environment.live_url}/${environment.jobs}/${finalQuery}`).subscribe((res: any) => {
+    await this.api.getData(`${environment.live_url}/${environment.jobs}/${finalQuery}`).subscribe((res: any) => {
 
       if(res.results && res.results?.length>=1){
-      const formattedData = res.results.map((item: any, i: number) => ({
+      this.formattedData = res.results.map((item: any, i: number) => ({
         sl: (page - 1) * pageSize + i + 1,
         ...item,
         is_primary:item?.employees?.find((emp: any) => emp?.is_primary === true)?.employee_name || '',
@@ -297,7 +295,7 @@ onApplyFilter(filteredData: any[], filteredKey: string): void {
                };
              }),
 
-       data: formattedData,
+       data: this.formattedData,
        searchTerm: this.term,
        actions: [],
        accessConfig: [],
@@ -313,6 +311,26 @@ onApplyFilter(filteredData: any[], filteredKey: string): void {
        currentPage:page,
        totalRecords: res.total_no_of_record,
        showDownload:true,
+      };
+    }else{
+      this.tableConfig = {
+        columns: tableColumns,
+        data: [],
+        searchTerm: this.term,
+        actions: [],
+        accessConfig: [],
+        tableSize: pageSize,
+        pagination: true,
+        searchable: true,
+        headerTabs:true,
+        showIncludeAllJobs:true,
+        includeAllJobsEnable:this.isIncludeAllJobEnable ? this.isIncludeAllJobEnable : false,
+        includeAllJobsValue:this.isIncludeAllJobValue ? this.isIncludeAllJobValue : false,
+        selectedClientId:this.client_id ? this.client_id:null,
+        sendEmail:true,
+        currentPage:page,
+        totalRecords: 0,
+        showDownload:true,
       };
     }
 
