@@ -287,7 +287,7 @@ onApplyDateFilter(filteredDate:string, filteredKey: string): void {
    filterQuery = `?job-status=[${this.statusList}]`;
    filterQuery += (this.userRole ==='Admin' || (this.userRole !='Admin' && this.client_id)) ? '':`&employee-id=${this.user_id}`;
    filterQuery += this.client_id ? `&client=${this.client_id}` : '';
-
+   filterQuery += `&report-type=job-status-report`;
   // Outer API call for filter options
   await this.api.getData(`${environment.live_url}/${environment.jobs}/${filterQuery}`).subscribe(async (filterRes: any) => {
    if(filterRes){ // Assuming filterRes is the data for filters
@@ -302,6 +302,7 @@ onApplyDateFilter(filteredDate:string, filteredKey: string): void {
        finalQuery = query + `&job-status=[${this.statusList}]`;
        finalQuery += (this.userRole ==='Admin' || (this.userRole !='Admin' && this.client_id)) ? '':`&employee-id=${this.user_id}`;
        finalQuery += this.client_id ? `&client=${this.client_id}` : '';
+       finalQuery += `&report-type=job-status-report`;
         if (params?.client_ids?.length) {
             finalQuery += `&client-ids=[${params.client_ids.join(',')}]`;
           }if (params?.job_ids?.length) {

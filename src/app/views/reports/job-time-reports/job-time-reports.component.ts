@@ -237,7 +237,7 @@ onApplyFilter(filteredData: any[], filteredKey: string): void {
  }
 
  // Fetch table data from API with given params
- getTableData(params?: { page?: number; pageSize?: number; searchTerm?: string;client_ids?: any[]; job_ids?: any[]; job_status?: any[]; }) {
+ async getTableData(params?: { page?: number; pageSize?: number; searchTerm?: string;client_ids?: any[]; job_ids?: any[]; job_status?: any[]; }) {
   let finalQuery;
   let filterQuery = '';
 
@@ -250,8 +250,8 @@ onApplyFilter(filteredData: any[], filteredKey: string): void {
    filterQuery = `?job-status=[${this.statusList}]`;
    filterQuery += (this.userRole ==='Admin' || (this.userRole !='Admin' && this.client_id)) ? '':`&employee-id=${this.user_id}`;
    filterQuery += this.client_id ? `&client=${this.client_id}` : '';
-
-   this.api.getData(`${environment.live_url}/${environment.jobs}/${filterQuery}`).subscribe((response: any) => {
+  filterQuery += `&report-type=job-time-report`;
+   await this.api.getData(`${environment.live_url}/${environment.jobs}/${filterQuery}`).subscribe(async (response: any) => {
     if(response){
 
     this.jobFilterList = response;
@@ -265,6 +265,7 @@ onApplyFilter(filteredData: any[], filteredKey: string): void {
     finalQuery = query + `&job-status=[${this.statusList}]`;
     finalQuery += (this.userRole ==='Admin' || (this.userRole !='Admin' && this.client_id)) ? '':`&employee-id=${this.user_id}`;
     finalQuery += this.client_id ? `&client=${this.client_id}` : '';
+    finalQuery += `&report-type=job-time-report`;
       if (params?.client_ids?.length) {
         finalQuery += `&client-ids=[${params.client_ids.join(',')}]`;
       }
