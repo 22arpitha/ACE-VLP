@@ -21,12 +21,7 @@
   width: 200px;
   display: contents !important;
 }
-::ng-deep
-  .vlp-timesheet
-  .mat-form-field-appearance-outline
-  .mat-form-field-outline {
-  // background-color: white !important;
-}
+
 ::ng-deep .vlp-timesheet .mat-form-field-wrapper {
   padding: 0 !important;
 }
@@ -67,4 +62,16 @@
 .vlp-timesheet .proceedbtn {
   height: 30px !important;
   line-height: 0px !important;
+}
+.bg-total{
+  border: 2px solid #126EB4 !important;
+  color:#126EB4;
+  pointer-events: none;
+  background: white;
+}
+.bg-shortfall{
+  border: 2px solid #ff7e00 !important;
+  color:#ff7e00;
+  background: white;
+  pointer-events: none;
 }
