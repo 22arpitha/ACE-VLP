@@ -67,7 +67,8 @@ onTableDataChange(event: any) {
     client_ids: this.selectedClientIds,
     job_ids: this.selectedJobIds,
     task_ids: this.selectedTaskIds,
-    employee_ids: this.selectedEmployeeIds
+    employee_ids: this.selectedEmployeeIds,
+    timesheet_dates: this.selectedDate
   });
 }
 // Called when user changes page size from the dynamic table
@@ -83,7 +84,8 @@ onTableSizeChange(event: any): void {
       client_ids: this.selectedClientIds,
       job_ids: this.selectedJobIds,
       task_ids: this.selectedTaskIds,
-      employee_ids: this.selectedEmployeeIds
+      employee_ids: this.selectedEmployeeIds,
+      timesheet_dates: this.selectedDate
     });
   }
 
