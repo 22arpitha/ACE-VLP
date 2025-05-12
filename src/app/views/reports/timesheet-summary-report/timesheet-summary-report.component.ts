@@ -152,7 +152,7 @@ export class TimesheetSummaryReportComponent implements OnInit {
 
   async getTableData(params?: { page?: number; pageSize?: number; searchTerm?: string; fromdate?:any; employee_ids?: any; startDate?; endDate? }) {
   let query = '';
-  if (this.user_role_name !== 'Admin') {
+  if (this.user_role_name !== 'Admin' ) {
     query += `?employee-id=${this.user_id}`;
   }
  await this.api.getData(`${environment.live_url}/${environment.timesheet_summary}/${query}`)
@@ -185,14 +185,52 @@ export class TimesheetSummaryReportComponent implements OnInit {
         // Build query params
         let query = buildPaginationQuery({ page, pageSize, searchTerm });
 
-        const employeeIdsList = employeeIds ?? this.selectedEmployeeId;
+        // Consolidate employee ID filtering logic
+        const currentSelectedIds = params?.employee_ids ?? this.selectedEmployeeId ?? [];
 
-        if (employeeIdsList && employeeIdsList.length > 0) {
-          query += `&employee-ids=[${employeeIdsList}]`;
-        }
         if (this.user_role_name !== 'Admin') {
-          query += `&employee-id=${this.user_id}`;
+            // For Non-Admins:
+            if (currentSelectedIds.length > 0) {
+                // If filters are selected by a non-admin, combine them with the logged-in user's ID
+                const idsForQuery = new Set<string>();
+                currentSelectedIds.forEach(id => {
+                    if (id != null) idsForQuery.add(String(id));
+                });
+
+                // Only add the parameter if the set is not empty after processing
+                if (idsForQuery.size > 0) {
+                  if (this.user_id != null) {
+                    idsForQuery.add(String(this.user_id));
+                }
+                    query += `&employee-ids=[${Array.from(idsForQuery).join(',')}]`;
+                }else{
+                  // If no filters are selected, use the logged-in user's ID
+                  if (this.user_id != null) {
+                    query += `&employee-id=${this.user_id}`;
+                  }
+                }
+            } else {
+                // If no filters are selected by a non-admin, query by their own ID using employee-id
+                if (this.user_id != null) {
+                    query += `&employee-id=${this.user_id}`;
+                }
+            }
+        } else {
+            // For Admins:
+            // Only use selected filters, if any
+            if (currentSelectedIds.length > 0) {
+                const idsForQuery = new Set<string>();
+                currentSelectedIds.forEach(id => {
+                    if (id != null) idsForQuery.add(String(id));
+                });
+                // Ensure we only add the param if the set is not empty after processing
+                if (idsForQuery.size > 0) {
+                     query += `&employee-ids=[${Array.from(idsForQuery).join(',')}]`;
+                }
+            }
+            // If Admin and no filters selected, no employee-specific parameter is added by this block.
         }
+
 
       const startDate = params?.fromdate?.start_date ?? this.time.start_date;
       const formattedStartDate = this.datePipe.transform(startDate, 'yyyy-MM-dd');
