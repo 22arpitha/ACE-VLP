@@ -175,11 +175,10 @@ onApplyDateFilter(filteredDate:string, filteredKey: string): void {
 }
 
 exportCsvOrPdf(fileType) {
-  // let query = buildPaginationQuery({
-  //   page: this.page,
-  //   pageSize: this.tableSize
-  // });
-  let query = `?page=1`;
+  let query = buildPaginationQuery({
+    page: this.page,
+    pageSize: this.tableSize
+  });
   if(this.user_role_name !== 'Admin'){
     query +=`&timesheet-employee=${this.user_id}`
     }if (this.selectedClientIds.length) {
