@@ -17,27 +17,9 @@
         <mat-checkbox color="primary" class="example-margin" [checked]="config.includeAllJobsValue" [(ngModel)]="config.includeAllJobsValue" [ngModelOptions]="{standalone: true}" [disabled]="config.includeAllJobsEnable" (change)="onIncludeJobsChange($event)" ><h5 class="c-headerss">Include All Jobs</h5></mat-checkbox>
       </div>
       <!-- Date Range Filter -->
-      <!-- <div class="col-12 mt-2 col-sm-12 col-md-4 col-lg-3" *ngIf="config.dateRangeFilter">
-        <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
-          <mat-label>&nbsp; Enter a date range</mat-label>
-          <mat-date-range-input [rangePicker]="picker">
-            <input matStartDate placeholder="Start date" />
-            <input matEndDate placeholder="End date" />
-          </mat-date-range-input>
-          <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
-          <mat-date-range-picker #picker></mat-datepicker-toggle>
-        </mat-form-field>
-      </div> -->
+
       <div class="col-12 mt-2 col-sm-12 col-md-4 col-lg-3" *ngIf="config.dateRangeFilter">
-        <!-- <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
-          <mat-label>&nbsp; Enter a date range</mat-label>
-          <mat-date-range-input [rangePicker]="picker">
-            <input matStartDate placeholder="Start date" [(ngModel)]="startDate" />
-            <input matEndDate placeholder="End date" [(ngModel)]="endDate" (dateChange)="onDateRangeChange(startDate,endDate)"/>
-          </mat-date-range-input>
-          <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
-          <mat-date-range-picker #picker></mat-date-range-picker>
-        </mat-form-field> -->
+
         <app-week-picker (weekSelected)="weekDatePicker($event)" [resetWeek]="resetWeekDate"></app-week-picker>
       </div>
 
@@ -89,7 +71,7 @@
     <table class="table table-hover table-list">
       <thead>
         <tr>
-          <th *ngFor="let col of config.columns; trackBy: trackByColumnKey" style="cursor: pointer;">
+          <th *ngFor="let col of config.columns; trackBy: trackByColumnKey" >
             {{ col.label }}
 
             <!-- Sort Icons -->

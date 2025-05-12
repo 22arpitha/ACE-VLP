@@ -1,20 +1,37 @@
 /* width */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 8px;
+  height: 8px;
+  background: transparent;
 }
 
 /* Track */
 ::-webkit-scrollbar-track {
-  background: #f1f1f1; 
+  background: #f5f7fa;
+  border-radius: 8px;
 }
- 
+
 /* Handle */
 ::-webkit-scrollbar-thumb {
-  background: #cfcfcf; 
+  background: #bdbdbd;
+  border-radius: 8px;
+  min-height: 30px;
+  transition: background 0.2s;
 }
 
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
-  background: #555; 
+  background: #888;
+}
+
+/* Always show scrollbar on hover for scrollable containers */
+.table-wrapper:hover::-webkit-scrollbar-thumb,
+.table-wrapper:focus-within::-webkit-scrollbar-thumb {
+  background: #888;
+}
+
+/* For Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #bdbdbd #f5f7fa;
 }
