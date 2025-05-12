@@ -161,6 +161,7 @@ tableSize: number = 50;
         this.isIncludeAllJobValue= event['action'];
         this.client_id = event['action'] && event['client_id'] ? event['client_id'] : null;
         this.isIncludeAllJobEnable = event['action']  || (!event['action'] && event['client_id'])  ? false : true;
+        console.log('isIncludeAllJobEnable',this.isIncludeAllJobEnable);
         this.page=1;
         this.getTableData({
           page: this.page,
@@ -190,6 +191,11 @@ onApplyFilter(filteredData: any[], filteredKey: string): void {
 
   if (filteredKey === 'client-ids') {
     this.selectedClientIds = filteredData;
+    if(this.selectedClientIds && this.selectedClientIds.length===0){
+      console.log(this.selectedClientIds);
+      this.isIncludeAllJobEnable=true;
+      this.isIncludeAllJobValue=false;
+    }
   }
   if (filteredKey === 'job-ids') {
     this.selectedJobIds = filteredData;
