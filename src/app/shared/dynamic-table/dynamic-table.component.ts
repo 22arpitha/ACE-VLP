@@ -94,13 +94,13 @@ selectedFile:(File | null)[] = [];
     };
   }
   private initializeTable(): void {
-    if(this.config.data && this.config.data.length > 0){
+    if(this.config.data && this.config.data?.length > 0){
      this.filteredData = this.config.data;
     }else{
       this.filteredData = [];
     }
     console.log('Filtered Data:', this.config.data);
-    this.config.columns.forEach(col => {
+    this.config.columns?.forEach(col => {
       this.arrowState[col.key] = false;
       //this.columnFilters[col.key] = col.filterType === 'multi-select' ? [] : '';
     });
@@ -118,7 +118,7 @@ selectedFile:(File | null)[] = [];
     this.updatePagination()
   }
   get hasColumnFilters(): boolean {
-    return this.config.columns.some(col => col.filterable);
+    return this.config.columns?.some(col => col.filterable);
   }
 
   onSearch(term: string): void {
@@ -149,15 +149,13 @@ selectedFile:(File | null)[] = [];
     } else {
       // console.log(`Filter value for ${filterKey} (backend key: ${backendParamKey}) has not changed since last emit. Emission skipped.`);
     }
+    if(this.config.showIncludeAllJobs){
+        this.isIncludeFlagEnableLogic();
+      }
   }
 
     applyFilters(): void {
-      const showIncludeLogic = this.config.showIncludeAllJobs && this.columnFilters['client_name'];
-      if (showIncludeLogic) {
-        this.isIncludeFlagEnableLogic();
-      }
-
-      this.filteredData = this.config.data.filter(row => {
+      this.filteredData = this.config.data?.filter(row => {
         const matchSearch = !this.config.searchTerm || this.config.columns?.some(col =>
           row[col.key]?.toString()?.toLowerCase()?.includes(this.config.searchTerm!?.toLowerCase())
         );
@@ -243,7 +241,7 @@ selectedFile:(File | null)[] = [];
 //     .map((option: any) => typeof option === 'string' ? { id: null, name: option } : option);
 // }
   getFilteredOptions(colKey: string): { id: any; name: string }[] {
-    const column = this.config.columns.find(c => c.key === colKey);
+    const column = this.config.columns?.find(c => c.key === colKey);
     const options = column?.filterOptions || [];
     const search = this.filterSearchText[colKey]?.toLowerCase() || '';
 
@@ -349,14 +347,13 @@ this.actionEvent.emit({ actionType: 'submitWorkCulture', action:reqPayload});
 
 }
 private isIncludeFlagEnableLogic(): void {
-
   const clientNameFilter = this.columnFilters['client_name'];
   if (this.config.selectedClientId) {
     const clientObj = this.filteredData?.find(
       (obj: any) => obj['client'] === this.config.selectedClientId
     );
     if (clientObj) {
-      this.columnFilters['client_name'] = [clientObj.client_name];
+      this.columnFilters['client_name'] = [clientObj.client];
       this.selected_client_id = clientObj.client;
       if(this.selected_client_id){
         this.allow_sending_status=false;
@@ -386,7 +383,7 @@ private isIncludeFlagEnableLogic(): void {
 
   // Case 4: Exactly one client selected
   const matchedClient = this.filteredData?.find(
-    (obj: any) => obj['client_name'] === clientNameFilter[0]
+    (obj: any) => obj['client'] === clientNameFilter[0]
   );
   this.selected_client_id = matchedClient?.client ?? null;
   this.config.includeAllJobsEnable = false;

@@ -161,6 +161,7 @@ tableSize: number = 50;
         this.isIncludeAllJobValue= event['action'];
         this.client_id = event['action'] && event['client_id'] ? event['client_id'] : null;
         this.isIncludeAllJobEnable = event['action']  || (!event['action'] && event['client_id'])  ? false : true;
+        console.log('isIncludeAllJobEnable',this.isIncludeAllJobEnable);
         this.page=1;
         this.getTableData({
           page: this.page,
@@ -190,6 +191,11 @@ onApplyFilter(filteredData: any[], filteredKey: string): void {
 
   if (filteredKey === 'client-ids') {
     this.selectedClientIds = filteredData;
+    if(this.selectedClientIds && this.selectedClientIds.length===0){
+      console.log(this.selectedClientIds);
+      this.isIncludeAllJobEnable=true;
+      this.isIncludeAllJobValue=false;
+    }
   }
   if (filteredKey === 'job-ids') {
     this.selectedJobIds = filteredData;
@@ -245,7 +251,7 @@ onApplyFilter(filteredData: any[], filteredKey: string): void {
    filterQuery = `?job-status=[${this.statusList}]`;
    filterQuery += (this.userRole ==='Admin' || (this.userRole !='Admin' && this.client_id)) ? '':`&employee-id=${this.user_id}`;
    filterQuery += this.client_id ? `&client=${this.client_id}` : '';
-
+  filterQuery += `&report-type=job-time-report`;
    await this.api.getData(`${environment.live_url}/${environment.jobs}/${filterQuery}`).subscribe(async (response: any) => {
     if(response){
 
@@ -257,6 +263,7 @@ onApplyFilter(filteredData: any[], filteredKey: string): void {
     finalQuery = query + `&job-status=[${this.statusList}]`;
     finalQuery += (this.userRole ==='Admin' || (this.userRole !='Admin' && this.client_id)) ? '':`&employee-id=${this.user_id}`;
     finalQuery += this.client_id ? `&client=${this.client_id}` : '';
+    finalQuery += `&report-type=job-time-report`;
       if (params?.client_ids?.length) {
         finalQuery += `&client-ids=[${params.client_ids.join(',')}]`;
       }
