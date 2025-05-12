@@ -193,6 +193,11 @@ export class JobStatusReportComponent implements OnInit {
 
   if (filteredKey === 'client-ids') {
     this.selectedClientIds = filteredData;
+    if(this.selectedClientIds && this.selectedClientIds.length===0){
+      console.log(this.selectedClientIds);
+      this.isIncludeAllJobEnable=true;
+      this.isIncludeAllJobValue=false;
+    }
   }
   if (filteredKey === 'job-ids') {
     this.selectedJobIds = filteredData;
