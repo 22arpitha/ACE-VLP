@@ -6,7 +6,10 @@ import { ApiserviceService } from '../../../service/apiservice.service';
 import { CommonServiceService } from '../../../service/common-service.service';
 import { environment } from '../../../../environments/environment';
 import { SubModuleService } from '../../../service/sub-module.service';
-
+export interface IdNamePair {
+  id: any;
+  name: string;
+}
 @Component({
   selector: 'app-all-employee',
   templateUrl: './all-employee.component.html',
@@ -29,14 +32,20 @@ is_active:false,
   };
   page = 1;
   count = 0;
-  tableSize = 5;
-  tableSizes = [5, 10, 25, 50, 100];
+  tableSize = 50;
+  tableSizes = [50,75,100];
   currentIndex: any;
   allEmployeeList:any=[];
   accessPermissions = []
   user_id: any;
   userRole: any;
-
+  filters: { designation__designation_name: string[]} = {
+    designation__designation_name:[]
+  }
+  allRoleNames:IdNamePair[] = [];
+  filterQuery: string;
+  filteredemployeeList:any =[];
+  allInitalEmployeeList:any=[];
   constructor(private common_service: CommonServiceService,
     private router:Router,private modalService: NgbModal,private accessControlService:SubModuleService,
     private apiService: ApiserviceService) {
@@ -50,11 +59,11 @@ is_active:false,
     })
    }
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
     this.user_id = sessionStorage.getItem('user_id');
     this.userRole = sessionStorage.getItem('user_role_name');
     this.getModuleAccess();
-
+    await this.initialGetAllEmployeelist('True');
   }
 
   access_name:any ;
@@ -99,17 +108,29 @@ is_active:false,
       console.error('Error opening modal:', error);
     }
   }
+public  initialGetAllEmployeelist(is_active?:string){
+  let query = this.getFilterBaseUrl();
+  if(is_active){
+    query = `?is_active=${status}&employee=True`;
+  }
+  this.apiService.getData(`${environment.live_url}/${environment.employee}/${query}`).subscribe(
+    (res: any) => {
+      this.allInitalEmployeeList = res;
+      this.allRoleNames = this.getUniqueValues(emp => ({ id: emp.designation_id, name: emp.designation__designation_name }));
+    }
+  )
+}
 
   // Current Btn event
   getCurrentEmployeeList(){
     this.page = 1;
-    this.tableSize = 5;
+    this.tableSize = 50;
   this.getActiveEmployeeList();    
   }
 // History btn event 
   getEmployeeHistoryList(){
     this.page = 1;
-    this.tableSize = 5;
+    this.tableSize = 50;
     this.getInActiveEmployeeList();
   }
 
@@ -137,6 +158,7 @@ this.apiService.getData(`${environment.live_url}/${environment.employee}/${query
     this.apiService.getData(`${environment.live_url}/${environment.employee}/${query}`).subscribe(
       (res: any) => {
         this.allEmployeeList = res.results;
+        this.filteredemployeeList=res?.results;
         const noOfPages: number = res?.['total_pages']
         this.count = noOfPages * this.tableSize;
         this.count = res?.['total_no_of_record']
@@ -148,38 +170,21 @@ this.apiService.getData(`${environment.live_url}/${environment.employee}/${query
     if (event) {
       this.page = 1;
       this.tableSize = Number(event.value);
-      if(this.isCurrent){
-        this.getActiveEmployeeList()
-      }else{
-        this.getInActiveEmployeeList();
-      }
+      this.filterData();
     }
   }
   public onTableDataChange(event: any) {
     this.page = event;
-      if(this.isCurrent){
-        this.getActiveEmployeeList()
-      }else{
-        this.getInActiveEmployeeList();
-      }
-
+    this.filterData();
   }
   public filterSearch(event: any) {
     this.term = event.target.value?.trim();
     if (this.term && this.term.length >= 2) {
       this.page = 1;
-      if(this.isCurrent){
-        this.getActiveEmployeeList()
-      }else{
-        this.getInActiveEmployeeList();
-      }
+      this.filterData();
     }
     else if (!this.term) {
-      if(this.isCurrent){
-        this.getActiveEmployeeList()
-      }else{
-        this.getInActiveEmployeeList();
-      }
+      this.filterData();
     }
   }
 
@@ -198,5 +203,51 @@ this.apiService.getData(`${environment.live_url}/${environment.employee}/${query
 
   public getContinuousIndex(index: number): number {
     return (this.page - 1) * this.tableSize + index + 1;
+  }
+
+  // Filter Related
+
+  
+  getUniqueValues(
+    extractor: (item: any) => { id: any; name: string }
+  ): { id: any; name: string }[] {
+    const seen = new Map();
+    this.allInitalEmployeeList?.forEach(emp => {
+      const value = extractor(emp);
+      if (value && value.id && !seen.has(value.id)) {
+        seen.set(value.id, value.name);
+      }
+    });
+
+    return Array.from(seen, ([id, name]) => ({ id, name }));
+  }
+  onFilterChange(event: any, filterType: string) {
+    const selectedOptions = event;
+    this.filters[filterType] = selectedOptions;
+    this.filterData();
+  }
+
+  filterData() {
+    this.filterQuery = this.getFilterBaseUrl();
+    if (this.filters.designation__designation_name.length) {
+      this.filterQuery += `&designation-ids=[${this.filters.designation__designation_name.join(',')}]`;
+    }
+
+    if(this.isCurrent){
+      this.filterQuery += `&is_active=True`;
+    }
+    else{
+      this.filterQuery += `&is_active=False`;
+    }
+    this.apiService.getData(`${environment.live_url}/${environment.employee}/${this.filterQuery}`).subscribe(
+      (res: any) => {
+        this.allEmployeeList = res?.results;
+        this.filteredemployeeList=res?.results;
+        const noOfPages: number = res?.['total_pages']
+        this.count = noOfPages * this.tableSize;
+        this.count = res?.['total_no_of_record']
+        this.page = res?.['current_page'];
+      }
+    )
   }
 }

@@ -27,8 +27,8 @@ export class JobsOfEndclientComponent implements OnInit {
   };
   page = 1;
   count = 0;
-  tableSize = 5;
-  tableSizes = [5, 10, 25, 50, 100];
+  tableSize = 50;
+  tableSizes = [50,75,100];
   currentIndex: any;
   term: any = '';
   client_id:any;

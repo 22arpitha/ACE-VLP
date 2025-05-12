@@ -86,7 +86,7 @@ export class WorkCultureAndWorkEthicsComponent implements OnInit,OnChanges {
                           columns: tableColumns.map(col => ({
                             ...col,
                           })),
-                         data: formattedData,
+                         data: formattedData ? formattedData : [],
                          actions: [],
                          accessConfig: [],
                          pagination: false,

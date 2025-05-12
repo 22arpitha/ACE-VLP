@@ -30,7 +30,8 @@ export class TimesheetSummaryReportComponent implements OnInit {
     accessConfig: [],
     tableSize: 50,
     pagination: true,
-    navigation:true
+    navigation:true,
+    showDownload:true,
   };
   user_id: string | null;
   user_role_name: string;

@@ -1,9 +1,9 @@
 import { DatePipe } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ApiserviceService } from 'src/app/service/apiservice.service';
-import { CommonServiceService } from 'src/app/service/common-service.service';
-import { environment } from 'src/environments/environment';
+import { ApiserviceService } from '../../../service/apiservice.service';
+import { CommonServiceService } from '../../../service/common-service.service';
+import { environment } from '../../../../environments/environment';
 export interface IdNamePair {
   id: any;
   name: string;
@@ -26,8 +26,8 @@ export class JobsOfClientsComponent implements OnInit {
     };
     page = 1;
     count = 0;
-    tableSize = 5;
-    tableSizes = [5, 10, 25, 50, 100];
+    tableSize = 50;
+    tableSizes = [50,75,100];
     currentIndex: any;
     term: any = '';
     client_id:any;

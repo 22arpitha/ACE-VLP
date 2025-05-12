@@ -27,6 +27,7 @@ export class EmployeeListComponent implements OnInit, OnChanges {
         this.selectEmployee.emit(this.allEmployeeList[0]?.user_id);
       } else {
         this.selectedEmployeeVal = null;
+        this.searchEmployeeText='';
         this.selectEmployee.emit(null);
       }
     }

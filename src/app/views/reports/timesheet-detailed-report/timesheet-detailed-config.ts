@@ -4,7 +4,7 @@ const tableColumns = [
   { label: 'Sl No', key: 'sl', sortable: true },
   { label: 'Date', key: 'date', sortable: true, filterable: true,paramskeyId: 'timesheet-dates', filterType: 'date' },
   {
-    label: 'Client Name',
+    label: 'Client',
     key: 'client_name',
     keyId:'client_id',
     paramskeyId: 'client-ids',
@@ -13,7 +13,7 @@ const tableColumns = [
     sortable: true
   },
   {
-    label: 'Job Name',
+    label: 'Job',
     key: 'job_name',
     keyId:'job_id',
     paramskeyId: 'job-ids',
@@ -22,7 +22,7 @@ const tableColumns = [
     sortable: true
   },
   {
-    label: 'Task Name',
+    label: 'Task',
     key: 'task_name',
     keyId:'id',
     paramskeyId: 'timesheet-task-ids',
@@ -37,7 +37,7 @@ const tableColumns = [
 ];
 if (role !== 'Accountant' ) {
   tableColumns.splice(5, 0, {
-    label: 'Employee Name',
+    label: 'Employee',
     key: 'employee_name',
     keyId:'employee_id',
     paramskeyId: 'timesheet-employee-ids',

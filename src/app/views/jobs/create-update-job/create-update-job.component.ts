@@ -73,6 +73,7 @@ export class CreateUpdateJobComponent implements CanComponentDeactivate, OnInit,
   ];
   user_id: any;
   currentDate: any = new Date().toISOString();
+  jobAllocationCurrentDate: any = new Date().toISOString();
   initialFormValue:any;
   constructor(private fb: FormBuilder, private activeRoute: ActivatedRoute, private accessControlService: SubModuleService,
     private common_service: CommonServiceService, private router: Router, private datepipe: DatePipe,
@@ -122,7 +123,7 @@ export class CreateUpdateJobComponent implements CanComponentDeactivate, OnInit,
       periodicity: ['', Validators.required],
       period: ['', Validators.required],
       job_type: ['', Validators.required],
-      job_allocation_date: ['', Validators.required],
+      job_allocation_date: [this.jobAllocationCurrentDate, Validators.required],
       budget_time: ['', [Validators.required, Validators.pattern('^([0-9]{1,3}):([0-5]?[0-9])$')]],
       job_status: ['', Validators.required],
       percentage_of_completion: [Number, Validators.required],
@@ -604,6 +605,7 @@ export class CreateUpdateJobComponent implements CanComponentDeactivate, OnInit,
   }
 
   public joiningDateFun(event: any) {
+    console.log('event Date',event.value);
     if (this.user_role_name === 'Admin') {
       this.jobFormGroup.patchValue({ 'job_status_date': event.value });
     } else {

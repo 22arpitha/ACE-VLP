@@ -16,16 +16,16 @@ export class NonProductiveHoursComponent implements OnInit,OnChanges {
 @Input() dropdwonFilterData:any;
   BreadCrumbsTitle: any = 'Non Productive Hours';
    term: string = '';
-     tableSize: number = 5;
-     page: any = 1;
-     tableSizes = [5,10,25,50,100];
+     tableSize: number = 50;
+      page: any = 1;
+      tableSizes = [50,75,100];
      tableConfig:any = {
        columns: [],
        data: [],
        searchTerm: '',
        actions: [],
        accessConfig: [],
-       tableSize: 10,
+       tableSize: this.tableSize,
        pagination: true,
        showDownload:true,
      };
@@ -169,12 +169,13 @@ export class NonProductiveHoursComponent implements OnInit,OnChanges {
        }));
        this.tableConfig = {
         columns: tableColumns,
-        data: formattedData,
+        data: formattedData ? formattedData : [],
         searchTerm: this.term,
         actions: [],
         accessConfig: [],
         tableSize: pageSize,
         pagination: true,
+        searchable: true,
         currentPage:page,
         totalRecords: res.total_no_of_record,
         hideDownload:true,
@@ -194,7 +195,8 @@ export class NonProductiveHoursComponent implements OnInit,OnChanges {
 public viewtimesheetDetails(item:any){
       this.dialog.open(JobTimeSheetDetailsPopupComponent, {
       width: '900px',
-      data: { 'job_id': item?.job_id,'job_name':item?.job_name },
+      data: { 'job_id': item?.job_id,'job_name':item?.job_name,'employee_id':item.employee_id
+},
     });
     }
   }

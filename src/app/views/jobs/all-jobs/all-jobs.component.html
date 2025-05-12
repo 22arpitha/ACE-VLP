@@ -30,12 +30,12 @@
                 <thead>
                   <tr>
                     <th scope="col"> S.No</th>
-                    <th scope="col">Job Number
+                    <th scope="col">Job Id
                       <i *ngIf="!arrowState['job_number']" (click)="sort('asc','job_number')" class="bi bi-arrow-down"></i>
                 <i (click)="sort('desc','job_number')" *ngIf="arrowState['job_number']"
                   class="bi bi-arrow-up"></i>
                     </th>
-                    <th scope="col">Job Name
+                    <th scope="col" class="name-col">Job
                       <i *ngIf="!arrowState['job_name']" (click)="sort('asc','job_name')" class="bi bi-arrow-down"></i>
                       <i (click)="sort('desc','job_name')" *ngIf="arrowState['job_name']"
                         class="bi bi-arrow-up"></i>
@@ -57,7 +57,7 @@
                         ></app-generic-table-filter>
                       </mat-menu>
                     </th>
-                    <th scope="col">Client
+                    <th scope="col" class="name-col">Client
                       <i *ngIf="!arrowState['client_name']" (click)="sort('asc','client_name')" class="bi bi-arrow-down"></i>
                       <i (click)="sort('desc','client_name')" *ngIf="arrowState['client_name']"
                         class="bi bi-arrow-up"></i>
@@ -76,7 +76,7 @@
                         </mat-menu>
                     </th>
                     <th scope="col">
-                      Job Allocation Date
+                      Allocation Date
                       <button
                         mat-icon-button
                         (click)="setDateFilterColumn($event); picker.open()"
@@ -133,7 +133,7 @@
                       </mat-menu>
                     </th>
                     <th scope="col" class="status-col">Status</th>
-                    <th scope="col">% of Completion</th>
+                    <th scope="col">% of<br>Completion</th>
                     <th scope="col">
                       Status Date
                       <button

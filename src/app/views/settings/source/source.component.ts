@@ -75,7 +75,7 @@ this.formUtilityService.resetHasUnsavedValue();
 
   public initializeForm() {
     this.sourceForm = this.fb.group({
-      source_name: ['', [Validators.required, Validators.pattern(/^[a-zA-Z]+( [a-zA-Z]+)*$/), Validators.maxLength(20)]],
+      source_name: ['', [Validators.required, Validators.pattern(/^[a-zA-Z]+( [a-zA-Z]+)*$/), Validators.maxLength(50)]],
     });
     this.initialFormValue=this.sourceForm?.getRawValue();
   }

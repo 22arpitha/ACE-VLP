@@ -27,7 +27,7 @@ export class DynamicTableComponent implements OnInit {
   startDate;
   endDate;
   currentPage = 1;
-  tableSizes = [50,100,200];
+  tableSizes = [50,75,100,150,200];
   columnFilters: { [key: string]: any } = {};
   arrowState: { [key: string]: boolean } = {};
   sortValue: string = '';

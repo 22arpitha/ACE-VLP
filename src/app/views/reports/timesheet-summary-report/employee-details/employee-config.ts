@@ -8,7 +8,7 @@ export function getTableColumns(role: string) {
     // filterType: 'date'
   },
   {
-    label: 'Client',
+    label: 'Client Name',
     key: 'client_name',
     // filterable: true,
     // filterType: 'multi-select',

@@ -9,6 +9,11 @@
   overflow-x: auto;
   margin-bottom: 20px;
 }
+.time-col{
+  width: 120px;
+  min-width: 120px !important;
+  text-align: center !important;
+}
 ::ng-deep
   .vlp-timesheet
   .mat-form-field-type-mat-date-range-input

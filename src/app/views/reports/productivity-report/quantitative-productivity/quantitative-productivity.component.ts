@@ -16,9 +16,9 @@ export class QuantitativeProductivityComponent implements OnInit,OnChanges {
   BreadCrumbsTitle: any = 'Quantitative Productivity';
   @Input() dropdwonFilterData:any;
         term: string = '';
-        tableSize: number = 5;
-           page: any = 1;
-           tableSizes = [5,10,25,50,100];
+      tableSize: number = 50;
+      page: any = 1;
+      tableSizes = [50,75,100];
            tableConfig:any = {
              columns: [],
              data: [],
@@ -26,7 +26,7 @@ export class QuantitativeProductivityComponent implements OnInit,OnChanges {
              actions: [],
              searchable:true,
              accessConfig: [],
-             tableSize: 5,
+             tableSize: this.tableSize,
              pagination: true,
             estimationDetails:true,
             hideDownload:true,
@@ -136,7 +136,8 @@ export class QuantitativeProductivityComponent implements OnInit,OnChanges {
               query+= this.dropdwonFilterData.employee_id ? `&employee-id=${this.dropdwonFilterData.employee_id}`:this.userRole ==='Admin' ? '':`&employee-id=${this.user_id}`;
               query+= this.dropdwonFilterData.periodicity ? `&periodicity=${this.dropdwonFilterData.periodicity}`:'';
               query+= this.dropdwonFilterData.period ? `&period=${this.dropdwonFilterData.period}`:'';
-             }else{
+              query+= this.dropdwonFilterData.employee_id || this.dropdwonFilterData.periodicity || this.dropdwonFilterData.period ? '&is_dropdown_selected=True' :'';
+            }else{
               query += this.userRole ==='Admin' ? '':`&employee-id=${this.user_id}`;
              }
            }
@@ -161,7 +162,8 @@ export class QuantitativeProductivityComponent implements OnInit,OnChanges {
             finalQuery+= this.dropdwonFilterData.employee_id ? `&employee-id=${this.dropdwonFilterData.employee_id}`:this.userRole ==='Admin' ? '':`&employee-id=${this.user_id}`;
             finalQuery+= this.dropdwonFilterData.periodicity ? `&periodicity=${this.dropdwonFilterData.periodicity}`:'';
             finalQuery+= this.dropdwonFilterData.period ? `&period=${this.dropdwonFilterData.period}`:'';
-           }else{
+            finalQuery+= this.dropdwonFilterData.employee_id || this.dropdwonFilterData.periodicity || this.dropdwonFilterData.period ? '&is_dropdown_selected=True' :'';
+          }else{
             finalQuery += this.userRole ==='Admin' ? '':`&employee-id=${this.user_id}`;
            }
            this.api.getData(`${environment.live_url}/${environment.jobs}/${finalQuery}`).subscribe((res: any) => {
@@ -175,7 +177,7 @@ export class QuantitativeProductivityComponent implements OnInit,OnChanges {
               columns: tableColumns.map(col => ({
                 ...col,
               })),
-             data: formattedData,
+             data: formattedData ? formattedData : [],
              searchTerm: this.term,
              actions: [],
              accessConfig: [],

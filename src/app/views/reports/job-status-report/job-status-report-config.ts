@@ -23,12 +23,12 @@ export const tableColumns  = [
     sortable: true
   },
   {
-    label: 'Job Number',
+    label: 'Job Id',
     key: 'job_number',
     sortable: true
   },
   {
-    label: 'Job Name',
+    label: 'Job',
     key: 'job_name',
     keyId: 'id',
     paramskeyId: 'job-ids',
@@ -37,7 +37,7 @@ export const tableColumns  = [
     sortable: true
   },
   {
-    label: 'Job Allocation Date',
+    label: 'Alloc. Date',
     key: 'job_allocation_date',
     filterable: true,
     filterType: 'date',

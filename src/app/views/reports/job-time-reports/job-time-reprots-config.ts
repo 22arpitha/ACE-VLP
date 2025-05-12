@@ -7,7 +7,7 @@ export const tableColumns  = [
     sortable: true
   },
   {
-    label: 'Client Name',
+    label: 'Client',
     key: 'client_name',
     keyId: 'client_id',
     paramskeyId: 'client-ids',
@@ -16,12 +16,12 @@ export const tableColumns  = [
     sortable: true
   },
   {
-    label: 'Job Number',
+    label: 'Job id',
     key: 'job_number',
     sortable: true
   },
   {
-    label: 'Job Name',
+    label: 'Job',
     key: 'job_name',
     keyId: 'id',
     paramskeyId: 'job-ids',
@@ -43,9 +43,9 @@ export const tableColumns  = [
     key: 'task',
     sortable: true
   },
-  { label: 'Estimated Time (hrs)', key: 'estimated_time', sortable: true },
-  { label: 'Actual Time (hrs)', key: 'actual_time', sortable: true ,navigation:true},
-  { label: 'Remaining/(Excess) Time (hrs)', key: 'remaining_time', sortable: true },
+  { label: 'Est. Hrs', key: 'estimated_time', sortable: true },
+  { label: 'Act. Hrs', key: 'actual_time', sortable: true ,navigation:true},
+  { label: 'Rem./Ex. Hrs', key: 'remaining_time', sortable: true },
 
 ]
 

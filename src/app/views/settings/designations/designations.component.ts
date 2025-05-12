@@ -82,7 +82,7 @@ this.formUtilityService.resetHasUnsavedValue();
   }
   public initializeForm() {
     this.designationForm = this.fb.group({
-      sub_designation_name: ['', [Validators.pattern(/^[a-zA-Z0-9]+( [a-zA-Z0-9]+)*$/), Validators.required, Validators.maxLength(20)]],
+      sub_designation_name: ['', [Validators.pattern(/^[a-zA-Z0-9]+( [a-zA-Z0-9]+)*$/), Validators.required, Validators.maxLength(50)]],
       designation: [null, Validators.required],
     });
     this.initialFormValue = this.designationForm?.getRawValue();

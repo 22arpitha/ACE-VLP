@@ -13,7 +13,6 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
   styleUrls: ['./job-time-sheet-details-popup.component.scss']
 })
 export class JobTimeSheetDetailsPopupComponent implements OnInit {
-  user_id:any;
   user_role_name:any;
   jobId:any;
   jobName:any;
@@ -23,16 +22,17 @@ export class JobTimeSheetDetailsPopupComponent implements OnInit {
     data: [],
     showDownload:false,
   };
+  employee_id:any;
  constructor(
      private common_service:CommonServiceService,
      private api:ApiserviceService,
      public dialogRef: MatDialogRef<JobTimeSheetDetailsPopupComponent>,
       @Inject(MAT_DIALOG_DATA) public data: any
    ) {
-     this.user_id = sessionStorage.getItem('user_id') || '' ;
      this.user_role_name = sessionStorage.getItem('user_role_name') || '';
      this.jobId=data.job_id;
      this.jobName=data.job_name;
+     this.employee_id=data.employee_id;
      if(this.jobId){
 
       this.getTableData();
@@ -45,14 +45,14 @@ export class JobTimeSheetDetailsPopupComponent implements OnInit {
 
    getTableData() {
     let query=`?job-ids=[${this.jobId}]`;
-    query  += this.user_role_name ==='Admin' ? '':`&timesheet-employee=${this.user_id}`;
+    query  += this.employee_id ? `&timesheet-employee=${this.employee_id}` : ``;
      this.api.getData(`${environment.live_url}/${environment.timesheet}/${query}`).subscribe((res: any) => {
        const formattedData = res;
        this.tableConfig = {
          columns:  this.tableData?.map(col => ({
            ...col
          })),
-         data: formattedData,
+         data: formattedData ? formattedData : [],
          showDownload:false,
        };
      });

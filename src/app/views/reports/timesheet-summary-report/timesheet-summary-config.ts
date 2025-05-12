@@ -2,7 +2,7 @@
 
   export const tableColumns = [
     { label: 'Sl No', key: 'sl' },
-    { label: 'Employee', key: 'employee_name', keyId:'employee_id', sortable: true ,filterable: true,navigation:true, filterType: 'multi-select' },
+    { label: 'Employee', key: 'employee_name', keyId:'employee_id', sortable: true ,filterable: true, navigation:true, filterType: 'multi-select' },
     { label: 'Sun', key: 'Sunday', sortable: true },
     { label: 'Mon', key: 'Monday', sortable: true },
     { label: 'Tues', key: 'Tuesday', sortable: true },

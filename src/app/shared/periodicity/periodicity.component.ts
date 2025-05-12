@@ -19,6 +19,7 @@ export class PeriodicityComponent implements OnInit,OnChanges {
    ngOnChanges(changes: SimpleChanges): void {
     if(changes['resetFilterField'] && changes['resetFilterField']?.currentValue === true){
         this.selectedPeriodicityVal=null;
+        this.searchPeroidicityText='';
         this.selectPeriodicity.emit(null);
     }
     if(changes['defaultSelection'] && changes['defaultSelection']?.currentValue === true){

@@ -8,8 +8,8 @@
             </div>
             <div class="col-12 mt-2 col-sm-12 col-md-4 col-lg-3"></div>
             <div class="col-12 mt-2 col-sm-12 col-md-4 col-lg-6 text-end px-0">
-                <button mat-raised-button class="mat-btn-s tab-button-content order-sm-2 order-1" [ngClass]="{'isActive': isCurrent}" type="button" (click)="getCurrentEmployeeList()">Current</button> 
-                <button mat-raised-button class="mat-btn-s tab-button-content order-sm-3 order-2" [ngClass]="{'isActive': isHistory}" type="button" (click)="getEmployeeHistoryList()">History</button> 
+                <button mat-raised-button class="mat-btn-s tab-button-content order-sm-2 order-1" [ngClass]="{'isActive': isCurrent}" type="button" (click)="getCurrentEmployeeList();initialGetAllEmployeelist('True')">Current</button> 
+                <button mat-raised-button class="mat-btn-s tab-button-content order-sm-3 order-2" [ngClass]="{'isActive': isHistory}" type="button" (click)="getEmployeeHistoryList();initialGetAllEmployeelist()">History</button> 
                 <!-- <button mat-raised-button class="proceedbtn mat-btn-s download-btn" type="button"><i class="fa fa-download"></i></button> -->
                 <button mat-raised-button class="proceedbtn mat-btn-s order-sm-1 order-3" type="button" (click)="openCreateEmployeePage()" *ngIf="userRole !='Admin' && accessPermissions[0]?.create || userRole === 'Admin'">Create
                   Employee</button>    
@@ -40,6 +40,18 @@
                       <i *ngIf="!arrowState['designation__designation_name']" (click)="sort('asc','designation__designation_name')" class="bi bi-arrow-down"></i>
                       <i (click)="sort('desc','designation__designation_name')" *ngIf="arrowState['designation__designation_name']"
                         class="bi bi-arrow-up"></i>
+                        <button mat-icon-button [matMenuTriggerFor]="roleFilterMenu">
+                          <i class="bi bi-toggles"></i>
+                        </button>
+
+
+                        <mat-menu #roleFilterMenu="matMenu">
+                          <app-generic-table-filter
+                            [options]="allRoleNames"
+                            [(selectedOptions)]="filters.designation__designation_name"
+                            (selectedOptionsChange)="onFilterChange($event, 'designation__designation_name')"
+                          ></app-generic-table-filter>
+                        </mat-menu>
                     </th>
                     <th scope="col">Emp Status
                       <i *ngIf="!arrowState['is_active']" (click)="sort('asc','is_active')" class="bi bi-arrow-down"></i>

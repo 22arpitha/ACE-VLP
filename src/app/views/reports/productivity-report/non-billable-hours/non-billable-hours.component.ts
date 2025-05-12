@@ -15,16 +15,16 @@ export class NonBillableHoursComponent implements OnInit,OnChanges {
 BreadCrumbsTitle: any = 'Non Billable Hours';
 @Input() dropdwonFilterData:any;
  term: string = '';
-      tableSize: number = 5;
+      tableSize: number = 50;
       page: any = 1;
-      tableSizes = [5,10,25,50,100];
+      tableSizes = [50,75,100];
       tableConfig:any = {
         columns: [],
         data: [],
         searchTerm: '',
         actions: [],
         accessConfig: [],
-        tableSize: 10,
+        tableSize: this.tableSize,
         pagination: true,
         showDownload:true,
       };
@@ -121,7 +121,8 @@ exportCsvOrPdf(fileType) {
       query+= this.dropdwonFilterData.employee_id ? `&employee-id=${this.dropdwonFilterData.employee_id}`:this.userRole ==='Admin' ? '':`&employee-id=${this.user_id}`;
       query+= this.dropdwonFilterData.periodicity ? `&periodicity=${this.dropdwonFilterData.periodicity}`:'';
       query+= this.dropdwonFilterData.period ? `&period=${this.dropdwonFilterData.period}`:'';
-     }else{
+      query+= this.dropdwonFilterData.employee_id || this.dropdwonFilterData.periodicity || this.dropdwonFilterData.period ? '&is_dropdown_selected=True' :'';
+    }else{
       query += this.userRole ==='Admin' ? '':`&employee-id=${this.user_id}`;
      }
    }
@@ -144,11 +145,12 @@ exportCsvOrPdf(fileType) {
             finalQuery+= this.dropdwonFilterData.employee_id ? `&employee-id=${this.dropdwonFilterData.employee_id}`:this.userRole ==='Admin' ? '':`&employee-id=${this.user_id}`;
             finalQuery+= this.dropdwonFilterData.periodicity ? `&periodicity=${this.dropdwonFilterData.periodicity}`:'';
             finalQuery+= this.dropdwonFilterData.period ? `&period=${this.dropdwonFilterData.period}`:'';
-           }else{
+            finalQuery+= this.dropdwonFilterData.employee_id || this.dropdwonFilterData.periodicity || this.dropdwonFilterData.period ? '&is_dropdown_selected=True' :'';   
+          }else{
             finalQuery += this.userRole ==='Admin' ? '':`&employee-id=${this.user_id}`;
            }
            this.api.getData(`${environment.live_url}/${environment.jobs}/${finalQuery}`).subscribe((res: any) => {
-            if(res.results && res.results?.length>=1){
+      
               const formattedData = res.results.map((item: any, i: number) => ({
                 sl: (page - 1) * pageSize + i + 1,
                 ...item,
@@ -157,7 +159,7 @@ exportCsvOrPdf(fileType) {
                 columns: tableColumns.map(col => ({
                   ...col,
                 })),
-               data: formattedData,
+               data: formattedData ? formattedData : [],
                searchTerm: this.term,
                actions: [],
                accessConfig: [],
@@ -169,20 +171,6 @@ exportCsvOrPdf(fileType) {
                hideDownload:true,
                showDownload:true,
               };
-            }else{
-              this.tableConfig = {
-                columns: [],
-                data: [],
-                searchTerm: this.term,
-                actions: [],
-                accessConfig: [],
-                tableSize: 5,
-                searchable:true,
-                pagination: false,
-                estimationDetails:false,
-                hideDownload:false,
-              };
-            }
            },(error:any)=>{  this.api.showError(error?.error?.detail);
            });
          }

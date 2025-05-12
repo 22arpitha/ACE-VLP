@@ -97,7 +97,7 @@
                     </mat-form-field>
 
                             </th>
-                            <th scope="col">Employee Name
+                            <th scope="col">Employee
                                 <i *ngIf="!arrowState['employee_name']" (click)="sort('asc','employee_name')"
                                     class="bi bi-arrow-down"></i>
                                 <i (click)="sort('desc','employee_name')" *ngIf="arrowState['employee_name']"
@@ -115,7 +115,7 @@
                                         ></app-generic-table-filter>
                                       </mat-menu>
                             </th>
-                            <th scope="col">Client
+                            <th scope="col" class="name-col">Client
                                 <i *ngIf="!arrowState['client_name']" (click)="sort('asc','client_name')"
                                     class="bi bi-arrow-down"></i>
                                 <i (click)="sort('desc','client_name')" *ngIf="arrowState['client_name']"
@@ -133,7 +133,7 @@
                                         ></app-generic-table-filter>
                                       </mat-menu>
                             </th>
-                            <th scope="col">Job
+                            <th scope="col" class="name-col">Job
                                 <i *ngIf="!arrowState['job_name']" (click)="sort('asc','job_name')"
                                     class="bi bi-arrow-down"></i>
                                 <i (click)="sort('desc','job_name')" *ngIf="arrowState['job_name']"
@@ -170,8 +170,8 @@
                                         ></app-generic-table-filter>
                                       </mat-menu>
                             </th>
-                            <th scope="col">Time</th>
-                            <th scope="col">Notes
+                            <th scope="col" class="time-col">Time</th>
+                            <th scope="col" class="name-col">Notes
                                 <i *ngIf="!arrowState['notes']" (click)="sort('asc','notes')"
                                     class="bi bi-arrow-down"></i>
                                 <i (click)="sort('desc','notes')" *ngIf="arrowState['notes']"
@@ -206,6 +206,7 @@
                                             *ngIf="userRole !='Admin' && (accessPermissions[0]?.view && accessPermissions[0]?.update) && !item.is_locked"/>
                                         <button mat-raised-button class="proceedbtn" *ngIf="userRole ==='Admin' && item.is_locked" (click)="unlockTimesheet(item)">Unlock</button>
                                         <span *ngIf="userRole ==='Admin' && !item.is_locked">Not Locked Yet</span>
+                                        <span *ngIf="userRole !='Admin' && item.is_locked">Locked</span>
                                         <span
                                             *ngIf="userRole !='Admin' && !accessPermissions[0]?.update && !accessPermissions[0]?.delete">-</span>
                                     </ng-container></td>

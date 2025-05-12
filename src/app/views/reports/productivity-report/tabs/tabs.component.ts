@@ -1,4 +1,5 @@
 import { Component, ContentChildren, OnInit, QueryList } from '@angular/core';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-tabs',
@@ -16,6 +17,7 @@ tabs:string[] = ['Overall Productivity', 'Quantitative Productivity', 'Qualitati
    'Productive Hours','Non Billable Hours','Non Productive Hours' ];
   selectedTab: number = 0;
   commonFilterData:any={'employee_id':'','periodicity':'','period':''};
+  user_id:any;
   selectTab(index: number): void {
     this.selectedTab = index;
     if(this.selectedTab ===  3 && ((this.userRole ==='Accountant' && !this.periodicityId && !this.period)||(!this.employee && !this.periodicityId && !this.period))){
@@ -28,7 +30,8 @@ tabs:string[] = ['Overall Productivity', 'Quantitative Productivity', 'Qualitati
     }
   }
   constructor() {
-    this.userRole = sessionStorage.getItem('user_role_name')
+    this.userRole = sessionStorage.getItem('user_role_name');
+    this.user_id = sessionStorage.getItem('user_id');
    }
 
   ngOnInit(): void {
@@ -82,5 +85,30 @@ selectedPeriodicity(event:any){
 }
 selectedPeriod(event:any){
 this.period=event;
+}
+
+downloadExcel(){
+ let query = `?productivity-type-for-all=Overall`;
+  if(this.userRole === 'Admin'){
+    query +=`&admin=True`
+  }else{
+    query += this.employee ? `logged-in-user-id=${this.employee}` :`logged-in-user-id=${this.user_id}`
+  }
+  if(this.period){
+query +=`&period=${this.period}&periodicity=${this.periodicityId}`
+  }
+  if(this.periodicityId){
+query +=`&periodicity=${this.periodicityId}`
+  }
+      let apiUrl = `${environment.live_url}/${environment.download_excel}/${query}`;
+      fetch(apiUrl)
+      .then(res => res.blob())
+      .then(blob => {
+        //console.log('blob',blob);
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = `productivity_reports.${'xlsx'}`;
+        a.click();
+      });
 }
 }

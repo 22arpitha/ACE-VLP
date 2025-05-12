@@ -17,16 +17,16 @@ export class QualitativeProductivityComponent implements OnInit,OnChanges {
 BreadCrumbsTitle: any = 'Qualitative Productivity';
 @Input() dropdwonFilterData:any;
       term: string = '';
-          tableSize: number = 5;
-          page: any = 1;
-          tableSizes = [5,10,25,50,100];
+         tableSize: number = 50;
+        page: any = 1;
+        tableSizes = [50,75,100];
           tableConfig:any = {
             columns: [],
             data: [],
             searchTerm: '',
             actions: [],
             accessConfig: [],
-            tableSize: 10,
+            tableSize: this.tableSize,
             pagination: true,
             averageProductivity:true,
             showDownload:true,
@@ -129,7 +129,8 @@ BreadCrumbsTitle: any = 'Qualitative Productivity';
               query+= this.dropdwonFilterData.employee_id ? `&employee-id=${this.dropdwonFilterData.employee_id}`:this.user_role_name ==='Admin' ? '':`&employee-id=${this.user_id}`;
               query+= this.dropdwonFilterData.periodicity ? `&periodicity=${this.dropdwonFilterData.periodicity}`:'';
               query+= this.dropdwonFilterData.period ? `&period=${this.dropdwonFilterData.period}`:'';
-             }else{
+              query+= this.dropdwonFilterData.employee_id || this.dropdwonFilterData.periodicity || this.dropdwonFilterData.period ? '&is_dropdown_selected=True' :'';
+              }else{
               query += this.user_role_name ==='Admin' ? '':`&employee-id=${this.user_id}`;
              }
            }
@@ -153,7 +154,8 @@ BreadCrumbsTitle: any = 'Qualitative Productivity';
             query+= this.dropdwonFilterData.employee_id ? `&employee-id=${this.dropdwonFilterData.employee_id}`:this.user_role_name ==='Admin' ? '':`&employee-id=${this.user_id}`;
             query+= this.dropdwonFilterData.periodicity ? `&periodicity=${this.dropdwonFilterData.periodicity}`:'';
             query+= this.dropdwonFilterData.period ? `&period=${this.dropdwonFilterData.period}`:'';
-           }else{
+            query+= this.dropdwonFilterData.employee_id || this.dropdwonFilterData.periodicity || this.dropdwonFilterData.period ? '&is_dropdown_selected=True' :'';
+            }else{
             query += this.user_role_name ==='Admin' ? '':`&employee-id=${this.user_id}`;
            }
           this.api.getData(`${environment.live_url}/${environment.jobs}/${query}`).subscribe((res: any) => {
@@ -164,7 +166,7 @@ BreadCrumbsTitle: any = 'Qualitative Productivity';
             let tableFooterContent = {'avg_qualitative_productivity':res?.avg_qualitative_productivity}
             this.tableConfig = {
              columns: tableColumns,
-             data: formattedData,
+             data: formattedData ? formattedData : [],
              searchTerm: this.term,
              actions: [],
              accessConfig: [],
@@ -172,6 +174,7 @@ BreadCrumbsTitle: any = 'Qualitative Productivity';
              tableFooterContent:tableFooterContent,
              tableSize: pageSize,
              pagination: true,
+             searchable: true,
              currentPage:page,
              totalRecords: res.total_no_of_record,
              hideDownload:true,

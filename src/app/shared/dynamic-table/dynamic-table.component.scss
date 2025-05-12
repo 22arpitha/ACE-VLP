@@ -48,8 +48,8 @@ mat-form-field{
 }
 
 .isActive {
-  background-color: #ebebeb !important;
-  color: #000;
+  background-color: #0F5C98 !important;
+  color: #fff;
   font-weight: 500;
   font-size: 14px;
 }
@@ -83,4 +83,10 @@ button.proceedbtn:disabled{
 .bg-transparent{
   font-size: 12px !important;
   text-align: center !important;
+}
+.negativeText {
+color: red !important;
+}
+.positiveText{
+  color: green !important;
 }

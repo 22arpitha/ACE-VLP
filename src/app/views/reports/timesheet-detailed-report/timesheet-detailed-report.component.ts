@@ -25,6 +25,7 @@ export class TimesheetDetailedReportComponent implements OnInit {
     accessConfig: [],
     tableSize: 50,
     pagination: true,
+    showDownload:true,
   };
   userRole: string;
   user_role_name: string;
