@@ -12,7 +12,7 @@ userRole:any
 period:number | null = null;
 employee:number | null = null;
 resetFilter:boolean=false;
-ondefaultSelection:boolean =false;
+ondefaultSelection:boolean =true;
 tabs:string[] = ['Overall Productivity', 'Quantitative Productivity', 'Qualitative Productivity','Work Culture and Work Ethics',
    'Productive Hours','Non Billable Hours','Non Productive Hours' ];
   selectedTab: number = 0;
@@ -20,7 +20,7 @@ tabs:string[] = ['Overall Productivity', 'Quantitative Productivity', 'Qualitati
   user_id:any;
   selectTab(index: number): void {
     this.selectedTab = index;
-    if(this.selectedTab ===  3 && ((this.userRole ==='Accountant' && !this.periodicityId && !this.period)||(!this.employee && !this.periodicityId && !this.period))){
+    if(((this.userRole ==='Accountant' && !this.periodicityId && !this.period)||(!this.employee && !this.periodicityId && !this.period))){
       this.ondefaultSelection=true; 
       setTimeout(() => {
         this.applySearch();
@@ -35,10 +35,12 @@ tabs:string[] = ['Overall Productivity', 'Quantitative Productivity', 'Qualitati
    }
 
   ngOnInit(): void {
+    if(this.ondefaultSelection){
+      setTimeout(() => this.applySearch(), 300);
+    }
   }
   applySearch(){
     this.commonFilterData={'employee_id':this.employee,'periodicity':this.periodicityId,'period':this.period};
-  console.log('this.commonFilterData',this.commonFilterData);
   }
   resetSearch(): void {
     // Reset all filter-related data
@@ -58,17 +60,13 @@ tabs:string[] = ['Overall Productivity', 'Quantitative Productivity', 'Qualitati
     // Determine if no filters are selected based on user role and current values
     const noFiltersSelected =
       !this.periodicityId && !this.period &&
-      (this.userRole === 'Accountant' || !this.employee);
-    // Check if the current tab is tab 3
-    const isTab3 = this.selectedTab === 3;
-  
+      (this.userRole === 'Accountant' || !this.employee);  
     // Reset UI state and possibly re-apply search
     setTimeout(() => {
       this.resetFilter = false;
   
-      if (isTab3 && noFiltersSelected) {
+      if (noFiltersSelected) {
         this.ondefaultSelection = true;
-  
         // Apply the search with a slight delay
         setTimeout(() => this.applySearch(), 300);
       }
