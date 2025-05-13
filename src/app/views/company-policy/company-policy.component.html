@@ -14,7 +14,7 @@
                   <span *ngIf="f['policy_name'].errors?.['required']">Policy Name is required</span>
                   <span
                     *ngIf="!f['policy_name'].errors?.['required'] && f['policy_name'].errors?.['pattern']">
-                    Invalid Name. Extra space and special charaters are not allowed
+                    Extra space charaters are not allowed.
                   </span>
                 </div>
               </div>

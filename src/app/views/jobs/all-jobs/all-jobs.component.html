@@ -9,7 +9,7 @@
             <div class="col-12 mt-2 col-sm-12 col-md-4 col-lg-3"></div>
             <div class="col-12 mt-2 col-sm-12 col-md-4 col-lg-6 text-end px-0">
                 <button mat-raised-button class="mat-btn-s tab-button-content" [ngClass]="{'isActive': isCurrent}" type="button" (click)="getCurrentJobs();getJobsFilterList('True')">Current</button>
-                <button mat-raised-button class="mat-btn-s tab-button-content" [ngClass]="{'isActive': isHistory}" type="button" (click)="getJobsHistory();getJobsFilterList()">History</button>
+                <button mat-raised-button class="mat-btn-s tab-button-content" [ngClass]="{'isActive': isHistory}" type="button" (click)="getJobsHistory();getJobsFilterList('False')">History</button>
                 <button mat-raised-button class="proceedbtn mat-btn-s download-btn" [disabled]="filteredList?.length === 0" type="button" [matMenuTriggerFor]="downloadMenu"><i class="fa fa-download"></i></button>
                 <button mat-raised-button class="proceedbtn mat-btn-s" type="button" (click)="openCreateClientPage()"
                 *ngIf="userRole !='Admin' && accessPermissions[0]?.create || userRole === 'Admin'">Create
@@ -175,7 +175,7 @@
                       <td>{{item?.job_name || '-'}}</td>
                       <td>{{item?.job_type_name  || '-'}}</td>
                       <td>{{item?.client_name  || '-'}}</td>
-                      <td>{{item?.job_allocation_date}}</td>
+                      <td>{{item?.job_allocation_date | date: 'dd/MM/yyyy'}}</td>
                       <td>{{getEmployeeName(item?.employees) || '-'}}</td>
                       <td>{{getManagerName(item?.employees) || '-'}}</td>
                           <td>
@@ -200,7 +200,7 @@
                             <div *ngIf="userRole !='Admin' && accessPermissions[0]?.update && item.valueChanged || userRole === 'Admin' && item.valueChanged"><img src="../../../../assets/images/tick.svg"  (click)="saveJobStausPercentage(item)" alt="" height="20" width="20"></div>
                            </div>
                           </td>
-                      <td>{{item?.job_status_date}}</td>
+                      <td>{{item?.job_status_date | date: 'dd/MM/yyyy'}}</td>
                       <td> <ng-container>
                         <img src="../../../../assets/images/Edit.svg" class="icon-image" type="button" container="body"
                           ngbTooltip="Edit" (click)="edit(item)" *ngIf="userRole !='Admin' && (accessPermissions[0]?.update || accessPermissions[0]?.view) || userRole === 'Admin'"/>

@@ -53,7 +53,7 @@ import { NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
     EmployeeListComponent,
     WeekDatepickerComponent,
     GenericTableFilterComponent,
-    WeekPickerComponent
+    WeekPickerComponent,
   ],
   imports: [
     CommonModule,

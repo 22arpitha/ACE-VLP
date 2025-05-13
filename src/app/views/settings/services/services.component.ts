@@ -107,7 +107,7 @@ this.formUtilityService.resetHasUnsavedValue();
           if (respData) {
             this.apiService.showSuccess(respData['message']);
             this.resetFormState();
-            this.getAllServices('?page=1&page_size=5');
+            this.getAllServices(`?page=1&page_size=${this.tableSize}`);
           }
         }, (error: any) => {
           this.apiService.showError(error?.error?.detail);
@@ -117,7 +117,7 @@ this.formUtilityService.resetHasUnsavedValue();
           if (respData) {
             this.apiService.showSuccess(respData['message']);
             this.resetFormState();
-            this.getAllServices('?page=1&page_size=5');
+            this.getAllServices(`?page=1&page_size=${this.tableSize}`);
           }
 
         }, (error: any) => {
