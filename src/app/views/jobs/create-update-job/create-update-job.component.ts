@@ -212,7 +212,7 @@ export class CreateUpdateJobComponent implements CanComponentDeactivate, OnInit,
     let queryparams = `?is_active=True&employee=True`;
     const shouldAddQuery = this.selectOtherEmpFlag || this.selectAllEmpFlag;
     if (!shouldAddQuery) {
-      if (this.user_role_name === 'Accountant') {
+      if (this.user_role_name === 'Accountant' && !this.isEditItem) {
         queryparams += `&employee_id=${this.user_id}`;
       } else if (this.user_role_name === 'Manager') {
         queryparams += `&reporting_manager_id=${this.user_id}`;

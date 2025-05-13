@@ -15,12 +15,14 @@
                 Client</button>
             </div>
             <mat-menu #downloadMenu="matMenu">
-              <button mat-menu-item (click)="downloadOption('pdf')">
-                <i class="fa fa-file-pdf"></i> PDF
-              </button>
               <button mat-menu-item (click)="downloadOption('csv')">
-                <i class="fa fa-file-excel"></i> CSV
-              </button>
+                       <mat-icon style="color: green">table_view</mat-icon>
+                        <span>CSV</span>
+                    </button>
+                    <button mat-menu-item (click)="downloadOption('pdf')">
+                        <mat-icon style="color: red">picture_as_pdf</mat-icon>
+                        <span>PDF</span>
+                    </button>
             </mat-menu>
         </div>
         <div class="row mx-1 my-2 px-0 table-wrapper">
