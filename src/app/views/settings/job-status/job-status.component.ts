@@ -91,7 +91,7 @@ export class JobStatusComponent implements CanComponentDeactivate, OnInit,OnDest
   }
   public initializeForm() {
     this.jobStatusForm = this.fb.group({
-      status_name: ['', [Validators.pattern(/^[a-zA-Z&.,'\-]+( [a-zA-Z&.,'\-]+)*$/), Validators.required, Validators.maxLength(50)]],
+      status_name: ['', [Validators.pattern(/^[a-zA-Z0-9!@#$%^&*()_+{}\[\]:;"'<>,.?/\\|`~\-]+( [a-zA-Z0-9!@#$%^&*()_+{}\[\]:;"'<>,.?/\\|`~\-]+)*$/), Validators.required, Validators.maxLength(50)]],
       percentage_of_completion: [null, [Validators.required,Validators.pattern(/^(100|[1-9]?\d)$/), Validators.maxLength(3), Validators.max(100), Validators.min(0), Validators.minLength(1)]],
       status_group: [null, Validators.required],
     });
