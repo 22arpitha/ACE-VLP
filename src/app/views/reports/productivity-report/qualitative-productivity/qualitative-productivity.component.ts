@@ -134,7 +134,7 @@ BreadCrumbsTitle: any = 'Qualitative Productivity';
               query += this.user_role_name ==='Admin' ? '':`&employee-id=${this.user_id}`;
              }
            }
-          const url = `${environment.live_url}/${environment.timesheet_reports}/${query}&file-type=${fileType}&productivity-type=qualitative`;
+          const url = `${environment.live_url}/${environment.productivity_reports}/${query}&file-type=${fileType}&productivity-type=qualitative`;
           downloadFileFromUrl({
             url,
             fileName: 'qualitative_report',

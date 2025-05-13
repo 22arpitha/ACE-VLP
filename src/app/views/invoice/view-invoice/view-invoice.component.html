@@ -14,7 +14,7 @@
 <div class="d-flex gap-1 my-1">
     <h5>{{allClientBasedJobsLists[0]?.invoice_number || '-'}}</h5>
     <span>|</span>
-    <h5>{{allClientBasedJobsLists[0]?.created_date||'-'}}</h5>
+    <h5>{{(allClientBasedJobsLists[0]?.created_date  | date: 'dd/MM/yyyy')||'-'}}</h5>
 </div>
         </div>
     </div>
@@ -39,12 +39,14 @@
                 <button *ngIf="userRole !='Admin' && accessPermissions[0]?.update || userRole === 'Admin'" mat-raised-button class="proceedbtn mat-btn-s download-btn" type="button" [matMenuTriggerFor]="downloadMenu"><i class="fa fa-download"></i></button>
               
                 <mat-menu #downloadMenu="matMenu">
-                  <button mat-menu-item type="button" (click)="downloadOption('pdf')">
-                    <i class="fa fa-file-pdf"></i> PDF
-                  </button>
-                  <button mat-menu-item type="button" (click)="downloadOption('csv')">
-                    <i class="fa fa-file-excel"></i> CSV
-                  </button>
+                   <button mat-menu-item (click)="downloadOption('csv')">
+                       <mat-icon style="color: green">table_view</mat-icon>
+                        <span>CSV</span>
+                    </button>
+                    <button mat-menu-item (click)="downloadOption('pdf')">
+                        <mat-icon style="color: red">picture_as_pdf</mat-icon>
+                        <span>PDF</span>
+                    </button>
                 </mat-menu>  
               </div>  
         </div>

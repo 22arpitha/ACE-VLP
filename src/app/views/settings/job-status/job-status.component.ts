@@ -156,7 +156,7 @@ export class JobStatusComponent implements CanComponentDeactivate, OnInit,OnDest
           if (respData) {
             this.apiService.showSuccess(respData['message']);
             this.resetFormState();
-            this.getAllJobStatus('?page=1&page_size=5');
+            this.getAllJobStatus(`?page=1&page_size=${this.tableSize}`);
           }
         }, (error: any) => {
           this.apiService.showError(error?.error?.detail);
@@ -166,7 +166,7 @@ export class JobStatusComponent implements CanComponentDeactivate, OnInit,OnDest
           if (respData) {
             this.apiService.showSuccess(respData['message']);
             this.resetFormState();
-            this.getAllJobStatus('?page=1&page_size=5');
+            this.getAllJobStatus(`?page=1&page_size=${this.tableSize}`);
           }
 
         }, (error: any) => {

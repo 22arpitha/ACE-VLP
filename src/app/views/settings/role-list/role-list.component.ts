@@ -155,7 +155,7 @@ export class RoleListComponent implements CanComponentDeactivate, OnInit {
           if (respData) {
             this.api.showSuccess(respData['message']);
             this.resetFormState();
-            this.getAllRolesList(`?page=${1}&page_size=${5}`);
+            this.getAllRolesList(`?page=1&page_size=${this.tableSize}`);
           }
         }, (error: any) => {
           this.api.showError(error?.error?.detail);

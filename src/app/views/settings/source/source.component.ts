@@ -75,7 +75,7 @@ this.formUtilityService.resetHasUnsavedValue();
 
   public initializeForm() {
     this.sourceForm = this.fb.group({
-      source_name: ['', [Validators.required, Validators.pattern(/^[a-zA-Z]+( [a-zA-Z]+)*$/), Validators.maxLength(50)]],
+      source_name: ['', [Validators.required, Validators.pattern(/^[a-zA-Z&.,'\-]+( [a-zA-Z&.,'\-]+)*$/), Validators.maxLength(50)]],
     });
     this.initialFormValue=this.sourceForm?.getRawValue();
   }
@@ -106,7 +106,7 @@ this.formUtilityService.resetHasUnsavedValue();
           if (respData) {
             this.apiService.showSuccess(respData['message']);
             this.resetFormState();
-            this.getAllSource('?page=1&page_size=5');
+            this.getAllSource(`?page=1&page_size=${this.tableSize}`);
           }
         }, (error: any) => {
           this.apiService.showError(error?.error?.detail);
@@ -116,7 +116,7 @@ this.formUtilityService.resetHasUnsavedValue();
           if (respData) {
             this.apiService.showSuccess(respData['message']);
             this.resetFormState();
-            this.getAllSource('?page=1&page_size=5');
+            this.getAllSource(`?page=1&page_size=${this.tableSize}`);
           }
 
         }, (error: any) => {

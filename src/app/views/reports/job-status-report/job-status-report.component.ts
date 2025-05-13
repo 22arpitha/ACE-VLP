@@ -250,6 +250,7 @@ onApplyDateFilter(filteredDate:string, filteredKey: string): void {
      page: this.page,
      pageSize: this.tableSize,
    });
+   query += (this.userRole ==='Admin' || (this.userRole !='Admin' && this.client_id)) ? '':`&employee-id=${this.user_id}`;  
    query += this.client_id ? `&client=${this.client_id}` : '';
     if (this.selectedClientIds?.length) {
         query += `&client-ids=[${this.selectedClientIds.join(',')}]`;
@@ -266,7 +267,7 @@ onApplyDateFilter(filteredDate:string, filteredKey: string): void {
       if(this.jobAllocationDate.length){
         query += `&job-allocation-date=[${this.jobAllocationDate}]`;
       }
-   const url = `${environment.live_url}/${environment.job_reports}/${query}&job-status=[${this.statusList}]&type=job-status-report&file-type=${fileType}`;
+   const url = `${environment.live_url}/${environment.job_reports}/${query}&job-status=[${this.statusList}]&report-type=job-status-report&file-type=${fileType}`;
    downloadFileFromUrl({
      url,
      fileName: 'job_status_report',

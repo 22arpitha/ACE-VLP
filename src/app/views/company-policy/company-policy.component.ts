@@ -87,10 +87,10 @@ this.formUtilityService.resetHasUnsavedValue();
 
   public initializeForm() {
     this.companyPolicyForm = this.fb.group({
-      policy_name: ['', [Validators.required, Validators.pattern(/^[a-zA-Z0-9]+( [a-zA-Z0-9]+)*$/)]],
+      policy_name: ['', [Validators.required, Validators.pattern(/^[a-zA-Z&.,'\-]+( [a-zA-Z&.,'\-]+)*$/)]],
       policy_file: ['', Validators.required, this.fileFormatValidator],
       password: ['', [Validators.pattern(/^[a-zA-Z0-9!@#$%^&*()_+{}\[\]:;"'<>,.?/\\|`~\-]+( [a-zA-Z0-9!@#$%^&*()_+{}\[\]:;"'<>,.?/\\|`~\-]+)*$/), Validators.maxLength(20)]],
-      when_to_use: ['', [ Validators.pattern(/^[a-zA-Z0-9]+( [a-zA-Z0-9]+)*$/), Validators.maxLength(20)]],
+      when_to_use: ['', [ Validators.pattern(/^[a-zA-Z0-9&.,'\-]+( [a-zA-Z0-9&.,'\-]+)*$/), Validators.maxLength(20)]],
     });
     this.initialFormValue=this.companyPolicyForm?.getRawValue();
 
@@ -123,7 +123,7 @@ this.formUtilityService.resetHasUnsavedValue();
           if (respData) {
             this.apiService.showSuccess(respData['message']);
             this.resetFormState();
-            this.getAllCompanyPolicy('?page=1&page_size=5');
+            this.getAllCompanyPolicy(`?page=1&page_size=${this.tableSize}`);
           }
         }, (error: any) => {
           this.apiService.showError(error?.error?.detail);
@@ -134,7 +134,7 @@ this.formUtilityService.resetHasUnsavedValue();
           if (respData) {
             this.apiService.showSuccess(respData['message']);
             this.resetFormState();
-            this.getAllCompanyPolicy('?page=1&page_size=5');
+            this.getAllCompanyPolicy(`?page=1&page_size=${this.tableSize}`);
           }
 
         }, (error: any) => {

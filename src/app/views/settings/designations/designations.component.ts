@@ -82,7 +82,7 @@ this.formUtilityService.resetHasUnsavedValue();
   }
   public initializeForm() {
     this.designationForm = this.fb.group({
-      sub_designation_name: ['', [Validators.pattern(/^[a-zA-Z0-9]+( [a-zA-Z0-9]+)*$/), Validators.required, Validators.maxLength(50)]],
+      sub_designation_name: ['', [Validators.pattern(/^[a-zA-Z&.,'\-]+( [a-zA-Z&.,'\-]+)*$/), Validators.required, Validators.maxLength(50)]],
       designation: [null, Validators.required],
     });
     this.initialFormValue = this.designationForm?.getRawValue();
@@ -124,7 +124,7 @@ this.formUtilityService.resetHasUnsavedValue();
           if (respData) {
             this.apiService.showSuccess(respData['message']);
             this.resetFormState();
-            this.getAllDesignation('?page=1&page_size=5');
+            this.getAllDesignation(`?page=1&page_size=${this.tableSize}`);
           }
         }, (error: any) => {
           this.apiService.showError(error?.error?.detail);
@@ -134,7 +134,7 @@ this.formUtilityService.resetHasUnsavedValue();
           if (respData) {
             this.apiService.showSuccess(respData['message']);
             this.resetFormState();
-            this.getAllDesignation('?page=1&page_size=5');
+            this.getAllDesignation(`?page=1&page_size=${this.tableSize}`);
           }
 
         }, (error: any) => {
