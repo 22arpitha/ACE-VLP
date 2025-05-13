@@ -69,7 +69,7 @@ export class ClientListComponent implements OnInit {
       private datePipe:DatePipe) {
         this.user_id = sessionStorage.getItem('user_id');
         this.userRole = sessionStorage.getItem('user_role_name');
-  
+
       this.common_service.setTitle(this.BreadCrumbsTitle);
       this.getCurrentClientList();
      }
@@ -100,14 +100,14 @@ export class ClientListComponent implements OnInit {
       extractor: (item: any) => { id: any; name: string }
     ): { id: any; name: string }[] {
       const seen = new Map();
-  
+
       this.clientList.forEach(client => {
         const value = extractor(client);
         if (value && value.id && !seen.has(value.id)) {
           seen.set(value.id, value.name);
         }
       });
-  
+
       return Array.from(seen, ([id, name]) => ({ id, name }));
     }
 
@@ -243,7 +243,7 @@ export class ClientListComponent implements OnInit {
 
     public viewContactDetails(item:any){
       this.dialog.open(ClientContactDetailsPopupComponent, {
-      width: '700px',
+      panelClass: 'custom-details-dialog',
       data: { contact_details: item?.contact_details }
     });
     }
@@ -274,13 +274,13 @@ export class ClientListComponent implements OnInit {
       a.click();
     });
     }
-   
+
     filterData() {
       this.filterQuery = this.getFilterBaseUrl()
       if (this.filters.country.length) {
         this.filterQuery += `&country-ids=[${this.filters.country.join(',')}]`;
       }
-  
+
       if (this.filters.source.length) {
         this.filterQuery += `&source-ids=[${this.filters.source.join(',')}]`;
       }
@@ -294,10 +294,10 @@ export class ClientListComponent implements OnInit {
         this.allClientList = res?.results;
         this.filteredList = res?.results;
         this.count = res?.['total_no_of_record'];
-        this.page = res?.['current_page'];  
+        this.page = res?.['current_page'];
       });
     }
-  
+
     onFilterChange(event: any, filterType: string) {
       const selectedOptions = event;
       this.filters[filterType] = selectedOptions;

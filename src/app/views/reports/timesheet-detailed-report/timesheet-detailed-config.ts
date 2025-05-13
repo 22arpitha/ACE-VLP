@@ -2,7 +2,7 @@
 export function getTableColumns(role: string) {
 const tableColumns = [
   { label: 'Sl No', key: 'sl', sortable: true },
-  { label: 'Date', key: 'date', sortable: true, filterable: true,paramskeyId: 'timesheet-dates', filterType: 'date' },
+  { label: 'Date', key: 'date', sortable: true, filterable: true,paramskeyId: 'timesheet-dates', filterType: 'daterange' },
   {
     label: 'Client',
     key: 'client_name',

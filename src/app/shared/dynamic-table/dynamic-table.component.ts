@@ -9,11 +9,20 @@ import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
 import { fileToBase64, urlToFile } from '../fileUtils.utils';
 import { OverlayRef } from '@angular/cdk/overlay';
 import { NgbDropdownConfig } from '@ng-bootstrap/ng-bootstrap';
+import { MAT_DATE_RANGE_SELECTION_STRATEGY } from '@angular/material/datepicker';
+import { WeeklySelectionStrategy } from '../weekly-selection-strategy';
 @Component({
   selector: 'app-dynamic-table',
   templateUrl: './dynamic-table.component.html',
   styleUrls: ['./dynamic-table.component.scss'],
-  providers: [NgbDropdownConfig],
+  providers: [
+    NgbDropdownConfig,
+    {
+          provide: MAT_DATE_RANGE_SELECTION_STRATEGY,
+          useClass: WeeklySelectionStrategy
+    }
+  ],
+
 })
 export class DynamicTableComponent implements OnInit {
   @Input() config!: DynamicTableConfig;
@@ -130,9 +139,6 @@ selectedFile:(File | null)[] = [];
   onFilterChange(selectedValue: any, columnConfig: any) {
     const filterKey = columnConfig.key; // The key used for columnFilters
     const backendParamKey = columnConfig.paramskeyId || filterKey; // The key to be sent to backend
-
-    // console.log(`onFilterChange candidate for ${filterKey}. Selected:`, selectedValue);
-
     const currentFilterValueStr = JSON.stringify(selectedValue);
     const lastEmittedValueStr = this.lastEmittedFilters[filterKey];
 
@@ -232,14 +238,6 @@ selectedFile:(File | null)[] = [];
   }
 
 
-
-// getFilteredOptions(colKey: string): { id: any; name: string }[] {
-//   const options = this.config.columns.find(c => c.key === colKey)?.filterOptions || [];
-//   const search = this.filterSearchText[colKey]?.toLowerCase() || '';
-//   return options
-//     .filter((option: any) => typeof option === 'string' || (typeof option === 'object' && option.name?.toLowerCase().includes(search)))
-//     .map((option: any) => typeof option === 'string' ? { id: null, name: option } : option);
-// }
   getFilteredOptions(colKey: string): { id: any; name: string }[] {
     const column = this.config.columns?.find(c => c.key === colKey);
     const options = column?.filterOptions || [];
@@ -295,9 +293,6 @@ clearDateFilter(columnKey: string): void {
   // If the column being cleared is the one currently active in the datepicker, reset dateFilterValue
   if (this.activeDateColumn === columnKey) {
     this.dateFilterValue = null;
-    // Optionally, you might want to set this.activeDateColumn = null if no date column should be considered active.
-    // However, the UI now shows calendar/clear per column based on columnFilters[col.key],
-    // so activeDateColumn is mainly for which column the #picker is currently controlling.
   }
   // Parent component is expected to handle the data refresh.
 }
@@ -562,5 +557,20 @@ isPositiveOrNegative(value: string): string {
         return "";
     }
 }
-
+onDateChange(event: any) {
+  const selectedDate = event.value;
+  const formattedDate = this.datePipe.transform(selectedDate, 'yyyy-MM-dd');
+//  this.rows.at(index).patchValue({ month: formattedDate });
+  this.selectedDateRange = formattedDate;
+ // this.actionEvent.emit({ actionType: 'dateChange', detail: formattedDate });
+  this.resetWeekDate = true;
+}
+onEndDateChange(event: any) {
+  const selectedDate = event.value;
+  const formattedDate = this.datePipe.transform(selectedDate, 'yyyy-MM-dd');
+//  this.rows.at(index).patchValue({ month: formattedDate });
+  this.selectedDateRange = formattedDate;
+  //this.actionEvent.emit({ actionType: 'endDateChange', detail: formattedDate });
+  this.resetWeekDate = true;
+}
 }

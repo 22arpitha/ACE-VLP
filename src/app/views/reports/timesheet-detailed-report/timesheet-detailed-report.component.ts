@@ -279,7 +279,8 @@ async getTableData(params?: { page?: number; pageSize?: number; searchTerm?: str
         searchable: true,
         currentPage:page,
         totalRecords: res.total_no_of_record,
-        showDownload:true
+        showDownload:true,
+        timesheetDetailedReport:true
       };
     }
     });

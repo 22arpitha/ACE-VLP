@@ -10,12 +10,20 @@ import { CommonServiceService } from '../../../service/common-service.service';
 import { SubModuleService } from '../../../service/sub-module.service';
 import { environment } from '../../../../environments/environment';
 import { EditInvoiceComponent } from '../edit-invoice/edit-invoice.component';
+import { MAT_DATE_RANGE_SELECTION_STRATEGY } from '@angular/material/datepicker';
+import { WeeklySelectionStrategy } from '../../../shared/weekly-selection-strategy';
 
 
 @Component({
   selector: 'app-all-invoice',
   templateUrl: './all-invoice.component.html',
-  styleUrls: ['./all-invoice.component.scss']
+  styleUrls: ['./all-invoice.component.scss'],
+  providers: [
+      {
+            provide: MAT_DATE_RANGE_SELECTION_STRATEGY,
+            useClass: WeeklySelectionStrategy
+      }
+    ]
 })
 export class AllInvoiceComponent implements OnInit {
 
@@ -29,6 +37,8 @@ BreadCrumbsTitle: any = 'Invoices';
       invoice_number:false,
       client_name:false,
     };
+    startDate:any;
+    endDate:any;
     page = 1;
     count = 0;
     tableSize = 5;
@@ -189,7 +199,7 @@ BreadCrumbsTitle: any = 'Invoices';
     public openEditInvoicePopup(item:any){
       this.dialog.open(EditInvoiceComponent, {
       data: { invoice_id: item?.id,client_id:item?.client_id },
-      width:'75%',
+      panelClass: 'custom-details-dialog',
       disableClose: true
     });
     this.dialog.afterAllClosed.subscribe((resp:any)=>{
@@ -237,5 +247,19 @@ BreadCrumbsTitle: any = 'Invoices';
       this.invoiceDate = null;
       this.dateFilterValue = null;
       this.filterData()
+    }
+    onDateChange(event: any) {
+      const selectedDate = event.value;
+      if (selectedDate) {
+        this.invoiceDate = this.datePipe.transform(selectedDate, 'yyyy-MM-dd');
+      }
+      //this.filterData()
+    }
+    onEndDateChange(event: any) {
+      const selectedDate = event.value;
+      if (selectedDate) {
+        this.invoiceDate = this.datePipe.transform(selectedDate, 'yyyy-MM-dd');
+      }
+     // this.filterData()
     }
 }

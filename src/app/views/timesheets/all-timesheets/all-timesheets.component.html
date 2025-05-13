@@ -1,24 +1,42 @@
-<div class="container-wrapper settings-main-content  px-0">
-    <section class="settings-table-bg px-3 vlp-timesheet"
-        *ngIf="userRole !='Admin' && accessPermissions[0]?.view || userRole === 'Admin'">
-        <div class="row mx-0 my-1 px-0 py-2">
-            <div class="col-sm-12 col-md-12 week-picker mb-3" *ngIf="userRole !='Admin'">
-                <div class="d-block d-md-flex  justify-content-between align-items-center">
-                    <div class="d-flex align-items-center">
-                        <h5 class="fw-bold">Weekly Timesheet History</h5>
-                        <app-week-datepicker (weekSelected)="weekDatePicker($event)" [resetWeek]="resetWeekDate"></app-week-datepicker>
-                        <!-- <button mat-raised-button (click)="picker1.open()"><i class="bi bi-calendar-event fs-4"></i></button>  -->
-                        <!-- <p class="mb-0">Select a week of a month</p> -->
-                    </div>
-                    <div>
-                        <button mat-raised-button class="proceedbtn mat-btn-s order-sm-1 order-3" type="button"
-                        (click)="openCreateEmployeePage()"
-                        *ngIf="userRole !='Admin' && accessPermissions[0]?.create">Create
-                        TimeSheet</button>
-                    </div>
-                </div>
-                <!-- <app-week-datepicker (weekSelected)="weekDatePicker($event)"></app-week-datepicker> -->
-                <!-- <mat-form-field class="example-full-width">
+<div class="container-wrapper settings-main-content px-0">
+  <section
+    class="settings-table-bg px-3 vlp-timesheet"
+    *ngIf="
+      (userRole != 'Admin' && accessPermissions[0]?.view) ||
+      userRole === 'Admin'
+    "
+  >
+    <div class="row mx-0 my-1 px-0 py-2">
+      <div
+        class="col-sm-12 col-md-12 week-picker mb-3"
+        *ngIf="userRole != 'Admin'"
+      >
+        <div
+          class="d-block d-md-flex justify-content-between align-items-center"
+        >
+          <div class="d-flex align-items-center">
+            <h5 class="fw-bold">Weekly Timesheet History</h5>
+            <app-week-datepicker
+              (weekSelected)="weekDatePicker($event)"
+              [resetWeek]="resetWeekDate"
+            ></app-week-datepicker>
+            <!-- <button mat-raised-button (click)="picker1.open()"><i class="bi bi-calendar-event fs-4"></i></button>  -->
+            <!-- <p class="mb-0">Select a week of a month</p> -->
+          </div>
+          <div>
+            <button
+              mat-raised-button
+              class="proceedbtn mat-btn-s order-sm-1 order-3"
+              type="button"
+              (click)="openCreateEmployeePage()"
+              *ngIf="userRole != 'Admin' && accessPermissions[0]?.create"
+            >
+              Create TimeSheet
+            </button>
+          </div>
+        </div>
+        <!-- <app-week-datepicker (weekSelected)="weekDatePicker($event)"></app-week-datepicker> -->
+        <!-- <mat-form-field class="example-full-width">
                         <mat-date-range-input [rangePicker]="picker1">
                             <input matStartDate placeholder="Start date" [(ngModel)]="selectedDate" (dateChange)="weekDatePicker($event)">
                             <input matEndDate placeholder="End date"  >
@@ -26,27 +44,40 @@
                         <mat-datepicker-toggle matIconSuffix [for]="picker1"></mat-datepicker-toggle>
                         <mat-date-range-picker #picker1></mat-date-range-picker>
                     </mat-form-field> -->
+      </div>
+      <div class="col-12 m-0 p-0" *ngIf="userRole != 'Admin'">
+        <div class="d-flex">
+          <div *ngFor="let i of weekData" class="week-card">
+            <div
+              class="d-flex d-flex justify-content-around align-items-center"
+            >
+              <div class="text-style">{{ i.date | date : "dd" }}</div>
+              <div class="text-style">{{ i.day.slice(0, 3) | titlecase }}</div>
             </div>
-            <div class="col-12 m-0 p-0 " *ngIf="userRole !='Admin'">
-                <div class="d-flex">
-                    <div *ngFor="let i of weekData" class="week-card">
-                        <div class="d-flex d-flex justify-content-around align-items-center">
-                            <div class="text-style">{{i.date | date: 'dd' }}</div>
-                            <div class="text-style">{{i.day.slice(0, 3) | titlecase}}</div>
-                        </div>
-                        <div class="d-flex d-flex justify-content-around align-items-center">
-                            <div class="text-style fw-medium">{{i.month}}</div>
-                            <div style="color: #449dd0; margin-bottom: 4px; font-weight: 600;">{{i.total_time}}</div>
-                        </div>
-                    </div>
-                </div>
+            <div
+              class="d-flex d-flex justify-content-around align-items-center"
+            >
+              <div class="text-style fw-medium">{{ i.month }}</div>
+              <div style="color: #449dd0; margin-bottom: 4px; font-weight: 600">
+                {{ i.total_time }}
+              </div>
             </div>
-            <div class="col-12 mt-3 col-sm-12 col-md-4 col-lg-3 search-div px-0">
-                <input type="search" (input)="filterSearch($event)" class="form-control p-2 sizeinput"
-                    [(ngModel)]="term" placeholder="Search" aria-describedby="emailHelp" autocomplete="off">
-                <i *ngIf="!term" class="bi bi-search" id="search-icon-tab"></i>
-            </div>
-            <!-- <div class="col-12 mt-3 col-sm-12 col-md-4 col-lg-3">
+          </div>
+        </div>
+      </div>
+      <div class="col-12 mt-3 col-sm-12 col-md-4 col-lg-3 search-div px-0">
+        <input
+          type="search"
+          (input)="filterSearch($event)"
+          class="form-control p-2 sizeinput"
+          [(ngModel)]="term"
+          placeholder="Search"
+          aria-describedby="emailHelp"
+          autocomplete="off"
+        />
+        <i *ngIf="!term" class="bi bi-search" id="search-icon-tab"></i>
+      </div>
+      <!-- <div class="col-12 mt-3 col-sm-12 col-md-4 col-lg-3">
                 <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
                     <mat-label> &nbsp; Enter a date range</mat-label >
                     <mat-date-range-input [rangePicker]="picker">
@@ -57,195 +88,361 @@
                     <mat-date-range-picker #picker ></mat-date-range-picker>
                   </mat-form-field>
             </div> -->
-            <!-- <div class="col-12 mt-3 col-sm-12 col-md-4 col-lg-3"></div> -->
-            <div class="col-12 mt-3 col-sm-12 col-md-4 col-lg-5 text-end">
-                <button mat-raised-button class="mat-btn-s order-sm-1 order-3" type="button" [disabled]="isTodayFriday()"
-                    *ngIf="userRole !='Admin' && accessPermissions[0]?.create" (click)="submitWeekTimesheet();getTimesheetsIDs()">Submit Week
-                    TimeSheet
-                  </button>
-                  </div>
-                   <div class="col-12 mt-3 col-sm-12 col-md-4 col-lg-2 text-end">
-                    <button mat-stroked-button class="order-sm-1 order-3 w-100 bg-shortfall" type="button"
-                    *ngIf="userRole !='Admin'" >ShortFall : 10
-                  </button>
-                  </div>
-                  <div class="col-12 mt-3 col-sm-12 col-md-4 col-lg-2 text-end">
-                  <button mat-stroked-button class="order-sm-1 order-3 w-100 bg-total" type="button"
-                    *ngIf="userRole !='Admin'" >Total Time : 12
-                  </button>
-                  </div>
-        </div>
-        <div class="row mx-1 my-2 px-0 table-wrapper">
-            <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0 ">
-                <table class="table table table-hover table-list">
-                    <thead>
-                        <tr>
-                            <th scope="col"> S.No</th>
-                            <th scope="col">Date
-                                <button
-                        mat-icon-button
-                        (click)="picker.open()"
-                        class="ms-1 btn-menu-trigger"
-                        *ngIf="!dateFilterValue">
-                      <i class="bi bi-calendar"></i>
-
-                    </button>
-                      <button mat-icon-button container="body"
-                      ngbTooltip="Clear Date" placement="top"  *ngIf="dateFilterValue" (click)="clearDateFilter()" class="ms-1 btn-menu-trigger">
-                        <i class="bi bi-x-circle"></i>
-                      </button>
-
-                    <mat-form-field class="opacity-0 position-absolute">
-                      <mat-label>Choose a date</mat-label>
-                      <input
-                        matInput
-                        [matDatepicker]="picker"
-                        [(ngModel)]="dateFilterValue"
-                        (dateChange)="onDateSelected($event)"
-                      />
-                      <mat-hint>MM/DD/YYYY</mat-hint>
-                      <mat-datepicker #picker></mat-datepicker>
-                    </mat-form-field>
-
-                            </th>
-                            <th scope="col">Employee
-                                <i *ngIf="!arrowState['employee_name']" (click)="sort('asc','employee_name')"
-                                    class="bi bi-arrow-down"></i>
-                                <i (click)="sort('desc','employee_name')" *ngIf="arrowState['employee_name']"
-                                    class="bi bi-arrow-up"></i>
-                                    <button mat-icon-button [matMenuTriggerFor]="employeeFilterMenu">
-                                        <i class="bi bi-toggles"></i>
-                                      </button>
-
-
-                                      <mat-menu #employeeFilterMenu="matMenu">
-                                        <app-generic-table-filter
-                                          [options]="allEmployeeNames"
-                                          [(selectedOptions)]="filters.employee_name"
-                                          (selectedOptionsChange)="onFilterChange($event, 'employee_name')"
-                                        ></app-generic-table-filter>
-                                      </mat-menu>
-                            </th>
-                            <th scope="col" class="name-col">Client
-                                <i *ngIf="!arrowState['client_name']" (click)="sort('asc','client_name')"
-                                    class="bi bi-arrow-down"></i>
-                                <i (click)="sort('desc','client_name')" *ngIf="arrowState['client_name']"
-                                    class="bi bi-arrow-up"></i>
-                                    <button mat-icon-button [matMenuTriggerFor]="clientFilterMenu">
-                                        <i class="bi bi-toggles"></i>
-                                      </button>
-
-
-                                      <mat-menu #clientFilterMenu="matMenu">
-                                        <app-generic-table-filter
-                                          [options]="allClientNames"
-                                          [(selectedOptions)]="filters.client_name"
-                                          (selectedOptionsChange)="onFilterChange($event, 'client_name')"
-                                        ></app-generic-table-filter>
-                                      </mat-menu>
-                            </th>
-                            <th scope="col" class="name-col">Job
-                                <i *ngIf="!arrowState['job_name']" (click)="sort('asc','job_name')"
-                                    class="bi bi-arrow-down"></i>
-                                <i (click)="sort('desc','job_name')" *ngIf="arrowState['job_name']"
-                                    class="bi bi-arrow-up"></i>
-                                    <button mat-icon-button [matMenuTriggerFor]="jobFilterMenu">
-                                        <i class="bi bi-toggles"></i>
-                                      </button>
-
-
-                                      <mat-menu #jobFilterMenu="matMenu">
-                                        <app-generic-table-filter
-                                          [options]="allJobsNames"
-                                          [(selectedOptions)]="filters.job_name"
-                                          (selectedOptionsChange)="onFilterChange($event, 'job_name')"
-                                        ></app-generic-table-filter>
-                                      </mat-menu>
-
-                            </th>
-                            <th scope="col">Task
-                                <i *ngIf="!arrowState['task_nmae']" (click)="sort('asc','task_nmae')"
-                                    class="bi bi-arrow-down"></i>
-                                <i (click)="sort('desc','task_nmae')" *ngIf="arrowState['task_nmae']"
-                                    class="bi bi-arrow-up"></i>
-                                    <button mat-icon-button [matMenuTriggerFor]="taskFilterMenu">
-                                        <i class="bi bi-toggles"></i>
-                                      </button>
-
-
-                                      <mat-menu #taskFilterMenu="matMenu">
-                                        <app-generic-table-filter
-                                          [options]="allTaskNames"
-                                          [(selectedOptions)]="filters.task_nmae"
-                                          (selectedOptionsChange)="onFilterChange($event, 'task_nmae')"
-                                        ></app-generic-table-filter>
-                                      </mat-menu>
-                            </th>
-                            <th scope="col" class="time-col">Time</th>
-                            <th scope="col" class="name-col">Notes
-                                <i *ngIf="!arrowState['notes']" (click)="sort('asc','notes')"
-                                    class="bi bi-arrow-down"></i>
-                                <i (click)="sort('desc','notes')" *ngIf="arrowState['notes']"
-                                    class="bi bi-arrow-up"></i>
-                            </th>
-                            <th scope="col">Action </th>
-                        </tr>
-                    </thead>
-                    <tbody>
-
-                        <ng-container *ngIf="(allTimesheetsList) as result">
-                            <tr *ngFor='let item of result | customSort:directionValue:sortValue
-                             |paginate : {
-                             itemsPerPage: tableSize,
-                             currentPage: page,
-                             totalItems: count
-                              }; let i=index'>
-                                <td>{{getContinuousIndex(i)}}</td>
-                                <td>{{item?.date || '-'}}</td>
-                                <td>{{item?.employee_name || '-'}}</td>
-                                <td>{{item?.client_name || '-'}}</td>
-                                <td>{{item?.job_name || '-'}}</td>
-                                <td> {{item?.task_name || '-'}}</td>
-                                <td> {{item?.time_spent}} <br> [{{item?.start_time}} - {{item?.end_time}}] </td>
-                                <td> {{item?.notes || '-'}}</td>
-                                <td> <ng-container>
-                                        <img src="../../../../assets/images/Delete.svg" class="icon-image" type="button"
-                                            container="body" ngbTooltip="Delete" (click)="delete(item.id)"
-                                            *ngIf="userRole !='Admin' && accessPermissions[0]?.delete && !item.is_locked"/>
-                                        <img src="../../../../assets/images/Edit.svg" class="icon-image" type="button"
-                                            container="body" ngbTooltip="Edit" (click)="edit(item)"
-                                            *ngIf="userRole !='Admin' && (accessPermissions[0]?.view && accessPermissions[0]?.update) && !item.is_locked"/>
-                                        <button mat-raised-button class="proceedbtn" *ngIf="userRole ==='Admin' && item.is_locked" (click)="unlockTimesheet(item)">Unlock</button>
-                                        <span *ngIf="userRole ==='Admin' && !item.is_locked">Not Locked Yet</span>
-                                        <span *ngIf="userRole !='Admin' && item.is_locked">Locked</span>
-                                        <span
-                                            *ngIf="userRole !='Admin' && !accessPermissions[0]?.update && !accessPermissions[0]?.delete">-</span>
-                                    </ng-container></td>
-                            </tr>
-                        </ng-container>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <div class="row mx-1 my-2 px-0" *ngIf="allTimesheetsList?.length === 0">
-            <app-generic-norecards></app-generic-norecards>
-        </div>
-
-    </section>
-    <div class="row mx-0 px-3" *ngIf="allTimesheetsList?.length > 0">
-        <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0">
-            <div class="pagination-container p-0">
-                <pagination-controls previousLabel="Prev" nextLabel="Next" (pageChange)="onTableDataChange($event)">
-                </pagination-controls>
-                <div class="items-per-page-container">
-                    <div>Items per page</div>
-                    <mat-select [(ngModel)]="tableSize" (selectionChange)="onTableSizeChange($event)" placeholder="10"
-                        disableOptionCentering panelClass="paginationPanelClass" class="page-size">
-                        <mat-option *ngFor="let size of tableSizes" [value]="size">{{size}}</mat-option>
-                    </mat-select>
-                </div>
-            </div>
-        </div>
+      <!-- <div class="col-12 mt-3 col-sm-12 col-md-4 col-lg-3"></div> -->
+      <div class="col-12 mt-3 col-sm-12 col-md-4 col-lg-5 text-end">
+        <button
+          mat-raised-button
+          class="mat-btn-s order-sm-1 order-3"
+          type="button"
+          [disabled]="isTodayFriday()"
+          *ngIf="userRole != 'Admin' && accessPermissions[0]?.create"
+          (click)="submitWeekTimesheet(); getTimesheetsIDs()"
+        >
+          Submit Week TimeSheet
+        </button>
+      </div>
+      <div class="col-12 mt-3 col-sm-12 col-md-4 col-lg-2 text-end">
+        <button
+          mat-stroked-button
+          class="order-sm-1 order-3 w-100 bg-shortfall"
+          type="button"
+          *ngIf="userRole != 'Admin'"
+        >
+          ShortFall : 10
+        </button>
+      </div>
+      <div class="col-12 mt-3 col-sm-12 col-md-4 col-lg-2 text-end">
+        <button
+          mat-stroked-button
+          class="order-sm-1 order-3 w-100 bg-total"
+          type="button"
+          *ngIf="userRole != 'Admin'"
+        >
+          Total Time : 12
+        </button>
+      </div>
     </div>
+    <div class="row mx-1 my-2 px-0 table-wrapper">
+      <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0">
+        <table class="table table table-hover table-list">
+          <thead>
+            <tr>
+              <th scope="col">S.No</th>
+              <th scope="col" *ngIf="userRole !== 'Admin'">
+                Date
+                <button
+                  mat-icon-button
+                  (click)="picker.open()"
+                  class="ms-1 btn-menu-trigger"
+                  *ngIf="!dateFilterValue"
+                >
+                  <i class="bi bi-calendar"></i>
+                </button>
+                <button
+                  mat-icon-button
+                  container="body"
+                  ngbTooltip="Clear Date"
+                  placement="top"
+                  *ngIf="dateFilterValue"
+                  (click)="clearDateFilter()"
+                  class="ms-1 btn-menu-trigger"
+                >
+                  <i class="bi bi-x-circle"></i>
+                </button>
+
+                <mat-form-field class="opacity-0 position-absolute">
+                  <mat-label>Choose a date</mat-label>
+                  <input
+                    matInput
+                    [matDatepicker]="picker"
+                    [(ngModel)]="dateFilterValue"
+                    (dateChange)="onDateSelected($event)"
+                  />
+                  <mat-hint>MM/DD/YYYY</mat-hint>
+                  <mat-datepicker #picker></mat-datepicker>
+                </mat-form-field>
+              </th>
+              <th scope="col" *ngIf="userRole === 'Admin'">
+                Date
+                <button
+                  mat-icon-button
+                  (click)="picker1.open()"
+                  class="ms-1 btn-menu-trigger"
+                  *ngIf="!dateFilterValue"
+                >
+                  <i class="bi bi-calendar"></i>
+                </button>
+                <button
+                  mat-icon-button
+                  container="body"
+                  ngbTooltip="Clear Date"
+                  placement="top"
+                  *ngIf="dateFilterValue"
+                  (click)="clearDateFilter()"
+                  class="ms-1 btn-menu-trigger"
+                >
+                  <i class="bi bi-x-circle"></i>
+                </button>
+
+                <mat-form-field class="opacity-0 position-absolute">
+                      <mat-date-range-input [rangePicker]="picker1">
+                        <input
+                          matStartDate
+                          placeholder="Start date"
+                          [(ngModel)]="startDate"
+                          (dateChange)="onDateChange($event)"
+                        />
+                        <input
+                          matEndDate
+                          placeholder="End date"
+                          [(ngModel)]="endDate"
+                          (dateChange)="onEndDateChange($event)"
+                        />
+                      </mat-date-range-input>
+                      <mat-datepicker-toggle
+                        matIconSuffix
+                        [for]="picker1"
+                      ></mat-datepicker-toggle>
+                      <mat-date-range-picker #picker1></mat-date-range-picker>
+                </mat-form-field>
+              </th>
+              <th scope="col">
+                Employee
+                <i
+                  *ngIf="!arrowState['employee_name']"
+                  (click)="sort('asc', 'employee_name')"
+                  class="bi bi-arrow-down"
+                ></i>
+                <i
+                  (click)="sort('desc', 'employee_name')"
+                  *ngIf="arrowState['employee_name']"
+                  class="bi bi-arrow-up"
+                ></i>
+                <button
+                  mat-icon-button
+                  [matMenuTriggerFor]="employeeFilterMenu"
+                >
+                  <i class="bi bi-toggles"></i>
+                </button>
+
+                <mat-menu #employeeFilterMenu="matMenu">
+                  <app-generic-table-filter
+                    [options]="allEmployeeNames"
+                    [(selectedOptions)]="filters.employee_name"
+                    (selectedOptionsChange)="
+                      onFilterChange($event, 'employee_name')
+                    "
+                  ></app-generic-table-filter>
+                </mat-menu>
+              </th>
+              <th scope="col" class="name-col">
+                Client
+                <i
+                  *ngIf="!arrowState['client_name']"
+                  (click)="sort('asc', 'client_name')"
+                  class="bi bi-arrow-down"
+                ></i>
+                <i
+                  (click)="sort('desc', 'client_name')"
+                  *ngIf="arrowState['client_name']"
+                  class="bi bi-arrow-up"
+                ></i>
+                <button mat-icon-button [matMenuTriggerFor]="clientFilterMenu">
+                  <i class="bi bi-toggles"></i>
+                </button>
+
+                <mat-menu #clientFilterMenu="matMenu">
+                  <app-generic-table-filter
+                    [options]="allClientNames"
+                    [(selectedOptions)]="filters.client_name"
+                    (selectedOptionsChange)="
+                      onFilterChange($event, 'client_name')
+                    "
+                  ></app-generic-table-filter>
+                </mat-menu>
+              </th>
+              <th scope="col" class="name-col">
+                Job
+                <i
+                  *ngIf="!arrowState['job_name']"
+                  (click)="sort('asc', 'job_name')"
+                  class="bi bi-arrow-down"
+                ></i>
+                <i
+                  (click)="sort('desc', 'job_name')"
+                  *ngIf="arrowState['job_name']"
+                  class="bi bi-arrow-up"
+                ></i>
+                <button mat-icon-button [matMenuTriggerFor]="jobFilterMenu">
+                  <i class="bi bi-toggles"></i>
+                </button>
+
+                <mat-menu #jobFilterMenu="matMenu">
+                  <app-generic-table-filter
+                    [options]="allJobsNames"
+                    [(selectedOptions)]="filters.job_name"
+                    (selectedOptionsChange)="onFilterChange($event, 'job_name')"
+                  ></app-generic-table-filter>
+                </mat-menu>
+              </th>
+              <th scope="col">
+                Task
+                <i
+                  *ngIf="!arrowState['task_nmae']"
+                  (click)="sort('asc', 'task_nmae')"
+                  class="bi bi-arrow-down"
+                ></i>
+                <i
+                  (click)="sort('desc', 'task_nmae')"
+                  *ngIf="arrowState['task_nmae']"
+                  class="bi bi-arrow-up"
+                ></i>
+                <button mat-icon-button [matMenuTriggerFor]="taskFilterMenu">
+                  <i class="bi bi-toggles"></i>
+                </button>
+
+                <mat-menu #taskFilterMenu="matMenu">
+                  <app-generic-table-filter
+                    [options]="allTaskNames"
+                    [(selectedOptions)]="filters.task_nmae"
+                    (selectedOptionsChange)="
+                      onFilterChange($event, 'task_nmae')
+                    "
+                  ></app-generic-table-filter>
+                </mat-menu>
+              </th>
+              <th scope="col" class="time-col">Time</th>
+              <th scope="col" class="name-col">
+                Notes
+                <i
+                  *ngIf="!arrowState['notes']"
+                  (click)="sort('asc', 'notes')"
+                  class="bi bi-arrow-down"
+                ></i>
+                <i
+                  (click)="sort('desc', 'notes')"
+                  *ngIf="arrowState['notes']"
+                  class="bi bi-arrow-up"
+                ></i>
+              </th>
+              <th scope="col">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <ng-container *ngIf="allTimesheetsList as result">
+              <tr
+                *ngFor="
+                  let item of result
+                    | customSort : directionValue : sortValue
+                    | paginate
+                      : {
+                          itemsPerPage: tableSize,
+                          currentPage: page,
+                          totalItems: count
+                        };
+                  let i = index
+                "
+              >
+                <td>{{ getContinuousIndex(i) }}</td>
+                <td>{{ item?.date || "-" }}</td>
+                <td>{{ item?.employee_name || "-" }}</td>
+                <td>{{ item?.client_name || "-" }}</td>
+                <td>{{ item?.job_name || "-" }}</td>
+                <td>{{ item?.task_name || "-" }}</td>
+                <td>
+                  {{ item?.time_spent }} <br />
+                  [{{ item?.start_time }} - {{ item?.end_time }}]
+                </td>
+                <td>{{ item?.notes || "-" }}</td>
+                <td>
+                  <ng-container>
+                    <img
+                      src="../../../../assets/images/Delete.svg"
+                      class="icon-image"
+                      type="button"
+                      container="body"
+                      ngbTooltip="Delete"
+                      (click)="delete(item.id)"
+                      *ngIf="
+                        userRole != 'Admin' &&
+                        accessPermissions[0]?.delete &&
+                        !item.is_locked
+                      "
+                    />
+                    <img
+                      src="../../../../assets/images/Edit.svg"
+                      class="icon-image"
+                      type="button"
+                      container="body"
+                      ngbTooltip="Edit"
+                      (click)="edit(item)"
+                      *ngIf="
+                        userRole != 'Admin' &&
+                        accessPermissions[0]?.view &&
+                          accessPermissions[0]?.update &&
+                        !item.is_locked
+                      "
+                    />
+                    <button
+                      mat-raised-button
+                      class="proceedbtn"
+                      *ngIf="userRole === 'Admin' && item.is_locked"
+                      (click)="unlockTimesheet(item)"
+                    >
+                      Unlock
+                    </button>
+                    <span *ngIf="userRole === 'Admin' && !item.is_locked"
+                      >Not Locked Yet</span
+                    >
+                    <span *ngIf="userRole != 'Admin' && item.is_locked"
+                      >Locked</span
+                    >
+                    <span
+                      *ngIf="
+                        userRole != 'Admin' &&
+                        !accessPermissions[0]?.update &&
+                        !accessPermissions[0]?.delete
+                      "
+                      >-</span
+                    >
+                  </ng-container>
+                </td>
+              </tr>
+            </ng-container>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="row mx-1 my-2 px-0" *ngIf="allTimesheetsList?.length === 0">
+      <app-generic-norecards></app-generic-norecards>
+    </div>
+  </section>
+  <div class="row mx-0 px-3" *ngIf="allTimesheetsList?.length > 0">
+    <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0">
+      <div class="pagination-container p-0">
+        <pagination-controls
+          previousLabel="Prev"
+          nextLabel="Next"
+          (pageChange)="onTableDataChange($event)"
+        >
+        </pagination-controls>
+        <div class="items-per-page-container">
+          <div>Items per page</div>
+          <mat-select
+            [(ngModel)]="tableSize"
+            (selectionChange)="onTableSizeChange($event)"
+            placeholder="10"
+            disableOptionCentering
+            panelClass="paginationPanelClass"
+            class="page-size"
+          >
+            <mat-option *ngFor="let size of tableSizes" [value]="size">{{
+              size
+            }}</mat-option>
+          </mat-select>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>

@@ -403,7 +403,7 @@ this.formUtilityService.resetHasUnsavedValue();
 
   openFileViewer(fileUrl: string, fileType: string) {
     this.dialog.open(PdfViewComponent, {
-      width: '700px',
+      panelClass: 'custom-details-dialog',
       data: { url: fileUrl, type: fileType }
     });
   }

@@ -123,8 +123,8 @@ export class TimesheetSummaryReportComponent implements OnInit {
         const isEmpty = Object.keys(this.fromDate).length === 0;
         const filteredDate = isEmpty ? this.time : this.fromDate;
          this.dialog.open(EmployeeDetailsComponent, {
-         width: '900px',
-         data: { employee:employee,dateRange:filteredDate }
+         data: { employee:employee, dateRange:filteredDate },
+         panelClass: 'custom-details-dialog'
        });
 
   }

@@ -9,6 +9,8 @@ import { environment } from '../../../../environments/environment';
 import { SubModuleService } from '../../../service/sub-module.service';
 import { GenericDeleteComponent } from '../../../generic-components/generic-delete/generic-delete.component';
 import { GenericTimesheetConfirmationComponent } from '../../../generic-components/generic-timesheet-confirmation/generic-timesheet-confirmation.component';
+import { MAT_DATE_RANGE_SELECTION_STRATEGY } from '@angular/material/datepicker';
+import { WeeklySelectionStrategy } from '../../../shared/weekly-selection-strategy';
 export interface IdNamePair {
   id: any;
   name: string;
@@ -17,6 +19,12 @@ export interface IdNamePair {
   selector: 'app-all-timesheets',
   templateUrl: './all-timesheets.component.html',
   styleUrls: ['./all-timesheets.component.scss'],
+   providers: [
+      {
+        provide: MAT_DATE_RANGE_SELECTION_STRATEGY,
+        useClass: WeeklySelectionStrategy
+      }
+    ]
 })
 export class AllTimesheetsComponent implements OnInit {
   selectedDate: any;
@@ -67,13 +75,7 @@ export class AllTimesheetsComponent implements OnInit {
     private router: Router, private modalService: NgbModal, private accessControlService: SubModuleService,
     private apiService: ApiserviceService, private datePipe: DatePipe) {
     this.common_service.setTitle(this.BreadCrumbsTitle)
-    // this.common_service.empolyeeStatus$.subscribe((status: boolean) => {
-    //   if (status) {
-    //     this.getTimesheets();
-    //   } else {
-    //     this.getInActiveEmployeeList();
-    //   }
-    // })
+
     this.user_id = sessionStorage.getItem('user_id');
     this.userRole = sessionStorage.getItem('user_role_name');
   }
@@ -88,55 +90,7 @@ export class AllTimesheetsComponent implements OnInit {
     }
     this.getTimesheetsIDs();
   }
-  // isTodayFriday(): boolean {
-  //   const today = new Date();
-  //   return today.getDay() === 5; // 0 = Sunday, 5 = Friday
-  // }
 
-
-  // isDateInCurrentWeek(dateToCheck: Date): boolean {
-  //   const today = new Date();
-  //   const currentDay = today.getDay();
-
-  //   const startOfWeek = new Date(today);
-  //   startOfWeek.setDate(today.getDate() - currentDay);
-  //   startOfWeek.setHours(0, 0, 0, 0);
-
-  //   const endOfWeek = new Date(startOfWeek);
-  //   endOfWeek.setDate(startOfWeek.getDate() + 6);
-  //   endOfWeek.setHours(23, 59, 59, 999);
-
-  //   const date = new Date(dateToCheck);
-  //   date.setHours(0, 0, 0, 0);
-
-  //   return date >= startOfWeek && date <= endOfWeek;
-  // }
-
-  // isTodayFriday(): boolean {
-  //   let storeDate: any
-  //   if (this.selectedDate) {
-  //     storeDate = this.selectedDate;
-  //     console.log('storeDate', storeDate)
-  //   }
-
-  //   else {
-  //     storeDate = new Date();
-  //   }
-  //   if (this.allTimesheetsList && this.allTimesheetsList.length > 0) {
-  //     if (!this.weekTimesheetSubmitted) {
-  //       if (this.isDateInCurrentWeek(storeDate)) {
-  //         const isFriday = storeDate.getDay() === 5;
-  //         return !isFriday;
-  //       } else {
-  //         return this.weekTimesheetSubmitted;
-  //       }
-  //     } else {
-  //       return this.weekTimesheetSubmitted;
-  //     }
-  //   } else {
-  //     return true;
-  //   }
-  // }
   isTodayFriday(): boolean {
     const storeDate = this.selectedDate ? new Date(this.selectedDate) : new Date();
     const today = new Date();
@@ -145,7 +99,7 @@ export class AllTimesheetsComponent implements OnInit {
     const isFuture = storeDate > this.getEndOfCurrentWeek();
     const isFriday = today.getDay() === 5;
     const hasData = this.allTimesheetsList && this.allTimesheetsList.length > 0;
-  
+
     if(this.weekTimesheetSubmitted){
       return true;
     }
@@ -153,22 +107,22 @@ export class AllTimesheetsComponent implements OnInit {
     if (isSameWeek && isFriday && hasData) {
       return false;
     }
-  
+
     // 2. Past week and has data => enable
     if (isPastWeek && hasData) {
       return false;
     }
-  
+
     // 3. Past or future week and no data => disable
     if ((isPastWeek || isFuture) && !hasData) {
       return true;
     }
-  
+
     // 4. Future week with data => disable
     if (isFuture && hasData) {
       return true;
     }
-  
+
     // Default: disable
     return true;
   }
@@ -179,7 +133,7 @@ export class AllTimesheetsComponent implements OnInit {
     startOfWeek.setHours(0, 0, 0, 0);
     return startOfWeek;
   }
-  
+
   getEndOfCurrentWeek(): Date {
     const now = new Date();
     const endOfWeek = new Date(now);
@@ -187,7 +141,7 @@ export class AllTimesheetsComponent implements OnInit {
     endOfWeek.setHours(23, 59, 59, 999);
     return endOfWeek;
   }
-  
+
   isDateInCurrentWeek(date: Date): boolean {
     const start = this.getStartOfCurrentWeek();
     const end = this.getEndOfCurrentWeek();
@@ -531,7 +485,7 @@ export class AllTimesheetsComponent implements OnInit {
       }
     )
   }
-  
+
   clearDateFilter(){
     this.timesheetDate = null;
     this.dateFilterValue = null;
@@ -596,5 +550,13 @@ export class AllTimesheetsComponent implements OnInit {
     });
 
     return Array.from(seen, ([id, name]) => ({ id, name }));
+  }
+  onDateChange(event: any) {
+    this.startDate = this.datePipe.transform(event.value, 'yyyy-MM-dd');
+    // this.filterData();
+  }
+  onEndDateChange(event: any) {
+    this.endDate = this.datePipe.transform(event.value, 'yyyy-MM-dd');
+    // this.filterData();
   }
 }
