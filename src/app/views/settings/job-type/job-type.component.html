@@ -7,13 +7,13 @@
             <div class="col-12 col-sm-12 col-md-6 col-lg-4 px-2">
               <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
                 <mat-label>Job Type<b class="r-star">*</b></mat-label>
-                <input matInput placeholder="Enter Job Type" appAlphabetOnly formControlName="job_type_name" autocomplete="off">
+                <input matInput placeholder="Enter Job Type" formControlName="job_type_name" autocomplete="off">
                 <mat-error
                   *ngIf="f['job_type_name']?.invalid && f['job_type_name']?.touched || f['job_type_name']?.dirty">
                   <span *ngIf="f['job_type_name'].errors?.['required']">Job Type is required</span>
                   <span
                     *ngIf="!f['job_type_name'].errors?.['required'] && f['job_type_name'].errors?.['pattern'] && !f['job_type_name'].errors?.['maxlength']">
-                    Invalid name. Extra space, numbers and special charaters are not allowed
+                    Extra space are not allowed.
                   </span>
                   <span *ngIf="!f['job_type_name'].errors?.['required'] && f['job_type_name'].errors?.['maxlength']">
                     Job Type cannot exceed 50 characters.

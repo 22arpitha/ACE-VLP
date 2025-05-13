@@ -82,10 +82,10 @@ this.formUtilityService.resetHasUnsavedValue();
 
   public initializeForm() {
     this.templateForm = this.fb.group({
-      template_name: ['', [Validators.required, Validators.pattern(/^[a-zA-Z0-9]+( [a-zA-Z0-9]+)*$/)]],
+      template_name: ['', [Validators.required, Validators.pattern(/^[a-zA-Z&.,'\-]+( [a-zA-Z&.,'\-]+)*$/)]],
       template_file: ['',Validators.required,this.fileFormatValidator],
       password: ['', [Validators.pattern(/^[a-zA-Z0-9!@#$%^&*()_+{}\[\]:;"'<>,.?/\\|`~\-]+( [a-zA-Z0-9!@#$%^&*()_+{}\[\]:;"'<>,.?/\\|`~\-]+)*$/),Validators.maxLength(20)]],
-      when_to_use: ['', [Validators.pattern(/^[a-zA-Z0-9]+( [a-zA-Z0-9]+)*$/),Validators.maxLength(100)]],
+      when_to_use: ['', [Validators.pattern(/^[a-zA-Z0-9&.,'\-]+( [a-zA-Z0-9&.,'\-]+)*$/),Validators.maxLength(100)]],
     });
     this.initialFormValue=this.templateForm?.getRawValue();
   }
@@ -118,7 +118,7 @@ this.formUtilityService.resetHasUnsavedValue();
           if (respData) {
             this.apiService.showSuccess(respData['message']);
             this.resetFormState();
-            this.getAllTemplates('?page=1&page_size=5');
+            this.getAllTemplates(`?page=1&page_size=${this.tableSize}`);
           }
         }, (error: any) => {
           this.apiService.showError(error?.error?.detail);
@@ -129,7 +129,7 @@ this.formUtilityService.resetHasUnsavedValue();
           if (respData) {
             this.apiService.showSuccess(respData['message']);
             this.resetFormState();
-            this.getAllTemplates('?page=1&page_size=5');
+            this.getAllTemplates(`?page=1&page_size=${this.tableSize}`);
           }
 
         }, (error: any) => {

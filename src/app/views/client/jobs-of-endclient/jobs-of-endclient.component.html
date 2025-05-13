@@ -121,7 +121,7 @@
                           <td>{{getContinuousIndex(i)}}</td>
                           <td>{{item.job_number}}</td>
                           <td>{{item.job_name}}</td>
-                          <td>{{item.job_allocation_date}}</td>
+                          <td>{{item.job_allocation_date | date: 'dd/MM/yyyy'}}</td>
                           <td *ngIf="item.employees.length > 0">
                             <div *ngFor="let employee of item.employees">
                               {{employee.employee_name}}
@@ -131,7 +131,7 @@
                             {{'-'}}
                           </td>
                           <td>{{item.job_status_name}}</td>
-                          <td>{{item.job_status_date}}</td>
+                          <td>{{item.job_status_date | date: 'dd/MM/yyyy'}}</td>
                   <!-- <td>
                     <ng-container>
                       <img src="../../../../assets/images/Edit.svg" class="icon-image" type="button" container="body"

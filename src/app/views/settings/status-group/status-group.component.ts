@@ -78,7 +78,7 @@ this.formUtilityService.resetHasUnsavedValue();
 
   public initializeForm() {
     this.statusGroupForm = this.fb.group({
-      group_name: ['', [Validators.required, Validators.pattern(/^[a-zA-Z]+( [a-zA-Z]+)*$/), , Validators.maxLength(20)]],
+      group_name: ['', [Validators.required, Validators.pattern(/^[a-zA-Z]+( [a-zA-Z]+)*$/), , Validators.maxLength(50)]],
     });
     this.initialFormValue=this.statusGroupForm?.getRawValue();
   }
@@ -109,7 +109,7 @@ this.formUtilityService.resetHasUnsavedValue();
           if (respData) {
             this.apiService.showSuccess(respData['message']);
             this.resetFormState();
-            this.getAllStatusGroup('?page=1&page_size=5');
+            this.getAllStatusGroup(`?page=1&page_size=${this.tableSize}`);
           }
         }, (error: any) => {
           this.apiService.showError(error?.error?.detail);
@@ -119,7 +119,7 @@ this.formUtilityService.resetHasUnsavedValue();
           if (respData) {
             this.apiService.showSuccess(respData['message']);
             this.resetFormState();
-            this.getAllStatusGroup('?page=1&page_size=5');
+            this.getAllStatusGroup(`?page=1&page_size=${this.tableSize}`);
           }
 
         }, (error: any) => {

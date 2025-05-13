@@ -163,7 +163,7 @@ this.formUtilityService.resetHasUnsavedValue();
           if (respData) {
             this.api.showSuccess(respData['message']);
             this.resetFormState();
-            this.getAllCountryList('?page=1&page_size=5');
+            this.getAllCountryList(`?page=1&page_size=${this.tableSize}`);
           }
         }, (error: any) => {
           this.api.showError(error?.error?.detail);
@@ -173,7 +173,7 @@ this.formUtilityService.resetHasUnsavedValue();
           if (respData) {
             this.api.showSuccess(respData['message']);
             this.resetFormState();
-            this.getAllCountryList('?page=1&page_size=5');
+            this.getAllCountryList(`?page=1&page_size=${this.tableSize}`);
           }
         }, (error: any) => {
           this.api.showError(error?.error?.detail);

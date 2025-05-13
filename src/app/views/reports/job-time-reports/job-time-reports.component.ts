@@ -219,6 +219,7 @@ onApplyFilter(filteredData: any[], filteredKey: string): void {
      pageSize: this.tableSize,
    });
    query += this.client_id ? `&client=${this.client_id}` : '';
+   query += (this.userRole ==='Admin' || (this.userRole !='Admin' && this.client_id)) ? '':`&employee-id=${this.user_id}`;
       if (this.selectedClientIds?.length) {
         query += `&client-ids=[${this.selectedClientIds.join(',')}]`;
       }
@@ -228,7 +229,7 @@ onApplyFilter(filteredData: any[], filteredKey: string): void {
       if (this.selectedStatusIds?.length) {
         query += `&job-status-ids=[${this.selectedStatusIds.join(',')}]`;
       }
-   const url = `${environment.live_url}/${environment.job_reports}/${query}&job-status=[${this.statusList}]&type=job-time-report&file-type=${fileType}`;
+   const url = `${environment.live_url}/${environment.job_reports}/${query}&job-status=[${this.statusList}]&report-type=job-time-report&file-type=${fileType}`;
    downloadFileFromUrl({
      url,
      fileName: 'job_time_report',

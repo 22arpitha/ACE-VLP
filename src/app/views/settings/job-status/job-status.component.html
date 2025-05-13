@@ -31,7 +31,7 @@
                   <span *ngIf="f['status_name'].errors?.['required']">Job Status is required</span>
                   <span
                     *ngIf="!f['status_name'].errors?.['required'] && f['status_name'].errors?.['pattern'] && !f['status_name'].errors?.['maxlength']">
-                    Invalid name. Extra space, numbers and special charaters are not allowed
+                    Extra space are not allowed.
                   </span>
                   <span *ngIf="!f['status_name'].errors?.['required'] && f['status_name'].errors?.['maxlength']">
                     Job Status  cannot exceed 50 characters.
