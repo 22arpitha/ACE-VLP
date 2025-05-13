@@ -16,8 +16,8 @@ import { NotificationService } from '../../../views/pages/notification/notificat
 import { WebsocketService } from '../../../service/websocket.service';
 import { EmployeeStatusWebsocketService } from '../../../service/employee-status-websocket.service';
 import { UserAccessWebsocketService } from '../../../service/user-access-websocket.service';
-import { FormErrorScrollUtilityService } from 'src/app/service/form-error-scroll-utility-service.service';
-import { LogoutConfirmationService } from 'src/app/service/logout-confirmation.service';
+import { FormErrorScrollUtilityService } from '../../../service/form-error-scroll-utility-service.service';
+import { LogoutConfirmationService } from '../../../service/logout-confirmation.service';
 
 @Component({
   selector: 'app-default-header',
@@ -256,7 +256,7 @@ export class DefaultHeaderComponent extends HeaderComponent implements OnInit {
         if(res.user_info[0]['profile_image_path']){
           this.profileDataForSidebar.profile_pic =environment.media_url+res.user_info[0]['profile_image_path'];
         }
-        this.profileDataForSidebar.name = res.user_info[0].first_name; 
+        this.profileDataForSidebar.name = res.user_info[0].first_name;
         this.profileDataForSidebar.last_name = res.user_info[0].last_name;
         this.common_service.setProfilePhoto(this.profileDataForSidebar)
         if(res?.access_list?.length!=0){
@@ -272,12 +272,12 @@ export class DefaultHeaderComponent extends HeaderComponent implements OnInit {
     //   if (res.result.data) {
     //     this.profileImg = res?.result?.data[0]?.u_profile_path;
     //     this.profileDataForSidebar.profile_pic = res.result.data[0]['u_profile_photo'];
-    //     this.profileDataForSidebar.name = res.result.data[0].u_first_name; 
+    //     this.profileDataForSidebar.name = res.result.data[0].u_first_name;
     //     this.common_service.setProfilePhoto(this.profileDataForSidebar)
     //   }
     // }, (error => {
     //   console.log('from default header',error);
-  
+
   }
   getNotification() {
     this.notificationServive.notificationCount.subscribe((data) => {
@@ -308,7 +308,7 @@ export class DefaultHeaderComponent extends HeaderComponent implements OnInit {
     this.isModalOpen = true;
     const initialState: ModalOptions = {
       initialState: {
-       
+
       },
       class: 'modal-dialog-centered custom-modal-lg',
       ignoreBackdropClick: true,
@@ -348,5 +348,5 @@ export class DefaultHeaderComponent extends HeaderComponent implements OnInit {
       }
     })
   }
- 
+
 }

@@ -23,8 +23,7 @@
         <div *ngIf="hideHeaderButton && user_role_Name !== 'SuperAdmin'">
           <div *ngFor="let items of mySubscription">
             <button *ngIf="items?.is_active" mat-icon-button aria-label="Get Started" class="icon-button user-guide-btn"
-            container="body"
-                  ngbTooltip="Get started" placement="top" (click)="openWelcomeDialog()">
+                  matTooltip="Get started" (click)="openWelcomeDialog()">
                   <img src="../../../assets/images/bulb.svg" width="25" height="25">
             </button>
           </div>
@@ -32,7 +31,7 @@
 
       <div *ngIf="user_role_Name === 'SuperAdmin'">
         <button  mat-icon-button aria-label="Notifications" class="icon-button"
-        container="body" ngbTooltip="Notifications" placement="top"
+        matTooltip="Notifications"
         (click)="openNotification()" style="position: relative;">
       <img src="../../../../assets/images/Notification.svg" class="notification-icon" />
 
@@ -46,7 +45,7 @@
       </div>
       <div *ngFor="let items of mySubscription">
         <button *ngIf="items?.is_active" mat-icon-button aria-label="Notifications" class="icon-button"
-        container="body" ngbTooltip="Notifications" placement="top"
+        matTooltip="Notifications"
         (click)="openNotification()" style="position: relative;">
 
       <img src="../../../../assets/images/Notification.svg" class="notification-icon" />
@@ -59,8 +58,7 @@
     </button>
       </div>
     <button mat-icon-button aria-label="Logout" class="icon-button mobile-hide-content"
-    (click)="openDialogue()" container="body"
-            ngbTooltip="Logout" placement="top">
+    (click)="openDialogue()" matTooltip="Logout">
       <mat-icon>power_settings_new</mat-icon>
     </button>
   </div>

@@ -35,15 +35,7 @@
             </button>
           </div>
         </div>
-        <!-- <app-week-datepicker (weekSelected)="weekDatePicker($event)"></app-week-datepicker> -->
-        <!-- <mat-form-field class="example-full-width">
-                        <mat-date-range-input [rangePicker]="picker1">
-                            <input matStartDate placeholder="Start date" [(ngModel)]="selectedDate" (dateChange)="weekDatePicker($event)">
-                            <input matEndDate placeholder="End date"  >
-                        </mat-date-range-input>
-                        <mat-datepicker-toggle matIconSuffix [for]="picker1"></mat-datepicker-toggle>
-                        <mat-date-range-picker #picker1></mat-date-range-picker>
-                    </mat-form-field> -->
+
       </div>
       <div class="col-12 m-0 p-0" *ngIf="userRole != 'Admin'">
         <div class="d-flex">
@@ -77,18 +69,7 @@
         />
         <i *ngIf="!term" class="bi bi-search" id="search-icon-tab"></i>
       </div>
-      <!-- <div class="col-12 mt-3 col-sm-12 col-md-4 col-lg-3">
-                <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
-                    <mat-label> &nbsp; Enter a date range</mat-label >
-                    <mat-date-range-input [rangePicker]="picker">
-                      <input matStartDate placeholder="Start date" (dateChange)="startDatePicker($event)">
-                      <input matEndDate placeholder="End date"  (dateChange)="startAndEndDateFunction($event)">
-                    </mat-date-range-input>
-                    <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
-                    <mat-date-range-picker #picker ></mat-date-range-picker>
-                  </mat-form-field>
-            </div> -->
-      <!-- <div class="col-12 mt-3 col-sm-12 col-md-4 col-lg-3"></div> -->
+
       <div class="col-12 mt-3 col-sm-12 col-md-4 col-lg-5 text-end">
         <button
           mat-raised-button
