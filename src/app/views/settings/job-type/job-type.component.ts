@@ -79,6 +79,7 @@ this.formUtilityService.resetHasUnsavedValue();
     this.jobTypeForm = this.fb.group({
       job_type_name: ['', [Validators.required, Validators.pattern(/^[a-zA-Z&.,'\-]+( [a-zA-Z&.,'\-]+)*$/), Validators.maxLength(50)]],
       job_price: [null, [Validators.required,Validators.pattern(/^[0-9]+(\.[0-9]{1,2})?$/), Validators.maxLength(10), Validators.min(0), Validators.minLength(1)]],
+      stand_arround_time: ['', [Validators.required,Validators.pattern(/^[0-9]+(\.[0-9]{1,2})?$/), Validators.maxLength(10), Validators.min(0), Validators.minLength(1)]],
     });
     this.initialFormValue = this.jobTypeForm?.getRawValue();
 

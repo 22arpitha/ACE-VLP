@@ -4,7 +4,7 @@
       <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0">
         <form [formGroup]="jobTypeForm">
           <div class="row mx-0 my-0 p-0">
-            <div class="col-12 col-sm-12 col-md-6 col-lg-4 px-2">
+            <div class="col-12 col-sm-12 col-md-6 col-lg-3 px-2">
               <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
                 <mat-label>Job Type<b class="r-star">*</b></mat-label>
                 <input matInput placeholder="Enter Job Type" formControlName="job_type_name" autocomplete="off">
@@ -21,7 +21,7 @@
                 </mat-error>
               </mat-form-field>
             </div>
-            <div class="col-12 col-sm-12 col-md-6 col-lg-4 px-2">
+            <div class="col-12 col-sm-12 col-md-6 col-lg-3 px-2">
               <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
                 <mat-label>Job Price <b class="r-star">*</b></mat-label>
                 <input matInput type="number" placeholder="Enter Job Price" formControlName="job_price" autocomplete="off" (keypress)="validateKeyPress($event)">
@@ -37,6 +37,27 @@
                     Job price must be at least 1 character.
                   </span>
                   <span *ngIf="!f['job_price'].errors?.['required'] && f['job_price'].errors?.['min']">
+                    Job price must be at least 0.
+                  </span>
+                </mat-error>
+              </mat-form-field>
+            </div>
+             <div class="col-12 col-sm-12 col-md-6 col-lg-3 px-2">
+              <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+                <mat-label>Stand Around Time <b class="r-star">*</b></mat-label>
+                <input matInput type="number" placeholder="Stand Around Time" formControlName="stand_arround_time" autocomplete="off" (keypress)="validateKeyPress($event)">
+                <mat-error *ngIf="f['stand_arround_time']?.invalid && f['stand_arround_time']?.touched || f['stand_arround_time']?.dirty">
+                  <span *ngIf="f['stand_arround_time'].errors?.['required']">Stand around time is required</span>
+                  <span *ngIf="!f['stand_arround_time'].errors?.['required'] && f['stand_arround_time'].errors?.['maxlength']">
+                    Stand around time cannot exceed 10 characters.
+                  </span>
+                  <span *ngIf="!f['stand_arround_time'].errors?.['required'] && f['stand_arround_time'].errors?.['pattern']">
+                    Please enter a number with up to 2 decimal places.
+                      </span>
+                  <span *ngIf="!f['stand_arround_time'].errors?.['required'] && f['stand_arround_time'].errors?.['minlength']">
+                    Job price must be at least 1 character.
+                  </span>
+                  <span *ngIf="!f['stand_arround_time'].errors?.['required'] && f['stand_arround_time'].errors?.['min']">
                     Job price must be at least 0.
                   </span>
                 </mat-error>
@@ -77,7 +98,11 @@
                 <i *ngIf="!arrowState['job_price']" (click)="sort('asc', 'job_price')" class="bi bi-arrow-down"></i>
                 <i *ngIf="arrowState['job_price']" (click)="sort('desc', 'job_price')" class="bi bi-arrow-up"></i>
               </th>
-              <th>Action</th>
+              <th>Stand Around Time
+                <i *ngIf="!arrowState['stand_arround_time']" (click)="sort('asc', 'stand_arround_time')" class="bi bi-arrow-down"></i>
+                <i *ngIf="arrowState['stand_arround_time']" (click)="sort('desc', 'stand_arround_time')" class="bi bi-arrow-up"></i>
+              </th>
+                <th>Action</th>
             </tr>
           </thead>
           <tbody>
@@ -90,6 +115,7 @@
               <td>{{getContinuousIndex(i)}}</td>
               <td>{{type?.job_type_name || '-'}}</td>
               <td>{{type?.job_price || '-'}}</td>
+              <td>{{type?.stand_arround_time || '-'}}</td>
               <td>
                 <ng-container>
                   <img src="../../../../assets/images/Edit.svg" class="icon-image" container="body" ngbTooltip="Edit"
