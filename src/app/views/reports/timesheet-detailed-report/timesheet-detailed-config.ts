@@ -24,7 +24,7 @@ const tableColumns = [
   {
     label: 'Task',
     key: 'task_name',
-    keyId:'id',
+    keyId:'task',
     paramskeyId: 'timesheet-task-ids',
     filterable: true,
     filterType: 'multi-select',

@@ -214,7 +214,7 @@ async getTableData(params?: { page?: number; pageSize?: number; searchTerm?: str
    this.employees = res
    this.clientName = getUniqueValues3(this.employees, 'client_name', 'client_id')
    this.jobName = getUniqueValues3(this.employees, 'job_name', 'job_id')
-   this.taskName = getUniqueValues3(this.employees, 'task_name', 'id')
+   this.taskName = getUniqueValues3(this.employees, 'task_name', 'task')
    this.employeeName = getUniqueValues3(this.employees, 'employee_name', 'employee_id')
 
     if(this.clientName.length > 0 && this.jobName.length > 0 && this.taskName.length > 0 && this.employeeName.length > 0){

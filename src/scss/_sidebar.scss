@@ -108,6 +108,18 @@
 .sidebar {
     --cui-sidebar-width: 12rem !important;
 }
-.sidebar:not(.sidebar-end) ~ * {
-    --cui-sidebar-occupy-start: 12rem !important;
+// .sidebar:not(.sidebar-end) ~ * {
+//     --cui-sidebar-occupy-start: 12rem !important;
+// }
+@media (max-width: 991.98px) {
+    .sidebar:not(.sidebar-end) ~ * {
+        --cui-sidebar-occupy-start: 0 !important;
+         --cui-sidebar-width: 0 !important;
+    }
+}
+@media (min-width: 991.99px) {
+    .sidebar:not(.sidebar-end) ~ * {
+         --cui-sidebar-occupy-start: 12rem !important;
+          --cui-sidebar-width: 12rem !important;
+    }
 }
