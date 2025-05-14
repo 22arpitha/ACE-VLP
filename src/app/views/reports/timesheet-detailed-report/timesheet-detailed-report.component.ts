@@ -204,7 +204,53 @@ exportCsvOrPdf(fileType) {
     fileType
   });
 }
-
+getClienList(){
+  let query = `?status=True`
+  query += this.userRole ==='Admin' ? '':`&employee-id=${this.user_id}`;
+  this.api.getData(`${environment.live_url}/${environment.clients}/${query}`).subscribe((res: any) => {
+    if(res){
+      this.clientName = res?.map((item: any) => ({
+        id: item.id,
+        name: item.client_name
+      }));
+    }
+  })
+  return this.clientName;
+}
+  getJobList(){
+    let query = this.userRole ==='Admin' ? '':`?employee-id=${this.user_id}`;
+    this.api.getData(`${environment.live_url}/${environment.jobs}/${query}`).subscribe((res: any) => {
+      if(res){
+        this.jobName = res?.map((item: any) => ({
+          id: item.id,
+          name: item.job_name
+        }));
+      }
+    })
+    return this.jobName;
+  }
+    getTaskList(){
+      this.api.getData(`${environment.live_url}/${environment.timesheet}/?get-tasks=True`).subscribe((res: any) => {
+        if(res){
+          this.taskName = res?.map((item: any) => ({
+            id: item.id,
+            name: item.value
+          }));
+        }
+      })
+      return this.taskName;
+    }
+      getEmployeeList(){
+        this.api.getData(`${environment.live_url}/${environment.employee}/?is_active=True&employee=True`).subscribe((res: any) => {
+          if(res){
+            this.employeeName = res?.map((item: any) => ({
+              id: item.user_id,
+              name: item.user__full_name
+            }));
+          }
+        })
+        return this.employeeName;
+      }
 // Fetch table data from API with given params
 async getTableData(params?: { page?: number; pageSize?: number; searchTerm?: string;client_ids?:any;job_ids?:any;task_ids?:any;employee_ids?:any,timesheet_dates?:any }) {
 

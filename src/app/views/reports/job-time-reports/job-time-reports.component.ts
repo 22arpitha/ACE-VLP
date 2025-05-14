@@ -4,7 +4,6 @@ import { CommonServiceService } from '../../../service/common-service.service';
 import { ApiserviceService } from '../../../service/apiservice.service';
 import { downloadFileFromUrl } from '../../../shared/file-download.util';
 import { buildPaginationQuery } from '../../../shared/pagination.util';
-import { getUniqueValues, getUniqueValues3 } from '../../../shared/unique-values.utils';
 import { environment } from '../../../../environments/environment';
 import { JobTimeSheetDetailsPopupComponent } from '../common/job-time-sheet-details-popup/job-time-sheet-details-popup.component';
 import { MatDialog } from '@angular/material/dialog';
@@ -59,17 +58,17 @@ tableSize: number = 50;
    ) {
     this.user_id = sessionStorage.getItem('user_id');
     this.userRole = sessionStorage.getItem('user_role_name');
+      this.getJobList();
+      this.getClientList();
+      this.getStatusList();
     }
 
    ngOnInit(): void {
-    this.getJobStatusList()
      this.common_service.setTitle(this.BreadCrumbsTitle)
      this.tableConfig = tableColumns;
-     this.getTableData({
-      page: this.page,
-      pageSize: this.tableSize,
-      searchTerm: this.term
-    });
+     setTimeout(() => {
+      this.getJobStatusList();
+     }, 500);
    }
 
    getJobStatusList() {
@@ -143,7 +142,8 @@ tableSize: number = 50;
        break;
        case 'headerTabs':
         this.tabStatus = event['action'];
-        this.tableConfig['']=
+        this.getClientList();
+        this.getJobList();
         this.page=1;
         this.getTableData({
           page: this.page,
@@ -161,7 +161,6 @@ tableSize: number = 50;
         this.isIncludeAllJobValue= event['action'];
         this.client_id = event['action'] && event['client_id'] ? event['client_id'] : null;
         this.isIncludeAllJobEnable = event['action']  || (!event['action'] && event['client_id'])  ? false : true;
-        console.log('isIncludeAllJobEnable',this.isIncludeAllJobEnable);
         this.page=1;
         this.getTableData({
           page: this.page,
@@ -191,10 +190,16 @@ onApplyFilter(filteredData: any[], filteredKey: string): void {
 
   if (filteredKey === 'client-ids') {
     this.selectedClientIds = filteredData;
-    if(this.selectedClientIds && this.selectedClientIds.length===0){
-      console.log(this.selectedClientIds);
+    if(filteredData && filteredData?.length===0){
       this.isIncludeAllJobEnable=true;
       this.isIncludeAllJobValue=false;
+      this.client_id=null;
+    }else if(filteredData && filteredData?.length>1){
+      this.isIncludeAllJobEnable=true;
+      this.isIncludeAllJobValue=false;
+      this.client_id=null;
+    }else{
+      this.isIncludeAllJobEnable=false;
     }
   }
   if (filteredKey === 'job-ids') {
@@ -237,30 +242,65 @@ onApplyFilter(filteredData: any[], filteredKey: string): void {
      fileType
    });
  }
-
+ getClientList(){
+let query = `?status=True`;
+ query += this.userRole ==='Admin' ? '':`&employee-id=${this.user_id}`;
+  this.api.getData(`${environment.live_url}/${environment.clients}/${query}`).subscribe((res: any) => {
+    if(res){
+      this.clientName = res?.map((item: any) => ({
+        id: item.id,
+        name: item.client_name
+      }));
+    }
+  })
+  return this.clientName;
+}
+  getJobList(){
+    let query = `?status=${this.tabStatus}`;
+    query += this.userRole ==='Admin' ? '':`&employee-id=${this.user_id}`;
+    this.api.getData(`${environment.live_url}/${environment.jobs}/${query}`).subscribe((res: any) => {
+      if(res){
+        this.jobName = res?.map((item: any) => ({
+          id: item.id,
+          name: item.job_name
+        }));
+      }
+    })
+    return this.jobName;
+  }
+getStatusList(){
+  this.api.getData(`${environment.live_url}/${environment.settings_job_status}/`).subscribe((res: any) => {
+    if(res){
+      this.statusName = res?.map((item: any) => ({
+        id: item.id,
+        name: item.status_name
+      }));
+    }
+  })
+  console.log('statusName',this.statusName);
+  return this.statusName;
+}
+getJobTypeList(){
+  this.api.getData(`${environment.live_url}/${environment.settings_job_status}/`).subscribe((res: any) => {
+    if(res){
+      this.statusName = res?.map((item: any) => ({
+        id: item.id,
+        name: item.status_name
+      }));
+    }
+  })
+  console.log('statusName',this.statusName);
+  return this.statusName;
+}
  // Fetch table data from API with given params
- async getTableData(params?: { page?: number; pageSize?: number; searchTerm?: string;client_ids?: any[]; job_ids?: any[]; job_status?: any[]; }) {
+  async getTableData(params?: { page?: number; pageSize?: number; searchTerm?: string;client_ids?: any[]; job_ids?: any[]; job_status?: any[]; }) {
   let finalQuery;
-  let filterQuery = '';
-  this.formattedData = [];
+   this.formattedData = [];
    const page = params?.page ?? this.page;
    const pageSize = params?.pageSize ?? this.tableSize;
    const searchTerm = params?.searchTerm ?? this.term;
    const query = buildPaginationQuery({ page, pageSize, searchTerm });
    this.jobStatusList(this.tabStatus);
-
-   filterQuery = `?job-status=[${this.statusList}]`;
-   filterQuery += (this.userRole ==='Admin' || (this.userRole !='Admin' && this.client_id)) ? '':`&employee-id=${this.user_id}`;
-   filterQuery += this.client_id ? `&client=${this.client_id}` : '';
-  filterQuery += `&report-type=job-time-report`;
-   await this.api.getData(`${environment.live_url}/${environment.jobs}/${filterQuery}`).subscribe(async (response: any) => {
-    if(response){
-
-    this.jobFilterList = response;
-
-    this.clientName = getUniqueValues3(this.jobFilterList, 'client_name', 'client')
-    this.jobName = getUniqueValues3(this.jobFilterList, 'job_name', 'id')
-    this.statusName = getUniqueValues3(this.jobFilterList, 'job_status_name', 'job_status')
     finalQuery = query + `&job-status=[${this.statusList}]`;
     finalQuery += (this.userRole ==='Admin' || (this.userRole !='Admin' && this.client_id)) ? '':`&employee-id=${this.user_id}`;
     finalQuery += this.client_id ? `&client=${this.client_id}` : '';
@@ -275,18 +315,15 @@ onApplyFilter(filteredData: any[], filteredKey: string): void {
         finalQuery += `&job-status-ids=[${params.job_status.join(',')}]`;
       }
     await this.api.getData(`${environment.live_url}/${environment.jobs}/${finalQuery}`).subscribe((res: any) => {
-
-      if(res.results && res.results?.length>=1){
-      this.formattedData = res.results.map((item: any, i: number) => ({
+      if(res && res.results && Array.isArray(res.results) && res.results.length >=1){
+      this.formattedData = res.results?.map((item: any, i: number) => ({
         sl: (page - 1) * pageSize + i + 1,
         ...item,
         is_primary:item?.employees?.find((emp: any) => emp?.is_primary === true)?.employee_name || '',
       }));
-
         this.tableConfig = {
             columns: tableColumns?.map(col => {
                let filterOptions:any = [];
-
                if (col.filterable) {
                  if (col.key === 'client_name') {
                    filterOptions = this.clientName;
@@ -296,13 +333,11 @@ onApplyFilter(filteredData: any[], filteredKey: string): void {
                    filterOptions = this.statusName;
                  }
                }
-
                return {
                  ...col,
                  filterOptions
                };
              }),
-
        data: this.formattedData,
        searchTerm: this.term,
        actions: [],
@@ -322,7 +357,17 @@ onApplyFilter(filteredData: any[], filteredKey: string): void {
       };
     }else{
       this.tableConfig = {
-        columns: tableColumns,
+      columns: tableColumns?.map(col => {
+              let filterOptions:any = [];
+              if (col.filterable) {
+                if (col.key === 'client_name') { filterOptions = this.clientName; }
+                else if (col.key === 'job_name') { filterOptions = this.jobName; }
+                else if (col.key === 'job_status_name') {
+                   filterOptions = this.statusName;
+                 }
+              }
+              return { ...col, filterOptions };
+            }),
         data: [],
         searchTerm: this.term,
         actions: [],
@@ -345,8 +390,6 @@ onApplyFilter(filteredData: any[], filteredKey: string): void {
    },(error:any)=>{  this.api.showError(error?.error?.detail);
    });
   }
-  })
- }
 
    onSearch(term: string): void {
      this.term = term;

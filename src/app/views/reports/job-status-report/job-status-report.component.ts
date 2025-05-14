@@ -62,11 +62,12 @@ export class JobStatusReportComponent implements OnInit {
     this.userRole = sessionStorage.getItem('user_role_name');
     }
 
-   ngOnInit(): void {
-    this.getJobStatusList()
-    this.formattedData = [];
+   async ngOnInit() {
      this.common_service.setTitle(this.BreadCrumbsTitle)
      this.tableConfig = tableColumns;
+     setTimeout(() => {
+      this.getJobStatusList()
+    },500)
    }
 
    getJobStatusList() {
@@ -140,7 +141,8 @@ export class JobStatusReportComponent implements OnInit {
        break;
        case 'headerTabs':
         this.tabStatus = event['action'];
-        this.tableConfig['']=
+        this.getClienList();
+        this.getJobList();
         this.page=1;
         this.getTableData({
           page: this.page,
@@ -189,14 +191,14 @@ export class JobStatusReportComponent implements OnInit {
  }
 
  onApplyFilter(filteredData: any[], filteredKey: string): void {
-  console.log(filteredData, filteredKey);
-
   if (filteredKey === 'client-ids') {
-    this.selectedClientIds = filteredData;
-    if(this.selectedClientIds && this.selectedClientIds.length===0){
-      console.log(this.selectedClientIds);
+   this.selectedClientIds = filteredData;
+    if(filteredData && filteredData.length===0 || filteredData.length>1){
       this.isIncludeAllJobEnable=true;
       this.isIncludeAllJobValue=false;
+      this.client_id=null;
+    }else{
+      this.isIncludeAllJobEnable=false;
     }
   }
   if (filteredKey === 'job-ids') {
@@ -211,8 +213,6 @@ export class JobStatusReportComponent implements OnInit {
   if (filteredKey === 'job_status_date') {
     this.jobAllocationDate = filteredData;
   }
-
-
   this.getTableData({
     page: 1,
     pageSize: this.tableSize,
@@ -225,10 +225,7 @@ export class JobStatusReportComponent implements OnInit {
   });
 }
 onApplyDateFilter(filteredDate:string, filteredKey: string): void {
-  console.log(filteredDate, filteredKey);
-
  this.formattedData = [];
- console.log('onApplyDateFilter',this.formattedData);
   if (filteredKey === 'job_allocation_date') {
     this.jobAllocationDate = filteredDate;
   }if (filteredKey === 'job_status_date') {
@@ -274,7 +271,41 @@ onApplyDateFilter(filteredDate:string, filteredKey: string): void {
      fileType
    });
  }
-
+getClienList(){
+  let query = `?status=True`;
+ query += this.userRole ==='Admin' ? '':`&employee-id=${this.user_id}`;
+  this.api.getData(`${environment.live_url}/${environment.clients}/${query}`).subscribe((res: any) => {
+    if(res){
+      this.clientName = res?.map((item: any) => ({
+        id: item.id,
+        name: item.client_name
+      }));
+    }
+  })
+  return this.clientName;
+}
+  getJobList(){
+    let query = `?status=${this.tabStatus}`;
+    query += this.userRole ==='Admin' ? '':`&employee-id=${this.user_id}`;
+    this.api.getData(`${environment.live_url}/${environment.jobs}/${query}`).subscribe((res: any) => {
+      if(res){
+        this.jobName = res?.map((item: any) => ({
+          id: item.id,
+          name: item.job_name
+        }));
+      }
+    })
+    return this.jobName;
+  }
+  getGroupList(){
+    this.api.getData(`${environment.live_url}/${environment.settings_status_group}/`).subscribe((res: any) => {
+      if(res){
+        this.groupName = res?.map((item: any) => ({
+          id: item.id,
+          name: item.group_name
+        }));
+      }
+    })}
  // Fetch table data from API with given params
  async getTableData(params?: { page?: number; pageSize?: number; searchTerm?: string;client_ids?:any;job_ids?:any;group_ids?:any;job_allocation_date?:any;job_status_date?:any }) {
   let finalQuery;
@@ -324,6 +355,7 @@ onApplyDateFilter(filteredDate:string, filteredKey: string): void {
             ...item,
             is_primary:item?.employees?.find((emp: any) => emp?.is_primary === true)?.employee_name || '',
           }));
+          console.log(this.formattedData);
           this.tableConfig = {
            columns: tableColumns?.map(col => {
               let filterOptions:any = [];
@@ -355,25 +387,36 @@ onApplyDateFilter(filteredDate:string, filteredKey: string): void {
            totalRecords: response.total_no_of_record, // Correctly use 'response' from inner call
            showDownload:true,
           };
-        } else {
-          // Handle empty or invalid response for table data
-          this.formattedData = []; // Ensure it's empty
+        }else{
           this.tableConfig = {
-            ...this.tableConfig, // Preserve other config like columns, search term etc.
-            data: [],
-            currentPage: page,
-            totalRecords: 0,
-            // Update filter options in columns, as they might have been populated
-            columns: tableColumns?.map(col => {
-              let filterOptions:any = [];
-              if (col.filterable) {
-                if (col.key === 'client_name') { filterOptions = this.clientName; }
-                else if (col.key === 'job_name') { filterOptions = this.jobName; }
-                else if (col.key === 'group_name') { filterOptions = this.groupName; }
-              }
-              return { ...col, filterOptions };
-            }),
-          };
+              columns: tableColumns?.map(col => {
+                      let filterOptions:any = [];
+                      if (col.filterable) {
+                        if (col.key === 'client_name') { filterOptions = this.clientName; }
+                        else if (col.key === 'job_name') { filterOptions = this.jobName; }
+                        else if (col.key === 'group_name') {
+                  filterOptions = this.groupName;
+                }
+                      }
+                      return { ...col, filterOptions };
+                    }),
+                data: [],
+                searchTerm: this.term,
+                actions: [],
+                accessConfig: [],
+                tableSize: pageSize,
+                pagination: true,
+                searchable: true,
+                headerTabs:true,
+                showIncludeAllJobs:true,
+                includeAllJobsEnable:this.isIncludeAllJobEnable ? this.isIncludeAllJobEnable : false,
+                includeAllJobsValue:this.isIncludeAllJobValue ? this.isIncludeAllJobValue : false,
+                selectedClientId:this.client_id ? this.client_id:null,
+                sendEmail:true,
+                currentPage:page,
+                totalRecords: 0,
+                showDownload:true,
+              };
         }
       }, (error: any) => { // Error handling for inner API call
         this.api.showError(error?.error?.detail);

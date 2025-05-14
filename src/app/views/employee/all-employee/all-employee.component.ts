@@ -28,7 +28,6 @@ employee_number:false,
 user__full_name:false,
 user__email:false,
 designation__designation_name:false,
-is_active:false,
   };
   page = 1;
   count = 0;
