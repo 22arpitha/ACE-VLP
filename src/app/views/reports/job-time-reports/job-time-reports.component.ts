@@ -59,9 +59,9 @@ tableSize: number = 50;
    ) {
     this.user_id = sessionStorage.getItem('user_id');
     this.userRole = sessionStorage.getItem('user_role_name');
-    this.getClientList()
-    this.getJobList()
-    this.getStatusList()
+      this.getClientList()
+      this.getJobList()
+      this.getStatusList()
     }
 
    ngOnInit(): void {
@@ -69,7 +69,8 @@ tableSize: number = 50;
      this.common_service.setTitle(this.BreadCrumbsTitle)
      this.tableConfig = tableColumns;
      setTimeout(() => {
-       this.getTableData({page: this.page,pageSize: this.tableSize,searchTerm: this.term});
+      this.getJobStatusList()
+      // this.getTableData({page: this.page,pageSize: this.tableSize,searchTerm: this.term});
      }, 3000);
 
    }
@@ -206,7 +207,7 @@ onApplyFilter(filteredData: any[], filteredKey: string): void {
     this.selectedStatusIds = filteredData;
   }
 
-
+this.formattedData = [];
   this.getTableData({
     page: 1,
     pageSize: this.tableSize,
@@ -270,13 +271,14 @@ getStatusList(){
       }));
     }
   })
+  console.log('statusName',this.statusName);
   return this.statusName;
 }
  // Fetch table data from API with given params
  async getTableData(params?: { page?: number; pageSize?: number; searchTerm?: string;client_ids?: any[]; job_ids?: any[]; job_status?: any[]; }) {
   let finalQuery;
 
- // this.formattedData = [];
+   this.formattedData = [];
    const page = params?.page ?? this.page;
    const pageSize = params?.pageSize ?? this.tableSize;
    const searchTerm = params?.searchTerm ?? this.term;
@@ -343,27 +345,36 @@ getStatusList(){
        showDownload:true,
       };
     }
-    // else{
-    //   this.tableConfig = {
-    //     columns: tableColumns,
-    //     data: [],
-    //     searchTerm: this.term,
-    //     actions: [],
-    //     accessConfig: [],
-    //     tableSize: pageSize,
-    //     pagination: true,
-    //     searchable: true,
-    //     headerTabs:true,
-    //     showIncludeAllJobs:true,
-    //     includeAllJobsEnable:this.isIncludeAllJobEnable ? this.isIncludeAllJobEnable : false,
-    //     includeAllJobsValue:this.isIncludeAllJobValue ? this.isIncludeAllJobValue : false,
-    //     selectedClientId:this.client_id ? this.client_id:null,
-    //     sendEmail:true,
-    //     currentPage:page,
-    //     totalRecords: 0,
-    //     showDownload:true,
-    //   };
-    // }
+    else{
+      this.tableConfig = {
+         ...this.tableConfig,
+         columns: tableColumns?.map(col => {
+                      let filterOptions:any = [];
+                      if (col.filterable) {
+                        if (col.key === 'client_name') { filterOptions = this.clientName; }
+                        else if (col.key === 'job_name') { filterOptions = this.jobName; }
+                        else if (col.key === 'job_status_name') { filterOptions = this.statusName }
+                      }
+                      return { ...col, filterOptions };
+                    }),
+        data: [],
+        searchTerm: this.term,
+        actions: [],
+        accessConfig: [],
+        tableSize: pageSize,
+        pagination: true,
+        searchable: true,
+        headerTabs:true,
+        showIncludeAllJobs:true,
+        includeAllJobsEnable:this.isIncludeAllJobEnable ? this.isIncludeAllJobEnable : false,
+        includeAllJobsValue:this.isIncludeAllJobValue ? this.isIncludeAllJobValue : false,
+        selectedClientId:this.client_id ? this.client_id:null,
+        sendEmail:true,
+        currentPage:page,
+        totalRecords: 0,
+        showDownload:true,
+      };
+    }
 
    },(error:any)=>{  this.api.showError(error?.error?.detail);
    });
