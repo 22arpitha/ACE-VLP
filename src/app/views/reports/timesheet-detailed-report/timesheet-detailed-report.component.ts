@@ -3,7 +3,6 @@ import { getTableColumns } from './timesheet-detailed-config';
 import { CommonServiceService } from '../../../service/common-service.service';
 import { ApiserviceService } from '../../../service/apiservice.service';
 import { environment } from '../../../../environments/environment';
-import { getUniqueValues, getUniqueValues2, getUniqueValues3 } from '../../../shared/unique-values.utils';
 import { buildPaginationQuery } from '../../../shared/pagination.util';
 import { downloadFileFromUrl } from '../../../shared/file-download.util';
 @Component({
@@ -53,7 +52,7 @@ export class TimesheetDetailedReportComponent implements OnInit {
     this.getEmployeeList();
   }
 
-  async ngOnInit() {
+   ngOnInit() {
     this.common_service.setTitle(this.BreadCrumbsTitle)
     this.tableData = getTableColumns(this.user_role_name);
 
@@ -213,13 +212,9 @@ exportCsvOrPdf(fileType) {
   });
 }
 getClienList(){
-<<<<<<< HEAD
-  this.api.getData(`${environment.live_url}/${environment.clients}/`).subscribe((res: any) => {
-=======
   let query = `?status=True`
   query += this.userRole ==='Admin' ? '':`&employee-id=${this.user_id}`;
   this.api.getData(`${environment.live_url}/${environment.clients}/${query}`).subscribe((res: any) => {
->>>>>>> Vignesh
     if(res){
       this.clientName = res?.map((item: any) => ({
         id: item.id,
@@ -230,12 +225,8 @@ getClienList(){
   return this.clientName;
 }
   getJobList(){
-<<<<<<< HEAD
-    this.api.getData(`${environment.live_url}/${environment.jobs}/`).subscribe((res: any) => {
-=======
     let query = this.userRole ==='Admin' ? '':`?employee-id=${this.user_id}`;
     this.api.getData(`${environment.live_url}/${environment.jobs}/${query}`).subscribe((res: any) => {
->>>>>>> Vignesh
       if(res){
         this.jobName = res?.map((item: any) => ({
           id: item.id,
@@ -270,12 +261,7 @@ getClienList(){
 // Fetch table data from API with given params
 async getTableData(params?: { page?: number; pageSize?: number; searchTerm?: string;client_ids?:any;job_ids?:any;task_ids?:any;employee_ids?:any,timesheet_dates?:any }) {
 
-    const clientName = this.getClienList();
-    const jobName = this.getJobList();
-    const employeeName = this.getEmployeeList();
-    const taskName =  this.getTaskList();
-    if(clientName?.length > 0 && jobName?.length > 0 && taskName?.length > 0 && employeeName?.length > 0){
-    const page = params?.page ?? this.page;
+   const page = params?.page ?? this.page;
     const pageSize = params?.pageSize ?? this.tableSize;
     const searchTerm = params?.searchTerm ?? this.term;
 
@@ -341,10 +327,6 @@ async getTableData(params?: { page?: number; pageSize?: number; searchTerm?: str
       };
     }
     });
-  }
-
-
-
 }
   onSearch(term: string): void {
     this.term = term;
