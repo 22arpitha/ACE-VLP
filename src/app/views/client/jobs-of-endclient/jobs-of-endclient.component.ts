@@ -41,7 +41,8 @@ export class JobsOfEndclientComponent implements OnInit {
   allStatusNames: IdNamePair[] = [];
   dateFilterValue: any = null;
   filteredList:any = [];
-    initialList:any = [];
+      allJobStatusList:any=[];
+    allEmployeeList:any=[];
     datepicker:any;
     filterQuery: string;
     jobList:any = [];
@@ -62,9 +63,10 @@ export class JobsOfEndclientComponent implements OnInit {
      this.getJobsOfEndClient(`?page=${1}&page_size=${5}&end-client=${this.end_client_id}`);
   }
 
-  async ngOnInit(): Promise<void> {
-    await this.getFilteredList();
-  }
+  ngOnInit(){
+      this.getEmployees();
+      this.getAllJobStatus();
+    }
 
   getContinuousIndex(index: number): number {
     return (this.page - 1) * this.tableSize + index + 1;
@@ -76,23 +78,27 @@ export class JobsOfEndclientComponent implements OnInit {
     this.sortValue = column;
   }
 
-  public getFilteredList(){
-    let query =`?&end-client=${this.end_client_id}`;
-    query +=this.userRole !== 'Admin' ? `&employee-id=${this.user_id}` : '';
-    this.api.getData(`${environment.live_url}/${environment.jobs}/${query}`).subscribe(
-      (res: any) => {
-        this.initialList = res;
-        this.allEmployeeNames = this.getUniqueValues(job => {
-          const emp = job.employees?.find((e: any) => e.is_primary);
-          return { id: emp?.employee || '', name: emp?.employee_name || '' };
-        });
-        this.allStatusNames = this.getUniqueValues(job => ({ id: job.job_status, name: job.job_status_name }));
+ public getAllJobStatus() {
+    this.allJobStatusList = [];
+    this.api.getData(`${environment.live_url}/${environment.settings_job_status}/`).subscribe((respData: any) => {
+    this.allJobStatusList = respData;
+    this.allStatusNames = this.getUniqueStatusValues(status => ({ id: status.id, name: status.status_name }));
+    }, (error: any) => {
+      this.api.showError(error.detail);
 
-      },(error: any) => {
-        this.api.showError(error?.error?.detail);
-      });
+    });
   }
 
+   public getEmployees() {
+    let queryparams = `?is_active=True&employee=True`;
+    this.allEmployeeList = [];
+    this.api.getData(`${environment.live_url}/${environment.employee}/${queryparams}`).subscribe((respData: any) => {
+      this.allEmployeeList = respData;
+      this.allEmployeeNames = this.getUniqueEmpValues(emp => ({ id: emp.user_id, name: emp.user__full_name }));
+    }, (error => {
+      this.api.showError(error?.error?.detail)
+    }));
+  }
   getJobsOfEndClient(params: any) {
       this.api.getData(`${environment.live_url}/${environment.jobs}/${params}`).subscribe(
         (res: any) => {
@@ -145,20 +151,34 @@ export class JobsOfEndclientComponent implements OnInit {
       this.common_service.setClientActiveTabindex(id);
       this.router.navigate([`/client/update-client/${this.client_id}`])
     }
-    getUniqueValues(
-      extractor: (item: any) => { id: any; name: string }
-    ): { id: any; name: string }[] {
-      const seen = new Map();
-  
-      this.initialList.forEach(job => {
-        const value = extractor(job);
-        if (value && value.id && !seen.has(value.id)) {
-          seen.set(value.id, value.name);
-        }
-      });
-  
-      return Array.from(seen, ([id, name]) => ({ id, name }));
-    }
+   getUniqueStatusValues(
+        extractor: (item: any) => { id: any; name: string }
+      ): { id: any; name: string }[] {
+        const seen = new Map();
+    
+        this.allJobStatusList.forEach(status => {
+          const value = extractor(status);
+          if (value && value.id && !seen.has(value.id)) {
+            seen.set(value.id, value.name);
+          }
+        });
+    
+        return Array.from(seen, ([id, name]) => ({ id, name }));
+      }
+ getUniqueEmpValues(
+        extractor: (item: any) => { id: any; name: string }
+      ): { id: any; name: string }[] {
+        const seen = new Map();
+    
+        this.allEmployeeList.forEach(emp => {
+          const value = extractor(emp);
+          if (value && value.id && !seen.has(value.id)) {
+            seen.set(value.id, value.name);
+          }
+        });
+    
+        return Array.from(seen, ([id, name]) => ({ id, name }));
+      }
 
     filterData() {
       this.filterQuery = this.getFilterBaseUrl()

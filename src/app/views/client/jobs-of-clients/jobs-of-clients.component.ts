@@ -39,7 +39,6 @@ export class JobsOfClientsComponent implements OnInit {
     allStatusNames: IdNamePair[] = [];
     dateFilterValue: any = null;
     filteredList:any = [];
-    initialList:any = [];
     datepicker:any;
     filterQuery: string;
     jobList:any = [];
@@ -47,6 +46,8 @@ export class JobsOfClientsComponent implements OnInit {
     statusDate: any;
     user_id:any;
     userRole:any;
+    allJobStatusList:any=[];
+    allEmployeeList:any=[];
     constructor(private datePipe: DatePipe,private common_service: CommonServiceService,private activateRoute:ActivatedRoute,private router: Router,
       private api: ApiserviceService,
     ) {
@@ -56,10 +57,34 @@ export class JobsOfClientsComponent implements OnInit {
        this.getJobsOfClient(`?page=${1}&page_size=${5}&client=${this.client_id}`);
     }
   
-    async ngOnInit(): Promise<void> {
-      await this.getFilteredList();
+    ngOnInit(){
+      this.getEmployees();
+      this.getAllJobStatus();
     }
   
+
+    public getAllJobStatus() {
+    this.allJobStatusList = [];
+    this.api.getData(`${environment.live_url}/${environment.settings_job_status}/`).subscribe((respData: any) => {
+    this.allJobStatusList = respData;
+    this.allStatusNames = this.getUniqueStatusValues(status => ({ id: status.id, name: status.status_name }));
+    }, (error: any) => {
+      this.api.showError(error.detail);
+
+    });
+  }
+
+   public getEmployees() {
+    let queryparams = `?is_active=True&employee=True`;
+    this.allEmployeeList = [];
+    this.api.getData(`${environment.live_url}/${environment.employee}/${queryparams}`).subscribe((respData: any) => {
+      this.allEmployeeList = respData;
+      this.allEmployeeNames = this.getUniqueEmpValues(emp => ({ id: emp.user_id, name: emp.user__full_name }));
+    }, (error => {
+      this.api.showError(error?.error?.detail)
+    }));
+  }
+
     getContinuousIndex(index: number): number {
       return (this.page - 1) * this.tableSize + index + 1;
     }
@@ -68,23 +93,6 @@ export class JobsOfClientsComponent implements OnInit {
       this.arrowState[column] = direction === 'asc' ? true : false;
       this.directionValue = direction;
       this.sortValue = column;
-    }
-  
-    public getFilteredList(){
-      let query =`?client=${this.client_id}`;
-      query +=this.userRole !== 'Admin' ? `&employee-id=${this.user_id}` : '';
-      this.api.getData(`${environment.live_url}/${environment.jobs}/${query}`).subscribe(
-        (res: any) => {
-          this.initialList = res;
-          this.allEmployeeNames = this.getUniqueValues(job => {
-            const emp = job.employees?.find((e: any) => e.is_primary);
-            return { id: emp?.employee || '', name: emp?.employee_name || '' };
-          });
-          this.allStatusNames = this.getUniqueValues(job => ({ id: job.job_status, name: job.job_status_name }));
-
-        },(error: any) => {
-          this.api.showError(error?.error?.detail);
-        });
     }
     getJobsOfClient(params: any) {
         this.api.getData(`${environment.live_url}/${environment.jobs}/${params}`).subscribe(
@@ -131,13 +139,13 @@ export class JobsOfClientsComponent implements OnInit {
         this.filterData();
       }
 
-      getUniqueValues(
+      getUniqueStatusValues(
         extractor: (item: any) => { id: any; name: string }
       ): { id: any; name: string }[] {
         const seen = new Map();
     
-        this.initialList.forEach(job => {
-          const value = extractor(job);
+        this.allJobStatusList.forEach(status => {
+          const value = extractor(status);
           if (value && value.id && !seen.has(value.id)) {
             seen.set(value.id, value.name);
           }
@@ -145,11 +153,24 @@ export class JobsOfClientsComponent implements OnInit {
     
         return Array.from(seen, ([id, name]) => ({ id, name }));
       }
-
+ getUniqueEmpValues(
+        extractor: (item: any) => { id: any; name: string }
+      ): { id: any; name: string }[] {
+        const seen = new Map();
+    
+        this.allEmployeeList.forEach(emp => {
+          const value = extractor(emp);
+          if (value && value.id && !seen.has(value.id)) {
+            seen.set(value.id, value.name);
+          }
+        });
+    
+        return Array.from(seen, ([id, name]) => ({ id, name }));
+      }
       filterData() {
         this.filterQuery = this.getFilterBaseUrl()
         if (this.filters.status.length) {
-          this.filterQuery += `&job-type-ids=[${this.filters.status.join(',')}]`;
+          this.filterQuery += `&job-status-ids=[${this.filters.status.join(',')}]`;
         }
         if (this.filters.employees.length) {
           this.userRole === 'accountant' ? this.filterQuery += `&employee-ids=[${this.filters.employees.join(',')}]` :
