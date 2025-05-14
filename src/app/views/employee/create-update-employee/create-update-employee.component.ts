@@ -259,6 +259,7 @@ this.searchRoleText ='';
       this.apiService.delete(`${environment.live_url}/${environment.employee}/${id}/`).subscribe(async (data: any) => {
         if (data) {
           this.apiService.showSuccess(data.message);
+           this.resetFormState();
           this.router.navigate(['/settings/all-employee']);
         }
       }, (error => {

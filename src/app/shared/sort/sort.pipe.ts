@@ -38,16 +38,27 @@ private sortArrayByKey(array: any[], sortOrder: SortOrder, sortKey: string): any
     const aValue = a?.[sortKey];
     const bValue = b?.[sortKey];
 
-    const aStr = aValue !== undefined && aValue !== null ? aValue.toString() : '';
-    const bStr = bValue !== undefined && bValue !== null ? bValue.toString() : '';
+    // Extract numeric part if value is string like 'VIP-C-0095'
+    const getComparableValue = (val: any): number | string => {
+      if (typeof val === 'number') return val;
+      if (typeof val === 'string') {
+        const match = val.match(/\d+/); // Extract first number
+        return match ? parseInt(match[0], 10) : val;
+      }
+      return val;
+    };
 
-    if (typeof aValue === 'number' && typeof bValue === 'number') {
-      return aValue - bValue;
+    const aComp = getComparableValue(aValue);
+    const bComp = getComparableValue(bValue);
+
+    if (typeof aComp === 'number' && typeof bComp === 'number') {
+      return aComp - bComp;
     } else {
-      return aStr.localeCompare(bStr);
+      return aComp.toString().localeCompare(bComp.toString());
     }
   });
 
   return sortOrder === 'asc' ? sortedArray : sortedArray.reverse();
 }
+
 }

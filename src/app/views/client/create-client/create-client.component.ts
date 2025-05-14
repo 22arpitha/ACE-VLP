@@ -438,6 +438,7 @@ this.initialFormValue=this.clientFormGroup?.getRawValue();
           if (data) {
             this.selectedClient = [];
             this.apiService.showSuccess(data.message);
+             this.resetFormState();
             this.router.navigate(['/client/all-client']);
           }
         }, (error => {
