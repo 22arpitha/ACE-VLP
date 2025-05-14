@@ -183,7 +183,7 @@ export class JobsOfEndclientComponent implements OnInit {
     filterData() {
       this.filterQuery = this.getFilterBaseUrl()
       if (this.filters.status.length) {
-        this.filterQuery += `&job-type-ids=[${this.filters.status.join(',')}]`;
+        this.filterQuery += `&job-status-ids=[${this.filters.status.join(',')}]`;
       }
       if (this.filters.employees.length) {
         this.userRole === 'accountant' ? this.filterQuery += `&employee-ids=[${this.filters.employees.join(',')}]` :
