@@ -44,6 +44,7 @@ export class TimesheetSummaryReportComponent implements OnInit {
   employees: any = [];
   filterOptions: { id: any; name: string; }[];
   selectedEmployeeId: any = [];
+  employeeName: any = [];
 
   constructor(
     private common_service: CommonServiceService,
@@ -52,16 +53,16 @@ export class TimesheetSummaryReportComponent implements OnInit {
     private dialog: MatDialog,
     private datePipe:DatePipe
   ) {
-
+      this.getEmployeeList();
   }
 
   async ngOnInit(){
     this.common_service.setTitle(this.BreadCrumbsTitle);
     this.user_id = sessionStorage.getItem('user_id');
     this.user_role_name = sessionStorage.getItem('user_role_name') || '';
-
-    this.getTableData({ page: 1, pageSize: this.tableSize, searchTerm: this.term });
-  //  await this.getFilterData();
+    setTimeout(() => {
+      this.getTableData({ page: 1, pageSize: this.tableSize, searchTerm: this.term });
+    }, 3000);
   }
 
   onTableDataChange(event: number): void {
@@ -148,18 +149,20 @@ export class TimesheetSummaryReportComponent implements OnInit {
   filterByDate(date: string): void {
     this.getTableData({ page: this.page, pageSize: this.tableSize, searchTerm: this.term ,employee_ids:this.selectedEmployeeId, fromdate: date });
   }
-
+ getEmployeeList(){
+        this.api.getData(`${environment.live_url}/${environment.employee}/?is_active=True&employee=True`).subscribe((res: any) => {
+          if(res){
+            this.employeeName = res?.map((item: any) => ({
+              id: item.user_id,
+              name: item.user__full_name
+            }));
+          }
+        })
+      }
 
   async getTableData(params?: { page?: number; pageSize?: number; searchTerm?: string; fromdate?:any; employee_ids?: any; startDate?; endDate? }) {
-  let query = '';
-  if (this.user_role_name !== 'Admin' ) {
-    query += `?employee-id=${this.user_id}`;
-  }
- await this.api.getData(`${environment.live_url}/${environment.timesheet_summary}/${query}`)
-    .subscribe(async (res: any) => {
-      if(res){
-      this.employees = res;
-      this.filterOptions = getUniqueValues2(this.employees, 'employee_name', 'employee_id');
+
+      this.filterOptions =  this.employeeName
 
       if(this.filterOptions && this.filterOptions.length > 0){
         this.selectedEmployeeId = params?.employee_ids
@@ -275,8 +278,8 @@ export class TimesheetSummaryReportComponent implements OnInit {
          });
        }
 
-      }
-    });
+
+
   }
 
 

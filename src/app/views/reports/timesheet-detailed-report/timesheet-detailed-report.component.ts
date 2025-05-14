@@ -47,18 +47,19 @@ export class TimesheetDetailedReportComponent implements OnInit {
   ) {
     this.user_id = sessionStorage.getItem('user_id') || '' ;
     this.user_role_name = sessionStorage.getItem('user_role_name') || '';
-     this.getClienList();
-     this.getJobList();
-     this.getEmployeeList();
-     this.getTaskList();
+    this.getClienList();
+    this.getJobList();
+    this.getTaskList();
+    this.getEmployeeList();
   }
 
   async ngOnInit() {
     this.common_service.setTitle(this.BreadCrumbsTitle)
     this.tableData = getTableColumns(this.user_role_name);
+
     setTimeout(() => {
       this.getTableData()
-    }, 1000);
+    }, 3000);
 
   }
 
@@ -215,21 +216,24 @@ getClienList(){
   this.api.getData(`${environment.live_url}/${environment.clients}/`).subscribe((res: any) => {
     if(res){
       this.clientName = res?.map((item: any) => ({
-        id: item.client_id,
+        id: item.id,
         name: item.client_name
       }));
     }
-  })}
+  })
+  return this.clientName;
+}
   getJobList(){
     this.api.getData(`${environment.live_url}/${environment.jobs}/`).subscribe((res: any) => {
       if(res){
         this.jobName = res?.map((item: any) => ({
-          id: item.job_id,
+          id: item.id,
           name: item.job_name
         }));
-        console.log(this.jobName, 'jobName');
       }
-    })}
+    })
+    return this.jobName;
+  }
     getTaskList(){
       this.api.getData(`${environment.live_url}/${environment.timesheet}/?get-tasks=True`).subscribe((res: any) => {
         if(res){
@@ -239,6 +243,7 @@ getClienList(){
           }));
         }
       })
+      return this.taskName;
     }
       getEmployeeList(){
         this.api.getData(`${environment.live_url}/${environment.employee}/?is_active=True&employee=True`).subscribe((res: any) => {
@@ -249,25 +254,16 @@ getClienList(){
             }));
           }
         })
+        return this.employeeName;
       }
 // Fetch table data from API with given params
 async getTableData(params?: { page?: number; pageSize?: number; searchTerm?: string;client_ids?:any;job_ids?:any;task_ids?:any;employee_ids?:any,timesheet_dates?:any }) {
 
-  await this.api.getData(`${environment.live_url}/${environment.timesheet}/`).subscribe(async (res: any) => {
-  if(res){
-
-   this.employees = res
-  //  this.clientName = getUniqueValues3(this.employees, 'client_name', 'client_id')
-  //  this.jobName = getUniqueValues3(this.employees, 'job_name', 'job_id')
-  // this.taskName = getUniqueValues3(this.employees, 'task_name', 'task')
-  //  this.employeeName = getUniqueValues3(this.employees, 'employee_name', 'employee_id')
-
-    console.log(this.employees, 'employees');
-    console.log(this.clientName, 'clientName');
-    console.log(this.jobName, 'jobName');
-    console.log(this.taskName, 'taskName');
-
-    if(this.clientName?.length > 0 && this.jobName?.length > 0 && this.taskName?.length > 0 && this.employeeName?.length > 0){
+    const clientName = this.getClienList();
+    const jobName = this.getJobList();
+    const employeeName = this.getEmployeeList();
+    const taskName =  this.getTaskList();
+    if(clientName?.length > 0 && jobName?.length > 0 && taskName?.length > 0 && employeeName?.length > 0){
     const page = params?.page ?? this.page;
     const pageSize = params?.pageSize ?? this.tableSize;
     const searchTerm = params?.searchTerm ?? this.term;
@@ -334,10 +330,9 @@ async getTableData(params?: { page?: number; pageSize?: number; searchTerm?: str
       };
     }
     });
-    console.log(this.tableConfig, 'tableConfig');
   }
-}
-  })
+
+
 
 }
   onSearch(term: string): void {

@@ -60,13 +60,19 @@ export class JobStatusReportComponent implements OnInit {
    ) {
     this.user_id = sessionStorage.getItem('user_id');
     this.userRole = sessionStorage.getItem('user_role_name');
+     this.getGroupList()
+     this.getClienList()
+     this.getJobList()
+
     }
 
    ngOnInit(): void {
-    this.getJobStatusList()
-    this.formattedData = [];
+     this.formattedData = [];
      this.common_service.setTitle(this.BreadCrumbsTitle)
      this.tableConfig = tableColumns;
+     setTimeout(() => {
+      this.getJobStatusList()
+    },3000)
    }
 
    getJobStatusList() {
@@ -250,7 +256,7 @@ onApplyDateFilter(filteredDate:string, filteredKey: string): void {
      page: this.page,
      pageSize: this.tableSize,
    });
-   query += (this.userRole ==='Admin' || (this.userRole !='Admin' && this.client_id)) ? '':`&employee-id=${this.user_id}`;  
+   query += (this.userRole ==='Admin' || (this.userRole !='Admin' && this.client_id)) ? '':`&employee-id=${this.user_id}`;
    query += this.client_id ? `&client=${this.client_id}` : '';
     if (this.selectedClientIds?.length) {
         query += `&client-ids=[${this.selectedClientIds.join(',')}]`;
@@ -274,32 +280,47 @@ onApplyDateFilter(filteredDate:string, filteredKey: string): void {
      fileType
    });
  }
-
+getClienList(){
+  this.api.getData(`${environment.live_url}/${environment.clients}/`).subscribe((res: any) => {
+    if(res){
+      this.clientName = res?.map((item: any) => ({
+        id: item.id,
+        name: item.client_name
+      }));
+    }
+  })
+  return this.clientName;
+}
+  getJobList(){
+    this.api.getData(`${environment.live_url}/${environment.jobs}/`).subscribe((res: any) => {
+      if(res){
+        this.jobName = res?.map((item: any) => ({
+          id: item.id,
+          name: item.job_name
+        }));
+      }
+    })
+    return this.jobName;
+  }
+  getGroupList(){
+    this.api.getData(`${environment.live_url}/${environment.settings_status_group}/`).subscribe((res: any) => {
+      if(res){
+        this.groupName = res?.map((item: any) => ({
+          id: item.id,
+          name: item.group_name
+        }));
+      }
+    })}
  // Fetch table data from API with given params
  async getTableData(params?: { page?: number; pageSize?: number; searchTerm?: string;client_ids?:any;job_ids?:any;group_ids?:any;job_allocation_date?:any;job_status_date?:any }) {
   let finalQuery;
-  let filterQuery;
-  this.formattedData = []; // Initialize/clear formattedData for the new fetch
+  this.formattedData = []; // Initialize/clear
    const page = params?.page ?? this.page;
    const pageSize = params?.pageSize ?? this.tableSize;
    const searchTerm = params?.searchTerm ?? this.term;
    const query = buildPaginationQuery({ page, pageSize, searchTerm });
    this.jobStatusList(this.tabStatus);
-   filterQuery = `?job-status=[${this.statusList}]`;
-   filterQuery += (this.userRole ==='Admin' || (this.userRole !='Admin' && this.client_id)) ? '':`&employee-id=${this.user_id}`;
-   filterQuery += this.client_id ? `&client=${this.client_id}` : '';
-   filterQuery += `&report-type=job-status-report`;
-  // Outer API call for filter options
-  await this.api.getData(`${environment.live_url}/${environment.jobs}/${filterQuery}`).subscribe(async (filterRes: any) => {
-   if(filterRes){ // Assuming filterRes is the data for filters
-
-    this.jobFilterList = filterRes; // Assuming filterRes is an array
-    this.clientName = getUniqueValues3(this.jobFilterList, 'client_name', 'client')
-    this.jobName = getUniqueValues3(this.jobFilterList, 'job_name', 'id')
-    this.groupName = getUniqueValues3(this.jobFilterList, 'group_name', 'group')
-
-
-    if(this.jobFilterList && this.jobFilterList?.length>=1){
+    console.log(this.groupName,'groupName');
        finalQuery = query + `&job-status=[${this.statusList}]`;
        finalQuery += (this.userRole ==='Admin' || (this.userRole !='Admin' && this.client_id)) ? '':`&employee-id=${this.user_id}`;
        finalQuery += this.client_id ? `&client=${this.client_id}` : '';
@@ -359,7 +380,7 @@ onApplyDateFilter(filteredDate:string, filteredKey: string): void {
           // Handle empty or invalid response for table data
           this.formattedData = []; // Ensure it's empty
           this.tableConfig = {
-            ...this.tableConfig, // Preserve other config like columns, search term etc.
+            ...this.tableConfig,
             data: [],
             currentPage: page,
             totalRecords: 0,
@@ -380,41 +401,6 @@ onApplyDateFilter(filteredDate:string, filteredKey: string): void {
         this.formattedData = [];
         this.tableConfig = { ...this.tableConfig, data: [], totalRecords: 0, currentPage: page };
       });
-   }else{ // This 'else' is for: if(this.jobFilterList && this.jobFilterList?.length>=1)
-    // No job filter list, so no data to show
-    this.formattedData = [];
-    this.tableConfig = {
-       columns:tableColumns, // Use default columns
-       data: [], // Explicitly empty
-       searchTerm: this.term,
-       actions: [],
-       accessConfig: [],
-       tableSize: pageSize,
-       pagination: true,
-       searchable: true,
-       headerTabs:true,
-       showIncludeAllJobs:true,
-       includeAllJobsEnable:this.isIncludeAllJobEnable ? this.isIncludeAllJobEnable : false,
-       includeAllJobsValue:this.isIncludeAllJobValue ? this.isIncludeAllJobValue : false,
-       selectedClientId:this.client_id ? this.client_id:null,
-       sendEmail:true,
-       currentPage:page,
-       totalRecords: 0, // No records if filter list is empty
-       showDownload:true,
-    };
-   }
-  } else { // This 'else' is for: if(filterRes)
-    // Handle case where initial filter data fetch fails or returns nothing
-    this.jobFilterList = []; this.clientName = []; this.jobName = []; this.groupName = [];
-    this.formattedData = [];
-    this.tableConfig = { ...this.tableConfig, data: [], totalRecords: 0, currentPage: page, columns: tableColumns.map(c => ({...c, filterOptions: []})) };
-  }
-   },(error:any)=>{  // Error handling for outer API call
-    this.api.showError(error?.error?.detail);
-    this.jobFilterList = []; this.clientName = []; this.jobName = []; this.groupName = [];
-    this.formattedData = [];
-    this.tableConfig = { ...this.tableConfig, data: [], totalRecords: 0, currentPage: page, columns: tableColumns.map(c => ({...c, filterOptions: []})) };
-   });
  }
 
    onSearch(term: string): void {

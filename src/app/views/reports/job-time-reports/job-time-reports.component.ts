@@ -59,17 +59,19 @@ tableSize: number = 50;
    ) {
     this.user_id = sessionStorage.getItem('user_id');
     this.userRole = sessionStorage.getItem('user_role_name');
+    this.getClientList()
+    this.getJobList()
+    this.getStatusList()
     }
 
    ngOnInit(): void {
     this.getJobStatusList()
      this.common_service.setTitle(this.BreadCrumbsTitle)
      this.tableConfig = tableColumns;
-     this.getTableData({
-      page: this.page,
-      pageSize: this.tableSize,
-      searchTerm: this.term
-    });
+     setTimeout(() => {
+       this.getTableData({page: this.page,pageSize: this.tableSize,searchTerm: this.term});
+     }, 3000);
+
    }
 
    getJobStatusList() {
@@ -237,30 +239,50 @@ onApplyFilter(filteredData: any[], filteredKey: string): void {
      fileType
    });
  }
-
+ getClientList(){
+  this.api.getData(`${environment.live_url}/${environment.clients}/`).subscribe((res: any) => {
+    if(res){
+      this.clientName = res?.map((item: any) => ({
+        id: item.id,
+        name: item.client_name
+      }));
+    }
+  })
+  return this.clientName;
+}
+  getJobList(){
+    this.api.getData(`${environment.live_url}/${environment.jobs}/`).subscribe((res: any) => {
+      if(res){
+        this.jobName = res?.map((item: any) => ({
+          id: item.id,
+          name: item.job_name
+        }));
+      }
+    })
+    return this.jobName;
+  }
+getStatusList(){
+  this.api.getData(`${environment.live_url}/${environment.settings_job_status}/`).subscribe((res: any) => {
+    if(res){
+      this.statusName = res?.map((item: any) => ({
+        id: item.id,
+        name: item.status_name
+      }));
+    }
+  })
+  return this.statusName;
+}
  // Fetch table data from API with given params
  async getTableData(params?: { page?: number; pageSize?: number; searchTerm?: string;client_ids?: any[]; job_ids?: any[]; job_status?: any[]; }) {
   let finalQuery;
-  let filterQuery = '';
-  this.formattedData = [];
+
+ // this.formattedData = [];
    const page = params?.page ?? this.page;
    const pageSize = params?.pageSize ?? this.tableSize;
    const searchTerm = params?.searchTerm ?? this.term;
    const query = buildPaginationQuery({ page, pageSize, searchTerm });
    this.jobStatusList(this.tabStatus);
 
-   filterQuery = `?job-status=[${this.statusList}]`;
-   filterQuery += (this.userRole ==='Admin' || (this.userRole !='Admin' && this.client_id)) ? '':`&employee-id=${this.user_id}`;
-   filterQuery += this.client_id ? `&client=${this.client_id}` : '';
-  filterQuery += `&report-type=job-time-report`;
-   await this.api.getData(`${environment.live_url}/${environment.jobs}/${filterQuery}`).subscribe(async (response: any) => {
-    if(response){
-
-    this.jobFilterList = response;
-
-    this.clientName = getUniqueValues3(this.jobFilterList, 'client_name', 'client')
-    this.jobName = getUniqueValues3(this.jobFilterList, 'job_name', 'id')
-    this.statusName = getUniqueValues3(this.jobFilterList, 'job_status_name', 'job_status')
     finalQuery = query + `&job-status=[${this.statusList}]`;
     finalQuery += (this.userRole ==='Admin' || (this.userRole !='Admin' && this.client_id)) ? '':`&employee-id=${this.user_id}`;
     finalQuery += this.client_id ? `&client=${this.client_id}` : '';
@@ -320,32 +342,31 @@ onApplyFilter(filteredData: any[], filteredKey: string): void {
        totalRecords: res.total_no_of_record,
        showDownload:true,
       };
-    }else{
-      this.tableConfig = {
-        columns: tableColumns,
-        data: [],
-        searchTerm: this.term,
-        actions: [],
-        accessConfig: [],
-        tableSize: pageSize,
-        pagination: true,
-        searchable: true,
-        headerTabs:true,
-        showIncludeAllJobs:true,
-        includeAllJobsEnable:this.isIncludeAllJobEnable ? this.isIncludeAllJobEnable : false,
-        includeAllJobsValue:this.isIncludeAllJobValue ? this.isIncludeAllJobValue : false,
-        selectedClientId:this.client_id ? this.client_id:null,
-        sendEmail:true,
-        currentPage:page,
-        totalRecords: 0,
-        showDownload:true,
-      };
     }
+    // else{
+    //   this.tableConfig = {
+    //     columns: tableColumns,
+    //     data: [],
+    //     searchTerm: this.term,
+    //     actions: [],
+    //     accessConfig: [],
+    //     tableSize: pageSize,
+    //     pagination: true,
+    //     searchable: true,
+    //     headerTabs:true,
+    //     showIncludeAllJobs:true,
+    //     includeAllJobsEnable:this.isIncludeAllJobEnable ? this.isIncludeAllJobEnable : false,
+    //     includeAllJobsValue:this.isIncludeAllJobValue ? this.isIncludeAllJobValue : false,
+    //     selectedClientId:this.client_id ? this.client_id:null,
+    //     sendEmail:true,
+    //     currentPage:page,
+    //     totalRecords: 0,
+    //     showDownload:true,
+    //   };
+    // }
 
    },(error:any)=>{  this.api.showError(error?.error?.detail);
    });
-  }
-  })
  }
 
    onSearch(term: string): void {
