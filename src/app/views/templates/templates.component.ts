@@ -10,7 +10,7 @@ import { Observable, of } from 'rxjs';
 import { SubModuleService } from '../../../app/service/sub-module.service';
 import {fullUrlToFile} from '../../shared/fileUtils.utils';
 import { CanComponentDeactivate } from '../../auth-guard/can-deactivate.guard';
-import { FormErrorScrollUtilityService } from 'src/app/service/form-error-scroll-utility-service.service';
+import { FormErrorScrollUtilityService } from '../../service/form-error-scroll-utility-service.service';
 
 @Component({
   selector: 'app-templates',

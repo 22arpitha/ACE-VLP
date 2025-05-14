@@ -46,7 +46,8 @@ export class ClientListComponent implements OnInit {
     tableSizes = [50,75,100];
     currentIndex: any;
     allClientList:any=[];
-    clientList:any=[];
+    allCountryList:any=[];
+    allSourceList:any=[];
     accessPermissions = []
     user_id: any;
     userRole: any;
@@ -74,34 +75,54 @@ export class ClientListComponent implements OnInit {
       this.getCurrentClientList();
      }
 
-    async ngOnInit(): Promise<void> {
+      ngOnInit() {
       this.getModuleAccess();
-
-      // this.getCurrentClientList()
-      await this.getClientFilterList('True');
+      this.getAllCountryList();
+      this.getAllSourceList();
     }
 
-    public getClientFilterList(status?:string){
-      let query='';
-      if(status){
-        query = `?status=${status}`;
-        query += this.userRole !== 'Admin' ? `&employee-id=${this.user_id}` : '';
-      }
-  this.apiService.getData(`${environment.live_url}/${environment.clients}/${query}`).subscribe(
-        (res: any) => {
-          this.clientList = res;
-          this.allCountriesNames = this.getUniqueValues(con => ({ id: con.country_id, name: con.country }));
-          this.allSourceNames = this.getUniqueValues(sou => ({ id: sou.source_id, name: sou.source }));
-        },(error: any) => {
-          this.apiService.showError(error?.error?.detail);
-        });
-    }
+  public getAllCountryList() {
+      this.allCountryList=[];
+    this.apiService.getData(`${environment.live_url}/${environment.settings_country}/`).subscribe(
+      (res: any) => {
+        this.allCountryList = res;
+        this.allCountriesNames = this.getUniqueValues(con => ({ id: con.id, name: con.country_name }));
+      },(error: any) => {
+        this.apiService.showError(error?.error?.detail);
+      });
+  }
+
+  public getAllSourceList() {
+    this.allSourceList=[];
+    this.apiService.getData(`${environment.live_url}/${environment.settings_source}/`).subscribe(
+      (res: any) => {
+        this.allSourceList = res;
+         this.allSourceNames = this.getUniqueSourceValues(sou => ({ id: sou.id, name: sou.source_name }));
+       },(error: any) => {
+        this.apiService.showError(error?.error?.detail);
+      });
+  }
     getUniqueValues(
       extractor: (item: any) => { id: any; name: string }
     ): { id: any; name: string }[] {
       const seen = new Map();
   
-      this.clientList.forEach(client => {
+      this.allCountryList.forEach(client => {
+        const value = extractor(client);
+        if (value && value.id && !seen.has(value.id)) {
+          seen.set(value.id, value.name);
+        }
+      });
+  
+      return Array.from(seen, ([id, name]) => ({ id, name }));
+    }
+
+    getUniqueSourceValues(
+      extractor: (item: any) => { id: any; name: string }
+    ): { id: any; name: string }[] {
+      const seen = new Map();
+  
+      this.allSourceList.forEach(client => {
         const value = extractor(client);
         if (value && value.id && !seen.has(value.id)) {
           seen.set(value.id, value.name);

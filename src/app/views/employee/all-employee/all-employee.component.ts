@@ -45,7 +45,7 @@ is_active:false,
   allRoleNames:IdNamePair[] = [];
   filterQuery: string;
   filteredemployeeList:any =[];
-  allInitalEmployeeList:any=[];
+  allRolesList:any=[];
   constructor(private common_service: CommonServiceService,
     private router:Router,private modalService: NgbModal,private accessControlService:SubModuleService,
     private apiService: ApiserviceService) {
@@ -59,11 +59,11 @@ is_active:false,
     })
    }
 
-  async ngOnInit(): Promise<void> {
+  ngOnInit() {
     this.user_id = sessionStorage.getItem('user_id');
     this.userRole = sessionStorage.getItem('user_role_name');
     this.getModuleAccess();
-    await this.initialGetAllEmployeelist('True');
+    this.getAllRoleList();
   }
 
   access_name:any ;
@@ -108,18 +108,17 @@ is_active:false,
       console.error('Error opening modal:', error);
     }
   }
-public  initialGetAllEmployeelist(is_active?:string){
-  let query = this.getFilterBaseUrl();
-  if(is_active){
-    query = `?is_active=${status}&employee=True`;
+public getAllRoleList() {
+    this.allRolesList = [];
+    this.apiService.getData(`${environment.live_url}/${environment.settings_roles}/`).subscribe((respData: any) => {
+      this.allRolesList = respData;
+   this.allRoleNames = this.getUniqueValues(role => ({ id: role?.id, name: role?.designation_name }));
+   
+    }, (error: any) => {
+      this.apiService.showError(error.detail);
+
+    })
   }
-  this.apiService.getData(`${environment.live_url}/${environment.employee}/${query}`).subscribe(
-    (res: any) => {
-      this.allInitalEmployeeList = res;
-      this.allRoleNames = this.getUniqueValues(emp => ({ id: emp.designation_id, name: emp.designation__designation_name }));
-    }
-  )
-}
 
   // Current Btn event
   getCurrentEmployeeList(){
@@ -212,7 +211,7 @@ this.apiService.getData(`${environment.live_url}/${environment.employee}/${query
     extractor: (item: any) => { id: any; name: string }
   ): { id: any; name: string }[] {
     const seen = new Map();
-    this.allInitalEmployeeList?.forEach(emp => {
+    this.allRolesList?.forEach(emp => {
       const value = extractor(emp);
       if (value && value.id && !seen.has(value.id)) {
         seen.set(value.id, value.name);
