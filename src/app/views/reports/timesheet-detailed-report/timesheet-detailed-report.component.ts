@@ -47,16 +47,19 @@ export class TimesheetDetailedReportComponent implements OnInit {
   ) {
     this.user_id = sessionStorage.getItem('user_id') || '' ;
     this.user_role_name = sessionStorage.getItem('user_role_name') || '';
-    this.getClienList();
-    this.getJobList();
-    this.getEmployeeList();
+     this.getClienList();
+     this.getJobList();
+     this.getEmployeeList();
+     this.getTaskList();
   }
 
-  ngOnInit(): void {
+  async ngOnInit() {
     this.common_service.setTitle(this.BreadCrumbsTitle)
     this.tableData = getTableColumns(this.user_role_name);
+    setTimeout(() => {
+      this.getTableData()
+    }, 1000);
 
-    this.getTableData()
   }
 
 
@@ -224,15 +227,25 @@ getClienList(){
           id: item.job_id,
           name: item.job_name
         }));
+        console.log(this.jobName, 'jobName');
       }
     })}
-
+    getTaskList(){
+      this.api.getData(`${environment.live_url}/${environment.timesheet}/?get-tasks=True`).subscribe((res: any) => {
+        if(res){
+          this.taskName = res?.map((item: any) => ({
+            id: item.id,
+            name: item.value
+          }));
+        }
+      })
+    }
       getEmployeeList(){
         this.api.getData(`${environment.live_url}/${environment.employee}/?is_active=True&employee=True`).subscribe((res: any) => {
           if(res){
             this.employeeName = res?.map((item: any) => ({
-              id: item.employee_id,
-              name: item.employee_name
+              id: item.user_id,
+              name: item.user__full_name
             }));
           }
         })
@@ -246,13 +259,15 @@ async getTableData(params?: { page?: number; pageSize?: number; searchTerm?: str
    this.employees = res
   //  this.clientName = getUniqueValues3(this.employees, 'client_name', 'client_id')
   //  this.jobName = getUniqueValues3(this.employees, 'job_name', 'job_id')
-   this.taskName = getUniqueValues3(this.employees, 'task_name', 'task')
+  // this.taskName = getUniqueValues3(this.employees, 'task_name', 'task')
   //  this.employeeName = getUniqueValues3(this.employees, 'employee_name', 'employee_id')
-console.log(this.employees, 'employees');
-console.log(this.clientName, 'clientName');
-console.log(this.jobName, 'jobName');
-console.log(this.taskName, 'taskName');
-    if(this.clientName.length > 0 && this.jobName.length > 0 && this.taskName.length > 0 && this.employeeName.length > 0){
+
+    console.log(this.employees, 'employees');
+    console.log(this.clientName, 'clientName');
+    console.log(this.jobName, 'jobName');
+    console.log(this.taskName, 'taskName');
+
+    if(this.clientName?.length > 0 && this.jobName?.length > 0 && this.taskName?.length > 0 && this.employeeName?.length > 0){
     const page = params?.page ?? this.page;
     const pageSize = params?.pageSize ?? this.tableSize;
     const searchTerm = params?.searchTerm ?? this.term;
