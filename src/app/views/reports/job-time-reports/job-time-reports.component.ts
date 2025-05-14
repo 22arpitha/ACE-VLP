@@ -240,7 +240,11 @@ this.formattedData = [];
    });
  }
  getClientList(){
-  this.api.getData(`${environment.live_url}/${environment.clients}/`).subscribe((res: any) => {
+   let query = '';
+    if(this.userRole !== 'Admin'){
+      query += this.user_id ? `?employee-id=${this.user_id}` : '';
+    }
+  this.api.getData(`${environment.live_url}/${environment.clients}/${query}`).subscribe((res: any) => {
     if(res){
       this.clientName = res?.map((item: any) => ({
         id: item.id,
@@ -262,6 +266,18 @@ this.formattedData = [];
     return this.jobName;
   }
 getStatusList(){
+  this.api.getData(`${environment.live_url}/${environment.settings_job_status}/`).subscribe((res: any) => {
+    if(res){
+      this.statusName = res?.map((item: any) => ({
+        id: item.id,
+        name: item.status_name
+      }));
+    }
+  })
+  console.log('statusName',this.statusName);
+  return this.statusName;
+}
+getJobTypeList(){
   this.api.getData(`${environment.live_url}/${environment.settings_job_status}/`).subscribe((res: any) => {
     if(res){
       this.statusName = res?.map((item: any) => ({
