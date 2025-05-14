@@ -47,8 +47,8 @@ export class TimesheetDetailedReportComponent implements OnInit {
   ) {
     this.user_id = sessionStorage.getItem('user_id') || '' ;
     this.user_role_name = sessionStorage.getItem('user_role_name') || '';
-    this.getClienList();
     this.getJobList();
+    this.getClienList();
     this.getTaskList();
     this.getEmployeeList();
   }

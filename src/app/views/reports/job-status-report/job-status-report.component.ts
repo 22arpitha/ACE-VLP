@@ -60,16 +60,16 @@ export class JobStatusReportComponent implements OnInit {
    ) {
     this.user_id = sessionStorage.getItem('user_id');
     this.userRole = sessionStorage.getItem('user_role_name');
-     this.getGroupList()
-     this.getClienList()
-     this.getJobList()
-
+    this.getJobList()
+    this.getGroupList()
+    this.getClienList()
     }
 
-   ngOnInit(): void {
+   async ngOnInit() {
      this.formattedData = [];
      this.common_service.setTitle(this.BreadCrumbsTitle)
      this.tableConfig = tableColumns;
+     //await this.initializeTableFilterList()
      setTimeout(() => {
       this.getJobStatusList()
     },3000)

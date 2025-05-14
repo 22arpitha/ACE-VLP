@@ -59,8 +59,8 @@ tableSize: number = 50;
    ) {
     this.user_id = sessionStorage.getItem('user_id');
     this.userRole = sessionStorage.getItem('user_role_name');
-      this.getClientList()
       this.getJobList()
+      this.getClientList()
       this.getStatusList()
     }
 
@@ -70,7 +70,6 @@ tableSize: number = 50;
      this.tableConfig = tableColumns;
      setTimeout(() => {
       this.getJobStatusList()
-      // this.getTableData({page: this.page,pageSize: this.tableSize,searchTerm: this.term});
      }, 3000);
 
    }

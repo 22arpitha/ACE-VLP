@@ -62,7 +62,7 @@ export class TimesheetSummaryReportComponent implements OnInit {
     this.user_role_name = sessionStorage.getItem('user_role_name') || '';
     setTimeout(() => {
       this.getTableData({ page: 1, pageSize: this.tableSize, searchTerm: this.term });
-    }, 3000);
+    }, 100);
   }
 
   onTableDataChange(event: number): void {
