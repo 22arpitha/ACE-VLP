@@ -77,7 +77,7 @@ this.formUtilityService.resetHasUnsavedValue();
   }
   public initializeForm() {
     this.serviceForm = this.fb.group({
-      service_name: ['', [Validators.required, Validators.pattern(/^[a-zA-Z&.,'\-]+( [a-zA-Z&.,'\-]+)*$/), Validators.maxLength(50)]],
+      service_name: ['', [Validators.required, Validators.pattern(/^[a-zA-Z0-9!@#$%^&*()_+{}\[\]:;"'<>,.?/\\|`~\-]+( [a-zA-Z0-9!@#$%^&*()_+{}\[\]:;"'<>,.?/\\|`~\-]+)*$/), Validators.maxLength(50)]],
     });
     this.initialFormValue=this.serviceForm?.getRawValue();
   }

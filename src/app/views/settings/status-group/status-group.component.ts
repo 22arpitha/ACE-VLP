@@ -78,7 +78,7 @@ this.formUtilityService.resetHasUnsavedValue();
 
   public initializeForm() {
     this.statusGroupForm = this.fb.group({
-      group_name: ['', [Validators.required, Validators.pattern(/^[a-zA-Z]+( [a-zA-Z]+)*$/), , Validators.maxLength(50)]],
+      group_name: ['', [Validators.required, Validators.pattern(/^[a-zA-Z0-9!@#$%^&*()_+{}\[\]:;"'<>,.?/\\|`~\-]+( [a-zA-Z0-9!@#$%^&*()_+{}\[\]:;"'<>,.?/\\|`~\-]+)*$/), , Validators.maxLength(50)]],
     });
     this.initialFormValue=this.statusGroupForm?.getRawValue();
   }
