@@ -201,7 +201,7 @@
                              totalItems: count
                               }; let i=index'>
                                 <td>{{getContinuousIndex(i)}}</td>
-                                <td>{{item?.date || '-'}}</td>
+                                <td>{{(item?.date  | date: 'dd/MM/yyyy') || '-'}}</td>
                                 <td>{{item?.employee_name || '-'}}</td>
                                 <td>{{item?.client_name || '-'}}</td>
                                 <td>{{item?.job_name || '-'}}</td>

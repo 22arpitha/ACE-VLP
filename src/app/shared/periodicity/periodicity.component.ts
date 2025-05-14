@@ -10,11 +10,12 @@ import { environment } from '../../../environments/environment';
 export class PeriodicityComponent implements OnInit,OnChanges {
   searchPeroidicityText:any;
   allPeroidicitylist:any=[];
-  @Input() defaultSelection: boolean = false;
+  @Input() defaultSelection;
   @Input() resetFilterField: boolean = false;
   selectedPeriodicityVal:any;
   @Output() selectPeriodicity :EventEmitter<any> = new EventEmitter<any>();
-  constructor(private apiService: ApiserviceService) { }
+  constructor(private apiService: ApiserviceService) { 
+  }
 
    ngOnChanges(changes: SimpleChanges): void {
     if(changes['resetFilterField'] && changes['resetFilterField']?.currentValue === true){
@@ -40,6 +41,10 @@ export class PeriodicityComponent implements OnInit,OnChanges {
     this.apiService.getData(`${environment.live_url}/${environment.settings_periodicty}/`).subscribe(
       (res: any) => {
         this.allPeroidicitylist = res;
+        if(this.defaultSelection){
+           this.selectedPeriodicityVal = this.allPeroidicitylist?.find((element):any => element?.periodicty_name ==='Monthly')?.id;
+        this.selectPeriodicity.emit(this.selectedPeriodicityVal);
+        }
       }, (error: any) => {
         this.apiService.showError(error?.error?.detail);
       });

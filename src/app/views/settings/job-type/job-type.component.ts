@@ -77,7 +77,7 @@ this.formUtilityService.resetHasUnsavedValue();
   }
   public initializeForm() {
     this.jobTypeForm = this.fb.group({
-      job_type_name: ['', [Validators.required, Validators.pattern(/^[a-zA-Z]+( [a-zA-Z]+)*$/), Validators.maxLength(50)]],
+      job_type_name: ['', [Validators.required, Validators.pattern(/^[a-zA-Z0-9!@#$%^&*()_+{}\[\]:;"'<>,.?/\\|`~\-]+( [a-zA-Z0-9!@#$%^&*()_+{}\[\]:;"'<>,.?/\\|`~\-]+)*$/), Validators.maxLength(50)]],
       job_price: [null, [Validators.required,Validators.pattern(/^[0-9]+(\.[0-9]{1,2})?$/), Validators.maxLength(10), Validators.min(0), Validators.minLength(1)]],
     });
     this.initialFormValue = this.jobTypeForm?.getRawValue();
@@ -127,7 +127,7 @@ this.formUtilityService.resetHasUnsavedValue();
           if (respData) {
             this.apiService.showSuccess(respData['message']);
             this.resetFormState();
-            this.getAllJobTypes('?page=1&page_size=5');
+            this.getAllJobTypes(`?page=1&page_size=${this.tableSize}`);
           }
         }, (error: any) => {
           this.apiService.showError(error?.error?.detail);
@@ -137,7 +137,7 @@ this.formUtilityService.resetHasUnsavedValue();
           if (respData) {
             this.apiService.showSuccess(respData['message']);
             this.resetFormState();
-            this.getAllJobTypes('?page=1&page_size=5');
+            this.getAllJobTypes(`?page=1&page_size=${this.tableSize}`);
           }
 
         }, (error: any) => {
