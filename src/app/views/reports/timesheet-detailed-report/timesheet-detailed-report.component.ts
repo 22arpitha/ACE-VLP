@@ -213,7 +213,13 @@ exportCsvOrPdf(fileType) {
   });
 }
 getClienList(){
+<<<<<<< HEAD
   this.api.getData(`${environment.live_url}/${environment.clients}/`).subscribe((res: any) => {
+=======
+  let query = `?status=True`
+  query += this.userRole ==='Admin' ? '':`&employee-id=${this.user_id}`;
+  this.api.getData(`${environment.live_url}/${environment.clients}/${query}`).subscribe((res: any) => {
+>>>>>>> Vignesh
     if(res){
       this.clientName = res?.map((item: any) => ({
         id: item.id,
@@ -224,7 +230,12 @@ getClienList(){
   return this.clientName;
 }
   getJobList(){
+<<<<<<< HEAD
     this.api.getData(`${environment.live_url}/${environment.jobs}/`).subscribe((res: any) => {
+=======
+    let query = this.userRole ==='Admin' ? '':`?employee-id=${this.user_id}`;
+    this.api.getData(`${environment.live_url}/${environment.jobs}/${query}`).subscribe((res: any) => {
+>>>>>>> Vignesh
       if(res){
         this.jobName = res?.map((item: any) => ({
           id: item.id,
