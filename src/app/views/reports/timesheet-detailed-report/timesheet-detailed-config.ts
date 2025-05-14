@@ -2,7 +2,7 @@
 export function getTableColumns(role: string) {
 const tableColumns = [
   { label: 'Sl No', key: 'sl', sortable: true },
-  { label: 'Date', key: 'date', sortable: true, filterable: true,paramskeyId: 'timesheet-dates', filterType: 'date' },
+  { label: 'Date', key: 'date', sortable: true, filterable: true,paramskeyId: 'timesheet-dates', filterType: 'daterange' },
   {
     label: 'Client',
     key: 'client_name',
@@ -30,8 +30,8 @@ const tableColumns = [
     filterType: 'multi-select',
     sortable: true
   },
-  { label: 'Start time', key: 'start_time', sortable: true },
-  { label: 'End time', key: 'end_time', sortable: true },
+  { label: 'Start', key: 'st', sortable: true },
+  { label: 'End', key: 'end_time', sortable: true },
   { label: 'Time spent', key: 'time_spent', sortable: true },
   { label: 'Notes', key: 'notes', sortable: false }
 ];
