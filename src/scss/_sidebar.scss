@@ -105,9 +105,9 @@
  .sidebar-nav .nav-group.show > .nav-group-toggle::after {
      transform: rotate(92deg) !important;
  }
-.sidebar {
-    --cui-sidebar-width: 12rem !important;
-}
+// .sidebar {
+//     --cui-sidebar-width: 10rem !important;
+// }
 // .sidebar:not(.sidebar-end) ~ * {
 //     --cui-sidebar-occupy-start: 12rem !important;
 // }
@@ -118,6 +118,9 @@
     }
 }
 @media (min-width: 991.99px) {
+  .sidebar {
+    --cui-sidebar-width: 12rem !important;
+    }
     .sidebar:not(.sidebar-end) ~ * {
          --cui-sidebar-occupy-start: 12rem !important;
           --cui-sidebar-width: 12rem !important;

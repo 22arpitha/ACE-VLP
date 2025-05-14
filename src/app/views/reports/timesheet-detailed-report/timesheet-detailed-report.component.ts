@@ -47,11 +47,15 @@ export class TimesheetDetailedReportComponent implements OnInit {
   ) {
     this.user_id = sessionStorage.getItem('user_id') || '' ;
     this.user_role_name = sessionStorage.getItem('user_role_name') || '';
+    this.getClienList();
+    this.getJobList();
+    this.getEmployeeList();
   }
 
   ngOnInit(): void {
     this.common_service.setTitle(this.BreadCrumbsTitle)
     this.tableData = getTableColumns(this.user_role_name);
+
     this.getTableData()
   }
 
@@ -204,7 +208,35 @@ exportCsvOrPdf(fileType) {
     fileType
   });
 }
+getClienList(){
+  this.api.getData(`${environment.live_url}/${environment.clients}/`).subscribe((res: any) => {
+    if(res){
+      this.clientName = res?.map((item: any) => ({
+        id: item.client_id,
+        name: item.client_name
+      }));
+    }
+  })}
+  getJobList(){
+    this.api.getData(`${environment.live_url}/${environment.jobs}/`).subscribe((res: any) => {
+      if(res){
+        this.jobName = res?.map((item: any) => ({
+          id: item.job_id,
+          name: item.job_name
+        }));
+      }
+    })}
 
+      getEmployeeList(){
+        this.api.getData(`${environment.live_url}/${environment.employee}/?is_active=True&employee=True`).subscribe((res: any) => {
+          if(res){
+            this.employeeName = res?.map((item: any) => ({
+              id: item.employee_id,
+              name: item.employee_name
+            }));
+          }
+        })
+      }
 // Fetch table data from API with given params
 async getTableData(params?: { page?: number; pageSize?: number; searchTerm?: string;client_ids?:any;job_ids?:any;task_ids?:any;employee_ids?:any,timesheet_dates?:any }) {
 
@@ -212,11 +244,14 @@ async getTableData(params?: { page?: number; pageSize?: number; searchTerm?: str
   if(res){
 
    this.employees = res
-   this.clientName = getUniqueValues3(this.employees, 'client_name', 'client_id')
-   this.jobName = getUniqueValues3(this.employees, 'job_name', 'job_id')
+  //  this.clientName = getUniqueValues3(this.employees, 'client_name', 'client_id')
+  //  this.jobName = getUniqueValues3(this.employees, 'job_name', 'job_id')
    this.taskName = getUniqueValues3(this.employees, 'task_name', 'task')
-   this.employeeName = getUniqueValues3(this.employees, 'employee_name', 'employee_id')
-
+  //  this.employeeName = getUniqueValues3(this.employees, 'employee_name', 'employee_id')
+console.log(this.employees, 'employees');
+console.log(this.clientName, 'clientName');
+console.log(this.jobName, 'jobName');
+console.log(this.taskName, 'taskName');
     if(this.clientName.length > 0 && this.jobName.length > 0 && this.taskName.length > 0 && this.employeeName.length > 0){
     const page = params?.page ?? this.page;
     const pageSize = params?.pageSize ?? this.tableSize;
