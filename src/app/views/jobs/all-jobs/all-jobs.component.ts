@@ -477,6 +477,13 @@ export class AllJobsComponent implements OnInit {
     }
     this.filterData()
   }
+  onStatusDateSelected(event: any): void {
+    const selectedDate = event.value;
+    if (selectedDate) {
+     this.statusDate = this.datePipe.transform(selectedDate, 'yyyy-MM-dd');
+    }
+    this.filterData()
+  }
   clearDateFilter(){
     this.jobAllocationDate = null;
     this.dateFilterValue = null;

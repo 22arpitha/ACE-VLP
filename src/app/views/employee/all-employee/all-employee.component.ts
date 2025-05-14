@@ -45,7 +45,6 @@ is_active:false,
   allRoleNames:IdNamePair[] = [];
   filterQuery: string;
   filteredemployeeList:any =[];
-  allRolesList:any=[];
   constructor(private common_service: CommonServiceService,
     private router:Router,private modalService: NgbModal,private accessControlService:SubModuleService,
     private apiService: ApiserviceService) {
@@ -109,11 +108,11 @@ is_active:false,
     }
   }
 public getAllRoleList() {
-    this.allRolesList = [];
+    this.allRoleNames = [];
     this.apiService.getData(`${environment.live_url}/${environment.settings_roles}/`).subscribe((respData: any) => {
-      this.allRolesList = respData;
-   this.allRoleNames = this.getUniqueValues(role => ({ id: role?.id, name: role?.designation_name }));
-   
+      if(respData && respData.length>=1){
+      this.allRoleNames = respData?.map((role:any) => ({ id: role?.id, name: role?.designation_name }));
+      }
     }, (error: any) => {
       this.apiService.showError(error.detail);
 
@@ -205,21 +204,6 @@ this.apiService.getData(`${environment.live_url}/${environment.employee}/${query
   }
 
   // Filter Related
-
-  
-  getUniqueValues(
-    extractor: (item: any) => { id: any; name: string }
-  ): { id: any; name: string }[] {
-    const seen = new Map();
-    this.allRolesList?.forEach(emp => {
-      const value = extractor(emp);
-      if (value && value.id && !seen.has(value.id)) {
-        seen.set(value.id, value.name);
-      }
-    });
-
-    return Array.from(seen, ([id, name]) => ({ id, name }));
-  }
   onFilterChange(event: any, filterType: string) {
     const selectedOptions = event;
     this.filters[filterType] = selectedOptions;

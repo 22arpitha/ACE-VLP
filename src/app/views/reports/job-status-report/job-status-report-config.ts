@@ -37,7 +37,7 @@ export const tableColumns  = [
     sortable: true
   },
   {
-    label: 'Alloc. Date',
+    label: 'Allocated On',
     key: 'job_allocation_date',
     filterable: true,
     filterType: 'date',

@@ -346,6 +346,9 @@ export class CreateUpdateJobComponent implements CanComponentDeactivate, OnInit,
     this.jobFormGroup?.get('group')?.reset();
     // this.getCombinationJobName();
     this.getEndClientBasedGroup(endClient_id);
+    if(this.isEditItem){
+      this.getCombinationJobName();
+    }
   }
 
   private getEndClientBasedGroup(id: any) {
@@ -392,7 +395,9 @@ export class CreateUpdateJobComponent implements CanComponentDeactivate, OnInit,
   }
   public onServiceChange(event: any) {
     // console.log('event', event);
-    // this.getCombinationJobName();
+    if(this.isEditItem){
+      this.getCombinationJobName();
+    }
   }
   public onPeroidChange(event: any) {
     // console.log('event', event);
@@ -749,6 +754,7 @@ export class CreateUpdateJobComponent implements CanComponentDeactivate, OnInit,
     this.apiService.delete(`${environment.live_url}/${environment.jobs}/${id}/`).subscribe(async (data: any) => {
       if (data) {
         this.apiService.showSuccess(data.message);
+        this.resetFormState();
         this.router.navigate(['/jobs/all-jobs']);
       }
     }, (error => {

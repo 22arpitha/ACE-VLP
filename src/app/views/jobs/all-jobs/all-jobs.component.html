@@ -3,7 +3,7 @@
         <div class="row mx-0 my-1 px-0 py-2">
             <div class="col-12 mt-2 col-sm-12 col-md-4 col-lg-3 search-div px-0">
               <input type="search" (input)="filterSearch($event)" class="form-control p-2 sizeinput" [(ngModel)]="term"
-                placeholder="Search" aria-describedby="emailHelp" autocomplete="off">
+                placeholder="Search by Job" aria-describedby="emailHelp" autocomplete="off">
               <i *ngIf="!term" class="bi bi-search" id="search-icon-tab"></i>
             </div>
             <div class="col-12 mt-2 col-sm-12 col-md-4 col-lg-3"></div>
@@ -78,7 +78,7 @@
                         </mat-menu>
                     </th>
                     <th scope="col">
-                      Allocation On
+                       Allocated On
                       <button
                         mat-icon-button
                         (click)="setDateFilterColumn($event); picker.open()"
@@ -155,7 +155,7 @@
                       matInput
                       [matDatepicker]="datepicker"
                       [(ngModel)]="dateFilterValue"
-                      (dateChange)="onDateSelected($event)"
+                      (dateChange)="onStatusDateSelected($event)"
                     />
                     <mat-hint>MM/DD/YYYY</mat-hint>
                     <mat-datepicker #datepicker></mat-datepicker>

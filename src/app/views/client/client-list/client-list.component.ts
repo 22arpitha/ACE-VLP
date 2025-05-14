@@ -46,8 +46,6 @@ export class ClientListComponent implements OnInit {
     tableSizes = [50,75,100];
     currentIndex: any;
     allClientList:any=[];
-    allCountryList:any=[];
-    allSourceList:any=[];
     accessPermissions = []
     user_id: any;
     userRole: any;
@@ -82,55 +80,26 @@ export class ClientListComponent implements OnInit {
     }
 
   public getAllCountryList() {
-      this.allCountryList=[];
     this.apiService.getData(`${environment.live_url}/${environment.settings_country}/`).subscribe(
       (res: any) => {
-        this.allCountryList = res;
-        this.allCountriesNames = this.getUniqueValues(con => ({ id: con.id, name: con.country_name }));
+        if(res && res.length>=1 ){
+          this.allCountriesNames = res?.map(((con:any) => ({ id: con.id, name: con.country_name })));
+        }
       },(error: any) => {
         this.apiService.showError(error?.error?.detail);
       });
   }
 
   public getAllSourceList() {
-    this.allSourceList=[];
     this.apiService.getData(`${environment.live_url}/${environment.settings_source}/`).subscribe(
       (res: any) => {
-        this.allSourceList = res;
-         this.allSourceNames = this.getUniqueSourceValues(sou => ({ id: sou.id, name: sou.source_name }));
+        if(res && res.length>=1 ){
+          this.allSourceNames = res?.map(((sou:any) => ({ id: sou.id, name: sou.source_name })));
+        }
        },(error: any) => {
         this.apiService.showError(error?.error?.detail);
       });
   }
-    getUniqueValues(
-      extractor: (item: any) => { id: any; name: string }
-    ): { id: any; name: string }[] {
-      const seen = new Map();
-  
-      this.allCountryList.forEach(client => {
-        const value = extractor(client);
-        if (value && value.id && !seen.has(value.id)) {
-          seen.set(value.id, value.name);
-        }
-      });
-  
-      return Array.from(seen, ([id, name]) => ({ id, name }));
-    }
-
-    getUniqueSourceValues(
-      extractor: (item: any) => { id: any; name: string }
-    ): { id: any; name: string }[] {
-      const seen = new Map();
-  
-      this.allSourceList.forEach(client => {
-        const value = extractor(client);
-        if (value && value.id && !seen.has(value.id)) {
-          seen.set(value.id, value.name);
-        }
-      });
-  
-      return Array.from(seen, ([id, name]) => ({ id, name }));
-    }
 
     access_name:any ;
     getModuleAccess(){

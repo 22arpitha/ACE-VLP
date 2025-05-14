@@ -41,8 +41,6 @@ export class JobsOfEndclientComponent implements OnInit {
   allStatusNames: IdNamePair[] = [];
   dateFilterValue: any = null;
   filteredList:any = [];
-      allJobStatusList:any=[];
-    allEmployeeList:any=[];
     datepicker:any;
     filterQuery: string;
     jobList:any = [];
@@ -78,11 +76,12 @@ export class JobsOfEndclientComponent implements OnInit {
     this.sortValue = column;
   }
 
- public getAllJobStatus() {
-    this.allJobStatusList = [];
+     public getAllJobStatus() {
+    this.allStatusNames = [];
     this.api.getData(`${environment.live_url}/${environment.settings_job_status}/`).subscribe((respData: any) => {
-    this.allJobStatusList = respData;
-    this.allStatusNames = this.getUniqueStatusValues(status => ({ id: status.id, name: status.status_name }));
+    if(respData && respData.length>=1){
+  this.allStatusNames = respData.map((status:any) => ({ id: status.id, name: status.status_name }));
+    }
     }, (error: any) => {
       this.api.showError(error.detail);
 
@@ -91,10 +90,11 @@ export class JobsOfEndclientComponent implements OnInit {
 
    public getEmployees() {
     let queryparams = `?is_active=True&employee=True`;
-    this.allEmployeeList = [];
+    this.allEmployeeNames = [];
     this.api.getData(`${environment.live_url}/${environment.employee}/${queryparams}`).subscribe((respData: any) => {
-      this.allEmployeeList = respData;
-      this.allEmployeeNames = this.getUniqueEmpValues(emp => ({ id: emp.user_id, name: emp.user__full_name }));
+      if(respData && respData.length>=1){
+      this.allEmployeeNames = respData.map((emp:any) => ({ id: emp.user_id, name: emp.user__full_name }));
+    }
     }, (error => {
       this.api.showError(error?.error?.detail)
     }));
@@ -151,34 +151,6 @@ export class JobsOfEndclientComponent implements OnInit {
       this.common_service.setClientActiveTabindex(id);
       this.router.navigate([`/client/update-client/${this.client_id}`])
     }
-   getUniqueStatusValues(
-        extractor: (item: any) => { id: any; name: string }
-      ): { id: any; name: string }[] {
-        const seen = new Map();
-    
-        this.allJobStatusList.forEach(status => {
-          const value = extractor(status);
-          if (value && value.id && !seen.has(value.id)) {
-            seen.set(value.id, value.name);
-          }
-        });
-    
-        return Array.from(seen, ([id, name]) => ({ id, name }));
-      }
- getUniqueEmpValues(
-        extractor: (item: any) => { id: any; name: string }
-      ): { id: any; name: string }[] {
-        const seen = new Map();
-    
-        this.allEmployeeList.forEach(emp => {
-          const value = extractor(emp);
-          if (value && value.id && !seen.has(value.id)) {
-            seen.set(value.id, value.name);
-          }
-        });
-    
-        return Array.from(seen, ([id, name]) => ({ id, name }));
-      }
 
     filterData() {
       this.filterQuery = this.getFilterBaseUrl()
@@ -215,6 +187,13 @@ export class JobsOfEndclientComponent implements OnInit {
     }
     this.filterData()
     }
+    onStatusDateSelected(event: any): void {
+    const selectedDate = event.value;
+    if (selectedDate) {
+     this.statusDate = this.datePipe.transform(selectedDate, 'yyyy-MM-dd');
+    }
+    this.filterData()
+  }
     onDateSelected(event: any): void {
       const selectedDate = event.value;
       if (selectedDate) {
@@ -236,4 +215,8 @@ export class JobsOfEndclientComponent implements OnInit {
       this.filterData()
     }
 
+    getEmployeeName(employees: any): string {
+    const employee = employees.find((emp:any) => emp?.is_primary === true);
+    return employee ? employee?.employee_name : '';
+  }
 }

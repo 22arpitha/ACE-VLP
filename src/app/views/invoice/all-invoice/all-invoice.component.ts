@@ -110,7 +110,7 @@ BreadCrumbsTitle: any = 'Invoices';
       }
     }
     
-     public getAllActiveClients() {
+  public getAllActiveClients() {
     this.filteredList = [];
     let query:any
     if(this.userRole ==='Admin'){
