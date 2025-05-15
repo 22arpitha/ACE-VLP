@@ -57,7 +57,8 @@
           </div>
         </div>
       </div>
-      <div class="col-12 mt-3 col-sm-12 col-md-4 col-lg-3 search-div px-0">
+      <div class="row">
+      <div class="col-12 mt-3 col-sm-12 col-md-4 col-lg-3 search-div px-0 s-m">
         <input
           type="search"
           (input)="filterSearch($event)"
@@ -70,7 +71,7 @@
         <i *ngIf="!term" class="bi bi-search" id="search-icon-tab"></i>
       </div>
 
-      <div class="col-12 mt-3 col-sm-12 col-md-4 col-lg-5 text-end">
+      <div class="col-12 mt-3 col-sm-12 col-md-4 col-lg-5 text-end s-m">
         <button
           mat-raised-button
           class="mat-btn-s order-sm-1 order-3"
@@ -83,24 +84,23 @@
         </button>
       </div>
       <div class="col-12 mt-3 col-sm-12 col-md-4 col-lg-2 text-end">
-        <button
-          mat-stroked-button
-          class="order-sm-1 order-3 w-100 bg-shortfall"
+        <div
+          class="order-sm-1 order-3 w-100 bg-shortfall p-0"
           type="button"
           *ngIf="userRole != 'Admin'"
         >
-          ShortFall : 10
-        </button>
+          <div class="w-100">ShortFall</div> <div>{{shortfall}}</div>
+      </div>
       </div>
       <div class="col-12 mt-3 col-sm-12 col-md-4 col-lg-2 text-end">
-        <button
-          mat-stroked-button
-          class="order-sm-1 order-3 w-100 bg-total"
+        <div
+          class="order-sm-1 order-3 w-100 bg-total p-0"
           type="button"
           *ngIf="userRole != 'Admin'"
         >
-          Total Time : 12
-        </button>
+          <div class="w-100">Total Time</div> <div>{{total_working_hours}}</div>
+      </div>
+      </div>
       </div>
     </div>
     <div class="row mx-1 my-2 px-0 table-wrapper">

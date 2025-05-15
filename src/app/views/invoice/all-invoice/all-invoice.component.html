@@ -22,7 +22,7 @@
                       <i *ngIf="!arrowState['created_date']" (click)="sort('asc','created_date')" class="bi bi-arrow-down"></i>
                         <i (click)="sort('desc','created_date')" *ngIf="arrowState['created_date']"
                           class="bi bi-arrow-up"></i>
-                          <button *ngIf="!dateFilterValue"
+                          <button *ngIf="!startDate && !endDate"
                           mat-icon-button
                           (click)="setDateFilterColumn($event); picker1.open()"
                           class="ms-1 btn-menu-trigger"
@@ -30,7 +30,7 @@
                         <i class="bi bi-calendar"></i>
                       </button>
                       <button mat-icon-button container="body"
-                      ngbTooltip="Clear Invoice Date" placement="top"  *ngIf="dateFilterValue" (click)="clearDateFilter()" class="ms-1 btn-menu-trigger">
+                      ngbTooltip="Clear Invoice Date" placement="top"  *ngIf="startDate && endDate" (click)="clearDateFilter()" class="ms-1 btn-menu-trigger">
                         <i class="bi bi-x-circle"></i>
                       </button>
                       <!-- <mat-form-field class="opacity-0 position-absolute">
@@ -44,13 +44,13 @@
                         <mat-hint>MM/DD/YYYY</mat-hint>
                         <mat-datepicker #datepicker></mat-datepicker>
                       </mat-form-field> -->
-                    <mat-form-field class="opacity-0 position-absolute" >
+                    <mat-form-field class="opacity-0 position-absolute">
                     <mat-date-range-input [rangePicker]="picker1">
                         <input
                           matStartDate
                           placeholder="Start date"
                           [(ngModel)]="startDate"
-                          (dateChange)="onDateChange($event)"
+                          (dateChange)="onStartDateChange($event)"
                         />
                         <input
                           matEndDate

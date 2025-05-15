@@ -19,12 +19,12 @@ export interface IdNamePair {
   selector: 'app-all-timesheets',
   templateUrl: './all-timesheets.component.html',
   styleUrls: ['./all-timesheets.component.scss'],
-   providers: [
-      {
-        provide: MAT_DATE_RANGE_SELECTION_STRATEGY,
-        useClass: WeeklySelectionStrategy
-      }
-    ]
+  //  providers: [
+  //     {
+  //       provide: MAT_DATE_RANGE_SELECTION_STRATEGY,
+  //       useClass: WeeklySelectionStrategy
+  //     }
+  //   ]
 })
 export class AllTimesheetsComponent implements OnInit {
   selectedDate: any;
@@ -70,6 +70,8 @@ export class AllTimesheetsComponent implements OnInit {
   filterQuery: string;
   initalTimesheetList:any = [];
   timesheetDate: string | null;
+  total_working_hours: any;
+  shortfall: any;
   constructor(private common_service: CommonServiceService,
     private router: Router, private modalService: NgbModal, private accessControlService: SubModuleService,
     private apiService: ApiserviceService, private datePipe: DatePipe) {
@@ -77,6 +79,10 @@ export class AllTimesheetsComponent implements OnInit {
 
     this.user_id = sessionStorage.getItem('user_id');
     this.userRole = sessionStorage.getItem('user_role_name');
+    const startDate = this.getStartOfCurrentWeek();
+    const endDate = this.getEndOfCurrentWeek();
+    this.startDate = this.datePipe.transform(startDate, 'yyyy-MM-dd');
+    this.endDate = this.datePipe.transform(endDate, 'yyyy-MM-dd');
   }
 
   async ngOnInit(): Promise<void> {
@@ -297,9 +303,11 @@ this.allJobsNames=[];
 
   public getTimesheets() {
     let query = this.getFilterBaseUrl();
-    this.apiService.getData(`${environment.live_url}/${environment.vlp_timesheets}/${query}`).subscribe(
+    this.apiService.getData(`${environment.live_url}/${environment.vlp_timesheets}/${query}&start-date=${this.startDate}&end-date=${this.endDate}`).subscribe(
       (res: any) => {
         this.allTimesheetsList = res?.results;
+        this.total_working_hours = res?.total_working_hours;
+        this.shortfall = res?.shortfall;
         // if (this.allTimesheetsList.length > 0) {
         //   this.idsOfTimesheet = [];
         //   res.results.forEach((element: any) => {
@@ -315,8 +323,10 @@ this.allJobsNames=[];
     )
   }
   public getTimesheetsIDs() {
-   // let query = this.getFilterBaseUrl();
-    this.apiService.getData(`${environment.live_url}/${environment.vlp_timesheets}/?timesheet-employee=${this.user_id}&start-date=${this.startDate}&end-date=${this.endDate}`).subscribe(
+   let query = this.getFilterBaseUrl();
+   console.log('this.startDate', this.startDate)
+   console.log('this.endDate', this.endDate)
+    this.apiService.getData(`${environment.live_url}/${environment.vlp_timesheets}/${query}&timesheet-employee=${this.user_id}&start-date=${this.startDate}&end-date=${this.endDate}`).subscribe(
       (res: any) => {
         // this.allTimesheetsList = res;
         if (res.length > 0) {
@@ -362,9 +372,17 @@ this.allJobsNames=[];
 
   public getFilterBaseUrl(): string {
     if (this.userRole === 'Admin') {
-      return `?page=${this.page}&page_size=${this.tableSize}&search=${this.term}&start-date=${this.startDate}&end-date=${this.endDate}`;
+      let query = `?page=${this.page}&page_size=${this.tableSize}`;
+      if (this.term) {
+        query += `&search=${this.term}`;
+      }
+        return query;
     } else {
-      return `?timesheet-employee=${this.user_id}&page=${this.page}&page_size=${this.tableSize}&search=${this.term}&start-date=${this.startDate}&end-date=${this.endDate}`;
+      let query = `?page=${this.page}&page_size=${this.tableSize}`;
+      if (this.term) {
+        query += `&search=${this.term}`;
+      }
+       return `?timesheet-employee=${this.user_id}&page=${this.page}&page_size=${this.tableSize}&search=${this.term}`;
     }
   }
 
@@ -540,29 +558,32 @@ this.allJobsNames=[];
 
 
   filterData() {
-    this.filterQuery = this.getFilterBaseUrl()
+    let filterQuery = this.getFilterBaseUrl()
     if (this.filters.client_name.length) {
-      this.filterQuery += `&client-ids=[${this.filters.client_name.join(',')}]`;
+      filterQuery += `&client-ids=[${this.filters.client_name.join(',')}]`;
     }
 
     if (this.filters.job_name.length) {
-      this.filterQuery += `&job-ids=[${this.filters.job_name.join(',')}]`;
+      filterQuery += `&job-ids=[${this.filters.job_name.join(',')}]`;
     }
     if (this.filters.employee_name.length) {
-      this.userRole === 'accountant' ? this.filterQuery += `&timesheet-employee-ids=[${this.filters.employee_name.join(',')}]` :
-      this.filterQuery += `&timesheet-employee-ids=[${this.filters.employee_name.join(',')}]` ;
+      this.userRole === 'Accountant' ? filterQuery += `&timesheet-employee-ids=[${this.filters.employee_name.join(',')}]` :
+      filterQuery += `&timesheet-employee-ids=[${this.filters.employee_name.join(',')}]` ;
     }
     if (this.filters.task_nmae.length) {
-      this.filterQuery += `&timesheet-task-ids=[${this.filters.task_nmae.join(',')}]`;
+      filterQuery += `&timesheet-task-ids=[${this.filters.task_nmae.join(',')}]`;
     }
-
-    if (this.startDate && this.endDate) {
-      this.filterQuery += `&start-date=${this.startDate}&end-date=${this.endDate}`;
+    if (this.userRole === 'Admin') {
+      if(this.startDate && this.endDate) {
+      filterQuery += `&start-date=${this.startDate}&end-date=${this.endDate}`;
+     }
     }
-    if (this.timesheetDate) {
-      this.filterQuery += `&timesheet-dates=[${this.timesheetDate}]`;
+     if (this.userRole === 'Accountant') {
+      if(this.timesheetDate) {
+      filterQuery += `&timesheet-dates=[${this.timesheetDate}]`;
+     }
     }
-    this.apiService.getData(`${environment.live_url}/${environment.vlp_timesheets}/${this.filterQuery}`).subscribe(
+    this.apiService.getData(`${environment.live_url}/${environment.vlp_timesheets}/${filterQuery}`).subscribe(
       (res: any) => {
     this.allTimesheetsList = res?.results;
       this.count = res?.['total_no_of_record'];
@@ -570,13 +591,17 @@ this.allJobsNames=[];
     });
   }
   onDateChange(event: any) {
+    this.startDate = '';
     this.dateFilterValue = event.value;
     this.startDate = this.datePipe.transform(this.dateFilterValue, 'yyyy-MM-dd');
-    this.filterData();
   }
   onEndDateChange(event: any) {
+    this.endDate = '';
     this.endDate = event.value;
     this.endDate = this.datePipe.transform(this.endDate, 'yyyy-MM-dd');
-    this.filterData();
+    if(this.startDate && this.endDate){
+      this.filterData();
+    }
+
   }
 }

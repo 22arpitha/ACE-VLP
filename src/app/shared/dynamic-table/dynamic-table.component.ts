@@ -70,6 +70,7 @@ selectedFile:(File | null)[] = [];
   selectedDate: any;
 
   private lastEmittedFilters: { [key: string]: string } = {}; // To store JSON string of last emitted filter value per key
+  dateRangeStartDate: string | null;
 
   constructor(
     private fb:FormBuilder,
@@ -570,20 +571,20 @@ isPositiveOrNegative(value: string): string {
         return "";
     }
 }
-onDateChange(event: any) {
+onDateChange(event: any,key:any) {
   const selectedDate = event.value;
   const formattedDate = this.datePipe.transform(selectedDate, 'yyyy-MM-dd');
 //  this.rows.at(index).patchValue({ month: formattedDate });
-  this.selectedDateRange = formattedDate;
+  this.dateRangeStartDate = formattedDate;
  // this.actionEvent.emit({ actionType: 'dateChange', detail: formattedDate });
   this.resetWeekDate = true;
 }
-onEndDateChange(event: any) {
+onEndDateChange(event: any,key) {
   const selectedDate = event.value;
   const formattedDate = this.datePipe.transform(selectedDate, 'yyyy-MM-dd');
 //  this.rows.at(index).patchValue({ month: formattedDate });
   this.selectedDateRange = formattedDate;
-  //this.actionEvent.emit({ actionType: 'endDateChange', detail: formattedDate });
+  this.actionEvent.emit({ actionType: 'dateRange', detail: {startDate:this.dateRangeStartDate,endDate:formattedDate,key:key}});
   this.resetWeekDate = true;
 }
 }

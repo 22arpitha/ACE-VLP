@@ -144,13 +144,13 @@
                           matStartDate
                           placeholder="Start date"
                           [(ngModel)]="startDate"
-                          (dateChange)="onDateChange($event)"
+                          (dateChange)="onDateChange($event,col.key)"
                         />
                         <input
                           matEndDate
                           placeholder="End date"
                           [(ngModel)]="endDate"
-                          (dateChange)="onEndDateChange($event)"
+                          (dateChange)="onEndDateChange($event,col.key)"
                         />
                       </mat-date-range-input>
                       <mat-datepicker-toggle

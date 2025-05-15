@@ -55,8 +55,8 @@ BreadCrumbsTitle: any = 'Invoices';
       client_name: []
     };
     allClientNames: any[] = [];
-  filteredList: any = [];
-  datepicker: null;
+    filteredList: any = [];
+    datepicker: null;
     constructor(private common_service: CommonServiceService,private accessControlService:SubModuleService,
       private router:Router,private modalService: NgbModal,private dialog:MatDialog,
       private datePipe:DatePipe,
@@ -119,7 +119,7 @@ BreadCrumbsTitle: any = 'Invoices';
         console.error('Error opening modal:', error);
       }
     }
-    
+
   public getAllActiveClients() {
     this.filteredList = [];
     let query:any
@@ -135,7 +135,7 @@ BreadCrumbsTitle: any = 'Invoices';
       }, (error: any) => {
         this.apiService.showError(error?.error?.detail);
       });
-  } 
+  }
     getUniqueValues(
       extractor: (item: any) => { id: any; name: string }
     ): { id: any; name: string }[] {
@@ -242,34 +242,39 @@ BreadCrumbsTitle: any = 'Invoices';
       if (this.filters.client_name.length) {
         this.filterQuery += `&client-ids=[${this.filters.client_name.join(',')}]`;
       }
-      if (this.invoiceDate) {
-        this.filterQuery += `&dates=[${this.invoiceDate}]`;
+      // if (this.invoiceDate) {
+      //   this.filterQuery += `&dates=[${this.invoiceDate}]`;
+      // }
+      if(this.startDate && this.endDate){
+        this.filterQuery += `&start-date=${this.startDate}&end-date=${this.endDate}`;
       }
       this.apiService.getData(`${environment.live_url}/${environment.client_invoice}/${this.filterQuery}`).subscribe((res: any) => {
         this.allInvoiceList = res?.results;
         const noOfPages: number = res?.['total_pages']
         this.count = noOfPages * this.tableSize;
-        this.count = res?.['total_no_of_record']
+        this.count = res?.['total_no_of_record'];
         this.page = res?.['current_page'];
       });
     }
     clearDateFilter(){
       this.invoiceDate = null;
       this.dateFilterValue = null;
+      this.startDate = null;
+      this.endDate = null;
       this.filterData()
     }
-    onDateChange(event: any) {
+    onStartDateChange(event: any) {
       const selectedDate = event.value;
       if (selectedDate) {
-        this.invoiceDate = this.datePipe.transform(selectedDate, 'yyyy-MM-dd');
+        this.startDate = this.datePipe.transform(selectedDate, 'yyyy-MM-dd');
       }
-      //this.filterData()
+      this.filterData()
     }
     onEndDateChange(event: any) {
       const selectedDate = event.value;
       if (selectedDate) {
-        this.invoiceDate = this.datePipe.transform(selectedDate, 'yyyy-MM-dd');
+        this.endDate = this.datePipe.transform(selectedDate, 'yyyy-MM-dd');
       }
-     // this.filterData()
+      this.filterData()
     }
 }

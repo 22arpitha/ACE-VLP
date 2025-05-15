@@ -343,7 +343,7 @@ getClienList(){
             ...item,
             is_primary:item?.employees?.find((emp: any) => emp?.is_primary === true)?.employee_name || '',
           }));
-          console.log(this.formattedData);
+          //console.log(this.formattedData);
           this.tableConfig = {
            columns: tableColumns?.map(col => {
               let filterOptions:any = [];

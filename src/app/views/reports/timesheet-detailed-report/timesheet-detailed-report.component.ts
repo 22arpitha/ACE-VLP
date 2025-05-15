@@ -119,7 +119,7 @@ handleAction(event: { actionType: string; detail: any,key:string }) {
       case 'filter':
       this.onApplyFilter(event.detail,event.key);
       break;
-      case 'dateFilter':
+      case 'dateRange':
         console.log(event.detail, event.key);
       this.onApplyDateFilter(event.detail,event.key);
       break;
@@ -167,8 +167,10 @@ onApplyDateFilter(filteredDate:string, filteredKey: string): void {
   console.log(filteredDate, filteredKey);
 
   if (filteredKey === 'date') {
+    debugger;
     this.selectedDate = filteredDate;
   }
+  console.log('selectedDate',this.selectedDate);
   this.getTableData({
     page: 1,
     pageSize: this.tableSize,
@@ -177,7 +179,7 @@ onApplyDateFilter(filteredDate:string, filteredKey: string): void {
     job_ids: this.selectedJobIds,
     task_ids: this.selectedTaskIds,
     employee_ids: this.selectedEmployeeIds,
-    timesheet_dates: this.selectedDate
+    timesheet_dates: filteredDate
   });
 }
 
@@ -281,7 +283,7 @@ async getTableData(params?: { page?: number; pageSize?: number; searchTerm?: str
         query += `&timesheet-employee-ids=[${params.employee_ids.join(',')}]`;
       }
       if(params?.timesheet_dates){
-        query += `&timesheet-dates=[${params.timesheet_dates}]`
+        query += `&start-date=${params.timesheet_dates.startDate}&end-date=${params.timesheet_dates.endDate}`
       }
       await this.api.getData(`${environment.live_url}/${environment.timesheet}/${query}`).subscribe((res: any) => {
      if(res){
