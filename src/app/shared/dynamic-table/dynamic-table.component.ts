@@ -184,7 +184,6 @@ onSelectionChange(newSelected: any[], col: any): void {
           }
 
           if (Array.isArray(filterVal)) {
-            debugger;
             return filterVal?.includes(cellVal);
           }
 
