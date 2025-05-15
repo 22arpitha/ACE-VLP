@@ -50,6 +50,7 @@ export class AllJobsComponent implements OnInit {
   allEmployeelist:any=[];
   allManagerlist:any=[];
   dateFilterValue: any = null;
+  statusList:String[]=[];
   filters: { job_type_name: string[]; client_name: string[];employees:string[];manager:string[] } = {
     job_type_name: [],
     client_name: [],
@@ -80,6 +81,12 @@ export class AllJobsComponent implements OnInit {
     this.common_service.setTitle(this.BreadCrumbsTitle);
     this.user_id = sessionStorage.getItem('user_id');
     this.userRole = sessionStorage.getItem('user_role_name');
+    this.getModuleAccess();
+    this.getJobStatusList();
+    this.getJobTypeList();
+    this.getAllEmployeeList();
+    this.getAllActiveManagerList();
+    this.getClientList();
      this.common_service.jobStatus$.subscribe((status:boolean)=>{
       if(status){
          this.getJobsHistoryList();
@@ -89,16 +96,11 @@ export class AllJobsComponent implements OnInit {
     })
   }
 
-  async ngOnInit() {
-
-    this.getModuleAccess();
-    this.getAllEmployeeList();
-    this.getAllActiveManagerList();
-    this.getClientList();
-    this.getJobStatusList();
-    this.getJobTypeList();
+  ngOnInit() {
     this.initialForm();
-    await this.getJobsFilterList('True');
+     setTimeout(() => {
+      this.getCurrentJobs();
+     }, 300);
   }
   access_name:any;
 
@@ -161,11 +163,12 @@ export class AllJobsComponent implements OnInit {
       this.filterQuery += `&job-status-date=[${this.statusDate}]`;
     }
     if(this.isCurrent){
-      this.filterQuery += `&status=True`;
+   this.jobStatusList('True');
     }
     else{
-      this.filterQuery += `&status=False`;
+      this.jobStatusList('False');
     }
+    this.filterQuery +=`&job-status=[${this.statusList}]`;
     this.apiService.getData(`${environment.live_url}/${environment.jobs}/${this.filterQuery}`).subscribe((res: any) => {
       this.allJobsList = res?.results;
       this.filteredList = res?.results;
@@ -192,6 +195,7 @@ settings_job_type
           element['valueChanged']=false
         })
         this.allJobStatus = resData;
+        this.jobStatusList('True');
       }
     )
   }
@@ -274,8 +278,8 @@ settings_job_type
   getCurrentJobsList() {
     this.isHistory = false;
     this.isCurrent = true;
-    let query = `${this.getFilterBaseUrl()}&status=True`;
-
+     this.jobStatusList('True');
+    let query = `${this.getFilterBaseUrl()}&job-status=[${this.statusList}]`;
     this.apiService.getData(`${environment.live_url}/${environment.jobs}/${query}`).subscribe((res: any) => {
       this.allJobsList = res?.results;
       this.filteredList = res?.results;
@@ -284,35 +288,11 @@ settings_job_type
       this.count = res?.['total_no_of_record'];
       this.page = res?.['current_page'];    });
   }
-  getJobsFilterList(status?:string) {
-    let query = this.getFilterBaseUrl();
-    if(status){
-      query = `?status=${status}`;
-      query += this.userRole !== 'Admin' ? `&employee-id=${this.user_id}` : '';
-    }
-    this.apiService.getData(`${environment.live_url}/${environment.jobs}/${query}`).subscribe(
-      (res: any) => {
-        this.jobList = res;
-        // this.allClientNames = this.getUniqueValues(job => ({ id: job.client, name: job.client_name }));
-        // this.allJobTypeNames = this.getUniqueValues(job => ({ id: job.job_type, name: job.job_type_name }));
-        // this.allEmployeeNames = this.getUniqueValues(job => {
-        //   const emp = job.employees?.find((e: any) => e.is_primary);
-        //   return { id: emp?.employee || '', name: emp?.employee_name || '' };
-        // });
-
-        // this.allManagerNames = this.getUniqueValues(job => {
-        //   const mgr = job.employees?.find((e: any) => e.is_primary);
-        //   return { id: mgr?.manager || '', name: mgr?.manager_name || '' };
-        // });
-
-      }
-    )
-  }
   getJobsHistoryList() {
     this.isCurrent = false;
     this.isHistory = true;
-    let query = `${this.getFilterBaseUrl()}&status=False`;
-
+    this.jobStatusList('False');
+    let query = `${this.getFilterBaseUrl()}&job-status=[${this.statusList}]`;
     this.apiService.getData(`${environment.live_url}/${environment.jobs}/${query}`).subscribe(
       (res: any) => {
         this.allJobsList = res?.results;
@@ -457,18 +437,19 @@ settings_job_type
   let status:any
     if(this.isCurrent){
       status = 'True';
+   this.jobStatusList(status);
     }
     else{
       status = 'False';
+      this.jobStatusList(status);
     }
     let query = '';
     if(this.filterQuery){
-      query = this.filterQuery + `&file-type=${type}&is-active=${status}`
+      query = this.filterQuery + `&file-type=${type}`;
     }else{
-      query = `?page=${this.page}&page_size=${this.tableSize}&file-type=${type}&is-active=${status}`
+      query = `?page=${this.page}&page_size=${this.tableSize}&file-type=${type}&job-status=[${this.statusList}]`;
       query +=this.userRole !== 'Admin' ? `&employee-id=${this.user_id}` : '';
     }
-
     let apiUrl = `${environment.live_url}/${environment.job_details}/${query}`;
     fetch(apiUrl)
     .then(res => res.blob())
@@ -480,6 +461,16 @@ settings_job_type
       a.click();
     });
   }
+
+jobStatusList(status:any){
+  const isActive = status === 'True';
+  this.statusList = this.allJobStatus
+    ?.filter((jobstatus: any) => isActive
+      ? jobstatus?.status_name !== "Cancelled" && jobstatus?.status_name !== "Completed"
+      : jobstatus?.status_name === "Cancelled" || jobstatus?.status_name === "Completed")
+    .map((status: any) => status?.status_name);
+}
+
   setDateFilterColumn(event){
     const selectedDate = event.value;
   if (selectedDate) {

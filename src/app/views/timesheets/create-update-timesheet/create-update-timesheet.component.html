@@ -16,7 +16,7 @@
                                     <span *ngIf="f['date']?.errors?.['required']">Date is required</span>
                                 </mat-error>
                             </mat-form-field>
-
+                            <span *ngIf="weekTimesheetSubmitted" class="error-message">{{errorMessage}}</span>
                         </div>
                         <!-- employee -->
                         <div class="col-12 col-sm-12 col-md-6 col-lg-3 my-1 no-padding pl-0 pr-5">
@@ -172,10 +172,10 @@
                             <button mat-button class="cancel-button mat-btn-s" type="button" (click)="backBtnFunc()">
                                 Back</button>
                             <button mat-raised-button class="proceedbtn mat-btn-s" type="submit"
-                                (click)="saveTimesheets()"
+                                (click)="saveTimesheets()" [disabled]="weekTimesheetSubmitted"
                                 *ngIf="((user_role_name !== 'Admin' && accessPermissions[0]?.create) || user_role_name === 'Admin') && !isEditItem">
                                 <span>Submit</span></button>
-                            <button mat-raised-button class="proceedbtn mat-btn-s" type="submit"
+                            <button mat-raised-button class="proceedbtn mat-btn-s" type="submit" [disabled]="weekTimesheetSubmitted"
                                 (click)="saveTimesheets()"
                                 *ngIf="((user_role_name !== 'Admin' && accessPermissions[0]?.update) || user_role_name === 'Admin') && isEditItem">
                                 <span>Update</span></button>
