@@ -141,7 +141,7 @@
                           />
                         </div>
 
-                        <mat-selection-list
+                        <!-- <mat-selection-list
                           [(ngModel)]="columnFilters[columnKey]"
                           (ngModelChange)="onFilterChange(columnFilters[columnKey],col)"
                           [multiple]="true"
@@ -152,8 +152,19 @@
                           >
                             {{ option.name }}
                           </mat-list-option>
+                        </mat-selection-list> -->
+                        <mat-selection-list
+                          [ngModel]="tempFilters[columnKey]"
+                          (ngModelChange)="onSelectionChange($event, col)"
+                          [multiple]="true"
+                        >
+                          <mat-list-option
+                            *ngFor="let option of getFilteredOptions(columnKey)"
+                            [value]="option.id"
+                          >
+                            {{ option.name }}
+                          </mat-list-option>
                         </mat-selection-list>
-
                       </ng-container>
                     </div>
                   </div>

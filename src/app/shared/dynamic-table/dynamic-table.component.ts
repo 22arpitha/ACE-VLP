@@ -72,9 +72,17 @@ selectedFile:(File | null)[] = [];
     this.user_id = sessionStorage.getItem('user_id');
     this.userRole = sessionStorage.getItem('user_role_name');
   }
+  tempFilters: { [key: string]: any[] } = {};
   ngOnInit(): void {
-
+this.tempFilters = JSON.parse(JSON.stringify(this.columnFilters));
    }
+onSelectionChange(newSelected: any[], col: any): void {
+  const key = col.key;
+  this.tempFilters[key] = newSelected;
+  this.columnFilters[key] = newSelected;
+  this.onFilterChange(newSelected, col); // Emits to API
+  this.applyFilters(); // Applies locally
+}
 
   // Add this trackBy function
   trackByColumnKey(index: number, col: any): string {
@@ -169,6 +177,7 @@ selectedFile:(File | null)[] = [];
           }
 
           if (Array.isArray(filterVal)) {
+            debugger;
             return filterVal?.includes(cellVal);
           }
 
@@ -181,6 +190,7 @@ selectedFile:(File | null)[] = [];
       });
       this.updatePagination();
     }
+
   weekDatePicker(event: any) {
     this.selectedDate = event;
     this.actionEvent.emit({ actionType: 'weekDate', detail: this.selectedDate });
@@ -240,21 +250,33 @@ selectedFile:(File | null)[] = [];
 //     .filter((option: any) => typeof option === 'string' || (typeof option === 'object' && option.name?.toLowerCase().includes(search)))
 //     .map((option: any) => typeof option === 'string' ? { id: null, name: option } : option);
 // }
-  getFilteredOptions(colKey: string): { id: any; name: string }[] {
-    const column = this.config.columns?.find(c => c.key === colKey);
-    const options = column?.filterOptions || [];
-    const search = this.filterSearchText[colKey]?.toLowerCase() || '';
+  // getFilteredOptions(colKey: string): { id: any; name: string }[] {
+  //   const column = this.config.columns?.find(c => c.key === colKey);
+  //   const options = column?.filterOptions || [];
+  //   const search = this.filterSearchText[colKey]?.toLowerCase() || '';
 
-    const filtered = options
-      .filter((option: any) => {
-        const optionName = typeof option === 'string' ? option : option?.name;
-        return optionName?.toLowerCase().includes(search);
-      })
-      .map((option: any) =>
-        typeof option === 'string' ? { id: option, name: option } : option
-      );
-    return filtered;
-  }
+  //   const filtered = options
+  //     .filter((option: any) => {
+  //       const optionName = typeof option === 'string' ? option : option?.name;
+  //       return optionName?.toLowerCase().includes(search);
+  //     })
+  //     .map((option: any) =>
+  //       typeof option === 'string' ? { id: option, name: option } : option
+  //     );
+  //   return filtered;
+  // }
+getFilteredOptions(columnKey: string): any[] {
+  const allOptions = this.config.columns.find(col => col.key === columnKey)?.filterOptions || [];
+  const searchText = this.filterSearchText[columnKey]?.toLowerCase() || '';
+  const selectedIds = this.columnFilters[columnKey] || [];
+
+  const selected = allOptions.filter((opt:any) => selectedIds.includes(opt.id));
+  const searched = allOptions.filter((opt:any) => opt.name?.toLowerCase().includes(searchText));
+
+  const merged = [...selected, ...searched];
+  const uniqueMap = new Map(merged.map((opt:any) => [opt.id, opt]));
+  return Array.from(uniqueMap.values());
+}
 
 onTableDataChange(event: any) {
   this.actionEvent.emit({ actionType:'tableDataChange' , detail:event });
