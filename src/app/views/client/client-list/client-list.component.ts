@@ -252,6 +252,7 @@ export class ClientListComponent implements OnInit {
       query = this.filterQuery + `&file-type=${type}&is-active=${status}`
     }else{
       query = `?page=${this.page}&page_size=${this.tableSize}&file-type=${type}&is-active=${status}`
+      query +=this.userRole !== 'Admin' ? `&employee-id=${this.user_id}` : '';
     }
     let apiUrl = `${environment.live_url}/${environment.clients_details}/${query}`;
       fetch(apiUrl)

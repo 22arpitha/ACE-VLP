@@ -60,9 +60,9 @@ export class JobStatusReportComponent implements OnInit {
    ) {
     this.user_id = sessionStorage.getItem('user_id');
     this.userRole = sessionStorage.getItem('user_role_name');
-    this.getJobList()
-    this.getGroupList()
-    this.getClienList()
+    this.getJobList();
+    this.getGroupList();
+    this.getClienList();
     }
 
    async ngOnInit() {
@@ -447,6 +447,19 @@ public sendEamils(){
               this.api.getData(`${environment.live_url}/${environment.jobs}/${finalQuery}`).subscribe((respData: any) => {
                   if (respData) {
               this.api.showSuccess(respData['message']);
+    //           this.resetValues();
+    //     setTimeout(() => {
+    //     this.getTableData({
+    //    page: 1,
+    //    pageSize: this.tableSize,
+    //    searchTerm: this.term,
+    //    client_ids: this.selectedClientIds,
+    //    job_ids: this.selectedJobIds,
+    //    group_ids: this.selectedGroupIds,
+    //    job_allocation_date: this.jobAllocationDate,
+    //    job_status_date:this.selectedStatusDate
+    //  });
+    //     }, 200);
                }
                 },
                 (error:any)=>{
@@ -456,4 +469,18 @@ public sendEamils(){
             )
             }
             }
+// public resetValues(){
+//   this.client_id=null;
+//     this.selectedDate='';
+//     this.term='';
+//     this.selectedStatusDate='';
+//     this.selectedClientIds=[];
+//     this.selectedGroupIds=[];
+//     this.selectedJobIds=[];
+//     this.isIncludeAllJobEnable=true;
+//     this.isIncludeAllJobValue=false;
+//     this.getGroupList();
+//     this.getClienList();
+//     this.getJobList();
+// }
             }
