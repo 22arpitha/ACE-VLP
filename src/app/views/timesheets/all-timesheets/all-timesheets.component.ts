@@ -556,6 +556,9 @@ this.allJobsNames=[];
       this.filterQuery += `&timesheet-task-ids=[${this.filters.task_nmae.join(',')}]`;
     }
 
+    if (this.startDate && this.endDate) {
+      this.filterQuery += `&start-date=${this.startDate}&end-date=${this.endDate}`;
+    }
     if (this.timesheetDate) {
       this.filterQuery += `&timesheet-dates=[${this.timesheetDate}]`;
     }
@@ -565,5 +568,15 @@ this.allJobsNames=[];
       this.count = res?.['total_no_of_record'];
       this.page = res?.['current_page'];
     });
+  }
+  onDateChange(event: any) {
+    this.dateFilterValue = event.value;
+    this.startDate = this.datePipe.transform(this.dateFilterValue, 'yyyy-MM-dd');
+    this.filterData();
+  }
+  onEndDateChange(event: any) {
+    this.endDate = event.value;
+    this.endDate = this.datePipe.transform(this.endDate, 'yyyy-MM-dd');
+    this.filterData();
   }
 }
