@@ -101,31 +101,17 @@ export class TimesheetSummaryReportComponent implements OnInit {
         this.getTableData({ page: this.page, pageSize: this.tableSize, searchTerm: this.term , employee_ids:this.selectedEmployeeId, fromdate: this.fromDate })
         break;
       case 'navigate':
-        this.getEmployeeDetails(event['row'])
+        this.getEmployeeDetails(event['row'],event['selectedDay'])
         break;
       default:
         this.getTableData({ page: 1, pageSize: this.tableSize, searchTerm: this.term});
     }
   }
-  getEmployeeDetails(employee): void {
-    const today = new Date();
-        const dayOfWeek = today.getDay(); // Sunday = 0, Saturday = 6
-
-        const startOfWeek = new Date(today);
-        startOfWeek.setDate(today.getDate() - dayOfWeek);
-
-        const endOfWeek = new Date(today);
-        endOfWeek.setDate(today.getDate() + (6 - dayOfWeek));
-
-        // Save the week range in 'time'
-        this.time.start_date = startOfWeek.toISOString();
-        this.time.end_date = endOfWeek.toISOString();
-
-        const isEmpty = Object.keys(this.fromDate).length === 0;
-        const filteredDate = isEmpty ? this.time : this.fromDate;
+  getEmployeeDetails(employee,selectedDate): void {
+    console.log('employee Data',employee,selectedDate);
          this.dialog.open(EmployeeDetailsComponent, {
-         data: { employee:employee, dateRange:filteredDate },
-         panelClass: 'custom-details-dialog'
+         panelClass: 'custom-details-dialog',
+         data: { employee:employee,selectedDay:selectedDate }
        });
 
   }
@@ -251,6 +237,7 @@ export class TimesheetSummaryReportComponent implements OnInit {
              };
              employee?.timesheet_data?.forEach((entry: any) => {
                row[entry.day] = entry?.total_time;
+               row[`${entry?.day}_date`] = entry?.date;
              });
              return row;
            });

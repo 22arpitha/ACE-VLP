@@ -33,17 +33,7 @@
                       ngbTooltip="Clear Invoice Date" placement="top"  *ngIf="startDate && endDate" (click)="clearDateFilter()" class="ms-1 btn-menu-trigger">
                         <i class="bi bi-x-circle"></i>
                       </button>
-                      <!-- <mat-form-field class="opacity-0 position-absolute">
-                        <mat-label>Choose a date</mat-label>
-                        <input
-                          matInput
-                          [matDatepicker]="datepicker"
-                          [(ngModel)]="dateFilterValue"
-                          (dateChange)="onDateSelected($event)"
-                        />
-                        <mat-hint>MM/DD/YYYY</mat-hint>
-                        <mat-datepicker #datepicker></mat-datepicker>
-                      </mat-form-field> -->
+
                     <mat-form-field class="opacity-0 position-absolute">
                     <mat-date-range-input [rangePicker]="picker1">
                         <input

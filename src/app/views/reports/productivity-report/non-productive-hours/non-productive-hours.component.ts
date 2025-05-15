@@ -125,11 +125,7 @@ export class NonProductiveHoursComponent implements OnInit,OnChanges {
      }
    }
    exportCsvOrPdf(fileType) {
-    let query = buildPaginationQuery({
-      page: this.page,
-      pageSize: this.tableSize,
-      searchTerm :this.term
-    });
+   let query=`?client-name=Vedalekha professionals&download=True`;
     if(query){
       if(this.dropdwonFilterData){
         query+= this.dropdwonFilterData.employee_id ? `&employee-id=${this.dropdwonFilterData.employee_id}`:this.user_role_name ==='Admin' ? '':`&employee-id=${this.user_id}`;
@@ -139,7 +135,7 @@ export class NonProductiveHoursComponent implements OnInit,OnChanges {
         query += this.user_role_name ==='Admin' ? '':`&employee-id=${this.user_id}`;
        }
      }
-     const url = `${environment.live_url}/${environment.productivity_reports}/${query}&file-type=${fileType}&productivity-type=non-productive-hour`;
+     const url = `${environment.live_url}/${environment.timesheet}/${query}&file-type=${fileType}`;
      downloadFileFromUrl({
        url,
        fileName: 'non_productive_hours',

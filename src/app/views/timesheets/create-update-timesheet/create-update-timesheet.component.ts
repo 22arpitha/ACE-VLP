@@ -39,6 +39,8 @@ export class CreateUpdateTimesheetComponent implements CanComponentDeactivate, O
   minEndTime: string = '';
   statusList:any=[];
 allJobStatus:any=[];
+weekTimesheetSubmitted: boolean = false;
+errorMessage:any='';
   constructor(private fb: FormBuilder, private apiService: ApiserviceService, private datePipe: DatePipe,
     private accessControlService: SubModuleService, private router: Router, private common_service: CommonServiceService,
     private activeRoute: ActivatedRoute, private formErrorScrollService: FormErrorScrollUtilityService
@@ -206,7 +208,50 @@ this.formErrorScrollService.resetHasUnsavedValue();
     )
   }
   dateSelected(event){
-    this.getStartTimePreviousData()
+  const { startOfWeek, endOfWeek } = this.getWeekRangeFromSelectedDate(this.formatDateToString(event.value));
+  this.checkTimesheetSubmission(startOfWeek,endOfWeek);
+  this.getStartTimePreviousData()
+  }
+formatDateToString(date: Date): string | null {
+    return this.datePipe.transform(date, 'yyyy-MM-dd'); // Output: '2025-04-13'
+  }
+getWeekRangeFromSelectedDate(date: any): { startOfWeek: string; endOfWeek: string } {
+  const selected = new Date(date);
+  const dayOfWeek = selected.getDay(); // Sunday = 0, Monday = 1, ..., Saturday = 6
+
+  // Get Sunday (start of the week)
+  const startOfWeek = new Date(selected);
+  startOfWeek.setDate(selected.getDate() - dayOfWeek);
+
+  // Get Saturday (end of the week)
+  const endOfWeek = new Date(startOfWeek);
+  endOfWeek.setDate(startOfWeek.getDate() + 6);
+
+  // Format date as YYYY-MM-DD
+  const format = (d: Date) => d.toISOString().split('T')[0];
+
+  return {
+    startOfWeek: format(startOfWeek),
+    endOfWeek: format(endOfWeek),
+  };
+}
+
+
+checkTimesheetSubmission(startDate,endDate) {
+  this.errorMessage='';
+  this.weekTimesheetSubmitted=false;
+    let query = `?employee-id=${this.user_id}&from-date=${startDate}&to-date=${endDate}`
+    this.apiService.getData(`${environment.live_url}/${environment.submit_weekly_timesheet}/${query}`).subscribe(
+      (res: any) => {
+        this.weekTimesheetSubmitted = res.is_timesheet_submitted;
+        if(this.weekTimesheetSubmitted){
+          this.errorMessage=`Timesheet already submitted for this week (${startDate} – ${endDate}). Cannot create new.`;
+        }        
+      },
+      (error: any) => {
+        console.log(error)
+      }
+    )
   }
 
   getStartTimePreviousData() {

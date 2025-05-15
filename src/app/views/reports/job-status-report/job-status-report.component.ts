@@ -264,7 +264,7 @@ onApplyDateFilter(filteredDate:string, filteredKey: string): void {
       if (this.selectedStatusDate?.length) {
         query += `&job-status-date=[${this.selectedStatusDate.join(',')}]`;
       }
-      if(this.jobAllocationDate.length){
+      if(this.jobAllocationDate?.length){
         query += `&job-allocation-date=[${this.jobAllocationDate}]`;
       }
    const url = `${environment.live_url}/${environment.job_reports}/${query}&job-status=[${this.statusList}]&report-type=job-status-report&file-type=${fileType}`;

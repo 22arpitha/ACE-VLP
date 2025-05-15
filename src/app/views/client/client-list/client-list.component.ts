@@ -249,9 +249,9 @@ export class ClientListComponent implements OnInit {
     }
     let query = '';
     if(this.filterQuery){
-      query = this.filterQuery + `&file-type=${type}&is-active=${status}`
+      query = this.filterQuery + `&file-type=${type}&status=${status}`
     }else{
-      query = `?page=${this.page}&page_size=${this.tableSize}&file-type=${type}&is-active=${status}`
+      query = `?page=${this.page}&page_size=${this.tableSize}&file-type=${type}&status=${status}`
       query +=this.userRole !== 'Admin' ? `&employee-id=${this.user_id}` : '';
     }
     let apiUrl = `${environment.live_url}/${environment.clients_details}/${query}`;
