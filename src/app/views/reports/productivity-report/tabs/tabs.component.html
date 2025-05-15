@@ -11,7 +11,7 @@
   </div>
   <div class="col-sm-12 col-md-4 col-lg-4 d-flex justify-content-evenly">
     <button mat-raised-button class="proceedbtn mat-btn-s mr-2" type="button" (click)="applySearch()">Search</button>
-    <button mat-raised-button class="cancel-button mat-btn-s" type="button" (click)="resetSearch()">
+    <button mat-raised-button class="cancel-button mat-btn-s" type="button" (click)="resetSearch()" [disabled]="resetBtnDisable">
       Reset</button>
     <button mat-raised-button class="proceedbtn mat-btn-s" type="button" (click)="downloadExcel()">Export to Excel</button>
   </div>

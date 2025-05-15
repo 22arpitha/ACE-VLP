@@ -1,5 +1,5 @@
-import { Component, ContentChildren, OnInit, QueryList } from '@angular/core';
-import { environment } from 'src/environments/environment';
+import { Component, OnInit } from '@angular/core';
+import { environment } from '../../../../../environments/environment';
 
 @Component({
   selector: 'app-tabs',
@@ -13,6 +13,7 @@ period:number | null = null;
 employee:number | null = null;
 resetFilter:boolean=false;
 ondefaultSelection:boolean =true;
+resetBtnDisable:boolean=false;
 tabs:string[] = ['Overall Productivity', 'Quantitative Productivity', 'Qualitative Productivity','Work Culture and Work Ethics',
    'Productive Hours','Non Billable Hours','Non Productive Hours' ];
   selectedTab: number = 0;
@@ -36,13 +37,14 @@ tabs:string[] = ['Overall Productivity', 'Quantitative Productivity', 'Qualitati
 
   ngOnInit(): void {
     if(this.ondefaultSelection){
-      setTimeout(() => this.applySearch(), 300);
+      setTimeout(() => this.applySearch(), 800);
     }
   }
   applySearch(){
     this.commonFilterData={'employee_id':this.employee,'periodicity':this.periodicityId,'period':this.period};
   }
   resetSearch(): void {
+    this.resetBtnDisable=true;
     // Reset all filter-related data
     this.commonFilterData = {
       employee_id: '',
@@ -64,11 +66,14 @@ tabs:string[] = ['Overall Productivity', 'Quantitative Productivity', 'Qualitati
     // Reset UI state and possibly re-apply search
     setTimeout(() => {
       this.resetFilter = false;
-  
       if (noFiltersSelected) {
         this.ondefaultSelection = true;
+        this.resetBtnDisable=false;
         // Apply the search with a slight delay
-        setTimeout(() => this.applySearch(), 300);
+        setTimeout(() => {
+          this.resetBtnDisable=false;
+          this.applySearch()
+        }, 300);
       }
     }, 100);
   }
