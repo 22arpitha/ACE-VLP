@@ -138,9 +138,6 @@ onSelectionChange(newSelected: any[], col: any): void {
   onFilterChange(selectedValue: any, columnConfig: any) {
     const filterKey = columnConfig.key; // The key used for columnFilters
     const backendParamKey = columnConfig.paramskeyId || filterKey; // The key to be sent to backend
-
-    // console.log(`onFilterChange candidate for ${filterKey}. Selected:`, selectedValue);
-
     const currentFilterValueStr = JSON.stringify(selectedValue);
     const lastEmittedValueStr = this.lastEmittedFilters[filterKey];
 
@@ -370,22 +367,7 @@ this.actionEvent.emit({ actionType: 'submitWorkCulture', action:reqPayload});
 }
 private isIncludeFlagEnableLogic(): void {
   const clientNameFilter = this.columnFilters['client_name'];
-  if (this.config.selectedClientId) {
-    const clientObj = this.filteredData?.find(
-      (obj: any) => obj['client'] === this.config.selectedClientId
-    );
-    if (clientObj) {
-      this.columnFilters['client_name'] = [clientObj.client];
-      this.selected_client_id = clientObj.client;
-      if(this.selected_client_id){
-        this.allow_sending_status=false;
-        this.getClientDetails();
-      }
-    }
-    return;
-  }
-
-  // Case 2: No client selected — clear everything
+  // Case 1: No client selected — clear everything
   if (!clientNameFilter || clientNameFilter.length === 0) {
     this.allow_sending_status=false;
     this.selected_client_id = null;
@@ -393,17 +375,15 @@ private isIncludeFlagEnableLogic(): void {
     this.config.includeAllJobsValue = false;
     return;
   }
-
-  // Case 3: Multiple clients selected
+  // Case 2: Multiple clients selected
   if (clientNameFilter.length > 1) {
     this.allow_sending_status=false;
     this.config.includeAllJobsEnable = true;
     this.config.includeAllJobsValue = false;
     this.selected_client_id = null;
-    return;
+   return;
   }
-
-  // Case 4: Exactly one client selected
+  // Case 3: Exactly one client selected
   const matchedClient = this.filteredData?.find(
     (obj: any) => obj['client'] === clientNameFilter[0]
   );

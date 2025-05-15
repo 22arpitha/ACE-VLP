@@ -1,15 +1,13 @@
 import { Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { MatDialog } from '@angular/material/dialog';
-import { GenericDeleteComponent } from '../../../generic-components/generic-delete/generic-delete.component';
 import { GenericEditComponent } from '../../../generic-components/generic-edit/generic-edit.component';
-import { SortPipe } from '../../../shared/sort/sort.pipe';
 import { ApiserviceService } from '../../../service/apiservice.service';
 import { CommonServiceService } from '../../../service/common-service.service';
 import { SubModuleService } from '../../../service/sub-module.service';
 import { environment } from '../../../../environments/environment';
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup } from '@angular/forms';
 import { DatePipe } from '@angular/common';
 
 export interface IdNamePair {
@@ -118,10 +116,8 @@ export class AllJobsComponent implements OnInit {
     return Array.from(seen, ([id, name]) => ({ id, name }));
   }
   getClientList(){
-    let query = '';
-    if(this.userRole !== 'Admin'){
-      query += this.user_id ? `?employee-id=${this.user_id}` : '';
-    }
+      let query = `?status=True`;
+ query += this.userRole ==='Admin' ? '':`&employee-id=${this.user_id}`;
     this.apiService.getData(`${environment.live_url}/${environment.clients}/${query}`).subscribe((res: any) => {
       if(res){
         this.allClientNames = res?.map((item: any) => ({
