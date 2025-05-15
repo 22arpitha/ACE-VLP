@@ -64,10 +64,11 @@ export class PeriodComponent implements OnInit,OnChanges {
       this.apiService.getData(`${environment.live_url}/${environment.settings_period}/?periodicity=${this.periodicity_id}`).subscribe(
         (res: any) => {
           this.peroidslist = res;
-          if(this.defaultSelection){
+          if(this.periodicity_id && this.defaultSelection){
             this.selectedPeriodVal = this.peroidslist?.find((element):any => element.period_name === this.monthNames[this.currentDate.getMonth()-1])?.id; 
-          }
           this.selectPeriod.emit(this.selectedPeriodVal);
+          }
+          
         }, (error: any) => {
           this.apiService.showError(error?.error?.detail);
         });
