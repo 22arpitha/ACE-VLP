@@ -321,8 +321,13 @@ clearDateFilter(columnKey: string): void {
   // Parent component is expected to handle the data refresh.
 }
 
-navigateToEmployee(event){
+navigateToEmployee(event,col:any){
+  if ('keyId' in event) {
+  this.actionEvent.emit({ actionType: 'navigate', row: event, selectedDay:event[col.keyId] });
+  }
+  else{
   this.actionEvent.emit({ actionType: 'navigate', row: event });
+  }
 }
 
 // Header Tabs events

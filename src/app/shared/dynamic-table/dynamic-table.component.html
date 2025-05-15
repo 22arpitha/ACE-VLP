@@ -232,7 +232,7 @@
 
             <ng-container *ngIf="col.navigation">
               <a
-                (click)="navigateToEmployee(item)"
+                (click)="navigateToEmployee(item,col)"
                 class="text-primary text-decoration-underline"
                 style="cursor: pointer"
               >
@@ -272,7 +272,7 @@
 
             <ng-container *ngIf="col.navigation">
               <a
-                (click)="navigateToEmployee(item)"
+                (click)="navigateToEmployee(item,col)"
                 class="text-primary text-decoration-underline"
                 style="cursor: pointer"
               >

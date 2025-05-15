@@ -100,7 +100,7 @@ export class AllJobsComponent implements OnInit {
     this.initialForm();
      setTimeout(() => {
       this.getCurrentJobs();
-     }, 300);
+     }, 500);
   }
   access_name:any;
 

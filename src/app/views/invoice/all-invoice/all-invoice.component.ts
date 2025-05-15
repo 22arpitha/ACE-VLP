@@ -178,9 +178,8 @@ BreadCrumbsTitle: any = 'Invoices';
     getFilterBaseUrl(): string {
       const base = `?page=${this.page}&page_size=${this.tableSize}`;
       const searchParam = this.term?.trim().length >= 2 ? `&search=${this.term.trim()}` : '';
-      const employeeParam = this.userRole !== 'Admin' ? `&employee-id=${this.user_id}` : '';
-
-      return `${base}${searchParam}${employeeParam}`;
+      
+      return `${base}${searchParam}`;
     }
 
     public sort(direction: string, column: string) {

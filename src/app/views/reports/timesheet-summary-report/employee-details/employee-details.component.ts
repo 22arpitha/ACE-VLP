@@ -119,16 +119,11 @@ export class EmployeeDetailsComponent implements OnInit {
    const page = params?.page ?? this.page;
    const pageSize = params?.pageSize ?? this.tableSize;
    const searchTerm = params?.searchTerm ?? this.term;
-   console.log(this.data,"this.data")
-   const startDate = this.datePipe.transform(this.data?.dateRange.start_date, 'yyyy-MM-dd')
-   const endDate = this.datePipe.transform(this.data?.dateRange.end_date, 'yyyy-MM-dd')
-
    let query = buildPaginationQuery({ page, pageSize, searchTerm });
    if(this.user_role_name !== 'Admin'){
      query +=`&employee-id=${this.user_id}`
      }
-      query +=`&timesheet-employee=${this.data?.employee.keyId}&start-date=${startDate}&end-date=${endDate}`
-
+  query +=`&timesheet-employee=${this.data?.employee.keyId}&timesheet-as-per-date=${this.data.selectedDay}`
    this.api.getData(`${environment.live_url}/${environment.timesheet}/${query}`).subscribe((res: any) => {
      const formattedData = res.results.map((item: any, i: number) => ({
        sl: (page - 1) * pageSize + i + 1,
