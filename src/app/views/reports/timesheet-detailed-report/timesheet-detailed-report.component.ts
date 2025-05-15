@@ -3,7 +3,6 @@ import { getTableColumns } from './timesheet-detailed-config';
 import { CommonServiceService } from '../../../service/common-service.service';
 import { ApiserviceService } from '../../../service/apiservice.service';
 import { environment } from '../../../../environments/environment';
-import { getUniqueValues, getUniqueValues2, getUniqueValues3 } from '../../../shared/unique-values.utils';
 import { buildPaginationQuery } from '../../../shared/pagination.util';
 import { downloadFileFromUrl } from '../../../shared/file-download.util';
 @Component({
@@ -47,16 +46,20 @@ export class TimesheetDetailedReportComponent implements OnInit {
   ) {
     this.user_id = sessionStorage.getItem('user_id') || '' ;
     this.user_role_name = sessionStorage.getItem('user_role_name') || '';
-    this.getClienList();
     this.getJobList();
+    this.getTaskList();
+    this.getClienList();
     this.getEmployeeList();
   }
 
-  ngOnInit(): void {
+   ngOnInit() {
     this.common_service.setTitle(this.BreadCrumbsTitle)
     this.tableData = getTableColumns(this.user_role_name);
 
-    this.getTableData()
+    setTimeout(() => {
+      this.getTableData()
+    }, 3000);
+
   }
 
 
@@ -209,51 +212,56 @@ exportCsvOrPdf(fileType) {
   });
 }
 getClienList(){
-  this.api.getData(`${environment.live_url}/${environment.clients}/`).subscribe((res: any) => {
+  let query = `?status=True`
+  query += this.user_role_name ==='Admin' ? '':`&employee-id=${this.user_id}`;
+  this.api.getData(`${environment.live_url}/${environment.clients}/${query}`).subscribe((res: any) => {
     if(res){
       this.clientName = res?.map((item: any) => ({
-        id: item.client_id,
+        id: item.id,
         name: item.client_name
       }));
     }
-  })}
+  })
+  return this.clientName;
+}
   getJobList(){
-    this.api.getData(`${environment.live_url}/${environment.jobs}/`).subscribe((res: any) => {
+    let query = this.user_role_name ==='Admin' ? '':`?employee-id=${this.user_id}`;
+    this.api.getData(`${environment.live_url}/${environment.jobs}/${query}`).subscribe((res: any) => {
       if(res){
         this.jobName = res?.map((item: any) => ({
-          id: item.job_id,
+          id: item.id,
           name: item.job_name
         }));
       }
-    })}
-
+    })
+    return this.jobName;
+  }
+    getTaskList(){
+      this.api.getData(`${environment.live_url}/${environment.timesheet}/?get-tasks=True`).subscribe((res: any) => {
+        if(res){
+          this.taskName = res?.map((item: any) => ({
+            id: item.id,
+            name: item.value
+          }));
+        }
+      })
+      return this.taskName;
+    }
       getEmployeeList(){
         this.api.getData(`${environment.live_url}/${environment.employee}/?is_active=True&employee=True`).subscribe((res: any) => {
           if(res){
             this.employeeName = res?.map((item: any) => ({
-              id: item.employee_id,
-              name: item.employee_name
+              id: item.user_id,
+              name: item.user__full_name
             }));
           }
         })
+        return this.employeeName;
       }
 // Fetch table data from API with given params
 async getTableData(params?: { page?: number; pageSize?: number; searchTerm?: string;client_ids?:any;job_ids?:any;task_ids?:any;employee_ids?:any,timesheet_dates?:any }) {
 
-  await this.api.getData(`${environment.live_url}/${environment.timesheet}/`).subscribe(async (res: any) => {
-  if(res){
-
-   this.employees = res
-  //  this.clientName = getUniqueValues3(this.employees, 'client_name', 'client_id')
-  //  this.jobName = getUniqueValues3(this.employees, 'job_name', 'job_id')
-   this.taskName = getUniqueValues3(this.employees, 'task_name', 'task')
-  //  this.employeeName = getUniqueValues3(this.employees, 'employee_name', 'employee_id')
-console.log(this.employees, 'employees');
-console.log(this.clientName, 'clientName');
-console.log(this.jobName, 'jobName');
-console.log(this.taskName, 'taskName');
-    if(this.clientName.length > 0 && this.jobName.length > 0 && this.taskName.length > 0 && this.employeeName.length > 0){
-    const page = params?.page ?? this.page;
+   const page = params?.page ?? this.page;
     const pageSize = params?.pageSize ?? this.tableSize;
     const searchTerm = params?.searchTerm ?? this.term;
 
@@ -319,11 +327,6 @@ console.log(this.taskName, 'taskName');
       };
     }
     });
-    console.log(this.tableConfig, 'tableConfig');
-  }
-}
-  })
-
 }
   onSearch(term: string): void {
     this.term = term;

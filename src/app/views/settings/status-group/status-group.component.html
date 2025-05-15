@@ -7,7 +7,7 @@
             <div class="col-12 col-sm-12 col-md-6 col-lg-4 my-1 px-0">
               <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
                 <mat-label>Status Group<b class="r-star">*</b></mat-label>
-                <input matInput placeholder="Enter Status Group" appAlphabetOnly formControlName="group_name" autocomplete="off">
+                <input matInput placeholder="Enter Status Group" formControlName="group_name" autocomplete="off">
                 <mat-error *ngIf="f['group_name']?.invalid && f['group_name']?.touched || f['group_name']?.dirty">
                   <span *ngIf="f['group_name'].errors?.['required']">Status Group is required</span>
                   <span

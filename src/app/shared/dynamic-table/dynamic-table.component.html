@@ -75,8 +75,8 @@
             {{ col.label }}
 
             <!-- Sort Icons -->
-            <i *ngIf="!arrowState[col.key]" (click)="sort('asc', col.key)" class="bi bi-arrow-up ms-1"></i>
-            <i *ngIf="arrowState[col.key]" (click)="sort('desc', col.key)" class="bi bi-arrow-down ms-1"></i>
+            <i *ngIf="!arrowState[col.key]" (click)="sort('asc', col.key)" class="bi bi-arrow-down ms-1"></i>
+            <i *ngIf="arrowState[col.key]" (click)="sort('desc', col.key)" class="bi bi-arrow-up ms-1"></i>
 
             <!-- Filter Buttons -->
             <ng-container *ngIf="col.filterable">
@@ -183,7 +183,7 @@
                           />
                         </div>
 
-                        <mat-selection-list
+                        <!-- <mat-selection-list
                           [(ngModel)]="columnFilters[columnKey]"
                           (ngModelChange)="onFilterChange(columnFilters[columnKey],col)"
                           [multiple]="true"
@@ -194,8 +194,19 @@
                           >
                             {{ option.name }}
                           </mat-list-option>
+                        </mat-selection-list> -->
+                        <mat-selection-list
+                          [ngModel]="tempFilters[columnKey]"
+                          (ngModelChange)="onSelectionChange($event, col)"
+                          [multiple]="true"
+                        >
+                          <mat-list-option
+                            *ngFor="let option of getFilteredOptions(columnKey)"
+                            [value]="option.id"
+                          >
+                            {{ option.name }}
+                          </mat-list-option>
                         </mat-selection-list>
-
                       </ng-container>
                     </div>
                   </div>

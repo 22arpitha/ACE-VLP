@@ -27,19 +27,7 @@ export const tableColumns = [
       key: 'task',
       sortable: true
     },
-    {
-      label: 'Estimated Time (hrs)',
-      key: 'estimated_time',
-      sortable: true
-    },
-    {
-      label: 'Actual Time (hrs)',
-      key: 'actual_time',
-      sortable: true
-    },
-    {
-      label: 'Remaining Time / (Excess) (hrs)',
-      key: 'remaining_time',
-      sortable: true
-    }
+   { label: 'Est. Hrs', key: 'estimated_time', sortable: true },
+  { label: 'Act. Hrs', key: 'actual_time', sortable: true},
+  { label: 'Rem./Ex. Hrs', key: 'remaining_time', sortable: true },
   ]

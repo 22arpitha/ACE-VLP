@@ -3,13 +3,13 @@
         <div class="row mx-0 my-1 px-0 py-2">
             <div class="col-12 mt-2 col-sm-12 col-md-4 col-lg-3 search-div px-0">
               <input type="search" (input)="filterSearch($event)" class="form-control p-2 sizeinput" [(ngModel)]="term"
-                placeholder="Search by Employee Name" aria-describedby="emailHelp" autocomplete="off">
+                placeholder="Search by Employee" aria-describedby="emailHelp" autocomplete="off">
               <i *ngIf="!term" class="bi bi-search" id="search-icon-tab"></i>
             </div>
             <div class="col-12 mt-2 col-sm-12 col-md-4 col-lg-3"></div>
             <div class="col-12 mt-2 col-sm-12 col-md-4 col-lg-6 text-end px-0">
-                <button mat-raised-button class="mat-btn-s tab-button-content order-sm-2 order-1" [ngClass]="{'isActive': isCurrent}" type="button" (click)="getCurrentEmployeeList();initialGetAllEmployeelist('True')">Current</button> 
-                <button mat-raised-button class="mat-btn-s tab-button-content order-sm-3 order-2" [ngClass]="{'isActive': isHistory}" type="button" (click)="getEmployeeHistoryList();initialGetAllEmployeelist()">History</button> 
+                <button mat-raised-button class="mat-btn-s tab-button-content order-sm-2 order-1" [ngClass]="{'isActive': isCurrent}" type="button" (click)="getCurrentEmployeeList()">Current</button> 
+                <button mat-raised-button class="mat-btn-s tab-button-content order-sm-3 order-2" [ngClass]="{'isActive': isHistory}" type="button" (click)="getEmployeeHistoryList()">History</button> 
                 <!-- <button mat-raised-button class="proceedbtn mat-btn-s download-btn" type="button"><i class="fa fa-download"></i></button> -->
                 <button mat-raised-button class="proceedbtn mat-btn-s order-sm-1 order-3" type="button" (click)="openCreateEmployeePage()" *ngIf="userRole !='Admin' && accessPermissions[0]?.create || userRole === 'Admin'">Create
                   Employee</button>    
@@ -26,7 +26,7 @@
                 <i (click)="sort('desc','employee_number')" *ngIf="arrowState['employee_number']"
                   class="bi bi-arrow-up"></i>
                     </th>
-                    <th scope="col">Emp Name
+                    <th scope="col">Employee
                       <i *ngIf="!arrowState['user__full_name']" (click)="sort('asc','user__full_name')" class="bi bi-arrow-down"></i>
                       <i (click)="sort('desc','user__full_name')" *ngIf="arrowState['user__full_name']"
                         class="bi bi-arrow-up"></i>
@@ -54,9 +54,6 @@
                         </mat-menu>
                     </th>
                     <th scope="col">Emp Status
-                      <i *ngIf="!arrowState['is_active']" (click)="sort('asc','is_active')" class="bi bi-arrow-down"></i>
-                      <i (click)="sort('desc','is_active')" *ngIf="arrowState['is_active']"
-                        class="bi bi-arrow-up"></i> 
                     </th>
                     <th scope="col">Action </th>
                   </tr>

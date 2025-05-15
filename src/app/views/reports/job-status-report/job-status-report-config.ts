@@ -2,7 +2,6 @@ export const tableColumns  = [
   {
     label: 'Sl No',
     key: 'sl',
-    sortable: false
   },
   {
     label: 'Client',
@@ -37,11 +36,10 @@ export const tableColumns  = [
     sortable: true
   },
   {
-    label: 'Alloc. Date',
+    label: 'Allocated On',
     key: 'job_allocation_date',
     filterable: true,
     filterType: 'date',
-    sortable: false,
   },
   {
     label: 'Status',
@@ -53,10 +51,9 @@ export const tableColumns  = [
     key: 'job_status_date',
     filterable: true,
     filterType: 'date',
-    sortable: false,
   },
   {
-    label: 'Primary Employee',
+    label: 'PRIM EMP',
     key: 'is_primary',
     sortable: true
   }

@@ -90,3 +90,10 @@ color: red !important;
 .positiveText{
   color: green !important;
 }
+
+[ngbDropdownToggle]::after {
+  display: none !important;
+}
+.position-absolute{
+  width: 0 !important;
+}

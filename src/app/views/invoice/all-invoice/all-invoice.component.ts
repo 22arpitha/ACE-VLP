@@ -41,8 +41,8 @@ BreadCrumbsTitle: any = 'Invoices';
     endDate:any;
     page = 1;
     count = 0;
-    tableSize = 5;
-    tableSizes = [5, 10, 25, 50, 100];
+    tableSize = 50;
+    tableSizes = [50,75,100];
     currentIndex: any;
     allInvoiceList:any=[];
     accessPermissions = [];
@@ -73,7 +73,7 @@ BreadCrumbsTitle: any = 'Invoices';
       this.user_id = sessionStorage.getItem('user_id');
       this.userRole = sessionStorage.getItem('user_role_name');
       this.getModuleAccess();
-      this.getFilterList();
+      this.getAllActiveClients();
     }
 
     access_name:any ;
@@ -119,13 +119,23 @@ BreadCrumbsTitle: any = 'Invoices';
         console.error('Error opening modal:', error);
       }
     }
-    getFilterList(){
-      this.apiService.getData(`${environment.live_url}/${environment.client_invoice}/`).subscribe(
-        (res: any) => {
-          this.filteredList = res;
-          this.allClientNames = this.getUniqueValues(job => ({ id: job.client_id, name: job.client_name }));
-      })
-      }
+    
+  public getAllActiveClients() {
+    this.filteredList = [];
+    let query:any
+    if(this.userRole ==='Admin'){
+      query = '?status=True'
+    } else{
+      query = `?status=True&employee-id=${this.user_id}`
+    }
+    this.apiService.getData(`${environment.live_url}/${environment.clients}/${query}`).subscribe(
+      (res: any) => {
+        this.filteredList = res;
+        this.allClientNames = this.getUniqueValues(client => ({ id: client.id, name: client.client_name }));
+      }, (error: any) => {
+        this.apiService.showError(error?.error?.detail);
+      });
+  } 
     getUniqueValues(
       extractor: (item: any) => { id: any; name: string }
     ): { id: any; name: string }[] {

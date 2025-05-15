@@ -10,7 +10,7 @@ import { Observable, of } from 'rxjs';
 import { SubModuleService } from '../../../app/service/sub-module.service';
 import {fullUrlToFile} from '../../shared/fileUtils.utils';
 import { CanComponentDeactivate } from '../../auth-guard/can-deactivate.guard';
-import { FormErrorScrollUtilityService } from 'src/app/service/form-error-scroll-utility-service.service';
+import { FormErrorScrollUtilityService } from '../../service/form-error-scroll-utility-service.service';
 
 @Component({
   selector: 'app-templates',
@@ -82,10 +82,10 @@ this.formUtilityService.resetHasUnsavedValue();
 
   public initializeForm() {
     this.templateForm = this.fb.group({
-      template_name: ['', [Validators.required, Validators.pattern(/^[a-zA-Z&.,'\-]+( [a-zA-Z&.,'\-]+)*$/)]],
+      template_name: ['', [Validators.required, Validators.pattern(/^[a-zA-Z0-9!@#$%^&*()_+{}\[\]:;"'<>,.?/\\|`~\-]+( [a-zA-Z0-9!@#$%^&*()_+{}\[\]:;"'<>,.?/\\|`~\-]+)*$/)]],
       template_file: ['',Validators.required,this.fileFormatValidator],
       password: ['', [Validators.pattern(/^[a-zA-Z0-9!@#$%^&*()_+{}\[\]:;"'<>,.?/\\|`~\-]+( [a-zA-Z0-9!@#$%^&*()_+{}\[\]:;"'<>,.?/\\|`~\-]+)*$/),Validators.maxLength(20)]],
-      when_to_use: ['', [Validators.pattern(/^[a-zA-Z0-9&.,'\-]+( [a-zA-Z0-9&.,'\-]+)*$/),Validators.maxLength(100)]],
+      when_to_use: ['', [Validators.pattern(/^[a-zA-Z0-9!@#$%^&*()_+{}\[\]:;"'<>,.?/\\|`~\-]+( [a-zA-Z0-9!@#$%^&*()_+{}\[\]:;"'<>,.?/\\|`~\-]+)*$/),Validators.maxLength(100)]],
     });
     this.initialFormValue=this.templateForm?.getRawValue();
   }
