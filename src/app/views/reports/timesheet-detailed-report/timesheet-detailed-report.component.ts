@@ -121,7 +121,7 @@ handleAction(event: { actionType: string; detail: any,key:string }) {
       break;
       case 'dateRange':
         console.log(event.detail, event.key);
-      this.onApplyDateFilter(event.detail,event.key);
+      this.onApplyDateFilter(event.detail);
       break;
     default:
       this.getTableData({
@@ -163,14 +163,9 @@ onApplyFilter(filteredData: any[], filteredKey: string): void {
     timesheet_dates: this.selectedDate
   });
 }
-onApplyDateFilter(filteredDate:string, filteredKey: string): void {
-  console.log(filteredDate, filteredKey);
-
-  if (filteredKey === 'date') {
-    debugger;
-    this.selectedDate = filteredDate;
-  }
-  console.log('selectedDate',this.selectedDate);
+onApplyDateFilter(filteredDate:string): void {
+this.selectedDate = filteredDate;
+  //console.log('selectedDate',this.selectedDate);
   this.getTableData({
     page: 1,
     pageSize: this.tableSize,
@@ -179,7 +174,7 @@ onApplyDateFilter(filteredDate:string, filteredKey: string): void {
     job_ids: this.selectedJobIds,
     task_ids: this.selectedTaskIds,
     employee_ids: this.selectedEmployeeIds,
-    timesheet_dates: filteredDate
+    timesheet_dates: this.selectedDate
   });
 }
 
@@ -204,7 +199,7 @@ exportCsvOrPdf(fileType) {
       }if(this.term){
         query += `&search=${this.term}`
       }if(this.selectedDate){
-        query += `&timesheet-dates=[${this.selectedDate}]`
+         query += `&start-date=${this.selectedDate.startDate}&end-date=${this.selectedDate.endDate}`
       }
   const url = `${environment.live_url}/${environment.timesheet_reports}/${query}&file-type=${fileType}&timsheet-type=detailed`;
   downloadFileFromUrl({
