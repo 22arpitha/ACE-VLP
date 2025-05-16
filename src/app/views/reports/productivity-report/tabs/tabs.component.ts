@@ -95,10 +95,10 @@ downloadExcel(){
   if(this.userRole === 'Admin'){
     query +=`&admin=True`
   }else{
-    query += this.employee ? `logged-in-user-id=${this.employee}` :`logged-in-user-id=${this.user_id}`
+    query += this.employee ? `&logged-in-user-id=${this.employee}` :`&logged-in-user-id=${this.user_id}`
   }
   if(this.period){
-query +=`&period=${this.period}&periodicity=${this.periodicityId}`
+query +=`&period=${this.period}`
   }
   if(this.periodicityId){
 query +=`&periodicity=${this.periodicityId}`
