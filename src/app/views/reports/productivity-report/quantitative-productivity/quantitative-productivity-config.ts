@@ -8,13 +8,13 @@ export const tableColumns = [
       sortable: true
     },
     {
-      label: 'Job',
-      key: 'job_name',
+      label: 'Job Id',
+      key: 'job_number',
       sortable: true
     },
     {
-      label: 'Job Id',
-      key: 'job_number',
+      label: 'Job',
+      key: 'job_name',
       sortable: true
     },
     {

@@ -68,7 +68,7 @@ errorMessage:any='';
       // Delay due to alldropdown dependency
       setTimeout(() => {
         this.getTimesheetDetails(this.timesheet_id);
-      }, 300);
+      }, 500);
     } else {
       this.getStartTimePreviousData();
     }
@@ -314,12 +314,17 @@ checkTimesheetSubmission(startDate,endDate) {
     this.updateDuration()
   }
   endTimeFormat(event: any): void {
-    let rawValue = event.target.value.replace(/[^0-9]/g, '');
+   if(event.target.value){
+let rawValue = event.target.value.replace(/[^0-9]/g, '');
     if (rawValue.length > 2) {
       rawValue = rawValue.slice(0, 2) + ':' + rawValue.slice(2);
     }
     this.timesheetFormGroup.controls['end_time'].setValue(rawValue, { emitEvent: false });
     this.isEndTimeBeforeStartTime();
+   }else{
+this.timesheetFormGroup.controls['time_spent']?.reset();
+   }
+    
   }
 
   sss: boolean = false
@@ -379,7 +384,7 @@ checkTimesheetSubmission(startDate,endDate) {
     this.apiService.getData(`${environment.live_url}/${environment.vlp_timesheets}/${id}/`).subscribe(
       (res: any) => {
         this.getEmployeeJobsList(res.client_id);
-          this.timesheetFormGroup.patchValue({
+         this.timesheetFormGroup.patchValue({
           date: res.date,
           employee_id: res.employee_id,
           client_id: res.client_id,
