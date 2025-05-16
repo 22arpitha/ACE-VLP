@@ -125,7 +125,7 @@ export class TimesheetSummaryReportComponent implements OnInit {
     const formattedStartDate = this.datePipe.transform(startDate, 'yyyy-MM-dd');
     query += `&from-date=${formattedStartDate}`;
 
-    if (this.selectedEmployeeId.length > 0) {
+    if (this.selectedEmployeeId?.length > 0) {
       query += `&employee-ids=[${this.selectedEmployeeId}]`;
     }
     const url = `${environment.live_url}/${environment.timesheet_reports}/${query}&file-type=${fileType}&timsheet-type=summary`;

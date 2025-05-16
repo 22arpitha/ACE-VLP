@@ -228,7 +228,7 @@
           <td *ngFor="let col of config.columns">
             <div *ngIf="!col.navigation">
                <ng-container *ngIf="!col.inputField && !col.fileInputField">
-                {{ col.type === 'date' ? (item[col.key] | date: 'dd/MM/yyyy') : item[col.key] !== null && item[col.key] !== undefined && item[col.key] !== '' ? item[col.key] : 'NA'}}
+                {{ col.type === 'date' ? (item[col.key] | date: 'dd/mm/yyyy') : item[col.key] !== null && item[col.key] !== undefined && item[col.key] !== '' ? item[col.key] : 'NA'}}
                </ng-container>
                <ng-container *ngIf="col.inputField">
                 <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">

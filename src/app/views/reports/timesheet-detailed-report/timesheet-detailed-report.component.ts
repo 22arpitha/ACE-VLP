@@ -194,7 +194,7 @@ exportCsvOrPdf(fileType) {
       if ( this.selectedTaskIds.length) {
         query += `&timesheet-task-ids=[${this.selectedTaskIds.join(',')}]`;
       }
-      if (this.selectedEmployeeIds.length) {
+      if (this.selectedEmployeeIds?.length) {
         query += `&timesheet-employee-ids=[${this.selectedEmployeeIds.join(',')}]`;
       }if(this.term){
         query += `&search=${this.term}`

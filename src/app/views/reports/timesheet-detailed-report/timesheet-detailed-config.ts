@@ -30,8 +30,8 @@ const tableColumns = [
     filterType: 'multi-select',
     sortable: true
   },
-  { label: 'Start', key: 'st', sortable: true },
-  { label: 'End', key: 'end_time', sortable: true },
+  { label: 'Start Date', key: 'st', sortable: true },
+  { label: 'End Date', key: 'end_time', sortable: true },
   { label: 'Time spent', key: 'time_spent', sortable: true },
   { label: 'Notes', key: 'notes', sortable: false }
 ];
