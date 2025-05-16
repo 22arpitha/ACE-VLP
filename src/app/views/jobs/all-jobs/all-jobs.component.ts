@@ -50,6 +50,7 @@ export class AllJobsComponent implements OnInit {
   allEmployeelist:any=[];
   allManagerlist:any=[];
   dateFilterValue: any = null;
+  statusDateFilterValue: any = null;
   statusList:String[]=[];
   filters: { job_type_name: string[]; client_name: string[];employees:string[];manager:string[] } = {
     job_type_name: [],
@@ -64,7 +65,6 @@ export class AllJobsComponent implements OnInit {
   allManagerNames: IdNamePair[] = [];
   allEmployeeNames: IdNamePair[] = [];
   filteredList = [];
-  datepicker:any;
   filterQuery: string;
   jobList:any = [];
   jobAllocationDate: string | null;
@@ -495,14 +495,12 @@ jobStatusList(status:any){
   clearDateFilter(){
     this.jobAllocationDate = null;
     this.dateFilterValue = null;
-    this.statusDate = null;
-    this.datepicker = null;
+  
     this.filterData()
   }
   clearStatusDateFilter(){
     this.statusDate = null;
-    this.dateFilterValue = null;
-    this.datepicker = null;
+    this.statusDateFilterValue = null;
     this.filterData()
   }
 }
