@@ -9,8 +9,6 @@ import { environment } from '../../../../environments/environment';
 import { SubModuleService } from '../../../service/sub-module.service';
 import { GenericDeleteComponent } from '../../../generic-components/generic-delete/generic-delete.component';
 import { GenericTimesheetConfirmationComponent } from '../../../generic-components/generic-timesheet-confirmation/generic-timesheet-confirmation.component';
-import { MAT_DATE_RANGE_SELECTION_STRATEGY } from '@angular/material/datepicker';
-import { WeeklySelectionStrategy } from '../../../shared/weekly-selection-strategy';
 export interface IdNamePair {
   id: any;
   name: string;
@@ -19,12 +17,7 @@ export interface IdNamePair {
   selector: 'app-all-timesheets',
   templateUrl: './all-timesheets.component.html',
   styleUrls: ['./all-timesheets.component.scss'],
-  //  providers: [
-  //     {
-  //       provide: MAT_DATE_RANGE_SELECTION_STRATEGY,
-  //       useClass: WeeklySelectionStrategy
-  //     }
-  //   ]
+
 })
 export class AllTimesheetsComponent implements OnInit {
   selectedDate: any;
@@ -72,9 +65,13 @@ export class AllTimesheetsComponent implements OnInit {
   timesheetDate: string | null;
   total_working_hours: any;
   shortfall: any;
-  constructor(private common_service: CommonServiceService,
-    private router: Router, private modalService: NgbModal, private accessControlService: SubModuleService,
-    private apiService: ApiserviceService, private datePipe: DatePipe) {
+  constructor(
+    private common_service: CommonServiceService,
+    private router: Router,
+    private modalService: NgbModal,
+    private accessControlService: SubModuleService,
+    private apiService: ApiserviceService,
+    private datePipe: DatePipe) {
     this.common_service.setTitle(this.BreadCrumbsTitle)
 
     this.user_id = sessionStorage.getItem('user_id');
@@ -96,7 +93,6 @@ export class AllTimesheetsComponent implements OnInit {
     } else {
       this.getTimesheets();
     }
-    this.getTimesheetsIDs();
   }
 
   isTodayFriday(): boolean {
@@ -308,13 +304,6 @@ this.allJobsNames=[];
         this.allTimesheetsList = res?.results;
         this.total_working_hours = res?.total_working_hours;
         this.shortfall = res?.shortfall;
-        // if (this.allTimesheetsList.length > 0) {
-        //   this.idsOfTimesheet = [];
-        //   res.results.forEach((element: any) => {
-        //     this.idsOfTimesheet.push(element.id)
-        //   })
-          // console.log('this.idsOfTimesheet', this.idsOfTimesheet)
-        //}
         const noOfPages: number = res?.['total_pages']
         this.count = noOfPages * this.tableSize;
         this.count = res?.['total_no_of_record']
@@ -323,18 +312,15 @@ this.allJobsNames=[];
     )
   }
   public getTimesheetsIDs() {
-   let query = this.getFilterBaseUrl();
-   console.log('this.startDate', this.startDate)
-   console.log('this.endDate', this.endDate)
-    this.apiService.getData(`${environment.live_url}/${environment.vlp_timesheets}/${query}&timesheet-employee=${this.user_id}&start-date=${this.startDate}&end-date=${this.endDate}`).subscribe(
+    this.apiService.getData(`${environment.live_url}/${environment.vlp_timesheets}/?timesheet-employee=${this.user_id}&start-date=${this.startDate}&end-date=${this.endDate}`).subscribe(
       (res: any) => {
         // this.allTimesheetsList = res;
         if (res.length > 0) {
           this.idsOfTimesheet = [];
           res?.forEach((element: any) => {
+              console.log('element',element.id);
             this.idsOfTimesheet.push(element.id)
           })
-          // console.log('this.idsOfTimesheet', this.idsOfTimesheet)
         }
         // const noOfPages: number = res?.['total_pages']
         // this.count = noOfPages * this.tableSize;

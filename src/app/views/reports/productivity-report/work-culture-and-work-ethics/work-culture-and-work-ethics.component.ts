@@ -160,9 +160,10 @@ export class WorkCultureAndWorkEthicsComponent implements OnInit,OnChanges {
           }
           if(this.user_role_name ==='Admin')
             {
-              params.push(`admin=True`);
               if (this.dropdwonFilterData.employee_id) {
                 params.push(`logged-in-user-id=${this.dropdwonFilterData.employee_id}`);
+              }else{
+                params.push(`admin=True`);
               }
             }else{
               if (this.dropdwonFilterData.employee_id) {
