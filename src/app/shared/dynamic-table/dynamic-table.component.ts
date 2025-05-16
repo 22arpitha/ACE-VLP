@@ -15,13 +15,7 @@ import { WeeklySelectionStrategy } from '../weekly-selection-strategy';
   selector: 'app-dynamic-table',
   templateUrl: './dynamic-table.component.html',
   styleUrls: ['./dynamic-table.component.scss'],
-  providers: [
-    NgbDropdownConfig,
-    {
-          provide: MAT_DATE_RANGE_SELECTION_STRATEGY,
-          useClass: WeeklySelectionStrategy
-    }
-  ],
+  providers: [NgbDropdownConfig]
 
 })
 export class DynamicTableComponent implements OnInit {
