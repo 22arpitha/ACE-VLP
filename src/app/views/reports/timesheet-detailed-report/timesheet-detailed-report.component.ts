@@ -46,20 +46,14 @@ export class TimesheetDetailedReportComponent implements OnInit {
   ) {
     this.user_id = sessionStorage.getItem('user_id') || '' ;
     this.user_role_name = sessionStorage.getItem('user_role_name') || '';
-    this.getJobList();
-    this.getTaskList();
-    this.getClienList();
-    this.getEmployeeList();
+
+
   }
 
    ngOnInit() {
     this.common_service.setTitle(this.BreadCrumbsTitle)
     this.tableData = getTableColumns(this.user_role_name);
-
-    setTimeout(() => {
-      this.getTableData()
-    }, 3000);
-
+    this.getJobList();
   }
 
 
@@ -229,6 +223,10 @@ getClienList(){
           id: item.id,
           name: item.job_name
         }));
+        this.getTaskList();
+        this.getClienList();
+        this.getEmployeeList();
+        this.getTableData();
       }
     })
     return this.jobName;

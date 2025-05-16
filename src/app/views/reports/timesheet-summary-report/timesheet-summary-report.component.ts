@@ -53,16 +53,14 @@ export class TimesheetSummaryReportComponent implements OnInit {
     private dialog: MatDialog,
     private datePipe:DatePipe
   ) {
-      this.getEmployeeList();
+
   }
 
   async ngOnInit(){
     this.common_service.setTitle(this.BreadCrumbsTitle);
     this.user_id = sessionStorage.getItem('user_id');
     this.user_role_name = sessionStorage.getItem('user_role_name') || '';
-    setTimeout(() => {
-      this.getTableData({ page: 1, pageSize: this.tableSize, searchTerm: this.term });
-    }, 100);
+    this.getEmployeeList();
   }
 
   onTableDataChange(event: number): void {
@@ -142,6 +140,7 @@ export class TimesheetSummaryReportComponent implements OnInit {
               id: item.user_id,
               name: item.user__full_name
             }));
+             this.getTableData({ page: 1, pageSize: this.tableSize, searchTerm: this.term });
           }
         })
       }
