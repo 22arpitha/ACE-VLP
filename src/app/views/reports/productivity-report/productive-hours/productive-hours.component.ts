@@ -56,11 +56,11 @@ export class ProductiveHoursComponent implements OnInit,OnChanges {
 
   ngOnInit(): void {
     this.common_service.setTitle(this.BreadCrumbsTitle)
-    this.getTableData({
-      page: 1,
-      pageSize: this.tableSize,
-      searchTerm: this.term
-    });
+    // this.getTableData({
+    //   page: 1,
+    //   pageSize: this.tableSize,
+    //   searchTerm: this.term
+    // });
   }
 
   // Called when user changes page number from the dynamic table
