@@ -17,13 +17,7 @@ import { WeeklySelectionStrategy } from '../../../shared/weekly-selection-strate
 @Component({
   selector: 'app-all-invoice',
   templateUrl: './all-invoice.component.html',
-  styleUrls: ['./all-invoice.component.scss'],
-  providers: [
-      {
-            provide: MAT_DATE_RANGE_SELECTION_STRATEGY,
-            useClass: WeeklySelectionStrategy
-      }
-    ]
+  styleUrls: ['./all-invoice.component.scss']
 })
 export class AllInvoiceComponent implements OnInit {
 
@@ -174,7 +168,7 @@ BreadCrumbsTitle: any = 'Invoices';
     getFilterBaseUrl(): string {
       const base = `?page=${this.page}&page_size=${this.tableSize}`;
       const searchParam = this.term?.trim().length >= 2 ? `&search=${this.term.trim()}` : '';
-      
+
       return `${base}${searchParam}`;
     }
 
@@ -253,7 +247,6 @@ BreadCrumbsTitle: any = 'Invoices';
       if (selectedDate) {
         this.startDate = this.datePipe.transform(selectedDate, 'yyyy-MM-dd');
       }
-      this.filterData()
     }
     onEndDateChange(event: any) {
       const selectedDate = event.value;
