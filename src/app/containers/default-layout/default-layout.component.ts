@@ -369,6 +369,7 @@ export class DefaultLayoutComponent {
     if (headNavdata.page === 'Logout') {
       this.openDialogue();
     } else {
+      //console.log('headNavdata', headNavdata);
       this.router.navigate([`${headNavdata.link}`]);
     }
   }
