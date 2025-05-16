@@ -9,8 +9,6 @@ import { environment } from '../../../../environments/environment';
 import { SubModuleService } from '../../../service/sub-module.service';
 import { GenericDeleteComponent } from '../../../generic-components/generic-delete/generic-delete.component';
 import { GenericTimesheetConfirmationComponent } from '../../../generic-components/generic-timesheet-confirmation/generic-timesheet-confirmation.component';
-import { MAT_DATE_RANGE_SELECTION_STRATEGY } from '@angular/material/datepicker';
-import { WeeklySelectionStrategy } from '../../../shared/weekly-selection-strategy';
 export interface IdNamePair {
   id: any;
   name: string;
@@ -19,12 +17,7 @@ export interface IdNamePair {
   selector: 'app-all-timesheets',
   templateUrl: './all-timesheets.component.html',
   styleUrls: ['./all-timesheets.component.scss'],
-  //  providers: [
-  //     {
-  //       provide: MAT_DATE_RANGE_SELECTION_STRATEGY,
-  //       useClass: WeeklySelectionStrategy
-  //     }
-  //   ]
+
 })
 export class AllTimesheetsComponent implements OnInit {
   selectedDate: any;
@@ -72,9 +65,13 @@ export class AllTimesheetsComponent implements OnInit {
   timesheetDate: string | null;
   total_working_hours: any;
   shortfall: any;
-  constructor(private common_service: CommonServiceService,
-    private router: Router, private modalService: NgbModal, private accessControlService: SubModuleService,
-    private apiService: ApiserviceService, private datePipe: DatePipe) {
+  constructor(
+    private common_service: CommonServiceService,
+    private router: Router,
+    private modalService: NgbModal,
+    private accessControlService: SubModuleService,
+    private apiService: ApiserviceService,
+    private datePipe: DatePipe) {
     this.common_service.setTitle(this.BreadCrumbsTitle)
 
     this.user_id = sessionStorage.getItem('user_id');
