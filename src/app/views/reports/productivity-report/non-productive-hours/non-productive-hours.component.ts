@@ -128,11 +128,11 @@ export class NonProductiveHoursComponent implements OnInit,OnChanges {
    let query=`?client-name=Vedalekha professionals&download=True`;
     if(query){
       if(this.dropdwonFilterData){
-        query+= this.dropdwonFilterData.employee_id ? `&employee-id=${this.dropdwonFilterData.employee_id}`:this.user_role_name ==='Admin' ? '':`&employee-id=${this.user_id}`;
+        query+= this.dropdwonFilterData.employee_id ? `&timesheet-employee=${this.dropdwonFilterData.employee_id}`:this.user_role_name ==='Admin' ? '':`&timesheet-employee=${this.user_id}`;
         query+= this.dropdwonFilterData.periodicity ? `&periodicity=${this.dropdwonFilterData.periodicity}`:'';
         query+= this.dropdwonFilterData.period ? `&period=${this.dropdwonFilterData.period}`:'';
        }else{
-        query += this.user_role_name ==='Admin' ? '':`&employee-id=${this.user_id}`;
+        query += this.user_role_name ==='Admin' ? '':`&timesheet-employee=${this.user_id}`;
        }
      }
      const url = `${environment.live_url}/${environment.timesheet}/${query}&file-type=${fileType}`;
@@ -152,11 +152,11 @@ export class NonProductiveHoursComponent implements OnInit,OnChanges {
      let query = buildPaginationQuery({ page, pageSize, searchTerm });
      let finalQuery = query;
       if(this.dropdwonFilterData){
-       finalQuery += this.dropdwonFilterData.employee_id ? `&timesheet-employee=${this.dropdwonFilterData.employee_id}`:this.user_role_name ==='Admin' ? '':`&employee-id=${this.user_id}`;
+       finalQuery += this.dropdwonFilterData.employee_id ? `&timesheet-employee=${this.dropdwonFilterData.employee_id}`:this.user_role_name ==='Admin' ? '':`&timesheet-employee=${this.user_id}`;
        finalQuery += this.dropdwonFilterData.periodicity ? `&periodicity=${this.dropdwonFilterData.periodicity}`:'';
        finalQuery += this.dropdwonFilterData.period ? `&period=${this.dropdwonFilterData.period}`:'';
       }else{
-       finalQuery += this.user_role_name ==='Admin' ? '':`&employee-id=${this.user_id}`;
+       finalQuery += this.user_role_name ==='Admin' ? '':`&timesheet-employee=${this.user_id}`;
       }
      this.api.getData(`${environment.live_url}/${environment.timesheet}/${finalQuery}&client-name=Vedalekha professionals`).subscribe((res: any) => {
        const formattedData = res.results.map((item: any, i: number) => ({
