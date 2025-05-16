@@ -57,7 +57,7 @@ BreadCrumbsTitle: any = 'Non Billable Hours';
 
       ngOnInit(): void {
         this.common_service.setTitle(this.BreadCrumbsTitle)
-        this.getTableData()
+        // this.getTableData()
       }
 
       // Called when user changes page number from the dynamic table
