@@ -308,7 +308,7 @@
         </tr>
         <tr *ngIf="!config.formContent">
           <td *ngFor="let col of config.columns">
-            <div *ngIf="!col.navigation" [ngClass]="col.key === 'remaining_time' ? isPositiveOrNegative(item?.remaining_time):''">
+            <div *ngIf="!col.navigation" [ngStyle]="{ color:col.key === 'job_status_date' && item?.status_date_color ? item?.status_date_color : 'black' }" [ngClass]="col.key === 'remaining_time' ? isPositiveOrNegative(item?.remaining_time):''">
               {{ col.type === 'date' ? (item[col.key] | date: 'dd/MM/yyyy') : item[col.key] !== null && item[col.key] !== undefined && item[col.key] !== '' ? item[col.key] : 'NA' }}
             </div>
 
