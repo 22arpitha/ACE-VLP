@@ -54,18 +54,21 @@ errorMessage:any='';
     } else {
       this.common_service.setTitle('Create ' + this.BreadCrumbsTitle)
     }
+    
   }
 
   ngOnInit(): void {
+    this.getAllDropdownData();
     const now = new Date();
     const hours = now.getHours().toString().padStart(2, '0');
     const minutes = now.getMinutes().toString().padStart(2, '0');
     this.currentTime = `${hours}:${minutes}`;
     this.initialForm();
-    this.getJobStatusList();
-    this.getAllDropdownData();
     if (this.isEditItem) {
-      this.getTimesheetDetails(this.timesheet_id);
+      // Delay due to alldropdown dependency
+      setTimeout(() => {
+        this.getTimesheetDetails(this.timesheet_id);
+      }, 300);
     } else {
       this.getStartTimePreviousData();
     }
@@ -79,6 +82,7 @@ errorMessage:any='';
   getAllDropdownData() {
     if (this.user_role_name != 'Admin') {
       this.getModuleAccess();
+      this.getJobStatusList();
       this.getEmployeeData();
       this.getEmployeeClientData();
       // this.getEmployeeJobsList();
@@ -374,9 +378,8 @@ checkTimesheetSubmission(startDate,endDate) {
   getTimesheetDetails(id: any) {
     this.apiService.getData(`${environment.live_url}/${environment.vlp_timesheets}/${id}/`).subscribe(
       (res: any) => {
-        // console.log(res);
-        this.getEmployeeJobsList(res.client_id)
-        this.timesheetFormGroup.patchValue({
+        this.getEmployeeJobsList(res.client_id);
+          this.timesheetFormGroup.patchValue({
           date: res.date,
           employee_id: res.employee_id,
           client_id: res.client_id,
@@ -387,7 +390,7 @@ checkTimesheetSubmission(startDate,endDate) {
           time_spent: res.time_spent,
           notes: res.notes,
           created_by: res.created_by,
-        })
+        });
       },
       (error: any) => {
         this.apiService.showError(error?.error?.detail);
@@ -454,13 +457,14 @@ unloadNotification($event: BeforeUnloadEvent): void {
   }
 }
 getJobStatusList() {
+  this.allJobStatus=[];
+  this.statusList=[];
   this.apiService.getData(`${environment.live_url}/${environment.settings_job_status}/`).subscribe(
     (resData: any) => {
       if(resData){
         this.allJobStatus = resData;
         this.statusList = this.allJobStatus
         ?.filter((jobstatus: any) =>jobstatus?.status_name !== "Cancelled" && jobstatus?.status_name !== "Completed")?.map((status: any) => status?.status_name);
-    
       }
     },
     (error:any)=>{

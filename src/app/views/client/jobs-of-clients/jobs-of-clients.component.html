@@ -83,10 +83,10 @@
                     mat-icon-button
                     (click)="setDateFilterColumn($event); datepicker.open()"
                     class="ms-1 btn-menu-trigger"
-                    *ngIf="!dateFilterValue">
+                    *ngIf="!statusDateFilterValue">
                   <i class="bi bi-calendar"></i>
                 </button>
-                 <button mat-icon-button  *ngIf="dateFilterValue" (click)="clearDateFilter()" class="ms-1 btn-menu-trigger">
+                 <button mat-icon-button  *ngIf="statusDateFilterValue" (click)="clearStatusDateFilter()" class="ms-1 btn-menu-trigger">
                       <i class="bi bi-x-circle"></i>
                  </button>
                 <mat-form-field class="opacity-0 position-absolute date-picker-input">
@@ -94,7 +94,7 @@
                   <input
                     matInput
                     [matDatepicker]="datepicker"
-                    [(ngModel)]="dateFilterValue"
+                    [(ngModel)]="statusDateFilterValue"
                     (dateChange)="onStatusDateSelected($event)"
                   />
                   <mat-hint>MM/DD/YYYY</mat-hint>

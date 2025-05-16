@@ -40,6 +40,7 @@ export class JobsOfEndclientComponent implements OnInit {
   allEmployeeNames: IdNamePair[] = [];
   allStatusNames: IdNamePair[] = [];
   dateFilterValue: any = null;
+  statusDateFilterValue: any = null;
   filteredList:any = [];
     datepicker:any;
     filterQuery: string;
@@ -204,14 +205,11 @@ export class JobsOfEndclientComponent implements OnInit {
     clearDateFilter(){
       this.jobAllocationDate = null;
       this.dateFilterValue = null;
-      this.statusDate = null;
-      this.datepicker = null;
       this.filterData()
     }
     clearStatusDateFilter(){
       this.statusDate = null;
-      this.dateFilterValue = null;
-      this.datepicker = null;
+      this.statusDateFilterValue = null;
       this.filterData()
     }
 
