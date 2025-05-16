@@ -70,8 +70,9 @@
         />
         <i *ngIf="!term" class="bi bi-search" id="search-icon-tab"></i>
       </div>
+      <div class="col-12 mt-3 col-sm-12 col-md-4 col-lg-4 text-end s-m px-0" *ngIf="userRole !== 'Accountant'"></div>
 
-      <div class="col-12 mt-3 col-sm-12 col-md-4 col-lg-5 text-end s-m">
+      <div class="col-12 mt-3 col-sm-12 col-md-4 col-lg-5 text-end s-m px-0">
         <button
           mat-raised-button
           class="mat-btn-s order-sm-1 order-3"
@@ -83,20 +84,19 @@
           Submit Week TimeSheet
         </button>
       </div>
-      <div class="col-12 mt-3 col-sm-12 col-md-4 col-lg-2 text-end">
+      <div class="col-12 mt-3 col-sm-12 col-md-4 col-lg-2 text-end" *ngIf="userRole === 'Accountant'">
         <div
           class="order-sm-1 order-3 w-100 bg-shortfall p-0"
           type="button"
-          *ngIf="userRole != 'Admin'"
         >
           <div class="w-100">ShortFall</div> <div>{{shortfall}}</div>
       </div>
       </div>
-      <div class="col-12 mt-3 col-sm-12 col-md-4 col-lg-2 text-end">
+      <div class="col-12 mt-3 col-sm-12 col-md-4 col-lg-2 text-end" *ngIf="userRole === 'Accountant'">
         <div
           class="order-sm-1 order-3 w-100 bg-total p-0"
           type="button"
-          *ngIf="userRole != 'Admin'"
+          
         >
           <div class="w-100">Total Time</div> <div>{{total_working_hours}}</div>
       </div>
@@ -292,7 +292,7 @@
                   ></app-generic-table-filter>
                 </mat-menu>
               </th>
-              <th scope="col" class="time-col">Time</th>
+              <th scope="col" class="time-col">Time Spent</th>
               <th scope="col" class="name-col">
                 Notes
                 <i
