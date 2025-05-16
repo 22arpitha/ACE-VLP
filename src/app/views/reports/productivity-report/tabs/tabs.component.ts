@@ -92,10 +92,10 @@ this.period=event;
 
 downloadExcel(){
  let query = `?productivity-type-for-all=Overall`;
-  if(this.userRole === 'Admin'){
+  if(this.userRole === 'Admin' && !this.employee){
     query +=`&admin=True`
   }else{
-    query += this.employee ? `&logged-in-user-id=${this.employee}` :`&logged-in-user-id=${this.user_id}`
+    query += this.employee ? `&employee-id=${this.employee}` :`&employee-id=${this.user_id}`
   }
   if(this.period){
 query +=`&period=${this.period}`
