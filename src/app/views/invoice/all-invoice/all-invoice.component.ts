@@ -55,7 +55,6 @@ BreadCrumbsTitle: any = 'Invoices';
       client_name: []
     };
     allClientNames: any[] = [];
-    filteredList: any = [];
     datepicker: null;
     constructor(private common_service: CommonServiceService,private accessControlService:SubModuleService,
       private router:Router,private modalService: NgbModal,private dialog:MatDialog,
@@ -121,7 +120,6 @@ BreadCrumbsTitle: any = 'Invoices';
     }
 
   public getAllActiveClients() {
-    this.filteredList = [];
     let query:any
     if(this.userRole ==='Admin'){
       query = '?status=True'
@@ -130,25 +128,13 @@ BreadCrumbsTitle: any = 'Invoices';
     }
     this.apiService.getData(`${environment.live_url}/${environment.clients}/${query}`).subscribe(
       (res: any) => {
-        this.filteredList = res;
-        this.allClientNames = this.getUniqueValues(client => ({ id: client.id, name: client.client_name }));
+        if(res && res.length>=1){
+        this.allClientNames = res.map((client:any) => ({ id: client.id, name: client.client_name }));
+        }
       }, (error: any) => {
         this.apiService.showError(error?.error?.detail);
       });
   }
-    getUniqueValues(
-      extractor: (item: any) => { id: any; name: string }
-    ): { id: any; name: string }[] {
-      const seen = new Map();
-      this.filteredList?.forEach(job => {
-        const value = extractor(job);
-        if (value && value.id && !seen.has(value.id)) {
-          seen.set(value.id, value.name);
-        }
-      });
-
-      return Array.from(seen, ([id, name]) => ({ id, name }));
-    }
       public getAllInvoiceList(){
         let query = this.getFilterBaseUrl();
         this.apiService.getData(`${environment.live_url}/${environment.client_invoice}/${query}`).subscribe(
