@@ -13,7 +13,7 @@
       (ngModelChange)="filterOptions()"
     />
   </div>
-
+<div class="custom-mat-select-list-style">
 <mat-selection-list class="dynamic-mat-selection">
     <mat-list-option
       *ngFor="let option of displayOptions"
@@ -23,4 +23,5 @@
       {{ option.name }}
     </mat-list-option>
   </mat-selection-list>
+  </div>
 </div>

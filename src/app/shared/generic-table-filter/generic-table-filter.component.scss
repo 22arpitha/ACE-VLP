@@ -3,3 +3,11 @@
   max-height: 200px;
   overflow-y: auto;
 }
+.custom-mat-select-list-style{
+  ::ng-deep .mat-list-base .mat-list-item,
+  ::ng-deep .mat-list-base .mat-list-option {
+  height: 25px !important;
+  font-size: 14px !important;
+  zoom:95%;
+}
+}
