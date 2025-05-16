@@ -19,7 +19,7 @@ export class ActivateChildGuard implements CanActivateChild {
 
     if (!online) {
       this._router.navigate(['/no-internet']);
-      return false; 
+      return false;
     }
 
     const userId = sessionStorage.getItem('user_id');
@@ -29,11 +29,13 @@ export class ActivateChildGuard implements CanActivateChild {
       this._router.navigate(['/login']);
       return false;
     }
-
+    if (state.url.includes('/changePasswords')) {
+        return true;
+      }
     if (roleName === 'admin') {
       return true;
     }
-   
+
     try {
       const access = await lastValueFrom(this.subModuleService.getAccessForActiveUrl(+userId, state.url));
       if(access !== null && access.length > 0) {
@@ -44,7 +46,7 @@ export class ActivateChildGuard implements CanActivateChild {
         hasViewPermission = false;
       }
 
-      return hasViewPermission; 
+      return hasViewPermission;
     } catch (error: any) {
 
       if (error.status === 404 || error.message?.includes('not found')) {
@@ -55,6 +57,7 @@ export class ActivateChildGuard implements CanActivateChild {
 
       return false;
     }
-   
+
   }
+
 }
