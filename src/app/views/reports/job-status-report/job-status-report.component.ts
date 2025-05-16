@@ -374,6 +374,7 @@ getClienList(){
            currentPage:page,
            totalRecords: response.total_no_of_record, // Correctly use 'response' from inner call
            showDownload:true,
+           searchPlaceholder:'Search by Client/Group/Job',
           };
         }else{
           this.tableConfig = {
@@ -404,6 +405,7 @@ getClienList(){
                 currentPage:page,
                 totalRecords: 0,
                 showDownload:true,
+                searchPlaceholder:'Search by Client/Group/Job',
               };
         }
       }, (error: any) => { // Error handling for inner API call

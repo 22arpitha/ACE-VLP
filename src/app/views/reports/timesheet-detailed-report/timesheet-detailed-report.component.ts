@@ -46,8 +46,6 @@ export class TimesheetDetailedReportComponent implements OnInit {
   ) {
     this.user_id = sessionStorage.getItem('user_id') || '' ;
     this.user_role_name = sessionStorage.getItem('user_role_name') || '';
-
-
   }
 
    ngOnInit() {
@@ -318,7 +316,8 @@ async getTableData(params?: { page?: number; pageSize?: number; searchTerm?: str
         currentPage:page,
         totalRecords: res.total_no_of_record,
         showDownload:true,
-        timesheetDetailedReport:true
+        timesheetDetailedReport:true,
+        searchPlaceholder:'Search by Client/Job/Task',
       };
     }
     });

@@ -7,7 +7,7 @@
           class="form-control p-2 sizeinput"
           [(ngModel)]="config.searchTerm"
           (input)="onSearch(config.searchTerm)"
-          placeholder="Search"
+          [placeholder]="config?.searchPlaceholder"
           autocomplete="off"
           aria-describedby="emailHelp"
         />

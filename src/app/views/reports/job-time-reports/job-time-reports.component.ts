@@ -354,6 +354,7 @@ getJobTypeList(){
        currentPage:page,
        totalRecords: res.total_no_of_record,
        showDownload:true,
+       searchPlaceholder:'Search by Client/Job/Status',
       };
     }
     else{
@@ -385,6 +386,7 @@ getJobTypeList(){
         currentPage:page,
         totalRecords: 0,
         showDownload:true,
+        searchPlaceholder:'Search by Client/Job/Status',
       };
     }
 

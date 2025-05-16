@@ -258,7 +258,8 @@ export class TimesheetSummaryReportComponent implements OnInit {
                  totalRecords: res.total_no_of_record,
                  dateRangeFilter: true,
                  navigation: true,
-                 showDownload:true
+                 showDownload:true,
+                 searchPlaceholder:'Search by Employee',
                };
              }
          });
