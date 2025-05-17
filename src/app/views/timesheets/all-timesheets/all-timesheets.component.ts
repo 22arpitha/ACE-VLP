@@ -302,7 +302,7 @@ this.allJobsNames=[];
     this.apiService.getData(`${environment.live_url}/${environment.vlp_timesheets}/${query}&start-date=${this.startDate}&end-date=${this.endDate}`).subscribe(
       (res: any) => {
         this.allTimesheetsList = res?.results;
-        this.total_working_hours = res?.total_working_hours;
+        this.total_working_hours = res?.total_time_spent;
         this.shortfall = res?.shortfall;
         const noOfPages: number = res?.['total_pages']
         this.count = noOfPages * this.tableSize;

@@ -164,7 +164,9 @@ export class NonProductiveHoursComponent implements OnInit,OnChanges {
          ...item
        }));
        this.tableConfig = {
-        columns: tableColumns,
+        columns: tableColumns.map(col => ({
+                        ...col,
+                      })),
         data: formattedData ? formattedData : [],
         searchTerm: this.term,
         actions: [],
@@ -178,7 +180,6 @@ export class NonProductiveHoursComponent implements OnInit,OnChanges {
         showDownload:true,
       };
      });
-
    }
      onSearch(term: string): void {
        this.term = term;
@@ -195,5 +196,9 @@ public viewtimesheetDetails(item:any){
 },
     });
     }
+
+    ngOnDestroy(): void {
+        this.tableConfig=null
+      }
   }
 
