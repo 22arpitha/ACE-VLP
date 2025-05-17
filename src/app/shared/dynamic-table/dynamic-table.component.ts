@@ -561,9 +561,9 @@ isPositiveOrNegative(value: string): string {
     const number = parseFloat(value);
     if (isNaN(number)) {
         return "";
-    } else if (number >= 0) {
+    } else if (number > 0) {
         return "positiveText";
-    } else if (number < 0) {
+    } else if (number < 0 || Object.is(number, -0)) {
         return "negativeText";
     } else {
         return "";
