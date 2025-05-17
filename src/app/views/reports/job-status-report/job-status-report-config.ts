@@ -40,6 +40,7 @@ export const tableColumns  = [
     key: 'job_allocation_date',
     filterable: true,
     filterType: 'date',
+    type:'date',
   },
   {
     label: 'Status',
@@ -51,6 +52,7 @@ export const tableColumns  = [
     key: 'job_status_date',
     filterable: true,
     filterType: 'date',
+    type:'date',
   },
   {
     label: 'PRIM EMP',

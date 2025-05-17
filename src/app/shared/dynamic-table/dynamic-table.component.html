@@ -326,20 +326,20 @@
         </ng-container>
       <tr *ngIf="config?.estimationDetails" class="bg-transparent">
           <td colspan="6" class="bg-transparent"></td>
-          <td class="bg-transparent"><b>Estimated (hrs) : {{ config?.tableFooterContent?.total_estimated_time || 'NA' }}</b></td>
-          <td class="bg-transparent"><b>Actual Time (hrs) : {{ config?.tableFooterContent?.total_actual_time || 'NA'}}</b></td>
-          <td class="bg-transparent"><b>Average Productivity (hrs): {{ config?.tableFooterContent?.avg_quantitative_productivity || 'NA'}}</b></td>
+          <td class="bg-transparent"><b>Estimated (hrs) : {{ config?.tableFooterContent?.total_estimated_time !== null && config?.tableFooterContent?.total_estimated_time !== undefined && config?.tableFooterContent?.total_estimated_time !== '' ? config?.tableFooterContent?.total_estimated_time : 'NA' }}</b></td>
+          <td class="bg-transparent"><b>Actual Time (hrs) : {{ config?.tableFooterContent?.total_actual_time !== null && config?.tableFooterContent?.total_actual_time !== undefined && config?.tableFooterContent?.total_actual_time !== '' ? config?.tableFooterContent?.total_actual_time : 'NA' }}</b></td>
+          <td class="bg-transparent"><b>Average Productivity (hrs): {{ config?.tableFooterContent?.avg_quantitative_productivity !== null && config?.tableFooterContent?.avg_quantitative_productivity !== undefined && config?.tableFooterContent?.avg_quantitative_productivity !== '' ? config?.tableFooterContent?.avg_quantitative_productivity : 'NA' }}</b></td>
       </tr>
       <tr *ngIf="config?.averageProductivity" class="bg-transparent" >
         <td colspan="9" class="bg-transparent"></td>
-        <td  class="bg-transparent"><b>Average Productivity: {{ config?.tableFooterContent?.avg_qualitative_productivity || 'NA'}}</b></td>
+        <td  class="bg-transparent"><b>Average Productivity: {{ config?.tableFooterContent?.avg_qualitative_productivity !== null && config?.tableFooterContent?.avg_qualitative_productivity !== undefined && config?.tableFooterContent?.avg_qualitative_productivity !== '' ? config?.tableFooterContent?.avg_qualitative_productivity : 'NA' }}</b></td>
       </tr>
       <tr *ngIf="config?.average_productive_hour"  class="bg-transparent">
         <td colspan="6" class="bg-transparent"></td>
-        <td class="bg-transparent"><b>Total Estimated (hrs) : {{ config?.tableFooterContent?.total_estimated_time || 'NA' }}</b></td>
+        <td class="bg-transparent"><b>Total Estimated (hrs) : {{ config?.tableFooterContent?.total_estimated_time !== null && config?.tableFooterContent?.total_estimated_time !== undefined && config?.tableFooterContent?.total_estimated_time !== '' ? config?.tableFooterContent?.total_estimated_time : 'NA' }}</b></td>
         <td class="bg-transparent"></td>
-        <td class="bg-transparent"><b>Total Productivity (hrs) : {{ config?.tableFooterContent?.total_productive_hour || 'NA'}}</b></td>
-        <td class="bg-transparent"><b>Total Actual Time (hrs): {{ config?.tableFooterContent?.total_actual_time || 'NA'}}</b></td>
+        <td class="bg-transparent"><b>Total Productivity (hrs) : {{ config?.tableFooterContent?.total_productive_hour !== null && config?.tableFooterContent?.total_productive_hour !== undefined && config?.tableFooterContent?.total_productive_hour !== '' ? config?.tableFooterContent?.total_productive_hour : 'NA' }}</b></td>
+        <td class="bg-transparent"><b>Total Actual Time (hrs): {{ config?.tableFooterContent?.total_actual_time !== null && config?.tableFooterContent?.total_actual_time !== undefined && config?.tableFooterContent?.total_actual_time !== '' ? config?.tableFooterContent?.total_actual_time : 'NA' }}</b></td>
       </tr>
       </tbody>
     </table>

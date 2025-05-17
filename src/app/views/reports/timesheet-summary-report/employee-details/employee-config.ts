@@ -3,7 +3,7 @@ export function getTableColumns(role: string) {
   const tableColumns = [
 
   { label: 'Sl No', key: 'sl',sortable: false },
-  { label: 'Date', key: 'date',sortable: true
+  { label: 'Date', key: 'date',sortable: true,type:'date',
   },
   {
     label: 'Client',

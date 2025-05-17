@@ -3,17 +3,17 @@ export function getTableColumns(role: string) {
     const tableColumns = [
       { label: 'Date', key: 'date', sortable: true },
       {
-        label: 'Client Name',
+        label: 'Client',
         key: 'client_name',
         sortable: true
       },
       {
-        label: 'Job Name',
+        label: 'Job',
         key: 'job_name',
         sortable: true
       },
       {
-        label: 'Task Name',
+        label: 'Task',
         key: 'task_name',
         sortable: true
       },
@@ -23,8 +23,8 @@ export function getTableColumns(role: string) {
       { label: 'Notes', key: 'notes', sortable: false }
     ];
     if (role !== 'Accountant' ) {
-      tableColumns.splice(5, 0, {
-        label: 'Employee Name',
+      tableColumns.splice(4, 0, {
+        label: 'Employee',
         key: 'employee_name',
         sortable: true
       });
