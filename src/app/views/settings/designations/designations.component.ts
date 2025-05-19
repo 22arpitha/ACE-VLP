@@ -6,10 +6,10 @@ import { ApiserviceService } from '../../../service/apiservice.service';
 import { GenericDeleteComponent } from '../../../generic-components/generic-delete/generic-delete.component';
 import { GenericEditComponent } from '../../../generic-components/generic-edit/generic-edit.component';
 import { environment } from '../../../../environments/environment';
-import { SubModuleService } from 'src/app/service/sub-module.service';
+import { SubModuleService } from '../../../../app/service/sub-module.service';
 import { Observable } from 'rxjs';
-import { FormErrorScrollUtilityService } from 'src/app/service/form-error-scroll-utility-service.service';
-import { CanComponentDeactivate } from 'src/app/auth-guard/can-deactivate.guard';
+import { FormErrorScrollUtilityService } from '../../../service/form-error-scroll-utility-service.service';
+import { CanComponentDeactivate } from '../../../auth-guard/can-deactivate.guard';
 
 
 @Component({
