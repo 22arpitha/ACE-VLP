@@ -18,14 +18,13 @@
 
 <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
     <mat-label>First Name <b class="r-star">*</b></mat-label>
-    <input matInput placeholder="Enter first name" appAlphabetOnly formControlName="first_name" autocomplete="off"
-    pattern="^[a-zA-Z]+( [a-zA-Z]+)*$">
+    <input matInput placeholder="Enter first name" appAlphabetOnly formControlName="first_name" autocomplete="off">
     <mat-error *ngIf="f['first_name']?.invalid && f['first_name']?.touched || f['first_name']?.dirty">
         <span  *ngIf="f['first_name']?.errors?.['required']">First Name is required
         </span>
-        <!-- <span  *ngIf="f['first_name']?.errors?.['pattern']">
-            Invalid name. Only letters are allowed, and the name must start with a letter.
-        </span> -->
+        <span  *ngIf="f['last_name']?.errors?.['pattern']">
+        Extra space charaters are not allowed.
+        </span>
         <span 
             *ngIf="f['first_name']?.errors?.['maxlength']">
             First Name cannot exceed more than 50 characters.
@@ -47,14 +46,13 @@
 
 <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
     <mat-label>Last Name <b class="r-star">*</b></mat-label>
-    <input matInput placeholder="Enter last name" appAlphabetOnly formControlName="last_name" autocomplete="off"
-    pattern="^[a-zA-Z]+( [a-zA-Z]+)*$">
+    <input matInput placeholder="Enter last name" appAlphabetOnly formControlName="last_name" autocomplete="off">
     <mat-error *ngIf="f['last_name']?.invalid && f['last_name']?.touched || f['last_name']?.dirty">
         <span  *ngIf="f['last_name']?.errors?.['required']">Last Name is required
         </span>
-        <!-- <span  *ngIf="f['last_name']?.errors?.['pattern']">
-            Invalid name. Only letters are allowed, and the name must start with a letter.
-        </span> -->
+        <span  *ngIf="f['last_name']?.errors?.['pattern']">
+            Extra space charaters are not allowed.
+        </span>
         <span 
             *ngIf="f['last_name']?.errors?.['maxlength']">
             Last Name cannot exceed more than 50 characters.

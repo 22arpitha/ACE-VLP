@@ -85,8 +85,8 @@ this.formErrorScrollService.resetHasUnsavedValue();
   public intialForm(){
 this.employeeFormGroup = this.fb.group({
       employee_number: ['',Validators.required],
-      first_name: ['', [Validators.required, Validators.maxLength(50)]],
-      last_name: ['', [Validators.required, Validators.maxLength(50)]],
+      first_name: ['', [Validators.required, Validators.pattern(/^[a-zA-Z0-9!@#$%^&*()_+{}\[\]:;"'<>,.?/\\|`~\-]+( [a-zA-Z0-9!@#$%^&*()_+{}\[\]:;"'<>,.?/\\|`~\-]+)*$/),Validators.maxLength(50)]],
+      last_name: ['', [Validators.required,Validators.pattern(/^[a-zA-Z0-9!@#$%^&*()_+{}\[\]:;"'<>,.?/\\|`~\-]+( [a-zA-Z0-9!@#$%^&*()_+{}\[\]:;"'<>,.?/\\|`~\-]+)*$/), Validators.maxLength(50)]],
       email:['',[Validators.required,Validators.pattern('^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$')]],
       date_joined: ['', Validators.required],
       exit_date: [null],

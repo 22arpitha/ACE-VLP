@@ -131,11 +131,11 @@ initialFormValue:any;
     public intialForm(){
         this.clientFormGroup = this.fb.group({
         client_number: ['',Validators.required],
-        client_name: ['', [Validators.required, Validators.maxLength(50)]],
+        client_name: ['', [Validators.required,Validators.pattern(/^[a-zA-Z0-9!@#$%^&*()_+{}\[\]:;"'<>,.?/\\|`~\-]+( [a-zA-Z0-9!@#$%^&*()_+{}\[\]:;"'<>,.?/\\|`~\-]+)*$/), Validators.maxLength(50)]],
         email:['',[Validators.required,Validators.pattern('^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$')]],
         country: ['', Validators.required],
         source: ['', Validators.required],
-        address: ['', [Validators.required, Validators.maxLength(200)]],
+        address: ['', [Validators.required,Validators.pattern(/^[a-zA-Z0-9!@#$%^&*()_+{}\[\]:;"'<>,.?/\\|`~\-]+( [a-zA-Z0-9!@#$%^&*()_+{}\[\]:;"'<>,.?/\\|`~\-]+)*$/), Validators.maxLength(200)]],
         service_start_date: ['', Validators.required],
         service_end_date: [null],
         client_file:[null],

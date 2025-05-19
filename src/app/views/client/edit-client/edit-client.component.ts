@@ -7,8 +7,8 @@ import { GenericDeleteComponent } from '../../../generic-components/generic-dele
 import { GenericEditComponent } from '../../../generic-components/generic-edit/generic-edit.component';
 import { environment } from '../../../../environments/environment';
 import { ActivatedRoute, Router } from '@angular/router';
-import { CanComponentDeactivate } from 'src/app/auth-guard/can-deactivate.guard';
-import { FormErrorScrollUtilityService } from 'src/app/service/form-error-scroll-utility-service.service';
+import { CanComponentDeactivate } from '../../../auth-guard/can-deactivate.guard';
+import { FormErrorScrollUtilityService } from '../../../service/form-error-scroll-utility-service.service';
 import { Observable } from 'rxjs';
 export interface IdNamePair {
   id: any;
@@ -75,7 +75,7 @@ export class EditClientComponent implements CanComponentDeactivate, OnInit {
 
   public initializeForm() {
     this.endClientForm = this.fb.group({
-      client_name: ['', [Validators.pattern(/^[a-zA-Z]+( [a-zA-Z]+)*$/), Validators.required, Validators.maxLength(20)]],
+      client_name: ['', [Validators.required,Validators.pattern(/^[a-zA-Z0-9!@#$%^&*()_+{}\[\]:;"'<>,.?/\\|`~\-]+( [a-zA-Z0-9!@#$%^&*()_+{}\[\]:;"'<>,.?/\\|`~\-]+)*$/), Validators.maxLength(20)]],
       group: [null],
       client:this.client_id
     });
