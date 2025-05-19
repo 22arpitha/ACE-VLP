@@ -7,15 +7,15 @@
               <div class="col-12 col-sm-12 col-md-6 col-lg-4 my-1 px-0">
                 <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
                     <mat-label>End Client Name  <b class="r-star">*</b></mat-label>
-                    <input matInput placeholder="Enter End Client Name " appAlphabetOnly formControlName="client_name" autocomplete="off">
+                    <input matInput placeholder="Enter End Client Name" formControlName="client_name" autocomplete="off">
                     <mat-error *ngIf="f['client_name']?.invalid && f['client_name']?.touched || f['client_name']?.dirty">
                       <span *ngIf="f['client_name'].errors?.['required']">End Client Name is required</span>
                       <span
                         *ngIf="!f['client_name'].errors?.['required'] && f['client_name'].errors?.['pattern'] && !f['client_name'].errors?.['maxlength']">
-                        Invalid name. Extra space, numbers and special charaters are not allowed
+                       Extra space charaters are not allowed.
                       </span>
                       <span *ngIf="!f['client_name'].errors?.['required'] && f['client_name'].errors?.['maxlength']">
-                        End Client Name  cannot exceed 20 characters.
+                        End Client Name  cannot exceed 50 characters.
                       </span>
                     </mat-error>
                   </mat-form-field>

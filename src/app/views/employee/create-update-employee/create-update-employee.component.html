@@ -18,7 +18,7 @@
 
 <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
     <mat-label>First Name <b class="r-star">*</b></mat-label>
-    <input matInput placeholder="Enter first name" appAlphabetOnly formControlName="first_name" autocomplete="off">
+    <input matInput placeholder="Enter first name" formControlName="first_name" autocomplete="off">
     <mat-error *ngIf="f['first_name']?.invalid && f['first_name']?.touched || f['first_name']?.dirty">
         <span  *ngIf="f['first_name']?.errors?.['required']">First Name is required
         </span>
@@ -46,7 +46,7 @@
 
 <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
     <mat-label>Last Name <b class="r-star">*</b></mat-label>
-    <input matInput placeholder="Enter last name" appAlphabetOnly formControlName="last_name" autocomplete="off">
+    <input matInput placeholder="Enter last name" formControlName="last_name" autocomplete="off">
     <mat-error *ngIf="f['last_name']?.invalid && f['last_name']?.touched || f['last_name']?.dirty">
         <span  *ngIf="f['last_name']?.errors?.['required']">Last Name is required
         </span>
