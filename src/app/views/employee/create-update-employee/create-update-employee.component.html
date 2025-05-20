@@ -146,7 +146,7 @@
 
 <div class="col-12 col-sm-12 col-md-6 col-lg-4 my-1 px-0">
     <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
-        <mat-label>Reporting Manager <b class="r-star">*</b></mat-label>
+        <mat-label>Reporting Manager</mat-label>
         <mat-select formControlName="reporting_manager_id" autocomplete="off"
                 placeholder="Reporting Manager" panelClass="custom-select-panel"
                 [disableOptionCentering]="true">
@@ -159,9 +159,9 @@
                     {{rmId?.first_name + rmId?.last_name || rmId?.user__full_name}}
                 </mat-option>
         </mat-select>
-        <mat-error *ngIf="f['reporting_manager_id']?.invalid && f['reporting_manager_id']?.touched || f['reporting_manager_id']?.dirty">
+        <!-- <mat-error *ngIf="f['reporting_manager_id']?.invalid && f['reporting_manager_id']?.touched || f['reporting_manager_id']?.dirty">
             <span  *ngIf="f['reporting_manager_id']?.errors?.['required']">Reporting Manager is required</span>
-      </mat-error>
+      </mat-error> -->
     </mat-form-field>
 
 </div>

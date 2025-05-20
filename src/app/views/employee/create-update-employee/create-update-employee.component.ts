@@ -90,7 +90,7 @@ this.employeeFormGroup = this.fb.group({
       email:['',[Validators.required,Validators.pattern('^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$')]],
       date_joined: ['', Validators.required],
       exit_date: [null],
-      reporting_manager_id:['', Validators.required],
+      reporting_manager_id:[''],
       designation: ['', Validators.required],
       sub_designation:['', Validators.required],
       role: 2,
