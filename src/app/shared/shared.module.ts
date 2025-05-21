@@ -41,6 +41,8 @@ import { WeekDatepickerComponent } from './week-datepicker/week-datepicker.compo
 import { GenericTableFilterComponent } from './generic-table-filter/generic-table-filter.component';
 import { WeekPickerComponent } from './week-picker/week-picker.component';
 import { NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
+import { QuarterMonthYearPickerComponent } from './quarter-month-year-picker/quarter-month-year-picker.component';
+
 @NgModule({
   declarations: [
     SortPipe,
@@ -54,6 +56,7 @@ import { NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
     WeekDatepickerComponent,
     GenericTableFilterComponent,
     WeekPickerComponent,
+    QuarterMonthYearPickerComponent,
   ],
   imports: [
     CommonModule,

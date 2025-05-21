@@ -46,7 +46,7 @@ export class WorkCultureAndWorkEthicsComponent implements OnInit,OnChanges {
           if (employeeIdChanged || periodicityChanged || periodChanged) {
             this.dropdwonFilterData = current;
             if(this.dropdwonFilterData.period){
-            this.getSelectedPeriod(this.dropdwonFilterData.period);
+            this.getWorkCultureAndEthicsList();
             }
           }
         }
@@ -56,26 +56,12 @@ export class WorkCultureAndWorkEthicsComponent implements OnInit,OnChanges {
         this.common_service.setTitle(this.BreadCrumbsTitle);
       }
 
-      public getSelectedPeriod(id: any) {
-        this.selectedPeriodDetails='';
-        this.api.getData(`${environment.live_url}/${environment.settings_period}/${id}/`).subscribe((respData: any) => {
-        this.selectedPeriodDetails = respData;
-        if(respData){
-          this.getWorkCultureAndEthicsList();
-        }
-        }, (error: any) => {
-          this.api.showError(error?.error?.detail);
-        })
-      }
-
       workCultureData:any =[]
       getWorkCultureAndEthicsList(){
-        this.selectedPeriodId=null;
         this.selectedperiodicityId=null;
         let query = this.getUpdateFilterQueryParams();
         this.api.getData(`${environment.live_url}/${environment.upload_assessment}/${query}`).subscribe(
           (res:any)=>{
-            this.selectedPeriodId = Number(res.period_id);
             this.selectedperiodicityId = Number(res.periodicity_id);
                         const formattedData = res.data?.map((item: any, i: number) => ({
                           sl: i + 1,
@@ -135,8 +121,7 @@ export class WorkCultureAndWorkEthicsComponent implements OnInit,OnChanges {
       }
 
       public submitWorkCultureDetails(data:any){
-        data['period_id']=this.selectedPeriodId,
-        data['periodicity_id']=this.selectedperiodicityId,
+        data['year']=Number(this.dropdwonFilterData.period['year']),
         console.log('data',data);
         this.api.postData(`${environment.live_url}/${environment.upload_assessment}/`, data).subscribe((respData: any) => {
           if (respData) {
@@ -156,7 +141,7 @@ export class WorkCultureAndWorkEthicsComponent implements OnInit,OnChanges {
             params.push(`periodicity=${this.dropdwonFilterData.periodicity}`);
           }
           if (this.dropdwonFilterData.period) {
-            params.push(`period=${this.dropdwonFilterData.period}`);
+            params.push(`period=${encodeURIComponent(JSON.stringify(this.dropdwonFilterData.period))}`);
           }
           if(this.user_role_name ==='Admin')
             {

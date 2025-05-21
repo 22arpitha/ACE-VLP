@@ -114,8 +114,7 @@ export class CreateUpdateJobComponent implements CanComponentDeactivate, OnInit,
 
   public intialForm() {
     this.jobFormGroup = this.fb.group({
-      job_number: ['', Validators.required],
-      job_name: [''],
+      job_name: ['',Validators.pattern(/^[a-zA-Z0-9!@#$%^&*()_+{}\[\]:;"'<>,.?/\\|`~\-]+( [a-zA-Z0-9!@#$%^&*()_+{}\[\]:;"'<>,.?/\\|`~\-]+)*$/)],
       client: ['', Validators.required],
       end_client: ['', Validators.required],
       group: [null],
@@ -141,7 +140,7 @@ export class CreateUpdateJobComponent implements CanComponentDeactivate, OnInit,
 
   public getAllDropdownData() {
     this.getModuleAccess();
-    this.getJobUniqueNumber();
+    // this.getJobUniqueNumber();
     this.getJobBillingOptions();
     this.getAllActiveClients();
     this.getAllServices();
@@ -192,13 +191,13 @@ export class CreateUpdateJobComponent implements CanComponentDeactivate, OnInit,
   }
 
 
-  public getJobUniqueNumber() {
-    this.apiService.getData(`${environment.live_url}/${environment.jobs}/?get-unique-id=true`).subscribe((respData: any) => {
-      this.jobFormGroup.patchValue({ 'job_number': respData?.unique_id });
-    }, (error => {
-      this.apiService.showError(error?.error?.detail);
-    }));
-  }
+  // public getJobUniqueNumber() {
+  //   this.apiService.getData(`${environment.live_url}/${environment.jobs}/?get-unique-id=true`).subscribe((respData: any) => {
+  //     this.jobFormGroup.patchValue({ 'job_number': respData?.unique_id });
+  //   }, (error => {
+  //     this.apiService.showError(error?.error?.detail);
+  //   }));
+  // }
   public getJobBillingOptions() {
     this.jobBillingOption = {};
     this.apiService.getData(`${environment.live_url}/${environment.jobs}/?get-options=True`).subscribe((respData: any) => {
@@ -541,6 +540,8 @@ export class CreateUpdateJobComponent implements CanComponentDeactivate, OnInit,
   public getJobDetails(id: any) {
     this.apiService.getData(`${environment.live_url}/${environment.jobs}/${id}/`).subscribe((respData: any) => {
       if (respData) {
+        this.BreadCrumbsTitle = this.BreadCrumbsTitle + ` (${respData.job_number})`
+        this.common_service.setTitle(this.BreadCrumbsTitle);
         this.jobDetails = respData
         this.getClientBasedEndClient(respData?.client);
         this.getEndClientBasedGroup(respData?.end_client);
@@ -550,7 +551,6 @@ export class CreateUpdateJobComponent implements CanComponentDeactivate, OnInit,
         this.getAllEmployeeList();
         // this.getEndClientBasedGroup(respData?.end_client);
         this.jobFormGroup.patchValue({
-          job_number: respData?.job_number,
           job_name: respData?.job_name,
           client: respData?.client,
           end_client: respData?.end_client,

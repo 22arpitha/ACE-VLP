@@ -37,7 +37,9 @@ BreadCrumbsTitle: any = 'Overall Productivity';
           const periodChanged = prev.period !== current.period;
           if (employeeIdChanged || periodicityChanged || periodChanged) {
             this.dropdwonFilterData = current;
-            this.getOverAllProductivity();
+            if(this.dropdwonFilterData.periodicity && this.dropdwonFilterData.period){
+              this.getOverAllProductivity();
+            }
           }
           }
         }
@@ -102,7 +104,7 @@ public getUpdateFilterQueryParams(){
       params.push(`periodicity=${this.dropdwonFilterData.periodicity}`);
     }
     if (this.dropdwonFilterData.period) {
-      params.push(`period=${this.dropdwonFilterData.period}`);
+      params.push(`period=${encodeURIComponent(JSON.stringify(this.dropdwonFilterData.period))}`);
     }
     
      if(this.user_role_name ==='Admin')

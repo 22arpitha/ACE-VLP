@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ApiserviceService } from '../../service/apiservice.service';
 import { environment } from '../../../environments/environment';
 
@@ -9,73 +9,61 @@ import { environment } from '../../../environments/environment';
   styleUrls: ['./period.component.scss']
 })
 export class PeriodComponent implements OnInit,OnChanges {
-  searchPeroidText:any;
   peroidslist:any=[];
-  @Input() periodicity_id: number | null = null;
+  @Input() mode: 'Monthly' | 'Quaterly' | 'Yearly'  = 'Monthly';
   @Input() defaultSelection: boolean = false;
   @Input() resetFilterField: boolean = false;
+  monthControl = new FormControl('');
+  quarterControl = new FormControl('');
+  yearControl  = new FormControl('');
+
   @Output() selectPeriod :EventEmitter<any> = new EventEmitter<any>();
-  selectedPeriodVal:any;
+  selectedPeriodVal:{'month_list': string; 'year': string};
   currentDate = new Date();
   monthNames = [
     "January", "February", "March", "April", "May", "June",
     "July", "August", "September", "October", "November", "December"
   ];
-  constructor(private apiService: ApiserviceService) { }
-  
+ 
   ngOnChanges(changes: SimpleChanges): void {
    
    if (changes['resetFilterField'] && changes['resetFilterField']?.currentValue === true) {
-    this.selectedPeriodVal=null;   
-    this.peroidslist=[];
-    this.searchPeroidText='';
-      this.selectPeriod.emit(null); 
+    this.selectedPeriodVal={
+  month_list: '',
+  year: ''
+};
+this.selectPeriod.emit(this.selectedPeriodVal); 
   }
   if(changes['defaultSelection'] && changes['defaultSelection']?.currentValue === true){
     this.defaultSelection = changes['defaultSelection']?.currentValue;
   }
 
-  if(changes['periodicity_id'] && changes['periodicity_id']?.currentValue !=null){
-    this.periodicity_id = changes['periodicity_id'].currentValue;
-    if(this.periodicity_id){
-      this.getPeroidicityBasedPeroid();  
-    }
+  if(changes['mode'] && changes['mode']?.currentValue !=null){
+    this.mode = changes['mode'].currentValue;
+    this.selectedPeriodVal={
+  month_list: '',
+  year: ''
+};
+this.selectPeriod.emit(this.selectedPeriodVal);
    }
   }
   ngOnInit(): void {
 
   }
 
-  public filteredPeriodList() {
-    if (!this.searchPeroidText) {
-      return this.peroidslist;
-    }
-    return this.peroidslist.filter((peroid: any) =>
-      peroid?.period_name?.toLowerCase()?.includes(this.searchPeroidText?.toLowerCase())
-    );
+onMonthChange(val: { 'month_list': string; 'year': string }) {
+  this.selectedPeriodVal=val;
+   this.selectPeriod.emit(this.selectedPeriodVal); 
+}
+
+onQuarterChange(val: { 'month_list': string; 'year': string }) {
+    this.selectedPeriodVal=val;
+    this.selectPeriod.emit(this.selectedPeriodVal); 
+}
+// Handle year change
+  onYearChange(val: { 'month_list': string; 'year': string }) {
+      this.selectedPeriodVal=val;
+      this.selectPeriod.emit(this.selectedPeriodVal); 
   }
-
-  public clearSearch(){
-    this.searchPeroidText ='';
-  }
-
-  private getPeroidicityBasedPeroid() {
-      this.peroidslist = [];
-      this.apiService.getData(`${environment.live_url}/${environment.settings_period}/?periodicity=${this.periodicity_id}`).subscribe(
-        (res: any) => {
-          this.peroidslist = res;
-          if(this.periodicity_id && this.defaultSelection){
-            this.selectedPeriodVal = this.peroidslist?.find((element):any => element.period_name === this.monthNames[this.currentDate.getMonth()-1])?.id; 
-          this.selectPeriod.emit(this.selectedPeriodVal);
-          }
-          
-        }, (error: any) => {
-          this.apiService.showError(error?.error?.detail);
-        });
-    }
-
-    public onPeroidChange(event:any){
-      this.selectPeriod.emit(event.value);
-    }
 
 }

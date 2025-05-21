@@ -130,7 +130,7 @@ export class NonProductiveHoursComponent implements OnInit,OnChanges {
       if(this.dropdwonFilterData){
         query+= this.dropdwonFilterData.employee_id ? `&timesheet-employee=${this.dropdwonFilterData.employee_id}`:this.user_role_name ==='Admin' ? '':`&timesheet-employee=${this.user_id}`;
         query+= this.dropdwonFilterData.periodicity ? `&periodicity=${this.dropdwonFilterData.periodicity}`:'';
-        query+= this.dropdwonFilterData.period ? `&period=${this.dropdwonFilterData.period}`:'';
+        query+= this.dropdwonFilterData.period ? `&period=${encodeURIComponent(JSON.stringify(this.dropdwonFilterData.period))}`:'';
        }else{
         query += this.user_role_name ==='Admin' ? '':`&timesheet-employee=${this.user_id}`;
        }
@@ -154,7 +154,7 @@ export class NonProductiveHoursComponent implements OnInit,OnChanges {
       if(this.dropdwonFilterData){
        finalQuery += this.dropdwonFilterData.employee_id ? `&timesheet-employee=${this.dropdwonFilterData.employee_id}`:this.user_role_name ==='Admin' ? '':`&timesheet-employee=${this.user_id}`;
        finalQuery += this.dropdwonFilterData.periodicity ? `&periodicity=${this.dropdwonFilterData.periodicity}`:'';
-       finalQuery += this.dropdwonFilterData.period ? `&period=${this.dropdwonFilterData.period}`:'';
+       finalQuery += this.dropdwonFilterData.period ? `&period=${encodeURIComponent(JSON.stringify(this.dropdwonFilterData.period))}`:'';
       }else{
        finalQuery += this.user_role_name ==='Admin' ? '':`&timesheet-employee=${this.user_id}`;
       }

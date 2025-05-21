@@ -1,16 +1,23 @@
 
-  <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
-    <mat-label>Period <b class="r-star">*</b></mat-label>
-    <mat-select [(ngModel)]="selectedPeriodVal" [ngModelOptions]="{standalone: true}" autocomplete="off"
-            placeholder="Period" panelClass="custom-select-panel"
-            [disableOptionCentering]="true" (selectionChange)="onPeroidChange($event)">
-            <div class="mat-select-search-wrapper d-flex">
-              <input matInput [(ngModel)]="searchPeroidText" autofocus [ngModelOptions]="{standalone: true}" placeholder="Search Period" class="mat-select-search" >
-              <mat-icon class="search-icon" *ngIf="!searchPeroidText">search</mat-icon>
-              <mat-icon class="search-icon" *ngIf="searchPeroidText" type="button" (click)="clearSearch()">close</mat-icon>
-            </div>
-            <mat-option *ngFor="let item of filteredPeriodList()" [value]="item?.id">
-                {{item?.period_name}}
-            </mat-option>
-    </mat-select>
-</mat-form-field> 
+
+<!-- Month Picker -->
+<app-quarter-month-year-picker *ngIf="mode==='Monthly'"
+  [mode]="'Monthly'"
+  [control]="monthControl"
+  [defaultSelectPreviousMonth]="defaultSelection"
+  (valueChange)="onMonthChange($event)">
+</app-quarter-month-year-picker>
+
+<!-- Quarter Picker -->
+<app-quarter-month-year-picker  *ngIf="mode==='Quaterly'"
+  [mode]="'Quaterly'"
+  [control]="quarterControl"
+  (valueChange)="onQuarterChange($event)">
+</app-quarter-month-year-picker>
+<!-- Year Picker -->
+<app-quarter-month-year-picker  *ngIf="mode==='Yearly'"
+  [mode]="'Yearly'"
+  [control]="yearControl"
+  (valueChange)="onYearChange($event)">
+</app-quarter-month-year-picker>
+

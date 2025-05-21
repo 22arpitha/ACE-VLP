@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { environment } from '../../../../../environments/environment';
+import { ApiserviceService } from 'src/app/service/apiservice.service';
 
 @Component({
   selector: 'app-tabs',
@@ -9,16 +10,18 @@ import { environment } from '../../../../../environments/environment';
 export class TabsComponent implements OnInit {
 periodicityId:number | null = null;
 userRole:any
-period:number | null = null;
+period:{ year: string; month_list: string } = null;
 employee:number | null = null;
 resetFilter:boolean=false;
 ondefaultSelection:boolean =true;
 resetBtnDisable:boolean=false;
+modeName:any;
 tabs:string[] = ['Overall Productivity', 'Quantitative Productivity', 'Qualitative Productivity','Work Culture and Work Ethics',
    'Productive Hours','Non Billable Hours','Non Productive Hours' ];
   selectedTab: number = 0;
   commonFilterData:any={'employee_id':'','periodicity':'','period':''};
   user_id:any;
+  allPeroidicitylist:any=[];
   selectTab(index: number): void {
     this.selectedTab = index;
     if(((this.userRole ==='Accountant' && !this.periodicityId && !this.period)||(!this.employee && !this.periodicityId && !this.period))){
@@ -30,9 +33,10 @@ tabs:string[] = ['Overall Productivity', 'Quantitative Productivity', 'Qualitati
       this.ondefaultSelection=false;
     }
   }
-  constructor() {
+  constructor(private apiService: ApiserviceService) {
     this.userRole = sessionStorage.getItem('user_role_name');
     this.user_id = sessionStorage.getItem('user_id');
+    this.getAllPeriodicity();
    }
 
   ngOnInit(): void {
@@ -85,8 +89,9 @@ this.employee=event;
   }
 selectedPeriodicity(event:any){
   this.periodicityId=event;
+  this.modeName = this.allPeroidicitylist.find((peroidicity:any)=>peroidicity.id=== this.periodicityId)?.periodicty_name;
 }
-selectedPeriod(event:any){
+selectedPeriod(event:{ year: string; month_list: string }){
 this.period=event;
 }
 
@@ -114,4 +119,14 @@ query +=`&periodicity=${this.periodicityId}`
         a.click();
       });
 }
+
+public getAllPeriodicity() {
+    this.allPeroidicitylist = [];
+    this.apiService.getData(`${environment.live_url}/${environment.settings_periodicty}/`).subscribe(
+      (res: any) => {
+        this.allPeroidicitylist = res;
+      }, (error: any) => {
+        this.apiService.showError(error?.error?.detail);
+      });
+  }
 }
