@@ -5,7 +5,7 @@
           <form [formGroup]="endClientForm">
             <div class="row mx-0 my-0">
               <div class="col-12 col-sm-12 col-md-6 col-lg-4 my-1 px-0">
-                <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+                <mat-form-field appearance="outline" [ngClass]="{ 'highlight-background': !shouldDisableGroupName }" class="w-100 custom-mat-form-field">
                     <mat-label>End Client Name  <b class="r-star">*</b></mat-label>
                     <input matInput placeholder="Enter End Client Name" formControlName="client_name" autocomplete="off">
                     <mat-error *ngIf="f['client_name']?.invalid && f['client_name']?.touched || f['client_name']?.dirty">
@@ -22,10 +22,10 @@
                 
               </div>
               <div class="col-12 col-sm-12 col-md-6 col-lg-4 my-1 no-padding pl-5 pr-0">
-                <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+                <mat-form-field appearance="outline" [ngClass]="{ 'highlight-background': !shouldDisableGroupName }" class="w-100 custom-mat-form-field">
                     <mat-label>Group</mat-label>
                     <mat-select formControlName="group" placeholder="Group" autocomplete="off"
-                      panelClass="custom-select-panel" [disableOptionCentering]="true">
+                      panelClass="custom-select-panel" [disableOptionCentering]="true" [disabled]="!shouldDisableGroupName">
                       <div class="mat-select-search-wrapper d-flex">
                         <input matInput [(ngModel)]="searchGroupText" autofocus [ngModelOptions]="{standalone: true}" placeholder="Search Group" class="mat-select-search">
                         <mat-icon class="search-icon" *ngIf="!searchGroupText">search</mat-icon>
@@ -39,10 +39,15 @@
               </div>
   
               <div class="col-12 col-sm-12 col-md-6 col-lg-3  align-content-center">
-                <button mat-raised-button class="cancel-button mat-btn-s" type="button" (click)="resetFormState()">
+                <button mat-raised-button class="cancel-button mat-btn-s" type="button" (click)="resetFormState()"
+                *ngIf="(user_role_name !='Admin' && shouldDisableGroupName) || user_role_name === 'Admin'">
                   Cancel</button>
-                <button mat-raised-button class="proceedbtn mat-btn-s" type="submit" (click)="saveEndClientDetails()"><span
-                    *ngIf="!isEditItem">Submit</span><span *ngIf="isEditItem">Update</span></button>
+                  <button mat-raised-button class="proceedbtn mat-btn-s" type="submit" (click)="saveEndClientDetails()" 
+                  *ngIf="!isEditItem && ((user_role_name !='Admin' && accessPermissions[0]?.create) || user_role_name === 'Admin')" >
+                    Submit</button>
+                  <button mat-raised-button class="proceedbtn mat-btn-s" type="submit" (click)="saveEndClientDetails()"
+                  *ngIf="isEditItem && ((user_role_name !='Admin' && accessPermissions[0]?.update) || user_role_name === 'Admin')">
+                   Update </button>
               </div>
             </div>
           </form>
@@ -102,10 +107,10 @@
                 <td>
                   <ng-container>
                     <img src="../../../../assets/images/Edit.svg" class="icon-image" container="body" ngbTooltip="Edit"
-                      type="button" (click)="editContent(item)" />
+                      type="button" (click)="editContent(item)" *ngIf="user_role_name !='Admin' && accessPermissions[0]?.update || user_role_name === 'Admin'"/>
                     <img src="../../../../assets/images/Delete.svg" class="icon-image" container="body"
-                      ngbTooltip="Delete" type="button" (click)="confirmDelete(item)" />
-  
+                      ngbTooltip="Delete" type="button" (click)="confirmDelete(item)" *ngIf="user_role_name !='Admin' && accessPermissions[0]?.delete || user_role_name === 'Admin'"/>
+                      <span  *ngIf="user_role_name !='Admin' && !accessPermissions[0]?.update && !accessPermissions[0]?.delete">-</span>
                   </ng-container>
                 </td>
               </tr>

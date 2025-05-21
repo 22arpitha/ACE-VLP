@@ -16,3 +16,12 @@
 .settings-main-content{
     height: 70vh !important;
 }
+::ng-deep .group-client .mat-raised-button.mat-button-disabled.mat-button-disabled{
+    background-color: rgba(0, 0, 0, .12) !important;
+}
+
+
+::ng-deep .highlight-background .mat-form-field-flex {
+    background-color: rgb(235 235 235) !important;
+    pointer-events: none !important;
+  }

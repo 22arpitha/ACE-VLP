@@ -10,6 +10,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { CanComponentDeactivate } from '../../../auth-guard/can-deactivate.guard';
 import { FormErrorScrollUtilityService } from '../../../service/form-error-scroll-utility-service.service';
 import { Observable } from 'rxjs';
+import { SubModuleService } from '../../../service/sub-module.service';
 export interface IdNamePair {
   id: any;
   name: string;
@@ -51,13 +52,19 @@ export class EditClientComponent implements CanComponentDeactivate, OnInit {
   filteredList = [];
     filterQuery: string;
     endclientList:any=[];
+    accessPermissions = [];
+  user_role_name:any;
+  user_id:any;
   constructor(private fb: FormBuilder,
      private modalService: NgbModal,
     private router:Router,private activeRoute:ActivatedRoute,
     private common_service: CommonServiceService,
     private apiService: ApiserviceService,
-    private formErrorScrollService:FormErrorScrollUtilityService
+    private formErrorScrollService:FormErrorScrollUtilityService,
+    private accessControlService:SubModuleService,
   ) {
+    this.user_id = sessionStorage.getItem('user_id');
+    this.user_role_name = sessionStorage.getItem('user_role_name');
     if(this.activeRoute.snapshot.paramMap.get('id')){
       this.client_id= this.activeRoute.snapshot.paramMap.get('id')}
       this.common_service.clientGroupCreationstatus$.subscribe((resp)=>{
@@ -69,8 +76,20 @@ export class EditClientComponent implements CanComponentDeactivate, OnInit {
 
   async ngOnInit(): Promise<void> {
     this.initializeForm();
+    this.getModuleAccess();
     this.getAllEndClients(`?page=1&page_size=5&client=${this.client_id}`);
     this.getGroupList();
+  }
+  shouldDisableGroupName:boolean
+  getModuleAccess(){
+    this.accessControlService.getAccessForActiveUrl(this.user_id).subscribe(
+      (res:any)=>{
+        console.log(res);
+        this.accessPermissions = res[0].operations;
+        this.shouldDisableGroupName = this.accessPermissions[0]?.['create'];
+        // console.log('this.shouldDisableGroupName',this.shouldDisableGroupName)
+      }
+    )
   }
 
   public initializeForm() {
@@ -178,6 +197,7 @@ getUniqueValues(
     this.formGroupDirective.resetForm();
     this.endClientForm.patchValue({"client":this.client_id});
     this.isEditItem = false;
+    this.getModuleAccess();
     this.term='';
   }
 
@@ -251,6 +271,7 @@ getUniqueValues(
           this.selectedJobStatus = item?.id;
           this.isEditItem = true;
           modalRef.dismiss();
+          this.shouldDisableGroupName = this.accessPermissions[0]?.['update']
           this.scrollToField();
           this.getSelectedEndClient(this.selectedJobStatus);
         } else {

@@ -10,6 +10,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { CanComponentDeactivate } from '../../../auth-guard/can-deactivate.guard';
 import { Observable } from 'rxjs';
 import { FormErrorScrollUtilityService } from '../../../service/form-error-scroll-utility-service.service';
+import { SubModuleService } from '../../../service/sub-module.service';
 
 @Component({
   selector: 'app-group',
@@ -36,13 +37,19 @@ export class GroupComponent implements CanComponentDeactivate, OnInit {
   term: any = '';
   client_id:any;
   initialFormValue:any;
+  accessPermissions = [];
+  user_role_name:any;
+  user_id:any;
   constructor(
     private common_service: CommonServiceService,
     private activeRoute:ActivatedRoute,
     private fb: FormBuilder, private api: ApiserviceService,
     private modalService: NgbModal, private router:Router,
-    private formErrorScrollService:FormErrorScrollUtilityService
+    private formErrorScrollService:FormErrorScrollUtilityService,
+    private accessControlService:SubModuleService,
   ) {
+    this.user_id = sessionStorage.getItem('user_id');
+    this.user_role_name = sessionStorage.getItem('user_role_name');
     if(this.activeRoute.snapshot.paramMap.get('id')){
       this.client_id= this.activeRoute.snapshot.paramMap.get('id')}
       this.common_service.clientEndClientCreationstatus$.subscribe((resp)=>{
@@ -53,8 +60,21 @@ export class GroupComponent implements CanComponentDeactivate, OnInit {
    }
 
   ngOnInit(): void {
+    this.getModuleAccess()
     this.intialForm();
     this.getAllGroupList(`?page=${1}&page_size=${5}&client=${this.client_id}`);
+  }
+
+  shouldDisableGroupName:boolean
+  getModuleAccess(){
+    this.accessControlService.getAccessForActiveUrl(this.user_id).subscribe(
+      (res:any)=>{
+        console.log(res);
+        this.accessPermissions = res[0].operations;
+        this.shouldDisableGroupName = this.accessPermissions[0]?.['create'];
+        console.log('this.shouldDisableGroupName',this.shouldDisableGroupName)
+      }
+    )
   }
 
   intialForm() {
@@ -134,7 +154,7 @@ export class GroupComponent implements CanComponentDeactivate, OnInit {
     }
   }
 
-  saveCountryDetails() {
+  saveGroupDetails() {
     if (this.groupForm.invalid) {
       console.log(this.groupForm.value)
       this.groupForm.markAllAsTouched();
@@ -169,6 +189,7 @@ export class GroupComponent implements CanComponentDeactivate, OnInit {
     this.groupForm.patchValue({"client":this.client_id});
     this.isEditItem = false;
     this.term='';
+    this.getModuleAccess();
   }
   async edit(item: any) {
 
@@ -185,6 +206,7 @@ export class GroupComponent implements CanComponentDeactivate, OnInit {
           this.isEditItem = true;
           modalRef.dismiss();
           this.scrollToField();
+          this.shouldDisableGroupName = this.accessPermissions[0]?.['update']
           this.getSelectedItemData(this.selectedItemId);
         } else {
           modalRef.dismiss();

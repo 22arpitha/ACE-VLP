@@ -1,13 +1,13 @@
 <div class="container-wrapper settings-main-content px-0">
-  <section class="settings-form-bg">
+  <section class="settings-form-bg group-client">
     <div class="row mx-0 px-0" #formInputField>
       <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0">
         <form [formGroup]="groupForm">
           <div class="row mx-0 my-0">
             <div class="col-sm-12 col-md-4 col-lg-3 my-1 px-0">
-              <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+              <mat-form-field appearance="outline" [ngClass]="{ 'highlight-background': !shouldDisableGroupName }" class="w-100 custom-mat-form-field">
                 <mat-label>Group Name <b class="r-star">*</b></mat-label>
-                <input matInput placeholder="Group name" formControlName="group_name" autocomplete="off">
+                <input matInput placeholder="Group name" appAlphabetOnly formControlName="group_name" autocomplete="off">
                   <mat-error
                   *ngIf="f['group_name']?.invalid && f['group_name']?.touched || f['group_name']?.dirty">
                   <span *ngIf="f['group_name'].errors?.['required']">Group Name is required</span>
@@ -22,10 +22,15 @@
               </mat-form-field>
             </div>
             <div class="col-12 col-sm-12 col-md-6 col-lg-3 align-content-center">
-              <button mat-raised-button class="cancel-button mat-btn-s" type="button" (click)="resetFormState()">
+              <button mat-raised-button class="cancel-button mat-btn-s" type="button" (click)="resetFormState()" 
+              *ngIf="(user_role_name !='Admin' && shouldDisableGroupName) || user_role_name === 'Admin'">
                 Cancel</button>
-              <button mat-raised-button class="proceedbtn mat-btn-s" type="submit" (click)="saveCountryDetails()">
-                {{isEditItem? 'Update' : 'Submit'}}</button>
+              <button mat-raised-button class="proceedbtn mat-btn-s" type="submit" (click)="saveGroupDetails()" 
+              *ngIf="!isEditItem && ((user_role_name !='Admin' && accessPermissions[0]?.create) || user_role_name === 'Admin')" >
+                Submit</button>
+              <button mat-raised-button class="proceedbtn mat-btn-s" type="submit" (click)="saveGroupDetails()"
+              *ngIf="isEditItem && ((user_role_name !='Admin' && accessPermissions[0]?.update) || user_role_name === 'Admin')">
+               Update </button>
             </div>
           </div>
         </form>
@@ -71,10 +76,11 @@
                 <td>
                   <ng-container>
                     <img src="../../../../assets/images/Edit.svg" class="icon-image" type="button" container="body"
-                      ngbTooltip="Edit" (click)="edit(item)" />
+                      ngbTooltip="Edit" (click)="edit(item)" *ngIf="user_role_name !='Admin' && accessPermissions[0]?.update || user_role_name === 'Admin'"/>
                     <img src="../../../../assets/images/Delete.svg" class="icon-image" type="button" container="body"
-                      ngbTooltip="Delete" (click)="delete(item.id)" />
-                    <!-- (click)="open(item.id)" -->
+                      ngbTooltip="Delete" (click)="delete(item.id)" *ngIf="user_role_name !='Admin' && accessPermissions[0]?.delete || user_role_name === 'Admin'"/>
+                      <span  *ngIf="user_role_name !='Admin' && !accessPermissions[0]?.update && !accessPermissions[0]?.delete">-</span>
+                      <!-- (click)="open(item.id)" -->
                     <!-- <span  *ngIf="userRole ==='Employee' && !accessPermissions[0]?.update && !accessPermissions[0]?.delete">-</span> -->
                     <!-- *ngIf="userRole ==='Employee' && accessPermissions[0]?.delete || userRole === 'Admin'" -->
                     <!-- *ngIf="userRole ==='Employee' && accessPermissions[0]?.update || userRole === 'Admin'" -->
