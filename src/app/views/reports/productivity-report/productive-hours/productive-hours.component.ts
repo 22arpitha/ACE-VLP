@@ -173,6 +173,7 @@ exportCsvOrPdf(fileType) {
              hideDownload:true,
              tableFooterContent:tableFooterContent,
              showDownload:true,
+            searchPlaceholder:'Search by Client/Job',
             };
            },(error:any)=>{  this.api.showError(error?.error?.detail);
            });

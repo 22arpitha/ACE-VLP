@@ -178,6 +178,7 @@ export class NonProductiveHoursComponent implements OnInit,OnChanges {
         totalRecords: res.total_no_of_record,
         hideDownload:true,
         showDownload:true,
+        searchPlaceholder:'Search by Client/Job',
       };
      });
    }

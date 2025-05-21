@@ -189,7 +189,8 @@ export class QuantitativeProductivityComponent implements OnInit,OnChanges {
              estimationDetails:true,
              tableFooterContent:tableFooterContent,
              hideDownload:true,
-             showDownload:true,
+            showDownload:true,
+            searchPlaceholder:'Search by Client/Job',
             };
            },(error:any)=>{  this.api.showError(error?.error?.detail);
            });
