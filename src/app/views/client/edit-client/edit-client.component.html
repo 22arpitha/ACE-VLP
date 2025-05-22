@@ -1,11 +1,11 @@
 <div class="container-wrapper settings-main-content px-0">
-    <section class="settings-form-bg">
+    <section class="settings-form-bg end-client">
       <div class="row mx-0 px-0" #formInputField>
         <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0">
           <form [formGroup]="endClientForm">
             <div class="row mx-0 my-0">
               <div class="col-12 col-sm-12 col-md-6 col-lg-4 my-1 px-0">
-                <mat-form-field appearance="outline" [ngClass]="{ 'highlight-background': !shouldDisableGroupName }" class="w-100 custom-mat-form-field">
+                <mat-form-field appearance="outline" [ngClass]="{ 'highlight-background': !shouldDisableGroupName && user_role_name !== 'Admin'}" class="w-100 custom-mat-form-field">
                     <mat-label>End Client Name  <b class="r-star">*</b></mat-label>
                     <input matInput placeholder="Enter End Client Name" formControlName="client_name" autocomplete="off">
                     <mat-error *ngIf="f['client_name']?.invalid && f['client_name']?.touched || f['client_name']?.dirty">
@@ -22,10 +22,10 @@
                 
               </div>
               <div class="col-12 col-sm-12 col-md-6 col-lg-4 my-1 no-padding pl-5 pr-0">
-                <mat-form-field appearance="outline" [ngClass]="{ 'highlight-background': !shouldDisableGroupName }" class="w-100 custom-mat-form-field">
+                <mat-form-field appearance="outline" [ngClass]="{ 'highlight-background': !shouldDisableGroupName && user_role_name !== 'Admin'}" class="w-100 custom-mat-form-field">
                     <mat-label>Group</mat-label>
                     <mat-select formControlName="group" placeholder="Group" autocomplete="off"
-                      panelClass="custom-select-panel" [disableOptionCentering]="true" [disabled]="!shouldDisableGroupName">
+                      panelClass="custom-select-panel" [disableOptionCentering]="true">
                       <div class="mat-select-search-wrapper d-flex">
                         <input matInput [(ngModel)]="searchGroupText" autofocus [ngModelOptions]="{standalone: true}" placeholder="Search Group" class="mat-select-search">
                         <mat-icon class="search-icon" *ngIf="!searchGroupText">search</mat-icon>
@@ -111,7 +111,7 @@
                       type="button" (click)="editContent(item)" *ngIf="user_role_name !='Admin' && accessPermissions[0]?.update || user_role_name === 'Admin'"/>
                     <img src="../../../../assets/images/Delete.svg" class="icon-image" container="body"
                       ngbTooltip="Delete" type="button" (click)="confirmDelete(item)" *ngIf="user_role_name !='Admin' && accessPermissions[0]?.delete || user_role_name === 'Admin'"/>
-                      <span  *ngIf="user_role_name !='Admin' && !accessPermissions[0]?.update && !accessPermissions[0]?.delete">-</span>
+                      <span *ngIf="user_role_name !='Admin' && !accessPermissions[0]?.update && !accessPermissions[0]?.delete">-</span>
                   </ng-container>
                 </td>
               </tr>

@@ -13,7 +13,7 @@
   max-height: max-content !important;
 }
 .settings-table-bg ::ng-deep .mat-form-field-appearance-outline .mat-form-field-outline{
-background: #fff;
+// background: #fff;
 }
 table .contact-form-content ::ng-deep .mat-form-field-appearance-outline .mat-form-field-wrapper,
 table .contact-form-content ::ng-deep .mat-form-field-wrapper {
@@ -53,7 +53,7 @@ padding: 0 !important;
 }
 
 .contact-details-table tbody tr td{
-  text-align: start !important;
+  // text-align: start !important;
 }
 textarea[matInput] {
   min-height: 50px; 
@@ -68,4 +68,18 @@ textarea[matInput] {
 }
 .settings-main-content ::ng-deep .image-container mat-label a{
   color: #87CEEB;
+}
+::ng-deep .create-client .highlight-background .mat-form-field-flex {
+  background-color: rgb(235 235 235) !important;
+  pointer-events: none !important;
+}
+::ng-deep .create-client .mat-raised-button.mat-button-disabled.mat-button-disabled{
+  background-color: rgba(0,0,0,.12) !important;
+}
+::ng-deep .settings-table-bg .highlight-background .mat-form-field-appearance-outline .mat-form-field-outline {
+  background-color: rgb(235, 235, 235) !important;
+  pointer-events: none !important;
+}
+.no-actions{
+  text-align: center !important;
 }

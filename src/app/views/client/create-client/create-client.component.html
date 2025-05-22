@@ -1,11 +1,11 @@
 <div class="container-wrapper settings-main-content px-0">
-    <section class="settings-form-bg px-0">
-      <div class="row mx-0 px-0">
+    <section class="settings-form-bg px-0 ">
+      <div class="row mx-0 px-0 create-client">
         <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0">
             <form [formGroup]="clientFormGroup">
                 <div class="row mx-0 my-0 px-2">
                     <div class="col-12 col-sm-12 col-md-6 col-lg-3 my-1 px-0">
-                    <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+                    <mat-form-field appearance="outline" [ngClass]="{ 'highlight-background': !shouldDisableFileds && userRole !== 'Admin'}" class="w-100 custom-mat-form-field">
                         <mat-label>Client Number <b class="r-star">*</b></mat-label>
                         <input matInput type="text" placeholder="Enter Client Number" formControlName="client_number" autocomplete="off" readonly>
                         <mat-error *ngIf="f['client_number']?.invalid && f['client_number']?.touched || f['client_number']?.dirty">
@@ -16,7 +16,7 @@
 <!-- Client name -->
 <div class="col-12 col-sm-12 col-md-6 col-lg-3 my-1 no-padding pl-5 pr-0">
 
-<mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+<mat-form-field appearance="outline" [ngClass]="{ 'highlight-background': !shouldDisableFileds && userRole !== 'Admin'}" class="w-100 custom-mat-form-field">
     <mat-label>Client Name <b class="r-star">*</b></mat-label>
     <input matInput placeholder="Enter Client name" formControlName="client_name" autocomplete="off">
     <mat-error *ngIf="f['client_name']?.invalid && f['client_name']?.touched || f['client_name']?.dirty">
@@ -36,7 +36,7 @@
 
 <!-- Email Address -->
 <div class="col-12 col-sm-12 col-md-6 col-lg-3 my-1 no-padding pl-0 pr-5">
-<mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+<mat-form-field appearance="outline" [ngClass]="{ 'highlight-background': !shouldDisableFileds && userRole !== 'Admin'}" class="w-100 custom-mat-form-field">
     <mat-label>Email Id <b class="r-star">*</b></mat-label>
     <input matInput type="email" placeholder="Enter email" formControlName="email"
         autocomplete="off" oninput="this.value = this.value.toLowerCase()">
@@ -49,7 +49,7 @@
 </div>
 <!-- Country Field -->
 <div class="col-12 col-sm-12 col-md-6 col-lg-3 my-1 px-0">
-    <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+    <mat-form-field appearance="outline" [ngClass]="{ 'highlight-background': !shouldDisableFileds && userRole !== 'Admin'}" class="w-100 custom-mat-form-field">
         <mat-label>Select Country <b class="r-star">*</b></mat-label>
         <mat-select formControlName="country" autocomplete="off"
                 placeholder="Select" panelClass="custom-select-panel"
@@ -72,7 +72,7 @@
 <!-- Address Field -->
 <div class="col-12 col-sm-12 col-md-12 col-lg-12 my-1 px-0">
 
-    <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+    <mat-form-field appearance="outline" [ngClass]="{ 'highlight-background': !shouldDisableFileds && userRole !== 'Admin'}" class="w-100 custom-mat-form-field">
         <mat-label>Address <b class="r-star">*</b></mat-label>
         <textarea matInput placeholder="Enter Address" formControlName="address" autocomplete="off"></textarea>
         <mat-error *ngIf="f['address']?.invalid && f['address']?.touched || f['address']?.dirty">
@@ -92,7 +92,7 @@
     </div>
     <!-- Source Field -->
     <div class="col-12 col-sm-12 col-md-6 col-lg-3 my-1 px-0">
-        <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+        <mat-form-field appearance="outline" [ngClass]="{ 'highlight-background': !shouldDisableFileds && userRole !== 'Admin'}" class="w-100 custom-mat-form-field">
             <mat-label>Select Source <b class="r-star">*</b></mat-label>
             <mat-select formControlName="source" autocomplete="off"
                     placeholder="Select" panelClass="custom-select-panel"
@@ -115,7 +115,7 @@
         <!-- Start Date -->
    
 <div class="col-12 col-sm-12 col-md-6 col-lg-3 my-1 no-padding pl-5 pr-0">
-    <mat-form-field appearance="outline" class="w-100 p-0 custom-mat-form-field">
+    <mat-form-field appearance="outline" [ngClass]="{ 'highlight-background': !shouldDisableFileds && userRole !== 'Admin'}" class="w-100 p-0 custom-mat-form-field">
         <mat-label>Start Date <b class="r-star">*</b></mat-label>
         <input matInput [matDatepicker]="picker1" placeholder="Enter Start date"
             formControlName="service_start_date" autocomplete="off" (dateInput)="joiningDateFun($event)">
@@ -129,7 +129,7 @@
 </div>
   <!-- End Date -->
 <div class="col-12 col-sm-12 col-md-6 col-lg-3 my-1 no-padding pl-0 pr-5">
-    <mat-form-field appearance="outline" class="w-100 p-0 custom-mat-form-field">
+    <mat-form-field appearance="outline" [ngClass]="{ 'highlight-background': !shouldDisableFileds && userRole !== 'Admin'}" class="w-100 p-0 custom-mat-form-field">
         <mat-label>End Date</mat-label>
         <input matInput [matDatepicker]="picker2" placeholder="Enter End date" 
             formControlName="service_end_date" autocomplete="off" (dateInput)="joiningDateFun($event)">
@@ -145,7 +145,7 @@
   
 </div>
   <!-- Upload File -->
-<div class="ccol-12 col-sm-12 col-md-6 col-lg-3 my-1 px-0 align-content-center" *ngIf="user_role_name === 'Admin'">
+<div class="ccol-12 col-sm-12 col-md-6 col-lg-3 my-1 px-0 align-content-center" *ngIf="userRole === 'Admin'">
     <input type="file" accept=".xlsx,.xls,.doc,.docx,.pdf" formControlName="client_file" #fileInput
                 (change)="onFileSelected($event)" hidden>
               <div class="image-container w-100 d-flex justify-content-between align-items-center"
@@ -189,7 +189,7 @@
               <tbody formArrayName="contact_details" class="contact-form-content">
                 <tr *ngFor="let contact of contactDetails.controls; let i = index" [formGroupName]="i">
                   <td>{{i+1}}</td>
-                  <td><mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+                  <td><mat-form-field appearance="outline" [ngClass]="{ 'highlight-background': !shouldDisableFileds && userRole !== 'Admin'}" class="w-100 custom-mat-form-field">
                     <mat-label>Name<b class="r-star">*</b></mat-label>
                     <input matInput type="text" placeholder="Enter Name" formControlName="name" autocomplete="off" >
                   </mat-form-field>
@@ -201,7 +201,7 @@
     </span>
                   </div>
                 </td>
-                  <td><mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+                  <td><mat-form-field appearance="outline" [ngClass]="{ 'highlight-background': !shouldDisableFileds && userRole !== 'Admin'}" class="w-100 custom-mat-form-field">
                     <mat-label>Email Id <b class="r-star">*</b></mat-label>
                     <input matInput type="email" placeholder="Enter email" formControlName="email"
                         autocomplete="off" oninput="this.value = this.value.toLowerCase()">
@@ -214,7 +214,7 @@
                   
                 </div>
               </td>
-                  <td> <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+                  <td> <mat-form-field appearance="outline" [ngClass]="{ 'highlight-background': !shouldDisableFileds && userRole !== 'Admin'}" class="w-100 custom-mat-form-field">
                     <mat-label>Phone No <b class="r-star">*</b></mat-label>
                     <input matInput type="number" placeholder="Enter phone no"
                         formControlName="phone_number" autocomplete="off"
@@ -228,7 +228,7 @@
                   </div>
               </td>
                   <td>
-                    <ng-container>
+                    <ng-container *ngIf="userRole === 'Admin' || (userRole !='Admin' && shouldDisableFileds)">
                       <img src="../../../../assets/images/Edit.svg" class="icon-image" type="button" container="body"
                         ngbTooltip="Edit" (click)="editContact(i)" *ngIf="contact?.get('name')?.disabled && i < contactDetails?.length - 1 || (contact?.get('name')?.disabled && i === 4)"/>
                         <img src="../../../../assets/images/tick.svg" class="icon-image" type="button" container="body"
@@ -238,7 +238,7 @@
                         <img src="../../../../assets/images/addnew.svg" class="icon-image" type="button" container="body"
                         ngbTooltip="add" (click)="addContact()" *ngIf="i === contactDetails?.length - 1 && contactDetails?.length < 5"/>
                    </ng-container>
-                   
+                   <span class="no-actions" *ngIf="user_role_name !='Admin' && !shouldDisableFileds">-</span>
                   </td>
                 </tr>
               </tbody>
@@ -255,7 +255,7 @@
   <div class="row mx-0 my-1 px-0">
     <div class="col-12 col-sm-12 col-md-12 col-lg-5 px-0 align-content-lg-start">
       <div class="d-flex justify-content-between">
-        <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+        <mat-form-field appearance="outline"  [ngClass]="{ 'highlight-background': !shouldDisableFileds && userRole !== 'Admin'}" class="w-100 custom-mat-form-field">
           <mat-label>Select Employee</mat-label>
           <mat-select [(ngModel)]="selectedEmployee"  [ngModelOptions]="{standalone: true}" autocomplete="off" placeholder="Select" panelClass="custom-select-panel">
             
@@ -274,7 +274,7 @@
         </mat-form-field>
         
         
-        <button  mat-raised-button class="proceedbtn mat-btn-s emp-add-btn" type="button" (click)="addEmployee()">Add</button>
+        <button [disabled]="!shouldDisableFileds && userRole !== 'Admin'" mat-raised-button class="proceedbtn mat-btn-s emp-add-btn" type="button" (click)="addEmployee()">Add</button>
       </div>
     </div>
     <div class="col-12 col-sm-12 col-md-12 col-lg-7 no-padding pl-2 pr-0 table-responsive table-responsive-sm table-responsive-md" *ngIf="employeeFormArray.controls.length >= 1">
@@ -297,9 +297,10 @@
               {{ getEmployeeName(control.value) }}
             </td>
             <td>
-              <ng-container>
+              <ng-container *ngIf="userRole === 'Admin' || (userRole !='Admin' && shouldDisableFileds==true)">
                 <img src="../../../../assets/images/Delete.svg" class="icon-image" type="button" container="body" ngbTooltip="Delete" (click)="removeEmployee(i)" *ngIf="employeeFormArray.length >= 1" />
               </ng-container>
+              <span class="text-center" *ngIf="user_role_name !='Admin' && !shouldDisableFileds">-</span>
             </td>
           </tr>
         </tbody>
@@ -327,21 +328,21 @@
     ></ngx-editor>
       </div>
 </section>
-<section class="d-flex align-items-center mx-0 my-3 px-2" *ngIf="user_role_name === 'Admin'">
+<section class="d-flex align-items-center mx-0 my-3 px-2" *ngIf="userRole === 'Admin'">
     <mat-checkbox color="primary" class="example-margin" formControlName="allow_sending_status_report_to_client" ><h5 class="c-header">Allow sending the status report to client</h5></mat-checkbox>
   </section>
 <div class="row mx-0 my-3 px-2">
     <div class="col-12 col-sm-12 col-md-6 col-lg-3 align-content-center px-0">
         <button mat-button class="cancel-button mat-btn-s" type="button" (click)="backBtnFunc()" >
             Back</button>
-        <button mat-raised-button class="proceedbtn mat-btn-s" type="submit" (click)="saveClientDetails()" *ngIf="!isEditItem && ((user_role_name !='Admin' && accessPermissions[0]?.create) || user_role_name === 'Admin')"><span
+        <button mat-raised-button class="proceedbtn mat-btn-s" type="submit" (click)="saveClientDetails()" *ngIf="!isEditItem && ((userRole !='Admin' && accessPermissions[0]?.create) || userRole === 'Admin')"><span
             *ngIf="!isEditItem">Submit</span></button>
-        <button mat-raised-button class="proceedbtn mat-btn-s" type="submit" (click)="saveClientDetails()" *ngIf="isEditItem && ((user_role_name !='Admin' && accessPermissions[0]?.update) || user_role_name === 'Admin')">
+        <button mat-raised-button class="proceedbtn mat-btn-s" type="submit" (click)="saveClientDetails()" *ngIf="isEditItem && ((userRole !='Admin' && accessPermissions[0]?.update) || userRole === 'Admin')">
             <span *ngIf="isEditItem" >Update</span></button>
       </div>
       <div class="col-lg-3"></div>
       <div class="col-lg-3"></div>
-      <div *ngIf="user_role_name !='Admin' && accessPermissions[0]?.delete || user_role_name === 'Admin'" class="col-12 col-sm-12 col-md-6 col-lg-3 justify-content-end text-end align-content-end">
+      <div *ngIf="userRole !='Admin' && accessPermissions[0]?.delete || userRole === 'Admin'" class="col-12 col-sm-12 col-md-6 col-lg-3 justify-content-end text-end align-content-end">
         <button mat-button class="mat-btn-s delete-item-button" type="button" *ngIf="isEditItem" (click)="deleteClient()">
           Delete</button>
       </div>

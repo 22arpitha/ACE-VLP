@@ -72,7 +72,7 @@ initialFormValue:any;
       private apiService: ApiserviceService,private formErrorScrollService:FormErrorScrollUtilityService) {
       this.common_service.setTitle(this.BreadCrumbsTitle)
       this.user_id = sessionStorage.getItem('user_id');
-      this.user_role_name = sessionStorage.getItem('user_role_name');
+      this.userRole = sessionStorage.getItem('user_role_name');
       if(this.activeRoute.snapshot.paramMap.get('id')){
         this.common_service.setTitle('Update ' + this.BreadCrumbsTitle)
         this.client_id= this.activeRoute.snapshot.paramMap?.get('id')
@@ -109,12 +109,20 @@ initialFormValue:any;
       this.formErrorScrollService.resetHasUnsavedValue();
     }
 
+    shouldDisableFileds:boolean = false;
     getModuleAccess(){
       this.accessControlService.getAccessForActiveUrl(this.user_id).subscribe(
         (res:any)=>{
           console.log(res);
           this.accessPermissions = res[0].operations;
-          // console.log('this.accessPermissions', this.accessPermissions)
+          if(this.client_id){
+            this.shouldDisableFileds = this.accessPermissions[0]?.['update'];
+            this.cdr.detectChanges();
+          } else{
+            this.shouldDisableFileds = this.accessPermissions[0]?.['create'];
+            this.cdr.detectChanges();
+          }
+          // console.log('this.shouldDisableFileds', this.shouldDisableFileds)
         //  res.access_list.forEach((access:any)=>{
         //     access.access.forEach((access_name:any)=>{
         //         if(access_name.name===sessionStorage.getItem('access-name')){

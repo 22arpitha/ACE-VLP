@@ -26,3 +26,8 @@
     font-size:x-large;
     color: #ccc;
   }
+  ::ng-deep .highlight-background .mat-form-field-flex {
+    background-color: rgb(235 235 235) !important;
+    pointer-events: none !important;
+  }
+  

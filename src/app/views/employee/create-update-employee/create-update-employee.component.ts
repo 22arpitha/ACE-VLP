@@ -70,14 +70,21 @@ initialFormValue:any;
   ngOnDestroy(): void {
 this.formErrorScrollService.resetHasUnsavedValue();
   }
+
+  shouldDisableFields:boolean
   getModuleAccess(){
     this.accessControlService.getAccessForActiveUrl(this.user_id).subscribe(
       (res:any)=>{
-        console.log(res)
+        // console.log(res)
        const access_name =  sessionStorage.getItem('access-name')
         let temp = res.find((item:any)=>item.name===access_name)
-        this.accessPermissions = temp.operations
-        // console.log(this.accessPermissions)
+        this.accessPermissions = temp?.operations;
+        if(this.employee_id){
+          this.shouldDisableFields = this.accessPermissions[0]?.['update'];
+        } else{
+          this.shouldDisableFields = this.accessPermissions[0]?.['create'];
+        }
+        // console.log(this.shouldDisableFields,'this.shouldDisableFields')
       }
     )
   }
