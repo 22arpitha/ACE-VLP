@@ -26,7 +26,7 @@ export const tableColumns = [
       sortable: true
     },
     { label: 'Est. Hrs', key: 'estimated_time', sortable: true },
-    { label: 'POC (%)',key: 'percentage_of_completion',sortable: true },
+    { label: 'POC (%)',key: 'current_month_percentage_of_completion',sortable: true },
     { label: 'Productive Hours', key: 'productive_hours', sortable: true },
     { label: 'Act. Hrs', key: 'actual_time', sortable: true},
   ]

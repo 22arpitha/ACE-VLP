@@ -163,7 +163,7 @@ export class QuarterMonthYearPickerComponent implements OnInit {
     if (this.finalSelectionMade()) {
       this.emitValue(currentPeriod || '');
       this.showSelection = true;
-      this.menuTrigger?.closeMenu();
+      this.menuTrigger?.openMenu();
     } else {
       this.showSelection = true;
     }

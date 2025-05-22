@@ -58,7 +58,8 @@
                     <i (click)="sort('desc','country')" *ngIf="arrowState['country']"
                       class="bi bi-arrow-up"></i>
                       <button mat-icon-button [matMenuTriggerFor]="countryFilterMenu">
-                        <i class="bi bi-toggles"></i>
+                        <i class="bi-funnel-fill" *ngIf="filters.country.length>=1"></i>
+                          <i class="bi-funnel" *ngIf="filters.country.length===0"></i>
                       </button>
 
                       <mat-menu #countryFilterMenu="matMenu">
@@ -74,7 +75,8 @@
                     <i (click)="sort('desc','source')" *ngIf="arrowState['source']"
                       class="bi bi-arrow-up"></i>
                       <button mat-icon-button [matMenuTriggerFor]="sourceFilterMenu">
-                        <i class="bi bi-toggles"></i>
+                         <i class="bi-funnel-fill" *ngIf="filters.source.length>=1"></i>
+                          <i class="bi-funnel" *ngIf="filters.source.length===0"></i>
                       </button>
 
                       <mat-menu #sourceFilterMenu="matMenu">

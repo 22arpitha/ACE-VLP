@@ -46,11 +46,13 @@ BreadCrumbsTitle: any = 'Non Billable Hours';
           const periodChanged = prev.period !== current.period;
           if (employeeIdChanged || periodicityChanged || periodChanged) {
             this.dropdwonFilterData = current;
-            this.getTableData({
-              page: this.page,
-              pageSize: this.tableSize,
-              searchTerm: this.term
-            });
+           if(this.dropdwonFilterData.periodicity && this.dropdwonFilterData.period){
+              this.getTableData({
+                page: this.page,
+                pageSize: this.tableSize,
+                searchTerm: this.term
+              });
+              }
           }
         }
       }

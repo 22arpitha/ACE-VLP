@@ -66,7 +66,8 @@
                       <i (click)="sort('desc','client_name')" *ngIf="arrowState['client_name']"
                         class="bi bi-arrow-up"></i>
                         <button mat-icon-button [matMenuTriggerFor]="clientFilterMenu">
-                          <i class="bi bi-toggles"></i>
+                          <i class="bi-funnel-fill" *ngIf="filters.client_name.length>=1"></i>
+                          <i class="bi-funnel" *ngIf="filters.client_name.length===0"></i>
                         </button>
 
                         <mat-menu #clientFilterMenu="matMenu">

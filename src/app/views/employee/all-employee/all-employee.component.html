@@ -41,7 +41,8 @@
                       <i (click)="sort('desc','designation__designation_name')" *ngIf="arrowState['designation__designation_name']"
                         class="bi bi-arrow-up"></i>
                         <button mat-icon-button [matMenuTriggerFor]="roleFilterMenu">
-                          <i class="bi bi-toggles"></i>
+                            <i class="bi-funnel-fill" *ngIf="filters.designation__designation_name.length>=1"></i>
+                          <i class="bi-funnel" *ngIf="filters.designation__designation_name.length===0"></i>
                         </button>
 
 

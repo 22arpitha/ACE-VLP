@@ -203,7 +203,9 @@
                   mat-icon-button
                   [matMenuTriggerFor]="employeeFilterMenu"
                 >
-                  <i class="bi bi-toggles"></i>
+                      <i class="bi-funnel-fill" *ngIf="filters.employee_name.length>=1"></i>
+                          <i class="bi-funnel" *ngIf="filters.employee_name.length===0"></i>
+                       
                 </button>
 
                 <mat-menu #employeeFilterMenu="matMenu">
@@ -229,7 +231,8 @@
                   class="bi bi-arrow-up"
                 ></i>
                 <button mat-icon-button [matMenuTriggerFor]="clientFilterMenu">
-                  <i class="bi bi-toggles"></i>
+                <i class="bi-funnel-fill" *ngIf="filters.client_name.length>=1"></i>
+                          <i class="bi-funnel" *ngIf="filters.client_name.length===0"></i>
                 </button>
 
                 <mat-menu #clientFilterMenu="matMenu">
@@ -255,7 +258,8 @@
                   class="bi bi-arrow-up"
                 ></i>
                 <button mat-icon-button [matMenuTriggerFor]="jobFilterMenu">
-                  <i class="bi bi-toggles"></i>
+                 <i class="bi-funnel-fill" *ngIf="filters.job_name.length>=1"></i>
+                          <i class="bi-funnel" *ngIf="filters.job_name.length===0"></i>
                 </button>
 
                 <mat-menu #jobFilterMenu="matMenu">
@@ -279,7 +283,8 @@
                   class="bi bi-arrow-up"
                 ></i>
                 <button mat-icon-button [matMenuTriggerFor]="taskFilterMenu">
-                  <i class="bi bi-toggles"></i>
+                  <i class="bi-funnel-fill" *ngIf="filters.task_nmae.length>=1"></i>
+                          <i class="bi-funnel" *ngIf="filters.task_nmae.length===0"></i>
                 </button>
 
                 <mat-menu #taskFilterMenu="matMenu">

@@ -48,7 +48,8 @@
                         class="bi bi-arrow-up"></i>
                         <!-- Filter Trigger -->
                       <button mat-icon-button [matMenuTriggerFor]="jobTypeFilterMenu">
-                        <i class="bi bi-toggles"></i>
+                       <i class="bi-funnel-fill" *ngIf="filters.job_type_name.length>=1"></i>
+                          <i class="bi-funnel" *ngIf="filters.job_type_name.length===0"></i>
                       </button>
 
                       <mat-menu #jobTypeFilterMenu="matMenu">
@@ -65,7 +66,8 @@
                         class="bi bi-arrow-up"></i>
                         <!-- Filter Trigger -->
                         <button mat-icon-button [matMenuTriggerFor]="clientFilterMenu">
-                          <i class="bi bi-toggles"></i>
+                          <i class="bi-funnel-fill" *ngIf="filters.client_name.length>=1"></i>
+                          <i class="bi-funnel" *ngIf="filters.client_name.length===0"></i>
                         </button>
 
 
@@ -109,7 +111,8 @@
                     <th scope="col">
                       Employee
                       <button mat-icon-button [matMenuTriggerFor]="employeesFilterMenu">
-                        <i class="bi bi-toggles"></i>
+                      <i class="bi-funnel-fill" *ngIf="filters.employees.length>=1"></i>
+                          <i class="bi-funnel" *ngIf="filters.employees.length===0"></i>
                       </button>
 
                       <mat-menu #employeesFilterMenu="matMenu">
@@ -123,7 +126,8 @@
                     <th scope="col">
                       Manager
                       <button mat-icon-button [matMenuTriggerFor]="managerFilterMenu">
-                        <i class="bi bi-toggles"></i>
+                       <i class="bi-funnel-fill" *ngIf="filters.manager.length>=1"></i>
+                          <i class="bi-funnel" *ngIf="filters.manager.length===0"></i>
                       </button>
 
                       <mat-menu #managerFilterMenu="matMenu">

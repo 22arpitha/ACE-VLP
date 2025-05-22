@@ -535,7 +535,7 @@ this.initialFormValue=this.clientFormGroup?.getRawValue();
 
 
   removeEmployee(index: number) {
-    if (this.employeeFormArray?.length > 1) {
+    if (this.employeeFormArray?.length >=1) {
       this.employeeFormArray?.removeAt(index);
     }
   }

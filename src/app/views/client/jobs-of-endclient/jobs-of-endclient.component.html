@@ -55,7 +55,8 @@
                   <i *ngIf="!arrowState['employee_name']" (click)="sort('asc', 'employee_name')" class="bi bi-arrow-down"></i>
                   <i *ngIf="arrowState['employee_name']" (click)="sort('desc', 'employee_name')" class="bi bi-arrow-up"></i>  
                   <button mat-icon-button [matMenuTriggerFor]="employeesFilterMenu">
-                    <i class="bi bi-toggles"></i>
+                     <i class="bi-funnel-fill" *ngIf="filters.employees.length>=1"></i>
+                          <i class="bi-funnel" *ngIf="filters.employees.length===0"></i>
                   </button>
 
                   <mat-menu #employeesFilterMenu="matMenu">
@@ -70,7 +71,8 @@
                   <i *ngIf="!arrowState['status']" (click)="sort('asc', 'status')" class="bi bi-arrow-down"></i>
                   <i *ngIf="arrowState['status']" (click)="sort('desc', 'status')" class="bi bi-arrow-up"></i>  
                   <button mat-icon-button [matMenuTriggerFor]="statusFilterMenu">
-                    <i class="bi bi-toggles"></i>
+                       <i class="bi-funnel-fill" *ngIf="filters.status.length>=1"></i>
+                          <i class="bi-funnel" *ngIf="filters.status.length===0"></i>
                   </button>
 
                   <mat-menu #statusFilterMenu="matMenu">
