@@ -143,7 +143,8 @@ export class EmployeeDetailsComponent implements OnInit {
        pagination: false,
        searchable: true,
        currentPage:page,
-       totalRecords: res.total_no_of_record
+       totalRecords: res.total_no_of_record,
+       searchPlaceholder:'Search by Employee',
      };
    });
  }
