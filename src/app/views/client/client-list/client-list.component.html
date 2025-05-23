@@ -89,7 +89,7 @@
                   </th>
                   <th scope="col">Status</th>
                   <th scope="col">Contact</th>
-                  <th scope="col">Action </th>
+                  <!-- <th scope="col">Action </th> -->
                 </tr>
               </thead>
               <tbody>
@@ -101,11 +101,11 @@
                            currentPage: page,
                            totalItems: count
                          }; let i=index'>
-                    <td>{{item?.client_number || '-'}}</td>
-                    <td>{{item?.client_name || '-'}}</td>
-                    <td>{{item?.country  || '-'}}</td>
-                    <td>{{item?.source  || '-'}}</td>
-                    <td class="text-center">
+                    <td (click)="edit(item)">{{item?.client_number || '-'}}</td>
+                    <td (click)="edit(item)">{{item?.client_name || '-'}}</td>
+                    <td (click)="edit(item)">{{item?.country  || '-'}}</td>
+                    <td (click)="edit(item)">{{item?.source  || '-'}}</td>
+                    <td (click)="edit(item)" class="text-center">
                       <div style="display: block;"><span [ngStyle]="{ 'color': item?.status === true ? 'green' : 'red' }">{{ item?.status === true ? 'Active' : 'Inactive'   || 'NA' }}</span></div>
                     </td>
                     <td>
@@ -114,10 +114,10 @@
                       </span>
                       <ng-template #noContact>-</ng-template>
                     </td>
-                    <td> <ng-container>
+                    <!-- <td> <ng-container>
                       <img src="../../../../assets/images/Edit.svg" class="icon-image" type="button" container="body"
                         ngbTooltip="Edit" (click)="edit(item)" *ngIf="userRole !='Admin' && (accessPermissions[0]?.view || accessPermissions[0]?.update) || userRole === 'Admin'"/>
-                   </ng-container></td>
+                   </ng-container></td> -->
                   </tr>
                 </ng-container>
               </tbody>

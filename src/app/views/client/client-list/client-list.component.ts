@@ -121,27 +121,30 @@ export class ClientListComponent implements OnInit {
     }
     async edit(item: any) {
       this.selectedItemId = item?.id;
-      try {
-        const modalRef = await this.modalService.open(GenericEditComponent, {
-          size: 'sm',
-          backdrop: 'static',
-          centered: true
-        });
+      sessionStorage.setItem('access-name', this.access_name?.name)
+      this.common_service.setClientActiveTabindex(0);
+      this.router.navigate(['/client/update-client/',this.selectedItemId]);
+      // try {
+      //   const modalRef = await this.modalService.open(GenericEditComponent, {
+      //     size: 'sm',
+      //     backdrop: 'static',
+      //     centered: true
+      //   });
 
-        modalRef.componentInstance.status.subscribe(resp => {
-          if (resp === 'ok') {
-            modalRef.dismiss();
-            sessionStorage.setItem('access-name', this.access_name?.name)
-            this.common_service.setClientActiveTabindex(0);
-            this.router.navigate(['/client/update-client/',this.selectedItemId]);
+      //   modalRef.componentInstance.status.subscribe(resp => {
+      //     if (resp === 'ok') {
+      //       modalRef.dismiss();
+      //       sessionStorage.setItem('access-name', this.access_name?.name)
+      //       this.common_service.setClientActiveTabindex(0);
+      //       this.router.navigate(['/client/update-client/',this.selectedItemId]);
 
-          } else {
-            modalRef.dismiss();
-          }
-        });
-      } catch (error) {
-        console.error('Error opening modal:', error);
-      }
+      //     } else {
+      //       modalRef.dismiss();
+      //     }
+      //   });
+      // } catch (error) {
+      //   console.error('Error opening modal:', error);
+      // }
     }
   public getCurrentClientList(){
   this.isHistory=false;
