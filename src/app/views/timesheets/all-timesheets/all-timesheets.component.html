@@ -187,7 +187,7 @@
                       <mat-date-range-picker #picker1></mat-date-range-picker>
                 </mat-form-field>
               </th>
-              <th scope="col">
+              <th scope="col" *ngIf="userRole === 'Admin'">
                 Employee
                 <i
                   *ngIf="!arrowState['employee_name']"
@@ -331,7 +331,7 @@
               >
                 <td>{{ getContinuousIndex(i) }}</td>
                 <td>{{ (item?.date | date: 'dd/MM/yyyy') || "-" }}</td>
-                <td>{{ item?.employee_name || "-" }}</td>
+                <td *ngIf="userRole === 'Admin'">{{ item?.employee_name || "-" }}</td>
                 <td>{{ item?.client_name || "-" }}</td>
                 <td>{{ item?.job_name || "-" }}</td>
                 <td>{{ item?.task_name || "-" }}</td>

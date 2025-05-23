@@ -568,7 +568,7 @@ this.allJobsNames=[];
       filterQuery += `&start-date=${this.startDate}&end-date=${this.endDate}`;
      }
     }
-     if (this.userRole === 'Accountant') {
+     if (this.userRole !== 'Admin') {
       if(this.timesheetDate) {
       filterQuery += `&timesheet-dates=[${this.timesheetDate}]`;
      }

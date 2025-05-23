@@ -148,3 +148,41 @@ zoom:80%;
     width: 97vw !important;
 }
 
+.mat-select-panel .mat-optgroup-label, 
+.mat-select-panel .mat-option{
+font-weight: bold !important;
+}
+
+.mat-option.mat-active{
+  background: #85b6dc !important;
+}
+.mat-option:hover{
+  background: #85b6dc !important;
+}
+
+/* Editable input style */
+input.editable-cell,
+mat-select.editable-cell{
+  background-color:  #85b6dc !important;
+  border: 1px solid #000 !important;
+  padding: 6px;
+  border-radius: 4px;
+  transition: border 0.2s, box-shadow 0.2s;
+}
+
+/* On focus */
+input.editable-cell:focus,
+mat-select.editable-cell:focus {
+  background: #fff !important;
+  border-color: #000;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.2);
+}
+
+/* Hover style */
+.editable-cell:hover {
+  background-color: #fff;
+}
+
+.mat-menu-panel{
+  max-width: 400px !important;
+}
