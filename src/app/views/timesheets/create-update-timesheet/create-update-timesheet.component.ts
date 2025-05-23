@@ -9,6 +9,7 @@ import { SubModuleService } from '../../../service/sub-module.service';
 import { CommonServiceService } from '../../../service/common-service.service';
 import { FormErrorScrollUtilityService } from '../../../service/form-error-scroll-utility-service.service';
 import {CanComponentDeactivate} from '../../../auth-guard/can-deactivate.guard'
+import { setMaxListeners } from 'events';
 
 @Component({
   selector: 'app-create-update-timesheet',
@@ -83,8 +84,7 @@ errorMessage:any='';
     if (this.user_role_name != 'Admin') {
       this.getModuleAccess();
       this.getJobStatusList();
-      this.getEmployeeData();
-      this.getEmployeeClientData();
+      this.getEmployeeData();;
       // this.getEmployeeJobsList();
       this.getTaskList();
     }
@@ -104,7 +104,7 @@ this.formErrorScrollService.resetHasUnsavedValue();
     this.timesheetFormGroup = this.fb.group({
       date: [this.currentDate, Validators.required],
       employee_id: ['', Validators.required],
-      client_id: ['', Validators.required],
+      client_id: [null],
       job_id: ['', Validators.required],
       task: ['', Validators.required],
       start_time: ['', [Validators.required, Validators.pattern(/^([01]\d|2[0-3]):([0-5][0-9]|[1-5][0-9])$/)]],
@@ -144,24 +144,6 @@ this.formErrorScrollService.resetHasUnsavedValue();
     )
   }
 
-  getEmployeeClientData() {
-    let queryparams = `?status=True&employee-id=${this.user_id}`
-    this.apiService.getData(`${environment.live_url}/${environment.clients}/${queryparams}`).subscribe(
-      (res: any) => {
-        // console.log('clientList data', res)
-        this.clientList = res
-      },
-      (error: any) => {
-        this.apiService.showError(error?.error?.detail);
-      }
-    )
-  }
-
-  onClientChange(event:any){
-    // console.log(event)
-    this.getEmployeeJobsList(event.value)
-  }
-
   filteredClientList() {
     if (!this.searchClientText) {
       return this.clientList;
@@ -171,8 +153,8 @@ this.formErrorScrollService.resetHasUnsavedValue();
     );
   }
 
-  getEmployeeJobsList(id) {
-    let queryparams = `?client=${id}&job-status=[${this.statusList}]&employee-id=${this.user_id}`;
+  getEmployeeJobsList() {
+    let queryparams = `?job-status=[${this.statusList}]&employee-id=${this.user_id}`;
     this.apiService.getData(`${environment.live_url}/${environment.jobs}/${queryparams}`).subscribe(
       (res: any) => {
         // console.log('jobs data', res)
@@ -383,7 +365,6 @@ this.timesheetFormGroup.controls['time_spent']?.reset();
   getTimesheetDetails(id: any) {
     this.apiService.getData(`${environment.live_url}/${environment.vlp_timesheets}/${id}/`).subscribe(
       (res: any) => {
-        this.getEmployeeJobsList(res.client_id);
          this.timesheetFormGroup.patchValue({
           date: res.date,
           employee_id: res.employee_id,
@@ -471,6 +452,9 @@ getJobStatusList() {
         this.statusList = this.allJobStatus
         ?.filter((jobstatus: any) =>jobstatus?.status_name !== "Cancelled" && jobstatus?.status_name !== "Completed")?.map((status: any) => status?.status_name);
       }
+    setTimeout(() => {
+      this.getEmployeeJobsList();
+    }, 300);
     },
     (error:any)=>{
       this.apiService.showError(error?.error?.detail);
