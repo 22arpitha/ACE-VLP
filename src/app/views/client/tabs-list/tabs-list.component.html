@@ -1,19 +1,42 @@
 <div class="row mx-0 px-0 client-tabs">
     <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0">
-        <mat-tab-group mat-stretch-tabs="false" mat-align-tabs="start" (selectedTabChange)="onTabChange($event)" [(selectedIndex)]="selectedIndex">
-            <mat-tab *ngIf="hasViewAccess('Clients')" label="Client Details">
-                <app-create-client *ngIf="selectedIndex === 0"></app-create-client>  
-            </mat-tab>
-            <mat-tab *ngIf="hasViewAccess('Groups')" label="Groups">
-                <app-group *ngIf="selectedIndex === 1"></app-group>
-            </mat-tab>
-            <mat-tab *ngIf="hasViewAccess('End Clients')" label="End Clients">
-                <app-edit-client *ngIf="selectedIndex === 2"></app-edit-client>
-            </mat-tab>
-            <mat-tab *ngIf="hasViewAccess('Jobs')" label="Jobs">
-                <app-jobs-of-clients *ngIf="selectedIndex === 3"></app-jobs-of-clients>
-            </mat-tab>
+        <mat-tab-group mat-stretch-tabs="false" mat-align-tabs="start" (selectedTabChange)="onTabChange($event)"
+            [(selectedIndex)]="selectedIndex">
+                <mat-tab [disabled]="!clientTabVisible" label="Client Details">
+                    <app-create-client *ngIf="selectedIndex === 0 "></app-create-client>
+                </mat-tab>
+                <mat-tab [disabled]="!groupTabVisible" label="Groups">
+                    <app-group *ngIf="selectedIndex === 1"></app-group>
+                </mat-tab>
+                <mat-tab [disabled]="!endClientTabVisible" label="End Clients">
+                    <app-edit-client *ngIf="selectedIndex === 2 "></app-edit-client>
+                </mat-tab>
+                <mat-tab [disabled]="!jobsTabVisible" label="Jobs">
+                    <app-jobs-of-clients *ngIf="selectedIndex === 3"></app-jobs-of-clients>
+                </mat-tab>
+            <!-- <mat-tab label="Client Details">
+                <ng-container *ngIf="clientTabVisible && selectedIndex === 0">
+                  <app-create-client></app-create-client>
+                </ng-container>
+              </mat-tab>
             
+              <mat-tab label="Groups">
+                <ng-container *ngIf="groupTabVisible && selectedIndex === 1">
+                  <app-group></app-group>
+                </ng-container>
+              </mat-tab>
+            
+              <mat-tab label="End Clients">
+                <ng-container *ngIf="endClientTabVisible && selectedIndex === 2">
+                  <app-edit-client></app-edit-client>
+                </ng-container>
+              </mat-tab>
+            
+              <mat-tab label="Jobs">
+                <ng-container *ngIf="jobsTabVisible && selectedIndex === 3">
+                  <app-jobs-of-clients></app-jobs-of-clients>
+                </ng-container>
+              </mat-tab> -->
         </mat-tab-group>
     </div>
 </div>

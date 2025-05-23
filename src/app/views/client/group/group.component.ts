@@ -73,13 +73,14 @@ export class GroupComponent implements CanComponentDeactivate, OnInit {
         console.log(res);
         let temp = res.find((item: any) => item.name === 'Groups');
           console.log('temp',temp)
-          this.accessPermissions = temp.operations;
-          console.log(this.accessPermissions,'this.accessPermissions')
+         if(temp){
+          this.accessPermissions = temp?.operations;
+         }
           this.shouldDisableGroupName = this.accessPermissions[0]?.['create'];
           this.cdr.detectChanges();
         // this.accessPermissions = res[0].operations;
         // this.shouldDisableGroupName = this.accessPermissions[0]?.['create'];
-        console.log('this.shouldDisableGroupName',this.shouldDisableGroupName)
+        // console.log('this.shouldDisableGroupName',this.shouldDisableGroupName)
       }
     )
   }

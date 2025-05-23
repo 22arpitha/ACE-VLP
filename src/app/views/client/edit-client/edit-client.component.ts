@@ -87,8 +87,10 @@ export class EditClientComponent implements CanComponentDeactivate, OnInit {
       (res:any)=>{
         console.log(res);
         let temp = res.find((item: any) => item.name === 'End Clients');
-          console.log('temp',temp)
-          this.accessPermissions = temp.operations;
+          // console.log('temp',temp)
+          this.accessPermissions = temp?.operations;
+          this.shouldDisableGroupName = this.accessPermissions[0]?.['create'];
+          this.cdr.detectChanges();
           // if(this.client_id){
           //   this.shouldDisableGroupName = this.accessPermissions[0]?.['update'];
           //   this.cdr.detectChanges();
@@ -96,8 +98,6 @@ export class EditClientComponent implements CanComponentDeactivate, OnInit {
           //   this.shouldDisableGroupName = this.accessPermissions[0]?.['create'];
           // }
           // this.accessPermissions = res[0].operations;
-          this.shouldDisableGroupName = this.accessPermissions[0]?.['create'];
-          this.cdr.detectChanges();
         // console.log('this.shouldDisableGroupName',this.shouldDisableGroupName)
       }
     )
