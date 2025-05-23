@@ -73,6 +73,7 @@ initialFormValue:any;
       this.common_service.setTitle(this.BreadCrumbsTitle)
       this.user_id = sessionStorage.getItem('user_id');
       this.userRole = sessionStorage.getItem('user_role_name');
+      this.getModuleAccess()
       if(this.activeRoute.snapshot.paramMap.get('id')){
         this.common_service.setTitle('Update ' + this.BreadCrumbsTitle)
         this.client_id= this.activeRoute.snapshot.paramMap?.get('id')
@@ -92,7 +93,7 @@ initialFormValue:any;
 
     ngOnInit(): void {
       this.editor = new Editor();
-      this.getModuleAccess()
+     
       this.intialForm();
       this.clientFormGroup?.valueChanges?.subscribe(() => {
         const currentFormValue = this.clientFormGroup?.getRawValue();
@@ -109,12 +110,15 @@ initialFormValue:any;
       this.formErrorScrollService.resetHasUnsavedValue();
     }
 
-    shouldDisableFileds:boolean = false;
+    shouldDisableFileds:boolean = true;
     getModuleAccess(){
       this.accessControlService.getAccessForActiveUrl(this.user_id).subscribe(
         (res:any)=>{
-          console.log(res);
-          this.accessPermissions = res[0].operations;
+          // console.log(res);
+          let temp = res.find((item: any) => item.name === sessionStorage.getItem('access-name'));
+          console.log('temp',temp)
+          this.accessPermissions = temp.operations;
+          console.log(this.accessPermissions)
           if(this.client_id){
             this.shouldDisableFileds = this.accessPermissions[0]?.['update'];
             this.cdr.detectChanges();
@@ -123,15 +127,7 @@ initialFormValue:any;
             this.cdr.detectChanges();
           }
           // console.log('this.shouldDisableFileds', this.shouldDisableFileds)
-        //  res.access_list.forEach((access:any)=>{
-        //     access.access.forEach((access_name:any)=>{
-        //         if(access_name.name===sessionStorage.getItem('access-name')){
-        //           console.log(access_name)
-        //           this.accessPermissions = access_name.operations;
-        //           // console.log('this.accessPermissions', this.accessPermissions);
-        //         }
-        //       })
-        //  })
+        
         }
       )
     }

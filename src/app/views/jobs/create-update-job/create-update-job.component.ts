@@ -96,6 +96,7 @@ export class CreateUpdateJobComponent implements CanComponentDeactivate, OnInit,
   ngOnInit(): void {
     this.editor = new Editor();
     this.intialForm();
+    this.getModuleAccess();
     this.jobFormGroup?.valueChanges?.subscribe(() => {
       const currentFormValue = this.jobFormGroup?.getRawValue();
       const isInvalid = this.jobFormGroup?.touched && this.jobFormGroup?.invalid;
@@ -139,7 +140,7 @@ export class CreateUpdateJobComponent implements CanComponentDeactivate, OnInit,
   }
 
   public getAllDropdownData() {
-    this.getModuleAccess();
+    
     // this.getJobUniqueNumber();
     this.getJobBillingOptions();
     this.getAllActiveClients();
@@ -155,21 +156,18 @@ export class CreateUpdateJobComponent implements CanComponentDeactivate, OnInit,
       this.getAllActiveManagerList();
     }, 1000);
   }
+  shouldDisableFields:boolean = false;
   getModuleAccess() {
     this.accessControlService.getAccessForActiveUrl(this.user_id).subscribe(
       (res: any) => {
-        // console.log(res);
+        console.log(res);
         this.accessPermissions = res[0].operations;
         // console.log('this.accessPermissions', this.accessPermissions)
-        //  res.access_list.forEach((access:any)=>{
-        //     access.access.forEach((access_name:any)=>{
-        //         if(access_name.name===sessionStorage.getItem('access-name')){
-        //           console.log(access_name)
-        //           this.accessPermissions = access_name.operations;
-        //           console.log('this.accessPermissions', this.accessPermissions);
-        //         }
-        //       })
-        //  })
+        if(this.job_id){
+          this.shouldDisableFields = this.accessPermissions[0]?.['update'];
+        } else{
+          this.shouldDisableFields = this.accessPermissions[0]?.['create'];
+        }
       }
     )
   }

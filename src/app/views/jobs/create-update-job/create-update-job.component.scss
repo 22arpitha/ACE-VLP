@@ -74,3 +74,7 @@
   .employee-details-table tbody tr td{
     // text-align: start !important;
   }
+  ::ng-deep .create-job .highlight-background .mat-form-field-flex {
+    background-color: rgb(235 235 235) !important;
+    pointer-events: none !important;
+  }

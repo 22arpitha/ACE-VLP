@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, FormGroupDirective, Validators } from '@angular/forms';
 import { ApiserviceService } from '../../../service/apiservice.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -47,6 +47,7 @@ export class GroupComponent implements CanComponentDeactivate, OnInit {
     private modalService: NgbModal, private router:Router,
     private formErrorScrollService:FormErrorScrollUtilityService,
     private accessControlService:SubModuleService,
+    private cdr: ChangeDetectorRef
   ) {
     this.user_id = sessionStorage.getItem('user_id');
     this.user_role_name = sessionStorage.getItem('user_role_name');
@@ -70,8 +71,14 @@ export class GroupComponent implements CanComponentDeactivate, OnInit {
     this.accessControlService.getAccessForActiveUrl(this.user_id).subscribe(
       (res:any)=>{
         console.log(res);
-        this.accessPermissions = res[0].operations;
-        this.shouldDisableGroupName = this.accessPermissions[0]?.['create'];
+        let temp = res.find((item: any) => item.name === 'Groups');
+          console.log('temp',temp)
+          this.accessPermissions = temp.operations;
+          console.log(this.accessPermissions,'this.accessPermissions')
+          this.shouldDisableGroupName = this.accessPermissions[0]?.['create'];
+          this.cdr.detectChanges();
+        // this.accessPermissions = res[0].operations;
+        // this.shouldDisableGroupName = this.accessPermissions[0]?.['create'];
         console.log('this.shouldDisableGroupName',this.shouldDisableGroupName)
       }
     )

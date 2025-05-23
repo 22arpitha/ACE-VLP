@@ -1,16 +1,16 @@
 <div class="row mx-0 px-0 client-tabs">
     <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0">
         <mat-tab-group mat-stretch-tabs="false" mat-align-tabs="start" (selectedTabChange)="onTabChange($event)" [(selectedIndex)]="selectedIndex">
-            <mat-tab label="Client Details">
+            <mat-tab *ngIf="hasViewAccess('Clients')" label="Client Details">
                 <app-create-client *ngIf="selectedIndex === 0"></app-create-client>  
             </mat-tab>
-            <mat-tab label="Groups">
+            <mat-tab *ngIf="hasViewAccess('Groups')" label="Groups">
                 <app-group *ngIf="selectedIndex === 1"></app-group>
             </mat-tab>
-            <mat-tab label="End Clients">
+            <mat-tab *ngIf="hasViewAccess('End Clients')" label="End Clients">
                 <app-edit-client *ngIf="selectedIndex === 2"></app-edit-client>
             </mat-tab>
-            <mat-tab label="Jobs">
+            <mat-tab *ngIf="hasViewAccess('Jobs')" label="Jobs">
                 <app-jobs-of-clients *ngIf="selectedIndex === 3"></app-jobs-of-clients>
             </mat-tab>
             

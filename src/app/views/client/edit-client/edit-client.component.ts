@@ -1,4 +1,4 @@
-import { Component, ElementRef, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, FormGroupDirective } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { CommonServiceService } from '../../../service/common-service.service';
@@ -62,6 +62,7 @@ export class EditClientComponent implements CanComponentDeactivate, OnInit {
     private apiService: ApiserviceService,
     private formErrorScrollService:FormErrorScrollUtilityService,
     private accessControlService:SubModuleService,
+    private cdr: ChangeDetectorRef
   ) {
     this.user_id = sessionStorage.getItem('user_id');
     this.user_role_name = sessionStorage.getItem('user_role_name');
@@ -85,8 +86,18 @@ export class EditClientComponent implements CanComponentDeactivate, OnInit {
     this.accessControlService.getAccessForActiveUrl(this.user_id).subscribe(
       (res:any)=>{
         console.log(res);
-        this.accessPermissions = res[0].operations;
-        this.shouldDisableGroupName = this.accessPermissions[0]?.['create'];
+        let temp = res.find((item: any) => item.name === 'End Clients');
+          console.log('temp',temp)
+          this.accessPermissions = temp.operations;
+          // if(this.client_id){
+          //   this.shouldDisableGroupName = this.accessPermissions[0]?.['update'];
+          //   this.cdr.detectChanges();
+          // } else{
+          //   this.shouldDisableGroupName = this.accessPermissions[0]?.['create'];
+          // }
+          // this.accessPermissions = res[0].operations;
+          this.shouldDisableGroupName = this.accessPermissions[0]?.['create'];
+          this.cdr.detectChanges();
         // console.log('this.shouldDisableGroupName',this.shouldDisableGroupName)
       }
     )
