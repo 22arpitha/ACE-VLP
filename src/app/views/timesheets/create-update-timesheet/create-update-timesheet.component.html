@@ -5,7 +5,7 @@
                 <form [formGroup]="timesheetFormGroup">
                     <div class="row mx-0 my-0 px-2">
                         <!-- date -->
-                        <div class="col-12 col-sm-12 col-md-6 col-lg-3 my-1 no-padding pl-0 pr-5">
+                        <div class="col-12 col-sm-12 col-md-6 col-lg-4 my-1 no-padding pl-0 pr-5">
                             <mat-form-field appearance="outline" class="w-100 p-0 custom-mat-form-field">
                                 <mat-label>Date <b class="r-star">*</b></mat-label>
                                 <input matInput [matDatepicker]="picker2" placeholder="Enter Date"
@@ -19,7 +19,7 @@
                             <span *ngIf="weekTimesheetSubmitted" class="error-message">{{errorMessage}}</span>
                         </div>
                         <!-- employee -->
-                        <div class="col-12 col-sm-12 col-md-6 col-lg-3 my-1 no-padding pl-0 pr-5">
+                        <div class="col-12 col-sm-12 col-md-6 col-lg-4 my-1 no-padding pl-0 pr-5">
                             <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
                                 <mat-label>Employee <b class="r-star">*</b></mat-label>
                                 <mat-select formControlName="employee_id" autocomplete="off"
@@ -36,35 +36,8 @@
                             </mat-form-field>
 
                         </div>
-                        <!-- client -->
-                        <div class="col-12 col-sm-12 col-md-6 col-lg-3 my-1 no-padding pl-0 pr-5">
-                            <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
-                                <mat-label>Client <b class="r-star">*</b></mat-label>
-                                <mat-select formControlName="client_id" autocomplete="off" placeholder="Select client"
-                                    panelClass="custom-select-panel" [disableOptionCentering]="true" (selectionChange)="onClientChange($event)">
-                                    <div class="mat-select-search-wrapper d-flex">
-                                        <input matInput [(ngModel)]="searchClientText" autofocus
-                                            [ngModelOptions]="{standalone: true}" placeholder="Search Client"
-                                            class="mat-select-search">
-                                        <mat-icon class="search-icon" *ngIf="!searchClientText">search</mat-icon>
-                                        <mat-icon class="search-icon" *ngIf="searchClientText" type="button"
-                                            (click)="clearSearch('client')">close</mat-icon>
-                                    </div>
-                                    <mat-option *ngFor="let item of filteredClientList()" [value]="item?.id">
-                                        {{item?.client_name}}
-                                    </mat-option>
-                                </mat-select>
-                                <mat-error
-                                    *ngIf="f['client_id']?.invalid && f['client_id']?.touched || f['client_id']?.dirty">
-                                    <span *ngIf="f['client_id']?.errors?.['required']">Client is required</span>
-                                </mat-error>
-                            </mat-form-field>
-
-                        </div>
-                        <div class="col-12">
-                            <div class="row">
-                                <!-- jobs -->
-                                <div class="col-12 col-sm-12 col-md-6 col-lg-4 my-1 no-padding pl-0 pr-5">
+                        <!-- jobs -->
+                                <div class="col-12 col-sm-12 col-md-6 col-lg-4 my-1 no-padding px-0">
                                     <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
                                         <mat-label> Jobs<b class="r-star">*</b></mat-label>
                                         <mat-select formControlName="job_id" autocomplete="off" placeholder="Select job"
@@ -87,6 +60,10 @@
                                         </mat-error>
                                     </mat-form-field>
                                 </div>
+                        <!-- client -->
+                        <div class="col-12">
+                            <div class="row">
+                                
                                 <!-- task -->
                                 <div class="col-12 col-sm-12 col-md-6 col-lg-2 my-1 no-padding pl-0 pr-5">
                                     <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
@@ -107,7 +84,7 @@
                                     <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
                                         <mat-label>Start Time <b class="r-star">*</b></mat-label>
                                         <input matInput type="text" placeholder="Enter start time"
-                                            formControlName="start_time" autocomplete="off"
+                                            formControlName="start_time" autocomplete="off" maxlength="5"
                                             (input)="startTimeFormat($event)">
                                         <mat-error
                                             *ngIf="f['start_time']?.invalid && f['start_time']?.touched || f['start_time']?.dirty">
@@ -127,7 +104,7 @@
                                 <div class="col-12 col-sm-12 col-md-6 col-lg-2 my-1 no-padding pl-0 pr-5">
                                     <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
                                         <mat-label>End Time <b class="r-star">*</b></mat-label>
-                                        <input matInput type="text" placeholder="Enter end time"
+                                        <input matInput type="text" placeholder="Enter end time" maxlength="5"
                                             formControlName="end_time" autocomplete="off" (input)="endTimeFormat($event)">
                                         <mat-error *ngIf="f['end_time']?.touched || f['end_time']?.dirty">
                                             <span *ngIf="f['end_time']?.errors?.['required']">End time is

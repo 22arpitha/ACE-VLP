@@ -48,7 +48,7 @@
                         class="bi bi-arrow-up"></i>
                         <!-- Filter Trigger -->
                       <button mat-icon-button [matMenuTriggerFor]="jobTypeFilterMenu">
-                       <i class="bi-funnel-fill" *ngIf="filters.job_type_name.length>=1"></i>
+                       <i class="bi-funnel-fill"  style="color: red" *ngIf="filters.job_type_name.length>=1"></i>
                           <i class="bi-funnel" *ngIf="filters.job_type_name.length===0"></i>
                       </button>
 

@@ -259,6 +259,7 @@ async getTableData(params?: { page?: number; pageSize?: number; searchTerm?: str
     const searchTerm = params?.searchTerm ?? this.term;
 
     let query = buildPaginationQuery({ page, pageSize, searchTerm });
+    query +=`&timesheet-report-type=detailed`;
     if(this.user_role_name !== 'Admin'){
       query +=`&timesheet-employee=${this.user_id}`
       }if (params?.client_ids?.length) {

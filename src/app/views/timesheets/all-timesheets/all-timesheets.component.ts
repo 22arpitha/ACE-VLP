@@ -91,6 +91,8 @@ export class AllTimesheetsComponent implements OnInit {
     if (this.userRole != 'Admin') {
       this.getWeekData();
     } else {
+      this.startDate ='';
+      this.endDate='';
       this.getTimesheets();
     }
   }
@@ -526,6 +528,8 @@ this.allJobsNames=[];
     this.timesheetDate = null;
     this.dateFilterValue = null;
     this.datepicker = null;
+    this.startDate ='';
+    this.endDate='';
     this.filterData();
   }
   onDateSelected(event: any): void {
@@ -564,7 +568,7 @@ this.allJobsNames=[];
       filterQuery += `&start-date=${this.startDate}&end-date=${this.endDate}`;
      }
     }
-     if (this.userRole === 'Accountant') {
+     if (this.userRole !== 'Admin') {
       if(this.timesheetDate) {
       filterQuery += `&timesheet-dates=[${this.timesheetDate}]`;
      }
