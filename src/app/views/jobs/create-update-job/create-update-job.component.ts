@@ -1,5 +1,5 @@
 import { DatePipe } from '@angular/common';
-import { Component, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormArray, FormBuilder, FormControl, FormGroup, FormGroupDirective, Validators } from '@angular/forms';
 import { MatPaginator } from '@angular/material/paginator';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -13,6 +13,7 @@ import { GenericDeleteComponent } from '../../../generic-components/generic-dele
 import { FormErrorScrollUtilityService } from '../../../service/form-error-scroll-utility-service.service';
 import { SubModuleService } from '../../../service/sub-module.service';
 import { CanComponentDeactivate } from '../../../auth-guard/can-deactivate.guard';
+import { MatMenuTrigger } from '@angular/material/menu';
 
 
 @Component({
@@ -30,7 +31,6 @@ export class CreateUpdateJobComponent implements CanComponentDeactivate, OnInit,
   groupslists: any = [];
   allServiceslist: any = [];
   allPeroidicitylist: any = [];
-  peroidslist: any = [];
   allJobtypeList: any = [];
   allJobStatusList: any = [];
   allEmployeeList: any = [];
@@ -41,7 +41,6 @@ export class CreateUpdateJobComponent implements CanComponentDeactivate, OnInit,
   searchGroupText: any;
   searchServicesText: any;
   searchPeroidicityText: any;
-  searchPeroidText: any;
   searchJobTypeText: any;
   searchJobStatusText: any;
   searchEmployeeText: any;
@@ -75,9 +74,29 @@ export class CreateUpdateJobComponent implements CanComponentDeactivate, OnInit,
   currentDate: any = new Date().toISOString();
   jobAllocationCurrentDate: any = new Date().toISOString();
   initialFormValue:any;
+// Period Changes
+  showSelection = true;
+  year: number = new Date()?.getFullYear();
+  yearDefault = new Date()?.getFullYear();
+  yearRangeStart: number;
+  selectedMonth: string | null = null;
+  selectedQuarter: string | null = null;
+  modeName:'Monthly' | 'Quaterly' | 'Yearly';
+  months: string[] = [
+    'January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December'
+  ];
+
+  quarters: { value: string; months: string[] }[] = [
+    { value: 'Q1', months: ['January', 'February', 'March'] },
+    { value: 'Q2', months: ['April', 'May', 'June'] },
+    { value: 'Q3', months: ['July', 'August', 'September'] },
+    { value: 'Q4', months: ['October', 'November', 'December'] }
+  ];
+  @ViewChild('trigger') menuTrigger!: MatMenuTrigger;
   constructor(private fb: FormBuilder, private activeRoute: ActivatedRoute, private accessControlService: SubModuleService,
     private common_service: CommonServiceService, private router: Router, private datepipe: DatePipe,
-    private apiService: ApiserviceService, private modalService: NgbModal, private formErrorScrollService: FormErrorScrollUtilityService) {
+    private apiService: ApiserviceService, private modalService: NgbModal, private formErrorScrollService: FormErrorScrollUtilityService,private cdr: ChangeDetectorRef) {
     this.common_service.setTitle(this.BreadCrumbsTitle);
     this.user_role_name = sessionStorage.getItem('user_role_name');
     this.user_id = sessionStorage.getItem('user_id');
@@ -94,13 +113,13 @@ export class CreateUpdateJobComponent implements CanComponentDeactivate, OnInit,
   }
 
   ngOnInit(): void {
+    this.yearRangeStart = this.yearDefault - (this.yearDefault % 10);
     this.editor = new Editor();
     this.intialForm();
     this.getModuleAccess();
     this.jobFormGroup?.valueChanges?.subscribe(() => {
       const currentFormValue = this.jobFormGroup?.getRawValue();
       const isInvalid = this.jobFormGroup?.touched && this.jobFormGroup?.invalid;
-      console.log(this.initialFormValue,currentFormValue);
       const isFormChanged:boolean =  JSON.stringify(currentFormValue) !== JSON.stringify(this.initialFormValue);
       let unSavedChanges = isFormChanged || isInvalid;
      this.formErrorScrollService.setUnsavedChanges(unSavedChanges);
@@ -386,9 +405,9 @@ export class CreateUpdateJobComponent implements CanComponentDeactivate, OnInit,
 
 
   public onPeroidicityChange(event: any) {
-    const peroidicity = event.value;
-    this.jobFormGroup?.get('peroid')?.reset();
-    this.getPeroidicityBasedPeroid(peroidicity);
+   const peroidicityId = event.value;
+   this.jobFormGroup.get('period')?.reset(null, { emitEvent: false });
+    this.modeName = this.allPeroidicitylist.find((peroidicity:any)=>peroidicity.id=== peroidicityId)?.periodicty_name;
   }
   public onServiceChange(event: any) {
     // console.log('event', event);
@@ -396,19 +415,8 @@ export class CreateUpdateJobComponent implements CanComponentDeactivate, OnInit,
       this.getCombinationJobName();
     }
   }
-  public onPeroidChange(event: any) {
-    // console.log('event', event);
-    this.getCombinationJobName();
-  }
-
-  private getPeroidicityBasedPeroid(id: any) {
-    this.peroidslist = [];
-    this.apiService.getData(`${environment.live_url}/${environment.settings_period}/?periodicity=${id}`).subscribe(
-      (res: any) => {
-        this.peroidslist = res;
-      }, (error: any) => {
-        this.apiService.showError(error?.error?.detail);
-      });
+  public onPeroidChange() {
+  this.getCombinationJobName();
   }
 
   public getAllJobType() {
@@ -489,14 +497,6 @@ export class CreateUpdateJobComponent implements CanComponentDeactivate, OnInit,
     );
   }
 
-  public filteredPeriodList() {
-    if (!this.searchPeroidText) {
-      return this.peroidslist;
-    }
-    return this.peroidslist.filter((peroid: any) =>
-      peroid?.period_name?.toLowerCase()?.includes(this.searchPeroidText?.toLowerCase())
-    );
-  }
 
   public filteredJobTypeList() {
     if (!this.searchJobTypeText) {
@@ -526,9 +526,7 @@ export class CreateUpdateJobComponent implements CanComponentDeactivate, OnInit,
       this.searchServicesText = '';
     } else if (key === 'periodicity') {
       this.searchPeroidicityText = '';
-    } else if (key === 'period') {
-      this.searchPeroidText = '';
-    } else if (key === 'job_type') {
+    }  else if (key === 'job_type') {
       this.searchJobTypeText = '';
     } else {
       this.searchJobStatusText = '';
@@ -543,10 +541,10 @@ export class CreateUpdateJobComponent implements CanComponentDeactivate, OnInit,
         this.jobDetails = respData
         this.getClientBasedEndClient(respData?.client);
         this.getEndClientBasedGroup(respData?.end_client);
-        this.getPeroidicityBasedPeroid(respData?.periodicity);
         this.selectOtherEmpFlag = respData?.is_allocated,
         this.selectAllEmpFlag = respData?.all_employees,
         this.getAllEmployeeList();
+         this.modeName = this.allPeroidicitylist.find((peroidicity:any)=>peroidicity.id=== Number(respData?.periodicity))?.periodicty_name;
         // this.getEndClientBasedGroup(respData?.end_client);
         this.jobFormGroup.patchValue({
           job_name: respData?.job_name,
@@ -555,7 +553,7 @@ export class CreateUpdateJobComponent implements CanComponentDeactivate, OnInit,
           group: respData?.group,
           service: respData?.service,
           periodicity: Number(respData?.periodicity),
-          period: Number(respData?.period),
+          period: respData?.period,
           job_type: respData?.job_type,
           job_allocation_date: respData?.job_allocation_date ? new Date(respData?.job_allocation_date)?.toISOString() : null,
           job_status_date: respData?.job_status_date ? new Date(respData?.job_status_date)?.toISOString() : null,
@@ -892,7 +890,7 @@ export class CreateUpdateJobComponent implements CanComponentDeactivate, OnInit,
   public getCombinationJobName() {
     let endClientName = this.getSelectedEndClient(this.jobFormGroup?.get('end_client')?.value);
     let service_name = this.getSelectedService(this.jobFormGroup?.get('service')?.value);
-    let period_name = this.getSelectedPeroid(this.jobFormGroup?.get('period')?.value);
+    let period_name = this.jobFormGroup?.get('period')?.value;
     if (this.jobFormGroup?.get('end_client')?.valid && this.jobFormGroup?.get('service')?.valid && this.jobFormGroup?.get('period')?.valid) {
       let job_name = `${endClientName} ${service_name} ${period_name}`;
       this.jobFormGroup?.patchValue({ 'job_name': job_name });
@@ -908,10 +906,6 @@ export class CreateUpdateJobComponent implements CanComponentDeactivate, OnInit,
   private getSelectedService(id: any) {
     const service = this.allServiceslist.find((service: any) => service?.id === id)
     return service?.service_name || '';
-  }
-  private getSelectedPeroid(id: any) {
-    const peroid = this.peroidslist.find((period: any) => period?.id === id)
-    return peroid?.period_name || '';
   }
   public formDataToJson(formData) {
     let obj = {};
@@ -972,4 +966,109 @@ canDeactivate(): Observable<boolean> {
         $event.preventDefault();
       }
     }
+
+  parseInput(val: string) {
+    val = (val || '').toUpperCase().trim();
+
+    if (this.modeName === 'Quaterly') {
+      const match = val.match(/^Q([1-4])\s*(\d{4})?$/);
+      if (match) {
+        this.selectedQuarter = `Q${match[1]}`;
+        this.year = +match[2] || this.year;
+        this.emitValue(this.selectedQuarter);
+      }
+    } else if (this.modeName === 'Monthly') {
+      const match = val.match(/^(January|February|March|April|May|June|July|August|September|October|November|December)\s*(\d{4})?$/i);
+      if (match) {
+        this.selectedMonth = match[1];
+        this.year = +match[2] || this.year;
+        this.emitValue(this.selectedMonth);
+      }
+    } else if (this.modeName === 'Yearly') {
+      const match = val.match(/^\d{4}$/);
+      if (match) {
+        this.year = +match[0];
+        this.emitValue(this.year.toString());
+      }
+    }
+  }
+
+  emitValue(period: string) {
+    if (!this.year) return;
+    if (this.modeName !== 'Yearly') {
+      const newVal = `${period} ${this.year}`;
+    this.jobFormGroup.get('period')?.patchValue(newVal ,{ emitEvent: false });
+    } else {
+    const newVal = `${this.year}`;
+    this.jobFormGroup.get('period')?.patchValue(newVal,{ emitEvent: false });
+    }
+    this.cdr.detectChanges();
+    this.onPeroidChange();
+  }
+
+  finalSelectionMade(): boolean {
+    if (this.modeName === 'Monthly') {
+      return !!this.selectedMonth && !!this.year;
+    }
+    if (this.modeName === 'Quaterly') {
+      return !!this.selectedQuarter && !!this.year;
+    }
+    if (this.modeName === 'Yearly') {
+      return !!this.year;
+    }
+    return false;
+  }
+
+  select(period: string) {
+    if (this.modeName === 'Monthly') {
+      this.selectedMonth = period;
+    } else if (this.modeName === 'Quaterly') {
+      this.selectedQuarter = period;
+    }
+
+    if (this.finalSelectionMade()) {
+      this.emitValue(period);
+     this.showSelection = true;
+      this.menuTrigger?.closeMenu();
+    } else {
+
+       this.showSelection = true;
+       this.menuTrigger?.closeMenu();
+    }
+  }
+
+  changeYear(val: number) {
+  this.year = val;
+
+  const currentPeriod =
+    this.modeName === 'Monthly' ? this.selectedMonth :
+    this.modeName === 'Quaterly' ? this.selectedQuarter :
+    this.year.toString();
+  this.showSelection = true;
+  if (this.modeName === 'Yearly') {
+    if (this.finalSelectionMade()) {
+      this.emitValue(currentPeriod || '');
+      this.menuTrigger?.closeMenu();
+    }
+  } else {
+    this.menuTrigger?.openMenu();
+  }
+}
+
+
+  toggleView() {
+    this.showSelection = !this.showSelection;
+  }
+
+  prevDecade() {
+    this.yearRangeStart -= 10;
+    this.showSelection = false;
+    this.cdr.detectChanges();
+  }
+
+  nextDecade() {
+    this.yearRangeStart += 10;
+    this.showSelection = false;
+    this.cdr.detectChanges();
+  }
 }

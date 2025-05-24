@@ -78,3 +78,35 @@
     background-color: rgb(235 235 235) !important;
     pointer-events: none !important;
   }
+  // Period Related css
+  .picker-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.25rem 1rem;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.picker-body {
+  display: flex;
+  flex-direction: column;
+  padding: 0.5rem 1rem;
+  max-width: 260px;
+  height: 250px;
+}
+
+.picker-item {
+  justify-content: flex-start;
+  width: 100%;
+  text-align: left;
+}
+.year-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* 2 rows of 5 years */
+  gap: 8px;
+}
+
+.year-grid button {
+  flex: 1 0 30%;
+  min-width: 70px;
+}
