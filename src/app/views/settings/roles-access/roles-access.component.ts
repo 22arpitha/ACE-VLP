@@ -82,16 +82,18 @@ export class RolesAccessComponent implements OnInit {
       (res: any) => {
         console.log(res, 'sub modules')
         if (res.length == 0 || res[0].access_list.length == 0) {
+          // console.log('no dataaaaaaaaaaaaaaa')
           if (this.user_role === 'Admin') {
             let temp = this.mainMenu.find((module_name: any) => module_name.name === 'Company Policy');
             temp.access[0].operations[0].view = true;
             this.passingChildrenToTabel(temp)
-            console.log(' this.passingChildrenToTabel')
+            // console.log(' this.passingChildrenToTabel')
           } 
           else {
             this.manualFuction();
           }
         } else if (res.length != 0 && res[0].access_list.length != 0){
+          // console.log('dataaaa present')
           let temp_dataa: any = [];
           let menuMap = new Map(this.mainMenu.map((item: any) => [item.name, item]));
           res[0].access_list.forEach((res_data: any) => {
@@ -111,14 +113,14 @@ export class RolesAccessComponent implements OnInit {
           });
 
           if(temp_dataa.length>0){
-            console.log('ccccccccc')
+            // console.log('ccccccccc',res[0].access_list)
             this.passingChildrenToTabel(res[0].access_list[0])
           } else{
             console.log('nooooooooo')
             this.passingChildrenToTabel(this.mainMenu[0])
           }
         }
-      },
+     },
       (error) => {
         console.log(error)
       }
@@ -148,14 +150,14 @@ export class RolesAccessComponent implements OnInit {
 
   // getting data from child
   receiveDataFromChild(data: any) {
-    console.log('from child', data)
     if (data) {
       this.mainMenu.forEach((access: any) => {
-        const moduleMatch = data.access_list.find((module_name: any) => module_name.name === access.name);
-        if (moduleMatch) {
+        // const moduleMatch = 
+        const subModuleMatch = data.access_list.find((module_name: any) => module_name.name === access.name);
+        if (subModuleMatch) {
           access['access_given'] = true;
         }
-        if (!moduleMatch) {
+        if (!subModuleMatch) {
           access['access_given'] = false;
         }
       });
@@ -171,7 +173,9 @@ export class RolesAccessComponent implements OnInit {
       'name': data.name,
       'access': data.access,
     }
+    // console.log('beforeaccess',access_data)
     this.toggleAllTrueToFalse(access_data);
+    // console.log('afterrr data',access_data)
     this.allChildrens = access_data;
   }
 

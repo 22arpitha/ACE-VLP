@@ -35,7 +35,7 @@ export class AccessToModulesComponent implements OnInit {
 
   ngOnChanges(): void {
     if (this.data?.access?.length > 0) {
-      console.log('this.data', this.data)
+      // console.log('got dataaaaa', this.data)
       this.getAccessForDesignation(this.designation_id);
     }
   }
@@ -48,7 +48,7 @@ export class AccessToModulesComponent implements OnInit {
   getAccessForDesignation(id: any) {
      this.api.getData(`${environment.live_url}/${environment.roles_access}/?designation=${this.designation_id}`).subscribe(
       (res: any) => {
-        console.log(res, 'designation id');
+        // console.log(res, 'designation id');
         this.buttonName =  res[0]?.id ? 'Update' : 'Add';
         
         this.storeAssessGivenData = JSON.parse(JSON.stringify( res[0]?.access_list || []));
@@ -63,16 +63,28 @@ export class AccessToModulesComponent implements OnInit {
             const accessList =  res[0].access_list;
             accessList.forEach((element_list) => {
               let isMatched = false;
-              element_list.access.forEach((accessItem: any) => {
-                const matchedModule = this.data.access.find((module_name: any) => module_name.name === accessItem.name);
-                if (matchedModule) {
-                  matchedModule['operations'] = accessItem.operations;
-                  isMatched = true;
-                }
-              });
+              if(this.data.name===element_list.name){
+                // console.log('data matching',element_list)
+                element_list.access.forEach((accessItem: any) => {
+                  const matchedSubModule = this.data.access.find((module_name: any) => module_name.name === accessItem.name);
+                  if (matchedSubModule) {
+                    matchedSubModule['operations'] = accessItem.operations;
+                    isMatched = true;
+                  }
+                });
+              } 
+              
+              // element_list.access.forEach((accessItem: any) => {
+              //   const matchedSubModule = this.data.access.find((module_name: any) => module_name.name === accessItem.name);
+              //   if (matchedSubModule) {
+              //     matchedSubModule['operations'] = accessItem.operations;
+              //     isMatched = true;
+              //   }
+              // });
               if (!isMatched) {
                 this.accessibility.push(element_list);
               }
+              // console.log('noooo matching',this.accessibility)
               this.checkSubModuleAccess(this.data, this.storeAssessGivenData);
             });
           } else {
@@ -112,15 +124,15 @@ export class AccessToModulesComponent implements OnInit {
 
 
   checkSubModuleAccess(data, api_data) {
-    console.log(data)
+    // console.log(data)
     if (api_data?.length === 1 && data?.name === api_data[0]?.name) {
-      console.log('data is there aor not')
+      // console.log('data is there aor not')
       this.disableAddOrUpdateBtn = true;
       this.errorMsg = false;
       this.oneAccessValidation(data, api_data)
     }
     else if (api_data?.length === 1 && data?.name != api_data[0]?.name) {
-      console.log('2')
+      // console.log('2')
       this.errorMsg = false;
       this.showBackButton = false;
       // this.disableAddOrUpdateBtn = true;
@@ -137,14 +149,14 @@ export class AccessToModulesComponent implements OnInit {
       this.disableAddOrUpdateBtn = !hasTrueValue;
     }
     else if (api_data?.length >= 2) {
-      console.log('3')
+      // console.log('3')
       this.errorMsg = false;
       this.showBackButton = false;
       this.disableAddOrUpdateBtn = true;
       this.oneAccessValidation(data, api_data)
   
     } else if (api_data?.length === 0) {
-      console.log('4')
+      // console.log('4')
       // this.disableAddOrUpdateBtn = false;
       this.showBackButton = true;
       this.disableAddOrUpdateBtn = true;
@@ -171,7 +183,7 @@ export class AccessToModulesComponent implements OnInit {
         );
 
         if (allOperationsFalse && api_data?.length === 1) {
-          console.log("All operations are false.");
+          // console.log("All operations are false.");
           this.errorMsg = true;
           this.disableAddOrUpdateBtn = true;
         } else {
@@ -212,6 +224,7 @@ export class AccessToModulesComponent implements OnInit {
   }
 
   modifyAccess(event: any, sub_module_name, access_name) {
+    // console.log(sub_module_name,'sub_module_namesub_module_name')
     this.data.access.forEach((element_sub_module: any) => {
       if (sub_module_name === element_sub_module.name) {
         if (event.target.checked && (access_name === 'create' || access_name === 'update' || access_name === 'delete')) {
@@ -235,7 +248,7 @@ export class AccessToModulesComponent implements OnInit {
         }
       }
     });
-    console.log(this.data, this.storeAssessGivenData)
+    // console.log(this.data, this.storeAssessGivenData)
     this.checkSubModuleAccess(this.data, this.storeAssessGivenData);
   }
 
