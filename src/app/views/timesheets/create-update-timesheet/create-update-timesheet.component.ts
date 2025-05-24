@@ -410,9 +410,10 @@ this.timesheetFormGroup.controls['time_spent']?.reset();
         this.apiService.postData(`${environment.live_url}/${environment.vlp_timesheets}/`, this.timesheetFormGroup.value).subscribe((respData: any) => {
           if (respData) {
             this.apiService.showSuccess(respData['message']);
+            this.getAllDropdownData();
             this.resetFormState();
-            sessionStorage.removeItem("access-name")
-            this.router.navigate(['/timesheets/all-timesheets']);
+            // sessionStorage.removeItem("access-name")
+            // this.router.navigate(['/timesheets/all-timesheets']);
           }
         }, (error: any) => {
           this.apiService.showError(error?.error?.detail);
@@ -425,6 +426,7 @@ this.timesheetFormGroup.controls['time_spent']?.reset();
     this.formGroupDirective?.resetForm();
     this.formErrorScrollService.resetHasUnsavedValue();
     this.isEditItem = false;
+    this.initialForm();
     this.initialFormValue  = this.timesheetFormGroup.getRawValue();
   }
 

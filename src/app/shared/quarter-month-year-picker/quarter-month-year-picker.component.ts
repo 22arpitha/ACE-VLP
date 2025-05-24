@@ -153,21 +153,22 @@ export class QuarterMonthYearPickerComponent implements OnInit {
   }
 
   changeYear(val: number) {
-    this.year = val;
+  this.year = val;
 
-    const currentPeriod =
-      this.mode === 'Monthly' ? this.selectedMonth :
-      this.mode === 'Quaterly' ? this.selectedQuarter :
-      this.year.toString();
-
+  const currentPeriod =
+    this.mode === 'Monthly' ? this.selectedMonth :
+    this.mode === 'Quaterly' ? this.selectedQuarter :
+    this.year?.toString();
+  this.showSelection = true;
+  if (this.mode === 'Yearly') {
     if (this.finalSelectionMade()) {
       this.emitValue(currentPeriod || '');
-      this.showSelection = true;
-      this.menuTrigger?.openMenu();
-    } else {
-      this.showSelection = true;
+      this.menuTrigger?.closeMenu();
     }
+  } else {
+    this.menuTrigger?.openMenu();
   }
+}
 
   toggleView() {
     this.showSelection = !this.showSelection;

@@ -139,25 +139,81 @@
 </div> 
 <!-- period -->
 <div class="col-12 col-sm-12 col-md-6 col-lg-3 no-padding pl-0 pr-5">
-    <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
-        <mat-label>Period <b class="r-star">*</b></mat-label>
-        <mat-select formControlName="period" autocomplete="off"
-                placeholder="Period" panelClass="custom-select-panel"
-                [disableOptionCentering]="true" (selectionChange)="onPeroidChange($event)">
-                <div class="mat-select-search-wrapper d-flex">
-                  <input matInput [(ngModel)]="searchPeroidText" autofocus [ngModelOptions]="{standalone: true}" placeholder="Search Period" class="mat-select-search" >
-                  <mat-icon class="search-icon" *ngIf="!searchPeroidText">search</mat-icon>
-                  <mat-icon class="search-icon" *ngIf="searchPeroidText" type="button" (click)="clearSearch('period')">close</mat-icon>
-                </div>
-                <mat-option *ngFor="let item of filteredPeriodList()" [value]="item?.id">
-                    {{item?.period_name}}
-                </mat-option>
-        </mat-select>
-        <mat-error *ngIf="f['period']?.invalid && f['period']?.touched || f['period']?.dirty">
+ <!-- Input field with the calendar icon -->
+<mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+   <mat-label>Period <b class="r-star">*</b></mat-label>
+  <input matInput formControlName="period" #trigger="matMenuTrigger" placeholder="{{ modeName === 'Quaterly' ? 'Qx YYYY' : modeName === 'Monthly' ? 'Mon YYYY' : 'YYYY' }}" readonly [matMenuTriggerFor]="pickerMenu">
+  <mat-icon mat-icon-button
+  matSuffix
+  [matMenuTriggerFor]="pickerMenu"
+  #trigger="matMenuTrigger"
+  type="button"
+  aria-label="Open picker">calendar_today</mat-icon>
+<mat-error *ngIf="f['period']?.invalid && f['period']?.touched || f['period']?.dirty">
             <span  *ngIf="f['period']?.errors?.['required']">Period is required</span>
       </mat-error>
-    </mat-form-field>
- 
+</mat-form-field>
+
+
+<mat-menu #pickerMenu="matMenu" class="picker-menu">
+  <ng-container>
+    <div *ngIf="jobFormGroup?.get('periodicity')?.value; else emptyContent">
+<!-- Year Navigation -->
+  <div class="picker-header">
+    <button mat-icon-button (click)="prevDecade();$event.stopPropagation()" aria-label="Previous Decade">
+      <mat-icon>chevron_left</mat-icon>
+    </button>
+
+    <button mat-button (click)="toggleView();$event.stopPropagation()">
+      {{ showSelection ? (year || yearDefault) : (yearRangeStart + ' - ' + (yearRangeStart + 9)) }}
+    </button>
+
+    <button mat-icon-button (click)="nextDecade();$event.stopPropagation()" aria-label="Next Decade">
+      <mat-icon>chevron_right</mat-icon>
+    </button>
+  </div>
+
+  <!-- Selection Grid -->
+  <div class="picker-body">
+    <!-- Year Mode -->
+    <ng-container *ngIf="modeName === 'Yearly' && showSelection">
+      <button mat-button *ngFor="let y of [0,1,2,3,4,5,6,7,8,9]" (click)="changeYear(yearRangeStart + y);$event.stopPropagation()">
+        {{ yearRangeStart + y }}
+      </button>
+    </ng-container>
+
+    <!-- Quarter Mode -->
+    <ng-container *ngIf="modeName === 'Quaterly' && showSelection">
+      <button mat-button *ngFor="let item of quarters" (click)="select(item.value);$event.stopPropagation()" class="picker-item">
+        <b>{{ item.value }}</b> — <small>{{ item.months.join(', ') }}</small>
+      </button>
+    </ng-container>
+
+    <!-- Month Mode -->
+    <ng-container *ngIf="modeName === 'Monthly' && showSelection">
+      <button mat-button *ngFor="let month of months" (click)="select(month);$event.stopPropagation()" class="picker-item">
+        {{ month }}
+      </button>
+    </ng-container>
+
+    <!-- Year Selection -->
+    <ng-container *ngIf="!showSelection">
+      <div class="year-grid">
+        <button mat-stroked-button *ngFor="let y of [0,1,2,3,4,5,6,7,8,9]" (click)="changeYear(yearRangeStart + y);$event.stopPropagation()">
+          {{ yearRangeStart + y }}
+        </button>
+      </div>
+    </ng-container>
+  </div>
+    </div>
+    
+  </ng-container>
+  <ng-template #emptyContent>
+    <span class="empty-message mat-menu-item" disabled>
+      Select periodicity to enable options
+    </span>
+  </ng-template>
+</mat-menu>
 </div> 
 <!-- Job Type -->
 <div class="col-12 col-sm-12 col-md-6 col-lg-3 no-padding pl-0 pr-5">
