@@ -232,6 +232,7 @@ export class TimesheetSummaryReportComponent implements OnInit {
                employee_name: employee?.employee_name,
                employee_worked_hours: employee?.employee_worked_hours,
                short_fall: employee?.short_fall,
+               is_locked:employee?.is_locked === false ? 'Not Locked Yet' : 'Locked',
                keyId: employee?.employee_id
              };
              employee?.timesheet_data?.forEach((entry: any) => {

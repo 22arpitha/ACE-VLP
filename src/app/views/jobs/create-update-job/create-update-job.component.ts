@@ -87,11 +87,11 @@ export class CreateUpdateJobComponent implements CanComponentDeactivate, OnInit,
     'July', 'August', 'September', 'October', 'November', 'December'
   ];
 
-  quarters: { value: string; months: string[] }[] = [
-    { value: 'Q1', months: ['January', 'February', 'March'] },
-    { value: 'Q2', months: ['April', 'May', 'June'] },
-    { value: 'Q3', months: ['July', 'August', 'September'] },
-    { value: 'Q4', months: ['October', 'November', 'December'] }
+  quarters: { label: string, value: string; months: string[] }[] = [
+    { label:'Q1',value:'Mar-Qtr', months: ['January', 'February', 'March'] },
+    { label:'Q2',value: 'Jun-Qtr', months: ['April', 'May', 'June'] },
+    { label:'Q3',value: 'Sep-Qtr', months: ['July', 'August', 'September'] },
+    { label:'Q4',value: 'Dec-Qtr', months: ['October', 'November', 'December'] }
   ];
   @ViewChild('trigger') menuTrigger!: MatMenuTrigger;
   constructor(private fb: FormBuilder, private activeRoute: ActivatedRoute, private accessControlService: SubModuleService,

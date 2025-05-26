@@ -103,7 +103,7 @@ downloadExcel(){
     query += this.employee ? `&employee-id=${this.employee}` :`&employee-id=${this.user_id}`
   }
   if(this.period){
-query +=`&period=${this.period}`
+query +=`&period=${encodeURIComponent(JSON.stringify(this.period))}`
   }
   if(this.periodicityId){
 query +=`&periodicity=${this.periodicityId}`

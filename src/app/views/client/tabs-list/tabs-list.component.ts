@@ -2,7 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { CommonServiceService } from '../../../service/common-service.service';
 import { ActivatedRoute } from '@angular/router';
 import { MatTabChangeEvent } from '@angular/material/tabs';
-import { SubModuleService } from 'src/app/service/sub-module.service';
+import { SubModuleService } from '../../../service/sub-module.service';
+import { ApiserviceService } from '../../../service/apiservice.service';
 @Component({
   selector: 'app-tabs-list',
   templateUrl: './tabs-list.component.html',
@@ -21,6 +22,7 @@ export class TabsListComponent implements OnInit {
   jobsTabVisible: boolean = false
   constructor(private common_service: CommonServiceService, private activeRoute: ActivatedRoute,
     private accessControlService: SubModuleService,
+        private apiService: ApiserviceService,
   ) {
     this.common_service.setTitle(this.BreadCrumbsTitle);
     this.user_id = sessionStorage.getItem('user_id');
@@ -43,21 +45,18 @@ export class TabsListComponent implements OnInit {
     this.accessControlService.getAccessForActiveUrl(this.user_id).subscribe((access) => {
       if (access) {
         this.accessPermissions = access;
-        console.log('Access tab Permissions:', access);
-        this.clientTabVisible = this.hasViewPermission(access, 'Clients');
-        this.groupTabVisible = this.hasViewPermission(access, 'Groups');
-        this.endClientTabVisible = this.hasViewPermission(access, 'End Clients');
-        this.jobsTabVisible = this.hasViewPermission(access, 'Jobs');
-      } else {
-        console.log('No matching access found.');
+        this.clientTabVisible = this.userRole === 'Admin' ? true : this.hasViewPermission(access, 'Clients');
+        this.groupTabVisible = this.userRole === 'Admin' ? true : this.hasViewPermission(access, 'Groups');
+        this.endClientTabVisible = this.userRole === 'Admin' ? true : this.hasViewPermission(access, 'End Clients');
+        this.jobsTabVisible = this.userRole === 'Admin' ? true : this.hasViewPermission(access, 'Jobs');
       }
+    },(error)=>{
+this.apiService.showError(error?.error?.detail);
     });
   }
 
   hasViewPermission(accessList: any[], name: string): boolean {
-    const item = accessList.find(a => a.name === name);
-    let temp = accessList.find((item: any) => item.name === name);
-    console.log(temp,'item')
+    let item = accessList.find(a => a.name === name);
     return item?.operations?.[0]?.view === true;
   }
   

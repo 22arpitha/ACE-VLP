@@ -425,9 +425,13 @@ this.timesheetFormGroup.controls['time_spent']?.reset();
   public resetFormState() {
     this.formGroupDirective?.resetForm();
     this.formErrorScrollService.resetHasUnsavedValue();
+    const now = new Date();
+    const hours = now.getHours().toString().padStart(2, '0');
+    const minutes = now.getMinutes().toString().padStart(2, '0');
+    this.currentTime = `${hours}:${minutes}`;
     this.isEditItem = false;
     this.initialForm();
-    this.initialFormValue  = this.timesheetFormGroup.getRawValue();
+    this.getStartTimePreviousData();
   }
 
   canDeactivate(): Observable<boolean> {

@@ -65,8 +65,9 @@
                       <i *ngIf="!arrowState['client_name']" (click)="sort('asc','client_name')" class="bi bi-arrow-down"></i>
                       <i (click)="sort('desc','client_name')" *ngIf="arrowState['client_name']"
                         class="bi bi-arrow-up"></i>
-                        <button mat-icon-button [matMenuTriggerFor]="clientFilterMenu">
-                          <i class="bi-funnel-fill" *ngIf="filters.client_name.length>=1"></i>
+                        <button mat-icon-button [matMenuTriggerFor]="clientFilterMenu" [ngClass]="filters.client_name.length>=1 ? 'filterdColumn':''">
+                        <span *ngIf="filters.client_name.length>=1">{{filters.client_name.length.toString().padStart(2, '0')}}</span>
+                          
                           <i class="bi-funnel" *ngIf="filters.client_name.length===0"></i>
                         </button>
 

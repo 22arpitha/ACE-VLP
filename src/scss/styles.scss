@@ -82,6 +82,8 @@ body {
   .body{
     background-color: #f6f6f6;
     height: 100vh;
+    display: flex;
+    flex-direction: column;
    font-family: 'Helvetica', sans-serif !important;
   }
  /* based on angular-toastr css https://github.com/Foxandxss/angular-toastr/blob/cb508fe6801d6b288d3afc525bb40fee1b101650/dist/angular-toastr.css */
@@ -94,6 +96,9 @@ body {
   height: 95% !important;
 
   mat-card.header-card{
+    height: 10vh;
+    display: flex;
+    flex-direction: column;
     border-radius:20px 20px 0 0 !important;
     box-shadow: rgba(0, 0, 0, 0.09) 0px 3px 12px !important;
   }

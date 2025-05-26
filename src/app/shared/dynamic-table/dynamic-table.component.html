@@ -162,9 +162,9 @@
                 </ng-container>
                 <ng-container *ngSwitchCase="'multi-select'">
                   <div ngbDropdown class="d-inline-block" container="body">
-                    <button id="dropdownBasic1" mat-icon-button style="outline: none;background: transparent;border:0" ngbDropdownToggle>
-                       <i class="bi-funnel" *ngIf="!tempFilters[col.key] || tempFilters[col.key]?.length===0"></i>
-                       <i class="bi-funnel-fill" *ngIf="tempFilters && tempFilters[col.key]?.length>=1"></i>
+                    <button id="dropdownBasic1" mat-icon-button ngbDropdownToggle [ngClass]="tempFilters[col.key]?.length>=1 ? 'filterdColumn':''">
+                          <span *ngIf="tempFilters[col.key]?.length>=1">{{tempFilters[col.key]?.length.toString().padStart(2, '0')}}</span> 
+                      <i class="bi-funnel" *ngIf="!tempFilters[col.key] || tempFilters[col.key]?.length===0"></i>
                     </button>
                     <div ngbDropdownMenu aria-labelledby="dropdownBasic1" class="p-2" (click)="$event.stopPropagation()">
                       <ng-container *ngIf="col.key as columnKey" >

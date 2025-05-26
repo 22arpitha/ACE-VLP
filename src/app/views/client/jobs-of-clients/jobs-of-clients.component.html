@@ -67,8 +67,8 @@
                   <th scope="col">Status 
                     <i *ngIf="!arrowState['status']" (click)="sort('asc', 'status')" class="bi bi-arrow-down"></i>
                     <i *ngIf="arrowState['status']" (click)="sort('desc', 'status')" class="bi bi-arrow-up"></i>  
-                    <button mat-icon-button [matMenuTriggerFor]="statusFilterMenu">
-                        <i class="bi-funnel-fill" *ngIf="filters.status.length>=1"></i>
+                    <button mat-icon-button [matMenuTriggerFor]="statusFilterMenu" [ngClass]="filters.status.length>=1 ? 'filterdColumn':''">
+                        <span *ngIf="filters.status.length>=1">{{filters.status.length.toString().padStart(2, '0')}}</span>
                           <i class="bi-funnel" *ngIf="filters.status.length===0"></i>
                     </button>
   

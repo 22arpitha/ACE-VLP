@@ -467,12 +467,12 @@ this.allJobsNames=[];
         this.apiService.postData(`${environment.live_url}/${environment.submit_weekly_timesheet}/`, data).subscribe(
           (res: any) => {
             // console.log(res)
-            this.apiService.showSuccess(res.detail)
-            this.startDate='';
-            this.endDate = '';
-            this.selectedDate = '';
+            this.apiService.showSuccess(res.detail);
+            // this.startDate='';
+            // this.endDate = '';
+            // this.selectedDate = '';
+            // this.resetWeekDate = true
             this.getWeekData();
-            this.resetWeekDate = true
           },
           (error) => {
             console.log(error);

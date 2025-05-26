@@ -185,7 +185,7 @@
     <!-- Quarter Mode -->
     <ng-container *ngIf="modeName === 'Quaterly' && showSelection">
       <button mat-button *ngFor="let item of quarters" (click)="select(item.value);$event.stopPropagation()" class="picker-item">
-        <b>{{ item.value }}</b> — <small>{{ item.months.join(', ') }}</small>
+        <b>{{ item.label }}</b> — <small>{{ item.months.join(', ') }}</small>
       </button>
     </ng-container>
 

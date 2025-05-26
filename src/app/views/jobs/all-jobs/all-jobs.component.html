@@ -47,9 +47,9 @@
                       <i (click)="sort('desc','job_type_name')" *ngIf="arrowState['job_type_name']"
                         class="bi bi-arrow-up"></i>
                         <!-- Filter Trigger -->
-                      <button mat-icon-button [matMenuTriggerFor]="jobTypeFilterMenu">
-                       <i class="bi-funnel-fill"  style="color: red" *ngIf="filters.job_type_name.length>=1"></i>
-                          <i class="bi-funnel" *ngIf="filters.job_type_name.length===0"></i>
+                      <button mat-icon-button [matMenuTriggerFor]="jobTypeFilterMenu" [ngClass]="filters.job_type_name.length>=1 ? 'filterdColumn':''">
+                        <span *ngIf="filters.job_type_name.length>=1">{{filters.job_type_name.length.toString().padStart(2, '0')}}</span>
+                        <i class="bi-funnel" *ngIf="filters.job_type_name.length===0"></i>
                       </button>
 
                       <mat-menu #jobTypeFilterMenu="matMenu">
@@ -65,8 +65,8 @@
                       <i (click)="sort('desc','client_name')" *ngIf="arrowState['client_name']"
                         class="bi bi-arrow-up"></i>
                         <!-- Filter Trigger -->
-                        <button mat-icon-button [matMenuTriggerFor]="clientFilterMenu">
-                          <i class="bi-funnel-fill" *ngIf="filters.client_name.length>=1"></i>
+                        <button mat-icon-button [matMenuTriggerFor]="clientFilterMenu" [ngClass]="filters.client_name.length>=1 ? 'filterdColumn':''">
+                        <span *ngIf="filters.client_name.length>=1">{{filters.client_name.length.toString().padStart(2, '0')}}</span>
                           <i class="bi-funnel" *ngIf="filters.client_name.length===0"></i>
                         </button>
 
@@ -110,8 +110,8 @@
                     </th>
                     <th scope="col">
                       Employee
-                      <button mat-icon-button [matMenuTriggerFor]="employeesFilterMenu">
-                      <i class="bi-funnel-fill" *ngIf="filters.employees.length>=1"></i>
+                      <button mat-icon-button [matMenuTriggerFor]="employeesFilterMenu" [ngClass]="filters.employees.length>=1 ? 'filterdColumn':''">
+                        <span *ngIf="filters.employees.length>=1">{{filters.employees.length.toString().padStart(2, '0')}}</span>
                           <i class="bi-funnel" *ngIf="filters.employees.length===0"></i>
                       </button>
 
@@ -125,8 +125,8 @@
                     </th>
                     <th scope="col">
                       Manager
-                      <button mat-icon-button [matMenuTriggerFor]="managerFilterMenu">
-                       <i class="bi-funnel-fill" *ngIf="filters.manager.length>=1"></i>
+                      <button mat-icon-button [matMenuTriggerFor]="managerFilterMenu" [ngClass]="filters.manager.length>=1 ? 'filterdColumn':''">
+                        <span *ngIf="filters.manager.length>=1">{{filters.manager.length.toString().padStart(2, '0')}}</span>
                           <i class="bi-funnel" *ngIf="filters.manager.length===0"></i>
                       </button>
 
@@ -201,10 +201,10 @@
                                     <small *ngIf="item.errorType === 'required'">Percentage is required.</small>
                                     <small *ngIf="item.errorType === 'pattern'">Invalid percentage format.</small>
                                     <small *ngIf="item.errorType === 'max'">Percentage cannot be more than 100.</small>
-                                    <small *ngIf="item.errorType === 'min'">Percentage cannot be less than 1.</small>
+                                    <small *ngIf="item.errorType === 'min'">Percentage cannot be less than 0.</small>
                                   </div>
                             </div>
-                            <div *ngIf="userRole !='Admin' && accessPermissions[0]?.update && item.valueChanged || userRole === 'Admin' && item.valueChanged"><img src="../../../../assets/images/tick.svg"  (click)="saveJobStausPercentage(item)" alt="" height="20" width="20"></div>
+                            <div *ngIf="userRole !='Admin' && accessPermissions[0]?.update && item.valueChanged && !item.isInvalid || userRole === 'Admin' && item.valueChanged && !item.isInvalid"><img src="../../../../assets/images/tick.svg"  (click)="saveJobStausPercentage(item)" alt="" height="20" width="20"></div>
                            </div>
                           </td>
                       <td [ngStyle]="{ color: item?.status_date_color ? item?.status_date_color : 'black' }">{{item?.job_status_date | date: 'dd/MM/yyyy'}}</td>

@@ -40,9 +40,9 @@
                       <i *ngIf="!arrowState['designation__designation_name']" (click)="sort('asc','designation__designation_name')" class="bi bi-arrow-down"></i>
                       <i (click)="sort('desc','designation__designation_name')" *ngIf="arrowState['designation__designation_name']"
                         class="bi bi-arrow-up"></i>
-                        <button mat-icon-button [matMenuTriggerFor]="roleFilterMenu">
-                            <i class="bi-funnel-fill" *ngIf="filters.designation__designation_name.length>=1"></i>
-                          <i class="bi-funnel" *ngIf="filters.designation__designation_name.length===0"></i>
+                        <button mat-icon-button [matMenuTriggerFor]="roleFilterMenu" [ngClass]="filters.designation__designation_name.length>=1 ? 'filterdColumn':''">
+                        <span *ngIf="filters.designation__designation_name.length>=1">{{filters.designation__designation_name.length.toString().padStart(2, '0')}}</span>
+                         <i class="bi-funnel" *ngIf="filters.designation__designation_name.length===0"></i>
                         </button>
 
 

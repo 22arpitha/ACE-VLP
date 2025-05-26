@@ -84,3 +84,8 @@
     font-size: 12px;
     color: red;
   }
+  
+::ng-deep .mat-select-panel.custom-select-panel {
+  width: 100% !important;
+  min-width: 100% !important;
+}

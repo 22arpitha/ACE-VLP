@@ -392,7 +392,7 @@ settings_job_type
     } else if (Number(percentage) > 100) {
       item.isInvalid = true;
       item.errorType = 'max';
-    } else if (Number(percentage) < 1) {
+    } else if (Number(percentage) < 0) {
       item.isInvalid = true;
       item.errorType = 'min';
     } else {

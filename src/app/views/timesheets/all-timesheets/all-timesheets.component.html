@@ -202,8 +202,8 @@
                 <button
                   mat-icon-button
                   [matMenuTriggerFor]="employeeFilterMenu"
-                >
-                      <i class="bi-funnel-fill" *ngIf="filters.employee_name.length>=1"></i>
+                  [ngClass]="filters.employee_name.length>=1 ? 'filterdColumn':''">
+                        <span *ngIf="filters.employee_name.length>=1">{{filters.employee_name.length?.toString().padStart(2, '0')}}</span>
                           <i class="bi-funnel" *ngIf="filters.employee_name.length===0"></i>
                        
                 </button>
@@ -230,8 +230,8 @@
                   *ngIf="arrowState['client_name']"
                   class="bi bi-arrow-up"
                 ></i>
-                <button mat-icon-button [matMenuTriggerFor]="clientFilterMenu">
-                <i class="bi-funnel-fill" *ngIf="filters.client_name.length>=1"></i>
+                <button mat-icon-button [matMenuTriggerFor]="clientFilterMenu" [ngClass]="filters.client_name.length>=1 ? 'filterdColumn':''">
+                        <span *ngIf="filters.client_name.length>=1">{{filters.client_name.length?.toString().padStart(2, '0')}}</span>
                           <i class="bi-funnel" *ngIf="filters.client_name.length===0"></i>
                 </button>
 
@@ -257,8 +257,8 @@
                   *ngIf="arrowState['job_name']"
                   class="bi bi-arrow-up"
                 ></i>
-                <button mat-icon-button [matMenuTriggerFor]="jobFilterMenu">
-                 <i class="bi-funnel-fill" *ngIf="filters.job_name.length>=1"></i>
+                <button mat-icon-button [matMenuTriggerFor]="jobFilterMenu" [ngClass]="filters.job_name.length>=1 ? 'filterdColumn':''">
+                        <span *ngIf="filters.job_name.length>=1">{{filters.job_name.length?.toString().padStart(2, '0')}}</span>
                           <i class="bi-funnel" *ngIf="filters.job_name.length===0"></i>
                 </button>
 
@@ -282,8 +282,8 @@
                   *ngIf="arrowState['task_nmae']"
                   class="bi bi-arrow-up"
                 ></i>
-                <button mat-icon-button [matMenuTriggerFor]="taskFilterMenu">
-                  <i class="bi-funnel-fill" *ngIf="filters.task_nmae.length>=1"></i>
+                <button mat-icon-button [matMenuTriggerFor]="taskFilterMenu" [ngClass]="filters.task_nmae.length>=1 ? 'filterdColumn':''">
+                        <span *ngIf="filters.task_nmae.length>=1">{{filters.task_nmae.length}}</span>
                           <i class="bi-funnel" *ngIf="filters.task_nmae.length===0"></i>
                 </button>
 
