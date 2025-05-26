@@ -186,7 +186,7 @@
                       <td>{{getEmployeeName(item?.employees) || '-'}}</td>
                       <td>{{getManagerName(item?.employees) || '-'}}</td>
                           <td>
-                            <mat-select panelClass="custom-select-dropdown" class="mat-select-table" [ngModel]="item?.job_status" (selectionChange)="onStatusChange(item, $event)">
+                            <mat-select panelClass="custom-select-dropdown" class="mat-select-table editable-cell" [ngModel]="item?.job_status" (selectionChange)="onStatusChange(item, $event)">
                                 <mat-option *ngFor="let status of allJobStatus" [value]="status?.id">
                                   {{ status?.status_name }}
                                 </mat-option>
@@ -195,7 +195,7 @@
                           <td>
                            <div class="d-flex justify-content-around">
                             <div>
-                                <input matInput type="number" [(ngModel)]="item.percentage_of_completion" (ngModelChange)="validatePercentage(item)"  (keypress)="validateKeyPress($event)" [class.is-invalid]="item.isInvalid"
+                                <input matInput type="number" class="editable-cell" [(ngModel)]="item.percentage_of_completion" (ngModelChange)="validatePercentage(item)"  (keypress)="validateKeyPress($event)" [class.is-invalid]="item.isInvalid"
                                 maxlength="3" >
                                 <div *ngIf="item.isInvalid" class="text-danger">
                                     <small *ngIf="item.errorType === 'required'">Percentage is required.</small>
