@@ -52,11 +52,12 @@ export class AllJobsComponent implements OnInit {
   dateFilterValue: any = null;
   statusDateFilterValue: any = null;
   statusList:String[]=[];
-  filters: { job_type_name: string[]; client_name: string[];employees:string[];manager:string[] } = {
+  filters: { job_type_name: string[]; client_name: string[];employees:string[];manager:string[],status_name:string[] } = {
     job_type_name: [],
     client_name: [],
     employees:[],
-    manager:[]
+    manager:[],
+    status_name:[],
   };
 
 
@@ -64,6 +65,7 @@ export class AllJobsComponent implements OnInit {
   allJobTypeNames: IdNamePair[] = [];
   allManagerNames: IdNamePair[] = [];
   allEmployeeNames: IdNamePair[] = [];
+  allStatusNames: IdNamePair[] = [];
   filteredList = [];
   filterQuery: string;
   jobList:any = [];
@@ -155,20 +157,22 @@ export class AllJobsComponent implements OnInit {
       this.filterQuery += `&manager-ids=[${this.filters.manager.join(',')}]` ;
     }
 
-
     if (this.jobAllocationDate) {
       this.filterQuery += `&job-allocation-date=[${this.jobAllocationDate}]`;
     }
     if (this.statusDate) {
       this.filterQuery += `&job-status-date=[${this.statusDate}]`;
     }
-    if(this.isCurrent){
+    if(this.isCurrent && this.filters.status_name.length==0){
    this.jobStatusList('True');
-    }
-    else{
-      this.jobStatusList('False');
-    }
     this.filterQuery +=`&job-status=[${this.statusList}]`;
+    }
+    else if(!this.isCurrent && this.filters.status_name.length==0){
+    this.jobStatusList('False');
+    this.filterQuery +=`&job-status=[${this.statusList}]`;
+    }else{
+    this.filterQuery += `&job-status=[${this.filters.status_name.join(',')}]` ;
+    }
     this.apiService.getData(`${environment.live_url}/${environment.jobs}/${this.filterQuery}`).subscribe((res: any) => {
       this.allJobsList = res?.results;
       this.filteredList = res?.results;
@@ -413,12 +417,7 @@ settings_job_type
       this.apiService.updateData(`${environment.live_url}/${environment.jobs_percetage}/${item.id}/`,formData).subscribe((respData: any) => {
         if (respData) {
           this.apiService.showSuccess(respData['message']);
-          let status = this.changedStatusName.toLowerCase();
-          if(status==='completed' || status==='cancelled'){
-            this.getJobsHistoryList();
-          } else{
-            this.getCurrentJobsList()
-          }
+          this.filterData();
     }},(error: any) => {
       this.apiService.showError(error?.error?.detail);
     });
@@ -469,6 +468,11 @@ jobStatusList(status:any){
       ? jobstatus?.status_name !== "Cancelled" && jobstatus?.status_name !== "Completed"
       : jobstatus?.status_name === "Cancelled" || jobstatus?.status_name === "Completed")
     .map((status: any) => status?.status_name);
+    this.allStatusNames = this.allJobStatus
+    ?.filter((jobstatus: any) => isActive ? jobstatus?.status_name !== "Cancelled" && jobstatus?.status_name !== "Completed"
+      : jobstatus?.status_name === "Cancelled" || jobstatus?.status_name === "Completed").map((status:any) => ({
+      id: status?.status_name,name: status?.status_name
+    }))
 }
 
   setDateFilterColumn(event){

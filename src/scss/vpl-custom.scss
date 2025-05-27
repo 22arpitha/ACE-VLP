@@ -164,8 +164,8 @@ font-size: 12px !important;
 /* Editable input style */
 input.editable-cell,
 mat-select.editable-cell{
-  background-color:  #85b6dc !important;
-  border: 1px solid #000 !important;
+  background-color:  #D6EAF8 !important;
+  border: 1px solid #fff !important;
   padding: 6px;
   border-radius: 4px;
   transition: border 0.2s, box-shadow 0.2s;
@@ -175,7 +175,7 @@ mat-select.editable-cell{
 input.editable-cell:focus,
 mat-select.editable-cell:focus {
   background: #fff !important;
-  border-color: #000;
+  border-color: #fff;
   box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.2);
 }
 

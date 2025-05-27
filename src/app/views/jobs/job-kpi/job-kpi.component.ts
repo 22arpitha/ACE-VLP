@@ -84,10 +84,13 @@ initialFormValue:any;
       processing_time:[this.defaultReviewingTime],
       review_time:[this.defaultReviewingTime],
       budget_file:[null],
+      budget_file_name:[null],
       mrp:[0],
       mrpFile:[null],
+      mrp_file_name:[null],
       crp:[0],
       crpFile:[null],
+      crp_file_name:[null],
     });
   }
 
@@ -156,13 +159,17 @@ initialFormValue:any;
       processing_time: [{ value: emp?.kpi ? emp?.kpi?.processing_time:formattedbudget_time?.toString(), disabled: true}],
       review_time: [{ value: emp?.kpi ? emp?.kpi?.review_time:'000:00', disabled: true}],
       budget_file: [{ value: null, disabled: true}],
+      budget_file_name: [null],
       mrp: [{ value: emp?.kpi ? emp?.kpi?.mrp:0, disabled: true}],
       mrpFile: [{ value: null, disabled: true}],
+      mrp_file_name: [null],
       crp: [{ value: emp?.kpi ? emp?.kpi?.crp:0, disabled: true}],
       crpFile: [{ value: null, disabled: true}],
+      crp_file_name: [null],
     });
 if(emp?.kpi){
   employeesDetailsArray?.at(index)?.get('budget_file')?.setErrors(null);
+  employeesDetailsArray?.at(index)?.patchValue({'budget_file_name':null});
   // Budget File
   if(emp?.kpi && emp?.kpi?.budget_file){
     urlToFile(emp?.kpi?.budget_file, this.getFileName(emp?.kpi?.budget_file))
@@ -172,10 +179,11 @@ if(emp?.kpi){
         this.selectedBudgetFile[index] = this.budgetFile[index];
         this.budgetFileLink[index]=`${environment.media_url+emp?.kpi?.budget_file}`
       }else{
-        this.budgetFile[index] = null;
+      this.budgetFile[index] = null;
       this.selectedBudgetFile[index] = null;
       this.budgetFileLink[index]=null;
       employeesDetailsArray?.at(index)?.patchValue({'budget_file':null});
+      employeesDetailsArray?.at(index)?.patchValue({'budget_file_name':null});
       }
     }
 
@@ -183,10 +191,12 @@ if(emp?.kpi){
     .catch(error => console.error('Error:', error));
     }else{
       employeesDetailsArray?.at(index)?.patchValue({'budget_file':null});
+      employeesDetailsArray?.at(index)?.patchValue({'budget_file_name':null});
     }
     // MRP File
     if(emp?.kpi && emp?.kpi?.mrpFile){
       employeesDetailsArray?.at(index)?.get('mrpFile')?.setErrors(null);
+      employeesDetailsArray?.at(index)?.patchValue({'mrp_file_name':null});
       urlToFile(emp?.kpi?.mrpFile, this.getFileName(emp?.kpi?.mrpFile))
       .then(file => {
         if(file){
@@ -198,16 +208,19 @@ if(emp?.kpi){
         this.selectedMrpFile[index] = null;
         this.mrpFileLink[index]=null;
         employeesDetailsArray?.at(index)?.patchValue({'mrpFile':null});
+        employeesDetailsArray?.at(index)?.patchValue({'mrp_file_name':null});
         }
       }
       )
       .catch(error => console.error('Error:', error));
       }else{
         employeesDetailsArray?.at(index)?.patchValue({'mrpFile':null});
+        employeesDetailsArray?.at(index)?.patchValue({'mrp_file_name':null});
       }
       // CRP File
       if(emp?.kpi && emp?.kpi?.crpFile){
         employeesDetailsArray?.at(index)?.get('crpFile')?.setErrors(null);
+          employeesDetailsArray?.at(index)?.patchValue({'crp_file_name':null});
         urlToFile(emp?.kpi?.crpFile, this.getFileName(emp?.kpi?.crpFile))
         .then(file => {
           if(file){
@@ -219,6 +232,7 @@ if(emp?.kpi){
             this.selectedCrpFile[index]=null;
             this.crpFileLink[index]=null;
             employeesDetailsArray?.at(index)?.patchValue({'crpFile':null});
+          employeesDetailsArray?.at(index)?.patchValue({'crp_file_name':null});
           }
 
         }
@@ -226,6 +240,7 @@ if(emp?.kpi){
         .catch(error => console.error('Error:', error));
         }else{
           employeesDetailsArray?.at(index)?.patchValue({'crpFile':null});
+          employeesDetailsArray?.at(index)?.patchValue({'crp_file_name':null});
         }
   }
     employeesDetailsArray.push(employeeForm);
@@ -293,12 +308,15 @@ public async UpdateFileFieldData(empData: any) {
       // Handle each file type asynchronously
       if (this.budgetFile && this.budgetFile[index]) {
         empData[index].budget_file = await this.convertFileToBase64(this.budgetFile[index]);
+        empData[index].budget_file_name = this.selectedBudgetFile[index].name || null;
       }
       if (this.mrpFile && this.mrpFile[index]) {
         empData[index].mrpFile = await this.convertFileToBase64(this.mrpFile[index]);
+        empData[index].mrp_file_name = this.selectedMrpFile[index].name || null;
       }
       if (this.crpFile && this.crpFile[index]) {
         empData[index].crpFile = await this.convertFileToBase64(this.crpFile[index]);
+        empData[index].crp_file_name = this.selectedCrpFile[index].name || null;
       }
     }
   }

@@ -1,4 +1,4 @@
-import { Component, ElementRef, HostListener, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DatePipe } from '@angular/common';
 import { FormBuilder, FormGroup, FormGroupDirective, Validators } from '@angular/forms';
@@ -16,7 +16,7 @@ import { setMaxListeners } from 'events';
   templateUrl: './create-update-timesheet.component.html',
   styleUrls: ['./create-update-timesheet.component.scss']
 })
-export class CreateUpdateTimesheetComponent implements CanComponentDeactivate, OnInit {
+export class CreateUpdateTimesheetComponent implements CanComponentDeactivate,OnInit,OnDestroy {
   @ViewChild(FormGroupDirective) formGroupDirective!: FormGroupDirective;
    @ViewChild('formInputField') formInputField: ElementRef;
   BreadCrumbsTitle: any = 'Timesheet';
@@ -73,7 +73,13 @@ errorMessage:any='';
     } else {
       this.getStartTimePreviousData();
     }
-
+    this.timesheetFormGroup?.valueChanges?.subscribe(() => {
+      const currentFormValue = this.timesheetFormGroup?.getRawValue();
+      const isInvalid = this.timesheetFormGroup?.touched && this.timesheetFormGroup?.invalid;
+      const isFormChanged:boolean =  JSON.stringify(currentFormValue) !== JSON.stringify(this.initialFormValue);
+      let unSavedChanges = isFormChanged || isInvalid;
+     this.formErrorScrollService.setUnsavedChanges(unSavedChanges);
+    });
   }
 
 
@@ -88,14 +94,7 @@ errorMessage:any='';
       // this.getEmployeeJobsList();
       this.getTaskList();
     }
-    this.timesheetFormGroup?.valueChanges?.subscribe(() => {
-      const currentFormValue = this.timesheetFormGroup?.getRawValue();
-      const isInvalid = this.timesheetFormGroup?.touched && this.timesheetFormGroup?.invalid;
-      // console.log(this.initialFormValue,currentFormValue);
-      const isFormChanged:boolean =  JSON.stringify(currentFormValue) !== JSON.stringify(this.initialFormValue);
-      let unSavedChanges = isFormChanged || isInvalid;
-     this.formErrorScrollService.setUnsavedChanges(unSavedChanges);
-    });
+
   }
   ngOnDestroy(): void {
 this.formErrorScrollService.resetHasUnsavedValue();

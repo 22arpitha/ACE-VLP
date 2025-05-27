@@ -5,8 +5,7 @@ import { CanDeactivateGuard } from '../../auth-guard/can-deactivate.guard';
 
 const routes: Routes = [
   {
-    path:'', component:ChangePasswordsComponent,
-    canDeactivate:[CanDeactivateGuard],
+    path:'', component:ChangePasswordsComponent
   }
 ];
 

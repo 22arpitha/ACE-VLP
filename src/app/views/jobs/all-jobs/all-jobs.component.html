@@ -139,7 +139,20 @@
                       </mat-menu>
                     </th>
                     
-                    <th scope="col" class="status-col">Status</th>
+                    <th scope="col" class="status-col">Status
+                      <button mat-icon-button [matMenuTriggerFor]="statusFilterMenu" [ngClass]="filters.status_name.length>=1 ? 'filterdColumn':''">
+                        <span *ngIf="filters.status_name.length>=1">{{filters.status_name.length.toString().padStart(2, '0')}}</span>
+                          <i class="bi-funnel" *ngIf="filters.status_name.length===0"></i>
+                      </button>
+
+                      <mat-menu #statusFilterMenu="matMenu">
+                        <app-generic-table-filter
+                          [options]="allStatusNames"
+                          [(selectedOptions)]="filters.status_name"
+                          (selectedOptionsChange)="filterData()"
+                        ></app-generic-table-filter>
+                      </mat-menu>
+                    </th>
                     <th scope="col">POC (%)</th>
                     <th scope="col">
                       Status Date
@@ -218,7 +231,6 @@
               </table>
             </div>
           </div>
-
           <div class="row mx-1 my-2 px-0" *ngIf="filteredList?.length === 0" >
             <app-generic-norecards></app-generic-norecards>
           </div>
