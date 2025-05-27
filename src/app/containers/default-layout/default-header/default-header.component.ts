@@ -13,9 +13,9 @@ import { environment } from '../../../../environments/environment';
 import { UserGuideModalComponent } from '../../../views/user-guide-modal/user-guide-modal.component';
 import { UserWelcomeMsgComponent } from '../../../views/user-welcome-msg/user-welcome-msg.component';
 import { NotificationService } from '../../../views/pages/notification/notification.service';
-import { WebsocketService } from '../../../service/websocket.service';
-import { EmployeeStatusWebsocketService } from '../../../service/employee-status-websocket.service';
-import { UserAccessWebsocketService } from '../../../service/user-access-websocket.service';
+// import { WebsocketService } from '../../../service/websocket.service';
+// import { EmployeeStatusWebsocketService } from '../../../service/employee-status-websocket.service';
+// import { UserAccessWebsocketService } from '../../../service/user-access-websocket.service';
 import { FormErrorScrollUtilityService } from '../../../service/form-error-scroll-utility-service.service';
 import { LogoutConfirmationService } from '../../../service/logout-confirmation.service';
 
@@ -74,8 +74,8 @@ export class DefaultHeaderComponent extends HeaderComponent implements OnInit {
     private common_service: CommonServiceService, private userGuideModel: BsModalService,
    private location:Location, public dialog: MatDialog,
    private notificationServive:NotificationService,
-   private webSocket:WebsocketService, private employeeSocket:EmployeeStatusWebsocketService,
-   private useraccessSocket:UserAccessWebsocketService,
+  //  private webSocket:WebsocketService, private employeeSocket:EmployeeStatusWebsocketService,
+  //  private useraccessSocket:UserAccessWebsocketService,
   private formUtilityService:FormErrorScrollUtilityService,
   private logoutService: LogoutConfirmationService) {
     super();
@@ -160,9 +160,9 @@ export class DefaultHeaderComponent extends HeaderComponent implements OnInit {
         if (resp === "ok") {
           this.logoutService.setLogoutConfirmed(true);
           this.api.showSuccess('You have been logged out!')
-          this.webSocket.closeWebSocket();
-          this.employeeSocket.closeWebSocket();
-          this.useraccessSocket.closeWebSocket();
+          // this.webSocket.closeWebSocket();
+          // this.employeeSocket.closeWebSocket();
+          // this.useraccessSocket.closeWebSocket();
           this.router.navigate(['/login']);
           localStorage.clear();
           sessionStorage.clear();
@@ -187,9 +187,9 @@ export class DefaultHeaderComponent extends HeaderComponent implements OnInit {
       modelRef.componentInstance.status.subscribe(resp => {
         if (resp === "ok") {
           this.api.showSuccess('You have been logged out!')
-          this.webSocket.closeWebSocket();
-          this.employeeSocket.closeWebSocket();
-          this.useraccessSocket.closeWebSocket();
+          // this.webSocket.closeWebSocket();
+          // this.employeeSocket.closeWebSocket();
+          // this.useraccessSocket.closeWebSocket();
           this.router.navigate(['/login']);
           localStorage.clear();
           sessionStorage.clear();

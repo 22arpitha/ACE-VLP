@@ -3,9 +3,9 @@ import { Validators, FormBuilder, FormGroup } from '@angular/forms';
 import { ApiserviceService } from '../../service/apiservice.service';
 import { Router } from '@angular/router';
 import { jwtDecode } from "jwt-decode";
-import { WebsocketService } from '../../service/websocket.service';
-import { EmployeeStatusWebsocketService } from '../../service/employee-status-websocket.service';
-import { UserAccessWebsocketService } from '../../service/user-access-websocket.service';
+// import { WebsocketService } from '../../service/websocket.service';
+// import { EmployeeStatusWebsocketService } from '../../service/employee-status-websocket.service';
+// import { UserAccessWebsocketService } from '../../service/user-access-websocket.service';
 import { environment } from '../../../environments/environment';
 @Component({
   selector: 'app-login',
@@ -17,8 +17,8 @@ export class LoginComponent implements OnInit {
   permission: any;
   showFieldset: boolean = false;
   constructor(private builder: FormBuilder, private api: ApiserviceService, private router: Router,
-    private websocketService:WebsocketService, private employeeSocket:EmployeeStatusWebsocketService,
-    private useraccessSocket:UserAccessWebsocketService
+    // private websocketService:WebsocketService, private employeeSocket:EmployeeStatusWebsocketService,
+    // private useraccessSocket:UserAccessWebsocketService
   ) { }
   time = new Date();
   message = '';
