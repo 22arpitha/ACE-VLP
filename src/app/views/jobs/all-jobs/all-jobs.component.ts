@@ -1,14 +1,15 @@
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup } from '@angular/forms';
+import { DatePipe } from '@angular/common';
 import { Router } from '@angular/router';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { MatDialog } from '@angular/material/dialog';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { forkJoin } from 'rxjs';
 import { GenericEditComponent } from '../../../generic-components/generic-edit/generic-edit.component';
 import { ApiserviceService } from '../../../service/apiservice.service';
 import { CommonServiceService } from '../../../service/common-service.service';
 import { SubModuleService } from '../../../service/sub-module.service';
 import { environment } from '../../../../environments/environment';
-import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
-import { DatePipe } from '@angular/common';
 
 export interface IdNamePair {
   id: any;
@@ -84,11 +85,12 @@ export class AllJobsComponent implements OnInit {
     this.user_id = sessionStorage.getItem('user_id');
     this.userRole = sessionStorage.getItem('user_role_name');
     this.getModuleAccess();
-    this.getJobStatusList();
-    this.getJobTypeList();
-    this.getAllEmployeeList();
-    this.getAllActiveManagerList();
-    this.getClientList();
+    this.loadInitialData();
+    // this.getJobStatusList();
+    // this.getJobTypeList();
+    // this.getAllEmployeeList();
+    // this.getAllActiveManagerList();
+    // this.getClientList();
      this.common_service.jobStatus$.subscribe((status:boolean)=>{
       if(status){
          this.getJobsHistoryList();
@@ -100,9 +102,9 @@ export class AllJobsComponent implements OnInit {
 
   ngOnInit() {
     this.initialForm();
-     setTimeout(() => {
-      this.getCurrentJobs();
-     }, 500);
+    //  setTimeout(() => {
+    //   this.getCurrentJobs();
+    //  }, 500);
   }
   access_name:any;
 
@@ -119,19 +121,76 @@ export class AllJobsComponent implements OnInit {
 
     return Array.from(seen, ([id, name]) => ({ id, name }));
   }
-  getClientList(){
-      let query = `?status=True`;
- query += this.userRole ==='Admin' ? '':`&employee-id=${this.user_id}`;
-    this.apiService.getData(`${environment.live_url}/${environment.clients}/${query}`).subscribe((res: any) => {
-      if(res){
-        this.allClientNames = res?.map((item: any) => ({
+
+  loadInitialData(){
+    let query = `?status=True`;
+   query += this.userRole ==='Admin' ? '':`&employee-id=${this.user_id}`;
+    this.allJobStatus=[];
+    this.allStatusNames=[];
+    this.allJobTypeNames=[];
+    this.allEmployeelist=[];
+    this.allEmployeeNames=[];
+    this.allManagerlist=[]
+    this.allManagerNames=[];
+    this.allClientNames=[];
+    forkJoin({
+      _res_job_status:this.apiService.getData(`${environment.live_url}/${environment.settings_job_status}/`),
+      _res_job_type:this.apiService.getData(`${environment.live_url}/${environment.settings_job_type}/`),
+    _res_employees:this.apiService.getData(`${environment.live_url}/${environment.employee}/?is_active=True&employee=True`), 
+    _res_Managers:this.apiService.getData(`${environment.live_url}/${environment.employee}/?is_active=True&employee=True&designation=manager`),
+    _res_clients:this.apiService.getData(`${environment.live_url}/${environment.clients}/${query}`),   
+    }).subscribe((data:any)=>{
+      if(data._res_job_status && data._res_job_status?.length>=1){
+        data._res_job_status.forEach((element:any)=>{
+          element['valueChanged']=false
+        })
+        this.allJobStatus = data._res_job_status;
+        this.jobStatusList('True');
+      }
+      if(data._res_job_type && data._res_job_type?.length>=1){
+         this.allJobTypeNames = data._res_job_type?.map((item: any) => ({
+          id: item.id,
+          name: item.job_type_name
+        }));
+      }
+      if(data._res_employees && data._res_employees?.length>=1){
+         this.allEmployeelist = data._res_employees;
+    this.allEmployeeNames = data._res_employees?.map((emp: any) => ({
+      id: emp?.user_id,
+      name: emp?.user__first_name
+    }))
+      }
+      if(data._res_Managers && data._res_Managers?.length>=1){
+    this.allManagerlist = data._res_Managers;
+    this.allManagerNames = data._res_Managers?.map((emp: any) => ({
+      id: emp?.user_id,
+      name: emp?.user__first_name
+    }))
+      }
+      if(data._res_clients && data._res_clients?.length>=1){
+        this.allClientNames = data._res_clients?.map((item: any) => ({
           id: item.id,
           name: item.client_name
         }));
       }
-    })
-    return this.allClientNames;
+      this.getCurrentJobs();
+    },(error)=>{
+      this.apiService.showError(error?.error?.detail)
+    });
   }
+//   getClientList(){
+//       let query = `?status=True`;
+//  query += this.userRole ==='Admin' ? '':`&employee-id=${this.user_id}`;
+//     this.apiService.getData(`${environment.live_url}/${environment.clients}/${query}`).subscribe((res: any) => {
+//       if(res){
+//         this.allClientNames = res?.map((item: any) => ({
+//           id: item.id,
+//           name: item.client_name
+//         }));
+//       }
+//     })
+//     return this.allClientNames;
+//   }
   applyClientFilter() {
     this.filterData();
   }
@@ -190,30 +249,29 @@ export class AllJobsComponent implements OnInit {
       }
     });
   }
-settings_job_type
-  getJobStatusList() {
-    this.apiService.getData(`${environment.live_url}/${environment.settings_job_status}/`).subscribe(
-      (resData: any) => {
-        // console.log(resData);
-        resData.forEach((element:any)=>{
-          element['valueChanged']=false
-        })
-        this.allJobStatus = resData;
-        this.jobStatusList('True');
-      }
-    )
-  }
-  getJobTypeList() {
-    this.apiService.getData(`${environment.live_url}/${environment.settings_job_type}/`).subscribe((res: any) => {
-      if (res) {
-        this.allJobTypeNames = res?.map((item: any) => ({
-          id: item.id,
-          name: item.job_type_name
-        }));
-      }
-    })
-    return this.allJobTypeNames;
-  }
+  // getJobStatusList() {
+  //   this.apiService.getData(`${environment.live_url}/${environment.settings_job_status}/`).subscribe(
+  //     (resData: any) => {
+  //       // console.log(resData);
+  //       resData.forEach((element:any)=>{
+  //         element['valueChanged']=false
+  //       })
+  //       this.allJobStatus = resData;
+  //       this.jobStatusList('True');
+  //     }
+  //   )
+  // }
+  // getJobTypeList() {
+  //   this.apiService.getData(`${environment.live_url}/${environment.settings_job_type}/`).subscribe((res: any) => {
+  //     if (res) {
+  //       this.allJobTypeNames = res?.map((item: any) => ({
+  //         id: item.id,
+  //         name: item.job_type_name
+  //       }));
+  //     }
+  //   })
+  //   return this.allJobTypeNames;
+  // }
 
   getAllEmployeeList(){
     this.allEmployeelist =[];
@@ -228,18 +286,18 @@ settings_job_type
     }));
   }
 
-  getAllActiveManagerList(){
-    this.allManagerlist =[];
-    this.apiService.getData(`${environment.live_url}/${environment.employee}/?is_active=True&employee=True&designation=manager`).subscribe((respData: any) => {
-    this.allManagerlist = respData;
-    this.allManagerNames = respData?.map((emp: any) => ({
-      id: emp?.user_id,
-      name: emp?.user__first_name
-    }))
-    },(error => {
-      this.apiService.showError(error?.error?.detail)
-    }));
-  }
+  // getAllActiveManagerList(){
+  //   this.allManagerlist =[];
+  //   this.apiService.getData(`${environment.live_url}/${environment.employee}/?is_active=True&employee=True&designation=manager`).subscribe((respData: any) => {
+  //   this.allManagerlist = respData;
+  //   this.allManagerNames = respData?.map((emp: any) => ({
+  //     id: emp?.user_id,
+  //     name: emp?.user__first_name
+  //   }))
+  //   },(error => {
+  //     this.apiService.showError(error?.error?.detail)
+  //   }));
+  // }
   onFilterChange(event: any, filterType: string) {
     const selectedOptions = event;
     this.filters[filterType] = selectedOptions;

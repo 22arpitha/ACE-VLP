@@ -318,7 +318,7 @@ async getTableData(params?: { page?: number; pageSize?: number; searchTerm?: str
         totalRecords: res.total_no_of_record,
         showDownload:true,
         timesheetDetailedReport:true,
-        searchPlaceholder:'Search by Client/Job/Task',
+        searchPlaceholder:'Search by Client/Job',
       };
     }
     });

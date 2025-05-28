@@ -229,6 +229,7 @@ export class TimesheetSummaryReportComponent implements OnInit {
            const formattedData = employees?.map((employee: any, index: number) => {
              const row: any = {
                sl: (page - 1) * pageSize + index + 1,
+               ...employee,
                employee_name: employee?.employee_name,
                employee_worked_hours: employee?.employee_worked_hours,
                short_fall: employee?.short_fall,
@@ -269,7 +270,6 @@ export class TimesheetSummaryReportComponent implements OnInit {
 
 
   }
-
 
   onSearch(term: string): void {
     this.term = term;
