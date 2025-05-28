@@ -4,5 +4,5 @@ export const tableColumns = [
   { label: 'Job Id', key: 'job_number', sortable: true },
   { label: 'Job',key: 'job_name',sortable: true },
   { label: 'Task', key: 'task', sortable: true },
-  { label: 'Actual Time', key: 'actual_time', sortable: true }
+  { label: 'Act. Hrs', key: 'actual_time', sortable: true},
 ]

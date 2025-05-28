@@ -46,7 +46,6 @@ export class ClientListComponent implements OnInit {
     tableSizes = [50,75,100];
     currentIndex: any;
     allClientList:any=[];
-    clientList:any=[];
     accessPermissions = []
     user_id: any;
     userRole: any;
@@ -74,42 +73,33 @@ export class ClientListComponent implements OnInit {
       this.getCurrentClientList();
      }
 
-    async ngOnInit(): Promise<void> {
+      ngOnInit() {
       this.getModuleAccess();
-
-      // this.getCurrentClientList()
-      await this.getClientFilterList('True');
+      this.getAllCountryList();
+      this.getAllSourceList();
     }
 
-    public getClientFilterList(status?:string){
-      let query='';
-      if(status){
-        query = `?status=${status}`;
-        query += this.userRole !== 'Admin' ? `&employee-id=${this.user_id}` : '';
-      }
-  this.apiService.getData(`${environment.live_url}/${environment.clients}/${query}`).subscribe(
-        (res: any) => {
-          this.clientList = res;
-          this.allCountriesNames = this.getUniqueValues(con => ({ id: con.country_id, name: con.country }));
-          this.allSourceNames = this.getUniqueValues(sou => ({ id: sou.source_id, name: sou.source }));
-        },(error: any) => {
-          this.apiService.showError(error?.error?.detail);
-        });
-    }
-    getUniqueValues(
-      extractor: (item: any) => { id: any; name: string }
-    ): { id: any; name: string }[] {
-      const seen = new Map();
-
-      this.clientList.forEach(client => {
-        const value = extractor(client);
-        if (value && value.id && !seen.has(value.id)) {
-          seen.set(value.id, value.name);
+  public getAllCountryList() {
+    this.apiService.getData(`${environment.live_url}/${environment.settings_country}/`).subscribe(
+      (res: any) => {
+        if(res && res.length>=1 ){
+          this.allCountriesNames = res?.map(((con:any) => ({ id: con.id, name: con.country_name })));
         }
+      },(error: any) => {
+        this.apiService.showError(error?.error?.detail);
       });
+  }
 
-      return Array.from(seen, ([id, name]) => ({ id, name }));
-    }
+  public getAllSourceList() {
+    this.apiService.getData(`${environment.live_url}/${environment.settings_source}/`).subscribe(
+      (res: any) => {
+        if(res && res.length>=1 ){
+          this.allSourceNames = res?.map(((sou:any) => ({ id: sou.id, name: sou.source_name })));
+        }
+       },(error: any) => {
+        this.apiService.showError(error?.error?.detail);
+      });
+  }
 
     access_name:any ;
     getModuleAccess(){
@@ -131,27 +121,30 @@ export class ClientListComponent implements OnInit {
     }
     async edit(item: any) {
       this.selectedItemId = item?.id;
-      try {
-        const modalRef = await this.modalService.open(GenericEditComponent, {
-          size: 'sm',
-          backdrop: 'static',
-          centered: true
-        });
+      sessionStorage.setItem('access-name', this.access_name?.name)
+      this.common_service.setClientActiveTabindex(0);
+      this.router.navigate(['/client/update-client/',this.selectedItemId]);
+      // try {
+      //   const modalRef = await this.modalService.open(GenericEditComponent, {
+      //     size: 'sm',
+      //     backdrop: 'static',
+      //     centered: true
+      //   });
 
-        modalRef.componentInstance.status.subscribe(resp => {
-          if (resp === 'ok') {
-            modalRef.dismiss();
-            sessionStorage.setItem('access-name', this.access_name?.name)
-            this.common_service.setClientActiveTabindex(0);
-            this.router.navigate(['/client/update-client/',this.selectedItemId]);
+      //   modalRef.componentInstance.status.subscribe(resp => {
+      //     if (resp === 'ok') {
+      //       modalRef.dismiss();
+      //       sessionStorage.setItem('access-name', this.access_name?.name)
+      //       this.common_service.setClientActiveTabindex(0);
+      //       this.router.navigate(['/client/update-client/',this.selectedItemId]);
 
-          } else {
-            modalRef.dismiss();
-          }
-        });
-      } catch (error) {
-        console.error('Error opening modal:', error);
-      }
+      //     } else {
+      //       modalRef.dismiss();
+      //     }
+      //   });
+      // } catch (error) {
+      //   console.error('Error opening modal:', error);
+      // }
     }
   public getCurrentClientList(){
   this.isHistory=false;
@@ -259,9 +252,10 @@ export class ClientListComponent implements OnInit {
     }
     let query = '';
     if(this.filterQuery){
-      query = this.filterQuery + `&file-type=${type}&is-active=${status}`
+      query = this.filterQuery + `&file-type=${type}&status=${status}`
     }else{
-      query = `?page=${this.page}&page_size=${this.tableSize}&file-type=${type}&is-active=${status}`
+      query = `?page=${this.page}&page_size=${this.tableSize}&file-type=${type}&status=${status}`
+      query +=this.userRole !== 'Admin' ? `&employee-id=${this.user_id}` : '';
     }
     let apiUrl = `${environment.live_url}/${environment.clients_details}/${query}`;
       fetch(apiUrl)

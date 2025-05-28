@@ -38,8 +38,8 @@ export class JobsOfClientsComponent implements OnInit {
     allEmployeeNames: IdNamePair[] = [];
     allStatusNames: IdNamePair[] = [];
     dateFilterValue: any = null;
+    statusDateFilterValue: any = null;
     filteredList:any = [];
-    initialList:any = [];
     datepicker:any;
     filterQuery: string;
     jobList:any = [];
@@ -56,10 +56,36 @@ export class JobsOfClientsComponent implements OnInit {
        this.getJobsOfClient(`?page=${1}&page_size=${5}&client=${this.client_id}`);
     }
   
-    async ngOnInit(): Promise<void> {
-      await this.getFilteredList();
+    ngOnInit(){
+      this.getEmployees();
+      this.getAllJobStatus();
     }
   
+
+    public getAllJobStatus() {
+    this.allStatusNames = [];
+    this.api.getData(`${environment.live_url}/${environment.settings_job_status}/`).subscribe((respData: any) => {
+    if(respData && respData.length>=1){
+  this.allStatusNames = respData.map((status:any) => ({ id: status.id, name: status.status_name }));
+    }
+    }, (error: any) => {
+      this.api.showError(error.detail);
+
+    });
+  }
+
+   public getEmployees() {
+    let queryparams = `?is_active=True&employee=True`;
+    this.allEmployeeNames = [];
+    this.api.getData(`${environment.live_url}/${environment.employee}/${queryparams}`).subscribe((respData: any) => {
+      if(respData && respData.length>=1){
+      this.allEmployeeNames = respData.map((emp:any) => ({ id: emp.user_id, name: emp.user__full_name }));
+    }
+    }, (error => {
+      this.api.showError(error?.error?.detail)
+    }));
+  }
+
     getContinuousIndex(index: number): number {
       return (this.page - 1) * this.tableSize + index + 1;
     }
@@ -68,23 +94,6 @@ export class JobsOfClientsComponent implements OnInit {
       this.arrowState[column] = direction === 'asc' ? true : false;
       this.directionValue = direction;
       this.sortValue = column;
-    }
-  
-    public getFilteredList(){
-      let query =`?client=${this.client_id}`;
-      query +=this.userRole !== 'Admin' ? `&employee-id=${this.user_id}` : '';
-      this.api.getData(`${environment.live_url}/${environment.jobs}/${query}`).subscribe(
-        (res: any) => {
-          this.initialList = res;
-          this.allEmployeeNames = this.getUniqueValues(job => {
-            const emp = job.employees?.find((e: any) => e.is_primary);
-            return { id: emp?.employee || '', name: emp?.employee_name || '' };
-          });
-          this.allStatusNames = this.getUniqueValues(job => ({ id: job.job_status, name: job.job_status_name }));
-
-        },(error: any) => {
-          this.api.showError(error?.error?.detail);
-        });
     }
     getJobsOfClient(params: any) {
         this.api.getData(`${environment.live_url}/${environment.jobs}/${params}`).subscribe(
@@ -131,25 +140,10 @@ export class JobsOfClientsComponent implements OnInit {
         this.filterData();
       }
 
-      getUniqueValues(
-        extractor: (item: any) => { id: any; name: string }
-      ): { id: any; name: string }[] {
-        const seen = new Map();
-    
-        this.initialList.forEach(job => {
-          const value = extractor(job);
-          if (value && value.id && !seen.has(value.id)) {
-            seen.set(value.id, value.name);
-          }
-        });
-    
-        return Array.from(seen, ([id, name]) => ({ id, name }));
-      }
-
       filterData() {
         this.filterQuery = this.getFilterBaseUrl()
         if (this.filters.status.length) {
-          this.filterQuery += `&job-type-ids=[${this.filters.status.join(',')}]`;
+          this.filterQuery += `&job-status-ids=[${this.filters.status.join(',')}]`;
         }
         if (this.filters.employees.length) {
           this.userRole === 'accountant' ? this.filterQuery += `&employee-ids=[${this.filters.employees.join(',')}]` :
@@ -188,17 +182,25 @@ export class JobsOfClientsComponent implements OnInit {
         }
         this.filterData()
       }
+      onStatusDateSelected(event: any): void {
+    const selectedDate = event.value;
+    if (selectedDate) {
+     this.statusDate = this.datePipe.transform(selectedDate, 'yyyy-MM-dd');
+    }
+    this.filterData()
+  }
       clearDateFilter(){
         this.jobAllocationDate = null;
         this.dateFilterValue = null;
-        this.statusDate = null;
-        this.datepicker = null;
         this.filterData()
       }
       clearStatusDateFilter(){
         this.statusDate = null;
-        this.dateFilterValue = null;
-        this.datepicker = null;
+        this.statusDateFilterValue = null;
         this.filterData()
       }
+    getEmployeeName(employees: any): string {
+    const employee = employees.find((emp:any) => emp?.is_primary === true);
+    return employee ? employee?.employee_name : '';
+  }
 }

@@ -1,5 +1,6 @@
-import { Component, ContentChildren, OnInit, QueryList } from '@angular/core';
-import { environment } from 'src/environments/environment';
+import { Component, OnInit } from '@angular/core';
+import { environment } from '../../../../../environments/environment';
+import { ApiserviceService } from 'src/app/service/apiservice.service';
 
 @Component({
   selector: 'app-tabs',
@@ -9,15 +10,18 @@ import { environment } from 'src/environments/environment';
 export class TabsComponent implements OnInit {
 periodicityId:number | null = null;
 userRole:any
-period:number | null = null;
+period:{ year: string; month_list: string } = null;
 employee:number | null = null;
 resetFilter:boolean=false;
 ondefaultSelection:boolean =true;
+resetBtnDisable:boolean=false;
+modeName:any;
 tabs:string[] = ['Overall Productivity', 'Quantitative Productivity', 'Qualitative Productivity','Work Culture and Work Ethics',
    'Productive Hours','Non Billable Hours','Non Productive Hours' ];
   selectedTab: number = 0;
   commonFilterData:any={'employee_id':'','periodicity':'','period':''};
   user_id:any;
+  allPeroidicitylist:any=[];
   selectTab(index: number): void {
     this.selectedTab = index;
     if(((this.userRole ==='Accountant' && !this.periodicityId && !this.period)||(!this.employee && !this.periodicityId && !this.period))){
@@ -29,20 +33,22 @@ tabs:string[] = ['Overall Productivity', 'Quantitative Productivity', 'Qualitati
       this.ondefaultSelection=false;
     }
   }
-  constructor() {
+  constructor(private apiService: ApiserviceService) {
     this.userRole = sessionStorage.getItem('user_role_name');
     this.user_id = sessionStorage.getItem('user_id');
+    this.getAllPeriodicity();
    }
 
   ngOnInit(): void {
     if(this.ondefaultSelection){
-      setTimeout(() => this.applySearch(), 300);
+      setTimeout(() => this.applySearch(), 800);
     }
   }
   applySearch(){
     this.commonFilterData={'employee_id':this.employee,'periodicity':this.periodicityId,'period':this.period};
   }
   resetSearch(): void {
+    this.resetBtnDisable=true;
     // Reset all filter-related data
     this.commonFilterData = {
       employee_id: '',
@@ -64,11 +70,14 @@ tabs:string[] = ['Overall Productivity', 'Quantitative Productivity', 'Qualitati
     // Reset UI state and possibly re-apply search
     setTimeout(() => {
       this.resetFilter = false;
-  
       if (noFiltersSelected) {
         this.ondefaultSelection = true;
+        this.resetBtnDisable=false;
         // Apply the search with a slight delay
-        setTimeout(() => this.applySearch(), 300);
+        setTimeout(() => {
+          this.resetBtnDisable=false;
+          this.applySearch()
+        }, 300);
       }
     }, 100);
   }
@@ -80,20 +89,21 @@ this.employee=event;
   }
 selectedPeriodicity(event:any){
   this.periodicityId=event;
+  this.modeName = this.allPeroidicitylist.find((peroidicity:any)=>peroidicity.id=== this.periodicityId)?.periodicty_name;
 }
-selectedPeriod(event:any){
+selectedPeriod(event:{ year: string; month_list: string }){
 this.period=event;
 }
 
 downloadExcel(){
  let query = `?productivity-type-for-all=Overall`;
-  if(this.userRole === 'Admin'){
+  if(this.userRole === 'Admin' && !this.employee){
     query +=`&admin=True`
   }else{
-    query += this.employee ? `logged-in-user-id=${this.employee}` :`logged-in-user-id=${this.user_id}`
+    query += this.employee ? `&employee-id=${this.employee}` :`&employee-id=${this.user_id}`
   }
   if(this.period){
-query +=`&period=${this.period}&periodicity=${this.periodicityId}`
+query +=`&period=${encodeURIComponent(JSON.stringify(this.period))}`
   }
   if(this.periodicityId){
 query +=`&periodicity=${this.periodicityId}`
@@ -109,4 +119,14 @@ query +=`&periodicity=${this.periodicityId}`
         a.click();
       });
 }
+
+public getAllPeriodicity() {
+    this.allPeroidicitylist = [];
+    this.apiService.getData(`${environment.live_url}/${environment.settings_periodicty}/`).subscribe(
+      (res: any) => {
+        this.allPeroidicitylist = res;
+      }, (error: any) => {
+        this.apiService.showError(error?.error?.detail);
+      });
+  }
 }

@@ -21,7 +21,7 @@ export class WebsocketService {
     const user_role = sessionStorage.getItem('user_role_name');
     if (token && user_role!='SuperAdmin') {
       // console.log(' after refresh...');
-      this.connectWebSocket();
+      // this.connectWebSocket();
     }
   }
 
@@ -68,7 +68,7 @@ export class WebsocketService {
     const user_role = sessionStorage.getItem('user_role_name');
     if (token && user_role!='SuperAdmin') {
       // console.log('after refresh...');
-      this.connectWebSocket();
+      // this.connectWebSocket();
     }
   }
 

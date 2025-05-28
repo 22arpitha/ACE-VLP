@@ -1,4 +1,4 @@
-import { Component, ElementRef, HostListener, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DatePipe } from '@angular/common';
 import { FormBuilder, FormGroup, FormGroupDirective, Validators } from '@angular/forms';
@@ -9,13 +9,14 @@ import { SubModuleService } from '../../../service/sub-module.service';
 import { CommonServiceService } from '../../../service/common-service.service';
 import { FormErrorScrollUtilityService } from '../../../service/form-error-scroll-utility-service.service';
 import {CanComponentDeactivate} from '../../../auth-guard/can-deactivate.guard'
+import { setMaxListeners } from 'events';
 
 @Component({
   selector: 'app-create-update-timesheet',
   templateUrl: './create-update-timesheet.component.html',
   styleUrls: ['./create-update-timesheet.component.scss']
 })
-export class CreateUpdateTimesheetComponent implements CanComponentDeactivate, OnInit {
+export class CreateUpdateTimesheetComponent implements CanComponentDeactivate,OnInit,OnDestroy {
   @ViewChild(FormGroupDirective) formGroupDirective!: FormGroupDirective;
    @ViewChild('formInputField') formInputField: ElementRef;
   BreadCrumbsTitle: any = 'Timesheet';
@@ -39,6 +40,8 @@ export class CreateUpdateTimesheetComponent implements CanComponentDeactivate, O
   minEndTime: string = '';
   statusList:any=[];
 allJobStatus:any=[];
+weekTimesheetSubmitted: boolean = false;
+errorMessage:any='';
   constructor(private fb: FormBuilder, private apiService: ApiserviceService, private datePipe: DatePipe,
     private accessControlService: SubModuleService, private router: Router, private common_service: CommonServiceService,
     private activeRoute: ActivatedRoute, private formErrorScrollService: FormErrorScrollUtilityService
@@ -52,22 +55,31 @@ allJobStatus:any=[];
     } else {
       this.common_service.setTitle('Create ' + this.BreadCrumbsTitle)
     }
+    
   }
 
   ngOnInit(): void {
+    this.getAllDropdownData();
     const now = new Date();
     const hours = now.getHours().toString().padStart(2, '0');
     const minutes = now.getMinutes().toString().padStart(2, '0');
     this.currentTime = `${hours}:${minutes}`;
     this.initialForm();
-    this.getJobStatusList();
-    this.getAllDropdownData();
     if (this.isEditItem) {
-      this.getTimesheetDetails(this.timesheet_id);
+      // Delay due to alldropdown dependency
+      setTimeout(() => {
+        this.getTimesheetDetails(this.timesheet_id);
+      }, 500);
     } else {
       this.getStartTimePreviousData();
     }
-
+    this.timesheetFormGroup?.valueChanges?.subscribe(() => {
+      const currentFormValue = this.timesheetFormGroup?.getRawValue();
+      const isInvalid = this.timesheetFormGroup?.touched && this.timesheetFormGroup?.invalid;
+      const isFormChanged:boolean =  JSON.stringify(currentFormValue) !== JSON.stringify(this.initialFormValue);
+      let unSavedChanges = isFormChanged || isInvalid;
+     this.formErrorScrollService.setUnsavedChanges(unSavedChanges);
+    });
   }
 
 
@@ -77,19 +89,12 @@ allJobStatus:any=[];
   getAllDropdownData() {
     if (this.user_role_name != 'Admin') {
       this.getModuleAccess();
-      this.getEmployeeData();
-      this.getEmployeeClientData();
+      this.getJobStatusList();
+      this.getEmployeeData();;
       // this.getEmployeeJobsList();
       this.getTaskList();
     }
-    this.timesheetFormGroup?.valueChanges?.subscribe(() => {
-      const currentFormValue = this.timesheetFormGroup?.getRawValue();
-      const isInvalid = this.timesheetFormGroup?.touched && this.timesheetFormGroup?.invalid;
-      // console.log(this.initialFormValue,currentFormValue);
-      const isFormChanged:boolean =  JSON.stringify(currentFormValue) !== JSON.stringify(this.initialFormValue);
-      let unSavedChanges = isFormChanged || isInvalid;
-     this.formErrorScrollService.setUnsavedChanges(unSavedChanges);
-    });
+
   }
   ngOnDestroy(): void {
 this.formErrorScrollService.resetHasUnsavedValue();
@@ -98,7 +103,7 @@ this.formErrorScrollService.resetHasUnsavedValue();
     this.timesheetFormGroup = this.fb.group({
       date: [this.currentDate, Validators.required],
       employee_id: ['', Validators.required],
-      client_id: ['', Validators.required],
+      client_id: [null],
       job_id: ['', Validators.required],
       task: ['', Validators.required],
       start_time: ['', [Validators.required, Validators.pattern(/^([01]\d|2[0-3]):([0-5][0-9]|[1-5][0-9])$/)]],
@@ -138,24 +143,6 @@ this.formErrorScrollService.resetHasUnsavedValue();
     )
   }
 
-  getEmployeeClientData() {
-    let queryparams = `?status=True&employee-id=${this.user_id}`
-    this.apiService.getData(`${environment.live_url}/${environment.clients}/${queryparams}`).subscribe(
-      (res: any) => {
-        // console.log('clientList data', res)
-        this.clientList = res
-      },
-      (error: any) => {
-        this.apiService.showError(error?.error?.detail);
-      }
-    )
-  }
-
-  onClientChange(event:any){
-    // console.log(event)
-    this.getEmployeeJobsList(event.value)
-  }
-
   filteredClientList() {
     if (!this.searchClientText) {
       return this.clientList;
@@ -165,8 +152,8 @@ this.formErrorScrollService.resetHasUnsavedValue();
     );
   }
 
-  getEmployeeJobsList(id) {
-    let queryparams = `?client=${id}&job-status=[${this.statusList}]&employee-id=${this.user_id}`;
+  getEmployeeJobsList() {
+    let queryparams = `?job-status=[${this.statusList}]&employee-id=${this.user_id}`;
     this.apiService.getData(`${environment.live_url}/${environment.jobs}/${queryparams}`).subscribe(
       (res: any) => {
         // console.log('jobs data', res)
@@ -206,7 +193,50 @@ this.formErrorScrollService.resetHasUnsavedValue();
     )
   }
   dateSelected(event){
-    this.getStartTimePreviousData()
+  const { startOfWeek, endOfWeek } = this.getWeekRangeFromSelectedDate(this.formatDateToString(event.value));
+  this.checkTimesheetSubmission(startOfWeek,endOfWeek);
+  this.getStartTimePreviousData()
+  }
+formatDateToString(date: Date): string | null {
+    return this.datePipe.transform(date, 'yyyy-MM-dd'); // Output: '2025-04-13'
+  }
+getWeekRangeFromSelectedDate(date: any): { startOfWeek: string; endOfWeek: string } {
+  const selected = new Date(date);
+  const dayOfWeek = selected.getDay(); // Sunday = 0, Monday = 1, ..., Saturday = 6
+
+  // Get Sunday (start of the week)
+  const startOfWeek = new Date(selected);
+  startOfWeek.setDate(selected.getDate() - dayOfWeek);
+
+  // Get Saturday (end of the week)
+  const endOfWeek = new Date(startOfWeek);
+  endOfWeek.setDate(startOfWeek.getDate() + 6);
+
+  // Format date as YYYY-MM-DD
+  const format = (d: Date) => d.toISOString().split('T')[0];
+
+  return {
+    startOfWeek: format(startOfWeek),
+    endOfWeek: format(endOfWeek),
+  };
+}
+
+
+checkTimesheetSubmission(startDate,endDate) {
+  this.errorMessage='';
+  this.weekTimesheetSubmitted=false;
+    let query = `?employee-id=${this.user_id}&from-date=${startDate}&to-date=${endDate}`
+    this.apiService.getData(`${environment.live_url}/${environment.submit_weekly_timesheet}/${query}`).subscribe(
+      (res: any) => {
+        this.weekTimesheetSubmitted = res.is_timesheet_submitted;
+        if(this.weekTimesheetSubmitted){
+          this.errorMessage=`Timesheet already submitted for this week (${startDate} – ${endDate}). Cannot create new.`;
+        }        
+      },
+      (error: any) => {
+        console.log(error)
+      }
+    )
   }
 
   getStartTimePreviousData() {
@@ -265,12 +295,17 @@ this.formErrorScrollService.resetHasUnsavedValue();
     this.updateDuration()
   }
   endTimeFormat(event: any): void {
-    let rawValue = event.target.value.replace(/[^0-9]/g, '');
+   if(event.target.value){
+let rawValue = event.target.value.replace(/[^0-9]/g, '');
     if (rawValue.length > 2) {
       rawValue = rawValue.slice(0, 2) + ':' + rawValue.slice(2);
     }
     this.timesheetFormGroup.controls['end_time'].setValue(rawValue, { emitEvent: false });
     this.isEndTimeBeforeStartTime();
+   }else{
+this.timesheetFormGroup.controls['time_spent']?.reset();
+   }
+    
   }
 
   sss: boolean = false
@@ -329,9 +364,7 @@ this.formErrorScrollService.resetHasUnsavedValue();
   getTimesheetDetails(id: any) {
     this.apiService.getData(`${environment.live_url}/${environment.vlp_timesheets}/${id}/`).subscribe(
       (res: any) => {
-        // console.log(res);
-        this.getEmployeeJobsList(res.client_id)
-        this.timesheetFormGroup.patchValue({
+         this.timesheetFormGroup.patchValue({
           date: res.date,
           employee_id: res.employee_id,
           client_id: res.client_id,
@@ -342,7 +375,7 @@ this.formErrorScrollService.resetHasUnsavedValue();
           time_spent: res.time_spent,
           notes: res.notes,
           created_by: res.created_by,
-        })
+        });
       },
       (error: any) => {
         this.apiService.showError(error?.error?.detail);
@@ -376,9 +409,10 @@ this.formErrorScrollService.resetHasUnsavedValue();
         this.apiService.postData(`${environment.live_url}/${environment.vlp_timesheets}/`, this.timesheetFormGroup.value).subscribe((respData: any) => {
           if (respData) {
             this.apiService.showSuccess(respData['message']);
+            this.getAllDropdownData();
             this.resetFormState();
-            sessionStorage.removeItem("access-name")
-            this.router.navigate(['/timesheets/all-timesheets']);
+            // sessionStorage.removeItem("access-name")
+            // this.router.navigate(['/timesheets/all-timesheets']);
           }
         }, (error: any) => {
           this.apiService.showError(error?.error?.detail);
@@ -390,8 +424,13 @@ this.formErrorScrollService.resetHasUnsavedValue();
   public resetFormState() {
     this.formGroupDirective?.resetForm();
     this.formErrorScrollService.resetHasUnsavedValue();
+    const now = new Date();
+    const hours = now.getHours().toString().padStart(2, '0');
+    const minutes = now.getMinutes().toString().padStart(2, '0');
+    this.currentTime = `${hours}:${minutes}`;
     this.isEditItem = false;
-    this.initialFormValue  = this.timesheetFormGroup.getRawValue();
+    this.initialForm();
+    this.getStartTimePreviousData();
   }
 
   canDeactivate(): Observable<boolean> {
@@ -409,14 +448,18 @@ unloadNotification($event: BeforeUnloadEvent): void {
   }
 }
 getJobStatusList() {
+  this.allJobStatus=[];
+  this.statusList=[];
   this.apiService.getData(`${environment.live_url}/${environment.settings_job_status}/`).subscribe(
     (resData: any) => {
       if(resData){
         this.allJobStatus = resData;
         this.statusList = this.allJobStatus
         ?.filter((jobstatus: any) =>jobstatus?.status_name !== "Cancelled" && jobstatus?.status_name !== "Completed")?.map((status: any) => status?.status_name);
-    
       }
+    setTimeout(() => {
+      this.getEmployeeJobsList();
+    }, 300);
     },
     (error:any)=>{
       this.apiService.showError(error?.error?.detail);

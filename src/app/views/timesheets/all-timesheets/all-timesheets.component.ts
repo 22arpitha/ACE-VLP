@@ -9,8 +9,6 @@ import { environment } from '../../../../environments/environment';
 import { SubModuleService } from '../../../service/sub-module.service';
 import { GenericDeleteComponent } from '../../../generic-components/generic-delete/generic-delete.component';
 import { GenericTimesheetConfirmationComponent } from '../../../generic-components/generic-timesheet-confirmation/generic-timesheet-confirmation.component';
-import { MAT_DATE_RANGE_SELECTION_STRATEGY } from '@angular/material/datepicker';
-import { WeeklySelectionStrategy } from '../../../shared/weekly-selection-strategy';
 export interface IdNamePair {
   id: any;
   name: string;
@@ -19,12 +17,7 @@ export interface IdNamePair {
   selector: 'app-all-timesheets',
   templateUrl: './all-timesheets.component.html',
   styleUrls: ['./all-timesheets.component.scss'],
-   providers: [
-      {
-        provide: MAT_DATE_RANGE_SELECTION_STRATEGY,
-        useClass: WeeklySelectionStrategy
-      }
-    ]
+
 })
 export class AllTimesheetsComponent implements OnInit {
   selectedDate: any;
@@ -66,29 +59,42 @@ export class AllTimesheetsComponent implements OnInit {
   allTaskNames:IdNamePair[] = [];
   dateFilterValue: any = null;
   resetWeekDate: boolean = false;
-  filteredList:any = [];
   datepicker:any;
   filterQuery: string;
   initalTimesheetList:any = [];
   timesheetDate: string | null;
-  constructor(private common_service: CommonServiceService,
-    private router: Router, private modalService: NgbModal, private accessControlService: SubModuleService,
-    private apiService: ApiserviceService, private datePipe: DatePipe) {
+  total_working_hours: any;
+  shortfall: any;
+  constructor(
+    private common_service: CommonServiceService,
+    private router: Router,
+    private modalService: NgbModal,
+    private accessControlService: SubModuleService,
+    private apiService: ApiserviceService,
+    private datePipe: DatePipe) {
     this.common_service.setTitle(this.BreadCrumbsTitle)
 
     this.user_id = sessionStorage.getItem('user_id');
     this.userRole = sessionStorage.getItem('user_role_name');
+    const startDate = this.getStartOfCurrentWeek();
+    const endDate = this.getEndOfCurrentWeek();
+    this.startDate = this.datePipe.transform(startDate, 'yyyy-MM-dd');
+    this.endDate = this.datePipe.transform(endDate, 'yyyy-MM-dd');
   }
 
   async ngOnInit(): Promise<void> {
     this.getModuleAccess();
+    this.getEmployees();
+    this.getAllActiveClients();
+    this.getAllUserbasedActiveJobsList();
+    this.getTaskList();
     if (this.userRole != 'Admin') {
       this.getWeekData();
     } else {
-      await this.getAllTimesheet();
+      this.startDate ='';
+      this.endDate='';
       this.getTimesheets();
     }
-    this.getTimesheetsIDs();
   }
 
   isTodayFriday(): boolean {
@@ -148,8 +154,60 @@ export class AllTimesheetsComponent implements OnInit {
     return date >= start && date <= end;
   }
 
+  public getAllActiveClients() {
+    let query:any
+    if(this.userRole ==='Admin'){
+      query = '?status=True'
+    } else{
+      query = `?status=True&employee-id=${this.user_id}`
+    }
+    this.apiService.getData(`${environment.live_url}/${environment.clients}/${query}`).subscribe(
+      (res: any) => {
+        this.allClientNames = res?.map((client: any) => ({
+            id: client.id, name: client.client_name
+          }));
+      }, (error: any) => {
+        this.apiService.showError(error?.error?.detail);
+      });
+  }
 
+  getTaskList(){
+      this.apiService.getData(`${environment.live_url}/${environment.timesheet}/?get-tasks=True`).subscribe((res: any) => {
+        if(res){
+          this.allTaskNames = res?.map((item: any) => ({
+            id: item.id,
+            name: item.value
+          }));
+        }
+      },(error: any) => {
+        this.apiService.showError(error?.error?.detail);
+      })
+    }
 
+public getEmployees() {
+    let queryparams = `?is_active=True&employee=True`;
+    this.allEmployeeNames = [];
+    this.apiService.getData(`${environment.live_url}/${environment.employee}/${queryparams}`).subscribe((respData: any) => {
+      if(respData && respData.length>=1){
+      this.allEmployeeNames = respData.map((emp:any) => ({ id: emp.user_id, name: emp.user__full_name }));
+    }
+    }, (error => {
+      this.apiService.showError(error?.error?.detail)
+    }));
+  }
+
+getAllUserbasedActiveJobsList() {
+let query = `?status=True`;
+query +=this.userRole !== 'Admin' ? `&employee-id=${this.user_id}` : '';
+this.allJobsNames=[];
+    this.apiService.getData(`${environment.live_url}/${environment.jobs}/${query}`).subscribe((res: any) => {
+      if(res && res.length>=1){
+      this.allJobsNames = res?.map(((jobs:any) => ({ id: jobs.id, name: jobs.job_name })));
+      }
+      }, (error => {
+      this.apiService.showError(error?.error?.detail)
+    }));
+  }
 
   access_name: any;
   getModuleAccess() {
@@ -184,7 +242,6 @@ export class AllTimesheetsComponent implements OnInit {
           this.startDate = res.data[0].date;
           this.endDate = res.data[res.data.length - 1].date;
         }
-        await this.getAllTimesheet();
         this.getTimesheets();
         this.checkTimesheetSubmission();
       }
@@ -244,39 +301,28 @@ export class AllTimesheetsComponent implements OnInit {
 
   public getTimesheets() {
     let query = this.getFilterBaseUrl();
-    this.apiService.getData(`${environment.live_url}/${environment.vlp_timesheets}/${query}`).subscribe(
+    this.apiService.getData(`${environment.live_url}/${environment.vlp_timesheets}/${query}&start-date=${this.startDate}&end-date=${this.endDate}`).subscribe(
       (res: any) => {
         this.allTimesheetsList = res?.results;
-        this.filteredList=res?.results;
-        // if (this.allTimesheetsList.length > 0) {
-        //   this.idsOfTimesheet = [];
-        //   res.results.forEach((element: any) => {
-        //     this.idsOfTimesheet.push(element.id)
-        //   })
-          // console.log('this.idsOfTimesheet', this.idsOfTimesheet)
-        //}
+        this.total_working_hours = res?.total_time_spent;
+        this.shortfall = res?.shortfall;
         const noOfPages: number = res?.['total_pages']
         this.count = noOfPages * this.tableSize;
         this.count = res?.['total_no_of_record']
         this.page = res?.['current_page'];
-        this.allClientNames = this.getUniqueValues(client => ({ id: client.client_id, name: client.client_name }));
-        this.allJobsNames =  this.getUniqueValues(jobs => ({ id: jobs.job_id, name: jobs.job_name }));
-        this.allEmployeeNames =  this.getUniqueValues(emps => ({ id: emps.employee_id, name: emps.employee_name }));
-        this.allTaskNames = this.getUniqueValues(tasks => ({ id: tasks.task, name: tasks.task_name }));
       }
     )
   }
   public getTimesheetsIDs() {
-   // let query = this.getFilterBaseUrl();
     this.apiService.getData(`${environment.live_url}/${environment.vlp_timesheets}/?timesheet-employee=${this.user_id}&start-date=${this.startDate}&end-date=${this.endDate}`).subscribe(
       (res: any) => {
         // this.allTimesheetsList = res;
         if (res.length > 0) {
           this.idsOfTimesheet = [];
           res?.forEach((element: any) => {
+              console.log('element',element.id);
             this.idsOfTimesheet.push(element.id)
           })
-          // console.log('this.idsOfTimesheet', this.idsOfTimesheet)
         }
         // const noOfPages: number = res?.['total_pages']
         // this.count = noOfPages * this.tableSize;
@@ -314,9 +360,17 @@ export class AllTimesheetsComponent implements OnInit {
 
   public getFilterBaseUrl(): string {
     if (this.userRole === 'Admin') {
-      return `?page=${this.page}&page_size=${this.tableSize}&search=${this.term}&start-date=${this.startDate}&end-date=${this.endDate}`;
+      let query = `?page=${this.page}&page_size=${this.tableSize}`;
+      if (this.term) {
+        query += `&search=${this.term}`;
+      }
+        return query;
     } else {
-      return `?timesheet-employee=${this.user_id}&page=${this.page}&page_size=${this.tableSize}&search=${this.term}&start-date=${this.startDate}&end-date=${this.endDate}`;
+      let query = `?page=${this.page}&page_size=${this.tableSize}`;
+      if (this.term) {
+        query += `&search=${this.term}`;
+      }
+       return `?timesheet-employee=${this.user_id}&page=${this.page}&page_size=${this.tableSize}&search=${this.term}`;
     }
   }
 
@@ -413,12 +467,12 @@ export class AllTimesheetsComponent implements OnInit {
         this.apiService.postData(`${environment.live_url}/${environment.submit_weekly_timesheet}/`, data).subscribe(
           (res: any) => {
             // console.log(res)
-            this.apiService.showSuccess(res.detail)
-            this.startDate='';
-            this.endDate = '';
-            this.selectedDate = '';
+            this.apiService.showSuccess(res.detail);
+            // this.startDate='';
+            // this.endDate = '';
+            // this.selectedDate = '';
+            // this.resetWeekDate = true
             this.getWeekData();
-            this.resetWeekDate = true
           },
           (error) => {
             console.log(error);
@@ -468,28 +522,14 @@ export class AllTimesheetsComponent implements OnInit {
   }
 
   // Filter related
-  getAllTimesheet(){
-    let query = '';
-    if (this.userRole === 'Admin') {
-      query = `?start-date=${this.startDate}&end-date=${this.endDate}`;
-    } else {
-      query =`?timesheet-employee=${this.user_id}&start-date=${this.startDate}&end-date=${this.endDate}`;
-    }
-    this.apiService.getData(`${environment.live_url}/${environment.vlp_timesheets}/${query}`).subscribe(
-      (res: any) => {
-        this.filteredList = res;
-        this.allClientNames = this.getUniqueValues(client => ({ id: client.client_id, name: client.client_name }));
-        this.allJobsNames =  this.getUniqueValues(jobs => ({ id: jobs.job_id, name: jobs.job_name }));
-        this.allEmployeeNames =  this.getUniqueValues(emps => ({ id: emps.employee_id, name: emps.employee_name }));
-        this.allTaskNames = this.getUniqueValues(tasks => ({ id: tasks.task, name: tasks.task_name }));
-      }
-    )
-  }
+
 
   clearDateFilter(){
     this.timesheetDate = null;
     this.dateFilterValue = null;
     this.datepicker = null;
+    this.startDate ='';
+    this.endDate='';
     this.filterData();
   }
   onDateSelected(event: any): void {
@@ -508,55 +548,50 @@ export class AllTimesheetsComponent implements OnInit {
 
 
   filterData() {
-    this.filterQuery = this.getFilterBaseUrl()
+    let filterQuery = this.getFilterBaseUrl()
     if (this.filters.client_name.length) {
-      this.filterQuery += `&client-ids=[${this.filters.client_name.join(',')}]`;
+      filterQuery += `&client-ids=[${this.filters.client_name.join(',')}]`;
     }
 
     if (this.filters.job_name.length) {
-      this.filterQuery += `&job-ids=[${this.filters.job_name.join(',')}]`;
+      filterQuery += `&job-ids=[${this.filters.job_name.join(',')}]`;
     }
     if (this.filters.employee_name.length) {
-      this.userRole === 'accountant' ? this.filterQuery += `&timesheet-employee-ids=[${this.filters.employee_name.join(',')}]` :
-      this.filterQuery += `&timesheet-employee-ids=[${this.filters.employee_name.join(',')}]` ;
+      this.userRole === 'Accountant' ? filterQuery += `&timesheet-employee-ids=[${this.filters.employee_name.join(',')}]` :
+      filterQuery += `&timesheet-employee-ids=[${this.filters.employee_name.join(',')}]` ;
     }
     if (this.filters.task_nmae.length) {
-      this.filterQuery += `&timesheet-task-ids=[${this.filters.task_nmae.join(',')}]`;
+      filterQuery += `&timesheet-task-ids=[${this.filters.task_nmae.join(',')}]`;
     }
-
-    if (this.timesheetDate) {
-      this.filterQuery += `&timesheet-dates=[${this.timesheetDate}]`;
+    if (this.userRole === 'Admin') {
+      if(this.startDate && this.endDate) {
+      filterQuery += `&start-date=${this.startDate}&end-date=${this.endDate}`;
+     }
     }
-    this.apiService.getData(`${environment.live_url}/${environment.vlp_timesheets}/${this.filterQuery}`).subscribe(
+     if (this.userRole !== 'Admin') {
+      if(this.timesheetDate) {
+      filterQuery += `&timesheet-dates=[${this.timesheetDate}]`;
+     }
+    }
+    this.apiService.getData(`${environment.live_url}/${environment.vlp_timesheets}/${filterQuery}`).subscribe(
       (res: any) => {
     this.allTimesheetsList = res?.results;
-      this.filteredList = res?.results;
       this.count = res?.['total_no_of_record'];
       this.page = res?.['current_page'];
-
-
     });
-  }
-  getUniqueValues(
-    extractor: (item: any) => { id: any; name: string }
-  ): { id: any; name: string }[] {
-    const seen = new Map();
-
-    this.filteredList.forEach(item => {
-      const value = extractor(item);
-      if (value && value.id && !seen.has(value.id)) {
-        seen.set(value.id, value.name);
-      }
-    });
-
-    return Array.from(seen, ([id, name]) => ({ id, name }));
   }
   onDateChange(event: any) {
-    this.startDate = this.datePipe.transform(event.value, 'yyyy-MM-dd');
-    // this.filterData();
+    this.startDate = '';
+    this.dateFilterValue = event.value;
+    this.startDate = this.datePipe.transform(this.dateFilterValue, 'yyyy-MM-dd');
   }
   onEndDateChange(event: any) {
-    this.endDate = this.datePipe.transform(event.value, 'yyyy-MM-dd');
-    // this.filterData();
+    this.endDate = '';
+    this.endDate = event.value;
+    this.endDate = this.datePipe.transform(this.endDate, 'yyyy-MM-dd');
+    if(this.startDate && this.endDate){
+      this.filterData();
+    }
+
   }
 }

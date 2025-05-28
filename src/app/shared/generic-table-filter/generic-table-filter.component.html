@@ -13,14 +13,15 @@
       (ngModelChange)="filterOptions()"
     />
   </div>
-
-  <mat-selection-list
-    [(ngModel)]="selectedOptions"
-    (ngModelChange)="onSelectionChange()"
-    [multiple]="true"
-  >
-    <mat-list-option *ngFor="let option of filteredOptions" [value]="option.id">
+<div class="custom-mat-select-list-style">
+<mat-selection-list class="dynamic-mat-selection">
+    <mat-list-option
+      *ngFor="let option of displayOptions"
+      [value]="option.id"
+      [selected]="isSelected(option.id)"
+      (click)="toggleSelection(option.id)">
       {{ option.name }}
     </mat-list-option>
   </mat-selection-list>
+  </div>
 </div>

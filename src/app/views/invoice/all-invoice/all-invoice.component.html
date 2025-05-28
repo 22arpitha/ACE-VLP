@@ -22,7 +22,7 @@
                       <i *ngIf="!arrowState['created_date']" (click)="sort('asc','created_date')" class="bi bi-arrow-down"></i>
                         <i (click)="sort('desc','created_date')" *ngIf="arrowState['created_date']"
                           class="bi bi-arrow-up"></i>
-                          <button *ngIf="!dateFilterValue"
+                          <button *ngIf="!startDate && !endDate"
                           mat-icon-button
                           (click)="setDateFilterColumn($event); picker1.open()"
                           class="ms-1 btn-menu-trigger"
@@ -30,27 +30,17 @@
                         <i class="bi bi-calendar"></i>
                       </button>
                       <button mat-icon-button container="body"
-                      ngbTooltip="Clear Invoice Date" placement="top"  *ngIf="dateFilterValue" (click)="clearDateFilter()" class="ms-1 btn-menu-trigger">
+                      ngbTooltip="Clear Invoice Date" placement="top"  *ngIf="startDate && endDate" (click)="clearDateFilter()" class="ms-1 btn-menu-trigger">
                         <i class="bi bi-x-circle"></i>
                       </button>
-                      <!-- <mat-form-field class="opacity-0 position-absolute">
-                        <mat-label>Choose a date</mat-label>
-                        <input
-                          matInput
-                          [matDatepicker]="datepicker"
-                          [(ngModel)]="dateFilterValue"
-                          (dateChange)="onDateSelected($event)"
-                        />
-                        <mat-hint>MM/DD/YYYY</mat-hint>
-                        <mat-datepicker #datepicker></mat-datepicker>
-                      </mat-form-field> -->
-                    <mat-form-field class="opacity-0 position-absolute" >
+
+                    <mat-form-field class="opacity-0 position-absolute">
                     <mat-date-range-input [rangePicker]="picker1">
                         <input
                           matStartDate
                           placeholder="Start date"
                           [(ngModel)]="startDate"
-                          (dateChange)="onDateChange($event)"
+                          (dateChange)="onStartDateChange($event)"
                         />
                         <input
                           matEndDate
@@ -75,8 +65,10 @@
                       <i *ngIf="!arrowState['client_name']" (click)="sort('asc','client_name')" class="bi bi-arrow-down"></i>
                       <i (click)="sort('desc','client_name')" *ngIf="arrowState['client_name']"
                         class="bi bi-arrow-up"></i>
-                        <button mat-icon-button [matMenuTriggerFor]="clientFilterMenu">
-                          <i class="bi bi-toggles"></i>
+                        <button mat-icon-button [matMenuTriggerFor]="clientFilterMenu" [ngClass]="filters.client_name.length>=1 ? 'filterdColumn':''">
+                        <span *ngIf="filters.client_name.length>=1">{{filters.client_name.length.toString().padStart(2, '0')}}</span>
+                          
+                          <i class="bi-funnel" *ngIf="filters.client_name.length===0"></i>
                         </button>
 
                         <mat-menu #clientFilterMenu="matMenu">
@@ -103,7 +95,7 @@
                              currentPage: page,
                              totalItems: count
                            }; let i=index'>
-                      <td>{{(item?.created_date  | date: 'dd/MM/yyyy')||'-'}}</td>
+                      <td>{{(item?.created_date || '-')}}</td>
                       <td>{{item?.invoice_number || '-'}}</td>
                       <td>{{item?.client_name || '-'}}</td>
                       <td>{{item?.total_amount || '-'}}</td>

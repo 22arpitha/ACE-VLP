@@ -50,17 +50,19 @@ BreadCrumbsTitle: any = 'Qualitative Productivity';
               const periodChanged = prev.period !== current.period;
               if (employeeIdChanged || periodicityChanged || periodChanged) {
                 this.dropdwonFilterData = current;
-                this.getTableData({
-                  page: this.page,
-                  pageSize: this.tableSize,
-                  searchTerm: this.term
-                });
+              if(this.dropdwonFilterData.periodicity && this.dropdwonFilterData.period){
+              this.getTableData({
+                page: this.page,
+                pageSize: this.tableSize,
+                searchTerm: this.term
+              });
+              }
               }
             }
           }
           ngOnInit(): void {
             this.common_service.setTitle(this.BreadCrumbsTitle)
-            this.getTableData()
+            // this.getTableData()
           }
 
           // Called when user changes page number from the dynamic table
@@ -128,7 +130,7 @@ BreadCrumbsTitle: any = 'Qualitative Productivity';
             if(this.dropdwonFilterData){
               query+= this.dropdwonFilterData.employee_id ? `&employee-id=${this.dropdwonFilterData.employee_id}`:this.user_role_name ==='Admin' ? '':`&employee-id=${this.user_id}`;
               query+= this.dropdwonFilterData.periodicity ? `&periodicity=${this.dropdwonFilterData.periodicity}`:'';
-              query+= this.dropdwonFilterData.period ? `&period=${this.dropdwonFilterData.period}`:'';
+              query+= this.dropdwonFilterData.period ? `&period=${encodeURIComponent(JSON.stringify(this.dropdwonFilterData.period))}`:'';
               query+= this.dropdwonFilterData.employee_id || this.dropdwonFilterData.periodicity || this.dropdwonFilterData.period ? '&is_dropdown_selected=True' :'';
               }else{
               query += this.user_role_name ==='Admin' ? '':`&employee-id=${this.user_id}`;
@@ -153,7 +155,7 @@ BreadCrumbsTitle: any = 'Qualitative Productivity';
           if(this.dropdwonFilterData){
             query+= this.dropdwonFilterData.employee_id ? `&employee-id=${this.dropdwonFilterData.employee_id}`:this.user_role_name ==='Admin' ? '':`&employee-id=${this.user_id}`;
             query+= this.dropdwonFilterData.periodicity ? `&periodicity=${this.dropdwonFilterData.periodicity}`:'';
-            query+= this.dropdwonFilterData.period ? `&period=${this.dropdwonFilterData.period}`:'';
+            query+= this.dropdwonFilterData.period ? `&period=${encodeURIComponent(JSON.stringify(this.dropdwonFilterData.period))}`:'';
             query+= this.dropdwonFilterData.employee_id || this.dropdwonFilterData.periodicity || this.dropdwonFilterData.period ? '&is_dropdown_selected=True' :'';
             }else{
             query += this.user_role_name ==='Admin' ? '':`&employee-id=${this.user_id}`;
@@ -179,6 +181,7 @@ BreadCrumbsTitle: any = 'Qualitative Productivity';
              totalRecords: res.total_no_of_record,
              hideDownload:true,
              showDownload:true,
+            searchPlaceholder:'Search by Client/Job',
            };
           });
 

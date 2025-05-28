@@ -82,6 +82,8 @@ import { PdfViewComponent } from './views/pdf-view/pdf-view.component';
 import { FormErrorScrollUtilityService } from './service/form-error-scroll-utility-service.service';
 import { ActivateChildGuard } from './auth-guard/activate-child.guard';
 import { GenericTimesheetConfirmationComponent } from './generic-components/generic-timesheet-confirmation/generic-timesheet-confirmation.component';
+import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
+import { CUSTOM_DATE_FORMATS, CustomDateAdapter } from './shared/custom-date-adapter';
 
 const APP_CONTAINERS = [
   DefaultFooterComponent,
@@ -180,6 +182,9 @@ const APP_CONTAINERS = [
       provide: PERFECT_SCROLLBAR_CONFIG,
       useValue: DEFAULT_PERFECT_SCROLLBAR_CONFIG,
     },
+    { provide: DateAdapter, useClass: CustomDateAdapter },
+    { provide: MAT_DATE_FORMATS, useValue: CUSTOM_DATE_FORMATS },
+    { provide: MAT_DATE_LOCALE, useValue: 'en-GB' },
     { provide: HTTP_INTERCEPTORS, useClass: BasicAuthInterceptor, multi: true },
 
       {

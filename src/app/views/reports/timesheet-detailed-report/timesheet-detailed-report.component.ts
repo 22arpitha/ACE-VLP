@@ -3,7 +3,6 @@ import { getTableColumns } from './timesheet-detailed-config';
 import { CommonServiceService } from '../../../service/common-service.service';
 import { ApiserviceService } from '../../../service/apiservice.service';
 import { environment } from '../../../../environments/environment';
-import { getUniqueValues, getUniqueValues2, getUniqueValues3 } from '../../../shared/unique-values.utils';
 import { buildPaginationQuery } from '../../../shared/pagination.util';
 import { downloadFileFromUrl } from '../../../shared/file-download.util';
 @Component({
@@ -49,10 +48,10 @@ export class TimesheetDetailedReportComponent implements OnInit {
     this.user_role_name = sessionStorage.getItem('user_role_name') || '';
   }
 
-  ngOnInit(): void {
+   ngOnInit() {
     this.common_service.setTitle(this.BreadCrumbsTitle)
     this.tableData = getTableColumns(this.user_role_name);
-    this.getTableData()
+    this.getJobList();
   }
 
 
@@ -112,9 +111,9 @@ handleAction(event: { actionType: string; detail: any,key:string }) {
       case 'filter':
       this.onApplyFilter(event.detail,event.key);
       break;
-      case 'dateFilter':
+      case 'dateRange':
         console.log(event.detail, event.key);
-      this.onApplyDateFilter(event.detail,event.key);
+      this.onApplyDateFilter(event.detail);
       break;
     default:
       this.getTableData({
@@ -156,12 +155,9 @@ onApplyFilter(filteredData: any[], filteredKey: string): void {
     timesheet_dates: this.selectedDate
   });
 }
-onApplyDateFilter(filteredDate:string, filteredKey: string): void {
-  console.log(filteredDate, filteredKey);
-
-  if (filteredKey === 'date') {
-    this.selectedDate = filteredDate;
-  }
+onApplyDateFilter(filteredDate:string): void {
+this.selectedDate = filteredDate;
+  //console.log('selectedDate',this.selectedDate);
   this.getTableData({
     page: 1,
     pageSize: this.tableSize,
@@ -190,12 +186,12 @@ exportCsvOrPdf(fileType) {
       if ( this.selectedTaskIds.length) {
         query += `&timesheet-task-ids=[${this.selectedTaskIds.join(',')}]`;
       }
-      if (this.selectedEmployeeIds.length) {
+      if (this.selectedEmployeeIds?.length) {
         query += `&timesheet-employee-ids=[${this.selectedEmployeeIds.join(',')}]`;
       }if(this.term){
         query += `&search=${this.term}`
       }if(this.selectedDate){
-        query += `&timesheet-dates=[${this.selectedDate}]`
+         query += `&start-date=${this.selectedDate.startDate}&end-date=${this.selectedDate.endDate}`
       }
   const url = `${environment.live_url}/${environment.timesheet_reports}/${query}&file-type=${fileType}&timsheet-type=detailed`;
   downloadFileFromUrl({
@@ -204,25 +200,66 @@ exportCsvOrPdf(fileType) {
     fileType
   });
 }
-
+getClienList(){
+  let query = `?status=True`
+  query += this.user_role_name ==='Admin' ? '':`&employee-id=${this.user_id}`;
+  this.api.getData(`${environment.live_url}/${environment.clients}/${query}`).subscribe((res: any) => {
+    if(res){
+      this.clientName = res?.map((item: any) => ({
+        id: item.id,
+        name: item.client_name
+      }));
+    }
+  })
+  return this.clientName;
+}
+  getJobList(){
+    let query = this.user_role_name ==='Admin' ? '':`?employee-id=${this.user_id}`;
+    this.api.getData(`${environment.live_url}/${environment.jobs}/${query}`).subscribe((res: any) => {
+      if(res){
+        this.jobName = res?.map((item: any) => ({
+          id: item.id,
+          name: item.job_name
+        }));
+        this.getTaskList();
+        this.getClienList();
+        this.getEmployeeList();
+        this.getTableData();
+      }
+    })
+    return this.jobName;
+  }
+    getTaskList(){
+      this.api.getData(`${environment.live_url}/${environment.timesheet}/?get-tasks=True`).subscribe((res: any) => {
+        if(res){
+          this.taskName = res?.map((item: any) => ({
+            id: item.id,
+            name: item.value
+          }));
+        }
+      })
+      return this.taskName;
+    }
+      getEmployeeList(){
+        this.api.getData(`${environment.live_url}/${environment.employee}/?is_active=True&employee=True`).subscribe((res: any) => {
+          if(res){
+            this.employeeName = res?.map((item: any) => ({
+              id: item.user_id,
+              name: item.user__full_name
+            }));
+          }
+        })
+        return this.employeeName;
+      }
 // Fetch table data from API with given params
 async getTableData(params?: { page?: number; pageSize?: number; searchTerm?: string;client_ids?:any;job_ids?:any;task_ids?:any;employee_ids?:any,timesheet_dates?:any }) {
 
-  await this.api.getData(`${environment.live_url}/${environment.timesheet}/`).subscribe(async (res: any) => {
-  if(res){
-
-   this.employees = res
-   this.clientName = getUniqueValues3(this.employees, 'client_name', 'client_id')
-   this.jobName = getUniqueValues3(this.employees, 'job_name', 'job_id')
-   this.taskName = getUniqueValues3(this.employees, 'task_name', 'task')
-   this.employeeName = getUniqueValues3(this.employees, 'employee_name', 'employee_id')
-
-    if(this.clientName.length > 0 && this.jobName.length > 0 && this.taskName.length > 0 && this.employeeName.length > 0){
-    const page = params?.page ?? this.page;
+   const page = params?.page ?? this.page;
     const pageSize = params?.pageSize ?? this.tableSize;
     const searchTerm = params?.searchTerm ?? this.term;
 
     let query = buildPaginationQuery({ page, pageSize, searchTerm });
+    query +=`&timesheet-report-type=detailed`;
     if(this.user_role_name !== 'Admin'){
       query +=`&timesheet-employee=${this.user_id}`
       }if (params?.client_ids?.length) {
@@ -238,7 +275,7 @@ async getTableData(params?: { page?: number; pageSize?: number; searchTerm?: str
         query += `&timesheet-employee-ids=[${params.employee_ids.join(',')}]`;
       }
       if(params?.timesheet_dates){
-        query += `&timesheet-dates=[${params.timesheet_dates}]`
+        query += `&start-date=${params.timesheet_dates.startDate}&end-date=${params.timesheet_dates.endDate}`
       }
       await this.api.getData(`${environment.live_url}/${environment.timesheet}/${query}`).subscribe((res: any) => {
      if(res){
@@ -280,15 +317,11 @@ async getTableData(params?: { page?: number; pageSize?: number; searchTerm?: str
         currentPage:page,
         totalRecords: res.total_no_of_record,
         showDownload:true,
-        timesheetDetailedReport:true
+        timesheetDetailedReport:true,
+        searchPlaceholder:'Search by Client/Job',
       };
     }
     });
-    console.log(this.tableConfig, 'tableConfig');
-  }
-}
-  })
-
 }
   onSearch(term: string): void {
     this.term = term;

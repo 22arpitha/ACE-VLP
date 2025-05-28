@@ -57,7 +57,8 @@
           </div>
         </div>
       </div>
-      <div class="col-12 mt-3 col-sm-12 col-md-4 col-lg-3 search-div px-0">
+      <div class="row">
+      <div class="col-12 mt-3 col-sm-12 col-md-4 col-lg-3 search-div px-0 s-m">
         <input
           type="search"
           (input)="filterSearch($event)"
@@ -69,8 +70,9 @@
         />
         <i *ngIf="!term" class="bi bi-search" id="search-icon-tab"></i>
       </div>
+      <div class="col-12 mt-3 col-sm-12 col-md-4 col-lg-4 text-end s-m px-0" *ngIf="userRole === 'Admin'"></div>
 
-      <div class="col-12 mt-3 col-sm-12 col-md-4 col-lg-5 text-end">
+      <div class="col-12 mt-3 col-sm-12 col-md-4 col-lg-5 text-end s-m px-0">
         <button
           mat-raised-button
           class="mat-btn-s order-sm-1 order-3"
@@ -82,25 +84,23 @@
           Submit Week TimeSheet
         </button>
       </div>
-      <div class="col-12 mt-3 col-sm-12 col-md-4 col-lg-2 text-end">
-        <button
-          mat-stroked-button
-          class="order-sm-1 order-3 w-100 bg-shortfall"
+      <div class="col-12 mt-3 col-sm-12 col-md-4 col-lg-2 text-end" *ngIf="userRole !== 'Admin'">
+        <div
+          class="order-sm-1 order-3 w-100 bg-shortfall p-0"
           type="button"
-          *ngIf="userRole != 'Admin'"
         >
-          ShortFall : 10
-        </button>
+          <div class="w-100">ShortFall</div> <div>{{shortfall}}</div>
       </div>
-      <div class="col-12 mt-3 col-sm-12 col-md-4 col-lg-2 text-end">
-        <button
-          mat-stroked-button
-          class="order-sm-1 order-3 w-100 bg-total"
+      </div>
+      <div class="col-12 mt-3 col-sm-12 col-md-4 col-lg-2 text-end" *ngIf="userRole !== 'Admin'">
+        <div
+          class="order-sm-1 order-3 w-100 bg-total p-0"
           type="button"
-          *ngIf="userRole != 'Admin'"
+          
         >
-          Total Time : 12
-        </button>
+          <div class="w-100">Total Time</div> <div>{{total_working_hours}}</div>
+      </div>
+      </div>
       </div>
     </div>
     <div class="row mx-1 my-2 px-0 table-wrapper">
@@ -187,7 +187,7 @@
                       <mat-date-range-picker #picker1></mat-date-range-picker>
                 </mat-form-field>
               </th>
-              <th scope="col">
+              <th scope="col" *ngIf="userRole === 'Admin'">
                 Employee
                 <i
                   *ngIf="!arrowState['employee_name']"
@@ -202,8 +202,10 @@
                 <button
                   mat-icon-button
                   [matMenuTriggerFor]="employeeFilterMenu"
-                >
-                  <i class="bi bi-toggles"></i>
+                  [ngClass]="filters.employee_name.length>=1 ? 'filterdColumn':''">
+                        <span *ngIf="filters.employee_name.length>=1">{{filters.employee_name.length?.toString().padStart(2, '0')}}</span>
+                          <i class="bi-funnel" *ngIf="filters.employee_name.length===0"></i>
+                       
                 </button>
 
                 <mat-menu #employeeFilterMenu="matMenu">
@@ -228,8 +230,9 @@
                   *ngIf="arrowState['client_name']"
                   class="bi bi-arrow-up"
                 ></i>
-                <button mat-icon-button [matMenuTriggerFor]="clientFilterMenu">
-                  <i class="bi bi-toggles"></i>
+                <button mat-icon-button [matMenuTriggerFor]="clientFilterMenu" [ngClass]="filters.client_name.length>=1 ? 'filterdColumn':''">
+                        <span *ngIf="filters.client_name.length>=1">{{filters.client_name.length?.toString().padStart(2, '0')}}</span>
+                          <i class="bi-funnel" *ngIf="filters.client_name.length===0"></i>
                 </button>
 
                 <mat-menu #clientFilterMenu="matMenu">
@@ -254,8 +257,9 @@
                   *ngIf="arrowState['job_name']"
                   class="bi bi-arrow-up"
                 ></i>
-                <button mat-icon-button [matMenuTriggerFor]="jobFilterMenu">
-                  <i class="bi bi-toggles"></i>
+                <button mat-icon-button [matMenuTriggerFor]="jobFilterMenu" [ngClass]="filters.job_name.length>=1 ? 'filterdColumn':''">
+                        <span *ngIf="filters.job_name.length>=1">{{filters.job_name.length?.toString().padStart(2, '0')}}</span>
+                          <i class="bi-funnel" *ngIf="filters.job_name.length===0"></i>
                 </button>
 
                 <mat-menu #jobFilterMenu="matMenu">
@@ -278,8 +282,9 @@
                   *ngIf="arrowState['task_nmae']"
                   class="bi bi-arrow-up"
                 ></i>
-                <button mat-icon-button [matMenuTriggerFor]="taskFilterMenu">
-                  <i class="bi bi-toggles"></i>
+                <button mat-icon-button [matMenuTriggerFor]="taskFilterMenu" [ngClass]="filters.task_nmae.length>=1 ? 'filterdColumn':''">
+                        <span *ngIf="filters.task_nmae.length>=1">{{filters.task_nmae.length}}</span>
+                          <i class="bi-funnel" *ngIf="filters.task_nmae.length===0"></i>
                 </button>
 
                 <mat-menu #taskFilterMenu="matMenu">
@@ -292,7 +297,7 @@
                   ></app-generic-table-filter>
                 </mat-menu>
               </th>
-              <th scope="col" class="time-col">Time</th>
+              <th scope="col" class="time-col">Time Spent</th>
               <th scope="col" class="name-col">
                 Notes
                 <i
@@ -325,8 +330,8 @@
                 "
               >
                 <td>{{ getContinuousIndex(i) }}</td>
-                <td>{{ item?.date || "-" }}</td>
-                <td>{{ item?.employee_name || "-" }}</td>
+                <td>{{ (item?.date | date: 'dd/MM/yyyy') || "-" }}</td>
+                <td *ngIf="userRole === 'Admin'">{{ item?.employee_name || "-" }}</td>
                 <td>{{ item?.client_name || "-" }}</td>
                 <td>{{ item?.job_name || "-" }}</td>
                 <td>{{ item?.task_name || "-" }}</td>

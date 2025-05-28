@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { MAT_DATE_RANGE_SELECTION_STRATEGY } from '@angular/material/datepicker';
-import { WeeklySelectionStrategy } from 'src/app/shared/weekly-selection-strategy';
+import { WeeklySelectionStrategy } from '../weekly-selection-strategy';
 
 @Component({
   selector: 'app-week-picker',

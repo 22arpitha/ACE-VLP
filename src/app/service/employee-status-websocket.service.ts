@@ -3,8 +3,6 @@ import { WebSocketSubject } from 'rxjs/webSocket';
 import { ApiserviceService } from './apiservice.service'
 import { Router } from '@angular/router';
 import { environment } from '../../environments/environment';
-import { WebsocketService } from './websocket.service';
-import { UserAccessWebsocketService } from './user-access-websocket.service';
 
 @Injectable({
   providedIn: 'root'
@@ -21,7 +19,7 @@ export class EmployeeStatusWebsocketService {
     const user_role = sessionStorage.getItem('user_role_name');
     if (token && user_role==='Employee') {
       // console.log(' after refresh...');
-      this.connectWebSocket();
+      // this.connectWebSocket();
     }
   }
 
@@ -69,7 +67,7 @@ export class EmployeeStatusWebsocketService {
     const user_role = sessionStorage.getItem('user_role_name');
     if (token && user_role==='Employee'){
       // console.log('after refresh...');
-      this.connectWebSocket();
+      // this.connectWebSocket();
     }
   }
 

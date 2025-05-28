@@ -2,9 +2,7 @@ import { Component, Inject, OnInit } from '@angular/core';
 import { CommonServiceService } from '../../../../service/common-service.service';
 import { ApiserviceService } from '../../../../service/apiservice.service';
 import { getTableColumns } from './job-time-sheet-details-popup-config';
-import { environment } from 'src/environments/environment';
-import { getUniqueValues } from 'src/app/shared/unique-values.utils';
-import { query } from '@angular/animations';
+import { environment } from '../../../../../environments/environment';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 
 @Component({
@@ -54,6 +52,7 @@ export class JobTimeSheetDetailsPopupComponent implements OnInit {
          })),
          data: formattedData ? formattedData : [],
          showDownload:false,
+         
        };
      });
    }

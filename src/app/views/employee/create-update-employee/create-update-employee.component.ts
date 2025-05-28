@@ -70,14 +70,21 @@ initialFormValue:any;
   ngOnDestroy(): void {
 this.formErrorScrollService.resetHasUnsavedValue();
   }
+
+  shouldDisableFields:boolean
   getModuleAccess(){
     this.accessControlService.getAccessForActiveUrl(this.user_id).subscribe(
       (res:any)=>{
-        console.log(res)
+        // console.log(res)
        const access_name =  sessionStorage.getItem('access-name')
         let temp = res.find((item:any)=>item.name===access_name)
-        this.accessPermissions = temp.operations
-        // console.log(this.accessPermissions)
+        this.accessPermissions = temp?.operations;
+        if(this.employee_id){
+          this.shouldDisableFields = this.accessPermissions[0]?.['update'];
+        } else{
+          this.shouldDisableFields = this.accessPermissions[0]?.['create'];
+        }
+        // console.log(this.shouldDisableFields,'this.shouldDisableFields')
       }
     )
   }
@@ -85,12 +92,12 @@ this.formErrorScrollService.resetHasUnsavedValue();
   public intialForm(){
 this.employeeFormGroup = this.fb.group({
       employee_number: ['',Validators.required],
-      first_name: ['', [Validators.required, Validators.maxLength(50)]],
-      last_name: ['', [Validators.required, Validators.maxLength(50)]],
+      first_name: ['', [Validators.required, Validators.pattern(/^[a-zA-Z0-9!@#$%^&*()_+{}\[\]:;"'<>,.?/\\|`~\-]+( [a-zA-Z0-9!@#$%^&*()_+{}\[\]:;"'<>,.?/\\|`~\-]+)*$/),Validators.maxLength(50)]],
+      last_name: ['', [Validators.required,Validators.pattern(/^[a-zA-Z0-9!@#$%^&*()_+{}\[\]:;"'<>,.?/\\|`~\-]+( [a-zA-Z0-9!@#$%^&*()_+{}\[\]:;"'<>,.?/\\|`~\-]+)*$/), Validators.maxLength(50)]],
       email:['',[Validators.required,Validators.pattern('^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$')]],
       date_joined: ['', Validators.required],
       exit_date: [null],
-      reporting_manager_id:['', Validators.required],
+      reporting_manager_id:[''],
       designation: ['', Validators.required],
       sub_designation:['', Validators.required],
       role: 2,
@@ -259,6 +266,7 @@ this.searchRoleText ='';
       this.apiService.delete(`${environment.live_url}/${environment.employee}/${id}/`).subscribe(async (data: any) => {
         if (data) {
           this.apiService.showSuccess(data.message);
+           this.resetFormState();
           this.router.navigate(['/settings/all-employee']);
         }
       }, (error => {

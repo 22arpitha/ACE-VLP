@@ -5,7 +5,7 @@
             <form [formGroup]="employeeFormGroup">
                 <div class="row mx-0 my-0 px-2">
                     <div class="col-12 col-sm-12 col-md-6 col-lg-4 my-1 px-0">
-                    <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+                    <mat-form-field appearance="outline"  [ngClass]="{ 'highlight-background': !shouldDisableFields && userRole !== 'Admin'}" class="w-100 custom-mat-form-field">
                         <mat-label>Employee Number <b class="r-star">*</b></mat-label>
                         <input matInput type="text" placeholder="Enter Employee Number" formControlName="employee_number" autocomplete="off" readonly>
                         <mat-error *ngIf="f['employee_number']?.invalid && f['employee_number']?.touched || f['employee_number']?.dirty">
@@ -16,16 +16,15 @@
 <!-- First name -->
 <div class="col-12 col-sm-12 col-md-6 col-lg-4 my-1 no-padding pl-5 pr-0">
 
-<mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+<mat-form-field appearance="outline"  [ngClass]="{ 'highlight-background': !shouldDisableFields && userRole !== 'Admin'}" class="w-100 custom-mat-form-field">
     <mat-label>First Name <b class="r-star">*</b></mat-label>
-    <input matInput placeholder="Enter first name" appAlphabetOnly formControlName="first_name" autocomplete="off"
-    pattern="^[a-zA-Z]+( [a-zA-Z]+)*$">
+    <input matInput placeholder="Enter first name" formControlName="first_name" autocomplete="off">
     <mat-error *ngIf="f['first_name']?.invalid && f['first_name']?.touched || f['first_name']?.dirty">
         <span  *ngIf="f['first_name']?.errors?.['required']">First Name is required
         </span>
-        <!-- <span  *ngIf="f['first_name']?.errors?.['pattern']">
-            Invalid name. Only letters are allowed, and the name must start with a letter.
-        </span> -->
+        <span  *ngIf="f['last_name']?.errors?.['pattern']">
+        Extra space charaters are not allowed.
+        </span>
         <span 
             *ngIf="f['first_name']?.errors?.['maxlength']">
             First Name cannot exceed more than 50 characters.
@@ -45,16 +44,15 @@
 <!-- Last name -->
 <div class="col-12 col-sm-12 col-md-6 col-lg-4 my-1 px-0">
 
-<mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+<mat-form-field appearance="outline" [ngClass]="{ 'highlight-background': !shouldDisableFields && userRole !== 'Admin'}" class="w-100 custom-mat-form-field">
     <mat-label>Last Name <b class="r-star">*</b></mat-label>
-    <input matInput placeholder="Enter last name" appAlphabetOnly formControlName="last_name" autocomplete="off"
-    pattern="^[a-zA-Z]+( [a-zA-Z]+)*$">
+    <input matInput placeholder="Enter last name" formControlName="last_name" autocomplete="off">
     <mat-error *ngIf="f['last_name']?.invalid && f['last_name']?.touched || f['last_name']?.dirty">
         <span  *ngIf="f['last_name']?.errors?.['required']">Last Name is required
         </span>
-        <!-- <span  *ngIf="f['last_name']?.errors?.['pattern']">
-            Invalid name. Only letters are allowed, and the name must start with a letter.
-        </span> -->
+        <span  *ngIf="f['last_name']?.errors?.['pattern']">
+            Extra space charaters are not allowed.
+        </span>
         <span 
             *ngIf="f['last_name']?.errors?.['maxlength']">
             Last Name cannot exceed more than 50 characters.
@@ -66,7 +64,7 @@
 
 <!-- Email Address -->
 <div class="col-12 col-sm-12 col-md-6 col-lg-4 my-1 px-0">
-<mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+<mat-form-field appearance="outline" [ngClass]="{ 'highlight-background': !shouldDisableFields && userRole !== 'Admin'}" class="w-100 custom-mat-form-field">
     <mat-label>Email Id <b class="r-star">*</b></mat-label>
     <input matInput type="email" placeholder="Enter email" formControlName="email"
         autocomplete="off" oninput="this.value = this.value.toLowerCase()">
@@ -78,7 +76,7 @@
 
 </div>
 <div class="col-12 col-sm-12 col-md-6 col-lg-4 my-1 no-padding pl-5 pr-0">
-    <mat-form-field appearance="outline" class="w-100 p-0 custom-mat-form-field">
+    <mat-form-field appearance="outline" [ngClass]="{ 'highlight-background': !shouldDisableFields && userRole !== 'Admin'}" class="w-100 p-0 custom-mat-form-field">
         <mat-label>Start Date <b class="r-star">*</b></mat-label>
         <input matInput [matDatepicker]="picker1" placeholder="Enter start date"
             formControlName="date_joined" autocomplete="off" (dateInput)="joiningDateFun($event)">
@@ -91,7 +89,7 @@
   
 </div>
 <div class="col-12 col-sm-12 col-md-6 col-lg-4 my-1 no-padding pl-5 pr-0">
-    <mat-form-field appearance="outline" class="w-100 p-0 custom-mat-form-field">
+    <mat-form-field appearance="outline" [ngClass]="{ 'highlight-background': !shouldDisableFields && userRole !== 'Admin'}" class="w-100 p-0 custom-mat-form-field">
         <mat-label>Exit Date</mat-label>
         <input matInput [matDatepicker]="picker2" placeholder="Enter start date"
             formControlName="exit_date" autocomplete="off" (dateInput)="joiningDateFun($event)">
@@ -104,7 +102,7 @@
   
 </div>
 <div class="col-12 col-sm-12 col-md-6 col-lg-4 my-1 px-0">
-    <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+    <mat-form-field appearance="outline" [ngClass]="{ 'highlight-background': !shouldDisableFields && userRole !== 'Admin'}" class="w-100 custom-mat-form-field">
         <mat-label>Role <b class="r-star">*</b></mat-label>
         <mat-select formControlName="designation" autocomplete="off"
                 placeholder="" panelClass="custom-select-panel"
@@ -125,7 +123,7 @@
 
 </div>
 <div class="col-12 col-sm-12 col-md-6 col-lg-4 my-1 no-padding pl-5 pr-0 ">
-    <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+    <mat-form-field appearance="outline" [ngClass]="{ 'highlight-background': !shouldDisableFields && userRole !== 'Admin'}" class="w-100 custom-mat-form-field">
         <mat-label>Designation <b class="r-star">*</b></mat-label>
         <mat-select formControlName="sub_designation" autocomplete="off"
                 placeholder="Designation" panelClass="custom-select-panel"
@@ -147,8 +145,8 @@
 </div>
 
 <div class="col-12 col-sm-12 col-md-6 col-lg-4 my-1 px-0">
-    <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
-        <mat-label>Reporting Manager <b class="r-star">*</b></mat-label>
+    <mat-form-field appearance="outline" [ngClass]="{ 'highlight-background': !shouldDisableFields && userRole !== 'Admin'}" class="w-100 custom-mat-form-field">
+        <mat-label>Reporting Manager</mat-label>
         <mat-select formControlName="reporting_manager_id" autocomplete="off"
                 placeholder="Reporting Manager" panelClass="custom-select-panel"
                 [disableOptionCentering]="true">
@@ -161,9 +159,9 @@
                     {{rmId?.first_name + rmId?.last_name || rmId?.user__full_name}}
                 </mat-option>
         </mat-select>
-        <mat-error *ngIf="f['reporting_manager_id']?.invalid && f['reporting_manager_id']?.touched || f['reporting_manager_id']?.dirty">
+        <!-- <mat-error *ngIf="f['reporting_manager_id']?.invalid && f['reporting_manager_id']?.touched || f['reporting_manager_id']?.dirty">
             <span  *ngIf="f['reporting_manager_id']?.errors?.['required']">Reporting Manager is required</span>
-      </mat-error>
+      </mat-error> -->
     </mat-form-field>
 
 </div>

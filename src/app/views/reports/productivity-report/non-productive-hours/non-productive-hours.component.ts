@@ -49,22 +49,24 @@ export class NonProductiveHoursComponent implements OnInit,OnChanges {
           const periodChanged = prev.period !== current.period;
           if (employeeIdChanged || periodicityChanged || periodChanged) {
             this.dropdwonFilterData = current;
-            this.getTableData({
-              page: this.page,
-              pageSize: this.tableSize,
-              searchTerm: this.term
-            });
+            if(this.dropdwonFilterData.periodicity && this.dropdwonFilterData.period){
+              this.getTableData({
+                page: this.page,
+                pageSize: this.tableSize,
+                searchTerm: this.term
+              });
+              }
           }
         }
       }
 
      ngOnInit(): void {
        this.common_service.setTitle(this.BreadCrumbsTitle)
-       this.getTableData({
-        page: this.page,
-        pageSize: this.tableSize,
-        searchTerm: this.term
-      });
+      //  this.getTableData({
+      //   page: this.page,
+      //   pageSize: this.tableSize,
+      //   searchTerm: this.term
+      // });
      }
 
      // Called when user changes page number from the dynamic table
@@ -125,21 +127,17 @@ export class NonProductiveHoursComponent implements OnInit,OnChanges {
      }
    }
    exportCsvOrPdf(fileType) {
-    let query = buildPaginationQuery({
-      page: this.page,
-      pageSize: this.tableSize,
-      searchTerm :this.term
-    });
+   let query=`?client-name=Vedalekha professionals&download=True`;
     if(query){
       if(this.dropdwonFilterData){
-        query+= this.dropdwonFilterData.employee_id ? `&employee-id=${this.dropdwonFilterData.employee_id}`:this.user_role_name ==='Admin' ? '':`&employee-id=${this.user_id}`;
+        query+= this.dropdwonFilterData.employee_id ? `&timesheet-employee=${this.dropdwonFilterData.employee_id}`:this.user_role_name ==='Admin' ? '':`&timesheet-employee=${this.user_id}`;
         query+= this.dropdwonFilterData.periodicity ? `&periodicity=${this.dropdwonFilterData.periodicity}`:'';
-        query+= this.dropdwonFilterData.period ? `&period=${this.dropdwonFilterData.period}`:'';
+        query+= this.dropdwonFilterData.period ? `&period=${encodeURIComponent(JSON.stringify(this.dropdwonFilterData.period))}`:'';
        }else{
-        query += this.user_role_name ==='Admin' ? '':`&employee-id=${this.user_id}`;
+        query += this.user_role_name ==='Admin' ? '':`&timesheet-employee=${this.user_id}`;
        }
      }
-     const url = `${environment.live_url}/${environment.productivity_reports}/${query}&file-type=${fileType}&productivity-type=non-productive-hour`;
+     const url = `${environment.live_url}/${environment.timesheet}/${query}&file-type=${fileType}`;
      downloadFileFromUrl({
        url,
        fileName: 'non_productive_hours',
@@ -156,11 +154,11 @@ export class NonProductiveHoursComponent implements OnInit,OnChanges {
      let query = buildPaginationQuery({ page, pageSize, searchTerm });
      let finalQuery = query;
       if(this.dropdwonFilterData){
-       finalQuery += this.dropdwonFilterData.employee_id ? `&timesheet-employee=${this.dropdwonFilterData.employee_id}`:this.user_role_name ==='Admin' ? '':`&employee-id=${this.user_id}`;
+       finalQuery += this.dropdwonFilterData.employee_id ? `&timesheet-employee=${this.dropdwonFilterData.employee_id}`:this.user_role_name ==='Admin' ? '':`&timesheet-employee=${this.user_id}`;
        finalQuery += this.dropdwonFilterData.periodicity ? `&periodicity=${this.dropdwonFilterData.periodicity}`:'';
-       finalQuery += this.dropdwonFilterData.period ? `&period=${this.dropdwonFilterData.period}`:'';
+       finalQuery += this.dropdwonFilterData.period ? `&period=${encodeURIComponent(JSON.stringify(this.dropdwonFilterData.period))}`:'';
       }else{
-       finalQuery += this.user_role_name ==='Admin' ? '':`&employee-id=${this.user_id}`;
+       finalQuery += this.user_role_name ==='Admin' ? '':`&timesheet-employee=${this.user_id}`;
       }
      this.api.getData(`${environment.live_url}/${environment.timesheet}/${finalQuery}&client-name=Vedalekha professionals`).subscribe((res: any) => {
        const formattedData = res.results.map((item: any, i: number) => ({
@@ -168,7 +166,9 @@ export class NonProductiveHoursComponent implements OnInit,OnChanges {
          ...item
        }));
        this.tableConfig = {
-        columns: tableColumns,
+        columns: tableColumns.map(col => ({
+                        ...col,
+                      })),
         data: formattedData ? formattedData : [],
         searchTerm: this.term,
         actions: [],
@@ -180,9 +180,9 @@ export class NonProductiveHoursComponent implements OnInit,OnChanges {
         totalRecords: res.total_no_of_record,
         hideDownload:true,
         showDownload:true,
+        searchPlaceholder:'Search by Client/Job',
       };
      });
-
    }
      onSearch(term: string): void {
        this.term = term;
@@ -199,5 +199,9 @@ public viewtimesheetDetails(item:any){
 },
     });
     }
+
+    ngOnDestroy(): void {
+        this.tableConfig=null
+      }
   }
 

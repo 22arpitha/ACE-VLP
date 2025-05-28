@@ -14,7 +14,7 @@
 <div class="d-flex gap-1 my-1">
     <h5>{{allClientBasedJobsLists[0]?.invoice_number || '-'}}</h5>
     <span>|</span>
-    <h5>{{(allClientBasedJobsLists[0]?.created_date  | date: 'dd/MM/yyyy')||'-'}}</h5>
+    <h5>{{allClientBasedJobsLists[0]?.created_date ||'-'}}</h5>
 </div>
         </div>
     </div>

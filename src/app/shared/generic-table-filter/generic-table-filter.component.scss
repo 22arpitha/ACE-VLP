@@ -1,10 +1,19 @@
-.mat-list-base .mat-list-item, .mat-list-base .mat-list-option {
-  height: 30px;
-  font-size: 14px !important;
-  zoom:95%;
-}
 .mat-selection-list.mat-selection-list.mat-list-base{
   height: fit-content;
   max-height: 200px;
   overflow-y: auto;
+}
+.custom-mat-select-list-style{
+  ::ng-deep .mat-list-base .mat-list-item,
+  ::ng-deep .mat-list-base .mat-list-option {
+    height: 30px !important;
+    font-size: 12px !important;
+    font-weight: 700;
+    zoom: 90%;
+    margin: 10px 0px;
+}
+::ng-deep .mat-list-base .mat-list-item:hover,
+  ::ng-deep .mat-list-base .mat-list-option:hover{
+background: #85b6dc !important;
+  }
 }

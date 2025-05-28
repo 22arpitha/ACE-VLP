@@ -72,7 +72,8 @@ initialFormValue:any;
       private apiService: ApiserviceService,private formErrorScrollService:FormErrorScrollUtilityService) {
       this.common_service.setTitle(this.BreadCrumbsTitle)
       this.user_id = sessionStorage.getItem('user_id');
-      this.user_role_name = sessionStorage.getItem('user_role_name');
+      this.userRole = sessionStorage.getItem('user_role_name');
+      this.getModuleAccess()
       if(this.activeRoute.snapshot.paramMap.get('id')){
         this.common_service.setTitle('Update ' + this.BreadCrumbsTitle)
         this.client_id= this.activeRoute.snapshot.paramMap?.get('id')
@@ -92,7 +93,7 @@ initialFormValue:any;
 
     ngOnInit(): void {
       this.editor = new Editor();
-      this.getModuleAccess()
+     
       this.intialForm();
       this.clientFormGroup?.valueChanges?.subscribe(() => {
         const currentFormValue = this.clientFormGroup?.getRawValue();
@@ -109,21 +110,24 @@ initialFormValue:any;
       this.formErrorScrollService.resetHasUnsavedValue();
     }
 
+    shouldDisableFileds:boolean = true;
     getModuleAccess(){
       this.accessControlService.getAccessForActiveUrl(this.user_id).subscribe(
         (res:any)=>{
-          console.log(res);
-          this.accessPermissions = res[0].operations;
-          // console.log('this.accessPermissions', this.accessPermissions)
-        //  res.access_list.forEach((access:any)=>{
-        //     access.access.forEach((access_name:any)=>{
-        //         if(access_name.name===sessionStorage.getItem('access-name')){
-        //           console.log(access_name)
-        //           this.accessPermissions = access_name.operations;
-        //           // console.log('this.accessPermissions', this.accessPermissions);
-        //         }
-        //       })
-        //  })
+          // console.log(res);
+          let temp = res.find((item: any) => item.name === sessionStorage.getItem('access-name'));
+          console.log('temp',temp)
+          this.accessPermissions = temp.operations;
+          console.log(this.accessPermissions)
+          if(this.client_id){
+            this.shouldDisableFileds = this.accessPermissions[0]?.['update'];
+            this.cdr.detectChanges();
+          } else{
+            this.shouldDisableFileds = this.accessPermissions[0]?.['create'];
+            this.cdr.detectChanges();
+          }
+          // console.log('this.shouldDisableFileds', this.shouldDisableFileds)
+        
         }
       )
     }
@@ -131,11 +135,11 @@ initialFormValue:any;
     public intialForm(){
         this.clientFormGroup = this.fb.group({
         client_number: ['',Validators.required],
-        client_name: ['', [Validators.required, Validators.maxLength(50)]],
+        client_name: ['', [Validators.required,Validators.pattern(/^[a-zA-Z0-9!@#$%^&*()_+{}\[\]:;"'<>,.?/\\|`~\-]+( [a-zA-Z0-9!@#$%^&*()_+{}\[\]:;"'<>,.?/\\|`~\-]+)*$/), Validators.maxLength(50)]],
         email:['',[Validators.required,Validators.pattern('^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$')]],
         country: ['', Validators.required],
         source: ['', Validators.required],
-        address: ['', [Validators.required, Validators.maxLength(200)]],
+        address: ['', [Validators.required,Validators.pattern(/^[a-zA-Z0-9!@#$%^&*()_+{}\[\]:;"'<>,.?/\\|`~\-]+( [a-zA-Z0-9!@#$%^&*()_+{}\[\]:;"'<>,.?/\\|`~\-]+)*$/), Validators.maxLength(200)]],
         service_start_date: ['', Validators.required],
         service_end_date: [null],
         client_file:[null],
@@ -438,6 +442,7 @@ this.initialFormValue=this.clientFormGroup?.getRawValue();
           if (data) {
             this.selectedClient = [];
             this.apiService.showSuccess(data.message);
+             this.resetFormState();
             this.router.navigate(['/client/all-client']);
           }
         }, (error => {
@@ -534,7 +539,7 @@ this.initialFormValue=this.clientFormGroup?.getRawValue();
 
 
   removeEmployee(index: number) {
-    if (this.employeeFormArray?.length > 1) {
+    if (this.employeeFormArray?.length >=1) {
       this.employeeFormArray?.removeAt(index);
     }
   }

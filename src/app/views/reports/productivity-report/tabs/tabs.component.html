@@ -7,11 +7,11 @@
     <app-periodicity (selectPeriodicity)="selectedPeriodicity($event)" [defaultSelection]="ondefaultSelection" [resetFilterField]="resetFilter"></app-periodicity>
   </div>
   <div class="col-sm-12 col-md-4 col-lg-2">
-    <app-period (selectPeriod)="selectedPeriod($event)" [periodicity_id]="periodicityId" [defaultSelection]="ondefaultSelection" [resetFilterField]="resetFilter"></app-period>
+    <app-period (selectPeriod)="selectedPeriod($event)" [mode]="modeName" [defaultSelection]="ondefaultSelection" [resetFilterField]="resetFilter"></app-period>
   </div>
-  <div class="col-sm-12 col-md-4 col-lg-4 d-flex justify-content-evenly">
-    <button mat-raised-button class="proceedbtn mat-btn-s mr-2" type="button" (click)="applySearch()">Search</button>
-    <button mat-raised-button class="cancel-button mat-btn-s" type="button" (click)="resetSearch()">
+  <div class="col-sm-12 col-md-6 col-lg-4 d-flex justify-content-evenly">
+    <button mat-raised-button class="proceedbtn mat-btn-s mr-2" type="button" (click)="applySearch()" [disabled]="(employee && !periodicityId && !period) || (!employee && !periodicityId && !period)">Search</button>
+    <button mat-raised-button class="cancel-button mat-btn-s" type="button" (click)="resetSearch()" [disabled]="resetBtnDisable">
       Reset</button>
     <button mat-raised-button class="proceedbtn mat-btn-s" type="button" (click)="downloadExcel()">Export to Excel</button>
   </div>

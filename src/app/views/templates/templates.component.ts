@@ -10,7 +10,7 @@ import { Observable, of } from 'rxjs';
 import { SubModuleService } from '../../../app/service/sub-module.service';
 import {fullUrlToFile} from '../../shared/fileUtils.utils';
 import { CanComponentDeactivate } from '../../auth-guard/can-deactivate.guard';
-import { FormErrorScrollUtilityService } from 'src/app/service/form-error-scroll-utility-service.service';
+import { FormErrorScrollUtilityService } from '../../service/form-error-scroll-utility-service.service';
 
 @Component({
   selector: 'app-templates',
@@ -141,9 +141,8 @@ this.formUtilityService.resetHasUnsavedValue();
 
 public createFromData(){
   this.formData = new FormData();
-  console.log('this.file',this.file);
   if (this.file) {
-    this.formData.set("template_file", this.file || '');
+     this.formData.set("template_file", this.file || '');
     this.formData.set("template_name", this.templateForm?.get('template_name')?.value || '');
     this.formData.set("password", this.templateForm?.get('password')?.value || '');
     this.formData.set("when_to_use", this.templateForm?.get('when_to_use')?.value || '');

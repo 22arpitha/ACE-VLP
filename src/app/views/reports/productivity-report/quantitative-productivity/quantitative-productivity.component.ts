@@ -51,11 +51,14 @@ export class QuantitativeProductivityComponent implements OnInit,OnChanges {
             const periodChanged = prev.period !== current.period;
             if (employeeIdChanged || periodicityChanged || periodChanged) {
               this.dropdwonFilterData = current;
+              if(this.dropdwonFilterData.periodicity && this.dropdwonFilterData.period){
               this.getTableData({
                 page: this.page,
                 pageSize: this.tableSize,
                 searchTerm: this.term
               });
+              }
+              
             }
           }
            }
@@ -63,11 +66,11 @@ export class QuantitativeProductivityComponent implements OnInit,OnChanges {
            ngOnInit(): void {
              this.common_service.setTitle(this.BreadCrumbsTitle)
              this.tableConfig = tableColumns;
-             this.getTableData({
-              page: 1,
-              pageSize: this.tableSize,
-              searchTerm: this.term
-            });
+            //  this.getTableData({
+            //   page: 1,
+            //   pageSize: this.tableSize,
+            //   searchTerm: this.term
+            // });
            }
 
            // Called when user changes page number from the dynamic table
@@ -135,7 +138,7 @@ export class QuantitativeProductivityComponent implements OnInit,OnChanges {
             if(this.dropdwonFilterData){
               query+= this.dropdwonFilterData.employee_id ? `&employee-id=${this.dropdwonFilterData.employee_id}`:this.userRole ==='Admin' ? '':`&employee-id=${this.user_id}`;
               query+= this.dropdwonFilterData.periodicity ? `&periodicity=${this.dropdwonFilterData.periodicity}`:'';
-              query+= this.dropdwonFilterData.period ? `&period=${this.dropdwonFilterData.period}`:'';
+              query+= this.dropdwonFilterData.period ? `&period=${encodeURIComponent(JSON.stringify(this.dropdwonFilterData.period))}`:'';
               query+= this.dropdwonFilterData.employee_id || this.dropdwonFilterData.periodicity || this.dropdwonFilterData.period ? '&is_dropdown_selected=True' :'';
             }else{
               query += this.userRole ==='Admin' ? '':`&employee-id=${this.user_id}`;
@@ -161,7 +164,7 @@ export class QuantitativeProductivityComponent implements OnInit,OnChanges {
            if(this.dropdwonFilterData){
             finalQuery+= this.dropdwonFilterData.employee_id ? `&employee-id=${this.dropdwonFilterData.employee_id}`:this.userRole ==='Admin' ? '':`&employee-id=${this.user_id}`;
             finalQuery+= this.dropdwonFilterData.periodicity ? `&periodicity=${this.dropdwonFilterData.periodicity}`:'';
-            finalQuery+= this.dropdwonFilterData.period ? `&period=${this.dropdwonFilterData.period}`:'';
+            finalQuery+= this.dropdwonFilterData.period ? `&period=${encodeURIComponent(JSON.stringify(this.dropdwonFilterData.period))}`:'';
             finalQuery+= this.dropdwonFilterData.employee_id || this.dropdwonFilterData.periodicity || this.dropdwonFilterData.period ? '&is_dropdown_selected=True' :'';
           }else{
             finalQuery += this.userRole ==='Admin' ? '':`&employee-id=${this.user_id}`;
@@ -189,7 +192,8 @@ export class QuantitativeProductivityComponent implements OnInit,OnChanges {
              estimationDetails:true,
              tableFooterContent:tableFooterContent,
              hideDownload:true,
-             showDownload:true,
+            showDownload:true,
+            searchPlaceholder:'Search by Client/Job',
             };
            },(error:any)=>{  this.api.showError(error?.error?.detail);
            });

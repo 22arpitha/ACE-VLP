@@ -296,7 +296,11 @@ export class DefaultLayoutComponent {
       const [subscriptionItem] = navigationData.splice(subscriptionIndex, 1);
       navigationData.unshift(subscriptionItem);
     }
-
+    navigationData.forEach(item => {
+      if (item.name === 'Clients') {
+        item.children = [];
+      }
+    });
     return navigationData;
   }
 
@@ -319,6 +323,7 @@ export class DefaultLayoutComponent {
 
         // Move subscription to top before assigning to sidebarNavItems
         this.sidebarNavItems = this.moveSubscriptionToTop(res.access_list);
+        // console.log(this.sidebarNavItems,'this.sidebarNavItems')
       });
   }
 
@@ -369,6 +374,7 @@ export class DefaultLayoutComponent {
     if (headNavdata.page === 'Logout') {
       this.openDialogue();
     } else {
+      //console.log('headNavdata', headNavdata);
       this.router.navigate([`${headNavdata.link}`]);
     }
   }

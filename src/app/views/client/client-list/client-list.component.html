@@ -3,13 +3,13 @@
       <div class="row mx-0 my-1 px-0 py-2">
           <div class="col-12 mt-2 col-sm-12 col-md-4 col-lg-3 search-div px-0">
             <input type="search" (input)="filterSearch($event)" class="form-control p-2 sizeinput" [(ngModel)]="term"
-              placeholder="Search by Client Name" aria-describedby="emailHelp" autocomplete="off">
+              placeholder="Search by Client" aria-describedby="emailHelp" autocomplete="off">
             <i *ngIf="!term" class="bi bi-search" id="search-icon-tab"></i>
           </div>
           <div class="col-12 mt-2 col-sm-12 col-md-4 col-lg-3"></div>
           <div class="col-12 mt-2 col-sm-12 col-md-4 col-lg-6 text-end px-0">
-              <button mat-raised-button class="mat-btn-s tab-button-content" [ngClass]="{'isActive': isCurrent}" type="button" (click)="getCurrentClients();getClientFilterList('True');">Current</button>
-              <button mat-raised-button class="mat-btn-s tab-button-content" [ngClass]="{'isActive': isHistory}" type="button" (click)="getClientsHistory();getClientFilterList();">History</button>
+              <button mat-raised-button class="mat-btn-s tab-button-content" [ngClass]="{'isActive': isCurrent}" type="button" (click)="getCurrentClients();">Current</button>
+              <button mat-raised-button class="mat-btn-s tab-button-content" [ngClass]="{'isActive': isHistory}" type="button" (click)="getClientsHistory();">History</button>
               <button mat-raised-button class="proceedbtn mat-btn-s download-btn" type="button" [disabled]="filteredList?.length === 0" [matMenuTriggerFor]="downloadMenu"><i class="fa fa-download"></i></button>
               <button mat-raised-button class="proceedbtn mat-btn-s" type="button" (click)="openCreateClientPage()" *ngIf="userRole !='Admin' && accessPermissions[0]?.create || userRole === 'Admin'">Create
                 Client</button>
@@ -57,8 +57,10 @@
                     <i *ngIf="!arrowState['country']" (click)="sort('asc','country')" class="bi bi-arrow-down"></i>
                     <i (click)="sort('desc','country')" *ngIf="arrowState['country']"
                       class="bi bi-arrow-up"></i>
-                      <button mat-icon-button [matMenuTriggerFor]="countryFilterMenu">
-                        <i class="bi bi-toggles"></i>
+                      <button mat-icon-button [matMenuTriggerFor]="countryFilterMenu" [ngClass]="filters.country.length>=1 ? 'filterdColumn':''">
+                        <span *ngIf="filters.country.length>=1">{{filters.country.length.toString().padStart(2, '0')}}</span>
+                         
+                          <i class="bi-funnel" *ngIf="filters.country.length===0"></i>
                       </button>
 
                       <mat-menu #countryFilterMenu="matMenu">
@@ -73,8 +75,9 @@
                     <i *ngIf="!arrowState['source']" (click)="sort('asc','source')" class="bi bi-arrow-down"></i>
                     <i (click)="sort('desc','source')" *ngIf="arrowState['source']"
                       class="bi bi-arrow-up"></i>
-                      <button mat-icon-button [matMenuTriggerFor]="sourceFilterMenu">
-                        <i class="bi bi-toggles"></i>
+                      <button mat-icon-button [matMenuTriggerFor]="sourceFilterMenu" [ngClass]="filters.source.length>=1 ? 'filterdColumn':''">
+                        <span *ngIf="filters.source.length>=1">{{filters.source.length.toString().padStart(2, '0')}}</span>
+                          <i class="bi-funnel" *ngIf="filters.source.length===0"></i>
                       </button>
 
                       <mat-menu #sourceFilterMenu="matMenu">
@@ -86,8 +89,8 @@
                       </mat-menu>
                   </th>
                   <th scope="col">Status</th>
-                  <th scope="col">Contact<br>Person</th>
-                  <th scope="col">Action </th>
+                  <th scope="col">Contact</th>
+                  <!-- <th scope="col">Action </th> -->
                 </tr>
               </thead>
               <tbody>
@@ -99,11 +102,11 @@
                            currentPage: page,
                            totalItems: count
                          }; let i=index'>
-                    <td>{{item?.client_number || '-'}}</td>
-                    <td>{{item?.client_name || '-'}}</td>
-                    <td>{{item?.country  || '-'}}</td>
-                    <td>{{item?.source  || '-'}}</td>
-                    <td class="text-center">
+                    <td (click)="edit(item)">{{item?.client_number || '-'}}</td>
+                    <td (click)="edit(item)">{{item?.client_name || '-'}}</td>
+                    <td (click)="edit(item)">{{item?.country  || '-'}}</td>
+                    <td (click)="edit(item)">{{item?.source  || '-'}}</td>
+                    <td (click)="edit(item)" class="text-center">
                       <div style="display: block;"><span [ngStyle]="{ 'color': item?.status === true ? 'green' : 'red' }">{{ item?.status === true ? 'Active' : 'Inactive'   || 'NA' }}</span></div>
                     </td>
                     <td>
@@ -112,10 +115,10 @@
                       </span>
                       <ng-template #noContact>-</ng-template>
                     </td>
-                    <td> <ng-container>
+                    <!-- <td> <ng-container>
                       <img src="../../../../assets/images/Edit.svg" class="icon-image" type="button" container="body"
                         ngbTooltip="Edit" (click)="edit(item)" *ngIf="userRole !='Admin' && (accessPermissions[0]?.view || accessPermissions[0]?.update) || userRole === 'Admin'"/>
-                   </ng-container></td>
+                   </ng-container></td> -->
                   </tr>
                 </ng-container>
               </tbody>

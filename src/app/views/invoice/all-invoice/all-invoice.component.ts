@@ -17,13 +17,7 @@ import { WeeklySelectionStrategy } from '../../../shared/weekly-selection-strate
 @Component({
   selector: 'app-all-invoice',
   templateUrl: './all-invoice.component.html',
-  styleUrls: ['./all-invoice.component.scss'],
-  providers: [
-      {
-            provide: MAT_DATE_RANGE_SELECTION_STRATEGY,
-            useClass: WeeklySelectionStrategy
-      }
-    ]
+  styleUrls: ['./all-invoice.component.scss']
 })
 export class AllInvoiceComponent implements OnInit {
 
@@ -41,8 +35,8 @@ BreadCrumbsTitle: any = 'Invoices';
     endDate:any;
     page = 1;
     count = 0;
-    tableSize = 5;
-    tableSizes = [5, 10, 25, 50, 100];
+    tableSize = 50;
+    tableSizes = [50,75,100];
     currentIndex: any;
     allInvoiceList:any=[];
     accessPermissions = [];
@@ -55,8 +49,7 @@ BreadCrumbsTitle: any = 'Invoices';
       client_name: []
     };
     allClientNames: any[] = [];
-  filteredList: any = [];
-  datepicker: null;
+    datepicker: null;
     constructor(private common_service: CommonServiceService,private accessControlService:SubModuleService,
       private router:Router,private modalService: NgbModal,private dialog:MatDialog,
       private datePipe:DatePipe,
@@ -73,7 +66,7 @@ BreadCrumbsTitle: any = 'Invoices';
       this.user_id = sessionStorage.getItem('user_id');
       this.userRole = sessionStorage.getItem('user_role_name');
       this.getModuleAccess();
-      this.getFilterList();
+      this.getAllActiveClients();
     }
 
     access_name:any ;
@@ -119,26 +112,23 @@ BreadCrumbsTitle: any = 'Invoices';
         console.error('Error opening modal:', error);
       }
     }
-    getFilterList(){
-      this.apiService.getData(`${environment.live_url}/${environment.client_invoice}/`).subscribe(
-        (res: any) => {
-          this.filteredList = res;
-          this.allClientNames = this.getUniqueValues(job => ({ id: job.client_id, name: job.client_name }));
-      })
-      }
-    getUniqueValues(
-      extractor: (item: any) => { id: any; name: string }
-    ): { id: any; name: string }[] {
-      const seen = new Map();
-      this.filteredList?.forEach(job => {
-        const value = extractor(job);
-        if (value && value.id && !seen.has(value.id)) {
-          seen.set(value.id, value.name);
-        }
-      });
 
-      return Array.from(seen, ([id, name]) => ({ id, name }));
+  public getAllActiveClients() {
+    let query:any
+    if(this.userRole ==='Admin'){
+      query = '?status=True'
+    } else{
+      query = `?status=True&employee-id=${this.user_id}`
     }
+    this.apiService.getData(`${environment.live_url}/${environment.clients}/${query}`).subscribe(
+      (res: any) => {
+        if(res && res.length>=1){
+        this.allClientNames = res.map((client:any) => ({ id: client.id, name: client.client_name }));
+        }
+      }, (error: any) => {
+        this.apiService.showError(error?.error?.detail);
+      });
+  }
       public getAllInvoiceList(){
         let query = this.getFilterBaseUrl();
         this.apiService.getData(`${environment.live_url}/${environment.client_invoice}/${query}`).subscribe(
@@ -178,9 +168,8 @@ BreadCrumbsTitle: any = 'Invoices';
     getFilterBaseUrl(): string {
       const base = `?page=${this.page}&page_size=${this.tableSize}`;
       const searchParam = this.term?.trim().length >= 2 ? `&search=${this.term.trim()}` : '';
-      const employeeParam = this.userRole !== 'Admin' ? `&employee-id=${this.user_id}` : '';
 
-      return `${base}${searchParam}${employeeParam}`;
+      return `${base}${searchParam}`;
     }
 
     public sort(direction: string, column: string) {
@@ -232,34 +221,38 @@ BreadCrumbsTitle: any = 'Invoices';
       if (this.filters.client_name.length) {
         this.filterQuery += `&client-ids=[${this.filters.client_name.join(',')}]`;
       }
-      if (this.invoiceDate) {
-        this.filterQuery += `&dates=[${this.invoiceDate}]`;
+      // if (this.invoiceDate) {
+      //   this.filterQuery += `&dates=[${this.invoiceDate}]`;
+      // }
+      if(this.startDate && this.endDate){
+        this.filterQuery += `&start-date=${this.startDate}&end-date=${this.endDate}`;
       }
       this.apiService.getData(`${environment.live_url}/${environment.client_invoice}/${this.filterQuery}`).subscribe((res: any) => {
         this.allInvoiceList = res?.results;
         const noOfPages: number = res?.['total_pages']
         this.count = noOfPages * this.tableSize;
-        this.count = res?.['total_no_of_record']
+        this.count = res?.['total_no_of_record'];
         this.page = res?.['current_page'];
       });
     }
     clearDateFilter(){
       this.invoiceDate = null;
       this.dateFilterValue = null;
+      this.startDate = null;
+      this.endDate = null;
       this.filterData()
     }
-    onDateChange(event: any) {
+    onStartDateChange(event: any) {
       const selectedDate = event.value;
       if (selectedDate) {
-        this.invoiceDate = this.datePipe.transform(selectedDate, 'yyyy-MM-dd');
+        this.startDate = this.datePipe.transform(selectedDate, 'yyyy-MM-dd');
       }
-      //this.filterData()
     }
     onEndDateChange(event: any) {
       const selectedDate = event.value;
       if (selectedDate) {
-        this.invoiceDate = this.datePipe.transform(selectedDate, 'yyyy-MM-dd');
+        this.endDate = this.datePipe.transform(selectedDate, 'yyyy-MM-dd');
       }
-     // this.filterData()
+      this.filterData()
     }
 }

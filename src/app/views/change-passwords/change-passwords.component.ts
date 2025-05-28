@@ -1,19 +1,17 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Location } from '@angular/common';
 import { ApiserviceService } from 'src/app/service/apiservice.service';
 import { CommonServiceService } from 'src/app/service/common-service.service';
-import { CanComponentDeactivate } from 'src/app/auth-guard/can-deactivate.guard';
 import { Observable } from 'rxjs';
-import { FormErrorScrollUtilityService } from 'src/app/service/form-error-scroll-utility-service.service';
 
 @Component({
   selector: 'app-change-passwords',
   templateUrl: './change-passwords.component.html',
   styleUrls: ['./change-passwords.component.scss']
 })
-export class ChangePasswordsComponent implements CanComponentDeactivate, OnInit {
+export class ChangePasswordsComponent implements OnInit {
   BreadCrumbsTitle: any = 'Change password';
   userId
   changePassword: FormGroup;
@@ -33,7 +31,6 @@ export class ChangePasswordsComponent implements CanComponentDeactivate, OnInit 
     private router: Router,
     private common_service: CommonServiceService,
     private location: Location,
-    private formErrorScrollService: FormErrorScrollUtilityService
   ) { }
 
   ngOnInit(): void {
@@ -51,7 +48,6 @@ export class ChangePasswordsComponent implements CanComponentDeactivate, OnInit 
     )
     this.initialFormValue=this.changePassword.getRawValue();
   }
-
   passwordMatchValidator(control: AbstractControl): { [key: string]: boolean } | null {
     const newPassword = control.get('new_password');
     const confirmPassword = control.get('confirm_new_password');
@@ -143,10 +139,4 @@ export class ChangePasswordsComponent implements CanComponentDeactivate, OnInit 
     }
 
   }
-
-  canDeactivate(): Observable<boolean> {
-      const currentFormValue = this.changePassword?.getRawValue();
-      const isFormChanged:boolean =  JSON.stringify(currentFormValue) !== JSON.stringify(this.initialFormValue);
-      return this.formErrorScrollService.isFormDirtyOrInvalidCheck(isFormChanged,this.changePassword);
-    }
 }

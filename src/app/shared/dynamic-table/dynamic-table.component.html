@@ -7,7 +7,7 @@
           class="form-control p-2 sizeinput"
           [(ngModel)]="config.searchTerm"
           (input)="onSearch(config.searchTerm)"
-          placeholder="Search"
+          [placeholder]="config?.searchPlaceholder"
           autocomplete="off"
           aria-describedby="emailHelp"
         />
@@ -75,8 +75,8 @@
             {{ col.label }}
 
             <!-- Sort Icons -->
-            <i *ngIf="!arrowState[col.key]" (click)="sort('asc', col.key)" class="bi bi-arrow-up ms-1"></i>
-            <i *ngIf="arrowState[col.key]" (click)="sort('desc', col.key)" class="bi bi-arrow-down ms-1"></i>
+            <i *ngIf="!arrowState[col.key]" (click)="sort('asc', col.key)" class="bi bi-arrow-down ms-1"></i>
+            <i *ngIf="arrowState[col.key]" (click)="sort('desc', col.key)" class="bi bi-arrow-up ms-1"></i>
 
             <!-- Filter Buttons -->
             <ng-container *ngIf="col.filterable">
@@ -105,7 +105,7 @@
 
                   <!-- Hidden Datepicker Input: Always in DOM, visually hidden by CSS. picker.open() targets this. -->
                   <!-- Removed *ngIf from mat-form-field. Added more robust hiding style for clarity. -->
-                  <mat-form-field class="opacity-0 position-absolute" >
+                  <mat-form-field class="opacity-0 position-absolute date-picker-input" >
                     <mat-label>Choose a date for {{col.label}}</mat-label> <!-- Label for accessibility -->
                     <input
                       matInput
@@ -144,13 +144,13 @@
                           matStartDate
                           placeholder="Start date"
                           [(ngModel)]="startDate"
-                          (dateChange)="onDateChange($event)"
+                          (dateChange)="onDateChange($event,col.key)"
                         />
                         <input
                           matEndDate
                           placeholder="End date"
                           [(ngModel)]="endDate"
-                          (dateChange)="onEndDateChange($event)"
+                          (dateChange)="onEndDateChange($event,col.key)"
                         />
                       </mat-date-range-input>
                       <mat-datepicker-toggle
@@ -162,7 +162,10 @@
                 </ng-container>
                 <ng-container *ngSwitchCase="'multi-select'">
                   <div ngbDropdown class="d-inline-block" container="body">
-                    <button id="dropdownBasic1" mat-icon-button style="outline: none;background: transparent;border:0" ngbDropdownToggle><i class="bi bi-toggles" style="color:white"></i></button>
+                    <button id="dropdownBasic1" mat-icon-button ngbDropdownToggle [ngClass]="tempFilters[col.key]?.length>=1 ? 'filterdColumn':''">
+                          <span *ngIf="tempFilters[col.key]?.length>=1">{{tempFilters[col.key]?.length.toString().padStart(2, '0')}}</span> 
+                      <i class="bi-funnel" *ngIf="!tempFilters[col.key] || tempFilters[col.key]?.length===0"></i>
+                    </button>
                     <div ngbDropdownMenu aria-labelledby="dropdownBasic1" class="p-2" (click)="$event.stopPropagation()">
                       <ng-container *ngIf="col.key as columnKey" >
                         <div class="position-relative mb-2" >
@@ -183,7 +186,7 @@
                           />
                         </div>
 
-                        <mat-selection-list
+                        <!-- <mat-selection-list
                           [(ngModel)]="columnFilters[columnKey]"
                           (ngModelChange)="onFilterChange(columnFilters[columnKey],col)"
                           [multiple]="true"
@@ -194,8 +197,19 @@
                           >
                             {{ option.name }}
                           </mat-list-option>
+                        </mat-selection-list> -->
+                        <mat-selection-list
+                          [ngModel]="tempFilters[columnKey]"
+                          (ngModelChange)="onSelectionChange($event, col)"
+                          [multiple]="true"
+                        >
+                          <mat-list-option
+                            *ngFor="let option of getFilteredOptions(columnKey)"
+                            [value]="option.id"
+                          >
+                            {{ option.name }}
+                          </mat-list-option>
                         </mat-selection-list>
-
                       </ng-container>
                     </div>
                   </div>
@@ -217,7 +231,7 @@
           <td *ngFor="let col of config.columns">
             <div *ngIf="!col.navigation">
                <ng-container *ngIf="!col.inputField && !col.fileInputField">
-                {{ col.type === 'date' ? (item[col.key] | date: 'dd/MM/yyyy') : item[col.key] !== null && item[col.key] !== undefined && item[col.key] !== '' ? item[col.key] : 'NA'}}
+                {{ col.type === 'date' ? (item[col.key] | date: 'dd/mm/yyyy') : item[col.key] !== null && item[col.key] !== undefined && item[col.key] !== '' ? item[col.key] : 'NA'}}
                </ng-container>
                <ng-container *ngIf="col.inputField">
                 <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
@@ -263,7 +277,7 @@
 
             <ng-container *ngIf="col.navigation">
               <a
-                (click)="navigateToEmployee(item)"
+                (click)="navigateToEmployee(item,col)"
                 class="text-primary text-decoration-underline"
                 style="cursor: pointer"
               >
@@ -297,13 +311,13 @@
         </tr>
         <tr *ngIf="!config.formContent">
           <td *ngFor="let col of config.columns">
-            <div *ngIf="!col.navigation" [ngClass]="col.key === 'remaining_time' ? isPositiveOrNegative(item?.remaining_time):''">
+            <div *ngIf="!col.navigation" [ngStyle]="{ color:col.key === 'job_status_date' && item?.status_date_color ? item?.status_date_color : col.key === 'short_fall' ? item?.color : 'black' }" [ngClass]="col.key === 'remaining_time' ? isPositiveOrNegative(item?.remaining_time):''">
               {{ col.type === 'date' ? (item[col.key] | date: 'dd/MM/yyyy') : item[col.key] !== null && item[col.key] !== undefined && item[col.key] !== '' ? item[col.key] : 'NA' }}
             </div>
 
             <ng-container *ngIf="col.navigation">
               <a
-                (click)="navigateToEmployee(item)"
+                (click)="navigateToEmployee(item,col)"
                 class="text-primary text-decoration-underline"
                 style="cursor: pointer"
               >
@@ -315,20 +329,20 @@
         </ng-container>
       <tr *ngIf="config?.estimationDetails" class="bg-transparent">
           <td colspan="6" class="bg-transparent"></td>
-          <td class="bg-transparent"><b>Estimated (hrs) : {{ config?.tableFooterContent?.total_estimated_time || 'NA' }}</b></td>
-          <td class="bg-transparent"><b>Actual Time (hrs) : {{ config?.tableFooterContent?.total_actual_time || 'NA'}}</b></td>
-          <td class="bg-transparent"><b>Average Productivity (hrs): {{ config?.tableFooterContent?.avg_quantitative_productivity || 'NA'}}</b></td>
+          <td class="bg-transparent"><b>Estimated (hrs) : {{ config?.tableFooterContent?.total_estimated_time !== null && config?.tableFooterContent?.total_estimated_time !== undefined && config?.tableFooterContent?.total_estimated_time !== '' ? config?.tableFooterContent?.total_estimated_time : 'NA' }}</b></td>
+          <td class="bg-transparent"><b>Actual Time (hrs) : {{ config?.tableFooterContent?.total_actual_time !== null && config?.tableFooterContent?.total_actual_time !== undefined && config?.tableFooterContent?.total_actual_time !== '' ? config?.tableFooterContent?.total_actual_time : 'NA' }}</b></td>
+          <td class="bg-transparent"><b>Average Productivity (hrs): {{ config?.tableFooterContent?.avg_quantitative_productivity !== null && config?.tableFooterContent?.avg_quantitative_productivity !== undefined && config?.tableFooterContent?.avg_quantitative_productivity !== '' ? config?.tableFooterContent?.avg_quantitative_productivity : 'NA' }}</b></td>
       </tr>
       <tr *ngIf="config?.averageProductivity" class="bg-transparent" >
         <td colspan="9" class="bg-transparent"></td>
-        <td  class="bg-transparent"><b>Average Productivity: {{ config?.tableFooterContent?.avg_qualitative_productivity || 'NA'}}</b></td>
+        <td  class="bg-transparent"><b>Average Productivity: {{ config?.tableFooterContent?.avg_qualitative_productivity !== null && config?.tableFooterContent?.avg_qualitative_productivity !== undefined && config?.tableFooterContent?.avg_qualitative_productivity !== '' ? config?.tableFooterContent?.avg_qualitative_productivity : 'NA' }}</b></td>
       </tr>
       <tr *ngIf="config?.average_productive_hour"  class="bg-transparent">
         <td colspan="6" class="bg-transparent"></td>
-        <td class="bg-transparent"><b>Total Estimated (hrs) : {{ config?.tableFooterContent?.total_estimated_time || 'NA' }}</b></td>
+        <td class="bg-transparent"><b>Total Estimated (hrs) : {{ config?.tableFooterContent?.total_estimated_time !== null && config?.tableFooterContent?.total_estimated_time !== undefined && config?.tableFooterContent?.total_estimated_time !== '' ? config?.tableFooterContent?.total_estimated_time : 'NA' }}</b></td>
         <td class="bg-transparent"></td>
-        <td class="bg-transparent"><b>Total Productivity (hrs) : {{ config?.tableFooterContent?.total_productive_hour || 'NA'}}</b></td>
-        <td class="bg-transparent"><b>Total Actual Time (hrs): {{ config?.tableFooterContent?.total_actual_time || 'NA'}}</b></td>
+        <td class="bg-transparent"><b>Total Productivity (hrs) : {{ config?.tableFooterContent?.total_productive_hour !== null && config?.tableFooterContent?.total_productive_hour !== undefined && config?.tableFooterContent?.total_productive_hour !== '' ? config?.tableFooterContent?.total_productive_hour : 'NA' }}</b></td>
+        <td class="bg-transparent"><b>Total Actual Time (hrs): {{ config?.tableFooterContent?.total_actual_time !== null && config?.tableFooterContent?.total_actual_time !== undefined && config?.tableFooterContent?.total_actual_time !== '' ? config?.tableFooterContent?.total_actual_time : 'NA' }}</b></td>
       </tr>
       </tbody>
     </table>

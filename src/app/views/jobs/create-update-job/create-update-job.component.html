@@ -10,7 +10,7 @@
             <form [formGroup]="jobFormGroup">
                 <div class="row mx-0 my-0 px-2" >
                     <!-- Job Number -->
-                    <div class="col-12 col-sm-12 col-md-6 col-lg-3 my-1 px-0">
+                    <!-- <div class="col-12 col-sm-12 col-md-6 col-lg-3 my-1 px-0" *ngIf="isEditItem">
                     <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
                         <mat-label>Job Number <b class="r-star">*</b></mat-label>
                         <input matInput type="text" placeholder="Enter Job Number" formControlName="job_number" autocomplete="off" readonly>
@@ -18,13 +18,13 @@
                           <span *ngIf="f['job_number']?.errors?.['required']">Job Number is required</span>
                         </mat-error>
                       </mat-form-field>  
-                    </div>
+                    </div> -->
 <!-- Job name -->
-<div class="col-12 col-sm-12 col-md-6 col-lg-3 my-1 no-padding pl-5 pr-0">
+<div class="col-12 col-sm-12 col-md-6 col-lg-3 my-1 no-padding pl-0 pr-5">
 
 <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
     <mat-label>Job Name <b class="r-star">*</b></mat-label>
-    <input matInput type="text" pattern="^[a-zA-Z0-9]+( [a-zA-Z0-9]+)*$" placeholder="Enter Job name" formControlName="job_name"  autocomplete="off" readonly>
+    <input matInput type="text"  placeholder="Enter Job name" formControlName="job_name"  autocomplete="off" readonly>
 </mat-form-field>
 
 </div>
@@ -51,7 +51,7 @@
  
 </div> 
 <!-- End Client Dropdown -->
-<div class="col-12 col-sm-12 col-md-6 col-lg-3 my-1 px-0">
+<div class="col-12 col-sm-12 col-md-6 col-lg-3 my-1 no-padding pl-0 pr-5">
   <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
       <mat-label>End Client <b class="r-star">*</b></mat-label>
       <mat-select formControlName="end_client" autocomplete="off"
@@ -73,7 +73,7 @@
 
 </div> 
 <!-- Group -->
-<div class="col-12 col-sm-12 col-md-6 col-lg-3 my-1 px-0">
+<div class="col-12 col-sm-12 col-md-6 col-lg-3 my-1 no-padding pl-0 pr-5">
     <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
         <mat-label>Group</mat-label>
         <mat-select formControlName="group" autocomplete="off"
@@ -94,7 +94,7 @@
 
 
 <!-- Services -->
-<div class="col-12 col-sm-12 col-md-6 col-lg-3 my-1 no-padding pl-5 pr-0">
+<div class="col-12 col-sm-12 col-md-6 col-lg-3 my-1 no-padding pl-0 pr-5">
     <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
         <mat-label>Service <b class="r-star">*</b></mat-label>
         <mat-select formControlName="service" autocomplete="off"
@@ -138,29 +138,85 @@
  
 </div> 
 <!-- period -->
-<div class="col-12 col-sm-12 col-md-6 col-lg-3 my-1 px-0">
-    <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
-        <mat-label>Period <b class="r-star">*</b></mat-label>
-        <mat-select formControlName="period" autocomplete="off"
-                placeholder="Period" panelClass="custom-select-panel"
-                [disableOptionCentering]="true" (selectionChange)="onPeroidChange($event)">
-                <div class="mat-select-search-wrapper d-flex">
-                  <input matInput [(ngModel)]="searchPeroidText" autofocus [ngModelOptions]="{standalone: true}" placeholder="Search Period" class="mat-select-search" >
-                  <mat-icon class="search-icon" *ngIf="!searchPeroidText">search</mat-icon>
-                  <mat-icon class="search-icon" *ngIf="searchPeroidText" type="button" (click)="clearSearch('period')">close</mat-icon>
-                </div>
-                <mat-option *ngFor="let item of filteredPeriodList()" [value]="item?.id">
-                    {{item?.period_name}}
-                </mat-option>
-        </mat-select>
-        <mat-error *ngIf="f['period']?.invalid && f['period']?.touched || f['period']?.dirty">
+<div class="col-12 col-sm-12 col-md-6 col-lg-3 no-padding pl-0 pr-5">
+ <!-- Input field with the calendar icon -->
+<mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+   <mat-label>Period <b class="r-star">*</b></mat-label>
+  <input matInput formControlName="period" #trigger="matMenuTrigger" placeholder="{{ modeName === 'Quaterly' ? 'Qx YYYY' : modeName === 'Monthly' ? 'Mon YYYY' : 'YYYY' }}" readonly [matMenuTriggerFor]="pickerMenu">
+  <mat-icon mat-icon-button
+  matSuffix
+  [matMenuTriggerFor]="pickerMenu"
+  #trigger="matMenuTrigger"
+  type="button"
+  aria-label="Open picker">calendar_today</mat-icon>
+<mat-error *ngIf="f['period']?.invalid && f['period']?.touched || f['period']?.dirty">
             <span  *ngIf="f['period']?.errors?.['required']">Period is required</span>
       </mat-error>
-    </mat-form-field>
- 
+</mat-form-field>
+
+
+<mat-menu #pickerMenu="matMenu" class="picker-menu">
+  <ng-container>
+    <div *ngIf="jobFormGroup?.get('periodicity')?.value; else emptyContent">
+<!-- Year Navigation -->
+  <div class="picker-header">
+    <button mat-icon-button (click)="prevDecade();$event.stopPropagation()" aria-label="Previous Decade">
+      <mat-icon>chevron_left</mat-icon>
+    </button>
+
+    <button mat-button (click)="toggleView();$event.stopPropagation()">
+      {{ showSelection ? (year || yearDefault) : (yearRangeStart + ' - ' + (yearRangeStart + 9)) }}
+    </button>
+
+    <button mat-icon-button (click)="nextDecade();$event.stopPropagation()" aria-label="Next Decade">
+      <mat-icon>chevron_right</mat-icon>
+    </button>
+  </div>
+
+  <!-- Selection Grid -->
+  <div class="picker-body">
+    <!-- Year Mode -->
+    <ng-container *ngIf="modeName === 'Yearly' && showSelection">
+      <button mat-button *ngFor="let y of [0,1,2,3,4,5,6,7,8,9]" (click)="changeYear(yearRangeStart + y);$event.stopPropagation()">
+        {{ yearRangeStart + y }}
+      </button>
+    </ng-container>
+
+    <!-- Quarter Mode -->
+    <ng-container *ngIf="modeName === 'Quaterly' && showSelection">
+      <button mat-button *ngFor="let item of quarters" (click)="select(item.value);$event.stopPropagation()" class="picker-item">
+        <b>{{ item.label }}</b> — <small>{{ item.months.join(', ') }}</small>
+      </button>
+    </ng-container>
+
+    <!-- Month Mode -->
+    <ng-container *ngIf="modeName === 'Monthly' && showSelection">
+      <button mat-button *ngFor="let month of months" (click)="select(month);$event.stopPropagation()" class="picker-item">
+        {{ month }}
+      </button>
+    </ng-container>
+
+    <!-- Year Selection -->
+    <ng-container *ngIf="!showSelection">
+      <div class="year-grid">
+        <button mat-stroked-button *ngFor="let y of [0,1,2,3,4,5,6,7,8,9]" (click)="changeYear(yearRangeStart + y);$event.stopPropagation()">
+          {{ yearRangeStart + y }}
+        </button>
+      </div>
+    </ng-container>
+  </div>
+    </div>
+    
+  </ng-container>
+  <ng-template #emptyContent>
+    <span class="empty-message mat-menu-item" disabled>
+      Select periodicity to enable options
+    </span>
+  </ng-template>
+</mat-menu>
 </div> 
 <!-- Job Type -->
-<div class="col-12 col-sm-12 col-md-6 col-lg-3 my-1 px-0">
+<div class="col-12 col-sm-12 col-md-6 col-lg-3 no-padding pl-0 pr-5">
     <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
         <mat-label>Job Type <b class="r-star">*</b></mat-label>
         <mat-select formControlName="job_type" autocomplete="off"
@@ -182,7 +238,7 @@
  
 </div>
  <!-- Allocation Date -->
- <div class="col-12 col-sm-12 col-md-6 col-lg-3 my-1 no-padding pl-5 pr-0">
+ <div class="col-12 col-sm-12 col-md-6 col-lg-3 my-1 no-padding pl-0 pr-5">
     <mat-form-field appearance="outline" class="w-100 p-0 custom-mat-form-field">
         <mat-label>Job Allocation Date <b class="r-star">*</b></mat-label>
         <input matInput [matDatepicker]="picker1" placeholder="Enter Job Allocation Date"
@@ -199,7 +255,7 @@
 <div class="col-12 col-sm-12 col-md-6 col-lg-3 my-1 no-padding pl-0 pr-5">
     <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
         <mat-label>Budget <b class="r-star">*</b></mat-label>
-        <input matInput type="text" placeholder="Enter Budget" formControlName="budget_time" autocomplete="off" (input)="formatBudget($event)" >
+        <input matInput type="text" placeholder="Enter Budget" formControlName="budget_time" autocomplete="off" (input)="formatBudget($event)" maxlength="6" >
         <mat-error *ngIf="f['budget_time']?.invalid && f['budget_time']?.touched || f['budget_time']?.dirty">
           <span *ngIf="f['budget_time']?.errors?.['required']">Budget is required</span>
           <!-- <span *ngIf="f['budget_time']?.errors?.['pattern'] ">Invalid time format. Please use HHH:MM</span> -->
@@ -211,7 +267,7 @@
     </div>
 
     <!-- Job Status -->
-<div class="col-12 col-sm-12 col-md-6 col-lg-3 my-1 px-0">
+<div class="col-12 col-sm-12 col-md-6 col-lg-3 no-padding pl-0 pr-5">
     <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
         <mat-label>Job Status <b class="r-star">*</b></mat-label>
         <mat-select formControlName="job_status" autocomplete="off"
@@ -234,7 +290,7 @@
 </div>
 
 <!-- Job status Date -->
-<div class="col-12 col-sm-12 col-md-6 col-lg-3 my-1 px-0">
+<div class="col-12 col-sm-12 col-md-6 col-lg-3 no-padding pl-0 pr-5">
     <mat-form-field appearance="outline" class="w-100 p-0 custom-mat-form-field">
         <mat-label>Status Date <b class="r-star">*</b></mat-label>
         <input matInput [matDatepicker]="picker2" placeholder="Enter Status Date"
@@ -248,7 +304,7 @@
   
 </div>
 
-<div class="col-12 col-sm-12 col-md-6 col-lg-6 my-1 no-padding pl-5 pr-0 align-self-center">
+<div class="col-12 col-sm-12 col-md-6 col-lg-6 my-1 no-padding pl-0 pr-5 align-self-center">
     <mat-radio-group formControlName="option">
         <mat-radio-button class="radio-button" *ngFor="let key of objectKeys(jobBillingOption)" [value]="key">
             {{ jobBillingOption[key] }}
@@ -261,7 +317,7 @@
 </div>
 </div>
 <section class="settings-table-bg" [ngStyle]="{'pointer-events': (user_role_name==='Accountant') ? 'none' : 'all'}">
-  <div class="row mx-0 my-1 px-0">
+  <div class="row mx-0 no-padding my-1 px-0">
       <div class="col-12 col-sm-12 col-md-6 col-lg-9 py-1 px-0">
           <h4>Employee Details</h4>
       </div>
@@ -287,11 +343,7 @@
           </tr>
         </thead>
         <tbody formArrayName="employees" class="contact-form-content">
-          <tr *ngFor="let emp of employeeFormArray.controls |paginate : {
-            itemsPerPage: pageSize,
-            currentPage: currentPage,
-            totalItems: employeeFormArray?.length
-          }; let i = index" [formGroupName]="i" >
+         <tr *ngFor="let emp of currentPageRows; let i = index" [formGroupName]="(currentPage - 1) * pageSize + i">
             <td>{{getContinuousIndex(i)}}</td>
             <td>
               <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">

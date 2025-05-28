@@ -15,13 +15,7 @@ import { WeeklySelectionStrategy } from '../weekly-selection-strategy';
   selector: 'app-dynamic-table',
   templateUrl: './dynamic-table.component.html',
   styleUrls: ['./dynamic-table.component.scss'],
-  providers: [
-    NgbDropdownConfig,
-    {
-          provide: MAT_DATE_RANGE_SELECTION_STRATEGY,
-          useClass: WeeklySelectionStrategy
-    }
-  ],
+  providers: [NgbDropdownConfig]
 
 })
 export class DynamicTableComponent implements OnInit {
@@ -70,6 +64,7 @@ selectedFile:(File | null)[] = [];
   selectedDate: any;
 
   private lastEmittedFilters: { [key: string]: string } = {}; // To store JSON string of last emitted filter value per key
+  dateRangeStartDate: string | null;
 
   constructor(
     private fb:FormBuilder,
@@ -81,9 +76,17 @@ selectedFile:(File | null)[] = [];
     this.user_id = sessionStorage.getItem('user_id');
     this.userRole = sessionStorage.getItem('user_role_name');
   }
+  tempFilters: { [key: string]: any[] } = {};
   ngOnInit(): void {
-
+this.tempFilters = JSON.parse(JSON.stringify(this.columnFilters));
    }
+onSelectionChange(newSelected: any[], col: any): void {
+  const key = col.key;
+  this.tempFilters[key] = newSelected;
+  this.columnFilters[key] = newSelected;
+  this.onFilterChange(newSelected, col); // Emits to API
+  this.applyFilters(); // Applies locally
+}
 
   // Add this trackBy function
   trackByColumnKey(index: number, col: any): string {
@@ -187,6 +190,7 @@ selectedFile:(File | null)[] = [];
       });
       this.updatePagination();
     }
+
   weekDatePicker(event: any) {
     this.selectedDate = event;
     this.actionEvent.emit({ actionType: 'weekDate', detail: this.selectedDate });
@@ -238,21 +242,41 @@ selectedFile:(File | null)[] = [];
   }
 
 
-  getFilteredOptions(colKey: string): { id: any; name: string }[] {
-    const column = this.config.columns?.find(c => c.key === colKey);
-    const options = column?.filterOptions || [];
-    const search = this.filterSearchText[colKey]?.toLowerCase() || '';
 
-    const filtered = options
-      .filter((option: any) => {
-        const optionName = typeof option === 'string' ? option : option?.name;
-        return optionName?.toLowerCase().includes(search);
-      })
-      .map((option: any) =>
-        typeof option === 'string' ? { id: option, name: option } : option
-      );
-    return filtered;
-  }
+// getFilteredOptions(colKey: string): { id: any; name: string }[] {
+//   const options = this.config.columns.find(c => c.key === colKey)?.filterOptions || [];
+//   const search = this.filterSearchText[colKey]?.toLowerCase() || '';
+//   return options
+//     .filter((option: any) => typeof option === 'string' || (typeof option === 'object' && option.name?.toLowerCase().includes(search)))
+//     .map((option: any) => typeof option === 'string' ? { id: null, name: option } : option);
+// }
+  // getFilteredOptions(colKey: string): { id: any; name: string }[] {
+  //   const column = this.config.columns?.find(c => c.key === colKey);
+  //   const options = column?.filterOptions || [];
+  //   const search = this.filterSearchText[colKey]?.toLowerCase() || '';
+
+  //   const filtered = options
+  //     .filter((option: any) => {
+  //       const optionName = typeof option === 'string' ? option : option?.name;
+  //       return optionName?.toLowerCase().includes(search);
+  //     })
+  //     .map((option: any) =>
+  //       typeof option === 'string' ? { id: option, name: option } : option
+  //     );
+  //   return filtered;
+  // }
+getFilteredOptions(columnKey: string): any[] {
+  const allOptions = this.config.columns.find(col => col.key === columnKey)?.filterOptions || [];
+  const searchText = this.filterSearchText[columnKey]?.toLowerCase() || '';
+  const selectedIds = this.columnFilters[columnKey] || [];
+
+  const selected = allOptions.filter((opt:any) => selectedIds.includes(opt.id));
+  const searched = allOptions.filter((opt:any) => opt.name?.toLowerCase().includes(searchText));
+
+  const merged = [...selected, ...searched];
+  const uniqueMap = new Map(merged.map((opt:any) => [opt.id, opt]));
+  return Array.from(uniqueMap.values());
+}
 
 onTableDataChange(event: any) {
   this.actionEvent.emit({ actionType:'tableDataChange' , detail:event });
@@ -297,8 +321,13 @@ clearDateFilter(columnKey: string): void {
   // Parent component is expected to handle the data refresh.
 }
 
-navigateToEmployee(event){
+navigateToEmployee(event,col:any){
+  if ('keyId' in event) {
+  this.actionEvent.emit({ actionType: 'navigate', row: event, selectedDay:event[col.keyId] });
+  }
+  else{
   this.actionEvent.emit({ actionType: 'navigate', row: event });
+  }
 }
 
 // Header Tabs events
@@ -343,22 +372,7 @@ this.actionEvent.emit({ actionType: 'submitWorkCulture', action:reqPayload});
 }
 private isIncludeFlagEnableLogic(): void {
   const clientNameFilter = this.columnFilters['client_name'];
-  if (this.config.selectedClientId) {
-    const clientObj = this.filteredData?.find(
-      (obj: any) => obj['client'] === this.config.selectedClientId
-    );
-    if (clientObj) {
-      this.columnFilters['client_name'] = [clientObj.client];
-      this.selected_client_id = clientObj.client;
-      if(this.selected_client_id){
-        this.allow_sending_status=false;
-        this.getClientDetails();
-      }
-    }
-    return;
-  }
-
-  // Case 2: No client selected — clear everything
+  // Case 1: No client selected — clear everything
   if (!clientNameFilter || clientNameFilter.length === 0) {
     this.allow_sending_status=false;
     this.selected_client_id = null;
@@ -366,17 +380,15 @@ private isIncludeFlagEnableLogic(): void {
     this.config.includeAllJobsValue = false;
     return;
   }
-
-  // Case 3: Multiple clients selected
+  // Case 2: Multiple clients selected
   if (clientNameFilter.length > 1) {
     this.allow_sending_status=false;
     this.config.includeAllJobsEnable = true;
     this.config.includeAllJobsValue = false;
     this.selected_client_id = null;
-    return;
+   return;
   }
-
-  // Case 4: Exactly one client selected
+  // Case 3: Exactly one client selected
   const matchedClient = this.filteredData?.find(
     (obj: any) => obj['client'] === clientNameFilter[0]
   );
@@ -549,28 +561,28 @@ isPositiveOrNegative(value: string): string {
     const number = parseFloat(value);
     if (isNaN(number)) {
         return "";
-    } else if (number >= 0) {
+    } else if (number > 0) {
         return "positiveText";
-    } else if (number < 0) {
+    } else if (number < 0 || Object.is(number, -0)) {
         return "negativeText";
     } else {
         return "";
     }
 }
-onDateChange(event: any) {
+onDateChange(event: any,key:any) {
   const selectedDate = event.value;
   const formattedDate = this.datePipe.transform(selectedDate, 'yyyy-MM-dd');
 //  this.rows.at(index).patchValue({ month: formattedDate });
-  this.selectedDateRange = formattedDate;
+  this.dateRangeStartDate = formattedDate;
  // this.actionEvent.emit({ actionType: 'dateChange', detail: formattedDate });
   this.resetWeekDate = true;
 }
-onEndDateChange(event: any) {
+onEndDateChange(event: any,key) {
   const selectedDate = event.value;
   const formattedDate = this.datePipe.transform(selectedDate, 'yyyy-MM-dd');
 //  this.rows.at(index).patchValue({ month: formattedDate });
   this.selectedDateRange = formattedDate;
-  //this.actionEvent.emit({ actionType: 'endDateChange', detail: formattedDate });
+  this.actionEvent.emit({ actionType: 'dateRange', detail: {startDate:this.dateRangeStartDate,endDate:formattedDate,key:key}});
   this.resetWeekDate = true;
 }
 }

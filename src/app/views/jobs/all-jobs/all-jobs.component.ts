@@ -1,16 +1,15 @@
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup } from '@angular/forms';
+import { DatePipe } from '@angular/common';
 import { Router } from '@angular/router';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { MatDialog } from '@angular/material/dialog';
-import { GenericDeleteComponent } from '../../../generic-components/generic-delete/generic-delete.component';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { forkJoin } from 'rxjs';
 import { GenericEditComponent } from '../../../generic-components/generic-edit/generic-edit.component';
-import { SortPipe } from '../../../shared/sort/sort.pipe';
 import { ApiserviceService } from '../../../service/apiservice.service';
 import { CommonServiceService } from '../../../service/common-service.service';
 import { SubModuleService } from '../../../service/sub-module.service';
 import { environment } from '../../../../environments/environment';
-import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
-import { DatePipe } from '@angular/common';
 
 export interface IdNamePair {
   id: any;
@@ -52,11 +51,14 @@ export class AllJobsComponent implements OnInit {
   allEmployeelist:any=[];
   allManagerlist:any=[];
   dateFilterValue: any = null;
-  filters: { job_type_name: string[]; client_name: string[];employees:string[];manager:string[] } = {
+  statusDateFilterValue: any = null;
+  statusList:String[]=[];
+  filters: { job_type_name: string[]; client_name: string[];employees:string[];manager:string[],status_name:string[] } = {
     job_type_name: [],
     client_name: [],
     employees:[],
-    manager:[]
+    manager:[],
+    status_name:[],
   };
 
 
@@ -64,8 +66,8 @@ export class AllJobsComponent implements OnInit {
   allJobTypeNames: IdNamePair[] = [];
   allManagerNames: IdNamePair[] = [];
   allEmployeeNames: IdNamePair[] = [];
+  allStatusNames: IdNamePair[] = [];
   filteredList = [];
-  datepicker:any;
   filterQuery: string;
   jobList:any = [];
   jobAllocationDate: string | null;
@@ -82,6 +84,13 @@ export class AllJobsComponent implements OnInit {
     this.common_service.setTitle(this.BreadCrumbsTitle);
     this.user_id = sessionStorage.getItem('user_id');
     this.userRole = sessionStorage.getItem('user_role_name');
+    this.getModuleAccess();
+    this.loadInitialData();
+    // this.getJobStatusList();
+    // this.getJobTypeList();
+    // this.getAllEmployeeList();
+    // this.getAllActiveManagerList();
+    // this.getClientList();
      this.common_service.jobStatus$.subscribe((status:boolean)=>{
       if(status){
          this.getJobsHistoryList();
@@ -91,20 +100,13 @@ export class AllJobsComponent implements OnInit {
     })
   }
 
-  async ngOnInit() {
-
-    this.getModuleAccess();
-    this.getAllEmployeeList();
-    this.getAllActiveManagerList();
-
-    this.getJobStatusList();
+  ngOnInit() {
     this.initialForm();
-
-
-
-    await this.getJobsFilterList('True');
+    //  setTimeout(() => {
+    //   this.getCurrentJobs();
+    //  }, 500);
   }
-  access_name:any ;
+  access_name:any;
 
   getUniqueValues(
     extractor: (item: any) => { id: any; name: string }
@@ -120,6 +122,75 @@ export class AllJobsComponent implements OnInit {
     return Array.from(seen, ([id, name]) => ({ id, name }));
   }
 
+  loadInitialData(){
+    let query = `?status=True`;
+   query += this.userRole ==='Admin' ? '':`&employee-id=${this.user_id}`;
+    this.allJobStatus=[];
+    this.allStatusNames=[];
+    this.allJobTypeNames=[];
+    this.allEmployeelist=[];
+    this.allEmployeeNames=[];
+    this.allManagerlist=[]
+    this.allManagerNames=[];
+    this.allClientNames=[];
+    forkJoin({
+      _res_job_status:this.apiService.getData(`${environment.live_url}/${environment.settings_job_status}/`),
+      _res_job_type:this.apiService.getData(`${environment.live_url}/${environment.settings_job_type}/`),
+    _res_employees:this.apiService.getData(`${environment.live_url}/${environment.employee}/?is_active=True&employee=True`), 
+    _res_Managers:this.apiService.getData(`${environment.live_url}/${environment.employee}/?is_active=True&employee=True&designation=manager`),
+    _res_clients:this.apiService.getData(`${environment.live_url}/${environment.clients}/${query}`),   
+    }).subscribe((data:any)=>{
+      if(data._res_job_status && data._res_job_status?.length>=1){
+        data._res_job_status.forEach((element:any)=>{
+          element['valueChanged']=false
+        })
+        this.allJobStatus = data._res_job_status;
+        this.jobStatusList('True');
+      }
+      if(data._res_job_type && data._res_job_type?.length>=1){
+         this.allJobTypeNames = data._res_job_type?.map((item: any) => ({
+          id: item.id,
+          name: item.job_type_name
+        }));
+      }
+      if(data._res_employees && data._res_employees?.length>=1){
+         this.allEmployeelist = data._res_employees;
+    this.allEmployeeNames = data._res_employees?.map((emp: any) => ({
+      id: emp?.user_id,
+      name: emp?.user__first_name
+    }))
+      }
+      if(data._res_Managers && data._res_Managers?.length>=1){
+    this.allManagerlist = data._res_Managers;
+    this.allManagerNames = data._res_Managers?.map((emp: any) => ({
+      id: emp?.user_id,
+      name: emp?.user__first_name
+    }))
+      }
+      if(data._res_clients && data._res_clients?.length>=1){
+        this.allClientNames = data._res_clients?.map((item: any) => ({
+          id: item.id,
+          name: item.client_name
+        }));
+      }
+      this.getCurrentJobs();
+    },(error)=>{
+      this.apiService.showError(error?.error?.detail)
+    });
+  }
+//   getClientList(){
+//       let query = `?status=True`;
+//  query += this.userRole ==='Admin' ? '':`&employee-id=${this.user_id}`;
+//     this.apiService.getData(`${environment.live_url}/${environment.clients}/${query}`).subscribe((res: any) => {
+//       if(res){
+//         this.allClientNames = res?.map((item: any) => ({
+//           id: item.id,
+//           name: item.client_name
+//         }));
+//       }
+//     })
+//     return this.allClientNames;
+//   }
   applyClientFilter() {
     this.filterData();
   }
@@ -132,11 +203,9 @@ export class AllJobsComponent implements OnInit {
     if (this.filters.client_name.length) {
       this.filterQuery += `&client-ids=[${this.filters.client_name.join(',')}]`;
     }
-
     if (this.filters.job_type_name.length) {
       this.filterQuery += `&job-type-ids=[${this.filters.job_type_name.join(',')}]`;
     }
-
     if (this.filters.employees.length) {
       this.userRole === 'accountant' ? this.filterQuery += `&employee-ids=[${this.filters.employees.join(',')}]` :
       this.filterQuery += `&employee-ids=[${this.filters.employees.join(',')}]` ;
@@ -147,31 +216,29 @@ export class AllJobsComponent implements OnInit {
       this.filterQuery += `&manager-ids=[${this.filters.manager.join(',')}]` ;
     }
 
-
     if (this.jobAllocationDate) {
       this.filterQuery += `&job-allocation-date=[${this.jobAllocationDate}]`;
     }
     if (this.statusDate) {
       this.filterQuery += `&job-status-date=[${this.statusDate}]`;
     }
-    if(this.isCurrent){
-      this.filterQuery += `&status=True`;
+    if(this.isCurrent && this.filters.status_name.length==0){
+   this.jobStatusList('True');
+    this.filterQuery +=`&job-status=[${this.statusList}]`;
     }
-    else{
-      this.filterQuery += `&status=False`;
+    else if(!this.isCurrent && this.filters.status_name.length==0){
+    this.jobStatusList('False');
+    this.filterQuery +=`&job-status=[${this.statusList}]`;
+    }else{
+    this.filterQuery += `&job-status=[${this.filters.status_name.join(',')}]` ;
     }
     this.apiService.getData(`${environment.live_url}/${environment.jobs}/${this.filterQuery}`).subscribe((res: any) => {
       this.allJobsList = res?.results;
       this.filteredList = res?.results;
       this.count = res?.['total_no_of_record'];
       this.page = res?.['current_page'];
-
-
     });
   }
-
-
-
   getModuleAccess() {
     this.accessControlService.getAccessForActiveUrl(this.user_id).subscribe((access) => {
       if (access) {
@@ -182,36 +249,55 @@ export class AllJobsComponent implements OnInit {
       }
     });
   }
-
-  getJobStatusList() {
-    this.apiService.getData(`${environment.live_url}/${environment.settings_job_status}/`).subscribe(
-      (resData: any) => {
-        // console.log(resData);
-        resData.forEach((element:any)=>{
-          element['valueChanged']=false
-        })
-        this.allJobStatus = resData;
-      }
-    )
-  }
+  // getJobStatusList() {
+  //   this.apiService.getData(`${environment.live_url}/${environment.settings_job_status}/`).subscribe(
+  //     (resData: any) => {
+  //       // console.log(resData);
+  //       resData.forEach((element:any)=>{
+  //         element['valueChanged']=false
+  //       })
+  //       this.allJobStatus = resData;
+  //       this.jobStatusList('True');
+  //     }
+  //   )
+  // }
+  // getJobTypeList() {
+  //   this.apiService.getData(`${environment.live_url}/${environment.settings_job_type}/`).subscribe((res: any) => {
+  //     if (res) {
+  //       this.allJobTypeNames = res?.map((item: any) => ({
+  //         id: item.id,
+  //         name: item.job_type_name
+  //       }));
+  //     }
+  //   })
+  //   return this.allJobTypeNames;
+  // }
 
   getAllEmployeeList(){
     this.allEmployeelist =[];
     this.apiService.getData(`${environment.live_url}/${environment.employee}/?is_active=True&employee=True`).subscribe((respData: any) => {
     this.allEmployeelist = respData;
+    this.allEmployeeNames = respData?.map((emp: any) => ({
+      id: emp?.user_id,
+      name: emp?.user__first_name
+    }))
     },(error => {
       this.apiService.showError(error?.error?.detail)
     }));
   }
 
-  getAllActiveManagerList(){
-    this.allManagerlist =[];
-    this.apiService.getData(`${environment.live_url}/${environment.employee}/?is_active=True&employee=True&designation=manager`).subscribe((respData: any) => {
-    this.allManagerlist = respData;
-    },(error => {
-      this.apiService.showError(error?.error?.detail)
-    }));
-  }
+  // getAllActiveManagerList(){
+  //   this.allManagerlist =[];
+  //   this.apiService.getData(`${environment.live_url}/${environment.employee}/?is_active=True&employee=True&designation=manager`).subscribe((respData: any) => {
+  //   this.allManagerlist = respData;
+  //   this.allManagerNames = respData?.map((emp: any) => ({
+  //     id: emp?.user_id,
+  //     name: emp?.user__first_name
+  //   }))
+  //   },(error => {
+  //     this.apiService.showError(error?.error?.detail)
+  //   }));
+  // }
   onFilterChange(event: any, filterType: string) {
     const selectedOptions = event;
     this.filters[filterType] = selectedOptions;
@@ -251,11 +337,11 @@ export class AllJobsComponent implements OnInit {
     //  console.error('Error opening modal:', error);
     }
   }
-   getCurrentJobsList() {
+  getCurrentJobsList() {
     this.isHistory = false;
     this.isCurrent = true;
-    let query = `${this.getFilterBaseUrl()}&status=True`;
-
+     this.jobStatusList('True');
+    let query = `${this.getFilterBaseUrl()}&job-status=[${this.statusList}]`;
     this.apiService.getData(`${environment.live_url}/${environment.jobs}/${query}`).subscribe((res: any) => {
       this.allJobsList = res?.results;
       this.filteredList = res?.results;
@@ -264,36 +350,11 @@ export class AllJobsComponent implements OnInit {
       this.count = res?.['total_no_of_record'];
       this.page = res?.['current_page'];    });
   }
-
-  getJobsFilterList(status?:string) {
-    let query = this.getFilterBaseUrl();
-    if(status){
-      query = `?status=${status}`;
-      query += this.userRole !== 'Admin' ? `&employee-id=${this.user_id}` : '';
-    }
-    this.apiService.getData(`${environment.live_url}/${environment.jobs}/${query}`).subscribe(
-      (res: any) => {
-        this.jobList = res;
-        this.allClientNames = this.getUniqueValues(job => ({ id: job.client, name: job.client_name }));
-        this.allJobTypeNames = this.getUniqueValues(job => ({ id: job.job_type, name: job.job_type_name }));
-        this.allEmployeeNames = this.getUniqueValues(job => {
-          const emp = job.employees?.find((e: any) => e.is_primary);
-          return { id: emp?.employee || '', name: emp?.employee_name || '' };
-        });
-
-        this.allManagerNames = this.getUniqueValues(job => {
-          const mgr = job.employees?.find((e: any) => e.is_primary);
-          return { id: mgr?.manager || '', name: mgr?.manager_name || '' };
-        });
-
-      }
-    )
-  }
-   getJobsHistoryList() {
+  getJobsHistoryList() {
     this.isCurrent = false;
     this.isHistory = true;
-    let query = `${this.getFilterBaseUrl()}&status=False`;
-
+    this.jobStatusList('False');
+    let query = `${this.getFilterBaseUrl()}&job-status=[${this.statusList}]`;
     this.apiService.getData(`${environment.live_url}/${environment.jobs}/${query}`).subscribe(
       (res: any) => {
         this.allJobsList = res?.results;
@@ -393,7 +454,7 @@ export class AllJobsComponent implements OnInit {
     } else if (Number(percentage) > 100) {
       item.isInvalid = true;
       item.errorType = 'max';
-    } else if (Number(percentage) < 1) {
+    } else if (Number(percentage) < 0) {
       item.isInvalid = true;
       item.errorType = 'min';
     } else {
@@ -402,8 +463,6 @@ export class AllJobsComponent implements OnInit {
       item.errorType = null; // Clear errors when valid
     }
   }
-
-
   saveJobStausPercentage(item: any) {
     if(!item.isInvalid){
       if(!this.changedStatusName){
@@ -416,12 +475,7 @@ export class AllJobsComponent implements OnInit {
       this.apiService.updateData(`${environment.live_url}/${environment.jobs_percetage}/${item.id}/`,formData).subscribe((respData: any) => {
         if (respData) {
           this.apiService.showSuccess(respData['message']);
-          let status = this.changedStatusName.toLowerCase();
-          if(status==='completed' || status==='cancelled'){
-            this.getJobsHistoryList();
-          } else{
-            this.getCurrentJobsList()
-          }
+          this.filterData();
     }},(error: any) => {
       this.apiService.showError(error?.error?.detail);
     });
@@ -431,7 +485,6 @@ export class AllJobsComponent implements OnInit {
     const employee = employees.find((emp:any) => emp?.is_primary === true);
     return employee ? employee?.employee_name : '';
   }
-
   getManagerName(employees: any): string {
     const manager = employees.find((man:any) => man?.is_primary === true);
     return manager ? manager?.manager_name : '';
@@ -441,17 +494,19 @@ export class AllJobsComponent implements OnInit {
   let status:any
     if(this.isCurrent){
       status = 'True';
+   this.jobStatusList(status);
     }
     else{
       status = 'False';
+      this.jobStatusList(status);
     }
     let query = '';
     if(this.filterQuery){
-      query = this.filterQuery + `&file-type=${type}&is-active=${status}`
+      query = this.filterQuery + `&file-type=${type}`;
     }else{
-      query = `?page=${this.page}&page_size=${this.tableSize}&file-type=${type}&is-active=${status}`
+      query = `?page=${this.page}&page_size=${this.tableSize}&file-type=${type}&job-status=[${this.statusList}]`;
+      query +=this.userRole !== 'Admin' ? `&employee-id=${this.user_id}` : '';
     }
-
     let apiUrl = `${environment.live_url}/${environment.job_details}/${query}`;
     fetch(apiUrl)
     .then(res => res.blob())
@@ -463,6 +518,21 @@ export class AllJobsComponent implements OnInit {
       a.click();
     });
   }
+
+jobStatusList(status:any){
+  const isActive = status === 'True';
+  this.statusList = this.allJobStatus
+    ?.filter((jobstatus: any) => isActive
+      ? jobstatus?.status_name !== "Cancelled" && jobstatus?.status_name !== "Completed"
+      : jobstatus?.status_name === "Cancelled" || jobstatus?.status_name === "Completed")
+    .map((status: any) => status?.status_name);
+    this.allStatusNames = this.allJobStatus
+    ?.filter((jobstatus: any) => isActive ? jobstatus?.status_name !== "Cancelled" && jobstatus?.status_name !== "Completed"
+      : jobstatus?.status_name === "Cancelled" || jobstatus?.status_name === "Completed").map((status:any) => ({
+      id: status?.status_name,name: status?.status_name
+    }))
+}
+
   setDateFilterColumn(event){
     const selectedDate = event.value;
   if (selectedDate) {
@@ -477,17 +547,22 @@ export class AllJobsComponent implements OnInit {
     }
     this.filterData()
   }
+  onStatusDateSelected(event: any): void {
+    const selectedDate = event.value;
+    if (selectedDate) {
+     this.statusDate = this.datePipe.transform(selectedDate, 'yyyy-MM-dd');
+    }
+    this.filterData()
+  }
   clearDateFilter(){
     this.jobAllocationDate = null;
     this.dateFilterValue = null;
-    this.statusDate = null;
-    this.datepicker = null;
+  
     this.filterData()
   }
   clearStatusDateFilter(){
     this.statusDate = null;
-    this.dateFilterValue = null;
-    this.datepicker = null;
+    this.statusDateFilterValue = null;
     this.filterData()
   }
 }

@@ -108,8 +108,8 @@
                   class="bi bi-arrow-up"></i>
               </th>
               <th>Template File</th>
-              <th>Password</th>
-              <th>When To Use</th>
+              <th *ngIf="userRole==='Admin'">Password</th>
+              <th *ngIf="userRole==='Admin'">When To Use</th>
               <th>Access</th>
               <th>Action</th>
             </tr>
@@ -126,8 +126,8 @@
               <td>
                 <span class="over-floww" [ngbTooltip]="getFileName(item?.template_file)">{{getFileName(item?.template_file)|| '-'}}</span>
               </td>
-              <td>{{item?.password || '-'}}</td>
-              <td>{{item?.when_to_use || '-'}}</td>
+              <td *ngIf="userRole==='Admin'">{{item?.password || '-'}}</td>
+              <td *ngIf="userRole==='Admin'">{{item?.when_to_use || '-'}}</td>
               <td>
                 <ng-container>
                   <img src="../../../../assets/images/download.svg" class="icon-image" container="body"

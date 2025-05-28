@@ -46,18 +46,20 @@ BreadCrumbsTitle: any = 'Non Billable Hours';
           const periodChanged = prev.period !== current.period;
           if (employeeIdChanged || periodicityChanged || periodChanged) {
             this.dropdwonFilterData = current;
-            this.getTableData({
-              page: this.page,
-              pageSize: this.tableSize,
-              searchTerm: this.term
-            });
+           if(this.dropdwonFilterData.periodicity && this.dropdwonFilterData.period){
+              this.getTableData({
+                page: this.page,
+                pageSize: this.tableSize,
+                searchTerm: this.term
+              });
+              }
           }
         }
       }
 
       ngOnInit(): void {
         this.common_service.setTitle(this.BreadCrumbsTitle)
-        this.getTableData()
+        // this.getTableData()
       }
 
       // Called when user changes page number from the dynamic table
@@ -120,7 +122,7 @@ exportCsvOrPdf(fileType) {
     if(this.dropdwonFilterData){
       query+= this.dropdwonFilterData.employee_id ? `&employee-id=${this.dropdwonFilterData.employee_id}`:this.userRole ==='Admin' ? '':`&employee-id=${this.user_id}`;
       query+= this.dropdwonFilterData.periodicity ? `&periodicity=${this.dropdwonFilterData.periodicity}`:'';
-      query+= this.dropdwonFilterData.period ? `&period=${this.dropdwonFilterData.period}`:'';
+      query+= this.dropdwonFilterData.period ? `&period=${encodeURIComponent(JSON.stringify(this.dropdwonFilterData.period))}`:'';
       query+= this.dropdwonFilterData.employee_id || this.dropdwonFilterData.periodicity || this.dropdwonFilterData.period ? '&is_dropdown_selected=True' :'';
     }else{
       query += this.userRole ==='Admin' ? '':`&employee-id=${this.user_id}`;
@@ -144,7 +146,7 @@ exportCsvOrPdf(fileType) {
            if(this.dropdwonFilterData){
             finalQuery+= this.dropdwonFilterData.employee_id ? `&employee-id=${this.dropdwonFilterData.employee_id}`:this.userRole ==='Admin' ? '':`&employee-id=${this.user_id}`;
             finalQuery+= this.dropdwonFilterData.periodicity ? `&periodicity=${this.dropdwonFilterData.periodicity}`:'';
-            finalQuery+= this.dropdwonFilterData.period ? `&period=${this.dropdwonFilterData.period}`:'';
+            finalQuery+= this.dropdwonFilterData.period ? `&period=${encodeURIComponent(JSON.stringify(this.dropdwonFilterData.period))}`:'';
             finalQuery+= this.dropdwonFilterData.employee_id || this.dropdwonFilterData.periodicity || this.dropdwonFilterData.period ? '&is_dropdown_selected=True' :'';   
           }else{
             finalQuery += this.userRole ==='Admin' ? '':`&employee-id=${this.user_id}`;
@@ -169,7 +171,8 @@ exportCsvOrPdf(fileType) {
                currentPage:page,
                totalRecords: res.total_no_of_record,
                hideDownload:true,
-               showDownload:true,
+               showDownload:true,   
+              searchPlaceholder:'Search by Employee/Job',
               };
            },(error:any)=>{  this.api.showError(error?.error?.detail);
            });

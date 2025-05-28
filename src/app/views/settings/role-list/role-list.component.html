@@ -68,7 +68,7 @@
                                   totalItems: count
                                 }; let i=index'>
                 <td>{{getContinuousIndex(i)}}</td>
-                <td>{{item.designation_name|titlecase }}</td>
+                <td>{{item.designation_name || '-' }}</td>
                 <td>
                   <ng-container>
                     <img src="../../../../assets/images/Group.svg" alt="" type="button" (click)="roleAccess(item.id)">

@@ -44,6 +44,7 @@ export class TimesheetSummaryReportComponent implements OnInit {
   employees: any = [];
   filterOptions: { id: any; name: string; }[];
   selectedEmployeeId: any = [];
+  employeeName: any = [];
 
   constructor(
     private common_service: CommonServiceService,
@@ -59,9 +60,7 @@ export class TimesheetSummaryReportComponent implements OnInit {
     this.common_service.setTitle(this.BreadCrumbsTitle);
     this.user_id = sessionStorage.getItem('user_id');
     this.user_role_name = sessionStorage.getItem('user_role_name') || '';
-
-    this.getTableData({ page: 1, pageSize: this.tableSize, searchTerm: this.term });
-  //  await this.getFilterData();
+    this.getEmployeeList();
   }
 
   onTableDataChange(event: number): void {
@@ -100,31 +99,17 @@ export class TimesheetSummaryReportComponent implements OnInit {
         this.getTableData({ page: this.page, pageSize: this.tableSize, searchTerm: this.term , employee_ids:this.selectedEmployeeId, fromdate: this.fromDate })
         break;
       case 'navigate':
-        this.getEmployeeDetails(event['row'])
+        this.getEmployeeDetails(event['row'],event['selectedDay'])
         break;
       default:
         this.getTableData({ page: 1, pageSize: this.tableSize, searchTerm: this.term});
     }
   }
-  getEmployeeDetails(employee): void {
-    const today = new Date();
-        const dayOfWeek = today.getDay(); // Sunday = 0, Saturday = 6
-
-        const startOfWeek = new Date(today);
-        startOfWeek.setDate(today.getDate() - dayOfWeek);
-
-        const endOfWeek = new Date(today);
-        endOfWeek.setDate(today.getDate() + (6 - dayOfWeek));
-
-        // Save the week range in 'time'
-        this.time.start_date = startOfWeek.toISOString();
-        this.time.end_date = endOfWeek.toISOString();
-
-        const isEmpty = Object.keys(this.fromDate).length === 0;
-        const filteredDate = isEmpty ? this.time : this.fromDate;
+  getEmployeeDetails(employee,selectedDate): void {
+    console.log('employee Data',employee,selectedDate);
          this.dialog.open(EmployeeDetailsComponent, {
-         data: { employee:employee, dateRange:filteredDate },
-         panelClass: 'custom-details-dialog'
+         panelClass: 'custom-details-dialog',
+         data: { employee:employee,selectedDay:selectedDate }
        });
 
   }
@@ -138,7 +123,7 @@ export class TimesheetSummaryReportComponent implements OnInit {
     const formattedStartDate = this.datePipe.transform(startDate, 'yyyy-MM-dd');
     query += `&from-date=${formattedStartDate}`;
 
-    if (this.selectedEmployeeId.length > 0) {
+    if (this.selectedEmployeeId?.length > 0) {
       query += `&employee-ids=[${this.selectedEmployeeId}]`;
     }
     const url = `${environment.live_url}/${environment.timesheet_reports}/${query}&file-type=${fileType}&timsheet-type=summary`;
@@ -148,18 +133,21 @@ export class TimesheetSummaryReportComponent implements OnInit {
   filterByDate(date: string): void {
     this.getTableData({ page: this.page, pageSize: this.tableSize, searchTerm: this.term ,employee_ids:this.selectedEmployeeId, fromdate: date });
   }
-
+ getEmployeeList(){
+        this.api.getData(`${environment.live_url}/${environment.employee}/?is_active=True&employee=True`).subscribe((res: any) => {
+          if(res){
+            this.employeeName = res?.map((item: any) => ({
+              id: item.user_id,
+              name: item.user__full_name
+            }));
+             this.getTableData({ page: 1, pageSize: this.tableSize, searchTerm: this.term });
+          }
+        })
+      }
 
   async getTableData(params?: { page?: number; pageSize?: number; searchTerm?: string; fromdate?:any; employee_ids?: any; startDate?; endDate? }) {
-  let query = '';
-  if (this.user_role_name !== 'Admin' ) {
-    query += `?employee-id=${this.user_id}`;
-  }
- await this.api.getData(`${environment.live_url}/${environment.timesheet_summary}/${query}`)
-    .subscribe(async (res: any) => {
-      if(res){
-      this.employees = res;
-      this.filterOptions = getUniqueValues2(this.employees, 'employee_name', 'employee_id');
+
+      this.filterOptions =  this.employeeName
 
       if(this.filterOptions && this.filterOptions.length > 0){
         this.selectedEmployeeId = params?.employee_ids
@@ -241,13 +229,16 @@ export class TimesheetSummaryReportComponent implements OnInit {
            const formattedData = employees?.map((employee: any, index: number) => {
              const row: any = {
                sl: (page - 1) * pageSize + index + 1,
+               ...employee,
                employee_name: employee?.employee_name,
                employee_worked_hours: employee?.employee_worked_hours,
                short_fall: employee?.short_fall,
+               is_locked:employee?.is_locked === false ? 'Not Locked Yet' : 'Locked',
                keyId: employee?.employee_id
              };
              employee?.timesheet_data?.forEach((entry: any) => {
                row[entry.day] = entry?.total_time;
+               row[`${entry?.day}_date`] = entry?.date;
              });
              return row;
            });
@@ -269,16 +260,16 @@ export class TimesheetSummaryReportComponent implements OnInit {
                  totalRecords: res.total_no_of_record,
                  dateRangeFilter: true,
                  navigation: true,
-                 showDownload:true
+                 showDownload:true,
+                 searchPlaceholder:'Search by Employee',
                };
              }
          });
        }
 
-      }
-    });
-  }
 
+
+  }
 
   onSearch(term: string): void {
     this.term = term;

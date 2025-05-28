@@ -147,3 +147,55 @@ zoom:80%;
     max-width: 97vw !important;
     width: 97vw !important;
 }
+
+.mat-select-panel .mat-optgroup-label, 
+.mat-select-panel .mat-option{
+font-weight: bold !important;
+font-size: 12px !important;
+}
+
+.mat-option.mat-active{
+  background: #85b6dc !important;
+}
+.mat-option:hover{
+  background: aliceblue !important;
+}
+
+/* Editable input style */
+input.editable-cell,
+mat-select.editable-cell{
+  background-color:  #D6EAF8 !important;
+  border: 1px solid #fff !important;
+  padding: 6px;
+  border-radius: 4px;
+  transition: border 0.2s, box-shadow 0.2s;
+}
+
+/* On focus */
+input.editable-cell:focus,
+mat-select.editable-cell:focus {
+  background: #fff !important;
+  border-color: #fff;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.2);
+}
+
+/* Hover style */
+.editable-cell:hover {
+  background-color: #fff;
+}
+
+.mat-menu-panel{
+  max-width: 400px !important;
+}
+button.filterdColumn {
+  background: #fff;
+  width: 24px !important;
+  height: 24px !important;
+  line-height: 24px !important;
+  border-radius: 8% !important;
+  span{
+    color: red !important;
+    font-size: 12px !important;
+    font-weight:700;
+  }
+}

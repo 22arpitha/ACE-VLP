@@ -585,10 +585,9 @@ form{
   }
 
 }
-// .cdk-overlay-pane {
-
-//   transform: translateX(-22px) !important;
-// }
+.cdk-overlay-pane {
+  transform: translateX(0px) translateX(0px) !important;
+}
 form {
 
   input,

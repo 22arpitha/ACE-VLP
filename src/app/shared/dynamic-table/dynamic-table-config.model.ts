@@ -38,4 +38,5 @@ export interface DynamicTableConfig {
   showDownload?:boolean;
   averageProductivity?:boolean;
   average_productive_hour?:boolean;
+  searchPlaceholder?:string;
 }
