@@ -23,3 +23,27 @@
     color: #ccc;
   }
   
+tr[cdkDrag] {
+  cursor: grab;
+  transition: background-color 0.2s;
+}
+.cdk-drag-preview {
+  display: table;
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #fff;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  border: 1px solid #dee2e6;
+}
+.cdk-drag-preview tr {
+  display: table-row;
+}
+.cdk-drag-preview td {
+  display: table-cell;
+  padding: 0.75rem;
+  border: 1px solid #dee2e6;
+  vertical-align: middle;
+}
+.cdk-drag-placeholder {
+  opacity: 0;
+}

@@ -20,6 +20,7 @@ import { RolesAccessComponent } from './roles-access/roles-access.component';
 import { AccessToModulesComponent } from './access-to-modules/access-to-modules.component';
 import { PeriodicityComponent } from './periodicity/periodicity.component';
 import { PeriodComponent } from './period/period.component';
+import { DragDropModule } from '@angular/cdk/drag-drop';
 @NgModule({
   declarations: [
     SettingsComponent,
@@ -44,6 +45,7 @@ import { PeriodComponent } from './period/period.component';
     ReactiveFormsModule,
     SharedModule,
     EmployeeModule,
+    DragDropModule
   ]
 })
 export class SettingsModule { }

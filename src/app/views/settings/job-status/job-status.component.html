@@ -96,6 +96,7 @@
         <table class="table table table-hover table-list">
           <thead>
             <tr>
+              <!-- <th></th> -->
               <th>
                 Sl no
               </th>
@@ -116,13 +117,14 @@
               <th>Action</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody cdkDropList (cdkDropListDropped)="drop($event)" class="table-group-divider">
             <tr *ngFor='let status_item of allJobStatusList | customSort:directionValue:sortValue
                         |paginate : {
                                  itemsPerPage: tableSize,
                                  currentPage: page,
                                  totalItems: count
-                               }; let i=index'>
+                               }; let i=index' cdkDrag>
+                              <!-- <td><i class="bi bi-grip-vertical" cdkDragHandle style="cursor: grab;"></i></td> -->
               <td>{{getContinuousIndex(i)}}</td>
               <td>{{status_item?.status_group_name || '-'}}</td>
               <td>{{status_item?.status_name || '-'}}</td>

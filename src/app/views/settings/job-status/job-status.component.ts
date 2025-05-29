@@ -10,7 +10,7 @@ import { SubModuleService } from '../../../service/sub-module.service';
 import { CanComponentDeactivate } from '../../../auth-guard/can-deactivate.guard';
 import { FormErrorScrollUtilityService } from '../../../service/form-error-scroll-utility-service.service';
 import { Observable } from 'rxjs';
-
+import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 @Component({
   selector: 'app-job-status',
   templateUrl: './job-status.component.html',
@@ -198,7 +198,7 @@ export class JobStatusComponent implements CanComponentDeactivate, OnInit,OnDest
   }
   public onTableSizeChange(event: any): void {
     if (event) {
-
+      this.page=1;
       this.tableSize = Number(event.value);
       let query = `?page=${1}&page_size=${this.tableSize}`
       if (this.term) {
@@ -359,6 +359,11 @@ export class JobStatusComponent implements CanComponentDeactivate, OnInit,OnDest
     });
 
     return Array.from(seen, ([id, name]) => ({ id, name }));
+  }
+
+  public drop(event: CdkDragDrop<any[]>) {
+    moveItemInArray(this.allJobStatusList, event.previousIndex, event.currentIndex);
+    console.log('Previous:',event.previousIndex,'Current:',event.currentIndex);
   }
 }
 
