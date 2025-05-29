@@ -117,7 +117,7 @@
               <th>Action</th>
             </tr>
           </thead>
-          <tbody cdkDropList (cdkDropListDropped)="drop($event)" class="table-group-divider">
+          <tbody cdkDropList (cdkDropListDropped)="drop($event)" [cdkDropListData]="allJobStatusList" class="table-group-divider">
             <tr *ngFor='let status_item of allJobStatusList | customSort:directionValue:sortValue
                         |paginate : {
                                  itemsPerPage: tableSize,

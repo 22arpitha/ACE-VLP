@@ -363,8 +363,28 @@ export class JobStatusComponent implements CanComponentDeactivate, OnInit,OnDest
 
   public drop(event: CdkDragDrop<any[]>) {
     console.log(event);
-    moveItemInArray(this.allJobStatusList, event.previousIndex, event.currentIndex);
-    console.log('Previous:',event.previousIndex,'Current:',event.currentIndex);
+    // moveItemInArray(this.allJobStatusList, event.previousIndex, event.currentIndex);
+    // console.log('Previous:',event.previousIndex,'Current:',event.currentIndex);
+    const previousIndexAbsolute = (this.page - 1) * this.tableSize + event.previousIndex;
+    const currentIndexAbsolute = (this.page - 1) * this.tableSize + event.currentIndex;
+    moveItemInArray(this.allJobStatusList, previousIndexAbsolute, currentIndexAbsolute);
+    const previousIndexdata = event.container.data[event.previousIndex];
+    const currentIndexdata = event.container.data[event.currentIndex];
+     let data = {
+      status_name: currentIndexdata.status_name,
+      percentage_of_completion: currentIndexdata.percentage_of_completion,
+      status_group: currentIndexdata.status_group,
+      index:currentIndexAbsolute
+    };
+    this.apiService.updateData(`${environment.live_url}/${environment.settings_job_status}/${currentIndexdata.id}/`, data).subscribe((respData: any) => {
+          if (respData) {
+            // this.apiService.showSuccess('Data rearranged successfully');
+            // this.resetFormState();
+            this.getAllJobStatus(`?page=1&page_size=${this.tableSize}`);
+          }
+        }, (error: any) => {
+          this.apiService.showError(error?.error?.detail);
+        });
   }
 }
 

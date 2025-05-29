@@ -45,8 +45,8 @@ export class AccessToModulesComponent implements OnInit {
 
 
 
-  getAccessForDesignation(id: any) {
-     this.api.getData(`${environment.live_url}/${environment.roles_access}/?designation=${this.designation_id}`).subscribe(
+  getAccessForDesignation(id: number):void {
+     this.api.getData(`${environment.live_url}/${environment.roles_access}/?designation=${id}`).subscribe(
       (res: any) => {
         // console.log(res, 'designation id');
         this.buttonName =  res[0]?.id ? 'Update' : 'Add';
@@ -73,14 +73,6 @@ export class AccessToModulesComponent implements OnInit {
                   }
                 });
               } 
-              
-              // element_list.access.forEach((accessItem: any) => {
-              //   const matchedSubModule = this.data.access.find((module_name: any) => module_name.name === accessItem.name);
-              //   if (matchedSubModule) {
-              //     matchedSubModule['operations'] = accessItem.operations;
-              //     isMatched = true;
-              //   }
-              // });
               if (!isMatched) {
                 this.accessibility.push(element_list);
               }
@@ -224,7 +216,7 @@ export class AccessToModulesComponent implements OnInit {
   }
 
   modifyAccess(event: any, sub_module_name, access_name) {
-    // console.log(sub_module_name,'sub_module_namesub_module_name')
+    console.log(sub_module_name,'sub_module_namesub_module_name')
     this.data.access.forEach((element_sub_module: any) => {
       if (sub_module_name === element_sub_module.name) {
         if (event.target.checked && (access_name === 'create' || access_name === 'update' || access_name === 'delete')) {
