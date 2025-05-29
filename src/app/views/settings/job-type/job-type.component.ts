@@ -25,8 +25,8 @@ export class JobTypeComponent implements CanComponentDeactivate, OnInit,OnDestro
   allJobTypesList: any = [];
   page = 1;
   count = 0;
-  tableSize = 5;
-  tableSizes = [5, 10, 25, 50, 100];
+  tableSize = 50;
+  tableSizes = [50,75,100];
   currentIndex: any;
   sortValue: string = '';
   directionValue: string = '';
@@ -53,7 +53,7 @@ export class JobTypeComponent implements CanComponentDeactivate, OnInit,OnDestro
     this.getModuleAccess();
 
     this.initializeForm();
-    this.getAllJobTypes('?page=1&page_size=5');
+    this.getAllJobTypes('?page=1&page_size=50');
     this.jobTypeForm?.valueChanges?.subscribe(() => {
       const currentFormValue = this.jobTypeForm?.getRawValue();
       const isInvalid = this.jobTypeForm?.touched && this.jobTypeForm?.invalid;

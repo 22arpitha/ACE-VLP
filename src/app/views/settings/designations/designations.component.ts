@@ -29,8 +29,8 @@ export class DesignationsComponent implements CanComponentDeactivate, OnInit,OnD
   RolesList: any = [];
   page = 1;
   count = 0;
-  tableSize = 5;
-  tableSizes = [5, 10, 25, 50, 100];
+  tableSize = 50;
+  tableSizes = [50,75,100];
   currentIndex: any;
   sortValue: string = '';
   directionValue: string = '';
@@ -56,7 +56,7 @@ export class DesignationsComponent implements CanComponentDeactivate, OnInit,OnD
     this.userRole = sessionStorage.getItem('user_role_name');
     this.getModuleAccess();
     this.initializeForm();
-    this.getAllDesignation('?page=1&page_size=5');
+    this.getAllDesignation('?page=1&page_size=50');
     this.getAllRolesList();
     this.designationForm?.valueChanges?.subscribe(() => {
       const currentFormValue = this.designationForm?.getRawValue();

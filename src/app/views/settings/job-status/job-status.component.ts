@@ -27,8 +27,8 @@ export class JobStatusComponent implements CanComponentDeactivate, OnInit,OnDest
   allStatusGroupList: any = [];
   page = 1;
   count = 0;
-  tableSize = 5;
-  tableSizes = [5, 10, 25, 50, 100];
+  tableSize = 50;
+  tableSizes = [50,75,100];
   currentIndex: any;
   sortValue: string = '';
   directionValue: string = '';
@@ -64,7 +64,7 @@ export class JobStatusComponent implements CanComponentDeactivate, OnInit,OnDest
     this.getModuleAccess();
 
     this.initializeForm();
-    this.getAllJobStatus('?page=1&page_size=5');
+    this.getAllJobStatus('?page=1&page_size=50');
     this.getStatusGroupList();
     this.jobStatusForm?.valueChanges?.subscribe(() => {
       const currentFormValue = this.jobStatusForm?.getRawValue();
@@ -362,6 +362,7 @@ export class JobStatusComponent implements CanComponentDeactivate, OnInit,OnDest
   }
 
   public drop(event: CdkDragDrop<any[]>) {
+    console.log(event);
     moveItemInArray(this.allJobStatusList, event.previousIndex, event.currentIndex);
     console.log('Previous:',event.previousIndex,'Current:',event.currentIndex);
   }

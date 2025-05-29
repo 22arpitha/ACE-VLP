@@ -31,8 +31,8 @@ export class GroupComponent implements CanComponentDeactivate, OnInit {
   };
   page = 1;
   count = 0;
-  tableSize = 5;
-  tableSizes = [5, 10, 25, 50, 100];
+  tableSize = 50;
+  tableSizes = [50,75,100];
   currentIndex: any;
   term: any = '';
   client_id:any;
@@ -55,7 +55,7 @@ export class GroupComponent implements CanComponentDeactivate, OnInit {
       this.client_id= this.activeRoute.snapshot.paramMap.get('id')}
       this.common_service.clientEndClientCreationstatus$.subscribe((resp)=>{
         if(resp){
-          this.getAllGroupList(`?page=${1}&page_size=${5}&client=${this.client_id}`);
+          this.getAllGroupList(`?page=${1}&page_size=${50}&client=${this.client_id}`);
         }
       });
    }
@@ -63,7 +63,7 @@ export class GroupComponent implements CanComponentDeactivate, OnInit {
   ngOnInit(): void {
     this.getModuleAccess()
     this.intialForm();
-    this.getAllGroupList(`?page=${1}&page_size=${5}&client=${this.client_id}`);
+    this.getAllGroupList(`?page=${1}&page_size=${50}&client=${this.client_id}`);
   }
 
   shouldDisableGroupName:boolean
@@ -173,7 +173,7 @@ export class GroupComponent implements CanComponentDeactivate, OnInit {
             this.api.showSuccess(respData['message']);
             this.resetFormState();
             this.common_service.setGroupCreationState(true);
-            this.getAllGroupList(`?page=${1}&page_size=${5}&client=${this.client_id}`);
+            this.getAllGroupList(`?page=${1}&page_size=${50}&client=${this.client_id}`);
           }
         }, (error: any) => {
           this.api.showError(error?.error?.detail);
@@ -184,7 +184,7 @@ export class GroupComponent implements CanComponentDeactivate, OnInit {
             this.api.showSuccess(respData['message']);
             this.resetFormState();
             this.common_service.setGroupCreationState(true);
-            this.getAllGroupList(`?page=${1}&page_size=${5}&client=${this.client_id}`);
+            this.getAllGroupList(`?page=${1}&page_size=${50}&client=${this.client_id}`);
           }
         }, (error: any) => {
           this.api.showError(error?.error?.detail);
@@ -278,7 +278,7 @@ export class GroupComponent implements CanComponentDeactivate, OnInit {
 
   reset() {
     this.resetFormState();
-    this.getAllGroupList(`?page=${1}&page_size=${5}&client=${this.client_id}`);
+    this.getAllGroupList(`?page=${1}&page_size=${50}&client=${this.client_id}`);
   }
 
   viewClientsOfGrpup(data){
