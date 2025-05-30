@@ -536,6 +536,7 @@ public async UpdateFileFieldData(workCulData: any) {
       // Handle each file type asynchronously
       if (this.file && this.file[index]) {
         workCulData[index].work_ethics_file = await this.convertFileToBase64(this.file[index]);
+        workCulData[index].file_name = this.selectedFile[index].name;
       }
     }
   }

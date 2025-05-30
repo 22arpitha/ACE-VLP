@@ -59,7 +59,7 @@ export class JobsOfEndclientComponent implements OnInit {
      this.end_client_id = this.activateRoute.snapshot.paramMap.get('id')
      this.BreadCrumbsTitle = this.endClientData + ' - Jobs';
      this.common_service.setTitle(this.BreadCrumbsTitle);
-     this.getJobsOfEndClient(`?page=${1}&page_size=${5}&end-client=${this.end_client_id}`);
+     this.getJobsOfEndClient(`?page=${1}&page_size=${50}&end-client=${this.end_client_id}`);
   }
 
   ngOnInit(){

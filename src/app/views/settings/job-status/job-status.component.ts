@@ -10,7 +10,7 @@ import { SubModuleService } from '../../../service/sub-module.service';
 import { CanComponentDeactivate } from '../../../auth-guard/can-deactivate.guard';
 import { FormErrorScrollUtilityService } from '../../../service/form-error-scroll-utility-service.service';
 import { Observable } from 'rxjs';
-
+import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 @Component({
   selector: 'app-job-status',
   templateUrl: './job-status.component.html',
@@ -27,8 +27,8 @@ export class JobStatusComponent implements CanComponentDeactivate, OnInit,OnDest
   allStatusGroupList: any = [];
   page = 1;
   count = 0;
-  tableSize = 5;
-  tableSizes = [5, 10, 25, 50, 100];
+  tableSize = 50;
+  tableSizes = [50,75,100];
   currentIndex: any;
   sortValue: string = '';
   directionValue: string = '';
@@ -64,7 +64,7 @@ export class JobStatusComponent implements CanComponentDeactivate, OnInit,OnDest
     this.getModuleAccess();
 
     this.initializeForm();
-    this.getAllJobStatus('?page=1&page_size=5');
+    this.getAllJobStatus('?page=1&page_size=50');
     this.getStatusGroupList();
     this.jobStatusForm?.valueChanges?.subscribe(() => {
       const currentFormValue = this.jobStatusForm?.getRawValue();
@@ -198,7 +198,7 @@ export class JobStatusComponent implements CanComponentDeactivate, OnInit,OnDest
   }
   public onTableSizeChange(event: any): void {
     if (event) {
-
+      this.page=1;
       this.tableSize = Number(event.value);
       let query = `?page=${1}&page_size=${this.tableSize}`
       if (this.term) {
@@ -359,6 +359,32 @@ export class JobStatusComponent implements CanComponentDeactivate, OnInit,OnDest
     });
 
     return Array.from(seen, ([id, name]) => ({ id, name }));
+  }
+
+  public drop(event: CdkDragDrop<any[]>) {
+    console.log(event);
+    // moveItemInArray(this.allJobStatusList, event.previousIndex, event.currentIndex);
+    // console.log('Previous:',event.previousIndex,'Current:',event.currentIndex);
+    const previousIndexAbsolute = (this.page - 1) * this.tableSize + event.previousIndex;
+    const currentIndexAbsolute = (this.page - 1) * this.tableSize + event.currentIndex;
+    moveItemInArray(this.allJobStatusList, previousIndexAbsolute, currentIndexAbsolute);
+    const previousIndexdata = event.container.data[event.previousIndex];
+    const currentIndexdata = event.container.data[event.currentIndex];
+     let data = {
+      status_name: currentIndexdata.status_name,
+      percentage_of_completion: currentIndexdata.percentage_of_completion,
+      status_group: currentIndexdata.status_group,
+      index:currentIndexAbsolute
+    };
+    this.apiService.updateData(`${environment.live_url}/${environment.settings_job_status}/${currentIndexdata.id}/`, data).subscribe((respData: any) => {
+          if (respData) {
+            // this.apiService.showSuccess('Data rearranged successfully');
+            // this.resetFormState();
+            this.getAllJobStatus(`?page=1&page_size=${this.tableSize}`);
+          }
+        }, (error: any) => {
+          this.apiService.showError(error?.error?.detail);
+        });
   }
 }
 

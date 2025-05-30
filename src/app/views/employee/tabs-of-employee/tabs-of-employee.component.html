@@ -1,0 +1,13 @@
+<div class="row mx-0 px-0 emp-tabs">
+    <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0">
+        <mat-tab-group mat-stretch-tabs="false" mat-align-tabs="start" (selectedTabChange)="onTabChange($event)"
+            [(selectedIndex)]="selectedTabIndex">
+                <mat-tab  label="Employee Details">
+                    <app-create-update-employee *ngIf="selectedTabIndex === 0" #EmployeeFormComponent></app-create-update-employee>
+                </mat-tab>
+                <mat-tab label="Client Details">
+                    <app-employee-clients *ngIf="selectedTabIndex === 1"></app-employee-clients>
+                </mat-tab>
+        </mat-tab-group>
+    </div>
+</div>

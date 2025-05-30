@@ -30,8 +30,8 @@ export class EditClientComponent implements CanComponentDeactivate, OnInit {
   allGroupList: any = [];
   page = 1;
   count = 0;
-  tableSize = 5;
-  tableSizes = [5, 10, 25, 50, 100];
+  tableSize = 50;
+  tableSizes = [50,75, 100];
   currentIndex: any;
   sortValue: string = '';
   directionValue: string = '';
@@ -78,7 +78,7 @@ export class EditClientComponent implements CanComponentDeactivate, OnInit {
   async ngOnInit(): Promise<void> {
     this.initializeForm();
     this.getModuleAccess();
-    this.getAllEndClients(`?page=1&page_size=5&client=${this.client_id}`);
+    this.getAllEndClients(`?page=1&page_size=50&client=${this.client_id}`);
     this.getGroupList();
   }
   shouldDisableGroupName:boolean

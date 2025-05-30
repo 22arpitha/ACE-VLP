@@ -26,8 +26,8 @@ export class SourceComponent implements CanComponentDeactivate, OnInit,OnDestroy
   allSourceList: any = [];
   page = 1;
   count = 0;
-  tableSize = 5;
-  tableSizes = [5, 10, 25, 50, 100];
+  tableSize = 50;
+  tableSizes = [50,75,100];
   currentIndex: any;
   sortValue: string = '';
   directionValue: string = '';
@@ -50,7 +50,7 @@ export class SourceComponent implements CanComponentDeactivate, OnInit,OnDestroy
     this.userRole = sessionStorage.getItem('user_role_name');
     this.getModuleAccess();
     this.initializeForm();
-    this.getAllSource('?page=1&page_size=5');
+    this.getAllSource('?page=1&page_size=50');
     this.sourceForm?.valueChanges?.subscribe(() => {
       const currentFormValue = this.sourceForm?.getRawValue();
       const isInvalid = this.sourceForm?.touched && this.sourceForm?.invalid;

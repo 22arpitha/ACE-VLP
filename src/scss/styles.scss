@@ -164,6 +164,7 @@ body {
 
  .toast-message {
   word-wrap: break-word;
+  white-space: normal;
  }
 
  .toast-message a,
@@ -595,5 +596,24 @@ input[type='search']::-webkit-search-cancel-button {
       right: -40px;
     }
   }
+}
+.sunday-highlight .mat-calendar-body-cell-content {
+  background-color: #f86464;
+  border-radius: 8%;
+}
+
+::ng-deep .sunday-highlight .mat-calendar-body-cell-content {
+  background-color: #f86464;
+  border-radius: 8%;
+}
+
+
+#toast-container > div {
+  display: flex;
+  align-items: flex-start;
+}
+
+.toast-icon {
+  margin-top: 4px;
 }
 

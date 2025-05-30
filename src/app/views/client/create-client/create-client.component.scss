@@ -73,10 +73,15 @@ textarea[matInput] {
   background-color: rgb(235 235 235) !important;
   pointer-events: none !important;
 }
-::ng-deep .create-client .mat-raised-button.mat-button-disabled.mat-button-disabled{
+::ng-deep .create-client .mat-raised-button.mat-button-disabled.mat-button-disabled,
+::ng-deep .settings-form-bg .mat-raised-button.mat-button-disabled.mat-button-disabled{
   background-color: rgba(0,0,0,.12) !important;
 }
 ::ng-deep .settings-table-bg .highlight-background .mat-form-field-appearance-outline .mat-form-field-outline {
+  background-color: rgb(235, 235, 235) !important;
+  pointer-events: none !important;
+}
+::ng-deep .settings-table-bg input.highlight-background {
   background-color: rgb(235, 235, 235) !important;
   pointer-events: none !important;
 }

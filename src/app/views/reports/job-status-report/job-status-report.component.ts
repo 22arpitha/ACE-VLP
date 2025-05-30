@@ -18,7 +18,7 @@ export class JobStatusReportComponent implements OnInit {
    term: string = '';
    tableSize: number = 50;
    page: any = 1;
-   tableSizes = [50,75,100,150,200];
+   tableSizes = [50,75,100];
    tableConfig:any = {
      columns: [],
      data: [],

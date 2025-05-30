@@ -31,8 +31,8 @@ export class CountryComponent implements CanComponentDeactivate, OnInit,OnDestro
   };
   page = 1;
   count = 0;
-  tableSize = 5;
-  tableSizes = [5, 10, 25, 50, 100];
+  tableSize = 50;
+  tableSizes = [50,75,100];
   currentIndex: any;
   term: any = '';
   accessPermissions = []
@@ -51,7 +51,7 @@ export class CountryComponent implements CanComponentDeactivate, OnInit,OnDestro
     this.userRole = sessionStorage.getItem('user_role_name');
     this.getModuleAccess();
     this.intialForm();
-    this.getAllCountryList(`?page=${1}&page_size=${5}`);
+    this.getAllCountryList(`?page=${1}&page_size=${50}`);
     this.countryForm?.valueChanges?.subscribe(() => {
       const currentFormValue = this.countryForm?.getRawValue();
       const isInvalid = this.countryForm.touched && this.countryForm.invalid;
@@ -265,7 +265,7 @@ this.formUtilityService.resetHasUnsavedValue();
 
   reset() {
     this.resetFormState();
-    this.getAllCountryList(`?page=${1}&page_size=${5}`);
+    this.getAllCountryList(`?page=${1}&page_size=${50}`);
   }
   canDeactivate(): Observable<boolean> {
     const currentFormValue = this.countryForm?.getRawValue();

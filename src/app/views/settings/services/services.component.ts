@@ -26,8 +26,8 @@ export class ServicesComponent implements CanComponentDeactivate, OnInit,OnDestr
   allServiceList: any = [];
   page = 1;
   count = 0;
-  tableSize = 5;
-  tableSizes = [5, 10, 25, 50, 100];
+  tableSize = 50;
+  tableSizes = [50,75,100];
   currentIndex: any;
   sortValue: string = '';
   directionValue: string = '';
@@ -52,7 +52,7 @@ export class ServicesComponent implements CanComponentDeactivate, OnInit,OnDestr
     this.userRole = sessionStorage.getItem('user_role_name');
     this.getModuleAccess();
     this.initializeForm();
-    this.getAllServices('?page=1&page_size=5');
+    this.getAllServices('?page=1&page_size=50');
     this.serviceForm?.valueChanges?.subscribe(() => {
       const currentFormValue = this.serviceForm?.getRawValue();
       const isInvalid = this.serviceForm?.touched && this.serviceForm?.invalid;

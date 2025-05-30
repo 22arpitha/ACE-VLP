@@ -1,0 +1,33 @@
+.isActive{
+    background-color: #0F5C98 !important;
+    color: #fff;
+    font-weight: 500;
+    font-size: 14px;
+}
+.tab-button-content{
+    background-color: #fff;
+    width: 75px;
+    outline: none;
+    border: none;
+    // height: 30px;
+    // line-height: 30px;
+}
+.mat-btn-s{
+    margin: 0px 5px;
+
+}
+.download-btn{
+    min-width: 45px !important;
+    background-color: #fff !important;
+    color: #000;
+    // height: 30px;
+    // line-height: 30px;
+}
+.settings-table-bg{
+    max-height: 70vh !important;
+}
+.table-wrapper{
+    max-height: 50vh !important;
+    overflow-x: auto;
+    margin-bottom: 20px;
+}

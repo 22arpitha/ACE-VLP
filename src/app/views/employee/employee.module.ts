@@ -10,13 +10,17 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { SharedModule } from '../../shared/shared.module';
+import { TabsOfEmployeeComponent } from './tabs-of-employee/tabs-of-employee.component';
+import { EmployeeClientsComponent } from './employee-clients/employee-clients.component';
 
 
 
 @NgModule({
   declarations: [
     AllEmployeeComponent,
-    CreateUpdateEmployeeComponent
+    CreateUpdateEmployeeComponent,
+    TabsOfEmployeeComponent,
+    EmployeeClientsComponent
   ],
   imports: [
     CommonModule,
@@ -29,6 +33,6 @@ import { SharedModule } from '../../shared/shared.module';
         MatButtonModule,
         SharedModule,
   ],
-  exports:[AllEmployeeComponent,CreateUpdateEmployeeComponent]
+  exports:[AllEmployeeComponent,CreateUpdateEmployeeComponent,EmployeeClientsComponent]
 })
 export class EmployeeModule { }

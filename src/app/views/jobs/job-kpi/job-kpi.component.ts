@@ -8,6 +8,8 @@ import { FormErrorScrollUtilityService } from '../../../service/form-error-scrol
 import { environment } from '../../../../environments/environment';
 import {urlToFile,fileToBase64} from '../../../shared/fileUtils.utils';
 import { CanComponentDeactivate } from '../../../auth-guard/can-deactivate.guard';
+import { GenericRedirectionConfirmationComponent } from 'src/app/generic-components/generic-redirection-confirmation/generic-redirection-confirmation.component';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
   selector: 'app-job-kpi',
@@ -42,7 +44,7 @@ defaultReviewingTime:any='000:00';
 formData:any;
 initialFormValue:any;
   constructor(private fb:FormBuilder,private activeRoute:ActivatedRoute,
-          private common_service: CommonServiceService,
+          private common_service: CommonServiceService,private modalService: NgbModal,
           private apiService: ApiserviceService,private router:Router,
           private formErrorScrollService:FormErrorScrollUtilityService) {
             this.user_role_name = sessionStorage.getItem('user_role_name');
@@ -263,9 +265,45 @@ if(emp?.kpi){
       })
         }
 
-        public backBtnFunc(){
-          this.router.navigate(['/jobs/update-job/',this.job_id]);
+public backBtnFunc(): void {
+        if (this.isEditItem && this.hasUnsavedChanges()) {
+          this.showConfirmationPopup().subscribe((confirmed: boolean) => {
+            if (confirmed) {
+              this.cleanupAndNavigate();
+            }
+          });
+        } else {
+          this.cleanupAndNavigate();
         }
+      }
+      
+      public hasUnsavedChanges(): boolean {
+        const currentFormValue = this.jobKPIFormGroup.getRawValue();
+        const isFormChanged = JSON.stringify(currentFormValue) !== JSON.stringify(this.initialFormValue);
+        return isFormChanged || this.jobKPIFormGroup.dirty;
+      }
+      
+      private cleanupAndNavigate(): void {
+        this.common_service.setJobActiveTabindex(0);
+      }
+      
+      private showConfirmationPopup(): Observable<boolean> {
+        return new Observable<boolean>((observer) => {
+          const modalRef = this.modalService.open(GenericRedirectionConfirmationComponent, {
+            size: 'sm' as any,
+            backdrop: true,
+            centered: true,
+          });
+      
+          modalRef.componentInstance.status.subscribe((resp: any) => {
+            observer.next(resp === 'ok');
+            observer.complete();
+            modalRef.close();
+          });
+        });
+      }
+
+
      // Save JOB KPI
 public async saveJobKPIDetails(){
   if (this.jobKPIFormGroup.invalid) {

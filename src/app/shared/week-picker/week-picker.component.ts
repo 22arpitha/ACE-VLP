@@ -1,5 +1,5 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { MAT_DATE_RANGE_SELECTION_STRATEGY } from '@angular/material/datepicker';
+import { AfterViewInit, ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { MAT_DATE_RANGE_SELECTION_STRATEGY, MatDateRangePicker } from '@angular/material/datepicker';
 import { WeeklySelectionStrategy } from '../weekly-selection-strategy';
 
 @Component({
@@ -13,16 +13,27 @@ import { WeeklySelectionStrategy } from '../weekly-selection-strategy';
       }
     ]
 })
-export class WeekPickerComponent implements OnInit {
+export class WeekPickerComponent implements OnInit,AfterViewInit  {
   @Output() weekSelected = new EventEmitter<any>();
+  @ViewChild('picker1') picker1!: MatDateRangePicker<Date>;
     @Input()resetWeek: boolean = false;
     startDate: Date | null = null;
     endDate: Date | null = null;
 
-    constructor() { }
+    constructor(private cdr: ChangeDetectorRef) { }
 
     ngOnInit(): void {
     }
+      ngAfterViewInit(): void {
+    // Ensure proper change detection so dateClass is recognized
+    setTimeout(() => {
+      this.cdr.detectChanges();
+    });
+  }
+
+dateClass = (date: Date) => {
+  return date.getDay() === 0 ? 'sunday-highlight' : '';
+};
     ngOnChanges() {
       if (this.resetWeek) {
         this.startDate = null;

@@ -20,8 +20,8 @@ export class ClientsOfGroupComponent implements OnInit {
   };
   page = 1;
   count = 0;
-  tableSize = 5;
-  tableSizes = [5, 10, 25, 50, 100];
+  tableSize = 50;
+  tableSizes = [50,75,100];
   currentIndex: any;
   term: any = '';
   client_id:any;
@@ -38,7 +38,7 @@ export class ClientsOfGroupComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.getAllClientOfGroup(`?page=${1}&page_size=${5}&client=${this.client_id}&group=${this.group_id}`);
+    this.getAllClientOfGroup(`?page=${1}&page_size=${50}&client=${this.client_id}&group=${this.group_id}`);
    
   }
 

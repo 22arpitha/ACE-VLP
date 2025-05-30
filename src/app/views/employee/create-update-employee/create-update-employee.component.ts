@@ -10,6 +10,7 @@ import { GenericDeleteComponent } from '../../../generic-components/generic-dele
 import { SubModuleService } from '../../../service/sub-module.service';
 import { FormErrorScrollUtilityService } from '../../../service/form-error-scroll-utility-service.service';
 import { CanComponentDeactivate } from '../../../auth-guard/can-deactivate.guard';
+import { GenericRedirectionConfirmationComponent } from 'src/app/generic-components/generic-redirection-confirmation/generic-redirection-confirmation.component';
 
 @Component({
   selector: 'app-create-update-employee',
@@ -41,9 +42,9 @@ initialFormValue:any;
       this.user_id = sessionStorage.getItem('user_id');
     this.userRole = sessionStorage.getItem('user_role_name');
     if(this.activeRoute.snapshot.paramMap.get('id')){
-      this.employee_id= this.activeRoute.snapshot.paramMap.get('id')
+      this.employee_id= this.activeRoute.snapshot.paramMap.get('id');
+      this.common_service.setTitle('Update ' + this.BreadCrumbsTitle);
       this.isEditItem = true;
-      this.common_service.setTitle('Update ' + this.BreadCrumbsTitle)
       this.getUserRoleList();
       this.getReportingManagerList();
       this.getEmployeeDetails(this.employee_id);
@@ -71,7 +72,8 @@ initialFormValue:any;
 this.formErrorScrollService.resetHasUnsavedValue();
   }
 
-  shouldDisableFields:boolean
+  shouldDisableFields:boolean;
+  isEnabledEdit:boolean;
   getModuleAccess(){
     this.accessControlService.getAccessForActiveUrl(this.user_id).subscribe(
       (res:any)=>{
@@ -79,11 +81,23 @@ this.formErrorScrollService.resetHasUnsavedValue();
        const access_name =  sessionStorage.getItem('access-name')
         let temp = res.find((item:any)=>item.name===access_name)
         this.accessPermissions = temp?.operations;
+        if(this.userRole!='Admin'){
         if(this.employee_id){
           this.shouldDisableFields = this.accessPermissions[0]?.['update'];
+          this.isEnabledEdit=false;
         } else{
           this.shouldDisableFields = this.accessPermissions[0]?.['create'];
+          this.isEnabledEdit=true;
         }
+        }else{
+           this.shouldDisableFields=true;
+           if(this.isEditItem){
+            this.isEnabledEdit=false;
+           }else{
+            this.isEnabledEdit=true;
+           }
+        }
+        
         // console.log(this.shouldDisableFields,'this.shouldDisableFields')
       }
     )
@@ -122,6 +136,10 @@ this.employeeFormGroup = this.fb.group({
           },(error => {
             this.apiService.showError(error?.error?.detail)
           }));
+  }
+ 
+  public enbleFields(){
+    this.isEnabledEdit=true;
   }
 
   // Get Role Based Designation
@@ -181,11 +199,47 @@ this.apiService.getData(`${environment.live_url}/${environment.employee}/${id}/`
 
   }
 
-  public backBtnFunc(){
-    sessionStorage.removeItem("access-name")
-    this.common_service.setEmployeeStatusState(this.employeeFormGroup.get('is_active')?.value);
-    this.router.navigate(['/settings/all-employee']);
+  public backBtnFunc(): void {
+  if (this.isEditItem && this.hasUnsavedChanges()) {
+    this.showConfirmationPopup().subscribe((confirmed: boolean) => {
+      if (confirmed) {
+        this.cleanupAndNavigate();
+      }
+    });
+  } else {
+    this.cleanupAndNavigate();
   }
+}
+
+public hasUnsavedChanges(): boolean {
+  const currentFormValue = this.employeeFormGroup.getRawValue();
+  const isFormChanged = JSON.stringify(currentFormValue) !== JSON.stringify(this.initialFormValue);
+  return isFormChanged || this.employeeFormGroup.dirty;
+}
+
+private cleanupAndNavigate(): void {
+  sessionStorage.removeItem('access-name');
+  const isActive = this.employeeFormGroup.get('is_active')?.value;
+  this.common_service.setEmployeeStatusState(isActive);
+  this.router.navigate(['/settings/all-employee']);
+}
+
+private showConfirmationPopup(): Observable<boolean> {
+  return new Observable<boolean>((observer) => {
+    const modalRef = this.modalService.open(GenericRedirectionConfirmationComponent, {
+      size: 'sm' as any,
+      backdrop: true,
+      centered: true,
+    });
+
+    modalRef.componentInstance.status.subscribe((resp: any) => {
+      observer.next(resp === 'ok');
+      observer.complete();
+      modalRef.close();
+    });
+  });
+}
+
 
   adminData() {
     this.apiService.getProfileDetails(`?role_id=${1}`).subscribe(

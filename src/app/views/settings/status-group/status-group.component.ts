@@ -27,8 +27,8 @@ export class StatusGroupComponent implements CanComponentDeactivate, OnInit,OnDe
   allStatusGroupList: any = [];
   page = 1;
   count = 0;
-  tableSize = 5;
-  tableSizes = [5, 10, 25, 50, 100];
+  tableSize = 50;
+  tableSizes = [50,75,100];
   currentIndex: any;
   sortValue: string = '';
   directionValue: string = '';
@@ -53,7 +53,7 @@ export class StatusGroupComponent implements CanComponentDeactivate, OnInit,OnDe
     this.userRole = sessionStorage.getItem('user_role_name');
     this.getModuleAccess();
     this.initializeForm();
-    this.getAllStatusGroup('?page=1&page_size=5');
+    this.getAllStatusGroup('?page=1&page_size=50');
     this.statusGroupForm?.valueChanges?.subscribe(() => {
       const currentFormValue = this.statusGroupForm?.getRawValue();
       const isInvalid = this.statusGroupForm?.touched && this.statusGroupForm?.invalid;

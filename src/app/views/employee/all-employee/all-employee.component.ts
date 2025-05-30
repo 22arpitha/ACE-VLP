@@ -85,26 +85,26 @@ designation__designation_name:false,
   }
   async edit(item: any) {
     this.selectedItemId = item?.user_id;
-    try {
-      const modalRef = await this.modalService.open(GenericEditComponent, {
-        size: 'sm',
-        backdrop: 'static',
-        centered: true
-      });
+      sessionStorage.setItem('access-name', this.access_name?.name)
+      this.router.navigate(['/settings/update-employee/',this.selectedItemId]);
+    // try {
+    //   const modalRef = await this.modalService.open(GenericEditComponent, {
+    //     size: 'sm',
+    //     backdrop: 'static',
+    //     centered: true
+    //   });
 
-      modalRef.componentInstance.status.subscribe(resp => {
-        if (resp === 'ok') {
-          modalRef.dismiss();
-          sessionStorage.setItem('access-name', this.access_name?.name)
-          this.router.navigate(['/settings/update-employee/',this.selectedItemId]);
+    //   modalRef.componentInstance.status.subscribe(resp => {
+    //     if (resp === 'ok') {
+    //       modalRef.dismiss();
 
-        } else {
-          modalRef.dismiss();
-        }
-      });
-    } catch (error) {
-      console.error('Error opening modal:', error);
-    }
+    //     } else {
+    //       modalRef.dismiss();
+    //     }
+    //   });
+    // } catch (error) {
+    //   console.error('Error opening modal:', error);
+    // }
   }
 public getAllRoleList() {
     this.allRoleNames = [];

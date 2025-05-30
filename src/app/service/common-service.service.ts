@@ -23,6 +23,7 @@ export class CommonServiceService {
    clientGroupCreationstatus$ = new BehaviorSubject(false);
    clientEndClientCreationstatus$ = new BehaviorSubject(false);
    clientActiveTabindex$ = new BehaviorSubject(0);
+   jobActiveTabindex$ = new BehaviorSubject(0);
 
 
 
@@ -55,5 +56,8 @@ export class CommonServiceService {
     
    setClientActiveTabindex(index:any){
     this.clientActiveTabindex$.next(index)
+   }
+    setJobActiveTabindex(index:any){
+    this.jobActiveTabindex$.next(index)
    }
 }
