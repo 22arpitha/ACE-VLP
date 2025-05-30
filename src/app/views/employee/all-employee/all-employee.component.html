@@ -56,7 +56,7 @@
                     </th>
                     <th scope="col">Emp Status
                     </th>
-                    <th scope="col">Action </th>
+                    <!-- <th scope="col">Action </th> -->
                   </tr>
                 </thead>
                 <tbody>
@@ -67,7 +67,7 @@
                              itemsPerPage: tableSize,
                              currentPage: page,
                              totalItems: count
-                           }; let i=index'>
+                           }; let i=index' (click)="edit(item)">
                       <td>{{getContinuousIndex(i)}}</td>
                       <td>{{item?.employee_number || '-'}}</td>
                       <td>{{item?.user__full_name || '-'}}</td>
@@ -76,11 +76,11 @@
                       <td class="text-center">
                         <div style="display: block;"><span [ngStyle]="{ 'color': item?.is_active === true ? 'green' : 'red' }">{{ item?.is_active === true ? 'Active' : 'Inactive'   || 'NA' }}</span></div>
                       </td>
-                      <td> <ng-container>
+                      <!-- <td> <ng-container>
                         <img src="../../../../assets/images/Edit.svg" class="icon-image" type="button" container="body"
                           ngbTooltip="Edit" (click)="edit(item)" />
-                          <!-- <span  *ngIf="userRole !='Admin' && !accessPermissions[0]?.update && !accessPermissions[0]?.delete">-</span> -->
-                        </ng-container></td>
+                          <span  *ngIf="userRole !='Admin' && !accessPermissions[0]?.update && !accessPermissions[0]?.delete">-</span>
+                        </ng-container></td> -->
                     </tr>
                   </ng-container>
                 </tbody>

@@ -32,6 +32,7 @@ export class AllJobsComponent implements OnInit {
   directionValue: string = '';
   selectedItemId: any;
   arrowState: { [key: string]: boolean } = {
+    group_name:false,
     job_number: false,
     job_name: false,
     job_type_name: false,
@@ -53,7 +54,8 @@ export class AllJobsComponent implements OnInit {
   dateFilterValue: any = null;
   statusDateFilterValue: any = null;
   statusList:String[]=[];
-  filters: { job_type_name: string[]; client_name: string[];employees:string[];manager:string[],status_name:string[] } = {
+  filters: { group_name: string[];job_type_name: string[]; client_name: string[];employees:string[];manager:string[],status_name:string[] } = {
+    group_name: [],
     job_type_name: [],
     client_name: [],
     employees:[],
@@ -67,11 +69,27 @@ export class AllJobsComponent implements OnInit {
   allManagerNames: IdNamePair[] = [];
   allEmployeeNames: IdNamePair[] = [];
   allStatusNames: IdNamePair[] = [];
+  allGroupNames: IdNamePair[] = [];
   filteredList = [];
   filterQuery: string;
   jobList:any = [];
   jobAllocationDate: string | null;
   statusDate: any;
+
+   columns = [
+  { key: 'sl_no', label: 'Sl No', visible: true },
+  { key: 'job_number', label: 'Job Id', visible: true },
+  { key: 'job_name', label: 'Job', visible: true },
+  { key: 'job_type_name', label: 'Job Type', visible: true },
+  { key: 'client_name', label: 'Client', visible: true },
+  { key: 'group_name', label: 'Group', visible: false },
+  { key: 'job_allocation_date', label: 'Allocated On', visible: false },
+  { key: 'employees', label: 'Employees', visible: true },
+  { key: 'manager', label: 'Manager', visible: true },
+   { key: 'status_name', label: 'Status', visible: true },
+   { key: 'percentage_of_completion', label: 'Percentage Of Completion', visible: true },
+   { key: 'job_status_date', label: 'Status Date', visible: true },
+];
   constructor(
     private common_service: CommonServiceService,
     private accessControlService: SubModuleService,
@@ -172,6 +190,11 @@ export class AllJobsComponent implements OnInit {
           id: item.id,
           name: item.client_name
         }));
+        let clientIds = this.allClientNames.map((client:any)=>client.id);
+        if(clientIds && clientIds.length>=1){
+
+        this.getAllCientsBaseGroupList(clientIds);
+        }
       }
       this.getCurrentJobs();
     },(error)=>{
@@ -205,6 +228,9 @@ export class AllJobsComponent implements OnInit {
     }
     if (this.filters.job_type_name.length) {
       this.filterQuery += `&job-type-ids=[${this.filters.job_type_name.join(',')}]`;
+    }
+    if (this.filters.group_name.length) {
+      this.filterQuery += `&group-ids=[${this.filters.group_name.join(',')}]`;
     }
     if (this.filters.employees.length) {
       this.userRole === 'accountant' ? this.filterQuery += `&employee-ids=[${this.filters.employees.join(',')}]` :
@@ -272,6 +298,19 @@ export class AllJobsComponent implements OnInit {
   //   })
   //   return this.allJobTypeNames;
   // }
+getAllCientsBaseGroupList(clientIds:any){
+console.log('ClientIDs:',clientIds);
+let query = this.userRole ==='Admin' ? '': `?client-ids=[${clientIds}]`
+this.allGroupNames =[];
+    this.apiService.getData(`${environment.live_url}/${environment.clients_group}/${query}`).subscribe((respData: any) => {
+    this.allGroupNames = respData?.map((group: any) => ({
+      id: group?.id,
+      name: group?.group_name
+    }))
+    },(error => {
+      this.apiService.showError(error?.error?.detail)
+    }));
+}
 
   getAllEmployeeList(){
     this.allEmployeelist =[];
@@ -316,26 +355,26 @@ export class AllJobsComponent implements OnInit {
   }
   async edit(item: any) {
     this.selectedItemId = item?.id;
-    try {
-      const modalRef = await this.modalService.open(GenericEditComponent, {
-        size: 'sm',
-        backdrop: 'static',
-        centered: true
-      });
+    sessionStorage.setItem('access-name', this.access_name?.name)
+    this.router.navigate(['/jobs/update-job', this.selectedItemId]);
+    // try {
+    //   const modalRef = await this.modalService.open(GenericEditComponent, {
+    //     size: 'sm',
+    //     backdrop: 'static',
+    //     centered: true
+    //   });
 
-      modalRef.componentInstance.status.subscribe(resp => {
-        if (resp === 'ok') {
-          modalRef.dismiss();
-           sessionStorage.setItem('access-name', this.access_name?.name)
-          this.router.navigate(['/jobs/update-job', this.selectedItemId]);
-
-        } else {
-          modalRef.dismiss();
-        }
-      });
-    } catch (error) {
-    //  console.error('Error opening modal:', error);
-    }
+    //   modalRef.componentInstance.status.subscribe(resp => {
+    //     if (resp === 'ok') {
+    //       modalRef.dismiss();
+           
+    //     } else {
+    //       modalRef.dismiss();
+    //     }
+    //   });
+    // } catch (error) {
+    // //  console.error('Error opening modal:', error);
+    // }
   }
   getCurrentJobsList() {
     this.isHistory = false;
@@ -565,4 +604,13 @@ jobStatusList(status:any){
     this.statusDateFilterValue = null;
     this.filterData()
   }
+
+  isColumnVisible(key: string): boolean {
+  const col = this.columns.find(c => c.key === key);
+  return col ? col.visible : false;
+}
+  resetColumns() {
+  this.columns.forEach(col => col.visible = true);
+}
+
 }

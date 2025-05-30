@@ -14,6 +14,7 @@ import { FormErrorScrollUtilityService } from '../../../service/form-error-scrol
 import { SubModuleService } from '../../../service/sub-module.service';
 import {urlToFile} from '../../../shared/fileUtils.utils';
 import { CanComponentDeactivate } from '../../../auth-guard/can-deactivate.guard';
+import { GenericRedirectionConfirmationComponent } from 'src/app/generic-components/generic-redirection-confirmation/generic-redirection-confirmation.component';
 
 @Component({
   selector: 'app-create-client',
@@ -60,13 +61,15 @@ selectedFile: File | null = null;
   currentPage = 1;
   selectedEmployee:any;
   formData:any;
-  searchEmployeeText:any;
+  searchEmployeeTextList: string[] = [];
+  filteredEmployeeLists: any[][] = [];
   searchCountryText:any;
   searchSourceText:any;
   accessPermissions = []
 userRole: any;
 user_id:any;
 initialFormValue:any;
+isEnabledEdit:boolean;
     constructor(private fb:FormBuilder,private activeRoute:ActivatedRoute,private accessControlService:SubModuleService,
       private common_service: CommonServiceService,private router:Router,private datepipe:DatePipe,private modalService: NgbModal,private cdr: ChangeDetectorRef,
       private apiService: ApiserviceService,private formErrorScrollService:FormErrorScrollUtilityService) {
@@ -119,13 +122,23 @@ initialFormValue:any;
           console.log('temp',temp)
           this.accessPermissions = temp.operations;
           console.log(this.accessPermissions)
-          if(this.client_id){
-            this.shouldDisableFileds = this.accessPermissions[0]?.['update'];
-            this.cdr.detectChanges();
-          } else{
-            this.shouldDisableFileds = this.accessPermissions[0]?.['create'];
-            this.cdr.detectChanges();
-          }
+         if(this.userRole!='Admin'){
+        if(this.client_id){
+          this.shouldDisableFileds = this.accessPermissions[0]?.['update'];
+          this.isEnabledEdit=false;
+        } else{
+          this.shouldDisableFileds = this.accessPermissions[0]?.['create'];
+          this.isEnabledEdit=true;
+        }
+        }else{
+           this.shouldDisableFileds=true;
+           if(this.isEditItem){
+            this.isEnabledEdit=false;
+           }else{
+            this.isEnabledEdit=true;
+           }
+           
+        }
           // console.log('this.shouldDisableFileds', this.shouldDisableFileds)
         
         }
@@ -144,7 +157,7 @@ initialFormValue:any;
         service_end_date: [null],
         client_file:[null],
         contact_details:this.fb.array([this.createContactGroup()],this.duplicateNameValidator),
-        employee_ids: this.fb.array([]),
+        employee_details: this.fb.array([]),
         allow_sending_status_report_to_client:[false],
         practice_notes:[''],
       });
@@ -186,18 +199,26 @@ this.allEmployeeList = respData;
   }));
 }
 
-// search Employee
-filteredEmployeeList() {
-  if (!this.searchEmployeeText) {
-    return this.allEmployeeList;
-  }
-  return this.allEmployeeList.filter((emp:any) =>
-    emp?.user__full_name?.toLowerCase()?.includes(this.searchEmployeeText?.toLowerCase())
-  );
+filterEmployeeList(index: number): void {
+  const search = this.searchEmployeeTextList[index]?.trim().toLowerCase() || '';
+  const employees = [...this.allEmployeeList];
+
+  this.filteredEmployeeLists[index] = search
+    ? employees.filter(emp =>
+        emp?.user__full_name?.toLowerCase().includes(search)
+      )
+    : employees;
 }
-public clearSearch(key:any){
+
+onSelectOpened(opened: boolean, index: number): void {
+  if (opened && !this.filteredEmployeeLists[index]?.length) {
+    this.filteredEmployeeLists[index] = [...this.allEmployeeList];
+  }
+}
+
+public clearSearch(key:any,i?:any){
   if(key==='emp'){
-    this.searchEmployeeText='';
+    this.searchEmployeeTextList[i]='';
   }else if(key==='con'){
     this.searchCountryText='';
   }else{
@@ -250,12 +271,26 @@ if(respData?.client_file){
 }else{
   this.clientFormGroup?.patchValue({'client_file':null});
 }
-if(respData?.employee_details && respData?.employee_details?.length >=1){
-  respData?.employee_details?.forEach((element:any) => {
-    this.employeeFormArray.push(this.fb.control(element?.employee))
+if (respData?.employee_details && Array.isArray(respData?.employee_details) && respData.employee_details?.length >= 1) {
+  const empDetailsArray = this.clientFormGroup.get('employee_details') as FormArray;
+  empDetailsArray.clear();
+respData?.employee_details?.forEach(({ employee, start_date, end_date }, index, array) => {
+  const isLastItem = index === array?.length - 1;
+  this.filteredEmployeeLists[index] = this.allEmployeeList;
+  const empForm = this.fb.group({
+    employee_id: [{ value: employee, disabled: !isLastItem }],
+    start_date: [{ value: start_date, disabled: !isLastItem }],
+    end_date: [{ value: end_date, disabled: !isLastItem }]
   });
+  empDetailsArray.push(empForm);
+  const totalItems = this.employeeFormArray.length;
+  const totalPages = Math.ceil(totalItems / this.pageSize);
+  this.currentPage = totalPages; // go to last page
+  this.setCurrentPageRows();
+  
+});
 }else{
-  this.clientFormGroup?.patchValue({'employee_ids':[]});
+  this.clientFormGroup?.patchValue({'employee_details':[]});
 }
 if (respData?.contact_details && Array.isArray(respData?.contact_details) && respData.contact_details?.length >= 1) {
   const contactDetailsArray = this.clientFormGroup.get('contact_details') as FormArray;
@@ -285,11 +320,15 @@ this.initialFormValue=this.clientFormGroup?.getRawValue();
     }
 
     get employeeFormArray() {
-      return this.clientFormGroup?.get('employee_ids') as FormArray;
+      return this.clientFormGroup?.get('employee_details') as FormArray;
     }
 
-    createEmployeeControl(): FormControl {
-      return this.fb.control('');
+    createEmployeeControl(): FormGroup {
+      return this.fb.group({
+        employee_id: [null, Validators.required],
+        start_date:[null,Validators.required],
+        end_date:[null],
+      });
     }
 
     private createContactGroup(): FormGroup {
@@ -300,9 +339,6 @@ this.initialFormValue=this.clientFormGroup?.getRawValue();
       });
     }
 
-    public joiningDateFun(event: any) {
-
-    }
     resetDate() {
       this.clientFormGroup?.get('service_end_date')?.setValue(null);
     }
@@ -414,8 +450,47 @@ this.initialFormValue=this.clientFormGroup?.getRawValue();
     }
   }
 
-    public backBtnFunc(){
+  public enbleFields(){
+  this.isEnabledEdit=true;
+  }
+
+      public backBtnFunc(): void {
+      if (this.isEditItem && this.hasUnsavedChanges()) {
+        this.showConfirmationPopup().subscribe((confirmed: boolean) => {
+          if (confirmed) {
+            this.cleanupAndNavigate();
+          }
+        });
+      } else {
+        this.cleanupAndNavigate();
+      }
+    }
+    
+    public hasUnsavedChanges(): boolean {
+      const currentFormValue = this.clientFormGroup.getRawValue();
+      const isFormChanged = JSON.stringify(currentFormValue) !== JSON.stringify(this.initialFormValue);
+      return isFormChanged || this.clientFormGroup.dirty;
+    }
+    
+    private cleanupAndNavigate(): void {
+      sessionStorage.removeItem('access-name');
       this.router.navigate(['/client/all-client']);
+    }
+    
+    private showConfirmationPopup(): Observable<boolean> {
+      return new Observable<boolean>((observer) => {
+        const modalRef = this.modalService.open(GenericRedirectionConfirmationComponent, {
+          size: 'sm' as any,
+          backdrop: true,
+          centered: true,
+        });
+    
+        modalRef.componentInstance.status.subscribe((resp: any) => {
+          observer.next(resp === 'ok');
+          observer.complete();
+          modalRef.close();
+        });
+      });
     }
 
     public deleteClient(){
@@ -459,8 +534,10 @@ this.initialFormValue=this.clientFormGroup?.getRawValue();
           if (this.isEditItem) {
             this.formData = this.createFromData();
               this.apiService.updateData(`${environment.live_url}/${environment.clients}/${this.client_id}/`, this.formData).subscribe((respData: any) => {
-              if (respData) {
-                this.apiService.showSuccess(respData['message']);
+               if (respData['result'] && respData['result']['error']) {
+                  this.handleErrors(respData);
+              }else{
+                 this.apiService.showSuccess(respData['message']);
                 this.resetFormState();
                 this.router.navigate(['/client/all-client']);
               }
@@ -470,7 +547,7 @@ this.initialFormValue=this.clientFormGroup?.getRawValue();
           }else{
             this.formData = this.createFromData();
             this.apiService.postData(`${environment.live_url}/${environment.clients}/`, this.formData).subscribe((respData: any) => {
-              if (respData) {
+               if (respData) {
                 this.apiService.showSuccess(respData['message']);
                 this.resetFormState();
                 this.router.navigate(['/client/all-client']);
@@ -481,6 +558,16 @@ this.initialFormValue=this.clientFormGroup?.getRawValue();
           }
       }
   }
+
+  handleErrors(respData: any): void {
+  if (respData?.result?.detail?.length) {
+    respData.result.detail.forEach((element: any) => {
+      this.apiService.showError(element['error']);
+    });
+  }
+  this.resetFormState();
+  this.router.navigate(['/client/all-client']);
+}
 
   public resetFormState() {
     this.formGroupDirective?.resetForm();
@@ -506,7 +593,6 @@ this.initialFormValue=this.clientFormGroup?.getRawValue();
       this.formData.set("service_start_date", updatedStartDateValue);
       this.formData.set("service_end_date", updatedEndDateValue || null);
       this.formData.set("source", this.clientFormGroup?.get('source')?.value);
-      this.formData.set("employee_ids",JSON.stringify(this.clientFormGroup.get('employee_ids')?.value) || []);
       this.formData.set("practice_notes", this.clientFormGroup?.get('practice_notes')?.value || '');
       this.formData.set("allow_sending_status_report_to_client", this.clientFormGroup?.get('allow_sending_status_report_to_client')?.value || false);
       const result = this.clientFormGroup?.get('contact_details')?.getRawValue().map((item:any) => {
@@ -516,31 +602,93 @@ this.initialFormValue=this.clientFormGroup?.getRawValue();
         };
       });
       this.formData.set("contact_details", JSON.stringify(result) || []);
+      const empresult = this.clientFormGroup?.get('employee_details')?.getRawValue().map((item:any) => {
+        return {
+          employee_id: item?.employee_id?.toString(),
+          start_date:this.datepipe.transform(item?.start_date,'YYYY-MM-dd'),
+          end_date:this.datepipe.transform(item?.end_date,'YYYY-MM-dd'),
+        };
+      });
+      this.formData.set("employee_details", JSON.stringify(empresult) || []);
       return this.formData;
   }
 
   addEmployee() {
-    if (this.selectedEmployee) {
-      console.log(this.selectedEmployee);
-      // Check if the selected employee already exists in the employeeFormArray
-      const isEmployeeExists = this.employeeFormArray.controls?.some(control =>
-        control.value === this.selectedEmployee
-      );
-
-      if (!isEmployeeExists) {
-        this.employeeFormArray.push(this.createEmployeeControl());
-        this.employeeFormArray?.at(this.employeeFormArray?.length - 1)?.setValue(this.selectedEmployee);
-      }else{
-        this.apiService.showWarning('Employee already exists in the list.');
-      }
-      this.selectedEmployee = null;
+     if(this.employeeFormArray.length>=1){
+     let lastItemIndex = this.employeeFormArray.length - 1;
+     console.log("emp",this.employeeFormArray.controls)
+if (this.employeeFormArray?.at(lastItemIndex)?.valid) {
+      const empControls = this.employeeFormArray.at(lastItemIndex);
+      ['employee_id', 'start_date', 'end_date'].forEach(field => empControls?.get(field)?.disable());
+      this.employeeFormArray.markAllAsTouched();
+      this.employeeFormArray.push(this.createEmployeeControl());
+      const newIndex = this.employeeFormArray.length - 1;
+      this.filteredEmployeeLists[newIndex] = [...this.allEmployeeList];
     }
+     }
+     else{
+this.filteredEmployeeLists[0] = [...this.allEmployeeList];
+this.employeeFormArray.push(this.createEmployeeControl());
+     }
+  const totalItems = this.employeeFormArray.length;
+  const totalPages = Math.ceil(totalItems / this.pageSize);
+  this.currentPage = totalPages; // go to last page
+  this.setCurrentPageRows();
+    
   }
 
 
   removeEmployee(index: number) {
-    if (this.employeeFormArray?.length >=1) {
+    if (this.employeeFormArray?.length > 1) {
       this.employeeFormArray?.removeAt(index);
+  if (this.searchEmployeeTextList && this.searchEmployeeTextList.length > index) {
+    this.searchEmployeeTextList.splice(index, 1);
+  }
+  if (this.filteredEmployeeLists && this.filteredEmployeeLists.length > index) {
+    this.filteredEmployeeLists.splice(index, 1);
+  }
+    const lastItemIndex = this.employeeFormArray?.length - 1;
+    const lastItem = this.employeeFormArray?.at(lastItemIndex);
+    if (lastItem) {
+      ['employee_id', 'start_date', 'end_date']?.forEach(field => lastItem?.get(field)?.enable());
+    }
+      }
+  const totalItems = this.employeeFormArray.length;
+  const totalPages = Math.ceil(totalItems / this.pageSize);
+  if (this.currentPage > totalPages) {
+    this.currentPage = Math.max(1, totalPages);
+    this.setCurrentPageRows();
+  }
+  }
+    public onEmployeeChange(event: any, i: any) {
+    const formArray = this.employeeFormArray.controls;
+    const isEmployeeDuplicate = formArray.some((control: any, index: number) => {
+      return index !== i && control.get('employee_id')?.value === event.value; // Skip the current row (index !== i)
+    });
+    if (isEmployeeDuplicate) {
+      this.employeeFormArray.at(i).get('employee_id')?.reset();
+      this.employeeFormArray.at(i).get('start_date')?.reset();
+      this.employeeFormArray.at(i).get('end_date')?.reset();
+    } else {
+      this.employeeFormArray.at(i).patchValue({ 'employee_id': event.value });
+    }
+
+    this.searchEmployeeTextList[i]='';
+  }
+
+  public editEmpployee(index: number) {
+    const empItem = this.employeeFormArray.at(index);
+    empItem?.get('employee_id')?.enable();
+    empItem?.get('start_date')?.enable();
+    empItem?.get('end_date')?.enable();
+  }
+
+  public saveEmpployeeChanges(index: number) {
+    const empItem = this.employeeFormArray.at(index);
+    if (index <= this.allEmployeeList?.length && empItem.valid) {
+      empItem?.get('employee_id')?.disable();
+      empItem?.get('start_date')?.disable();
+      empItem?.get('end_date')?.disable();
     }
   }
 
@@ -552,18 +700,25 @@ this.initialFormValue=this.clientFormGroup?.getRawValue();
   get currentPageRows() {
     const startIndex = (this.currentPage - 1) * this.pageSize;
     const endIndex = startIndex + this.pageSize;
-    return this.employeeFormArray?.controls?.slice(startIndex, endIndex);
-}
+    return this.employeeFormArray.controls.slice(startIndex, endIndex);
+  }
+
+  public setCurrentPageRows() {
+    const startIndex = (this.currentPage - 1) * this.pageSize;
+    const endIndex = startIndex + this.pageSize;
+    return this.employeeFormArray.controls.slice(startIndex, endIndex);
+  }
 
   onPageChanged(event: any) {
-    this.currentPage = event.pageIndex + 1;  // `pageIndex` is 0-based, so we add 1
+    this.currentPage = event.pageIndex + 1;
     this.pageSize = event.pageSize;
-    this.cdr.markForCheck();
+    this.setCurrentPageRows();
   }
 
   public getContinuousIndex(index: number): number {
     return (this.currentPage - 1) * this.pageSize + index + 1;
-}
+  }
+
 
   public getFileName(url:any){
     return url?.split('/')?.pop();

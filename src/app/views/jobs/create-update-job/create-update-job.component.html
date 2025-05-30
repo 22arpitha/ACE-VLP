@@ -295,7 +295,7 @@
     <mat-form-field appearance="outline"  [ngClass]="{ 'highlight-background': !shouldDisableFields}" class="w-100 p-0 custom-mat-form-field">
         <mat-label>Status Date <b class="r-star">*</b></mat-label>
         <input matInput [matDatepicker]="picker2" placeholder="Enter Status Date"
-            formControlName="job_status_date" autocomplete="off" (dateInput)="joiningDateFun($event)">
+            formControlName="job_status_date" autocomplete="off" (dateInput)="statusDateFun($event)">
             <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
              <mat-datepicker #picker2></mat-datepicker>
              <mat-error *ngIf="f['job_status_date']?.invalid && f['job_status_date']?.touched || f['job_status_date']?.dirty">

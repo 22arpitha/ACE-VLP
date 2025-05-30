@@ -6,7 +6,21 @@
                 placeholder="Search by Job" aria-describedby="emailHelp" autocomplete="off">
               <i *ngIf="!term" class="bi bi-search" id="search-icon-tab"></i>
             </div>
-            <div class="col-12 mt-2 col-sm-12 col-md-4 col-lg-3"></div>
+            <div class="col-12 col-sm-12 col-md-4 col-lg-3 px-0 text-start align-self-end">
+<!-- Trigger button -->
+<button mat-button [matMenuTriggerFor]="columnMenu" class="ml-5 border-1"> 
+  <i class="bi bi bi-gear"></i> Column settings 
+</button>
+
+<!-- Menu with checkboxes -->
+<mat-menu #columnMenu="matMenu" class="full-height-menu">
+  <div class="row px-3 py-2">
+    <mat-checkbox *ngFor="let col of columns" [(ngModel)]="col.visible">
+      {{ col.label }}
+    </mat-checkbox>
+  </div>
+</mat-menu>
+    </div>
             <div class="col-12 mt-2 col-sm-12 col-md-4 col-lg-6 text-end px-0">
                 <button mat-raised-button class="mat-btn-s tab-button-content" [ngClass]="{'isActive': isCurrent}" type="button" (click)="getCurrentJobs();">Current</button>
                 <button mat-raised-button class="mat-btn-s tab-button-content" [ngClass]="{'isActive': isHistory}" type="button" (click)="getJobsHistory();">History</button>
@@ -31,18 +45,18 @@
               <table class="table table table-hover table-list">
                 <thead>
                   <tr>
-                    <th scope="col"> S.No</th>
-                    <th scope="col">Job Id
+                    <th scope="col" *ngIf="isColumnVisible('sl_no')"> S.No</th>
+                    <th scope="col" *ngIf="isColumnVisible('job_number')">Job Id
                       <i *ngIf="!arrowState['job_number']" (click)="sort('asc','job_number')" class="bi bi-arrow-down"></i>
                 <i (click)="sort('desc','job_number')" *ngIf="arrowState['job_number']"
                   class="bi bi-arrow-up"></i>
                     </th>
-                    <th scope="col" class="name-col">Job
+                    <th scope="col" class="name-col" *ngIf="isColumnVisible('job_name')">Job
                       <i *ngIf="!arrowState['job_name']" (click)="sort('asc','job_name')" class="bi bi-arrow-down"></i>
                       <i (click)="sort('desc','job_name')" *ngIf="arrowState['job_name']"
                         class="bi bi-arrow-up"></i>
                     </th>
-                    <th scope="col">Job Type
+                    <th scope="col" *ngIf="isColumnVisible('job_type_name')">Job Type
                       <i *ngIf="!arrowState['job_type_name']" (click)="sort('asc','job_type_name')" class="bi bi-arrow-down"></i>
                       <i (click)="sort('desc','job_type_name')" *ngIf="arrowState['job_type_name']"
                         class="bi bi-arrow-up"></i>
@@ -60,7 +74,7 @@
                         ></app-generic-table-filter>
                       </mat-menu>
                     </th>
-                    <th scope="col" class="name-col">Client
+                    <th scope="col" class="name-col" *ngIf="isColumnVisible('client_name')">Client
                       <i *ngIf="!arrowState['client_name']" (click)="sort('asc','client_name')" class="bi bi-arrow-down"></i>
                       <i (click)="sort('desc','client_name')" *ngIf="arrowState['client_name']"
                         class="bi bi-arrow-up"></i>
@@ -79,7 +93,25 @@
                           ></app-generic-table-filter>
                         </mat-menu>
                     </th>
-                    <th scope="col">
+                    <th scope="col" *ngIf="isColumnVisible('group_name')"> Group
+                       <i *ngIf="!arrowState['group_name']" (click)="sort('asc','group_name')" class="bi bi-arrow-down"></i>
+                      <i (click)="sort('desc','group_name')" *ngIf="arrowState['group_name']"
+                        class="bi bi-arrow-up"></i>
+                        <button mat-icon-button [matMenuTriggerFor]="groupFilterMenu" [ngClass]="filters.group_name.length>=1 ? 'filterdColumn':''">
+                        <span *ngIf="filters.group_name.length>=1">{{filters.group_name.length.toString().padStart(2, '0')}}</span>
+                          <i class="bi-funnel" *ngIf="filters.group_name.length===0"></i>
+                        </button>
+
+
+                        <mat-menu #groupFilterMenu="matMenu">
+                          <app-generic-table-filter
+                            [options]="allGroupNames"
+                            [(selectedOptions)]="filters.group_name"
+                            (selectedOptionsChange)="onFilterChange($event, 'group_name')"
+                          ></app-generic-table-filter>
+                        </mat-menu>
+                    </th>
+                    <th scope="col" *ngIf="isColumnVisible('job_allocation_date')">
                        Allocated On
                       <button
                         mat-icon-button
@@ -108,7 +140,7 @@
 
 
                     </th>
-                    <th scope="col">
+                    <th scope="col" *ngIf="isColumnVisible('employees')">
                       Employee
                       <button mat-icon-button [matMenuTriggerFor]="employeesFilterMenu" [ngClass]="filters.employees.length>=1 ? 'filterdColumn':''">
                         <span *ngIf="filters.employees.length>=1">{{filters.employees.length.toString().padStart(2, '0')}}</span>
@@ -123,7 +155,7 @@
                         ></app-generic-table-filter>
                       </mat-menu>
                     </th>
-                    <th scope="col">
+                    <th scope="col" *ngIf="isColumnVisible('manager')">
                       Manager
                       <button mat-icon-button [matMenuTriggerFor]="managerFilterMenu" [ngClass]="filters.manager.length>=1 ? 'filterdColumn':''">
                         <span *ngIf="filters.manager.length>=1">{{filters.manager.length.toString().padStart(2, '0')}}</span>
@@ -139,7 +171,7 @@
                       </mat-menu>
                     </th>
                     
-                    <th scope="col" class="status-col">Status
+                    <th scope="col" class="status-col" *ngIf="isColumnVisible('status_name')">Status
                       <button mat-icon-button [matMenuTriggerFor]="statusFilterMenu" [ngClass]="filters.status_name.length>=1 ? 'filterdColumn':''">
                         <span *ngIf="filters.status_name.length>=1">{{filters.status_name.length.toString().padStart(2, '0')}}</span>
                           <i class="bi-funnel" *ngIf="filters.status_name.length===0"></i>
@@ -153,8 +185,8 @@
                         ></app-generic-table-filter>
                       </mat-menu>
                     </th>
-                    <th scope="col">POC (%)</th>
-                    <th scope="col">
+                    <th scope="col" *ngIf="isColumnVisible('percentage_of_completion')">POC (%)</th>
+                    <th scope="col" *ngIf="isColumnVisible('job_status_date')">
                       Status Date
                       <button
                       mat-icon-button
@@ -178,7 +210,7 @@
                     <mat-datepicker #datepicker></mat-datepicker>
                   </mat-form-field>
                     </th>
-                    <th scope="col">Action</th>
+                    <!-- <th scope="col" >Action</th> -->
                   </tr>
                 </thead>
                 <tbody>
@@ -190,22 +222,23 @@
                              currentPage: page,
                              totalItems: count
                            }; let i=index'>
-                      <td>{{getContinuousIndex(i)}}</td>
-                      <td>{{item?.job_number || '-'}}</td>
-                      <td>{{item?.job_name || '-'}}</td>
-                      <td>{{item?.job_type_name  || '-'}}</td>
-                      <td>{{item?.client_name  || '-'}}</td>
-                      <td>{{item?.job_allocation_date | date: 'dd/MM/yyyy'}}</td>
-                      <td>{{getEmployeeName(item?.employees) || '-'}}</td>
-                      <td>{{getManagerName(item?.employees) || '-'}}</td>
-                          <td>
+                      <td (click)="edit(item)" *ngIf="isColumnVisible('sl_no')">{{getContinuousIndex(i)}}</td>
+                      <td (click)="edit(item)" *ngIf="isColumnVisible('job_number')">{{item?.job_number || '-'}}</td>
+                      <td (click)="edit(item)" *ngIf="isColumnVisible('job_name')">{{item?.job_name || '-'}}</td>
+                      <td (click)="edit(item)" *ngIf="isColumnVisible('job_type_name')">{{item?.job_type_name  || '-'}}</td>
+                      <td (click)="edit(item)" *ngIf="isColumnVisible('client_name')">{{item?.client_name  || '-'}}</td>
+                      <td (click)="edit(item)" *ngIf="isColumnVisible('group_name')">{{item?.group_name || '-'}}</td>
+                      <td (click)="edit(item)" *ngIf="isColumnVisible('job_allocation_date')">{{item?.job_allocation_date | date: 'dd/MM/yyyy'}}</td>
+                      <td (click)="edit(item)" *ngIf="isColumnVisible('employees')">{{getEmployeeName(item?.employees) || '-'}}</td>
+                      <td (click)="edit(item)" *ngIf="isColumnVisible('manager')">{{getManagerName(item?.employees) || '-'}}</td>
+                          <td *ngIf="isColumnVisible('status_name')">
                             <mat-select panelClass="custom-select-dropdown" class="mat-select-table editable-cell" [ngModel]="item?.job_status" (selectionChange)="onStatusChange(item, $event)">
                                 <mat-option *ngFor="let status of allJobStatus" [value]="status?.id">
                                   {{ status?.status_name }}
                                 </mat-option>
                               </mat-select>
                           </td>
-                          <td>
+                          <td *ngIf="isColumnVisible('percentage_of_completion')">
                            <div class="d-flex justify-content-around">
                             <div>
                                 <input matInput type="number" class="editable-cell" [(ngModel)]="item.percentage_of_completion" (ngModelChange)="validatePercentage(item)"  (keypress)="validateKeyPress($event)" [class.is-invalid]="item.isInvalid"
@@ -220,11 +253,11 @@
                             <div *ngIf="userRole !='Admin' && accessPermissions[0]?.update && item.valueChanged && !item.isInvalid || userRole === 'Admin' && item.valueChanged && !item.isInvalid"><img src="../../../../assets/images/tick.svg"  (click)="saveJobStausPercentage(item)" alt="" height="20" width="20"></div>
                            </div>
                           </td>
-                      <td [ngStyle]="{ color: item?.status_date_color ? item?.status_date_color : 'black' }">{{item?.job_status_date | date: 'dd/MM/yyyy'}}</td>
-                      <td> <ng-container>
+                      <td (click)="edit(item)" *ngIf="isColumnVisible('job_status_date')" [ngStyle]="{ color: item?.status_date_color ? item?.status_date_color : 'black' }">{{item?.job_status_date | date: 'dd/MM/yyyy'}}</td>
+                      <!-- <td> <ng-container>
                         <img src="../../../../assets/images/Edit.svg" class="icon-image" type="button" container="body"
                           ngbTooltip="Edit" (click)="edit(item)" *ngIf="userRole !='Admin' && (accessPermissions[0]?.update || accessPermissions[0]?.view) || userRole === 'Admin'"/>
-                     </ng-container></td>
+                     </ng-container></td> -->
                     </tr>
                   </ng-container>
                 </tbody>

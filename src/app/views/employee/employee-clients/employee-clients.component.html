@@ -1,0 +1,143 @@
+<div class="container-wrapper settings-main-content px-0">
+  <section class="settings-table-bg px-3">
+      <div class="row mx-0 my-1 px-0 py-2">
+          <div class="col-12 mt-2 col-sm-12 col-md-4 col-lg-3 search-div px-0">
+            <input type="search" (input)="filterSearch($event)" class="form-control p-2 sizeinput" [(ngModel)]="term"
+              placeholder="Search by Client" aria-describedby="emailHelp" autocomplete="off">
+            <i *ngIf="!term" class="bi bi-search" id="search-icon-tab"></i>
+          </div>
+          <div class="col-12 mt-2 col-sm-12 col-md-4 col-lg-3"></div>
+          <div class="col-12 mt-2 col-sm-12 col-md-4 col-lg-6 text-end px-0">
+              <button mat-raised-button class="mat-btn-s tab-button-content" [ngClass]="{'isActive': isCurrent}" type="button" (click)="getCurrentClients();">Current</button>
+              <button mat-raised-button class="mat-btn-s tab-button-content" [ngClass]="{'isActive': isHistory}" type="button" (click)="getClientsHistory();">History</button>
+              <button mat-raised-button class="proceedbtn mat-btn-s download-btn" type="button" [disabled]="filteredList?.length === 0" [matMenuTriggerFor]="downloadMenu"><i class="fa fa-download"></i></button>
+            </div>
+            <mat-menu #downloadMenu="matMenu">
+              <button mat-menu-item (click)="downloadOption('csv')">
+                       <mat-icon style="color: green">table_view</mat-icon>
+                        <span>CSV</span>
+                    </button>
+                    <button mat-menu-item (click)="downloadOption('pdf')">
+                        <mat-icon style="color: red">picture_as_pdf</mat-icon>
+                        <span>PDF</span>
+                    </button>
+            </mat-menu>
+        </div>
+        <div class="row mx-1 my-2 px-0 table-wrapper">
+          <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0 ">
+            <table class="table table table-hover table-list">
+              <thead>
+                <tr>
+                  <th scope="col">Client Id
+                    <i *ngIf="!arrowState['client_number']" (click)="sort('asc','client_number')" class="bi bi-arrow-down"></i>
+              <i (click)="sort('desc','client_number')" *ngIf="arrowState['client_number']"
+                class="bi bi-arrow-up"></i>
+                  </th>
+                  <th scope="col" class="name-col">Client
+                    <i *ngIf="!arrowState['client_name']" (click)="sort('asc','client_name')" class="bi bi-arrow-down"></i>
+                    <i (click)="sort('desc','client_name')" *ngIf="arrowState['client_name']"
+                      class="bi bi-arrow-up"></i>
+                   <!-- Filter Trigger -->
+                   <!-- <button mat-icon-button [matMenuTriggerFor]="clientFilterMenu">
+                    <i class="bi bi-toggles"></i>
+                  </button> -->
+
+
+                  <!-- <mat-menu #clientFilterMenu="matMenu">
+                    <app-generic-table-filter
+                      [options]="allClientNames"
+                      [(selectedOptions)]="filters.client_name"
+                      (selectedOptionsChange)="onFilterChange($event, 'client_name')"
+                    ></app-generic-table-filter>
+                  </mat-menu> -->
+                    </th>
+                  <th scope="col">Country
+                    <i *ngIf="!arrowState['country']" (click)="sort('asc','country')" class="bi bi-arrow-down"></i>
+                    <i (click)="sort('desc','country')" *ngIf="arrowState['country']"
+                      class="bi bi-arrow-up"></i>
+                      <button mat-icon-button [matMenuTriggerFor]="countryFilterMenu" [ngClass]="filters.country.length>=1 ? 'filterdColumn':''">
+                        <span *ngIf="filters.country.length>=1">{{filters.country.length.toString().padStart(2, '0')}}</span>
+                         
+                          <i class="bi-funnel" *ngIf="filters.country.length===0"></i>
+                      </button>
+
+                      <mat-menu #countryFilterMenu="matMenu">
+                        <app-generic-table-filter
+                        [options]="allCountriesNames"
+                        [(selectedOptions)]="filters.country"
+                        (selectedOptionsChange)="onFilterChange($event, 'country')"
+                        ></app-generic-table-filter>
+                      </mat-menu>
+                  </th>
+                  <th scope="col">Source
+                    <i *ngIf="!arrowState['source']" (click)="sort('asc','source')" class="bi bi-arrow-down"></i>
+                    <i (click)="sort('desc','source')" *ngIf="arrowState['source']"
+                      class="bi bi-arrow-up"></i>
+                      <button mat-icon-button [matMenuTriggerFor]="sourceFilterMenu" [ngClass]="filters.source.length>=1 ? 'filterdColumn':''">
+                        <span *ngIf="filters.source.length>=1">{{filters.source.length.toString().padStart(2, '0')}}</span>
+                          <i class="bi-funnel" *ngIf="filters.source.length===0"></i>
+                      </button>
+
+                      <mat-menu #sourceFilterMenu="matMenu">
+                        <app-generic-table-filter
+                        [options]="allSourceNames"
+                        [(selectedOptions)]="filters.source"
+                        (selectedOptionsChange)="onFilterChange($event, 'client_name')"
+                        ></app-generic-table-filter>
+                      </mat-menu>
+                  </th>
+                  <th scope="col">Status</th>
+                  <th scope="col">Contact</th>
+                  <!-- <th scope="col">Action </th> -->
+                </tr>
+              </thead>
+              <tbody>
+
+                <ng-container *ngIf="(filteredList) as result">
+                  <tr *ngFor='let item of result | customSort:directionValue:sortValue
+                  |paginate : {
+                           itemsPerPage: tableSize,
+                           currentPage: page,
+                           totalItems: count
+                         }; let i=index'>
+                    <td>{{item?.client_number || '-'}}</td>
+                    <td>{{item?.client_name || '-'}}</td>
+                    <td>{{item?.country  || '-'}}</td>
+                    <td>{{item?.source  || '-'}}</td>
+                    <td class="text-center">
+                      <div style="display: block;"><span [ngStyle]="{ 'color': item?.status === true ? 'green' : 'red' }">{{ item?.status === true ? 'Active' : 'Inactive'   || 'NA' }}</span></div>
+                    </td>
+                    <td>
+                      <span *ngIf="item?.contact_details.length>=1;else noContact">
+                        <img src="../../../../assets/images/view.svg" class="icon-image" container="body" ngbTooltip="View" (click)="viewContactDetails(item)"/>
+                      </span>
+                      <ng-template #noContact>-</ng-template>
+                    </td>
+                  </tr>
+                </ng-container>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="row mx-1 my-2 px-0" *ngIf="filteredList?.length === 0" >
+          <app-generic-norecards></app-generic-norecards>
+        </div>
+
+  </section>
+  <div class="row mx-0 px-3" *ngIf="filteredList?.length > 0">
+      <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0">
+        <div class="pagination-container p-0">
+          <pagination-controls previousLabel="Prev" nextLabel="Next" (pageChange)="onTableDataChange($event)">
+          </pagination-controls>
+          <div class="items-per-page-container">
+            <div>Items per page</div>
+            <mat-select [(ngModel)]="tableSize" (selectionChange)="onTableSizeChange($event)" placeholder="10" disableOptionCentering panelClass="paginationPanelClass"
+              class="page-size">
+              <mat-option *ngFor="let size of tableSizes" [value]="size">{{size}}</mat-option>
+            </mat-select>
+          </div>
+        </div>
+      </div>
+    </div>
+</div>

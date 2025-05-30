@@ -44,4 +44,7 @@ export class WeekDatepickerComponent implements OnInit {
     this.time.end_date = event.value
     this.weekSelected.emit(this.time);
   }
+ dateClass = (date: Date) => {
+  return date.getDay() === 0 ? 'sunday-highlight' : '';
+};
 }

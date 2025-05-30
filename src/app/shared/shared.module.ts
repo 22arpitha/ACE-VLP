@@ -21,7 +21,7 @@ import {MatRadioModule} from '@angular/material/radio';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import {MatMenuModule} from '@angular/material/menu';
 import {MatDatepickerModule} from '@angular/material/datepicker';
-import {MatNativeDateModule } from '@angular/material/core';
+// import {MatNativeDateModule } from '@angular/material/core';
 import {MatTabsModule } from '@angular/material/tabs';
 import {MatExpansionModule} from '@angular/material/expansion';
 import {MatProgressBarModule} from '@angular/material/progress-bar';
@@ -78,7 +78,7 @@ import { QuarterMonthYearPickerComponent } from './quarter-month-year-picker/qua
     MatSlideToggleModule,
     MatMenuModule,
     MatDatepickerModule,
-    MatNativeDateModule,
+    // MatNativeDateModule,
     MatTabsModule,
     MatExpansionModule,
     MatProgressBarModule,
@@ -115,7 +115,7 @@ import { QuarterMonthYearPickerComponent } from './quarter-month-year-picker/qua
     MatSlideToggleModule,
     MatMenuModule,
     MatDatepickerModule,
-    MatNativeDateModule,
+    // MatNativeDateModule,
     MatTabsModule,
     MatExpansionModule,
     MatProgressBarModule,

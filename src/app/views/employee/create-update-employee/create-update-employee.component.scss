@@ -31,3 +31,6 @@
     pointer-events: none !important;
   }
   
+::ng-deep .settings-form-bg .mat-raised-button.mat-button-disabled.mat-button-disabled{
+  background-color: rgba(0,0,0,.12) !important;
+}

@@ -653,6 +653,9 @@ export class CreateUpdateJobComponent implements CanComponentDeactivate, OnInit,
 
   }
 
+  public statusDateFun(event: any) {
+    console.log('event Date',event.value);
+  }
   addEmployee() {
     let lastItemIndex = this.employeeFormArray.length - 1;
     // console.log(this.employeeFormArray?.at(lastItemIndex).valid);
