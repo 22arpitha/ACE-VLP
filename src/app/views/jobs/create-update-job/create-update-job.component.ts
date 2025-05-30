@@ -43,8 +43,10 @@ export class CreateUpdateJobComponent implements CanComponentDeactivate, OnInit,
   searchPeroidicityText: any;
   searchJobTypeText: any;
   searchJobStatusText: any;
-  searchEmployeeText: any;
-  searchManagerText: any;
+  searchEmployeeTextList: string[] = [];
+  filteredEmployeeLists: any[][] = [];
+  searchManagerTextList: string[] = [];
+  filteredManagerLists: any[][] = [];
   job_id: any;
   isEditItem: boolean = false;
   pageSize = 10;
@@ -160,6 +162,8 @@ export class CreateUpdateJobComponent implements CanComponentDeactivate, OnInit,
       only_admin_can_change_job_status: ['']
     });
     this.initialFormValue = this.jobFormGroup?.getRawValue();
+    this.filteredEmployeeLists[0] = [...this.allEmployeeList];
+    this.filteredManagerLists[0] = [...this.allManagerList];
   }
 
   public getAllDropdownData() {
@@ -278,6 +282,7 @@ export class CreateUpdateJobComponent implements CanComponentDeactivate, OnInit,
     this.allEmployeeList = [];
     this.apiService.getData(`${environment.live_url}/${environment.employee}/${params}`).subscribe((respData: any) => {
       this.allEmployeeList = respData;
+      this.filteredEmployeeLists[0] = [...this.allEmployeeList];
       this.accountManagerId = this.allEmployeeList[0]?.reporting_manager_id;
       if (this.isEditItem && this.user_role_name === 'Admin' && this.allEmployeeList.length === this.jobDetails?.employees?.length) {
         this.selectAllEmpFlag = true;
@@ -324,8 +329,9 @@ export class CreateUpdateJobComponent implements CanComponentDeactivate, OnInit,
     this.allManagerList = [];
     this.apiService.getData(`${environment.live_url}/${environment.employee}/${queryparams}`).subscribe((respData: any) => {
       this.allManagerList = respData;
+       this.filteredManagerLists[0] = [...this.allManagerList];
       if (this.user_role_name === 'Accountant' && !this.job_id) {
-        const employeesDetailsArray = this.jobFormGroup.get('employees') as FormArray;
+      const employeesDetailsArray = this.jobFormGroup.get('employees') as FormArray;
         employeesDetailsArray?.at(0)?.patchValue({ 'employee': this.allEmployeeList[0]?.user_id });
         if (this.allManagerList.length >= 1) {
           employeesDetailsArray?.at(0)?.patchValue({ 'manager': this.allEmployeeList[0]?.reporting_manager_id });
@@ -340,24 +346,39 @@ export class CreateUpdateJobComponent implements CanComponentDeactivate, OnInit,
     }));
   }
   // search Employee
-  filteredEmployeeList() {
-    if (!this.searchEmployeeText) {
-      return this.allEmployeeList;
-    }
-    return this.allEmployeeList.filter((emp: any) =>
-      emp?.user__full_name?.toLowerCase()?.includes(this.searchEmployeeText?.toLowerCase())
-    );
-  }
+ filterEmployeeList(index: number): void {
+  const search = this.searchEmployeeTextList[index]?.trim().toLowerCase() || '';
+  const employees = [...this.allEmployeeList];
 
-  // search Employee
-  filteredManagerList() {
-    if (!this.searchManagerText) {
-      return this.allManagerList;
-    }
-    return this.allManagerList.filter((emp: any) =>
-      emp?.user__full_name?.toLowerCase()?.includes(this.searchManagerText?.toLowerCase())
-    );
+  this.filteredEmployeeLists[index] = search
+    ? employees.filter(emp =>
+        emp?.user__full_name?.toLowerCase().includes(search)
+      )
+    : employees;
+}
+
+onSelectOpened(opened: boolean, index: number): void {
+  if (opened && !this.filteredEmployeeLists[index]?.length) {
+    this.filteredEmployeeLists[index] = [...this.allEmployeeList];
   }
+}
+
+filteredManagerList(index: number): void {
+  const search = this.searchManagerTextList[index]?.trim().toLowerCase() || '';
+  const employees = [...this.allManagerList];
+
+  this.filteredManagerLists[index] = search
+    ? employees.filter(emp =>
+        emp?.user__full_name?.toLowerCase().includes(search)
+      )
+    : employees;
+}
+
+onManagerSelectOpened(opened: boolean, index: number): void {
+  if (opened && !this.filteredManagerLists[index]?.length) {
+    this.filteredManagerLists[index] = [...this.allManagerList];
+  }
+}
 
   public getAllActiveClients() {
     this.allClientslist = [];
@@ -551,7 +572,7 @@ export class CreateUpdateJobComponent implements CanComponentDeactivate, OnInit,
     );
   }
 
-  public clearSearch(key: any) {
+  public clearSearch(key: any,i?:any) {
     if (key === 'client') {
       this.searchClientText = '';
     } else if (key === 'endClient') {
@@ -564,7 +585,15 @@ export class CreateUpdateJobComponent implements CanComponentDeactivate, OnInit,
       this.searchPeroidicityText = '';
     } else if (key === 'job_type') {
       this.searchJobTypeText = '';
-    } else {
+    } else if (key === 'emp') {
+    if (i >= 0 && i < this.searchEmployeeTextList.length) {
+      this.searchEmployeeTextList[i]='';
+}
+    }  else if (key === 'man') {
+      if (i >= 0 && i < this.searchManagerTextList.length) {
+      this.searchManagerTextList[i]='';
+};
+    }  else {
       this.searchJobStatusText = '';
     }
   }
@@ -617,6 +646,8 @@ export class CreateUpdateJobComponent implements CanComponentDeactivate, OnInit,
           const employeesDetailsArray = this.jobFormGroup.get('employees') as FormArray;
           employeesDetailsArray.clear();
           respData?.employees.forEach(({ employee, manager, is_primary }, index, array) => {
+            this.filteredEmployeeLists[index] = [...this.allEmployeeList];
+            this.filteredManagerLists[index] = [...this.allManagerList];
             const isLastItem = index === array.length - 1;
             const employeeForm = this.fb.group({
               employee: [{ value: employee, disabled: this.user_role_name === 'Accountant' ? true : !isLastItem }],
@@ -666,6 +697,9 @@ export class CreateUpdateJobComponent implements CanComponentDeactivate, OnInit,
       ['employee', 'manager', 'is_primary'].forEach(field => contact?.get(field)?.disable());
       this.employeeFormArray.markAllAsTouched();
       this.employeeFormArray.push(this.createEmployeeControl());
+      const newIndex = this.employeeFormArray.length - 1;
+      this.filteredEmployeeLists[newIndex] = this.allEmployeeList;
+      this.filteredManagerLists[newIndex] = this.allManagerList;
     }
     this.checkAllEmployeeCheckbox();
   }
@@ -675,6 +709,18 @@ export class CreateUpdateJobComponent implements CanComponentDeactivate, OnInit,
     if (this.employeeFormArray.length > 1) {
       this.selectAllEmpFlag = false;
       this.employeeFormArray.removeAt(index);
+      if (this.searchEmployeeTextList && this.searchEmployeeTextList.length > index) {
+    this.searchEmployeeTextList.splice(index, 1);
+  }
+  if (this.filteredEmployeeLists && this.filteredEmployeeLists.length > index) {
+    this.filteredEmployeeLists.splice(index, 1);
+  }
+    if (this.searchManagerTextList && this.searchManagerTextList.length > index) {
+    this.searchEmployeeTextList.splice(index, 1);
+  }
+  if (this.filteredManagerLists && this.filteredManagerLists.length > index) {
+    this.filteredManagerLists.splice(index, 1);
+  }
       const lastItemIndex = this.employeeFormArray.length - 1;
       const lastItem = this.employeeFormArray.at(lastItemIndex);
       if (lastItem) {
@@ -860,8 +906,10 @@ export class CreateUpdateJobComponent implements CanComponentDeactivate, OnInit,
     if (event.checked === true) {
       this.selectAllEmpFlag = true;
       this.employeeFormArray.clear();
-      this.allEmployeeList.forEach((element: any) => {
+      this.allEmployeeList.forEach((element: any,index:any) => {
         // Check if the reporting_manager_id exists in the allManagerList
+        this.filteredEmployeeLists[index] = [...this.allEmployeeList];
+        this.filteredManagerLists[index] = [...this.allManagerList];
         const isManagerValid = this.allManagerList?.some((manager: any) => manager?.user_id === element?.reporting_manager_id);
         let empData = this.fb.group({
           'employee': element?.user_id,
@@ -887,6 +935,8 @@ export class CreateUpdateJobComponent implements CanComponentDeactivate, OnInit,
       this.selectAllEmpFlag = false;
       this.employeeFormArray.clear();
       this.employeeFormArray.push(this.createEmployeeControl());
+      this.filteredEmployeeLists[0] = [...this.allEmployeeList];
+      this.filteredManagerLists[0] = [...this.allManagerList];
     }
     this.checkAllEmployeeCheckbox();
   }

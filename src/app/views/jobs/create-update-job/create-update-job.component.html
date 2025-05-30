@@ -355,17 +355,17 @@
             <td>
               <mat-form-field appearance="outline" [ngClass]="{ 'highlight-background': !shouldDisableFields}" class="w-100 custom-mat-form-field">
                 <mat-label>Select Employee <b class="r-star">*</b></mat-label>
-                <mat-select formControlName="employee"  autocomplete="off" placeholder="Select" panelClass="custom-select-panel" (selectionChange)="onEmployeeChange($event,i)">
+                <mat-select formControlName="employee"  autocomplete="off" placeholder="Select" panelClass="custom-select-panel" (selectionChange)="onEmployeeChange($event,i)" (openedChange)="onSelectOpened($event, i)">
                   
                   <!-- Search input field inside the panel -->
                   <div class="mat-select-search-wrapper d-flex">
-                    <input matInput [(ngModel)]="searchEmployeeText" [ngModelOptions]="{standalone: true}" placeholder="Search Employee" class="mat-select-search">
-                    <mat-icon class="search-icon" *ngIf="!searchEmployeeText">search</mat-icon>
-                    <mat-icon class="search-icon" *ngIf="searchEmployeeText" type="button" (click)="clearSearch('emp')">close</mat-icon>
+                    <input matInput [(ngModel)]="searchEmployeeTextList[i]" [ngModelOptions]="{standalone: true}" placeholder="Search Employee" class="mat-select-search" (ngModelChange)="filterEmployeeList(i)">
+                    <mat-icon class="search-icon" *ngIf="!searchEmployeeTextList[i]">search</mat-icon>
+                    <mat-icon class="search-icon" *ngIf="searchEmployeeTextList[i]" type="button" (click)="clearSearch('emp',i)">close</mat-icon>
                   </div>
               
                   <!-- Filtered options -->
-                  <mat-option *ngFor="let emp of filteredEmployeeList()" [value]="emp?.user_id">
+                  <mat-option *ngFor="let emp of filteredEmployeeLists[i]" [value]="emp?.user_id">
                     {{ emp?.user__full_name }}
                   </mat-option>
                 </mat-select>
@@ -377,17 +377,17 @@
             <td>
               <mat-form-field appearance="outline" [ngClass]="{ 'highlight-background': !shouldDisableFields}" class="w-100 custom-mat-form-field">
                 <mat-label>Select Manager <b class="r-star">*</b></mat-label>
-                <mat-select formControlName="manager"  autocomplete="off" placeholder="Select" panelClass="custom-select-panel">
+                <mat-select formControlName="manager"  autocomplete="off" placeholder="Select" panelClass="custom-select-panel" (openedChange)="onManagerSelectOpened($event, i)">
                   
                   <!-- Search input field inside the panel -->
                   <div class="mat-select-search-wrapper d-flex">
-                    <input matInput [(ngModel)]="searchManagerText" [ngModelOptions]="{standalone: true}" placeholder="Search Manager" class="mat-select-search">
-                    <mat-icon class="search-icon" *ngIf="!searchManagerText">search</mat-icon>
-                    <mat-icon class="search-icon" *ngIf="searchManagerText" type="button" (click)="clearSearch('emp')">close</mat-icon>
+                    <input matInput [(ngModel)]="searchManagerTextList[i]" [ngModelOptions]="{standalone: true}" placeholder="Search Manager" class="mat-select-search" (ngModelChange)="filteredManagerList(i)">
+                    <mat-icon class="search-icon" *ngIf="!searchManagerTextList[i]">search</mat-icon>
+                    <mat-icon class="search-icon" *ngIf="searchManagerTextList[i]" type="button" (click)="clearSearch('man',i)">close</mat-icon>
                   </div>
               
                   <!-- Filtered options -->
-                  <mat-option *ngFor="let emp of filteredManagerList()" [value]="emp?.user_id">
+                  <mat-option *ngFor="let emp of filteredManagerLists[i]" [value]="emp?.user_id">
                     {{ emp?.user__full_name }}
                   </mat-option>
                 </mat-select>
@@ -403,13 +403,13 @@
               <!-- *ngIf="user_role_name !== 'Accountant' && (user_role_name === 'Admin' || (user_role_name !== 'Admin' && shouldDisableFields))" -->
               <ng-container *ngIf="user_role_name !== 'Accountant' &&  shouldDisableFields">
                 <img src="../../../../assets/images/Edit.svg" class="icon-image" type="button" container="body"
-                        ngbTooltip="Edit" (click)="editContact(i)" *ngIf="emp?.get('employee')?.disabled && i < employeeFormArray?.length - 1 || (emp?.get('employee')?.disabled && i === allEmployeeList?.length-1)"/>
+                        ngbTooltip="Edit" (click)="editContact((currentPage - 1) * pageSize + i)" *ngIf="emp?.get('employee')?.disabled && (currentPage - 1) * pageSize + i < employeeFormArray?.length - 1 || (emp?.get('employee')?.disabled && (currentPage - 1) * pageSize + i === allEmployeeList?.length-1)"/>
                         <img src="../../../../assets/images/tick.svg" class="icon-image" type="button" container="body"
-                        ngbTooltip="save" (click)="saveChanges(i)" *ngIf="emp?.get('employee')?.enabled  && i < employeeFormArray?.length - 1 || (emp?.get('employee')?.enabled && i === allEmployeeList?.length-1)"/>
+                        ngbTooltip="save" (click)="saveChanges((currentPage - 1) * pageSize + i)" *ngIf="emp?.get('employee')?.enabled  && (currentPage - 1) * pageSize + i < employeeFormArray?.length - 1 || (emp?.get('employee')?.enabled && (currentPage - 1) * pageSize + i === allEmployeeList?.length-1)"/>
                         
                 <img src="../../../../assets/images/Delete.svg" class="icon-image" type="button" container="body" ngbTooltip="Delete" (click)="removeEmployee(i)" *ngIf="employeeFormArray.length >= 2" />
                 <img src="../../../../assets/images/addnew.svg" class="icon-image" type="button" container="body"
-                ngbTooltip="add" (click)="addEmployee()" *ngIf="i === employeeFormArray?.length - 1 && employeeFormArray?.length != allEmployeeList?.length"/>
+                ngbTooltip="add" (click)="addEmployee()" *ngIf="(currentPage - 1) * pageSize + i === employeeFormArray?.length - 1 && employeeFormArray?.length != allEmployeeList?.length"/>
               </ng-container>
               <ng-container *ngIf="user_role_name === 'Accountant' || (user_role_name !== 'Admin' && user_role_name !== 'Accountant' && !shouldDisableFields)">
                  -

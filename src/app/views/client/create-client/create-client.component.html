@@ -242,7 +242,7 @@
                         <img src="../../../../assets/images/addnew.svg" class="icon-image" type="button" container="body"
                         ngbTooltip="add" (click)="addContact()"   *ngIf="i === contactDetails?.length - 1 && contactDetails?.length < 5"/>
                    </ng-container>
-                   <span class="no-actions" *ngIf="shouldDisableFileds || !shouldDisableFileds && !isEnabledEdit">-</span>
+                   <span class="no-actions" *ngIf="(shouldDisableFileds || !shouldDisableFileds) && !isEnabledEdit">-</span>
                   </td>
                 </tr>
               </tbody>
@@ -331,7 +331,7 @@
                 ngbTooltip="add" (click)="addEmployee()" *ngIf="(currentPage - 1) * pageSize + i === employeeFormArray.length - 1 &&
             employeeFormArray.length < allEmployeeList.length"/>
               </ng-container>
-              <span class="no-actions" *ngIf="shouldDisableFileds || !shouldDisableFileds && !isEnabledEdit">-</span>
+              <span class="no-actions" *ngIf="(shouldDisableFileds || !shouldDisableFileds) && !isEnabledEdit">-</span>
             </td>
           </tr>
         </tbody>

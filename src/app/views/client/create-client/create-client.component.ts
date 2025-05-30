@@ -218,7 +218,9 @@ onSelectOpened(opened: boolean, index: number): void {
 
 public clearSearch(key:any,i?:any){
   if(key==='emp'){
-    this.searchEmployeeTextList[i]='';
+    if (i >= 0 && i < this.searchEmployeeTextList.length) {
+      this.searchEmployeeTextList[i]='';
+}
   }else if(key==='con'){
     this.searchCountryText='';
   }else{
