@@ -14,29 +14,6 @@
                 <mat-tab [disabled]="!jobsTabVisible" label="Jobs">
                     <app-jobs-of-clients *ngIf="selectedIndex === 3"></app-jobs-of-clients>
                 </mat-tab>
-            <!-- <mat-tab label="Client Details">
-                <ng-container *ngIf="clientTabVisible && selectedIndex === 0">
-                  <app-create-client></app-create-client>
-                </ng-container>
-              </mat-tab>
-            
-              <mat-tab label="Groups">
-                <ng-container *ngIf="groupTabVisible && selectedIndex === 1">
-                  <app-group></app-group>
-                </ng-container>
-              </mat-tab>
-            
-              <mat-tab label="End Clients">
-                <ng-container *ngIf="endClientTabVisible && selectedIndex === 2">
-                  <app-edit-client></app-edit-client>
-                </ng-container>
-              </mat-tab>
-            
-              <mat-tab label="Jobs">
-                <ng-container *ngIf="jobsTabVisible && selectedIndex === 3">
-                  <app-jobs-of-clients></app-jobs-of-clients>
-                </ng-container>
-              </mat-tab> -->
         </mat-tab-group>
     </div>
 </div>

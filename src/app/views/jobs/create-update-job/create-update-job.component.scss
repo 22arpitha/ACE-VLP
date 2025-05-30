@@ -26,7 +26,7 @@
     max-height: max-content !important;
   }
   .settings-table-bg ::ng-deep .mat-form-field-appearance-outline .mat-form-field-outline{
-  background: #fff;
+  // background: #fff;
   }
   table .contact-form-content ::ng-deep .mat-form-field-appearance-outline .mat-form-field-wrapper,
   table .contact-form-content ::ng-deep .mat-form-field-wrapper {
@@ -74,10 +74,7 @@
   .employee-details-table tbody tr td{
     // text-align: start !important;
   }
-  ::ng-deep .create-job .highlight-background .mat-form-field-flex {
-    background-color: rgb(235 235 235) !important;
-    pointer-events: none !important;
-  }
+  
   // Period Related css
   .picker-header {
   display: flex;
@@ -109,4 +106,20 @@
 .year-grid button {
   flex: 1 0 30%;
   min-width: 70px;
+}
+::ng-deep .edit-jobs .highlight-background .mat-form-field-flex {
+  background-color: rgb(235 235 235) !important;
+  pointer-events: none !important;
+}
+::ng-deep .employee-details-table .highlight-background .mat-form-field-flex  {
+  background-color: rgb(235, 235, 235) !important;
+  pointer-events: none !important;
+}
+.proceedbtn:disabled {
+    background-color: #cccccc !important;
+    color: #666666;
+}
+.funtion-btns .delete-item-button:disabled {
+   background-color: #cccccc !important;
+    color: #666666;
 }

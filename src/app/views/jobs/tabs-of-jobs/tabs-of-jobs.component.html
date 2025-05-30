@@ -1,0 +1,12 @@
+<div class="row mx-0 px-0 jobs-tabs">
+    <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0">
+        <mat-tab-group mat-stretch-tabs="false" mat-align-tabs="start" (selectedTabChange)="onTabChange($event)">
+                <mat-tab label="Job Details">
+                    <app-create-update-job ></app-create-update-job>
+                </mat-tab>
+                <mat-tab  label="KPI">
+                    <app-job-kpi ></app-job-kpi>
+                </mat-tab>
+        </mat-tab-group>
+    </div>
+</div>

@@ -55,7 +55,9 @@ export class CreateUpdateJobComponent implements CanComponentDeactivate, OnInit,
   formData: any;
   selectAllEmpFlag: boolean = false;
   selectOtherEmpFlag: boolean = false;
-  jobDetails:any = []
+  jobDetails: any = []
+  estimatedTime: any;
+  editJobDetails: boolean = false;
   toolbar: Toolbar = [
     // default value
     ['bold', 'italic'],
@@ -73,30 +75,30 @@ export class CreateUpdateJobComponent implements CanComponentDeactivate, OnInit,
   user_id: any;
   currentDate: any = new Date().toISOString();
   jobAllocationCurrentDate: any = new Date().toISOString();
-  initialFormValue:any;
-// Period Changes
+  initialFormValue: any;
+  // Period Changes
   showSelection = true;
   year: number = new Date()?.getFullYear();
   yearDefault = new Date()?.getFullYear();
   yearRangeStart: number;
   selectedMonth: string | null = null;
   selectedQuarter: string | null = null;
-  modeName:'Monthly' | 'Quaterly' | 'Yearly';
+  modeName: 'Monthly' | 'Quaterly' | 'Yearly';
   months: string[] = [
     'January', 'February', 'March', 'April', 'May', 'June',
     'July', 'August', 'September', 'October', 'November', 'December'
   ];
 
   quarters: { label: string, value: string; months: string[] }[] = [
-    { label:'Q1',value:'Mar-Qtr', months: ['January', 'February', 'March'] },
-    { label:'Q2',value: 'Jun-Qtr', months: ['April', 'May', 'June'] },
-    { label:'Q3',value: 'Sep-Qtr', months: ['July', 'August', 'September'] },
-    { label:'Q4',value: 'Dec-Qtr', months: ['October', 'November', 'December'] }
+    { label: 'Q1', value: 'Mar-Qtr', months: ['January', 'February', 'March'] },
+    { label: 'Q2', value: 'Jun-Qtr', months: ['April', 'May', 'June'] },
+    { label: 'Q3', value: 'Sep-Qtr', months: ['July', 'August', 'September'] },
+    { label: 'Q4', value: 'Dec-Qtr', months: ['October', 'November', 'December'] }
   ];
   @ViewChild('trigger') menuTrigger!: MatMenuTrigger;
   constructor(private fb: FormBuilder, private activeRoute: ActivatedRoute, private accessControlService: SubModuleService,
     private common_service: CommonServiceService, private router: Router, private datepipe: DatePipe,
-    private apiService: ApiserviceService, private modalService: NgbModal, private formErrorScrollService: FormErrorScrollUtilityService,private cdr: ChangeDetectorRef) {
+    private apiService: ApiserviceService, private modalService: NgbModal, private formErrorScrollService: FormErrorScrollUtilityService, private cdr: ChangeDetectorRef) {
     this.common_service.setTitle(this.BreadCrumbsTitle);
     this.user_role_name = sessionStorage.getItem('user_role_name');
     this.user_id = sessionStorage.getItem('user_id');
@@ -120,9 +122,9 @@ export class CreateUpdateJobComponent implements CanComponentDeactivate, OnInit,
     this.jobFormGroup?.valueChanges?.subscribe(() => {
       const currentFormValue = this.jobFormGroup?.getRawValue();
       const isInvalid = this.jobFormGroup?.touched && this.jobFormGroup?.invalid;
-      const isFormChanged:boolean =  JSON.stringify(currentFormValue) !== JSON.stringify(this.initialFormValue);
+      const isFormChanged: boolean = JSON.stringify(currentFormValue) !== JSON.stringify(this.initialFormValue);
       let unSavedChanges = isFormChanged || isInvalid;
-     this.formErrorScrollService.setUnsavedChanges(unSavedChanges);
+      this.formErrorScrollService.setUnsavedChanges(unSavedChanges);
     });
   }
 
@@ -134,7 +136,7 @@ export class CreateUpdateJobComponent implements CanComponentDeactivate, OnInit,
 
   public intialForm() {
     this.jobFormGroup = this.fb.group({
-      job_name: ['',Validators.pattern(/^[a-zA-Z0-9!@#$%^&*()_+{}\[\]:;"'<>,.?/\\|`~\-]+( [a-zA-Z0-9!@#$%^&*()_+{}\[\]:;"'<>,.?/\\|`~\-]+)*$/)],
+      job_name: ['', Validators.pattern(/^[a-zA-Z0-9!@#$%^&*()_+{}\[\]:;"'<>,.?/\\|`~\-]+( [a-zA-Z0-9!@#$%^&*()_+{}\[\]:;"'<>,.?/\\|`~\-]+)*$/)],
       client: ['', Validators.required],
       end_client: ['', Validators.required],
       group: [null],
@@ -151,15 +153,17 @@ export class CreateUpdateJobComponent implements CanComponentDeactivate, OnInit,
       job_notes: [''],
       created_by: Number(this.user_id),
       updated_by: Number(this.user_id),
-      is_allocated:[''],
-      all_employees:[''],
+      is_allocated: [''],
+      all_employees: [''],
       employees: this.fb.array([this.createEmployeeControl()]),
+      add_employees: [''],
+      only_admin_can_change_job_status: ['']
     });
-    this.initialFormValue=this.jobFormGroup?.getRawValue();
+    this.initialFormValue = this.jobFormGroup?.getRawValue();
   }
 
   public getAllDropdownData() {
-    
+
     // this.getJobUniqueNumber();
     this.getJobBillingOptions();
     this.getAllActiveClients();
@@ -168,27 +172,59 @@ export class CreateUpdateJobComponent implements CanComponentDeactivate, OnInit,
     this.getAllJobType();
     this.getAllJobStatus();
     // this.getEmployees(`?is_active=True&employee=True`);
-    if(!this.isEditItem){
+    if (!this.isEditItem) {
       this.getAllEmployeeList();
     }
     setTimeout(() => {
       this.getAllActiveManagerList();
     }, 1000);
   }
-  shouldDisableFields:boolean = false;
+  shouldDisableFields: boolean = false;
   getModuleAccess() {
     this.accessControlService.getAccessForActiveUrl(this.user_id).subscribe(
       (res: any) => {
         console.log(res);
         this.accessPermissions = res[0].operations;
         // console.log('this.accessPermissions', this.accessPermissions)
-        if(this.job_id){
-          this.shouldDisableFields = this.accessPermissions[0]?.['update'];
-        } else{
-          this.shouldDisableFields = this.accessPermissions[0]?.['create'];
+        if (this.user_role_name != 'Admin') {
+          if (this.job_id) {
+            if(this.accessPermissions[0]?.['update']){
+              this.editJobDetails = false;
+            } else{
+              this.editJobDetails = true;
+            }
+          } else {
+             this.editJobDetails = false;
+            this.shouldDisableFields = this.accessPermissions[0]?.['create'];
+          }
+        } else {
+          if (this.job_id) {
+            this.editJobDetails = false;
+            this.shouldDisableFields = false;
+          } else{
+            this.editJobDetails = true;
+            this.shouldDisableFields = true;
+          }
         }
       }
     )
+    // if(this.job_id){
+    //       this.shouldDisableFields = this.accessPermissions[0]?.['update'];
+    //     } else{
+    //       this.shouldDisableFields = this.accessPermissions[0]?.['create'] };
+  }
+  public enableEdit() {
+    if (this.user_role_name === 'Admin') {
+      this.editJobDetails = true;
+      this.shouldDisableFields = true;
+    }
+    else {
+      this.editJobDetails = true;
+      if(this.job_id){
+         this.shouldDisableFields = this.accessPermissions[0]?.['update'];
+      }
+    }
+    // this.router.navigate(['/jobs/update-kpi/', this.job_id]);
   }
 
   public get f() {
@@ -237,13 +273,13 @@ export class CreateUpdateJobComponent implements CanComponentDeactivate, OnInit,
     this.getEmployees(queryparams);
   }
 
-  accountManagerId:any;
+  accountManagerId: any;
   public getEmployees(params) {
     this.allEmployeeList = [];
     this.apiService.getData(`${environment.live_url}/${environment.employee}/${params}`).subscribe((respData: any) => {
       this.allEmployeeList = respData;
       this.accountManagerId = this.allEmployeeList[0]?.reporting_manager_id;
-      if(this.isEditItem && this.user_role_name==='Admin' && this.allEmployeeList.length===this.jobDetails?.employees?.length){
+      if (this.isEditItem && this.user_role_name === 'Admin' && this.allEmployeeList.length === this.jobDetails?.employees?.length) {
         this.selectAllEmpFlag = true;
       }
       // console.log('employee list', respData)
@@ -256,13 +292,13 @@ export class CreateUpdateJobComponent implements CanComponentDeactivate, OnInit,
   public getAllActiveManagerList() {
     let queryparams: any = `?is_active=True&employee=True&designation=manager`;
     const shouldAddQuery = this.selectOtherEmpFlag || this.selectAllEmpFlag;
-    if(!shouldAddQuery){
-     if(this.user_role_name === 'Manager') {
+    if (!shouldAddQuery) {
+      if (this.user_role_name === 'Manager') {
         queryparams = `?is_active=True&employee=True&employee_id=${this.user_id}&is_manager=True`
       }
     }
 
-   this.getManagers(queryparams)
+    this.getManagers(queryparams)
     // old code
     // this.apiService.getData(`${environment.live_url}/${environment.employee}/?is_active=True&employee=True&designation=manager`).subscribe((respData: any) => {
     //   this.allManagerList = respData;
@@ -284,8 +320,8 @@ export class CreateUpdateJobComponent implements CanComponentDeactivate, OnInit,
     // }));
   }
 
- public getManagers(queryparams:any){
-  this.allManagerList = [];
+  public getManagers(queryparams: any) {
+    this.allManagerList = [];
     this.apiService.getData(`${environment.live_url}/${environment.employee}/${queryparams}`).subscribe((respData: any) => {
       this.allManagerList = respData;
       if (this.user_role_name === 'Accountant' && !this.job_id) {
@@ -325,10 +361,10 @@ export class CreateUpdateJobComponent implements CanComponentDeactivate, OnInit,
 
   public getAllActiveClients() {
     this.allClientslist = [];
-    let query:any
-    if(this.user_role_name ==='Admin'){
+    let query: any
+    if (this.user_role_name === 'Admin') {
       query = '?status=True'
-    } else{
+    } else {
       query = `?status=True&employee-id=${this.user_id}`
     }
     this.apiService.getData(`${environment.live_url}/${environment.clients}/${query}`).subscribe(
@@ -362,7 +398,7 @@ export class CreateUpdateJobComponent implements CanComponentDeactivate, OnInit,
     this.jobFormGroup?.get('group')?.reset();
     // this.getCombinationJobName();
     this.getEndClientBasedGroup(endClient_id);
-    if(this.isEditItem){
+    if (this.isEditItem) {
       this.getCombinationJobName();
     }
   }
@@ -405,18 +441,18 @@ export class CreateUpdateJobComponent implements CanComponentDeactivate, OnInit,
 
 
   public onPeroidicityChange(event: any) {
-   const peroidicityId = event.value;
-   this.jobFormGroup.get('period')?.reset(null, { emitEvent: false });
-    this.modeName = this.allPeroidicitylist.find((peroidicity:any)=>peroidicity.id=== peroidicityId)?.periodicty_name;
+    const peroidicityId = event.value;
+    this.jobFormGroup.get('period')?.reset(null, { emitEvent: false });
+    this.modeName = this.allPeroidicitylist.find((peroidicity: any) => peroidicity.id === peroidicityId)?.periodicty_name;
   }
   public onServiceChange(event: any) {
     // console.log('event', event);
-    if(this.isEditItem){
+    if (this.isEditItem) {
       this.getCombinationJobName();
     }
   }
   public onPeroidChange() {
-  this.getCombinationJobName();
+    this.getCombinationJobName();
   }
 
   public getAllJobType() {
@@ -526,7 +562,7 @@ export class CreateUpdateJobComponent implements CanComponentDeactivate, OnInit,
       this.searchServicesText = '';
     } else if (key === 'periodicity') {
       this.searchPeroidicityText = '';
-    }  else if (key === 'job_type') {
+    } else if (key === 'job_type') {
       this.searchJobTypeText = '';
     } else {
       this.searchJobStatusText = '';
@@ -538,13 +574,14 @@ export class CreateUpdateJobComponent implements CanComponentDeactivate, OnInit,
       if (respData) {
         this.BreadCrumbsTitle = this.BreadCrumbsTitle + ` (${respData.job_number})`
         this.common_service.setTitle(this.BreadCrumbsTitle);
-        this.jobDetails = respData
+        this.jobDetails = respData;
+        this.estimatedTime = respData?.estimated_time
         this.getClientBasedEndClient(respData?.client);
         this.getEndClientBasedGroup(respData?.end_client);
         this.selectOtherEmpFlag = respData?.is_allocated,
-        this.selectAllEmpFlag = respData?.all_employees,
-        this.getAllEmployeeList();
-         this.modeName = this.allPeroidicitylist.find((peroidicity:any)=>peroidicity.id=== Number(respData?.periodicity))?.periodicty_name;
+          this.selectAllEmpFlag = respData?.all_employees,
+          this.getAllEmployeeList();
+        this.modeName = this.allPeroidicitylist.find((peroidicity: any) => peroidicity.id === Number(respData?.periodicity))?.periodicty_name;
         // this.getEndClientBasedGroup(respData?.end_client);
         this.jobFormGroup.patchValue({
           job_name: respData?.job_name,
@@ -563,8 +600,10 @@ export class CreateUpdateJobComponent implements CanComponentDeactivate, OnInit,
           job_notes: respData?.job_notes,
           created_by: respData?.created_by,
           updated_by: respData?.updated_by,
-          is_allocated:respData?.is_allocated,
-          all_employees:respData?.all_employees,
+          is_allocated: respData?.is_allocated,
+          all_employees: respData?.all_employees,
+          add_employees: respData?.add_employees,
+          only_admin_can_change_job_status: respData?.only_admin_can_change_job_status
         });
         this.tempSelectedJobStatus = respData?.job_status_name.toLowerCase();
         if (respData?.budget_time) {
@@ -601,12 +640,11 @@ export class CreateUpdateJobComponent implements CanComponentDeactivate, OnInit,
     this.router.navigate(['/jobs/all-jobs']);
   }
 
-  public openJobKPIDetails() {
-    this.router.navigate(['/jobs/update-kpi/', this.job_id]);
-  }
+
+
 
   public joiningDateFun(event: any) {
-    console.log('event Date',event.value);
+    console.log('event Date', event.value);
     if (this.user_role_name === 'Admin') {
       this.jobFormGroup.patchValue({ 'job_status_date': event.value });
     } else {
@@ -649,7 +687,30 @@ export class CreateUpdateJobComponent implements CanComponentDeactivate, OnInit,
     let data = this.allJobStatusList.find((x: any) => x.id === event.value)
     this.tempSelectedJobStatus = data.status_name.toLowerCase();
     this.jobFormGroup.patchValue({ percentage_of_completion: Number(data.percentage_of_completion) })
+    // check the status
+    const selectedIndex = this.allJobStatusList.findIndex(status => status.status_name.toLowerCase() === this.tempSelectedJobStatus.toLowerCase());
+    const querySentIndex = this.allJobStatusList.findIndex(status => status.status_name.toLowerCase() === 'quiery sent');
+    if (this.job_id && this.estimatedTime === '00:00' && selectedIndex >= querySentIndex) {
+      this.apiService.showError('Please upadte the estimated time to change the status.');
+      this.tempSelectedJobStatus = '';
+      this.jobFormGroup.patchValue({ job_status: this.jobDetails?.job_status })
+      // this.jobFormGroup.get('job_status')?.setValue(''); // Optionally reset the selection
+    } else if (!this.job_id && selectedIndex >= querySentIndex) {
+      this.apiService.showError('');
+      this.tempSelectedJobStatus = '';
+      this.jobFormGroup.patchValue({ job_status: '' })
+    }
   }
+
+  shouldDisableStatus(statusName: string): boolean {
+  if (this.estimatedTime !== '00:00') return false;
+
+  const jobStatusList =  this.filteredJobStatusList(); // Or use the full list if needed
+  const querySentIndex = jobStatusList.findIndex(item => item.status_name === 'Query sent');
+  const currentIndex = jobStatusList.findIndex(item => item.status_name === statusName);
+
+  return currentIndex >= querySentIndex;
+}
 
   public saveJobDetails() {
     if (this.jobFormGroup.invalid) {
@@ -714,7 +775,9 @@ export class CreateUpdateJobComponent implements CanComponentDeactivate, OnInit,
     this.formData.set("employees", JSON.stringify(this.jobFormGroup?.get('employees')?.getRawValue()) || []);
     this.formData.set("status", (this.tempSelectedJobStatus === 'cancelled' || this.tempSelectedJobStatus === 'completed') ? false : true);
     this.formData.set("is_allocated", this.jobFormGroup.get('is_allocated')?.value ? 'true' : 'false');
-    this.formData.set("all_employees",this.jobFormGroup.get('all_employees')?.value ? 'true' : 'false');
+    this.formData.set("all_employees", this.jobFormGroup.get('all_employees')?.value ? 'true' : 'false');
+    this.formData.set("add_employees", this.jobFormGroup.get('add_employees')?.value ? 'true' : 'false');
+    this.formData.set("only_admin_can_change_job_status", this.jobFormGroup.get('only_admin_can_change_job_status')?.value ? 'true' : 'false');
     const json = this.formDataToJson(this.formData);
 
     return json;
@@ -724,7 +787,7 @@ export class CreateUpdateJobComponent implements CanComponentDeactivate, OnInit,
     this.formGroupDirective?.resetForm();
     this.formErrorScrollService.resetHasUnsavedValue();
     this.isEditItem = false;
-    this.initialFormValue=this.jobFormGroup?.getRawValue();
+    this.initialFormValue = this.jobFormGroup?.getRawValue();
   }
 
   public deleteJobs() {
@@ -944,28 +1007,29 @@ export class CreateUpdateJobComponent implements CanComponentDeactivate, OnInit,
   }
 
 
-checkAllEmployeeCheckbox(){
-  if(this.user_role_name==='Admin' && this.employeeFormArray.length===this.allEmployeeList.length){
-    this.jobFormGroup.patchValue({'all_employees':true})
-  }  else{
-    this.jobFormGroup.patchValue({'all_employees':false})
+  checkAllEmployeeCheckbox() {
+    if (this.user_role_name === 'Admin' && this.employeeFormArray.length === this.allEmployeeList.length) {
+      this.jobFormGroup.patchValue({ 'all_employees': true })
+    } else {
+      this.jobFormGroup.patchValue({ 'all_employees': false });
+      this.jobFormGroup.patchValue({ 'add_employees': false })
+    }
   }
-}
 
-canDeactivate(): Observable<boolean> {
+  canDeactivate(): Observable<boolean> {
     const currentFormValue = this.jobFormGroup?.getRawValue();
-    const isFormChanged:boolean =  JSON.stringify(currentFormValue) !== JSON.stringify(this.initialFormValue);
-    return this.formErrorScrollService.isFormDirtyOrInvalidCheck(isFormChanged,this.jobFormGroup);
+    const isFormChanged: boolean = JSON.stringify(currentFormValue) !== JSON.stringify(this.initialFormValue);
+    return this.formErrorScrollService.isFormDirtyOrInvalidCheck(isFormChanged, this.jobFormGroup);
   }
 
   @HostListener('window:beforeunload', ['$event'])
-    unloadNotification($event: BeforeUnloadEvent): void {
-      const currentFormValue = this.jobFormGroup.getRawValue();
-      const isFormChanged:boolean =  JSON.stringify(currentFormValue) !== JSON.stringify(this.initialFormValue);
-      if (isFormChanged || this.jobFormGroup.dirty) {
-        $event.preventDefault();
-      }
+  unloadNotification($event: BeforeUnloadEvent): void {
+    const currentFormValue = this.jobFormGroup.getRawValue();
+    const isFormChanged: boolean = JSON.stringify(currentFormValue) !== JSON.stringify(this.initialFormValue);
+    if (isFormChanged || this.jobFormGroup.dirty) {
+      $event.preventDefault();
     }
+  }
 
   parseInput(val: string) {
     val = (val || '').toUpperCase().trim();
@@ -997,10 +1061,10 @@ canDeactivate(): Observable<boolean> {
     if (!this.year) return;
     if (this.modeName !== 'Yearly') {
       const newVal = `${period} ${this.year}`;
-    this.jobFormGroup.get('period')?.patchValue(newVal ,{ emitEvent: false });
+      this.jobFormGroup.get('period')?.patchValue(newVal, { emitEvent: false });
     } else {
-    const newVal = `${this.year}`;
-    this.jobFormGroup.get('period')?.patchValue(newVal,{ emitEvent: false });
+      const newVal = `${this.year}`;
+      this.jobFormGroup.get('period')?.patchValue(newVal, { emitEvent: false });
     }
     this.cdr.detectChanges();
     this.onPeroidChange();
@@ -1028,32 +1092,32 @@ canDeactivate(): Observable<boolean> {
 
     if (this.finalSelectionMade()) {
       this.emitValue(period);
-     this.showSelection = true;
+      this.showSelection = true;
       this.menuTrigger?.closeMenu();
     } else {
 
-       this.showSelection = true;
-       this.menuTrigger?.closeMenu();
+      this.showSelection = true;
+      this.menuTrigger?.closeMenu();
     }
   }
 
   changeYear(val: number) {
-  this.year = val;
+    this.year = val;
 
-  const currentPeriod =
-    this.modeName === 'Monthly' ? this.selectedMonth :
-    this.modeName === 'Quaterly' ? this.selectedQuarter :
-    this.year.toString();
-  this.showSelection = true;
-  if (this.modeName === 'Yearly') {
-    if (this.finalSelectionMade()) {
-      this.emitValue(currentPeriod || '');
-      this.menuTrigger?.closeMenu();
+    const currentPeriod =
+      this.modeName === 'Monthly' ? this.selectedMonth :
+        this.modeName === 'Quaterly' ? this.selectedQuarter :
+          this.year.toString();
+    this.showSelection = true;
+    if (this.modeName === 'Yearly') {
+      if (this.finalSelectionMade()) {
+        this.emitValue(currentPeriod || '');
+        this.menuTrigger?.closeMenu();
+      }
+    } else {
+      this.menuTrigger?.openMenu();
     }
-  } else {
-    this.menuTrigger?.openMenu();
   }
-}
 
 
   toggleView() {
