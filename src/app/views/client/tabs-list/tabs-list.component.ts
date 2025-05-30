@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonServiceService } from '../../../service/common-service.service';
 import { ActivatedRoute } from '@angular/router';
 import { MatTabChangeEvent } from '@angular/material/tabs';
@@ -9,7 +9,7 @@ import { ApiserviceService } from '../../../service/apiservice.service';
   templateUrl: './tabs-list.component.html',
   styleUrls: ['./tabs-list.component.scss']
 })
-export class TabsListComponent implements OnInit {
+export class TabsListComponent implements OnInit,OnDestroy {
   BreadCrumbsTitle: any = 'Client Name'
   client_id: any;
   selectedIndex: any = 0;
@@ -33,6 +33,9 @@ export class TabsListComponent implements OnInit {
         this.selectedIndex = index;
       })
     }
+  }
+  ngOnDestroy(): void {
+    this.common_service.setClientActiveTabindex(0);
   }
 
   ngOnInit(): void {

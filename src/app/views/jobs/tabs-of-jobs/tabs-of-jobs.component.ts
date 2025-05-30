@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonServiceService } from '../../../service/common-service.service';
 import { ActivatedRoute } from '@angular/router';
 import { MatTabChangeEvent } from '@angular/material/tabs';
@@ -10,7 +10,7 @@ import { ApiserviceService } from '../../../service/apiservice.service';
   templateUrl: './tabs-of-jobs.component.html',
   styleUrls: ['./tabs-of-jobs.component.scss']
 })
-export class TabsOfJobsComponent implements OnInit {
+export class TabsOfJobsComponent implements OnInit,OnDestroy {
 
   BreadCrumbsTitle: any = 'Client Name'
     client_id: any;
@@ -22,6 +22,7 @@ export class TabsOfJobsComponent implements OnInit {
     groupTabVisible: boolean = false
     endClientTabVisible: boolean = false
     jobsTabVisible: boolean = false
+    hasEmployees:boolean=false;
     constructor(private common_service: CommonServiceService, private activeRoute: ActivatedRoute,
       private accessControlService: SubModuleService,
           private apiService: ApiserviceService,
@@ -32,13 +33,19 @@ export class TabsOfJobsComponent implements OnInit {
       if (this.activeRoute.snapshot.paramMap.get('id')) {
         this.client_id = this.activeRoute.snapshot.paramMap.get('id');
       }
+      this.common_service.jobActiveTabindex$.subscribe((index) => {
+        this.selectedIndex = index;
+      });
     }
   
     ngOnInit(): void {
       // this.getModuleAccess()
     }
+     ngOnDestroy(): void {
+    this.common_service.setClientActiveTabindex(0);
+  }
     public onTabChange(event: MatTabChangeEvent) {
-      // this.selectedIndex = event.index;
+      this.selectedIndex = event.index;
     }
     getModuleAccess() {
       this.accessControlService.getAccessForActiveUrl(this.user_id).subscribe((access) => {
@@ -59,5 +66,8 @@ export class TabsOfJobsComponent implements OnInit {
       return item?.operations?.[0]?.view === true;
     }
     
+    isEmployeeAssigned(event:boolean){
+    this.hasEmployees=event;
+    }
   }
   

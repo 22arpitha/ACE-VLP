@@ -150,7 +150,8 @@
 </div>
   <!-- Upload File -->
 <div class="ccol-12 col-sm-12 col-md-6 col-lg-3 my-1 px-0 align-content-center" *ngIf="userRole === 'Admin'">
-    <input type="file" accept=".xlsx,.xls,.doc,.docx,.pdf" formControlName="client_file" #fileInput
+
+  <input type="file" accept=".xlsx,.xls,.doc,.docx,.pdf" formControlName="client_file" #fileInput
                 (change)="onFileSelected($event)" hidden>
               <div class="image-container w-100 d-flex justify-content-between align-items-center"
                 style="padding: 1px 15px;"
@@ -158,7 +159,7 @@
                 <mat-label *ngIf="selectedFile && selectedFile?.name"><a type="button" (click)="openFileInNewTab()">{{selectedFile?.name}}</a></mat-label>
                 <mat-label *ngIf="!selectedFile && !selectedFile?.name">Upload File</mat-label>
 
-                <button type="button" mat-icon-button (click)="triggerFileInput()">
+                <button type="button" mat-icon-button [disabled]="shouldDisableFileds && !isEnabledEdit" (click)="triggerFileInput()">
                   <i matTooltip="{{selectedFile ? 'Edit' : 'Upload File'}}"
                     class="{{selectedFile ? 'bi bi-pencil-fill' : 'bi bi-file-earmark-spreadsheet'}}"
                     id="edit-or-upload-icon"></i>
@@ -357,8 +358,8 @@
     ></ngx-editor>
       </div>
 </section>
-<section class="d-flex align-items-center mx-0 my-3 px-2" *ngIf="userRole === 'Admin'">
-    <mat-checkbox color="primary" class="example-margin" formControlName="allow_sending_status_report_to_client" ><h5 class="c-header">Allow sending the status report to client</h5></mat-checkbox>
+<section class="d-flex align-items-center mx-0 my-3 px-2"  *ngIf="userRole === 'Admin'">
+    <mat-checkbox [disabled]="shouldDisableFileds && !isEnabledEdit" color="primary" class="example-margin" formControlName="allow_sending_status_report_to_client" ><h5 class="c-header">Allow sending the status report to client</h5></mat-checkbox>
   </section>
 <div class="row mx-0 my-3 px-2">
     <div class="col-12 col-sm-12 col-md-6 col-lg-3 align-content-center px-0">

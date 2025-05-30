@@ -1,5 +1,5 @@
 import { DatePipe } from '@angular/common';
-import { ChangeDetectorRef, Component, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, HostListener, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { FormArray, FormBuilder, FormControl, FormGroup, FormGroupDirective, Validators } from '@angular/forms';
 import { MatPaginator } from '@angular/material/paginator';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -14,6 +14,7 @@ import { FormErrorScrollUtilityService } from '../../../service/form-error-scrol
 import { SubModuleService } from '../../../service/sub-module.service';
 import { CanComponentDeactivate } from '../../../auth-guard/can-deactivate.guard';
 import { MatMenuTrigger } from '@angular/material/menu';
+import { GenericRedirectionConfirmationComponent } from 'src/app/generic-components/generic-redirection-confirmation/generic-redirection-confirmation.component';
 
 
 @Component({
@@ -25,6 +26,7 @@ export class CreateUpdateJobComponent implements CanComponentDeactivate, OnInit,
   BreadCrumbsTitle: any = 'Job';
   @ViewChild(FormGroupDirective) formGroupDirective!: FormGroupDirective;
   @ViewChild(MatPaginator) paginator: MatPaginator | undefined;
+  @Output() isEmployeeAdded:EventEmitter<boolean> = new EventEmitter<boolean>();
   jobFormGroup: FormGroup;
   allClientslist: any = [];
   endClientslists: any = [];
@@ -282,7 +284,7 @@ export class CreateUpdateJobComponent implements CanComponentDeactivate, OnInit,
     this.allEmployeeList = [];
     this.apiService.getData(`${environment.live_url}/${environment.employee}/${params}`).subscribe((respData: any) => {
       this.allEmployeeList = respData;
-      this.filteredEmployeeLists[0] = [...this.allEmployeeList];
+     this.updateDropdownOptionlist();
       this.accountManagerId = this.allEmployeeList[0]?.reporting_manager_id;
       if (this.isEditItem && this.user_role_name === 'Admin' && this.allEmployeeList.length === this.jobDetails?.employees?.length) {
         this.selectAllEmpFlag = true;
@@ -329,7 +331,7 @@ export class CreateUpdateJobComponent implements CanComponentDeactivate, OnInit,
     this.allManagerList = [];
     this.apiService.getData(`${environment.live_url}/${environment.employee}/${queryparams}`).subscribe((respData: any) => {
       this.allManagerList = respData;
-       this.filteredManagerLists[0] = [...this.allManagerList];
+      this.updateDropdownOptionlist();
       if (this.user_role_name === 'Accountant' && !this.job_id) {
       const employeesDetailsArray = this.jobFormGroup.get('employees') as FormArray;
         employeesDetailsArray?.at(0)?.patchValue({ 'employee': this.allEmployeeList[0]?.user_id });
@@ -588,10 +590,12 @@ onManagerSelectOpened(opened: boolean, index: number): void {
     } else if (key === 'emp') {
     if (i >= 0 && i < this.searchEmployeeTextList.length) {
       this.searchEmployeeTextList[i]='';
+      this.filteredEmployeeLists[i]=[...this.allEmployeeList];
 }
     }  else if (key === 'man') {
       if (i >= 0 && i < this.searchManagerTextList.length) {
       this.searchManagerTextList[i]='';
+      this.filteredManagerLists[i]=[...this.allManagerList];
 };
     }  else {
       this.searchJobStatusText = '';
@@ -643,6 +647,7 @@ onManagerSelectOpened(opened: boolean, index: number): void {
           this.jobFormGroup.patchValue({ 'budget_time': '' });
         }
         if (respData?.employees && Array.isArray(respData?.employees) && respData?.employees?.length >= 1) {
+          this.isEmployeeAdded.emit(true);
           const employeesDetailsArray = this.jobFormGroup.get('employees') as FormArray;
           employeesDetailsArray.clear();
           respData?.employees.forEach(({ employee, manager, is_primary }, index, array) => {
@@ -657,20 +662,55 @@ onManagerSelectOpened(opened: boolean, index: number): void {
             employeesDetailsArray.push(employeeForm);
           });
         }
+      this.initialFormValue = this.jobFormGroup?.getRawValue();
       }
     }, (error: any) => {
       this.apiService.showError(error?.error?.detail);
     })
-  } public backBtnFunc() {
-    sessionStorage.removeItem("access-name")
+  } 
+     public backBtnFunc(): void {
+        if (this.isEditItem && this.hasUnsavedChanges()) {
+          this.showConfirmationPopup().subscribe((confirmed: boolean) => {
+            if (confirmed) {
+              this.cleanupAndNavigate();
+            }
+          });
+        } else {
+          this.cleanupAndNavigate();
+        }
+      }
+      
+      public hasUnsavedChanges(): boolean {
+        const currentFormValue = this.jobFormGroup.getRawValue();
+        const isFormChanged = JSON.stringify(currentFormValue) !== JSON.stringify(this.initialFormValue);
+        return isFormChanged || this.jobFormGroup.dirty;
+      }
+      
+      private cleanupAndNavigate(): void {
+        sessionStorage.removeItem("access-name")
     if (this.tempSelectedJobStatus === 'completed' || this.tempSelectedJobStatus === 'cancelled') {
       this.common_service.setjobStatusState(true);
     } else {
       this.common_service.setjobStatusState(false);
     }
     this.router.navigate(['/jobs/all-jobs']);
-  }
-
+      }
+      
+      private showConfirmationPopup(): Observable<boolean> {
+        return new Observable<boolean>((observer) => {
+          const modalRef = this.modalService.open(GenericRedirectionConfirmationComponent, {
+            size: 'sm' as any,
+            backdrop: true,
+            centered: true,
+          });
+      
+          modalRef.componentInstance.status.subscribe((resp: any) => {
+            observer.next(resp === 'ok');
+            observer.complete();
+            modalRef.close();
+          });
+        });
+      }
 
 
 
@@ -888,7 +928,8 @@ onManagerSelectOpened(opened: boolean, index: number): void {
       managerQuery = `?is_active=True&employee=True&employee_id=${this.user_id}&is_manager=True`
     }
     this.getEmployees(employeeQuery);
-    this.getManagers(managerQuery)
+    this.getManagers(managerQuery);
+    this.updateDropdownOptionlist();
 
     // old code
     // let queryparams;
@@ -901,6 +942,16 @@ onManagerSelectOpened(opened: boolean, index: number): void {
     // }
     // this.getEmployees(queryparams);
   }
+
+updateDropdownOptionlist(){
+  if(this.employeeFormArray && this.employeeFormArray.length>=1){
+this.employeeFormArray.controls.forEach((controls:any,index:any)=>{
+this.filteredEmployeeLists[index]=[...this.allEmployeeList];
+this.filteredManagerLists[index]=[...this.allManagerList];
+   });
+  }
+
+}
 
   public onSelectionAllEmployee(event: any) {
     if (event.checked === true) {

@@ -220,6 +220,7 @@ public clearSearch(key:any,i?:any){
   if(key==='emp'){
     if (i >= 0 && i < this.searchEmployeeTextList.length) {
       this.searchEmployeeTextList[i]='';
+      this.filteredEmployeeLists[i]=[...this.allEmployeeList];
 }
   }else if(key==='con'){
     this.searchCountryText='';

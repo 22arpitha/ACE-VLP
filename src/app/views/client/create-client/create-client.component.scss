@@ -81,6 +81,10 @@ textarea[matInput] {
   background-color: rgb(235, 235, 235) !important;
   pointer-events: none !important;
 }
+::ng-deep .settings-table-bg input.highlight-background {
+  background-color: rgb(235, 235, 235) !important;
+  pointer-events: none !important;
+}
 .no-actions{
   text-align: center !important;
 }
