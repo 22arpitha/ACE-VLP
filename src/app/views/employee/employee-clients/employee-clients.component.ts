@@ -162,11 +162,7 @@ export class EmployeeClientsComponent implements OnInit {
       }
   
       public getFilterBaseUrl(): string {
-        if(this.userRole === 'Admin'){
-          return `?page=${this.page}&page_size=${this.tableSize}&search=${this.term}`;
-        }else{
           return `?page=${this.page}&page_size=${this.tableSize}&search=${this.term}&employee-id=${this.user_id}`;
-        }
         }
   
       public sort(direction: string, column: string) {
