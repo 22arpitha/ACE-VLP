@@ -392,7 +392,7 @@
                   </mat-option>
                 </mat-select>
               </mat-form-field>
-              <div class="px-2" *ngIf="emp?.get('manager')?.invalid && emp?.get('manager')?.touched || emp?.get('manager')?.dirty">
+              <div class="px-2" *ngIf="emp?.get('manager')?.invalid && (emp.get('manager').dirty || emp.get('manager').touched)">
                 <span class="text-errors" *ngIf="emp?.get('manager')?.errors?.['required']">Manager is required</span>
               </div>      
             </td>

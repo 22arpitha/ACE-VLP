@@ -237,7 +237,7 @@ export class CreateUpdateJobComponent implements CanComponentDeactivate, OnInit,
     return this.jobFormGroup.controls;
   }
 
-  get employeeFormArray() {
+  get employeeFormArray():FormArray {
     return this.jobFormGroup.get('employees') as FormArray;
   }
 
@@ -740,6 +740,8 @@ onManagerSelectOpened(opened: boolean, index: number): void {
       const newIndex = this.employeeFormArray.length - 1;
       this.filteredEmployeeLists[newIndex] = this.allEmployeeList;
       this.filteredManagerLists[newIndex] = this.allManagerList;
+    } else{
+      this.employeeFormArray.markAllAsTouched();
     }
     this.checkAllEmployeeCheckbox();
   }
@@ -778,7 +780,7 @@ onManagerSelectOpened(opened: boolean, index: number): void {
     this.jobFormGroup.patchValue({ percentage_of_completion: Number(data.percentage_of_completion) })
     // check the status
     const selectedIndex = this.allJobStatusList.findIndex(status => status.status_name.toLowerCase() === this.tempSelectedJobStatus.toLowerCase());
-    const querySentIndex = this.allJobStatusList.findIndex(status => status.status_name.toLowerCase() === 'quiery sent');
+    const querySentIndex = this.allJobStatusList.findIndex(status => status.status_name.toLowerCase() === 'Internal Review 1');
     if (this.job_id && this.estimatedTime === '00:00' && selectedIndex >= querySentIndex) {
       this.apiService.showError('Please upadte the estimated time to change the status.');
       this.tempSelectedJobStatus = '';
@@ -962,10 +964,15 @@ this.filteredManagerLists[index]=[...this.allManagerList];
         this.filteredEmployeeLists[index] = [...this.allEmployeeList];
         this.filteredManagerLists[index] = [...this.allManagerList];
         const isManagerValid = this.allManagerList?.some((manager: any) => manager?.user_id === element?.reporting_manager_id);
+        // let empData = this.fb.group({
+        //   'employee': element?.user_id,
+        //   'manager': isManagerValid ? element?.reporting_manager_id : '',
+        //   'is_primary': this.user_role_name === 'Accountant' ? true : false
+        // });
         let empData = this.fb.group({
-          'employee': element?.user_id,
-          'manager': isManagerValid ? element?.reporting_manager_id : '',
-          'is_primary': this.user_role_name === 'Accountant' ? true : false
+          'employee': [element?.user_id, Validators.required],
+          'manager': [isManagerValid ? element?.reporting_manager_id : '', Validators.required],
+          'is_primary': [this.user_role_name === 'Accountant' ? true : false]
         });
 
         this.employeeFormArray.push(empData);
@@ -1001,7 +1008,11 @@ this.filteredManagerLists[index]=[...this.allManagerList];
   }
 
   saveChanges(index: number) {
-    const empItem = this.employeeFormArray.at(index);
+    const empItem = this.employeeFormArray.at(index) as FormGroup;
+    // console.log(empItem.valid)
+    empItem.markAllAsTouched();
+    empItem.updateValueAndValidity();
+    
     if (index <= this.allEmployeeList?.length && empItem.valid) {
       empItem?.get('employee')?.disable();
       empItem?.get('manager')?.disable();
