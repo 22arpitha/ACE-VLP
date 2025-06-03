@@ -216,7 +216,7 @@ export class AccessToModulesComponent implements OnInit {
   }
 
   modifyAccess(event: any, sub_module_name, access_name) {
-    console.log(sub_module_name,'sub_module_namesub_module_name')
+    // console.log(sub_module_name,'sub_module_namesub_module_name')
     this.data.access.forEach((element_sub_module: any) => {
       if (sub_module_name === element_sub_module.name) {
         if (event.target.checked && (access_name === 'create' || access_name === 'update' || access_name === 'delete')) {
@@ -274,7 +274,7 @@ export class AccessToModulesComponent implements OnInit {
       // 'organization': this.organization_id,
       'access_list': this.filterAccessList(combinedData)
     }
-    console.log('updated code', updated_access);
+    // console.log('updated code', updated_access);
     this.SaveData.emit({ 'text': text, 'data': updated_access })
     if (text === 'Add') {
       this.addSubModuleAccess(updated_access);

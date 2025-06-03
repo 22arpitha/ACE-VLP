@@ -70,9 +70,9 @@ export class GroupComponent implements CanComponentDeactivate, OnInit {
   getModuleAccess(){
     this.accessControlService.getAccessForActiveUrl(this.user_id).subscribe(
       (res:any)=>{
-        console.log(res);
+        // console.log(res);
         let temp = res.find((item: any) => item.name === 'Groups');
-          console.log('temp',temp)
+          // console.log('temp',temp)
          if(temp){
           this.accessPermissions = temp?.operations;
          }

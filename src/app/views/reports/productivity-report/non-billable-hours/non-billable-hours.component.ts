@@ -64,7 +64,7 @@ BreadCrumbsTitle: any = 'Non Billable Hours';
 
       // Called when user changes page number from the dynamic table
     onTableDataChange(event: any) {
-      console.log('Page changed to:', event);
+      // console.log('Page changed to:', event);
       const page = event;
       this.page = page;
 

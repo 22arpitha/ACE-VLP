@@ -27,12 +27,12 @@ export class ForgotChangeComponent implements OnInit {
       this.urlIdPresent = true;
       this.title = 'Set New Password'
       this.userId= Number(this.activeRoute.snapshot.queryParamMap.get('employee-id'));
-      console.log(this.urlIdPresent, this.userId,'p')
+      // console.log(this.urlIdPresent, this.userId,'p')
     } else{
       this.urlIdPresent = false;
       this.title = ''
       this.userId = sessionStorage.getItem('user_id')
-      console.log(this.urlIdPresent,'n')
+      // console.log(this.urlIdPresent,'n')
     }
    }
 
@@ -73,7 +73,7 @@ export class ForgotChangeComponent implements OnInit {
     if (this.changePassword.invalid) {
       // this.api.showError('Invalid!')
       this.changePassword.markAllAsTouched()
-      console.log(this.changePassword.value)
+      // console.log(this.changePassword.value)
     }
     else {
       this.api.postData(`${environment.live_url}/${environment.set_new_password}/`,this.changePassword.value).subscribe(

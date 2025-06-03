@@ -106,7 +106,7 @@ export class TimesheetSummaryReportComponent implements OnInit {
     }
   }
   getEmployeeDetails(employee,selectedDate): void {
-    console.log('employee Data',employee,selectedDate);
+    // console.log('employee Data',employee,selectedDate);
          this.dialog.open(EmployeeDetailsComponent, {
          panelClass: 'custom-details-dialog',
          data: { employee:employee,selectedDay:selectedDate }

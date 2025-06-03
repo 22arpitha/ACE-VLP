@@ -168,7 +168,7 @@ export class UpdateTaskCategoryComponent implements OnInit {
     return this.taskCategoryForm.controls['projectcategory_task'] as FormArray;
   }
   addRow() {
-    console.log('this.taskCategoryForm.value.projectcategory_task', this.taskCategoryForm.value.projectcategory_task)
+    // console.log('this.taskCategoryForm.value.projectcategory_task', this.taskCategoryForm.value.projectcategory_task)
     const taskList = this.taskCategoryForm.value.projectcategory_task;
     let allTasksValid = true;  // Flag to check if all tasks are valid
 
@@ -229,7 +229,7 @@ export class UpdateTaskCategoryComponent implements OnInit {
 
   deleteTaskRow(index: any) {
     this.dynamicArray.removeAt(index);
-    console.log(this.dynamicArray)
+    // console.log(this.dynamicArray)
     this.taskCategoryForm.patchValue({ task_name: this.dynamicArray });
     this.api.showSuccess('Task deleted')
   }
@@ -238,7 +238,7 @@ export class UpdateTaskCategoryComponent implements OnInit {
     // this.taskCategoryForm.value['projectcategory_task'].forEach((element, i) => {
     //   element.id = i + 1
     // });
-    console.log(this.taskCategoryForm.value)
+    // console.log(this.taskCategoryForm.value)
     const taskList = this.dynamicArray.at(index1) as FormGroup;
     const taskName = taskList.get('task_name')?.value.trim();
 
@@ -253,7 +253,7 @@ export class UpdateTaskCategoryComponent implements OnInit {
       });
       this.api.showSuccess('Task saved.');
     }
-    console.log(this.taskCategoryForm.value, 'clicked on save button')
+    // console.log(this.taskCategoryForm.value, 'clicked on save button')
   }
 
   editTask(index1: any) {
@@ -271,7 +271,7 @@ export class UpdateTaskCategoryComponent implements OnInit {
     //     element['is_cancelled'] = true;
     //   }
     // });
-    console.log(this.taskCategoryForm.value, 'clicked on edit button')
+    // console.log(this.taskCategoryForm.value, 'clicked on edit button')
   }
   cancelEdit(index1: any) {
     const taskList = this.dynamicArray.at(index1) as FormGroup;

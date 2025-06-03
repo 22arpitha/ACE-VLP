@@ -329,7 +329,7 @@ export class RegisterComponent {
   }
 
   firstFromValidtion() {
-    console.log(this.firstFormGroup.value)
+    // console.log(this.firstFormGroup.value)
     if (this.firstFormGroup.invalid) {
       this.firstFormGroup.markAllAsTouched()
       this.api.showError(' Please enter the mandatory fields!')
@@ -346,7 +346,7 @@ export class RegisterComponent {
     }
     
      else {
-      console.log(this.firstFormGroup.value);
+      // console.log(this.firstFormGroup.value);
       this.stepper.next();
     }
   }
@@ -439,7 +439,7 @@ export class RegisterComponent {
         country: this.secondFormGroup.value['country'],
         postal_code: this.secondFormGroup.value['postal_code'],
       };
-      console.log(data)
+      // console.log(data)
       this.api.postData(`${environment.live_url}/${environment.organization}/`, data).subscribe(
         res => {
           if (res) {

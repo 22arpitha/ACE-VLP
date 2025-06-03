@@ -120,7 +120,7 @@ export class ProfileComponent implements OnInit {
   }
   
   getState(event) {
-    console.log(event,'country id')
+    // console.log(event,'country id')
     if(event){
       this.api.getData(`${environment.live_url}/${environment.state}/?country_id=${event}`).subscribe((res: any) => {
         if(res){
@@ -210,7 +210,7 @@ export class ProfileComponent implements OnInit {
   }
 
   updateProfile() {
-    console.log(this.profileForm.controls, this.fileDataUrl)
+    // console.log(this.profileForm.controls, this.fileDataUrl)
     if (this.profileForm.invalid) {
       this.api.showError("Invalid!");
       this.profileForm.markAllAsTouched()
@@ -218,7 +218,7 @@ export class ProfileComponent implements OnInit {
     else {
       let profileData: any = {}
       profileData = this.profileForm.value
-      console.log(this.imageUploaded,'this.imageUploaded')
+      // console.log(this.imageUploaded,'this.imageUploaded')
       //  this.profileForm.patchValue({profile_image:this.fileDataUrl});
       profileData.date_joined  = this.datePipe.transform(profileData.date_joined, 'yyyy-MM-dd');
       let data = {
@@ -239,7 +239,7 @@ export class ProfileComponent implements OnInit {
       if (this.imageUploaded) {
         data['profile_image'] = this.fileDataUrl;
       }
-      console.log(data, "DATA---------------------")
+      // console.log(data, "DATA---------------------")
       this.api.updateUserProfileDetails(this.user_id, data).subscribe(res => {
         if (res) {
           this.api.showSuccess("Profile details updated successfully !");
@@ -259,11 +259,11 @@ export class ProfileComponent implements OnInit {
   }
 
   triggerFileInput(text:any) {
-    console.log(text)
+    // console.log(text)
     if(text=='Upload'){
       this.profileimg = 'file'
       this.fileInput?.nativeElement?.click();
-      console.log('this.profileimg', this.profileimg)
+      // console.log('this.profileimg', this.profileimg)
     } 
     else{
       this.fileDataUrl = null;
@@ -288,7 +288,7 @@ export class ProfileComponent implements OnInit {
         const reader = new FileReader();
         reader.onload = (e: any) => {
           this.fileDataUrl = e.target.result;
-          console.log(this.profileForm.value)
+          // console.log(this.profileForm.value)
         };
         reader.readAsDataURL(selectedFile);
       }

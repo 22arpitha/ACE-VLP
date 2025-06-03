@@ -121,7 +121,7 @@ export class CreatePeopleComponent implements OnInit {
   getReportingManager() {
     this.api.getEmployeeList(`?${'organization_id'}=${this.orgId}&${'designation'}=${'manager'}`).subscribe((data: any) => {
       if (data) {
-        console.log('manager list', data)
+        // console.log('manager list', data)
         if (data.length == 0) {
           this.adminData();
         }
@@ -203,10 +203,10 @@ export class CreatePeopleComponent implements OnInit {
 
   // get by id of employee
   getEmployeeById(id: any) {
-    console.log('id present', id);
+    // console.log('id present', id);
     this.api.getEmployeeDetailsById(`${id}/`).subscribe(
       (res: any) => {
-        console.log('employee data', res)
+        // console.log('employee data', res)
         if (res.length != 0) {
           this.secondButtonName= 'Update & Proceed';
           this.OrganizationAdded = true;
@@ -233,7 +233,7 @@ export class CreatePeopleComponent implements OnInit {
   getUserDetailsOfFirstStep(id: any) {
     this.api.getProfileDetails(`${id}/`).subscribe(
       (res: any) => {
-        console.log('only first step data', res);
+        // console.log('only first step data', res);
         if (res.profile_image) {
           this.fileDataUrl = environment.media_url + res.profile_image
         } else{
@@ -334,7 +334,7 @@ export class CreatePeopleComponent implements OnInit {
   imageUploaded:boolean = false;
   uploadProflieImageFile(event: any) {
     const selectedFile = event.target.files[0];
-    console.log(event.target.files[0])
+    // console.log(event.target.files[0])
     if (selectedFile) {
       const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
       if (!allowedTypes.includes(selectedFile.type)) {
@@ -348,7 +348,7 @@ export class CreatePeopleComponent implements OnInit {
         const reader = new FileReader();
         reader.onload = (e: any) => {
           this.temp = this.firstFormGroup.value.profile_image;
-          console.log(this.temp)
+          // console.log(this.temp)
           this.imageUploaded = true;
           this.fileDataUrl = e.target.result;
           this.tempStoreProfileImage = e.target.result;
@@ -417,13 +417,13 @@ export class CreatePeopleComponent implements OnInit {
       this.handleStep1Validation(text);
     }
     else if (event == 'step2') {
-      console.log('step 2')
+      // console.log('step 2')
       this.patchingForthFormValue();
       this.handleStep2Validation(text);
     }
     else if (event == 'step3') {
       this.fourthFormGroup.markAllAsTouched()
-      console.log(this.fourthFormGroup.value);
+      // console.log(this.fourthFormGroup.value);
     }
   }
 
@@ -444,7 +444,7 @@ export class CreatePeopleComponent implements OnInit {
       if (this.imageUploaded) {
         data['profile_image'] = this.fileDataUrl;
       } 
-      console.log(data,'before api')
+      // console.log(data,'before api')
       if(text==='add'){
         this.addFirstDetails(data);
       } else{
@@ -456,7 +456,7 @@ export class CreatePeopleComponent implements OnInit {
   addFirstDetails(data:any){
     this.api.postEmployee(data).subscribe(
       (res: any) => {
-        console.log('employee data added', res);
+        // console.log('employee data added', res);
         localStorage.setItem('employee_id', res.user.id)
         this.employeeId = localStorage.getItem('employee_id')
         this.firstButtonName = 'Update & Proceed';
@@ -470,10 +470,10 @@ export class CreatePeopleComponent implements OnInit {
     )
   }
   updateFirstDetails(data:any){
-    console.log('update 1st step',data)
+    // console.log('update 1st step',data)
     this.api.updateUserProfileDetails(this.employeeId,data).subscribe(
       (res: any) => {
-        console.log('employee data updated', res);
+        // console.log('employee data updated', res);
         this.firstButtonName = 'Update & Proceed';
         this.api.showSuccess(res.message);
         this.stepper.next();
@@ -502,7 +502,7 @@ export class CreatePeopleComponent implements OnInit {
       this.api.putOrganizationDataOfEmployee(data, this.employeeId).subscribe(
         (res: any) => {
           if(res){
-          console.log('organization details updated', res);
+          // console.log('organization details updated', res);
           this.api.showSuccess(res.message);
           this.secondButtonName= 'Update & Proceed';
           this.stepper.next();
@@ -516,11 +516,11 @@ export class CreatePeopleComponent implements OnInit {
   }
 
   addSecondDetails(data:any){
-    console.log(data)
+    // console.log(data)
     this.api.postOrganizationDataOfEmployee(data, this.employeeId).subscribe(
       (res: any) => {
         if(res){
-        console.log('organization details added', res);
+        // console.log('organization details added', res);
         this.api.showSuccess(res.message);
         this.secondButtonName= 'Update & Proceed';
         this.stepper.next();
@@ -532,11 +532,11 @@ export class CreatePeopleComponent implements OnInit {
     )
   }
   updateSecondDetails(data:any){
-    console.log(data,'second')
+    // console.log(data,'second')
     this.api.putOrganizationDataOfEmployee(data, this.employeeId).subscribe(
       (res: any) => {
         if(res){
-        console.log('organization details updated', res);
+        // console.log('organization details updated', res);
         this.api.showSuccess(res.message);
         this.secondButtonName= 'Update & Proceed';
         this.stepper.next();
@@ -551,7 +551,7 @@ export class CreatePeopleComponent implements OnInit {
   checkUpdateValidation(event) {
     if (event == 'step1') {
       this.firstFormGroup.markAllAsTouched();
-      console.log('update', this.firstFormGroup.value)
+      // console.log('update', this.firstFormGroup.value)
       this.stepper.next();
     }
     else if (event == 'step2') {
@@ -559,7 +559,7 @@ export class CreatePeopleComponent implements OnInit {
       this.stepper.next();
     } else if (event == 'step3') {
       this.fourthFormGroup.markAllAsTouched()
-      console.log(this.fourthFormGroup.value);
+      // console.log(this.fourthFormGroup.value);
     }
   }
   showPassword() {

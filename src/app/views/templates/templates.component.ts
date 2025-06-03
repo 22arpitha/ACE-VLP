@@ -73,7 +73,7 @@ this.formUtilityService.resetHasUnsavedValue();
     this.accessControlService.getAccessForActiveUrl(this.user_id).subscribe((access) => {
       if (access) {
         this.accessPermissions = access[0].operations;
-        console.log('Access Permissions:', this.accessPermissions);
+        // console.log('Access Permissions:', this.accessPermissions);
       } else {
         console.log('No matching access found.');
       }
@@ -107,7 +107,7 @@ this.formUtilityService.resetHasUnsavedValue();
     })
   }
   public saveTemplateDetails() {
-    console.log(this.templateForm.controls)
+    // console.log(this.templateForm.controls)
     if (this.templateForm.invalid) {
       this.templateForm.markAllAsTouched();
       this.formUtilityService.setUnsavedChanges(true);
@@ -335,9 +335,9 @@ public createFromData(){
     const file = control.value;
 
     if (file) {
-      console.log('file',file);
+      // console.log('file',file);
       const fileExtension = (/[.]/.exec(file)) ? file.split('.').pop()?.toLowerCase() : '';
-      console.log('fileExtension',fileExtension);
+      // console.log('fileExtension',fileExtension);
       const fileSize = file.size;
 
         if (allowedFormats.includes(fileExtension)) {

@@ -68,7 +68,7 @@ this.formUtilityService.resetHasUnsavedValue();
     this.accessControlService.getAccessForActiveUrl(this.user_id).subscribe((access) => {
       if (access) {
         this.accessPermissions = access[0].operations;
-        console.log('Access Permissions:', this.accessPermissions);
+        // console.log('Access Permissions:', this.accessPermissions);
       } else {
         console.log('No matching access found.');
       }
@@ -154,7 +154,7 @@ this.formUtilityService.resetHasUnsavedValue();
 
   saveCountryDetails() {
     if (this.countryForm.invalid) {
-      console.log(this.countryForm.value)
+      // console.log(this.countryForm.value)
       this.countryForm.markAllAsTouched();
       this.formUtilityService.setUnsavedChanges(true);
     } else {

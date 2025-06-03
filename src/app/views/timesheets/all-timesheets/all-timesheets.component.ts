@@ -320,7 +320,7 @@ this.allJobsNames=[];
         if (res.length > 0) {
           this.idsOfTimesheet = [];
           res?.forEach((element: any) => {
-              console.log('element',element.id);
+              // console.log('element',element.id);
             this.idsOfTimesheet.push(element.id)
           })
         }

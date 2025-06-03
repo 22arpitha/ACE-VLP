@@ -277,7 +277,7 @@ getStatusList(){
       }));
     }
   })
-  console.log('statusName',this.statusName);
+  // console.log('statusName',this.statusName);
   return this.statusName;
 }
 getJobTypeList(){
@@ -289,7 +289,7 @@ getJobTypeList(){
       }));
     }
   })
-  console.log('statusName',this.statusName);
+  // console.log('statusName',this.statusName);
   return this.statusName;
 }
  // Fetch table data from API with given params

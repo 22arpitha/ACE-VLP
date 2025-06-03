@@ -12,7 +12,7 @@ export class CanDeactivateGuard implements CanDeactivate<CanComponentDeactivate>
   constructor(private logoutConfirmationService: LogoutConfirmationService) {}
   canDeactivate(component: CanComponentDeactivate): Observable<boolean> | Promise<boolean> | boolean {
   // Check if logout is confirmed
-  console.log(this.logoutConfirmationService.getLogoutConfirmed());
+  // console.log(this.logoutConfirmationService.getLogoutConfirmed());
   if (this.logoutConfirmationService.getLogoutConfirmed()) {
     // If logout is confirmed, bypass the canDeactivate check
     return true;

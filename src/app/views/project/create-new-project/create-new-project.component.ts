@@ -78,7 +78,7 @@ export class CreateNewProjectComponent implements OnInit {
 
   }
   onChange(event: any) {
-    console.log('fff', event)
+    // console.log('fff', event)
     this.projectForm.patchValue({
       end_date: ''
     })
@@ -162,7 +162,7 @@ export class CreateNewProjectComponent implements OnInit {
   getReportingManager() {
     this.api.getEmployeeList(`?${'organization_id'}=${this.orgId}&${'designation'}=${'manager'}`).subscribe((data: any) => {
       if (data) {
-        console.log('manager list', data)
+        // console.log('manager list', data)
         if (data.length == 0) {
           this.adminData();
         }
@@ -183,7 +183,7 @@ export class CreateNewProjectComponent implements OnInit {
   adminData() {
     this.api.getProfileDetails(`?role_id=${2}&organization_id=${this.orgId}`).subscribe(
       (res: any) => {
-        console.log('admin',res);
+        // console.log('admin',res);
         
         let data = [];
         res.forEach((element:any) => {
@@ -287,12 +287,12 @@ export class CreateNewProjectComponent implements OnInit {
       }
     });
 
-    console.log('assigneePeoples', this.assigneePeoples);
+    // console.log('assigneePeoples', this.assigneePeoples);
   }
 
   teamDeselectedFromCard(id: any) {
     this.selectedTeamId = this.selectedTeamId.filter(item => item !== id);
-    console.log('this.selectedTeamId', this.selectedTeamId);
+    // console.log('this.selectedTeamId', this.selectedTeamId);
     this.teamFunction(this.selectedTeamId);
   }
 
@@ -334,7 +334,7 @@ export class CreateNewProjectComponent implements OnInit {
   // Templates
   getCategory() {
     this.api.getProjCategory(`${'organization_id'}=${this.orgId}`).subscribe(data => {
-      console.log(data, "category template")
+      // console.log(data, "category template")
       this.taskCategories = data;
     })
   }
@@ -362,7 +362,7 @@ export class CreateNewProjectComponent implements OnInit {
 
   // adding new task
   addTask(): void {
-    console.log('this.projectForm.value.task_list', this.projectForm.value.project_task)
+    // console.log('this.projectForm.value.task_list', this.projectForm.value.project_task)
     const taskList = this.projectForm.value.project_task;
     let allTasksValid = true;
 
@@ -429,7 +429,7 @@ export class CreateNewProjectComponent implements OnInit {
       });
       this.api.showSuccess('Task saved.');
     }
-    console.log(this.projectForm.value, 'clicked on save button')
+    // console.log(this.projectForm.value, 'clicked on save button')
   }
 
   editTask(index1: any) {
@@ -445,7 +445,7 @@ export class CreateNewProjectComponent implements OnInit {
     taskList.addControl('original_task_name', new FormControl(currentTaskName));
     taskList.addControl('original_task_status', new FormControl(currentTaskStatus));
     taskList.addControl('original_task_assignee', new FormControl(currentTaskAssignee));
-    console.log(this.projectForm.value, 'clicked on edit button')
+    // console.log(this.projectForm.value, 'clicked on edit button')
   }
   cancelEdit(index1: any) {
     const taskList = this.subTasks.at(index1) as FormGroup;
@@ -472,7 +472,7 @@ export class CreateNewProjectComponent implements OnInit {
 
   onPeopleGroupSelect(event: any) {
     this.peopleId.push(event.id)
-    console.log(this.peopleId)
+    // console.log(this.peopleId)
   }
   onSingleSelect(event) {
     this.task_name.push(event.task_name)
@@ -494,7 +494,7 @@ export class CreateNewProjectComponent implements OnInit {
 
   // selecting project templates
   getSubTask(event) {
-    console.log(event.value);
+    // console.log(event.value);
     // this.subTasks.clear();
     this.api.getProjCategoryById(event.value).subscribe(
       (resp) => {
@@ -505,7 +505,7 @@ export class CreateNewProjectComponent implements OnInit {
             this.subTasks.removeAt(i);
           }
         }
-        console.log('resp', resp)
+        // console.log('resp', resp)
         const taskList = resp['projectcategory_task'];
         taskList.forEach(task => {
           this.subTasks.push(this.builder.group({
@@ -519,7 +519,7 @@ export class CreateNewProjectComponent implements OnInit {
             is_template: true
           }));
         });
-        console.log(this.projectForm.value)
+        // console.log(this.projectForm.value)
       },
       (error) => {
         console.log(error);
@@ -547,10 +547,10 @@ export class CreateNewProjectComponent implements OnInit {
   addProject() {
     const startDate = this.projectForm.value.start_date;
     const EndDate = this.projectForm.value.end_date;
-    console.log(this.projectForm.value);
+    // console.log(this.projectForm.value);
     if (this.projectForm.invalid) {
       this.api.showError('Please fill mandatory fields');
-      console.log(this.projectForm.controls);
+      // console.log(this.projectForm.controls);
       this.projectForm.markAllAsTouched()
     }
     else {
@@ -594,7 +594,7 @@ export class CreateNewProjectComponent implements OnInit {
           project_category: this.projectForm.value.project_category,
 
         }
-        console.log(data, 'dataaaa')
+        // console.log(data, 'dataaaa')
         this.api.addProjectDetails(data).subscribe(res => {
           if (res) {
             this.api.showSuccess(res['message']);
@@ -616,12 +616,12 @@ export class CreateNewProjectComponent implements OnInit {
 
   filteredPeopleGroup = [];
   filterOptions(event: any) {
-    console.log('evenettt', event.target.value)
+    // console.log('evenettt', event.target.value)
     let eventw = event.target.value.toLowerCase();
     this.filteredPeopleGroup = this.allPeopleGroup.filter(item =>
       item.first_name.toLowerCase().includes(eventw)
     );
-    console.log(this.filteredPeopleGroup,'this.filteredPeopleGroup')
+    // console.log(this.filteredPeopleGroup,'this.filteredPeopleGroup')
   }
 
 }

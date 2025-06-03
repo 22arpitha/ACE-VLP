@@ -78,7 +78,7 @@ this.formUtilityService.resetHasUnsavedValue();
     this.accessControlService.getAccessForActiveUrl(this.user_id).subscribe((access) => {
       if (access) {
         this.accessPermissions = access[0].operations;
-        console.log('Access Permissions:', this.accessPermissions);
+        // console.log('Access Permissions:', this.accessPermissions);
       } else {
         console.log('No matching access found.');
       }
@@ -316,7 +316,7 @@ this.formUtilityService.resetHasUnsavedValue();
       }
       this.file = file;
       this.selectedFile = file; // Store the selected file
-      console.log('selectedFile', this.selectedFile)
+      // console.log('selectedFile', this.selectedFile)
       this.companyPolicyForm.controls['policy_file']?.setValue(file);
     }
     // const input = event.target as HTMLInputElement;
@@ -352,9 +352,9 @@ this.formUtilityService.resetHasUnsavedValue();
     const file = control.value;
 
     if (file) {
-      console.log('file', file);
+      // console.log('file', file);
       const fileExtension = (/[.]/.exec(file)) ? file.split('.').pop()?.toLowerCase() : '';
-      console.log('fileExtension', fileExtension);
+      // console.log('fileExtension', fileExtension);
       const fileSize = file.size;
 
       if (allowedFormats.includes(fileExtension)) {
@@ -395,9 +395,9 @@ this.formUtilityService.resetHasUnsavedValue();
   }
 
   previewFile(data:any){
-    console.log(data)
+    // console.log(data)
     const fileExtension = data?.policy_file?.split('.')?.pop()?.toLowerCase() || 'unknown';
-    console.log(fileExtension)
+    // console.log(fileExtension)
     this.openFileViewer(data.policy_file,fileExtension)
   }
 

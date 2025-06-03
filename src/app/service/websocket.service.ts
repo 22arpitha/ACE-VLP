@@ -36,7 +36,7 @@ export class WebsocketService {
     this.organization_id = sessionStorage.getItem('organization_id')
     this.socket$.subscribe(
       (message) => {
-        console.log('WebSocket message:', message);
+        // console.log('WebSocket message:', message);
         // console.log(message?.organization,this.organization_id)
         if (message?.organization==this.organization_id && message?.message?.is_active === 'False') {
           this.api.showSuccess('You have been logged out!')

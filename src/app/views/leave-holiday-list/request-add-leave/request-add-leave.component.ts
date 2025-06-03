@@ -262,12 +262,12 @@ export class RequestAddLeaveComponent implements OnInit {
   
   
       // Exclude weekends from the leaves
-      console.log(daysDiff)
+      // console.log(daysDiff)
       for(let i=0; i<daysDiff;i++){
         const currentDay = fromDate.add(i, 'days').format('dddd')
         const holidayDate = fromDate.add(i, 'days').format('DD/MM/YYYY')
         const isHoliday = holidays.includes(holidayDate)
-        console.log("CURRENT DAY", currentDay)
+        // console.log("CURRENT DAY", currentDay)
         if(currentDay === 'Saturday' || currentDay === 'Sunday' || isHoliday){
           daysDiffWithHolidays--;
         }
@@ -283,7 +283,7 @@ export class RequestAddLeaveComponent implements OnInit {
       // }else{
       //   days++
       // }
-      console.log(holidays, daysDiff, daysDiffWithHolidays)
+      // console.log(holidays, daysDiff, daysDiffWithHolidays)
       return daysDiffWithHolidays;
     }
   endDateValidator():any {

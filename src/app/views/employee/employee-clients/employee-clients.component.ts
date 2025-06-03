@@ -205,7 +205,7 @@ export class EmployeeClientsComponent implements OnInit {
         fetch(apiUrl)
       .then(res => res.blob())
       .then(blob => {
-        console.log('blob',blob);
+        // console.log('blob',blob);
         const a = document.createElement('a');
         a.href = URL.createObjectURL(blob);
         a.download = `client_details.${type}`;

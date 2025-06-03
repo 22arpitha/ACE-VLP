@@ -23,7 +23,7 @@ export class SubModuleService {
         const accessList = response?.access_list || [];
         let matchedAccess = null;
         for (const module of accessList) {
-          console.log(module.url != activeUrl)
+          // console.log(module.url != activeUrl)
           if (module?.url && module.url === activeUrl) {
             // console.log( 'first', module.access)
             return module.access;

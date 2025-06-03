@@ -66,7 +66,7 @@ export class RolesAccessComponent implements OnInit {
   allrolesList() {
     this.api.getData(`${environment.live_url}/${environment.user_access}/${this.user_id}/`).subscribe(
       (data: any) => {
-        console.log('all list', data,)
+        // console.log('all list', data,)
         this.mainMenu = data.access_list.filter((module_name) => module_name.name != 'Invoicing');
         this.getAccessbilitiesByDesignationId();
       },
@@ -116,7 +116,7 @@ export class RolesAccessComponent implements OnInit {
             // console.log('ccccccccc',res[0].access_list)
             this.passingChildrenToTabel(res[0].access_list[0])
           } else{
-            console.log('nooooooooo')
+            // console.log('nooooooooo')
             this.passingChildrenToTabel(this.mainMenu[0])
           }
         }

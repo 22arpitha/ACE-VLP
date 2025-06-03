@@ -112,7 +112,7 @@ handleAction(event: { actionType: string; detail: any,key:string }) {
       this.onApplyFilter(event.detail,event.key);
       break;
       case 'dateRange':
-        console.log(event.detail, event.key);
+        // console.log(event.detail, event.key);
       this.onApplyDateFilter(event.detail);
       break;
     default:
@@ -129,7 +129,7 @@ handleAction(event: { actionType: string; detail: any,key:string }) {
   }
 }
 onApplyFilter(filteredData: any[], filteredKey: string): void {
-  console.log(filteredData, filteredKey);
+  // console.log(filteredData, filteredKey);
 
   if (filteredKey === 'client-ids') {
     this.selectedClientIds = filteredData;

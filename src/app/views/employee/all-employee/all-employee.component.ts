@@ -70,7 +70,7 @@ designation__designation_name:false,
       if (access) {
         this.access_name=access[0]
         this.accessPermissions = access[0].operations;
-        console.log('Access Permissions:', access);
+        // console.log('Access Permissions:', access);
       } else {
         console.log('No matching access found.');
       }
@@ -78,7 +78,7 @@ designation__designation_name:false,
   }
 
   public openCreateEmployeePage(){
-    console.log('ddddddddd')
+    // console.log('ddddddddd')
     sessionStorage.setItem('access-name', this.access_name?.name)
     this.router.navigate(['/settings/create-employee']);
 

@@ -63,7 +63,7 @@ initialFormValue:any;
   this.jobKPIFormGroup?.valueChanges?.subscribe(() => {
     const currentFormValue = this.jobKPIFormGroup?.getRawValue();
     const isInvalid = this.jobKPIFormGroup?.touched && this.jobKPIFormGroup?.invalid;
-    console.log(this.initialFormValue,currentFormValue);
+    // console.log(this.initialFormValue,currentFormValue);
     const isFormChanged:boolean =  JSON.stringify(currentFormValue) !== JSON.stringify(this.initialFormValue);
     let unSavedChanges = isFormChanged || isInvalid;
    this.formErrorScrollService.setUnsavedChanges(unSavedChanges);
@@ -106,11 +106,11 @@ initialFormValue:any;
   public getModuleAccess(){
     this.apiService.getData(`${environment.live_url}/${environment.user_access}/${sessionStorage.getItem('user_id')}/`).subscribe(
       (res:any)=>{
-        console.log(res)
+        // console.log(res)
        res.access_list.forEach((access:any)=>{
           access.access.forEach((access_name:any)=>{
               if(access_name.name===sessionStorage.getItem('access-name')){
-                console.log(access_name)
+                // console.log(access_name)
                 this.accessPermissions = access_name.operations;
                 // console.log('this.accessPermissions', this.accessPermissions);
               }
@@ -139,7 +139,7 @@ initialFormValue:any;
      jobDetailsResponse['employees'].forEach((emp:any) => {
       if(kpiJobDetailsResponse['data'] && kpiJobDetailsResponse['data'].length>=1){
         kpiJobDetailsResponse['data']?.forEach((kpiEmp:any) => {
-          console.log('kpiEmp',kpiEmp);
+          // console.log('kpiEmp',kpiEmp);
           if(emp?.employee == kpiEmp.employee_id){
             emp['kpi']=kpiEmp;
           }
@@ -149,7 +149,7 @@ initialFormValue:any;
     return jobDetailsResponse;
   })
 ).subscribe(combinedResult => {
-  console.log('combinedResult',combinedResult);
+  // console.log('combinedResult',combinedResult);
   const [hours, minutes] = combinedResult['budget_time']?.split(":");
   const formattedbudget_time = `${hours}:${minutes}`;
   if (combinedResult['employees'] && Array.isArray(combinedResult['employees']) && combinedResult['employees']?.length >= 1) {
@@ -319,7 +319,7 @@ public async saveJobKPIDetails(){
   }).catch((error) => {
     reqPayload['data']=[];
   });
-    console.log('reqPayload',reqPayload,typeof reqPayload);
+    // console.log('reqPayload',reqPayload,typeof reqPayload);
               this.apiService.postData(`${environment.live_url}/${environment.jobs_kpi}/`, reqPayload).subscribe((respData: any) => {
               if (respData) {
                 this.apiService.showSuccess(respData['message']);
@@ -473,9 +473,9 @@ public onPageChanged(event: any) {
                   }
 }
 public triggerFileInput(index:any) {
-  console.log('fileInputs',this.fileInputs);
+  // console.log('fileInputs',this.fileInputs);
   const fileInput = this.fileInputs?.toArray()[index];
-  console.log('fileInput',fileInput);
+  // console.log('fileInput',fileInput);
 
   if (fileInput) {
     fileInput?.nativeElement?.click();
@@ -483,7 +483,7 @@ public triggerFileInput(index:any) {
  }
   public triggerMrpFileInput(index:any) {
    const fileInput = this.mrpfileInputs?.toArray()[index];
-   console.log('fileInput',fileInput);
+  //  console.log('fileInput',fileInput);
 
    if (fileInput) {
    fileInput?.nativeElement?.click();
@@ -491,7 +491,7 @@ public triggerFileInput(index:any) {
  }
  public triggerCrpFileInput(index:any) {
   const fileInput = this.crpfileInputs?.toArray()[index];
-  console.log('fileInput',fileInput);
+  // console.log('fileInput',fileInput);
   if (fileInput) {
    fileInput?.nativeElement?.click();
   }

@@ -142,7 +142,7 @@ export class UpdateProjectComponent implements OnInit {
   }
   edit() {
     this.api.getCurrentProjectDetails(this.id).subscribe((data: any) => {
-      console.log('Get by id Project Details', data)
+      // console.log('Get by id Project Details', data)
       this.startDate = this.datepipe.transform(data.start_date * 1000, 'yyyy-MM-dd')
       this.endDate = this.datepipe.transform(data.end_date * 1000, 'yyyy-MM-dd')
       let array1: any = [];
@@ -258,7 +258,7 @@ export class UpdateProjectComponent implements OnInit {
   }
 
   matTeamSelect() {
-    console.log(this.selectedTeamId, 'this.selectedTeamId');
+    // console.log(this.selectedTeamId, 'this.selectedTeamId');
     this.teamFunction(this.selectedTeamId);
   }
   teamFunction(id: any) {
@@ -457,7 +457,7 @@ export class UpdateProjectComponent implements OnInit {
   deleteTaskFromBackend(id: any) {
     this.api.deleteTaskInProjectData(id).subscribe(
       (res: any) => {
-        console.log(res);
+        // console.log(res);
         this.api.showSuccess('Task deleted successfully.')
         this.subTasks.clear();
         this.edit();
@@ -480,7 +480,7 @@ export class UpdateProjectComponent implements OnInit {
       //   edit_icon: true,
       //   is_cancelled: false
       // });
-      console.log(taskList.value,'taskList')
+      // console.log(taskList.value,'taskList')
       let data = {
         "project_id":this.id,
         "task_name": taskList.value.task_name,
@@ -551,7 +551,7 @@ export class UpdateProjectComponent implements OnInit {
     taskList.addControl('original_task_name', new FormControl(currentTaskName));
     taskList.addControl('original_task_status', new FormControl(currentTaskStatus));
     taskList.addControl('original_task_assignee', new FormControl(currentTaskAssignee));
-    console.log(this.updateForm.value, 'clicked on edit button')
+    // console.log(this.updateForm.value, 'clicked on edit button')
   }
   cancelEdit(index1: any) {
     const taskList = this.subTasks.at(index1) as FormGroup;
@@ -615,7 +615,7 @@ export class UpdateProjectComponent implements OnInit {
             this.subTasks.removeAt(i);
           }
         }
-        console.log('resp', resp)
+        // console.log('resp', resp)
         const taskList = resp['projectcategory_task'];
         taskList.forEach(task => {
           this.subTasks.push(this.builder.group({
@@ -641,10 +641,10 @@ export class UpdateProjectComponent implements OnInit {
   update() {
     const startDate = this.updateForm.value.start_date;
     const EndDate = this.updateForm.value.end_date;
-    console.log(this.updateForm.value);
+    // console.log(this.updateForm.value);
     if (this.updateForm.invalid) {
       this.api.showError('Please fill mandatory fields');
-      console.log(this.updateForm.controls);
+      // console.log(this.updateForm.controls);
       this.updateForm.markAllAsTouched()
     }
     else {
@@ -688,7 +688,7 @@ export class UpdateProjectComponent implements OnInit {
           project_category: this.updateForm.value.project_category,
 
         }
-        console.log(data, 'dataaaa')
+        // console.log(data, 'dataaaa')
         this.api.updateProject(this.id, data).subscribe(res => {
           if (res) {
             this.api.showSuccess(res['message']);

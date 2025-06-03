@@ -70,14 +70,14 @@ export class ChangePasswordComponent implements OnInit {
     if (this.changePassword.invalid) {
       this.api.showError('Invalid!')
       this.changePassword.markAllAsTouched()
-      console.log(this.changePassword.value)
+      // console.log(this.changePassword.value)
     }
     else {
       if (this.changePassword.value.old_password === this.changePassword.value.new_password) {
         this.api.showError('Old password and new password both should not be same')
       }
       else {
-        console.log(this.changePassword.value)
+        // console.log(this.changePassword.value)
         this.api.postData(`${environment.live_url}/${environment.set_new_password}/`,this.changePassword.value).subscribe(
           (response: any) => {
             if (response) {

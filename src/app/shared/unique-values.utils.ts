@@ -3,7 +3,7 @@ export const getUniqueValues = (data: any[], key: string): string[] => {
 };
 export function getUniqueValues2(data:{ results: any[] }, nameKey: string, keyId: string): { id: any, name: string }[] {
   const seen = new Map();
-  console.log(data, 'data');
+  // console.log(data, 'data');
   data?.results?.forEach(item => {
     const name = item[nameKey];
     const id = item[keyId];

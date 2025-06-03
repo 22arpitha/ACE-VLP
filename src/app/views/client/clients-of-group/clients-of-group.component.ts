@@ -55,7 +55,7 @@ export class ClientsOfGroupComponent implements OnInit {
   getAllClientOfGroup(params: any) {
       this.api.getData(`${environment.live_url}/${environment.end_clients}/${params}`).subscribe(
         (res: any) => {
-          console.log(res.results)
+          // console.log(res.results)
           this.allClients = res.results;
           const noOfPages: number = res?.['total_pages']
           this.count = noOfPages * this.tableSize;

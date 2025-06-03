@@ -67,7 +67,7 @@ export class WorkCultureAndWorkEthicsComponent implements OnInit,OnChanges {
                           sl: i + 1,
                           ...item,
                         }));
-                        console.log(formattedData);
+                        // console.log(formattedData);
                         this.tableConfig = {
                           columns: tableColumns.map(col => ({
                             ...col,
@@ -122,7 +122,7 @@ export class WorkCultureAndWorkEthicsComponent implements OnInit,OnChanges {
 
       public submitWorkCultureDetails(data:any){
         data['year']=Number(this.dropdwonFilterData.period['year']),
-        console.log('data',data);
+        // console.log('data',data);
         this.api.postData(`${environment.live_url}/${environment.upload_assessment}/`, data).subscribe((respData: any) => {
           if (respData) {
             this.api.showSuccess(respData['message']);

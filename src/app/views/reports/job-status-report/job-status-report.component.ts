@@ -318,7 +318,7 @@ getClienList(){
    const searchTerm = params?.searchTerm ?? this.term;
    const query = buildPaginationQuery({ page, pageSize, searchTerm });
    this.jobStatusList(this.tabStatus);
-    console.log(this.groupName,'groupName');
+    // console.log(this.groupName,'groupName');
        finalQuery = query + `&job-status=[${this.statusList}]`;
        finalQuery += (this.userRole ==='Admin' || (this.userRole !='Admin' && this.client_id)) ? '':`&employee-id=${this.user_id}`;
        finalQuery += this.client_id ? `&client=${this.client_id}` : '';

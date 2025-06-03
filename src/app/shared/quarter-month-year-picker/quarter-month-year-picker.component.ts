@@ -94,7 +94,7 @@ export class QuarterMonthYearPickerComponent implements OnInit {
 
   emitValue(period: string) {
     if (!this.year) return;
-    console.log('period',period,'year',this.year);
+    // console.log('period',period,'year',this.year);
     if (this.mode !== 'Yearly') {
       const newVal = `${period} ${this.year}`;
     this.control.setValue(newVal, { emitEvent: false });

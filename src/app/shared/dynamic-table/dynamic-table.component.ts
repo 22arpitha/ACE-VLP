@@ -111,7 +111,7 @@ onSelectionChange(newSelected: any[], col: any): void {
     }else{
       this.filteredData = [];
     }
-    console.log('Filtered Data:', this.config.data);
+    // console.log('Filtered Data:', this.config.data);
     this.config.columns?.forEach(col => {
       this.arrowState[col.key] = false;
       //this.columnFilters[col.key] = col.filterType === 'multi-select' ? [] : '';

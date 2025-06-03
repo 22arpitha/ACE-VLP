@@ -83,7 +83,7 @@ export class JobStatusComponent implements CanComponentDeactivate, OnInit,OnDest
     this.accessControlService.getAccessForActiveUrl(this.user_id).subscribe((access) => {
       if (access) {
         this.accessPermissions = access[0].operations;
-        console.log('Access Permissions:', this.accessPermissions);
+        // console.log('Access Permissions:', this.accessPermissions);
       } else {
         console.log('No matching access found.');
       }
@@ -362,7 +362,7 @@ export class JobStatusComponent implements CanComponentDeactivate, OnInit,OnDest
   }
 
   public drop(event: CdkDragDrop<any[]>) {
-    console.log(event);
+    // console.log(event);
     // moveItemInArray(this.allJobStatusList, event.previousIndex, event.currentIndex);
     // console.log('Previous:',event.previousIndex,'Current:',event.currentIndex);
     const previousIndexAbsolute = (this.page - 1) * this.tableSize + event.previousIndex;

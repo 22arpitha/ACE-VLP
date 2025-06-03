@@ -74,17 +74,17 @@ export class LoginComponent implements OnInit {
 
       this.api.postData(`${environment.live_url}/${environment.login}/`,this.loginForm.value).subscribe(response => {
         let status = Number(200)
-        console.log(response)
+        // console.log(response)
         const token = response['token'];
         const decoded:any = jwtDecode(token);
-        console.log(decoded)
+        // console.log(decoded)
         sessionStorage.setItem('token', response['token']),
         sessionStorage.setItem('logged_count', response['logged_in_time']);
         sessionStorage.setItem('user_id',decoded.user_id )
         
         this.api.getData(`${environment.live_url}/${environment.user_access}/${decoded.user_id}/`).subscribe(
           (data:any)=>{
-            console.log('user access',data)
+            // console.log('user access',data)
             if (data.user_role == 'Employee') {
               sessionStorage.setItem('user_role_name', data.designation);
               sessionStorage.setItem('designation', data.sub_designation);

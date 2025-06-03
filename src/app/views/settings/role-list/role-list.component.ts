@@ -80,7 +80,7 @@ export class RoleListComponent implements CanComponentDeactivate, OnInit {
     this.accessControlService.getAccessForActiveUrl(this.user_id).subscribe((access) => {
       if (access) {
         this.accessPermissions = access[0].operations;
-        console.log('Access Permissions:', this.accessPermissions);
+        // console.log('Access Permissions:', this.accessPermissions);
       } else {
         console.log('No matching access found.');
       }
@@ -91,7 +91,7 @@ export class RoleListComponent implements CanComponentDeactivate, OnInit {
     this.api.getData(`${environment.live_url}/${environment.settings_roles}/${params}`).subscribe(
       (res: any) => {
         this.allRoles = [];
-        console.log(res.results)
+        // console.log(res.results)
         this.allRoles = res.results;
         const noOfPages: number = res?.['total_pages']
         this.count = noOfPages * this.tableSize;
@@ -252,7 +252,7 @@ export class RoleListComponent implements CanComponentDeactivate, OnInit {
     this.getAllRolesList(`?page=${1}&page_size=${50}`);
   }
   roleAccess(id:any){
-    console.log(id)
+    // console.log(id)
     this.router.navigate([`/settings/roles-access/${id}`])
   }
   canDeactivate(): Observable<boolean> {

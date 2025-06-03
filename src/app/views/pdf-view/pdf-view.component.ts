@@ -18,7 +18,7 @@ export class PdfViewComponent implements OnInit {
     GlobalWorkerOptions.workerSrc = 'pdf.worker.min.js';
     this.fileUrl = data.url;
     this.fileType = data.type;
-    console.log(this.fileUrl,this.fileType)
+    // console.log(this.fileUrl,this.fileType)
   }
   ngOnInit(): void {
   }

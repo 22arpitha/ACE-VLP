@@ -74,7 +74,7 @@ this.formUtilityService.resetHasUnsavedValue();
     this.accessControlService.getAccessForActiveUrl(this.user_id).subscribe((access) => {
       if (access) {
         this.accessPermissions = access[0].operations;
-        console.log('Access Permissions:', this.accessPermissions);
+        // console.log('Access Permissions:', this.accessPermissions);
       } else {
         console.log('No matching access found.');
       }
@@ -95,7 +95,7 @@ this.formUtilityService.resetHasUnsavedValue();
     this.allDesignationStatusList = [];
     this.apiService.getData(`${environment.live_url}/${environment.settings_designation}/${pramas}`).subscribe((respData: any) => {
       this.allDesignationStatusList = respData.results;
-      console.log( this.allDesignationStatusList)
+      // console.log( this.allDesignationStatusList)
       const noOfPages: number = respData.total_pages
       this.count = noOfPages * this.tableSize;
       this.page = respData.current_page;

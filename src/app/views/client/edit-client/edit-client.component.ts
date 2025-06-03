@@ -85,7 +85,7 @@ export class EditClientComponent implements CanComponentDeactivate, OnInit {
   getModuleAccess(){
     this.accessControlService.getAccessForActiveUrl(this.user_id).subscribe(
       (res:any)=>{
-        console.log(res);
+        // console.log(res);
         let temp = res.find((item: any) => item.name === 'End Clients');
           // console.log('temp',temp)
           this.accessPermissions = temp?.operations;

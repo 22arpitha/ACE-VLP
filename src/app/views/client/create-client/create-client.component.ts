@@ -120,9 +120,9 @@ employeeDetails = [];
         (res:any)=>{
           // console.log(res);
           let temp = res.find((item: any) => item.name === sessionStorage.getItem('access-name'));
-          console.log('temp',temp)
+          // console.log('temp',temp)
           this.accessPermissions = temp.operations;
-          console.log(this.accessPermissions)
+          // console.log(this.accessPermissions)
          if(this.userRole!='Admin'){
         if(this.client_id){
           this.shouldDisableFileds = this.accessPermissions[0]?.['update'];
@@ -348,7 +348,7 @@ this.initialFormValue=this.clientFormGroup?.getRawValue();
       this.clientFormGroup?.get('service_end_date')?.setValue(null);
     }
     public addContact() {
-      console.log(this.contactDetails?.controls);
+      // console.log(this.contactDetails?.controls);
       let lastItemIndex = this.contactDetails?.length - 1;
       // Disable the previous contact group before adding a new one
       if (this.contactDetails?.at(lastItemIndex)?.valid && this.contactDetails?.length < 5) {
@@ -410,9 +410,9 @@ this.initialFormValue=this.clientFormGroup?.getRawValue();
       const file = control.value;
 
       if (file) {
-        console.log('file',file);
+        // console.log('file',file);
         const fileExtension = (/[.]/.exec(file)) ? file.split('.').pop()?.toLowerCase() : '';
-        console.log('fileExtension',fileExtension);
+        // console.log('fileExtension',fileExtension);
         const fileSize = file.size;
 
           if (allowedFormats.includes(fileExtension)) {
@@ -621,7 +621,7 @@ this.initialFormValue=this.clientFormGroup?.getRawValue();
   addEmployee() {
      if(this.employeeFormArray.length>=1){
      let lastItemIndex = this.employeeFormArray.length - 1;
-     console.log("emp",this.employeeFormArray.controls)
+    //  console.log("emp",this.employeeFormArray.controls)
 if (this.employeeFormArray?.at(lastItemIndex)?.valid) {
       const empControls = this.employeeFormArray.at(lastItemIndex);
       ['employee_id', 'start_date', 'end_date'].forEach(field => empControls?.get(field)?.disable());

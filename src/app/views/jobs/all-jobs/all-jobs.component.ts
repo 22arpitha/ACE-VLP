@@ -299,7 +299,7 @@ export class AllJobsComponent implements OnInit {
   //   return this.allJobTypeNames;
   // }
 getAllCientsBaseGroupList(clientIds:any){
-console.log('ClientIDs:',clientIds);
+// console.log('ClientIDs:',clientIds);
 let query = this.userRole ==='Admin' ? '': `?client-ids=[${clientIds}]`
 this.allGroupNames =[];
     this.apiService.getData(`${environment.live_url}/${environment.clients_group}/${query}`).subscribe((respData: any) => {

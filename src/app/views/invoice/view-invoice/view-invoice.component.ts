@@ -72,7 +72,7 @@ export class ViewInvoiceComponent implements OnInit {
       let query = this.getFilterBaseUrl();
   this.apiService.getData(`${environment.live_url}/${environment.client_invoice}/${query}`).subscribe(
         (res: any) => {
-          console.log(res?.results);
+          // console.log(res?.results);
           this.allClientBasedJobsLists = res;
           // const noOfPages: number = res?.['total_pages']
           // this.count = noOfPages * this.tableSize;
@@ -166,7 +166,7 @@ public deleteClient(){
     fetch(apiUrl)
   .then(res => res.blob())
   .then(blob => {
-    console.log('blob',blob);
+    // console.log('blob',blob);
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
     a.download = `invoice_details.${type}`;
