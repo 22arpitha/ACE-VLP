@@ -70,6 +70,7 @@ userRole: any;
 user_id:any;
 initialFormValue:any;
 isEnabledEdit:boolean;
+employeeDetails = [];
     constructor(private fb:FormBuilder,private activeRoute:ActivatedRoute,private accessControlService:SubModuleService,
       private common_service: CommonServiceService,private router:Router,private datepipe:DatePipe,private modalService: NgbModal,private cdr: ChangeDetectorRef,
       private apiService: ApiserviceService,private formErrorScrollService:FormErrorScrollUtilityService) {
@@ -275,6 +276,7 @@ if(respData?.client_file){
   this.clientFormGroup?.patchValue({'client_file':null});
 }
 if (respData?.employee_details && Array.isArray(respData?.employee_details) && respData.employee_details?.length >= 1) {
+  this.employeeDetails = respData?.employee_details;
   const empDetailsArray = this.clientFormGroup.get('employee_details') as FormArray;
   empDetailsArray.clear();
 respData?.employee_details?.forEach(({ employee, start_date, end_date }, index, array) => {
@@ -790,4 +792,13 @@ this.employeeFormArray.push(this.createEmployeeControl());
       $event.preventDefault();
     }
   }
+
+  shouldShowAddButton(data: any): boolean {
+
+  const currentEmployee = data.value.employee_id;
+  const matchedDetail = this.employeeDetails.find(emp => emp.employee === currentEmployee);
+  const showDelete = matchedDetail?.show_delete ?? false;
+  return !showDelete;
+}
+
   }

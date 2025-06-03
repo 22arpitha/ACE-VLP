@@ -45,20 +45,20 @@
              <div class="col-12 col-sm-12 col-md-6 col-lg-3 px-2">
               <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
                 <mat-label>Stand Around Time <b class="r-star">*</b></mat-label>
-                <input matInput type="number" placeholder="Stand Around Time" formControlName="stand_arround_time" autocomplete="off" (keypress)="validateKeyPress($event)">
-                <mat-error *ngIf="f['stand_arround_time']?.invalid && f['stand_arround_time']?.touched || f['stand_arround_time']?.dirty">
-                  <span *ngIf="f['stand_arround_time'].errors?.['required']">Stand around time is required</span>
-                  <span *ngIf="!f['stand_arround_time'].errors?.['required'] && f['stand_arround_time'].errors?.['maxlength']">
-                    Stand around time cannot exceed 10 characters.
+                <input matInput type="number" placeholder="Stand Around Time" formControlName="stand_around_time" autocomplete="off" (keypress)="validateKeyPress($event)">
+                <mat-error *ngIf="f['stand_around_time']?.invalid && f['stand_around_time']?.touched || f['stand_around_time']?.dirty">
+                  <span *ngIf="f['stand_around_time'].errors?.['required']">Stand around time is required</span>
+                  <span *ngIf="!f['stand_around_time'].errors?.['required'] && f['stand_around_time'].errors?.['maxlength']">
+                    Stand around time cannot exceed 3 digits.
                   </span>
-                  <span *ngIf="!f['stand_arround_time'].errors?.['required'] && f['stand_arround_time'].errors?.['pattern']">
-                    Please enter a number with up to 2 decimal places.
+                  <span *ngIf="!f['stand_around_time'].errors?.['required'] && f['stand_around_time'].errors?.['pattern']">
+                    Only digits allowed (max 3 digits, no decimals).
                       </span>
-                  <span *ngIf="!f['stand_arround_time'].errors?.['required'] && f['stand_arround_time'].errors?.['minlength']">
+                  <span *ngIf="!f['stand_around_time'].errors?.['required'] && f['stand_around_time'].errors?.['minlength']">
                     Job price must be at least 1 character.
                   </span>
-                  <span *ngIf="!f['stand_arround_time'].errors?.['required'] && f['stand_arround_time'].errors?.['min']">
-                    Job price must be at least 0.
+                  <span *ngIf="!f['stand_around_time'].errors?.['required'] && f['stand_around_time'].errors?.['min']">
+                    Stand Around Time cannot be negative.
                   </span>
                 </mat-error>
               </mat-form-field>
@@ -99,8 +99,8 @@
                 <i *ngIf="arrowState['job_price']" (click)="sort('desc', 'job_price')" class="bi bi-arrow-up"></i>
               </th>
               <th>Stand Around Time
-                <i *ngIf="!arrowState['stand_arround_time']" (click)="sort('asc', 'stand_arround_time')" class="bi bi-arrow-down"></i>
-                <i *ngIf="arrowState['stand_arround_time']" (click)="sort('desc', 'stand_arround_time')" class="bi bi-arrow-up"></i>
+                <i *ngIf="!arrowState['stand_around_time']" (click)="sort('asc', 'stand_around_time')" class="bi bi-arrow-down"></i>
+                <i *ngIf="arrowState['stand_around_time']" (click)="sort('desc', 'stand_around_time')" class="bi bi-arrow-up"></i>
               </th>
                 <th>Action</th>
             </tr>
@@ -115,7 +115,7 @@
               <td>{{getContinuousIndex(i)}}</td>
               <td>{{type?.job_type_name || '-'}}</td>
               <td>{{type?.job_price || '-'}}</td>
-              <td>{{type?.stand_arround_time || '-'}}</td>
+              <td>{{type?.stand_around_time || '-'}}</td>
               <td>
                 <ng-container>
                   <img src="../../../../assets/images/Edit.svg" class="icon-image" container="body" ngbTooltip="Edit"

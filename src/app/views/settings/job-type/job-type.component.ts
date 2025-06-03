@@ -79,7 +79,7 @@ this.formUtilityService.resetHasUnsavedValue();
     this.jobTypeForm = this.fb.group({
       job_type_name: ['', [Validators.required, Validators.pattern(/^[a-zA-Z0-9!@#$%^&*()_+{}\[\]:;"'<>,.?/\\|`~\-]+( [a-zA-Z0-9!@#$%^&*()_+{}\[\]:;"'<>,.?/\\|`~\-]+)*$/), Validators.maxLength(50)]],
       job_price: [null, [Validators.required,Validators.pattern(/^[0-9]+(\.[0-9]{1,2})?$/), Validators.maxLength(10), Validators.min(0), Validators.minLength(1)]],
-      stand_arround_time: ['', [Validators.required,Validators.pattern(/^[0-9]+(\.[0-9]{1,2})?$/), Validators.maxLength(10), Validators.min(0), Validators.minLength(1)]],
+      stand_around_time: ['', [Validators.required, Validators.pattern(/^\d{1,3}$/), Validators.maxLength(3), Validators.min(0)]],
     });
     this.initialFormValue = this.jobTypeForm?.getRawValue();
 
@@ -253,6 +253,7 @@ this.formUtilityService.resetHasUnsavedValue();
     this.apiService.getData(`${environment.live_url}/${environment.settings_job_type}/${id}/`).subscribe((respData: any) => {
       this.jobTypeForm.patchValue({ 'job_type_name': respData?.job_type_name });
       this.jobTypeForm.patchValue({ 'job_price': respData?.job_price });
+      this.jobTypeForm.patchValue({ 'stand_around_time': respData?.stand_around_time });
     }, (error: any) => {
       this.apiService.showError(error?.error?.detail);
     })
