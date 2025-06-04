@@ -33,6 +33,7 @@ export class JobTypeComponent implements CanComponentDeactivate, OnInit,OnDestro
   arrowState: { [key: string]: boolean } = {
     job_type_name: false,
     job_price:false,
+    stand_around_time:false,
   };
   arrow: boolean = false;
   term: any;

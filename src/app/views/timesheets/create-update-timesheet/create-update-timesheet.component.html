@@ -5,7 +5,7 @@
                 <form [formGroup]="timesheetFormGroup">
                     <div class="row mx-0 my-0 px-2">
                         <!-- date -->
-                        <div class="col-12 col-sm-12 col-md-6 col-lg-4 my-1 no-padding pl-0 pr-5">
+                        <div class="col-12 col-sm-12 col-md-6 col-lg-3 my-1 no-padding pl-0 pr-5">
                             <mat-form-field appearance="outline" class="w-100 p-0 custom-mat-form-field">
                                 <mat-label>Date <b class="r-star">*</b></mat-label>
                                 <input matInput [matDatepicker]="picker2" placeholder="Enter Date"
@@ -19,7 +19,7 @@
                             <span *ngIf="weekTimesheetSubmitted" class="error-message">{{errorMessage}}</span>
                         </div>
                         <!-- employee -->
-                        <div class="col-12 col-sm-12 col-md-6 col-lg-4 my-1 no-padding pl-0 pr-5">
+                        <div class="col-12 col-sm-12 col-md-6 col-lg-3 my-1 no-padding pl-0 pr-5">
                             <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
                                 <mat-label>Employee <b class="r-star">*</b></mat-label>
                                 <mat-select formControlName="employee_id" autocomplete="off"
@@ -37,29 +37,29 @@
 
                         </div>
                         <!-- jobs -->
-                                <div class="col-12 col-sm-12 col-md-6 col-lg-4 my-1 no-padding px-0">
-                                    <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
-                                        <mat-label> Jobs<b class="r-star">*</b></mat-label>
-                                        <mat-select formControlName="job_id" autocomplete="off" placeholder="Select job"
-                                            panelClass="custom-select-panel" [disableOptionCentering]="true">
-                                            <div class="mat-select-search-wrapper d-flex">
-                                                <input matInput [(ngModel)]="searchJobText" autofocus
-                                                    [ngModelOptions]="{standalone: true}" placeholder="Search job"
-                                                    class="mat-select-search">
-                                                <mat-icon class="search-icon" *ngIf="!searchJobText">search</mat-icon>
-                                                <mat-icon class="search-icon" *ngIf="searchJobText" type="button"
-                                                    (click)="clearSearch('jobs')">close</mat-icon>
-                                            </div>
-                                            <mat-option *ngFor="let item of filteredJobsList()" [value]="item?.id">
-                                                {{item?.job_name}}
-                                            </mat-option>
-                                        </mat-select>
-                                        <mat-error
-                                            *ngIf="f['job_id']?.invalid && f['job_id']?.touched || f['job_id']?.dirty">
-                                            <span *ngIf="f['job_id']?.errors?.['required']">Job is required</span>
-                                        </mat-error>
-                                    </mat-form-field>
-                                </div>
+                        <div class="col-12 col-sm-12 col-md-6 col-lg-6 my-1 no-padding px-0">
+                            <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+                                <mat-label> Jobs<b class="r-star">*</b></mat-label>
+                                <mat-select formControlName="job_id" autocomplete="off" placeholder="Select job"
+                                    panelClass="custom-select-panel" [disableOptionCentering]="true">
+                                    <div class="mat-select-search-wrapper d-flex">
+                                        <input matInput [(ngModel)]="searchJobText" autofocus
+                                            [ngModelOptions]="{standalone: true}" placeholder="Search job"
+                                            class="mat-select-search">
+                                        <mat-icon class="search-icon" *ngIf="!searchJobText">search</mat-icon>
+                                        <mat-icon class="search-icon" *ngIf="searchJobText" type="button"
+                                            (click)="clearSearch('jobs')">close</mat-icon>
+                                    </div>
+                                    <mat-option *ngFor="let item of filteredJobsList()" [value]="item?.id">
+                                        {{item?.job_name}}
+                                    </mat-option>
+                                </mat-select>
+                                <mat-error
+                                    *ngIf="f['job_id']?.invalid && f['job_id']?.touched || f['job_id']?.dirty">
+                                    <span *ngIf="f['job_id']?.errors?.['required']">Job is required</span>
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
                         <!-- client -->
                         <div class="col-12">
                             <div class="row">

@@ -278,7 +278,7 @@
                   <mat-icon class="search-icon" *ngIf="!searchJobStatusText">search</mat-icon>
                   <mat-icon class="search-icon" *ngIf="searchJobStatusText" type="button" (click)="clearSearch('job_type')">close</mat-icon>
                 </div>
-                <mat-option *ngFor="let item of filteredJobStatusList()" [value]="item?.id" >
+                <mat-option *ngFor="let item of filteredJobStatusList();let i = index" [value]="item?.id" [disabled]="!isEditItem && i >= internalReviewOneIndex">
                   {{item?.status_name}}
                 </mat-option>
                 <!-- [disabled]="shouldDisableStatus(item?.status_name)" -->

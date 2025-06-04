@@ -62,6 +62,7 @@ export class CreateUpdateJobComponent implements CanComponentDeactivate, OnInit,
   jobDetails: any = []
   estimatedTime: any;
   editJobDetails: boolean = false;
+  internalReviewOneIndex:any;
   toolbar: Toolbar = [
     // default value
     ['bold', 'italic'],
@@ -495,6 +496,8 @@ onManagerSelectOpened(opened: boolean, index: number): void {
         if (this.job_id) {
           this.allJobStatusList = res;
         } else {
+          this.internalReviewOneIndex = res.findIndex(status => status.status_name.toLowerCase() === 'internal review 1');
+          // console.log('this.internalReviewOneIndex',this.internalReviewOneIndex)
           this.allJobStatusList = res.filter(job => {
             const status = job.status_name.toLowerCase();
             return status !== 'completed' && status !== 'cancelled';
@@ -772,7 +775,8 @@ onManagerSelectOpened(opened: boolean, index: number): void {
     this.checkAllEmployeeCheckbox();
   }
 
-  tempSelectedJobStatus: any
+  tempSelectedJobStatus: any;
+  x
   selectJobStatus(event: any) {
     // console.log(event)
     let data = this.allJobStatusList.find((x: any) => x.id === event.value)
@@ -780,17 +784,13 @@ onManagerSelectOpened(opened: boolean, index: number): void {
     this.jobFormGroup.patchValue({ percentage_of_completion: Number(data.percentage_of_completion) })
     // check the status
     const selectedIndex = this.allJobStatusList.findIndex(status => status.status_name.toLowerCase() === this.tempSelectedJobStatus.toLowerCase());
-    const querySentIndex = this.allJobStatusList.findIndex(status => status.status_name.toLowerCase() === 'Internal Review 1');
+    const querySentIndex = this.allJobStatusList.findIndex(status => status.status_name.toLowerCase() === 'internal review 1');
     if (this.job_id && this.estimatedTime === '00:00' && selectedIndex >= querySentIndex) {
       this.apiService.showError('Please upadte the estimated time to change the status.');
       this.tempSelectedJobStatus = '';
       this.jobFormGroup.patchValue({ job_status: this.jobDetails?.job_status })
       // this.jobFormGroup.get('job_status')?.setValue(''); // Optionally reset the selection
-    } else if (!this.job_id && selectedIndex >= querySentIndex) {
-      this.apiService.showError('');
-      this.tempSelectedJobStatus = '';
-      this.jobFormGroup.patchValue({ job_status: '' })
-    }
+    } 
   }
 
   shouldDisableStatus(statusName: string): boolean {

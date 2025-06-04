@@ -75,6 +75,10 @@ export class AllJobsComponent implements OnInit {
   jobList:any = [];
   jobAllocationDate: string | null;
   statusDate: any;
+  dateRange = {
+  start: null,
+  end: null
+};
 
    columns = [
   { key: 'sl_no', label: 'Sl No', visible: true },
@@ -223,6 +227,7 @@ export class AllJobsComponent implements OnInit {
 
   filterData() {
     this.filterQuery = this.getFilterBaseUrl()
+    // console.log(this.filters)
     if (this.filters.client_name.length) {
       this.filterQuery += `&client-ids=[${this.filters.client_name.join(',')}]`;
     }
@@ -580,6 +585,7 @@ jobStatusList(status:any){
   this.filterData()
   }
   onDateSelected(event: any): void {
+    // console.log(event)
     const selectedDate = event.value;
     if (selectedDate) {
      this.jobAllocationDate = this.datePipe.transform(selectedDate, 'yyyy-MM-dd');

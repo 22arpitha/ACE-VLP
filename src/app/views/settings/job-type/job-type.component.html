@@ -54,9 +54,6 @@
                   <span *ngIf="!f['stand_around_time'].errors?.['required'] && f['stand_around_time'].errors?.['pattern']">
                     Only digits allowed (max 3 digits, no decimals).
                       </span>
-                  <span *ngIf="!f['stand_around_time'].errors?.['required'] && f['stand_around_time'].errors?.['minlength']">
-                    Job price must be at least 1 character.
-                  </span>
                   <span *ngIf="!f['stand_around_time'].errors?.['required'] && f['stand_around_time'].errors?.['min']">
                     Stand Around Time cannot be negative.
                   </span>

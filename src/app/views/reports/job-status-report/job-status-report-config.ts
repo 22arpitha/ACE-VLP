@@ -48,6 +48,11 @@ export const tableColumns  = [
     sortable: true
   },
   {
+    label: 'Percentage of Completion',
+    key: 'percentage_of_completion',
+    sortable: true
+  },
+  {
     label: 'Status Date',
     key: 'job_status_date',
     filterable: true,
