@@ -10,6 +10,7 @@ import { AllJobsComponent } from './all-jobs/all-jobs.component';
 import { NgxEditorModule } from 'ngx-editor';
 import { JobKpiComponent } from './job-kpi/job-kpi.component';
 import { TabsOfJobsComponent } from './tabs-of-jobs/tabs-of-jobs.component';
+import { UpdatedJobKpiComponent } from './updated-job-kpi/updated-job-kpi.component';
 
 
 
@@ -20,7 +21,8 @@ import { TabsOfJobsComponent } from './tabs-of-jobs/tabs-of-jobs.component';
     CreateUpdateJobComponent,
     AllJobsComponent,
     JobKpiComponent,
-    TabsOfJobsComponent
+    TabsOfJobsComponent,
+    UpdatedJobKpiComponent
   ],
   imports: [
     CommonModule,

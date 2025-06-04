@@ -7,6 +7,9 @@
                 <mat-tab  label="KPI" *ngIf="hasEmployees">
                     <app-job-kpi *ngIf="selectedIndex===1"></app-job-kpi>
                 </mat-tab>
+                <mat-tab  label="Updated KPI " *ngIf="hasEmployees">
+                    <app-updated-job-kpi *ngIf="selectedIndex===2"></app-updated-job-kpi>
+                </mat-tab>
         </mat-tab-group>
     </div>
 </div>

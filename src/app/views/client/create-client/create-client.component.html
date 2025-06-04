@@ -280,17 +280,17 @@
             <td>
               <mat-form-field appearance="outline" class="w-100 custom-mat-form-field" [ngClass]="{ 'highlight-background': shouldDisableFileds && !isEnabledEdit}">
                 <mat-label>Select Employee <b class="r-star">*</b></mat-label>
-                <mat-select formControlName="employee_id"  autocomplete="off" placeholder="Select" panelClass="custom-select-panel" (selectionChange)="onEmployeeChange($event,i)" (openedChange)="onSelectOpened($event, i)">
+                <mat-select formControlName="employee_id"  autocomplete="off" placeholder="Select" panelClass="custom-select-panel" (selectionChange)="onEmployeeChange($event,((currentPage - 1) * pageSize + i))" (openedChange)="onSelectOpened($event, ((currentPage - 1) * pageSize + i))">
                   
                   <!-- Search input field inside the panel -->
                   <div class="mat-select-search-wrapper d-flex">
-                    <input matInput [(ngModel)]="searchEmployeeTextList[i]" [ngModelOptions]="{standalone: true}" placeholder="Search Employee" class="mat-select-search" (ngModelChange)="filterEmployeeList(i)">
-                    <mat-icon class="search-icon" *ngIf="!searchEmployeeTextList[i]">search</mat-icon>
-                    <mat-icon class="search-icon" *ngIf="searchEmployeeTextList[i]" type="button" (click)="clearSearch('emp',i)">close</mat-icon>
+                    <input matInput [(ngModel)]="searchEmployeeTextList[((currentPage - 1) * pageSize + i)]" [ngModelOptions]="{standalone: true}" placeholder="Search Employee" class="mat-select-search" (ngModelChange)="filterEmployeeList(((currentPage - 1) * pageSize + i))">
+                    <mat-icon class="search-icon" *ngIf="!searchEmployeeTextList[((currentPage - 1) * pageSize + i)]">search</mat-icon>
+                    <mat-icon class="search-icon" *ngIf="searchEmployeeTextList[((currentPage - 1) * pageSize + i)]" type="button" (click)="clearSearch('emp',((currentPage - 1) * pageSize + i))">close</mat-icon>
                   </div>
               
                   <!-- Filtered options -->
-                  <mat-option *ngFor="let emp of filteredEmployeeLists[i]" [value]="emp?.user_id">
+                  <mat-option *ngFor="let emp of filteredEmployeeLists[((currentPage - 1) * pageSize + i)]" [value]="emp?.user_id">
                     {{ emp?.user__full_name }}
                   </mat-option>
                 </mat-select>
@@ -323,9 +323,9 @@
             <td>
               <ng-container *ngIf="shouldDisableFileds && isEnabledEdit">
                 <img src="../../../../assets/images/Edit.svg" class="icon-image" type="button" container="body"
-                        ngbTooltip="Edit" (click)="editEmpployee(i)"  *ngIf="emp?.get('employee_id')?.disabled && (currentPage - 1) * pageSize + i < employeeFormArray?.length - 1 || (emp?.get('employee_id')?.disabled && (currentPage - 1) * pageSize + i === allEmployeeList?.length-1)"/>
+                        ngbTooltip="Edit" (click)="editEmpployee(((currentPage - 1) * pageSize + i))"  *ngIf="emp?.get('employee_id')?.disabled && (currentPage - 1) * pageSize + i < employeeFormArray?.length - 1 || (emp?.get('employee_id')?.disabled && (currentPage - 1) * pageSize + i === allEmployeeList?.length-1)"/>
                         <img src="../../../../assets/images/tick.svg" class="icon-image" type="button" container="body"
-                        ngbTooltip="save" (click)="saveEmpployeeChanges(i)"  *ngIf="emp?.get('employee_id')?.enabled  && (currentPage - 1) * pageSize + i < employeeFormArray?.length - 1 || (emp?.get('employee_id')?.enabled && (currentPage - 1) * pageSize + i === allEmployeeList?.length-1)"/>
+                        ngbTooltip="save" (click)="saveEmpployeeChanges(((currentPage - 1) * pageSize + i))"  *ngIf="emp?.get('employee_id')?.enabled  && (currentPage - 1) * pageSize + i < employeeFormArray?.length - 1 || (emp?.get('employee_id')?.enabled && (currentPage - 1) * pageSize + i === allEmployeeList?.length-1)"/>
                         
                 <img src="../../../../assets/images/Delete.svg" class="icon-image" type="button" container="body" ngbTooltip="Delete" *ngIf="shouldShowAddButton(emp)"  (click)="removeEmployee((currentPage - 1) * pageSize + i)"/>
                 <button mat-raised-button disabled style="background: none !important; font-size: 5px !important; min-width: 20px !important; padding: 0px !important;" *ngIf="!shouldShowAddButton(emp)" ><mat-icon>delete</mat-icon></button>

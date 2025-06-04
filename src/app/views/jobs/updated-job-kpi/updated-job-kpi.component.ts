@@ -1,25 +1,25 @@
 import { Component, ElementRef, HostListener, OnDestroy, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup, FormGroupDirective, Validators } from '@angular/forms';
+import { FormGroupDirective, FormGroup, FormBuilder, FormArray, AbstractControl, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { forkJoin, map, Observable, of } from 'rxjs';
-import { ApiserviceService } from '../../../service/apiservice.service';
-import { CommonServiceService } from '../../../service/common-service.service';
-import { FormErrorScrollUtilityService } from '../../../service/form-error-scroll-utility-service.service';
-import { environment } from '../../../../environments/environment';
-import {urlToFile,fileToBase64} from '../../../shared/fileUtils.utils';
-import { CanComponentDeactivate } from '../../../auth-guard/can-deactivate.guard';
-import { GenericRedirectionConfirmationComponent } from 'src/app/generic-components/generic-redirection-confirmation/generic-redirection-confirmation.component';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { forkJoin, map, Observable, of } from 'rxjs';
+import { CanComponentDeactivate } from 'src/app/auth-guard/can-deactivate.guard';
+import { GenericRedirectionConfirmationComponent } from 'src/app/generic-components/generic-redirection-confirmation/generic-redirection-confirmation.component';
+import { ApiserviceService } from 'src/app/service/apiservice.service';
+import { CommonServiceService } from 'src/app/service/common-service.service';
+import { FormErrorScrollUtilityService } from 'src/app/service/form-error-scroll-utility-service.service';
+import { urlToFile, fileToBase64 } from 'src/app/shared/fileUtils.utils';
+import { environment } from 'src/environments/environment';
 
 @Component({
-  selector: 'app-job-kpi',
-  templateUrl: './job-kpi.component.html',
-  styleUrls: ['./job-kpi.component.scss']
+  selector: 'app-updated-job-kpi',
+  templateUrl: './updated-job-kpi.component.html',
+  styleUrls: ['./updated-job-kpi.component.scss']
 })
-export class JobKpiComponent implements CanComponentDeactivate, OnInit,OnDestroy {
+export class UpdatedJobKpiComponent implements CanComponentDeactivate, OnInit,OnDestroy {
     @ViewChildren('fileInput') fileInputs: QueryList<ElementRef>;
       @ViewChildren('crpfileInput') crpfileInputs: QueryList<ElementRef>;;
-        @ViewChildren('mrpfileInput') mrpfileInputs: QueryList<ElementRef>;;
+        @ViewChildren('mrpfileInput') mrpfileInputs: QueryList<ElementRef>;
   BreadCrumbsTitle: any = 'KPI';
   job_id:any;
   isEditItem:boolean=false;
@@ -31,14 +31,14 @@ pageSize = 10;
 currentPage = 1;
 user_role_name:any;
 budgetFile: any=[];
-mrpFile:  any=[];
-crpFile:  any=[];
+mrpFile:  any[][] = [];
+crpFile:  any[][] = [];
 budgetFileLink: any=[];
-mrpFileLink:  any=[];
-crpFileLink:  any=[];
+mrpFileLink:  any[][] = [];
+crpFileLink:  any[][] = [];
 selectedBudgetFile:(File | null)[] = [];
-selectedMrpFile:(File | null)[] = [];
-selectedCrpFile:(File | null)[] = [];
+selectedMrpFile: (File | null)[][] = [];
+selectedCrpFile: (File | null)[][] = [];
 
 defaultReviewingTime:any='000:00';
 formData:any;
@@ -63,7 +63,6 @@ initialFormValue:any;
   this.jobKPIFormGroup?.valueChanges?.subscribe(() => {
     const currentFormValue = this.jobKPIFormGroup?.getRawValue();
     const isInvalid = this.jobKPIFormGroup?.touched && this.jobKPIFormGroup?.invalid;
-    // console.log(this.initialFormValue,currentFormValue);
     const isFormChanged:boolean =  JSON.stringify(currentFormValue) !== JSON.stringify(this.initialFormValue);
     let unSavedChanges = isFormChanged || isInvalid;
    this.formErrorScrollService.setUnsavedChanges(unSavedChanges);
@@ -87,12 +86,7 @@ initialFormValue:any;
       review_time:[this.defaultReviewingTime],
       budget_file:[null],
       budget_file_name:[null],
-      mrp:[0],
-      mrpFile:[null],
-      mrp_file_name:[null],
-      crp:[0],
-      crpFile:[null],
-      crp_file_name:[null],
+      details:this.fb.array([this.createMrpCrpGroup()]),
     });
   }
 
@@ -103,14 +97,31 @@ initialFormValue:any;
  get employeeFormArray() {
   return this.jobKPIFormGroup.get('data') as FormArray;
 }
+
+mrpDetails(rowIndex: number): FormArray {
+      return this.employeeFormArray.at(rowIndex).get('details') as FormArray;
+}
+
+
+private createMrpCrpGroup(): FormGroup {
+  const group = this.fb.group({
+    mrp: [0],
+    mrpFile: [null],
+    mrp_file_name: [null],
+    crp: [0],
+    crpFile: [null],
+    crp_file_name: [null],
+  });
+  return group;
+}
   public getModuleAccess(){
     this.apiService.getData(`${environment.live_url}/${environment.user_access}/${sessionStorage.getItem('user_id')}/`).subscribe(
       (res:any)=>{
-        // console.log(res)
+        console.log(res)
        res.access_list.forEach((access:any)=>{
           access.access.forEach((access_name:any)=>{
               if(access_name.name===sessionStorage.getItem('access-name')){
-                // console.log(access_name)
+                console.log(access_name)
                 this.accessPermissions = access_name.operations;
                 // console.log('this.accessPermissions', this.accessPermissions);
               }
@@ -139,8 +150,8 @@ initialFormValue:any;
      jobDetailsResponse['employees'].forEach((emp:any) => {
       if(kpiJobDetailsResponse['data'] && kpiJobDetailsResponse['data'].length>=1){
         kpiJobDetailsResponse['data']?.forEach((kpiEmp:any) => {
-          // console.log('kpiEmp',kpiEmp);
-          if(emp?.employee == kpiEmp.employee_id){
+          console.log('kpiEmp',kpiEmp);
+          if(emp?.employee == kpiEmp.employee){
             emp['kpi']=kpiEmp;
           }
         });
@@ -149,122 +160,157 @@ initialFormValue:any;
     return jobDetailsResponse;
   })
 ).subscribe(combinedResult => {
-  // console.log('combinedResult',combinedResult);
+  console.log('combinedResult',combinedResult);
   const [hours, minutes] = combinedResult['budget_time']?.split(":");
   const formattedbudget_time = `${hours}:${minutes}`;
   if (combinedResult['employees'] && Array.isArray(combinedResult['employees']) && combinedResult['employees']?.length >= 1) {
     const employeesDetailsArray = this.jobKPIFormGroup.get('data') as FormArray;
     employeesDetailsArray?.clear();
     combinedResult['employees']?.forEach((emp,index) => {
+    const detailsArray = this.fb.array([]);
     const employeeForm = this.fb.group({
       employee: [{ value: emp?.employee, disabled: true}],
       processing_time: [{ value: emp?.kpi ? emp?.kpi?.processing_time:formattedbudget_time?.toString(), disabled: true}],
       review_time: [{ value: emp?.kpi ? emp?.kpi?.review_time:'000:00', disabled: true}],
       budget_file: [{ value: null, disabled: true}],
       budget_file_name: [null],
-      mrp: [{ value: emp?.kpi ? emp?.kpi?.mrp:0, disabled: true}],
-      mrpFile: [{ value: null, disabled: true}],
-      mrp_file_name: [null],
-      crp: [{ value: emp?.kpi ? emp?.kpi?.crp:0, disabled: true}],
-      crpFile: [{ value: null, disabled: true}],
-      crp_file_name: [null],
+      details:detailsArray,
     });
-if(emp?.kpi){
-  employeesDetailsArray?.at(index)?.get('budget_file')?.setErrors(null);
-  employeesDetailsArray?.at(index)?.patchValue({'budget_file_name':null});
-  // Budget File
-  if(emp?.kpi && emp?.kpi?.budget_file){
-    urlToFile(emp?.kpi?.budget_file, this.getFileName(emp?.kpi?.budget_file))
-    .then(file => {
-      if(file){
-        this.budgetFile[index] = file;
-        this.selectedBudgetFile[index] = this.budgetFile[index];
-        this.budgetFileLink[index]=`${environment.media_url+emp?.kpi?.budget_file}`
-      }else{
-      this.budgetFile[index] = null;
-      this.selectedBudgetFile[index] = null;
-      this.budgetFileLink[index]=null;
-      employeesDetailsArray?.at(index)?.patchValue({'budget_file':null});
-      employeesDetailsArray?.at(index)?.patchValue({'budget_file_name':null});
+employeesDetailsArray.push(employeeForm);
+// Step 3: Set budget file values
+    if (emp?.kpi) {
+      const currentGroup = employeesDetailsArray.at(index);
+      currentGroup?.get('budget_file')?.setErrors(null);
+      currentGroup?.patchValue({ budget_file_name: null });
+      if (emp.kpi.budget_file) {
+        urlToFile(emp.kpi.budget_file, this.getFileName(emp.kpi.budget_file))
+          .then((file) => {
+            if (file) {
+              this.budgetFile[index] = file;
+              this.selectedBudgetFile[index] = file;
+              this.budgetFileLink[index] =
+                `${environment.media_url}${emp.kpi.budget_file}`;
+            } else {
+              this.budgetFile[index] = null;
+              this.selectedBudgetFile[index] = null;
+              this.budgetFileLink[index] = null;
+              currentGroup?.patchValue({
+                budget_file: null,
+                budget_file_name: null,
+              });
+            }
+          })
+          .catch((error) => console.error('Error:', error));
+      } else {
+        currentGroup?.patchValue({
+          budget_file: null,
+          budget_file_name: null,
+        });
       }
-    }
 
-    )
-    .catch(error => console.error('Error:', error));
-    }else{
-      employeesDetailsArray?.at(index)?.patchValue({'budget_file':null});
-      employeesDetailsArray?.at(index)?.patchValue({'budget_file_name':null});
-    }
-    // MRP File
-    if(emp?.kpi && emp?.kpi?.mrpFile){
-      employeesDetailsArray?.at(index)?.get('mrpFile')?.setErrors(null);
-      employeesDetailsArray?.at(index)?.patchValue({'mrp_file_name':null});
-      urlToFile(emp?.kpi?.mrpFile, this.getFileName(emp?.kpi?.mrpFile))
-      .then(file => {
-        if(file){
-          this.mrpFile[index] = file;
-        this.selectedMrpFile[index] = this.mrpFile[index];
-        this.mrpFileLink[index]=`${environment.media_url+emp?.kpi?.mrpFile}`;
-        }else{
-          this.mrpFile[index] = null;
-        this.selectedMrpFile[index] = null;
-        this.mrpFileLink[index]=null;
-        employeesDetailsArray?.at(index)?.patchValue({'mrpFile':null});
-        employeesDetailsArray?.at(index)?.patchValue({'mrp_file_name':null});
-        }
-      }
-      )
-      .catch(error => console.error('Error:', error));
+      // Step 4: Add details items if they exist
+     if (emp.kpi.details && emp.kpi.details.length >= 1) {
+  emp.kpi.details.forEach((detail,detailIndex) => {
+    const detailGroup = this.createMrpCrpGroup();
+    detailGroup.patchValue({
+      mrp: detail?.mrp ?? 0,
+      crp: detail?.crp ?? 0,
+      mrp_file_name: detail?.mrp_file_name ?? null,
+      crp_file_name: detail?.crp_file_name ?? null,
+    });
+   detailGroup.get('mrp')?.disable();
+   detailGroup.get('crp')?.disable();
+// Ensure the nested arrays are initialized
+[this.mrpFile, this.crpFile, this.mrpFileLink, this.crpFileLink, this.selectedMrpFile, this.selectedCrpFile]
+  .forEach(arr => {
+    if (!arr[index]) arr[index] = [];
+  });
+// MRP File
+if (detail && detail?.mrpFile) {
+  detailGroup?.get('mrpFile')?.setErrors(null);
+  urlToFile(detail.mrpFile, this.getFileName(detail.mrpFile))
+    .then((file) => {
+      const fileToSet = file ?? null;
+      if(fileToSet){
+      detailGroup.get('mrpFile')?.disable();
+      this.mrpFile[index][detailIndex] = fileToSet;
+      this.selectedMrpFile[index][detailIndex] = fileToSet;
+      this.mrpFileLink[index][detailIndex] = file
+        ? `${environment.media_url}${detail.mrpFile}`
+        : null;
       }else{
-        employeesDetailsArray?.at(index)?.patchValue({'mrpFile':null});
-        employeesDetailsArray?.at(index)?.patchValue({'mrp_file_name':null});
+        detailGroup?.patchValue({
+          mrpFile: null,
+          mrp_file_name: null,
+        });
+        detailGroup.get('mrpFile')?.disable();
       }
-      // CRP File
-      if(emp?.kpi && emp?.kpi?.crpFile){
-        employeesDetailsArray?.at(index)?.get('crpFile')?.setErrors(null);
-          employeesDetailsArray?.at(index)?.patchValue({'crp_file_name':null});
-        urlToFile(emp?.kpi?.crpFile, this.getFileName(emp?.kpi?.crpFile))
-        .then(file => {
-          if(file){
-            this.crpFile[index] = file;
-            this.selectedCrpFile[index] = this.crpFile[index];
-            this.crpFileLink[index]=`${environment.media_url+emp?.kpi?.crpFile}`;
-          }else{
-            this.crpFile[index]=null;
-            this.selectedCrpFile[index]=null;
-            this.crpFileLink[index]=null;
-            employeesDetailsArray?.at(index)?.patchValue({'crpFile':null});
-          employeesDetailsArray?.at(index)?.patchValue({'crp_file_name':null});
-          }
+    })
+    .catch((err) => console.error('MRP File load error:', err));
+} else {
+        detailGroup?.patchValue({
+          mrpFile: null,
+          mrp_file_name: null,
+        });
+        detailGroup.get('mrpFile')?.disable();
+      }
 
-        }
-        )
-        .catch(error => console.error('Error:', error));
-        }else{
-          employeesDetailsArray?.at(index)?.patchValue({'crpFile':null});
-          employeesDetailsArray?.at(index)?.patchValue({'crp_file_name':null});
-        }
-  }
-    employeesDetailsArray.push(employeeForm);
+// CRP File
+if (detail && detail?.crpFile) {
+  detailGroup?.get('mrpFile')?.setErrors(null);
+  urlToFile(detail.crpFile, this.getFileName(detail.crpFile))
+    .then((file) => {
+      const fileToSet = file ?? null;
+      if(fileToSet){
+      detailGroup.get('crpFile')?.disable();
+      this.crpFile[index][detailIndex] = fileToSet;
+      this.selectedCrpFile[index][detailIndex] = fileToSet;
+      this.crpFileLink[index][detailIndex] = file
+        ? `${environment.media_url}${detail.crpFile}`
+        : null;
+      }else{
+        detailGroup?.patchValue({
+          crpFile: null,
+          crp_file_name: null,
+        });
+        detailGroup.get('crpFile')?.disable();
+      }
+      
+    })
+    .catch((err) => console.error('CRP File load error:', err));
+}else {
+        detailGroup?.patchValue({
+          crpFile: null,
+          crp_file_name: null,
+        });
+        detailGroup.get('crpFile')?.disable();
+      }
+     currentGroup.get('details')?.setErrors(null); 
+    (currentGroup.get('details') as FormArray).push(detailGroup);
+  });
+}
+
+    }
   });
   }
 });
   }
-
       public editJobKPIDetails(){
       this.isEditItem = !this.isEditItem;
       const employeesDetailsArray = this.jobKPIFormGroup.get('data') as FormArray;
-      employeesDetailsArray.controls?.forEach((controls)=>{
+      employeesDetailsArray.controls?.forEach((controls,index)=>{
         controls.get('processing_time')?.enable();
         controls.get('review_time')?.enable();
         controls.get('budget_file')?.enable();
-        controls.get('mrp')?.enable();
-        controls.get('mrpFile')?.enable();
-        controls.get('crp')?.enable();
-        controls.get('crpFile')?.enable();
+        const detailGroup = employeesDetailsArray.at(index).get('details') as FormArray;
+        detailGroup.controls?.forEach((controlss)=>{
+        controlss.get('mrp')?.enable();
+        controlss.get('mrpFile')?.enable();
+        controlss.get('crp')?.enable();
+        controlss.get('crpFile')?.enable();
+        })
       })
         }
-
 public backBtnFunc(): void {
         if (this.isEditItem && this.hasUnsavedChanges()) {
           this.showConfirmationPopup().subscribe((confirmed: boolean) => {
@@ -275,8 +321,7 @@ public backBtnFunc(): void {
         } else {
           this.cleanupAndNavigate();
         }
-      }
-      
+      }      
       public hasUnsavedChanges(): boolean {
         const currentFormValue = this.jobKPIFormGroup.getRawValue();
         const isFormChanged = JSON.stringify(currentFormValue) !== JSON.stringify(this.initialFormValue);
@@ -286,7 +331,6 @@ public backBtnFunc(): void {
       private cleanupAndNavigate(): void {
         this.common_service.setJobActiveTabindex(0);
       }
-      
       private showConfirmationPopup(): Observable<boolean> {
         return new Observable<boolean>((observer) => {
           const modalRef = this.modalService.open(GenericRedirectionConfirmationComponent, {
@@ -302,10 +346,9 @@ public backBtnFunc(): void {
           });
         });
       }
-
-
      // Save JOB KPI
 public async saveJobKPIDetails(){
+console.log('controls',this.jobKPIFormGroup.controls);
   if (this.jobKPIFormGroup.invalid) {
     this.jobKPIFormGroup.markAllAsTouched();
     this.formErrorScrollService.setUnsavedChanges(true);
@@ -319,7 +362,7 @@ public async saveJobKPIDetails(){
   }).catch((error) => {
     reqPayload['data']=[];
   });
-    // console.log('reqPayload',reqPayload,typeof reqPayload);
+    console.log('reqPayload',reqPayload,typeof reqPayload);
               this.apiService.postData(`${environment.live_url}/${environment.jobs_kpi}/`, reqPayload).subscribe((respData: any) => {
               if (respData) {
                 this.apiService.showSuccess(respData['message']);
@@ -336,26 +379,31 @@ public async saveJobKPIDetails(){
             });
   }
 }
-
-
 public async UpdateFileFieldData(empData: any) {
   if (empData && empData.length >= 1) {
-    // Use for...of to ensure we await properly inside the loop
     for (let index = 0; index < empData.length; index++) {
-
-      // Handle each file type asynchronously
+      // Budget file processing
       if (this.budgetFile && this.budgetFile[index]) {
         empData[index].budget_file = await this.convertFileToBase64(this.budgetFile[index]);
-        empData[index].budget_file_name = this.selectedBudgetFile[index].name || null;
+        empData[index].budget_file_name = this.selectedBudgetFile?.[index]?.name || null;
       }
-      if (this.mrpFile && this.mrpFile[index]) {
-        empData[index].mrpFile = await this.convertFileToBase64(this.mrpFile[index]);
-        empData[index].mrp_file_name = this.selectedMrpFile[index].name || null;
+      // Details
+      const details = empData[index].details;
+      if (details && details.length >= 1) {
+        for (let j = 0; j < details.length; j++) {
+          // MRP file
+          if (this.mrpFile?.[index]?.[j]) {
+            details[j].mrpFile = await this.convertFileToBase64(this.mrpFile[index][j]);
+            details[j].mrp_file_name = this.selectedMrpFile?.[index]?.[j]?.name || null;
+          }
+          // CRP file
+          if (this.crpFile?.[index]?.[j]) {
+            details[j].crpFile = await this.convertFileToBase64(this.crpFile[index][j]);
+            details[j].crp_file_name = this.selectedCrpFile?.[index]?.[j]?.name || null;
+          }
+        }
       }
-      if (this.crpFile && this.crpFile[index]) {
-        empData[index].crpFile = await this.convertFileToBase64(this.crpFile[index]);
-        empData[index].crp_file_name = this.selectedCrpFile[index].name || null;
-      }
+
     }
   }
   return empData;
@@ -371,11 +419,10 @@ private async convertFileToBase64(file: File): Promise<string | null> {
   }
 }
 
-
-   get currentPageRows() {
-                    const startIndex = (this.currentPage - 1) * this.pageSize;
-                    const endIndex = startIndex + this.pageSize;
-                    return this.employeeFormArray.controls.slice(startIndex, endIndex);
+  get currentPageRows() {
+  const startIndex = (this.currentPage - 1) * this.pageSize;
+  const endIndex = startIndex + this.pageSize;
+  return this.employeeFormArray.controls.slice(startIndex, endIndex);
 }
    public getFileName(url:any){
       return url?.split('/')?.pop();
@@ -416,7 +463,7 @@ public onPageChanged(event: any) {
                     }
                   }
   }
- public onMrpFileSelected(event: Event,index:any): void {
+ public onMrpFileSelected(event: Event,rowIndex: number, mrpIndex: number): void {
                   const input = event.target as HTMLInputElement;
 
                   if (input.files && input.files.length > 0) {
@@ -430,21 +477,21 @@ public onPageChanged(event: any) {
                       selectedFile.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document" ||
                       selectedFile.type === "application/pdf"
                     ) {
-                      this.mrpFile[index] = selectedFile;
-                      this.selectedMrpFile[index] = this.mrpFile[index];
-                      this.mrpFileLink[index]=null;
+                      this.mrpFile[rowIndex][mrpIndex] = selectedFile;
+                      this.selectedMrpFile[rowIndex][mrpIndex] = this.mrpFile[rowIndex][mrpIndex];
+                      this.mrpFileLink[rowIndex][mrpIndex]=null;
                       // Reset input value after a slight delay to allow re-selection
                       setTimeout(() => {
                         input.value = "";
                       }, 100); // Small delay to ensure the selection is registered
                     } else {
                       this.apiService.showError("Invalid file type. Only xlsx, xls, doc, docx, pdf files are allowed.");
-                      this.selectedMrpFile[index] = null;
-                      this.mrpFileLink[index]=null;
+                      this.selectedMrpFile[rowIndex][mrpIndex] = null;
+                      this.mrpFileLink[rowIndex][mrpIndex]=null;
                     }
                   }
  }
-  public onCrpFileSelected(event: Event,index:any): void {
+  public onCrpFileSelected(event: Event,rowIndex: number, crpIndex: number): void {
                   const input = event.target as HTMLInputElement;
 
                   if (input.files && input.files.length > 0) {
@@ -458,54 +505,64 @@ public onPageChanged(event: any) {
                       selectedFile.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document" ||
                       selectedFile.type === "application/pdf"
                     ) {
-                      this.crpFile[index] = selectedFile;
-                      this.selectedCrpFile[index] = this.crpFile[index];
-                      this.crpFileLink[index]=null;
+                      this.crpFile[rowIndex][crpIndex] = selectedFile;
+                      this.selectedCrpFile[rowIndex][crpIndex] = this.crpFile[rowIndex][crpIndex];
+                      this.crpFileLink[rowIndex][crpIndex]=null;
                       // Reset input value after a slight delay to allow re-selection
                       setTimeout(() => {
                         input.value = "";
                       }, 100); // Small delay to ensure the selection is registered
                     } else {
                       this.apiService.showError("Invalid file type. Only xlsx, xls, doc, docx, pdf files are allowed.");
-                      this.selectedCrpFile[index] = null;
-                      this.crpFileLink[index]=null;
+                      this.selectedCrpFile[rowIndex][crpIndex] = null;
+                      this.crpFileLink[rowIndex][crpIndex]=null;
                     }
                   }
 }
 public triggerFileInput(index:any) {
-  // console.log('fileInputs',this.fileInputs);
+  console.log('fileInputs',this.fileInputs);
   const fileInput = this.fileInputs?.toArray()[index];
-  // console.log('fileInput',fileInput);
+  console.log('fileInput',fileInput);
 
   if (fileInput) {
     fileInput?.nativeElement?.click();
   }
  }
-  public triggerMrpFileInput(index:any) {
-   const fileInput = this.mrpfileInputs?.toArray()[index];
-  //  console.log('fileInput',fileInput);
+ public triggerMrpFileInput(rowIndex: number, mrpIndex: number): void {
+  const input = this.mrpfileInputs.find((elementRef: ElementRef) => {
+    const nativeEl = elementRef.nativeElement;
+    return +nativeEl.getAttribute('data-row') === rowIndex &&
+           +nativeEl.getAttribute('data-mrp') === mrpIndex;
+  });
 
-   if (fileInput) {
-   fileInput?.nativeElement?.click();
-   }
- }
- public triggerCrpFileInput(index:any) {
-  const fileInput = this.crpfileInputs?.toArray()[index];
-  // console.log('fileInput',fileInput);
-  if (fileInput) {
-   fileInput?.nativeElement?.click();
+  if (input) {
+    input.nativeElement.click();
+  } else {
+    console.warn(`MRP File input not found for row ${rowIndex} and index ${mrpIndex}`);
   }
-  }
+}
+ public triggerCrpFileInput(rowIndex: number, mrpIndex: number): void {
+  const input = this.crpfileInputs.find((elementRef: ElementRef) => {
+    const nativeEl = elementRef.nativeElement;
+    return +nativeEl.getAttribute('data-row') === rowIndex &&
+           +nativeEl.getAttribute('data-mrp') === mrpIndex;
+  });
 
-  public openFileInNewTab(source:any,index:any){
+  if (input) {
+    input.nativeElement.click();
+  } else {
+    console.warn(`CRP File input not found for row ${rowIndex} and index ${mrpIndex}`);
+  }
+}
+public openFileInNewTab(source:any,index:any,typeindex?:any){
     if(source==='mrp'){
-if(this.mrpFileLink[index]){
-  window.open(this.mrpFileLink[index], '_blank');
+if(this.mrpFileLink[index][typeindex]){
+  window.open(this.mrpFileLink[index][typeindex], '_blank');
 }
 }else if (source==='crp')
 {
-if(this.crpFileLink[index]){
-  window.open(this.crpFileLink[index], '_blank');
+if(this.crpFileLink[index][typeindex]){
+  window.open(this.crpFileLink[index][typeindex], '_blank');
 }
 }else{
   if(this.budgetFileLink[index]){
@@ -513,7 +570,7 @@ if(this.crpFileLink[index]){
   }
 }
 }
- public defaultProcessingTime(event: any,index:any): void {
+public defaultProcessingTime(event: any,index:any): void {
 let rawValue = event.target.value;
 if (!rawValue) {
   const employeesDetailsArray = this.jobKPIFormGroup?.get('data') as FormArray;
@@ -521,7 +578,6 @@ if (!rawValue) {
  employeesDetailsArray?.at(index)?.patchValue({'processing_time':rawValue}); // Default value (can adjust as needed)
 }
 }
-
 public formatProcessingTime(event: any, index: any): void {
   let rawValue = event.target.value?.replace(/[^0-9]/g, ''); // Remove non-numeric characters
   const employeesDetailsArray = this.jobKPIFormGroup?.get('data') as FormArray;
@@ -548,10 +604,6 @@ public formatProcessingTime(event: any, index: any): void {
   // Update the processing_time field in the form without emitting an event
   employeesDetailsArray?.at(index)?.get('processing_time')?.setValue(rawValue, { emitEvent: false });
 }
-
-
-
-
 public formatReviewingTime(event: any,index:any): void {
   let rawValue = event.target.value?.replace(/[^0-9]/g, '');
   const employeesDetailsArray = this.jobKPIFormGroup?.get('data') as FormArray;
@@ -584,24 +636,27 @@ public formatReviewingTime(event: any,index:any): void {
       employeesDetailsArray?.at(index)?.patchValue({'review_time':rawValue});
     }
  }
+setDefaultValueIfEmpty(
+  event: any,
+  rowIndex: number,
+  mrpIndex: number,
+  fieldName: 'mrp' | 'crp'
+): void {
+  const rawValue = event?.target?.value;
 
- setMrpDefaultValueIfEmpty(event: any,index:any): void{
-  let rawValue = event.target.value
   if (!rawValue) {
     const employeesDetailsArray = this.jobKPIFormGroup?.get('data') as FormArray;
-    rawValue = 0;
- employeesDetailsArray.at(index).patchValue({'mrp':rawValue});
-  }
- }
 
- setCrpDefaultValueIfEmpty(event: any,index:any): void{
-  let rawValue = event.target.value
-  if (!rawValue) {
-  const employeesDetailsArray = this.jobKPIFormGroup?.get('data') as FormArray;
-  rawValue = 0;
-  employeesDetailsArray.at(index).patchValue({'crp':rawValue});
+    if (employeesDetailsArray?.at(rowIndex)) {
+      const detailFormGroup = employeesDetailsArray.at(rowIndex) as FormGroup;
+      const detailsArray = detailFormGroup.get('details') as FormArray;
+
+      if (detailsArray?.at(mrpIndex)) {
+        detailsArray.at(mrpIndex).patchValue({ [fieldName]: 0 });
+      }
+    }
   }
- }
+}
  public validateKeyPress(event: KeyboardEvent) {
   const keyCode = event.which || event.keyCode;
   if (
@@ -612,7 +667,6 @@ public formatReviewingTime(event: any,index:any): void {
     event.preventDefault();
 }
 }
-
 canDeactivate(): Observable<boolean> {
     const currentFormValue = this.jobKPIFormGroup?.getRawValue();
     const isFormChanged:boolean =  JSON.stringify(currentFormValue) !== JSON.stringify(this.initialFormValue);
@@ -627,4 +681,71 @@ canDeactivate(): Observable<boolean> {
           $event.preventDefault();
         }
       }
+
+// Dynamically adding CRP & MRP 
+public addMrpCrpItem(rowIndex:number) {
+const dataArray = this.jobKPIFormGroup.get('data') as FormArray;
+  const rowGroup = dataArray.at(rowIndex) as FormGroup;
+  const mrpCrpList = rowGroup.get('details') as FormArray;
+  mrpCrpList.push(this.createMrpCrpGroup());
+}
+
+public deleteMrpCrpItem(rowIndex:number,index: number) {
+const dataArray = this.jobKPIFormGroup.get('data') as FormArray;
+  const rowGroup = dataArray.at(rowIndex) as FormGroup;
+  const mrpCrpList = rowGroup.get('details') as FormArray;
+
+  if (mrpCrpList.length > 1) {
+    mrpCrpList.removeAt(index);
+  }
+    }
+
+public editMrpCrpItem(rowIndex:number,index: number) {
+  const dataArray = this.jobKPIFormGroup.get('data') as FormArray;
+  const detailGroup = dataArray?.at(rowIndex).get('details')?.get([index]) as FormGroup;
+  if (detailGroup) {
+    detailGroup.get('mrp')?.enable();
+    detailGroup.get('mrpFile')?.enable();
+    detailGroup.get('crp')?.enable();
+    detailGroup.get('crpFile')?.enable();
+  }
+    }
+
+saveMrpCrpItem(rowIndex:number,index: number) {
+  const dataArray = this.jobKPIFormGroup.get('data') as FormArray;
+  const detailGroup = dataArray?.at(rowIndex).get('details')?.get([index]) as FormGroup;
+  if (detailGroup) {
+    detailGroup.get('mrp')?.disable();
+    detailGroup.get('mrpFile')?.disable();
+    detailGroup.get('crp')?.disable();
+    detailGroup.get('crpFile')?.disable();
+  }
+    }
+public getEmployeeName(employeeId: string | null): string {
+  if (!employeeId) return 'Selected Employee';
+  const emp = this.allEmployeeList.find(e => e.user_id === employeeId);
+  return emp ? emp.user__full_name : 'Selected Employee';
+}
+
+public getTotalMrpValue(index){
+let totalMrp:any=0;
+const dataArray = this.jobKPIFormGroup.get('data') as FormArray;
+  const rowGroup = dataArray.at(index) as FormGroup;
+  const mrpCrpList = rowGroup.get('details') as FormArray;
+  mrpCrpList.controls.forEach((control)=>{
+   totalMrp +=control.get('mrp').value;
+  })
+return totalMrp ?? 0;
+}
+public getTotalCrpValue(index){
+let totalMrp:any=0;
+ const dataArray = this.jobKPIFormGroup.get('data') as FormArray;
+  const rowGroup = dataArray.at(index) as FormGroup;
+  const mrpCrpList = rowGroup.get('details') as FormArray;
+  mrpCrpList.controls.forEach((control)=>{
+   totalMrp +=control.get('crp').value;
+  })
+return totalMrp ?? 0;
+}
+
 }
