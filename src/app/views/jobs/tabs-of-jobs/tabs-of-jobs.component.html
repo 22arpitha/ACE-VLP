@@ -4,8 +4,11 @@
                 <mat-tab label="Job Details">
                     <app-create-update-job *ngIf="selectedIndex===0" (isEmployeeAdded)="isEmployeeAssigned($event)"></app-create-update-job>
                 </mat-tab>
-                <mat-tab  label="KPI" *ngIf="hasEmployees">
+                <!-- <mat-tab  label="KPI" *ngIf="hasEmployees">
                     <app-job-kpi *ngIf="selectedIndex===1"></app-job-kpi>
+                </mat-tab> -->
+                <mat-tab  label="KPI" *ngIf="hasEmployees">
+                    <app-updated-job-kpi *ngIf="selectedIndex===1"></app-updated-job-kpi>
                 </mat-tab>
         </mat-tab-group>
     </div>

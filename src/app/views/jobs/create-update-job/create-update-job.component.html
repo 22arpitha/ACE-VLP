@@ -355,17 +355,17 @@
             <td>
               <mat-form-field appearance="outline" [ngClass]="{ 'highlight-background': !shouldDisableFields}" class="w-100 custom-mat-form-field">
                 <mat-label>Select Employee <b class="r-star">*</b></mat-label>
-                <mat-select formControlName="employee"  autocomplete="off" placeholder="Select" panelClass="custom-select-panel" (selectionChange)="onEmployeeChange($event,i)" (openedChange)="onSelectOpened($event, i)">
+                <mat-select formControlName="employee"  autocomplete="off" placeholder="Select" panelClass="custom-select-panel" (selectionChange)="onEmployeeChange($event,((currentPage - 1) * pageSize + i))" (openedChange)="onSelectOpened($event,((currentPage - 1) * pageSize + i))">
                   
                   <!-- Search input field inside the panel -->
                   <div class="mat-select-search-wrapper d-flex">
-                    <input matInput [(ngModel)]="searchEmployeeTextList[i]" [ngModelOptions]="{standalone: true}" placeholder="Search Employee" class="mat-select-search" (ngModelChange)="filterEmployeeList(i)">
-                    <mat-icon class="search-icon" *ngIf="!searchEmployeeTextList[i]">search</mat-icon>
-                    <mat-icon class="search-icon" *ngIf="searchEmployeeTextList[i]" type="button" (click)="clearSearch('emp',i)">close</mat-icon>
+                    <input matInput [(ngModel)]="searchEmployeeTextList[((currentPage - 1) * pageSize + i)]" [ngModelOptions]="{standalone: true}" placeholder="Search Employee" class="mat-select-search" (ngModelChange)="filterEmployeeList(((currentPage - 1) * pageSize + i))">
+                    <mat-icon class="search-icon" *ngIf="!searchEmployeeTextList[((currentPage - 1) * pageSize + i)]">search</mat-icon>
+                    <mat-icon class="search-icon" *ngIf="searchEmployeeTextList[((currentPage - 1) * pageSize + i)]" type="button" (click)="clearSearch('emp',((currentPage - 1) * pageSize + i))">close</mat-icon>
                   </div>
               
                   <!-- Filtered options -->
-                  <mat-option *ngFor="let emp of filteredEmployeeLists[i]" [value]="emp?.user_id">
+                  <mat-option *ngFor="let emp of filteredEmployeeLists[((currentPage - 1) * pageSize + i)]" [value]="emp?.user_id">
                     {{ emp?.user__full_name }}
                   </mat-option>
                 </mat-select>
@@ -377,17 +377,17 @@
             <td>
               <mat-form-field appearance="outline" [ngClass]="{ 'highlight-background': !shouldDisableFields}" class="w-100 custom-mat-form-field">
                 <mat-label>Select Manager <b class="r-star">*</b></mat-label>
-                <mat-select formControlName="manager"  autocomplete="off" placeholder="Select" panelClass="custom-select-panel" (openedChange)="onManagerSelectOpened($event, i)">
+                <mat-select formControlName="manager"  autocomplete="off" placeholder="Select" panelClass="custom-select-panel" (openedChange)="onManagerSelectOpened($event, ((currentPage - 1) * pageSize + i))">
                   
                   <!-- Search input field inside the panel -->
                   <div class="mat-select-search-wrapper d-flex">
-                    <input matInput [(ngModel)]="searchManagerTextList[i]" [ngModelOptions]="{standalone: true}" placeholder="Search Manager" class="mat-select-search" (ngModelChange)="filteredManagerList(i)">
-                    <mat-icon class="search-icon" *ngIf="!searchManagerTextList[i]">search</mat-icon>
-                    <mat-icon class="search-icon" *ngIf="searchManagerTextList[i]" type="button" (click)="clearSearch('man',i)">close</mat-icon>
+                    <input matInput [(ngModel)]="searchManagerTextList[((currentPage - 1) * pageSize + i)]" [ngModelOptions]="{standalone: true}" placeholder="Search Manager" class="mat-select-search" (ngModelChange)="filteredManagerList(((currentPage - 1) * pageSize + i))">
+                    <mat-icon class="search-icon" *ngIf="!searchManagerTextList[((currentPage - 1) * pageSize + i)]">search</mat-icon>
+                    <mat-icon class="search-icon" *ngIf="searchManagerTextList[((currentPage - 1) * pageSize + i)]" type="button" (click)="clearSearch('man',((currentPage - 1) * pageSize + i))">close</mat-icon>
                   </div>
               
                   <!-- Filtered options -->
-                  <mat-option *ngFor="let emp of filteredManagerLists[i]" [value]="emp?.user_id">
+                  <mat-option *ngFor="let emp of filteredManagerLists[((currentPage - 1) * pageSize + i)]" [value]="emp?.user_id">
                     {{ emp?.user__full_name }}
                   </mat-option>
                 </mat-select>
@@ -397,7 +397,7 @@
               </div>      
             </td>
             <td >
-              <mat-checkbox color="primary" class="example-margin" [disabled]="user_role_name === 'Accountant' ? true : false || !shouldDisableFields"  formControlName="is_primary" (change)="isPrimarySelection($event,i)" ></mat-checkbox>
+              <mat-checkbox color="primary" class="example-margin" [disabled]="user_role_name === 'Accountant' ? true : false || !shouldDisableFields"  formControlName="is_primary" (change)="isPrimarySelection($event,((currentPage - 1) * pageSize + i))" ></mat-checkbox>
             </td>
             <td>
               <!-- *ngIf="user_role_name !== 'Accountant' && (user_role_name === 'Admin' || (user_role_name !== 'Admin' && shouldDisableFields))" -->
