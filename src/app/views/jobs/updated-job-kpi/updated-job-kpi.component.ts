@@ -49,7 +49,7 @@ initialFormValue:any;
           private formErrorScrollService:FormErrorScrollUtilityService) {
             this.user_role_name = sessionStorage.getItem('user_role_name');
             if(this.activeRoute.snapshot.paramMap.get('id')){
-              this.common_service.setTitle('Update ' + this.BreadCrumbsTitle)
+              this.common_service.setTitle('Update ' + 'KPI')
               this.job_id= this.activeRoute.snapshot.paramMap.get('id')
               this.getAllEmployeeList();
               this.getModuleAccess();
@@ -167,7 +167,7 @@ private createMrpCrpGroup(): FormGroup {
     const employeesDetailsArray = this.jobKPIFormGroup.get('data') as FormArray;
     employeesDetailsArray?.clear();
     combinedResult['employees']?.forEach((emp,index) => {
-    const detailsArray = this.fb.array([]);
+    const detailsArray = this.fb.array([this.createMrpCrpGroup()]);
     const employeeForm = this.fb.group({
       employee: [{ value: emp?.employee, disabled: true}],
       processing_time: [{ value: emp?.kpi ? emp?.kpi?.processing_time:formattedbudget_time?.toString(), disabled: true}],
@@ -210,6 +210,7 @@ employeesDetailsArray.push(employeeForm);
 
       // Step 4: Add details items if they exist
      if (emp.kpi.details && emp.kpi.details.length >= 1) {
+  (currentGroup.get('details') as FormArray).clear();
   emp.kpi.details.forEach((detail,detailIndex) => {
     const detailGroup = this.createMrpCrpGroup();
     detailGroup.patchValue({
@@ -284,8 +285,7 @@ if (detail && detail?.crpFile) {
           crp_file_name: null,
         });
         detailGroup.get('crpFile')?.disable();
-      }
-     currentGroup.get('details')?.setErrors(null); 
+      } 
     (currentGroup.get('details') as FormArray).push(detailGroup);
   });
 }

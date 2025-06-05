@@ -88,8 +88,51 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    width: 10em;
+    // width: 10em;
   }
   .employee-details-table ::ng-deep .image-container mat-label a{
     color: #87CEEB;
   }
+
+  .kpi-estimated-time-content{
+    width: 160px;
+    padding: 0px;
+    display: flex !important;
+    justify-content: space-between !important;
+    & mat-form-field{
+    width: 75px !important;
+    } 
+  }
+
+td.estimated-time .image-container {
+width: 160px !important;
+  }
+
+
+    .mrp-content,.crp-content{
+    padding: 0px;
+    display: flex !important;
+    justify-content: space-between !important;
+    border-bottom: 1px solid #f2f2f2;
+    & mat-form-field{
+    width: 70px !important;
+    } 
+    & .image-container{
+    width: 160px !important;
+    height: 40px !important;
+    margin-top: 15px;
+    }
+    }
+    .mrp-crp-action-content{
+    display:flex;
+    gap: 2px;
+    height: 75px;
+    align-items: center;
+    }
+
+    .emp-name-text{
+    white-space: nowrap;
+    line-break: auto;
+    font-size: 14px;
+    font-weight:700;
+    }

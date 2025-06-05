@@ -3,7 +3,7 @@
     <div class="row mx-0 my-3 px-2">
 <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0">
   <section class="settings-table-bg" >
-    <div class="row row mx-0 px-0" *ngIf="!isEditItem && job_id">
+    <div class="row mx-0 px-0" *ngIf="!isEditItem && job_id">
         <div class="col-12 col-sm-12 col-md-12 col-lg-12 my-2 pl-0 pr-5 text-end">
           <button mat-raised-button class="proceedbtn mat-btn-s" type="button" (click)="editJobKPIDetails()" *ngIf="user_role_name !='Admin' && accessPermissions[0]?.update || user_role_name === 'Admin'">Edit</button>
         </div>
@@ -11,38 +11,59 @@
       <form [formGroup]="jobKPIFormGroup">
       <div class="row mx-0 my-1 px-0">
         <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0 table-responsive table-responsive-sm table-responsive-md" *ngIf="employeeFormArray.controls.length >= 1">
-<mat-accordion formArrayName="data" class="contact-form-content">
-  <mat-expansion-panel *ngFor="let emp of currentPageRows; let i = index" [formGroupName]="(currentPage - 1) * pageSize + i">
-    <mat-expansion-panel-header style="display: flex; justify-content: space-between; align-items: center;">
-    <mat-panel-title>Employee:&nbsp;<span> {{ getEmployeeName(emp.get('employee')?.value) }}</span></mat-panel-title>  
-    </mat-expansion-panel-header>
-    <table class="table table-list employee-details-table">
-    <thead>
+<table class="table table-list employee-details-table">
+   <thead>
         <tr>
-            <th>Estimated Time</th>
-            <th>Points</th>
+            <th>Staff</th>
+            <th style="width: 25% !important;">Estimated Time</th>
+            <th style="width: 30% !important;">Mrp</th>
+            <th style="width: 30% !important;">Crp</th>
+            <th *ngIf="isEditItem" style="width: 5% !important;">Action</th>
         </tr>
     </thead>
-    <tbody>
-        <tr>
-            <td class="align-content-center">
-                <div class="row mx-0 my-1 px-0 justify-content-center">
- 
-                            <mat-form-field appearance="outline" class="w-100 custom-mat-form-field px-0">
+    <!-- <tbody>
+      <tr>
+        <td><div class="row">
+        <div class="col-12">-</div>
+      </div></td>
+        <td><div class="row d-flex">
+<div class="col-6">-</div>
+<div class="col-6">-</div>
+        </div>
+      <div class="row">
+        <div class="col-12">-</div>
+      </div></td>
+      <td><div class="row d-flex">
+<div class="col-4">-</div>
+<div class="col-8">-</div>
+        </div>
+      </td>
+      <td><div class="row d-flex">
+<div class="col-4">-</div>
+<div class="col-8">-</div>
+        </div></td>
+        <td>-</td>
+      </tr>
+    </tbody> -->
+    <tbody formArrayName="data">
+        <tr *ngFor="let emp of currentPageRows; let i = index" [formGroupName]="(currentPage - 1) * pageSize + i">
+          <td class="align-content-center">
+            <label for=""><span><p class="emp-name-text">{{getEmployeeName(emp?.get('employee')?.value) | titlecase}}</p>
+          </span></label></td>
+          <td class="align-content-center estimated-time">
+            <div class="kpi-estimated-time-content">
+                          <mat-form-field appearance="outline" class="custom-mat-form-field px-0">
                                 <mat-label>Processing Time</mat-label>
                                 <input matInput type="text" placeholder="00:00"  maxlength="6" formControlName="processing_time" autocomplete="off" (input)="formatProcessingTime($event,i)" (focusout)="defaultProcessingTime($event,i)" >
                               </mat-form-field>
-                        </div>
-                        <div class="row mx-0 my-1 px-0 justify-content-center">
-                              <mat-form-field appearance="outline" class="w-100 custom-mat-form-field px-0">
+                        <mat-form-field appearance="outline" class="custom-mat-form-field px-0">
                                 <mat-label>Review Time</mat-label>
                                 <input matInput type="text" placeholder="000:00"  maxlength="6" formControlName="review_time" autocomplete="off" (input)="formatReviewingTime($event,i)" (focusout)="defaultReviewTime($event,i)" >
                               </mat-form-field> 
-                        </div>
-                        <div class="row mx-0 my-1 px-0 justify-content-center">
-                            <input type="file" accept=".xlsx,.xls,.doc,.docx,.pdf" formControlName="budget_file" #fileInput
+            </div>
+                <input  type="file" accept=".xlsx,.xls,.doc,.docx,.pdf" formControlName="budget_file" #fileInput
                             (change)="onBudgetFileSelected($event,i)" hidden>
-                          <div class="image-container w-100 d-flex justify-content-between align-items-center"
+                          <div class="image-container d-flex justify-content-between align-items-center"
                             style="padding: 1px 15px;"
                             [ngClass]="{'is-invalid': emp?.get('budget_file')?.touched && emp?.get('budget_file')?.invalid}">
                             <mat-label *ngIf="selectedBudgetFile[((currentPage - 1) * pageSize + i)] && selectedBudgetFile[((currentPage - 1) * pageSize + i)]?.name" [ngbTooltip]="selectedBudgetFile[((currentPage - 1) * pageSize + i)]?.name" ><a type="button" (click)="openFileInNewTab('budget',i)">{{selectedBudgetFile[((currentPage - 1) * pageSize + i)]?.name}}</a></mat-label>
@@ -57,32 +78,21 @@
                             style="font-size: 11px;padding-left: 10px;color:#f44336">
                             <span *ngIf="emp?.get('budget_file')?.errors?.['accept']">Invalid file type. Please upload .xlsx, .xls, .doc, .docx, .pdf file.</span>
                             <span *ngIf="emp?.get('budget_file')?.errors?.['maxSize']">File size exceeds 10MB.</span>
-                          </div>
-                        </div>                
+                          </div>                
             </td>
-            <td formArrayName="details">
-                <table class="table table-list">  
-                    <thead>
-                        <tr>
-                            <th>MRP</th>
-                            <th>CRP</th>
-                            <th *ngIf="isEditItem">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
- <tr  *ngFor="let mrpCrpitem of mrpDetails(((currentPage - 1) * pageSize + i)).controls; let j = index" [formGroupName]="j">
-                            <td> 
-                              <div class="mx-0 my-1 px-0 justify-content-center">
-                        <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+                    <td>
+              <ng-container formArrayName="details">
+              <ng-container *ngFor="let mrpCrpitem of mrpDetails(((currentPage - 1) * pageSize + i)).controls; let j = index" [formGroupName]="j" class="border-bottom-1">
+ <div class="mrp-content">
+                        <mat-form-field appearance="outline" class="custom-mat-form-field">
                         <mat-label>MRP {{ j + 1 }}</mat-label>
                         <input matInput type="number" placeholder="Enter MRP {{ j + 1 }}" formControlName="mrp" maxlength="3" minlength="1" autocomplete="off" (focusout)="setDefaultValueIfEmpty($event, ((currentPage - 1) * pageSize + i), j, 'mrp')" (keypress)="validateKeyPress($event)">
                        
                       </mat-form-field> 
-                    </div>
-                   <div class="row mx-0 my-1 px-0 justify-content-center">
+                      <div class="row mx-0 my-1 px-0 justify-content-center">
                         <input type="file" accept=".xlsx,.xls,.doc,.docx,.pdf" formControlName="mrpFile" #mrpfileInput
                         (change)="onMrpFileSelected($event,((currentPage - 1) * pageSize + i),j)" hidden [attr.data-row]="((currentPage - 1) * pageSize + i)" [attr.data-mrp]="j" [required]="mrpCrpitem?.get('mrp')?.value > 0 && !selectedMrpFile?.[((currentPage - 1) * pageSize + i)]?.[j]">
-                      <div class="image-container w-100 d-flex justify-content-between align-items-center"
+                      <div class="image-container d-flex justify-content-between align-items-center"
                         style="padding: 1px 15px;"
                         [ngClass]="{'is-invalid': mrpCrpitem?.get('mrpFile')?.touched && mrpCrpitem?.get('mrpFile')?.invalid}">
                         <mat-label *ngIf="selectedMrpFile?.[((currentPage - 1) * pageSize + i)]?.[j] && selectedMrpFile?.[((currentPage - 1) * pageSize + i)]?.[j]?.name" [ngbTooltip]="selectedMrpFile?.[((currentPage - 1) * pageSize + i)]?.[j]?.name" ><a type="button" (click)="openFileInNewTab('mrp',((currentPage - 1) * pageSize + i),j)">{{selectedMrpFile?.[((currentPage - 1) * pageSize + i)]?.[j]?.name}}</a></mat-label>
@@ -101,19 +111,28 @@
   MRP File is required when MRP > 0
 </span>  
                       </div>
-         
                        </div>
-                    </td>
-                            <td><div class="mx-0 my-1 px-0 justify-content-center"> 
-                      <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+                    </div>
+                   
+              </ng-container>
+
+            </ng-container>
+            <tfoot>
+  <tr>
+    <td><strong>Total MRP:</strong>&nbsp;{{getTotalMrpValue(i)}}</td></tr></tfoot>
+            </td>
+                    <td>
+                <ng-container formArrayName="details">
+              <ng-container *ngFor="let mrpCrpitem of mrpDetails(((currentPage - 1) * pageSize + i)).controls; let j = index" [formGroupName]="j" class="border-bottom-1">
+ <div class="crp-content"> 
+                      <mat-form-field appearance="outline" class="custom-mat-form-field">
                       <mat-label>CRP {{ j + 1 }}</mat-label>
                       <input matInput type="number" placeholder="Enter CRP {{ j + 1 }}" formControlName="crp" autocomplete="off" maxlength="3" minlength="1" (focusout)="setDefaultValueIfEmpty($event, ((currentPage - 1) * pageSize + i), j, 'mrp')" (keypress)="validateKeyPress($event)">
                     </mat-form-field> 
-                  </div>
-                  <div class="mx-0 my-1 px-0 justify-content-center">
+                    <div class="mx-0 my-1 px-0 justify-content-center">
                       <input type="file" accept=".xlsx,.xls,.doc,.docx,.pdf" formControlName="crpFile" #crpfileInput
                       (change)="onCrpFileSelected($event,((currentPage - 1) * pageSize + i),j)" hidden [attr.data-row]="((currentPage - 1) * pageSize + i)" [attr.data-mrp]="j" [required]="mrpCrpitem?.get('crp')?.value > 0 && !selectedCrpFile?.[((currentPage - 1) * pageSize + i)]?.[j]">
-                    <div class="image-container w-100 d-flex justify-content-between align-items-center"
+                    <div class="image-container d-flex justify-content-between align-items-center"
                       style="padding: 1px 15px;"
                       [ngClass]="{'is-invalid': mrpCrpitem?.get('crpFile')?.touched && mrpCrpitem?.get('crpFile')?.invalid}">
                       <mat-label *ngIf="selectedCrpFile?.[((currentPage - 1) * pageSize + i)]?.[j] && selectedCrpFile?.[((currentPage - 1) * pageSize + i)]?.[j]?.name" [ngbTooltip]="selectedCrpFile?.[((currentPage - 1) * pageSize + i)]?.[j]?.name"><a type="button" (click)="openFileInNewTab('crp',((currentPage - 1) * pageSize + i),j)">{{selectedCrpFile?.[((currentPage - 1) * pageSize + i)]?.[j]?.name}}</a></mat-label>
@@ -133,45 +152,36 @@
 </span>  
                     </div>
                     
-                  </div></td>
-                            <td class="text-center" *ngIf="isEditItem">
-                            <ng-container>
-                        <img src="../../../../assets/images/Edit.svg" class="icon-image" type="button" container="body"
+                  </div>
+                  </div>
+                  
+              </ng-container>
+            </ng-container>
+            <tfoot>
+  <tr>
+    <td><strong>Total CRP:</strong>&nbsp;{{getTotalCrpValue(i)}}</td></tr></tfoot>
+            </td>
+                    <td *ngIf="isEditItem" class="align-content-center">
+                                      <ng-container formArrayName="details">
+              <ng-container *ngFor="let mrpCrpitem of mrpDetails(((currentPage - 1) * pageSize + i)).controls; let j = index" [formGroupName]="j" class="border-bottom-1">
+ <div class="mrp-crp-action-content">
+<img src="../../../../assets/images/Edit.svg" class="icon-image" type="button" container="body"
                           ngbTooltip="Edit"  *ngIf="mrpCrpitem?.get('mrp').disabled" (click)="editMrpCrpItem(((currentPage - 1) * pageSize + i),j)"/>
                           <img src="../../../../assets/images/tick.svg" class="icon-image" type="button" container="body"
                           ngbTooltip="Save" *ngIf="mrpCrpitem?.get('mrp').enabled" (click)="saveMrpCrpItem(((currentPage - 1) * pageSize + i),j)" />
                           <img  src="../../../../assets/images/Delete.svg" class="icon-image" type="button" container="body"
-                          ngbTooltip="Delete"  (click)="deleteMrpCrpItem(((currentPage - 1) * pageSize + i),j)"/>
-                    </ng-container>    
-                            </td>
-                        </tr>
-
-                    </tbody>
-                   <tfoot>
-  <tr>
-    <td><strong>Total MRP:</strong>&nbsp;{{getTotalMrpValue(i)}}</td>
-    <td><strong>Total CRP:</strong>&nbsp;{{getTotalCrpValue(i)}}</td>
-    <td *ngIf="isEditItem">
-      <ng-container *ngIf="mrpDetails(((currentPage - 1) * pageSize + i)).controls.length<=4">
-        <button mat-button class="cancel-button mat-btn-s" [disabled]="!isEditItem" (click)="addMrpCrpItem(((currentPage - 1) * pageSize + i))" *ngIf="mrpDetails(((currentPage - 1) * pageSize + i)).controls.length < 5">
-        Add Mrp & Crp
-      </button>
-      </ng-container>
-      
-      <ng-container *ngIf="mrpDetails(((currentPage - 1) * pageSize + i)).controls.length===5">
-        -
-      </ng-container>
-    </td>
-  </tr>
-</tfoot>
-                </table>
+                          ngbTooltip="Delete"  (click)="deleteMrpCrpItem(((currentPage - 1) * pageSize + i),j)" *ngIf="mrpDetails(((currentPage - 1) * pageSize + i)).controls.length >= 2"/>
+                    <img src="../../../../assets/images/addnew.svg" class="icon-image" type="button" container="body"
+                ngbTooltip="add" (click)="addMrpCrpItem(((currentPage - 1) * pageSize + i))" *ngIf="j === mrpDetails(((currentPage - 1) * pageSize + i)).controls.length-1 && mrpDetails(((currentPage - 1) * pageSize + i)).controls.length < 5"/>
+                        
+ </div>         
+             </ng-container>
+            </ng-container>
             </td>
+ 
         </tr>
-    </tbody>
+      </tbody>
 </table>
-</mat-expansion-panel>
-</mat-accordion>
-
         </div>
         </div>
         <div class="row mx-0 my-1 px-0" *ngIf="employeeFormArray.controls.length >= 1">
