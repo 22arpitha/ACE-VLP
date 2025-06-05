@@ -47,11 +47,13 @@ export class JobStatusReportComponent implements OnInit {
   clientName: { id: any; name: string; }[];
   jobName: { id: any; name: string; }[];
   groupName: { id: any; name: string; }[];
+  statusName: { id: any; name: string; }[];
   selectedClientIds: any = [];
   selectedJobIds: any = [];
   selectedGroupIds: any = [];
   selectedDate: string;
   jobAllocationDate: any;
+  selectedStatusIds: any = [];
   selectedStatusDate: any;
   formattedData: any = [];
  constructor(
@@ -63,6 +65,7 @@ export class JobStatusReportComponent implements OnInit {
     this.getJobList();
     this.getGroupList();
     this.getClienList();
+    this.getStatusList();
     }
 
    async ngOnInit() {
@@ -87,6 +90,19 @@ export class JobStatusReportComponent implements OnInit {
     )
   }
 
+  getStatusList(){
+  this.api.getData(`${environment.live_url}/${environment.settings_job_status}/`).subscribe((res: any) => {
+    if(res){
+      this.statusName = res?.map((item: any) => ({
+        id: item.id,
+        name: item.status_name
+      }));
+    }
+  })
+  // console.log('statusName',this.statusName);
+  return this.statusName;
+}
+
    // Called when user changes page number from the dynamic table
  onTableDataChange(event: any) {
    const page = event;
@@ -100,7 +116,8 @@ export class JobStatusReportComponent implements OnInit {
      job_ids: this.selectedJobIds,
      group_ids: this.selectedGroupIds,
      job_allocation_date: this.jobAllocationDate,
-     job_status_date:this.selectedStatusDate
+     job_status_date:this.selectedStatusDate,
+     job_status: this.selectedStatusIds,
    });
  }
 
@@ -118,7 +135,8 @@ export class JobStatusReportComponent implements OnInit {
        job_ids: this.selectedJobIds,
        group_ids: this.selectedGroupIds,
        job_allocation_date: this.jobAllocationDate,
-       job_status_date:this.selectedStatusDate
+       job_status_date:this.selectedStatusDate,
+       job_status: this.selectedStatusIds,
      });
    }
 
@@ -151,6 +169,7 @@ export class JobStatusReportComponent implements OnInit {
           page: this.page,
           pageSize: this.tableSize,
           searchTerm: this.term,
+          job_status: this.selectedStatusIds
         });
        break;
        case 'filter':
@@ -169,7 +188,8 @@ export class JobStatusReportComponent implements OnInit {
           job_ids: this.selectedJobIds,
           group_ids: this.selectedGroupIds,
           job_allocation_date: this.jobAllocationDate,
-          job_status_date:this.selectedStatusDate
+          job_status_date:this.selectedStatusDate,
+          job_status: this.selectedStatusIds,
         });
       break;
       case 'sendEmail':
@@ -188,12 +208,14 @@ export class JobStatusReportComponent implements OnInit {
         job_ids: this.selectedJobIds,
         group_ids: this.selectedGroupIds,
         job_allocation_date: this.jobAllocationDate,
-        job_status_date:this.selectedStatusDate
+        job_status_date:this.selectedStatusDate,
+        job_status: this.selectedStatusIds,
       });
    }
  }
 
  onApplyFilter(filteredData: any[], filteredKey: string): void {
+  // console.log('filteredKey',filteredKey)
   if (filteredKey === 'client-ids') {
    this.selectedClientIds = filteredData;
     if(filteredData && filteredData.length===0 || filteredData.length>1){
@@ -210,11 +232,14 @@ export class JobStatusReportComponent implements OnInit {
   if (filteredKey === 'group-ids') {
     this.selectedGroupIds = filteredData;
   }
-  if (filteredKey === 'job-status-ids') {
+  if (filteredKey === 'job_status_date') {
     this.selectedStatusDate = filteredData;
   }
-  if (filteredKey === 'job_status_date') {
+  if (filteredKey === 'job_allocation_date') {
     this.jobAllocationDate = filteredData;
+  }
+  if (filteredKey === 'job-status-ids') {
+    this.selectedStatusIds = filteredData;
   }
   this.getTableData({
     page: 1,
@@ -224,7 +249,8 @@ export class JobStatusReportComponent implements OnInit {
     job_ids: this.selectedJobIds,
     group_ids: this.selectedGroupIds,
     job_allocation_date: this.jobAllocationDate,
-    job_status_date:this.selectedStatusDate
+    job_status_date:this.selectedStatusDate,
+    job_status: this.selectedStatusIds,
   });
 }
 onApplyDateFilter(filteredDate:string, filteredKey: string): void {
@@ -310,7 +336,7 @@ getClienList(){
       }
     })}
  // Fetch table data from API with given params
- async getTableData(params?: { page?: number; pageSize?: number; searchTerm?: string;client_ids?:any;job_ids?:any;group_ids?:any;job_allocation_date?:any;job_status_date?:any }) {
+ async getTableData(params?: { page?: number; pageSize?: number; searchTerm?: string;client_ids?:any;job_ids?:any;group_ids?:any;job_allocation_date?:any;job_status_date?:any,job_status?: any[]; }) {
   let finalQuery;
   this.formattedData = []; // Initialize/clear
    const page = params?.page ?? this.page;
@@ -333,6 +359,8 @@ getClienList(){
             finalQuery += `&job-allocation-date=[${params.job_allocation_date}]`;
           }if (params?.job_status_date) {
             finalQuery += `&job-status-date=[${params.job_status_date}]`;
+          }if (params?.job_status?.length) {
+            finalQuery += `&job-status-ids=[${params.job_status.join(',')}]`;
           }
 
       // Inner API call for actual table data
@@ -354,7 +382,9 @@ getClienList(){
                   filterOptions = this.jobName;
                 }else if (col.key === 'group_name') {
                   filterOptions = this.groupName;
-                }
+                }else if (col.key === 'job_status_name') {
+                   filterOptions = this.statusName;
+                 }
               }
               return { ...col, filterOptions };
             }),
@@ -383,6 +413,9 @@ getClienList(){
                       if (col.filterable) {
                         if (col.key === 'client_name') { filterOptions = this.clientName; }
                         else if (col.key === 'job_name') { filterOptions = this.jobName; }
+                         else if (col.key === 'job_status_name') {
+                   filterOptions = this.statusName;
+                 }
                         else if (col.key === 'group_name') {
                   filterOptions = this.groupName;
                 }
@@ -425,7 +458,8 @@ getClienList(){
        job_ids: this.selectedJobIds,
        group_ids: this.selectedGroupIds,
        job_allocation_date: this.jobAllocationDate,
-       job_status_date:this.selectedStatusDate
+       job_status_date:this.selectedStatusDate,
+       job_status: this.selectedStatusIds,
      });
    }
 

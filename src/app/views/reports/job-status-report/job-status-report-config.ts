@@ -43,8 +43,12 @@ export const tableColumns  = [
     type:'date',
   },
   {
-    label: 'Status',
+   label: 'Status',
     key: 'job_status_name',
+    keyId: 'job_status',
+    paramskeyId: 'job-status-ids',
+    filterable: true,
+    filterType: 'multi-select',
     sortable: true
   },
   {

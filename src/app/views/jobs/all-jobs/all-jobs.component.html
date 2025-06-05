@@ -253,14 +253,14 @@
                       <td (click)="edit(item)" *ngIf="isColumnVisible('manager')">{{getManagerName(item?.employees) || '-'}}</td>
                           <td *ngIf="isColumnVisible('status_name')">
                             <mat-select panelClass="custom-select-dropdown" class="mat-select-table editable-cell" [ngModel]="item?.job_status" (selectionChange)="onStatusChange(item, $event)">
-                                <mat-option *ngFor="let status of allJobStatus" [value]="status?.id">
+                                <mat-option *ngFor="let status of allJobStatus; let i = index" [value]="status?.id" [disabled]="jobStatusValidation(item,i)">
                                   {{ status?.status_name }}
                                 </mat-option>
                               </mat-select>
                           </td>
                           <td *ngIf="isColumnVisible('percentage_of_completion')">
                            <div class="d-flex justify-content-around">
-                            <div>
+                            <div class="input-css">
                                 <input matInput type="number" class="editable-cell" [(ngModel)]="item.percentage_of_completion" (ngModelChange)="validatePercentage(item)"  (keypress)="validateKeyPress($event)" [class.is-invalid]="item.isInvalid"
                                 maxlength="3" >
                                 <div *ngIf="item.isInvalid" class="text-danger">

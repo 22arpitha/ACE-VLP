@@ -45,6 +45,7 @@ export class AllJobsComponent implements OnInit {
   tableSizes = [50,75,100];
   currentIndex: any;
   allJobsList: any = [];
+  internalReviewOneIndex:any
   allJobStatus: any = [];
   accessPermissions = []
   user_id: any;
@@ -167,6 +168,7 @@ export class AllJobsComponent implements OnInit {
           element['valueChanged']=false
         })
         this.allJobStatus = data._res_job_status;
+        this.internalReviewOneIndex = this.allJobStatus.findIndex(status => status.status_name.toLowerCase() === 'internal review 1');
         this.jobStatusList('True');
       }
       if(data._res_job_type && data._res_job_type?.length>=1){
@@ -575,6 +577,7 @@ jobStatusList(status:any){
       : jobstatus?.status_name === "Cancelled" || jobstatus?.status_name === "Completed").map((status:any) => ({
       id: status?.status_name,name: status?.status_name
     }))
+    
 }
 
   setDateFilterColumn(event){
@@ -619,4 +622,26 @@ jobStatusList(status:any){
   this.columns.forEach(col => col.visible = true);
 }
 
+jobStatusValidation(data: any, index: any): boolean {
+  if (data.estimated_time == '00:00' && index >= this.internalReviewOneIndex) {
+    return true;
+  }
+  if (this.userRole !== 'Admin') {
+    if (data.only_admin_can_change_job_status) {
+      return true;
+    }
+    if (!data.only_admin_can_change_job_status && index >= this.internalReviewOneIndex) {
+      return true;
+    }
+  } else {
+    if (index >= this.internalReviewOneIndex) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+
+// (userRole!='Admin' && item?.only_admin_can_change_job_status) && item.estimated_time=='00:00' && i >= internalReviewOneIndex
 }

@@ -502,10 +502,11 @@ onManagerSelectOpened(opened: boolean, index: number): void {
             const status = job.status_name.toLowerCase();
             return status !== 'completed' && status !== 'cancelled';
           })
-          let data = res.filter(job => {
-            const status = job.status_name.toLowerCase();
+          let data = res.find(job => {
+            const status = job?.status_name?.toLowerCase?.();
             return status === 'yet to start';
-          })
+          });
+          console.log(data)
           this.jobFormGroup.patchValue({ job_status: data[0].id })
           this.jobFormGroup.patchValue({ percentage_of_completion: data[0].percentage_of_completion })
         }

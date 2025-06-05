@@ -35,12 +35,12 @@
   border-radius: 8px !important;
   padding: 4px 0px !important;
 }
-::ng-deep .jobs input.mat-input-element {
-  margin-top: 0;
-  border-radius: 8px;
-  border: 1px solid #929292;
-  padding: 4px 9px;
-  width: 70px;
+::ng-deep .jobs .input-css input.mat-input-element {
+  margin-top: 0 !important;
+  border-radius: 8px !important;
+  border: 1px solid #929292 !important;
+  padding: 4px 9px !important;
+  width: 70px !important;
 }
 .status-col{
   width: 120px;
