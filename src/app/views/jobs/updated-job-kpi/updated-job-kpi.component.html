@@ -54,7 +54,7 @@
             <div class="kpi-estimated-time-content">
                           <mat-form-field appearance="outline" class="custom-mat-form-field px-0">
                                 <mat-label>Processing Time</mat-label>
-                                <input matInput type="text" placeholder="00:00"  maxlength="6" formControlName="processing_time" autocomplete="off" (input)="formatProcessingTime($event,i)" (focusout)="defaultProcessingTime($event,i)" >
+                                <input matInput type="text" placeholder="00:00" maxlength="6" formControlName="processing_time" autocomplete="off" (input)="formatProcessingTime($event,i)" (focusout)="defaultProcessingTime($event,i)" >
                               </mat-form-field>
                         <mat-form-field appearance="outline" class="custom-mat-form-field px-0">
                                 <mat-label>Review Time</mat-label>
@@ -86,7 +86,7 @@
  <div class="mrp-content">
                         <mat-form-field appearance="outline" class="custom-mat-form-field">
                         <mat-label>MRP {{ j + 1 }}</mat-label>
-                        <input matInput type="number" placeholder="Enter MRP {{ j + 1 }}" formControlName="mrp" maxlength="3" minlength="1" autocomplete="off" (focusout)="setDefaultValueIfEmpty($event, ((currentPage - 1) * pageSize + i), j, 'mrp')" (keypress)="validateKeyPress($event)">
+                        <input matInput type="number" min="0" placeholder="Enter MRP {{ j + 1 }}" formControlName="mrp" maxlength="3" minlength="1" autocomplete="off" (focusout)="setDefaultValueIfEmpty($event, ((currentPage - 1) * pageSize + i), j, 'mrp')" (keypress)="validateKeyPress($event)">
                        
                       </mat-form-field> 
                       <div class="row mx-0 my-1 px-0 justify-content-center">
@@ -127,7 +127,7 @@
  <div class="crp-content"> 
                       <mat-form-field appearance="outline" class="custom-mat-form-field">
                       <mat-label>CRP {{ j + 1 }}</mat-label>
-                      <input matInput type="number" placeholder="Enter CRP {{ j + 1 }}" formControlName="crp" autocomplete="off" maxlength="3" minlength="1" (focusout)="setDefaultValueIfEmpty($event, ((currentPage - 1) * pageSize + i), j, 'mrp')" (keypress)="validateKeyPress($event)">
+                      <input matInput type="number" placeholder="Enter CRP {{ j + 1 }}" min="0" formControlName="crp" autocomplete="off" maxlength="3" minlength="1" (focusout)="setDefaultValueIfEmpty($event, ((currentPage - 1) * pageSize + i), j, 'crp')" (keypress)="validateKeyPress($event)">
                     </mat-form-field> 
                     <div class="mx-0 my-1 px-0 justify-content-center">
                       <input type="file" accept=".xlsx,.xls,.doc,.docx,.pdf" formControlName="crpFile" #crpfileInput

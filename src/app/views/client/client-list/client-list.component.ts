@@ -147,6 +147,8 @@ export class ClientListComponent implements OnInit {
       // }
     }
   public getCurrentClientList(){
+  this.allClientList=[];
+  this.filteredList=[];
   this.isHistory=false;
   this.isCurrent = true;
   let query = `${this.getFilterBaseUrl()}&status=True`;
@@ -164,6 +166,8 @@ export class ClientListComponent implements OnInit {
     }
 
     public getClientHistoryList(){
+      this.allClientList=[];
+      this.filteredList=[];
       this.isCurrent = false;
       this.isHistory=true;
       let query = `${this.getFilterBaseUrl()}&status=False`;
@@ -270,6 +274,7 @@ export class ClientListComponent implements OnInit {
     }
 
     filterData() {
+      
       this.filterQuery = this.getFilterBaseUrl()
       if (this.filters.country.length) {
         this.filterQuery += `&country-ids=[${this.filters.country.join(',')}]`;

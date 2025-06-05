@@ -132,6 +132,8 @@ public getAllRoleList() {
   }
 
 public getActiveEmployeeList(){
+  this.allEmployeeList=[];
+  this.filteredemployeeList=[];
 this.isHistory=false;
 this.isCurrent = true;
  let query = this.getFilterBaseUrl()
@@ -139,6 +141,7 @@ this.isCurrent = true;
 this.apiService.getData(`${environment.live_url}/${environment.employee}/${query}`).subscribe(
       (res: any) => {
         this.allEmployeeList = res?.results;
+        this.filteredemployeeList= res?.results;
         const noOfPages: number = res?.['total_pages']
         this.count = noOfPages * this.tableSize;
         this.count = res?.['total_no_of_record']
@@ -148,6 +151,8 @@ this.apiService.getData(`${environment.live_url}/${environment.employee}/${query
   }
 
   public getInActiveEmployeeList(){
+    this.allEmployeeList=[];
+    this.filteredemployeeList=[];
     this.isCurrent = false;
     this.isHistory=true;
     let query = this.getFilterBaseUrl()

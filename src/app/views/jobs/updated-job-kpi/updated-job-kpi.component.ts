@@ -369,9 +369,10 @@ console.log('controls',this.jobKPIFormGroup.controls);
                 this.formGroupDirective.resetForm();
                 this.formErrorScrollService.resetHasUnsavedValue();
                 this.initialFormValue=this.jobKPIFormGroup?.getRawValue();
+                this.common_service.setJobActiveTabindex(null);
                 setTimeout(() => {
-                  location.reload();
-                }, 300);
+                this.common_service.setJobActiveTabindex(1);
+                }, 100);
                 
               }
             }, (error: any) => {

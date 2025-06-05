@@ -384,6 +384,8 @@ this.allGroupNames =[];
     // }
   }
   getCurrentJobsList() {
+    this.allJobsList=[];
+    this.filteredList=[];
     this.isHistory = false;
     this.isCurrent = true;
      this.jobStatusList('True');
@@ -397,6 +399,8 @@ this.allGroupNames =[];
       this.page = res?.['current_page'];    });
   }
   getJobsHistoryList() {
+    this.allJobsList=[];
+    this.filteredList=[];
     this.isCurrent = false;
     this.isHistory = true;
     this.jobStatusList('False');
