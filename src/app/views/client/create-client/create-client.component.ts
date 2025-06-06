@@ -383,6 +383,8 @@ this.initialFormValue=this.clientFormGroup?.getRawValue();
 
     saveChanges(index: number) {
       const contact = this.contactDetails?.at(index);
+      contact.markAllAsTouched();
+      contact.updateValueAndValidity();
       if(index <=4 && contact?.valid){
         contact?.get('name')?.disable();
         contact?.get('email')?.disable();

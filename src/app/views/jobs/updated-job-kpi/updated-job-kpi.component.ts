@@ -715,12 +715,22 @@ saveMrpCrpItem(rowIndex:number,index: number) {
   const dataArray = this.jobKPIFormGroup.get('data') as FormArray;
   const detailGroup = dataArray?.at(rowIndex).get('details')?.get([index]) as FormGroup;
   if (detailGroup) {
-    detailGroup.get('mrp')?.disable();
-    detailGroup.get('mrpFile')?.disable();
-    detailGroup.get('crp')?.disable();
-    detailGroup.get('crpFile')?.disable();
-  }
+    // Trigger validation for each field
+    Object.keys(detailGroup.controls).forEach(key => {
+      const control = detailGroup.get(key);
+      control?.markAsTouched();
+      control?.updateValueAndValidity();
+    });
+
+    // If group is valid, disable fields
+    if (detailGroup.valid) {
+      detailGroup.get('mrp')?.disable();
+      detailGroup.get('mrpFile')?.disable();
+      detailGroup.get('crp')?.disable();
+      detailGroup.get('crpFile')?.disable();
     }
+    }
+  }
 public getEmployeeName(employeeId: string | null): string {
   if (!employeeId) return 'Selected Employee';
   const emp = this.allEmployeeList.find(e => e.user_id === employeeId);
@@ -733,7 +743,7 @@ const dataArray = this.jobKPIFormGroup.get('data') as FormArray;
   const rowGroup = dataArray.at(index) as FormGroup;
   const mrpCrpList = rowGroup.get('details') as FormArray;
   mrpCrpList.controls.forEach((control)=>{
-   totalMrp +=control.get('mrp').value;
+   totalMrp +=control?.get('mrp')?.value;
   })
 return totalMrp ?? 0;
 }
@@ -743,7 +753,7 @@ let totalMrp:any=0;
   const rowGroup = dataArray.at(index) as FormGroup;
   const mrpCrpList = rowGroup.get('details') as FormArray;
   mrpCrpList.controls.forEach((control)=>{
-   totalMrp +=control.get('crp').value;
+   totalMrp +=control?.get('crp')?.value;
   })
 return totalMrp ?? 0;
 }
