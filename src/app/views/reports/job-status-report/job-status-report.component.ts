@@ -115,7 +115,7 @@ export class JobStatusReportComponent implements OnInit {
      client_ids: this.selectedClientIds,
      job_ids: this.selectedJobIds,
      group_ids: this.selectedGroupIds,
-     job_allocation_date: this.jobAllocationDate,
+     job_allocation_date: this.selectedDate,
      job_status_date:this.selectedStatusDate,
      job_status: this.selectedStatusIds,
    });
@@ -134,7 +134,7 @@ export class JobStatusReportComponent implements OnInit {
        client_ids: this.selectedClientIds,
        job_ids: this.selectedJobIds,
        group_ids: this.selectedGroupIds,
-       job_allocation_date: this.jobAllocationDate,
+       job_allocation_date: this.selectedDate,
        job_status_date:this.selectedStatusDate,
        job_status: this.selectedStatusIds,
      });
@@ -187,7 +187,7 @@ export class JobStatusReportComponent implements OnInit {
           client_ids: this.selectedClientIds,
           job_ids: this.selectedJobIds,
           group_ids: this.selectedGroupIds,
-          job_allocation_date: this.jobAllocationDate,
+          job_allocation_date: this.selectedDate,
           job_status_date:this.selectedStatusDate,
           job_status: this.selectedStatusIds,
         });
@@ -195,6 +195,10 @@ export class JobStatusReportComponent implements OnInit {
       case 'sendEmail':
       this.client_id = event['client_id'] ? event['client_id'] : null;
       this.sendEamils();
+      break;
+      case 'dateRange':
+        // console.log(event.detail, event.key);
+      this.onApplyDateFilter(event.detail,event.key);
       break;
       case 'dateFilter':
       this.onApplyDateFilter(event.detail,event.key);
@@ -248,14 +252,15 @@ export class JobStatusReportComponent implements OnInit {
     client_ids: this.selectedClientIds,
     job_ids: this.selectedJobIds,
     group_ids: this.selectedGroupIds,
-    job_allocation_date: this.jobAllocationDate,
+    job_allocation_date: this.selectedDate,
     job_status_date:this.selectedStatusDate,
     job_status: this.selectedStatusIds,
   });
 }
 onApplyDateFilter(filteredDate:string, filteredKey: string): void {
+  this.selectedDate = filteredDate
  this.formattedData = [];
-  if (filteredKey === 'job_allocation_date') {
+  if (filteredDate['key'] === 'job_allocation_date') {
     this.jobAllocationDate = filteredDate;
   }if (filteredKey === 'job_status_date') {
     this.selectedStatusDate = filteredDate;
@@ -267,7 +272,7 @@ onApplyDateFilter(filteredDate:string, filteredKey: string): void {
     client_ids: this.selectedClientIds,
     job_ids: this.selectedJobIds,
     group_ids: this.selectedGroupIds,
-    job_allocation_date: this.jobAllocationDate,
+    job_allocation_date: this.selectedDate,
     job_status_date:this.selectedStatusDate
   });
 }
@@ -290,9 +295,12 @@ onApplyDateFilter(filteredDate:string, filteredKey: string): void {
       if (this.selectedStatusDate?.length) {
         query += `&job-status-date=[${this.selectedStatusDate.join(',')}]`;
       }
-      if(this.jobAllocationDate?.length){
-        query += `&job-allocation-date=[${this.jobAllocationDate}]`;
+      if(this.selectedDate){
+         query += `&start-date=${this.selectedDate['startDate']}&end-date=${this.selectedDate['endDate']}`
       }
+      // if(this.jobAllocationDate?.length){
+      //   query += `&job-allocation-date=[${this.jobAllocationDate}]`;
+      // }
    const url = `${environment.live_url}/${environment.job_reports}/${query}&job-status=[${this.statusList}]&report-type=job-status-report&file-type=${fileType}`;
    downloadFileFromUrl({
      url,
@@ -356,7 +364,8 @@ getClienList(){
           }if (params?.group_ids?.length) {
             finalQuery += `&group-ids=[${params.group_ids.join(',')}]`;
           }if (params?.job_allocation_date) {
-            finalQuery += `&job-allocation-date=[${params.job_allocation_date}]`;
+            // console.log(params.job_allocation_date)
+             finalQuery += `&start-date=${params.job_allocation_date.startDate}&end-date=${params.job_allocation_date.endDate}`
           }if (params?.job_status_date) {
             finalQuery += `&job-status-date=[${params.job_status_date}]`;
           }if (params?.job_status?.length) {
@@ -457,7 +466,7 @@ getClienList(){
        client_ids: this.selectedClientIds,
        job_ids: this.selectedJobIds,
        group_ids: this.selectedGroupIds,
-       job_allocation_date: this.jobAllocationDate,
+       job_allocation_date: this.selectedDate,
        job_status_date:this.selectedStatusDate,
        job_status: this.selectedStatusIds,
      });

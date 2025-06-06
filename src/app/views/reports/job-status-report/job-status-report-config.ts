@@ -35,11 +35,20 @@ export const tableColumns  = [
     filterType: 'multi-select',
     sortable: true
   },
+  // {
+  //   label: 'Allocated On',
+  //   key: 'job_allocation_date',
+  //   filterable: true,
+  //   filterType: 'date',
+  //   type:'date',
+  // },
   {
     label: 'Allocated On',
     key: 'job_allocation_date',
     filterable: true,
-    filterType: 'date',
+    paramskeyId: 'timesheet-dates',
+    filterType: 'daterange',
+    sortable: true,
     type:'date',
   },
   {

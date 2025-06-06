@@ -248,10 +248,13 @@ export class AllJobsComponent implements OnInit {
       this.userRole === 'manager' ? this.filterQuery += `&manager-ids=[${this.filters.manager.join(',')}]`:
       this.filterQuery += `&manager-ids=[${this.filters.manager.join(',')}]` ;
     }
-
-    if (this.jobAllocationDate) {
-      this.filterQuery += `&job-allocation-date=[${this.jobAllocationDate}]`;
+     
+     if (this.dateRange.start && this.dateRange.end) {
+      this.filterQuery += `&start-date=${this.dateRange.start}&end-date=${this.dateRange.end}`;
     }
+    // if (this.jobAllocationDate) {
+    //   this.filterQuery += `&job-allocation-date=[${this.jobAllocationDate}]`;
+    // }
     if (this.statusDate) {
       this.filterQuery += `&job-status-date=[${this.statusDate}]`;
     }
@@ -591,15 +594,25 @@ jobStatusList(status:any){
   }
   this.filterData()
   }
-  onDateSelected(event: any): void {
+  allocationStartDate(event: any): void {
     // console.log(event)
     const selectedDate = event.value;
     if (selectedDate) {
-     this.jobAllocationDate = this.datePipe.transform(selectedDate, 'yyyy-MM-dd');
+     this.dateRange.start = this.datePipe.transform(selectedDate, 'yyyy-MM-dd');
     }
     this.filterData()
   }
+  allocationEndDate(event: any): void {
+    // console.log(event)
+    const selectedDate = event.value;
+    if (selectedDate) {
+     this.dateRange.end = this.datePipe.transform(selectedDate, 'yyyy-MM-dd');
+    }
+    this.filterData()
+  }
+
   onStatusDateSelected(event: any): void {
+    // console.log(event)
     const selectedDate = event.value;
     if (selectedDate) {
      this.statusDate = this.datePipe.transform(selectedDate, 'yyyy-MM-dd');
