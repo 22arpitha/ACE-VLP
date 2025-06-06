@@ -744,19 +744,19 @@ const dataArray = this.jobKPIFormGroup.get('data') as FormArray;
   const rowGroup = dataArray.at(index) as FormGroup;
   const mrpCrpList = rowGroup.get('details') as FormArray;
   mrpCrpList.controls.forEach((control)=>{
-   totalMrp +=control?.get('mrp')?.value;
+   totalMrp +=Number(control?.get('mrp')?.value);
   })
 return totalMrp ?? 0;
 }
 public getTotalCrpValue(index){
-let totalMrp:any=0;
+let totalCrp:any=0;
  const dataArray = this.jobKPIFormGroup.get('data') as FormArray;
   const rowGroup = dataArray.at(index) as FormGroup;
   const mrpCrpList = rowGroup.get('details') as FormArray;
   mrpCrpList.controls.forEach((control)=>{
-   totalMrp +=control?.get('crp')?.value;
+   totalCrp +=Number(control?.get('crp')?.value);
   })
-return totalMrp ?? 0;
+return totalCrp ?? 0;
 }
 
 }
