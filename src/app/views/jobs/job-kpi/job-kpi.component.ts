@@ -346,15 +346,15 @@ public async UpdateFileFieldData(empData: any) {
       // Handle each file type asynchronously
       if (this.budgetFile && this.budgetFile[index]) {
         empData[index].budget_file = await this.convertFileToBase64(this.budgetFile[index]);
-        empData[index].budget_file_name = this.selectedBudgetFile[index].name || null;
+        empData[index].budget_file_name = this.selectedBudgetFile[index]?.name || null;
       }
       if (this.mrpFile && this.mrpFile[index]) {
         empData[index].mrpFile = await this.convertFileToBase64(this.mrpFile[index]);
-        empData[index].mrp_file_name = this.selectedMrpFile[index].name || null;
+        empData[index].mrp_file_name = this.selectedMrpFile[index]?.name || null;
       }
       if (this.crpFile && this.crpFile[index]) {
         empData[index].crpFile = await this.convertFileToBase64(this.crpFile[index]);
-        empData[index].crp_file_name = this.selectedCrpFile[index].name || null;
+        empData[index].crp_file_name = this.selectedCrpFile[index]?.name || null;
       }
     }
   }

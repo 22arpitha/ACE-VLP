@@ -86,7 +86,7 @@
  <div class="mrp-content">
                         <mat-form-field appearance="outline" class="custom-mat-form-field">
                         <mat-label>MRP {{ j + 1 }}</mat-label>
-                        <input matInput type="number" min="0" placeholder="Enter MRP {{ j + 1 }}" formControlName="mrp" maxlength="3" minlength="1" autocomplete="off" (focusout)="setDefaultValueIfEmpty($event, ((currentPage - 1) * pageSize + i), j, 'mrp')" (keypress)="validateKeyPress($event)">
+                        <input matInput type="text" pattern="[0-9]*"  placeholder="MRP {{ j + 1 }}" formControlName="mrp" [maxlength]="3" [minlength]="1" autocomplete="off" (focusout)="setDefaultValueIfEmpty($event, ((currentPage - 1) * pageSize + i), j, 'mrp')" (keypress)="validateKeyPress($event)">
                        
                       </mat-form-field> 
                       <div class="row mx-0 my-1 px-0 justify-content-center">
@@ -96,7 +96,7 @@
                         style="padding: 1px 15px;"
                         [ngClass]="{'is-invalid': mrpCrpitem?.get('mrpFile')?.touched && mrpCrpitem?.get('mrpFile')?.invalid}">
                         <mat-label *ngIf="selectedMrpFile?.[((currentPage - 1) * pageSize + i)]?.[j] && selectedMrpFile?.[((currentPage - 1) * pageSize + i)]?.[j]?.name" [ngbTooltip]="selectedMrpFile?.[((currentPage - 1) * pageSize + i)]?.[j]?.name" ><a type="button" (click)="openFileInNewTab('mrp',((currentPage - 1) * pageSize + i),j)">{{selectedMrpFile?.[((currentPage - 1) * pageSize + i)]?.[j]?.name}}</a></mat-label>
-                        <mat-label *ngIf="!selectedMrpFile?.[((currentPage - 1) * pageSize + i)]?.[j] && !selectedMrpFile?.[((currentPage - 1) * pageSize + i)]?.[j]?.name" >Upload MRP File</mat-label>
+                        <mat-label *ngIf="!selectedMrpFile?.[((currentPage - 1) * pageSize + i)]?.[j] && !selectedMrpFile?.[((currentPage - 1) * pageSize + i)]?.[j]?.name" >Upload File</mat-label>
                         <button type="button" mat-icon-button (click)="triggerMrpFileInput(((currentPage - 1) * pageSize + i), j)">
                           <i matTooltip="{{selectedMrpFile?.[((currentPage - 1) * pageSize + i)]?.[j] && selectedMrpFile?.[((currentPage - 1) * pageSize + i)]?.[j]?.name ? 'Edit' : 'Upload MRP File'}}"
                             class="{{selectedMrpFile?.[((currentPage - 1) * pageSize + i)]?.[j] && selectedMrpFile?.[((currentPage - 1) * pageSize + i)]?.[j]?.name ? 'bi bi-pencil-fill' : 'bi bi-file-earmark-spreadsheet'}}"
@@ -107,9 +107,7 @@
                         style="font-size: 11px;padding-left: 10px;color:#f44336">
                         <span *ngIf="mrpCrpitem?.get('mrpFile')?.errors?.['accept']">Invalid file type. Please upload .xlsx, .xls, .doc, .docx, .pdf file.</span>
                         <span *ngIf="mrpCrpitem?.get('mrpFile')?.errors?.['maxSize']">File size exceeds 10MB.</span>
-                        <span *ngIf="mrpCrpitem?.get('mrpFile')?.errors?.['required']">
-  MRP File is required when MRP > 0
-</span>  
+                        <span *ngIf="mrpCrpitem?.get('mrpFile')?.errors?.['required']">MRP File is required when MRP > 0.</span>  
                       </div>
                        </div>
                     </div>
@@ -127,7 +125,7 @@
  <div class="crp-content"> 
                       <mat-form-field appearance="outline" class="custom-mat-form-field">
                       <mat-label>CRP {{ j + 1 }}</mat-label>
-                      <input matInput type="number" placeholder="Enter CRP {{ j + 1 }}" min="0" formControlName="crp" autocomplete="off" maxlength="3" minlength="1" (focusout)="setDefaultValueIfEmpty($event, ((currentPage - 1) * pageSize + i), j, 'crp')" (keypress)="validateKeyPress($event)">
+                      <input matInput type="text" pattern="[0-9]*" placeholder="CRP {{ j + 1 }}" [min]="0" formControlName="crp" autocomplete="off" [maxlength]="3" [minlength]="1" (focusout)="setDefaultValueIfEmpty($event, ((currentPage - 1) * pageSize + i), j, 'crp')" (keypress)="validateKeyPress($event)">
                     </mat-form-field> 
                     <div class="mx-0 my-1 px-0 justify-content-center">
                       <input type="file" accept=".xlsx,.xls,.doc,.docx,.pdf" formControlName="crpFile" #crpfileInput
@@ -136,7 +134,7 @@
                       style="padding: 1px 15px;"
                       [ngClass]="{'is-invalid': mrpCrpitem?.get('crpFile')?.touched && mrpCrpitem?.get('crpFile')?.invalid}">
                       <mat-label *ngIf="selectedCrpFile?.[((currentPage - 1) * pageSize + i)]?.[j] && selectedCrpFile?.[((currentPage - 1) * pageSize + i)]?.[j]?.name" [ngbTooltip]="selectedCrpFile?.[((currentPage - 1) * pageSize + i)]?.[j]?.name"><a type="button" (click)="openFileInNewTab('crp',((currentPage - 1) * pageSize + i),j)">{{selectedCrpFile?.[((currentPage - 1) * pageSize + i)]?.[j]?.name}}</a></mat-label>
-                      <mat-label *ngIf="!selectedCrpFile?.[((currentPage - 1) * pageSize + i)]?.[j] && !selectedCrpFile?.[((currentPage - 1) * pageSize + i)]?.[j]?.name">Upload CRP File</mat-label>
+                      <mat-label *ngIf="!selectedCrpFile?.[((currentPage - 1) * pageSize + i)]?.[j] && !selectedCrpFile?.[((currentPage - 1) * pageSize + i)]?.[j]?.name">Upload File</mat-label>
                       <button type="button" mat-icon-button (click)="triggerCrpFileInput(((currentPage - 1) * pageSize + i),j)">
                         <i matTooltip="{{selectedCrpFile?.[((currentPage - 1) * pageSize + i)]?.[j] && selectedCrpFile?.[((currentPage - 1) * pageSize + i)]?.[j]?.name ? 'Edit' : 'Upload CRP File'}}"
                           class="{{selectedCrpFile?.[((currentPage - 1) * pageSize + i)]?.[j] && selectedCrpFile?.[((currentPage - 1) * pageSize + i)]?.[j]?.name ? 'bi bi-pencil-fill' : 'bi bi-file-earmark-spreadsheet'}}"
@@ -148,7 +146,7 @@
                       <span *ngIf="mrpCrpitem?.get('crpFile')?.errors?.['accept']">Invalid file type. Please upload .xlsx, .xls, .doc, .docx, .pdf file.</span>
                       <span *ngIf="mrpCrpitem?.get('crpFile')?.errors?.['maxSize']">File size exceeds 10MB.</span>
                      <span *ngIf="mrpCrpitem?.get('crpFile')?.errors?.['required']">
- CRP File is required when CRP > 0
+ CRP File is required when CRP > 0.
 </span>  
                     </div>
                     
