@@ -44,18 +44,18 @@
             </div>
              <div class="col-12 col-sm-12 col-md-6 col-lg-3 px-2">
               <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
-                <mat-label>Stand Around Time <b class="r-star">*</b></mat-label>
-                <input matInput type="number" placeholder="Stand Around Time" formControlName="stand_around_time" autocomplete="off" (keypress)="validateKeyPress($event)">
+                <mat-label>Standard Turnaround Time <b class="r-star">*</b></mat-label>
+                <input matInput type="number" placeholder="Standard Turnaround Time" formControlName="stand_around_time" autocomplete="off" (keypress)="validateKeyPress($event)">
                 <mat-error *ngIf="f['stand_around_time']?.invalid && f['stand_around_time']?.touched || f['stand_around_time']?.dirty">
-                  <span *ngIf="f['stand_around_time'].errors?.['required']">Stand around time is required</span>
+                  <span *ngIf="f['stand_around_time'].errors?.['required']">Standard Turnaround Time is required</span>
                   <span *ngIf="!f['stand_around_time'].errors?.['required'] && f['stand_around_time'].errors?.['maxlength']">
-                    Stand around time cannot exceed 3 digits.
+                    Standard Turnaround Time cannot exceed 3 digits.
                   </span>
                   <span *ngIf="!f['stand_around_time'].errors?.['required'] && f['stand_around_time'].errors?.['pattern']">
                     Only digits allowed (max 3 digits, no decimals).
                       </span>
                   <span *ngIf="!f['stand_around_time'].errors?.['required'] && f['stand_around_time'].errors?.['min']">
-                    Stand Around Time cannot be negative.
+                    Standard Turnaround Time cannot be negative.
                   </span>
                 </mat-error>
               </mat-form-field>
@@ -95,7 +95,7 @@
                 <i *ngIf="!arrowState['job_price']" (click)="sort('asc', 'job_price')" class="bi bi-arrow-down"></i>
                 <i *ngIf="arrowState['job_price']" (click)="sort('desc', 'job_price')" class="bi bi-arrow-up"></i>
               </th>
-              <th>Stand Around Time
+              <th>Standard Turnaround Time
                 <i *ngIf="!arrowState['stand_around_time']" (click)="sort('asc', 'stand_around_time')" class="bi bi-arrow-down"></i>
                 <i *ngIf="arrowState['stand_around_time']" (click)="sort('desc', 'stand_around_time')" class="bi bi-arrow-up"></i>
               </th>
