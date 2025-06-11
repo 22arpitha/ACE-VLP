@@ -67,7 +67,7 @@ BreadCrumbsTitle: any = 'Overall Productivity';
               const url = `${environment.live_url}/${environment.over_all_productivity_reports}/${query}`;
               downloadFileFromUrl({
                 url,
-                fileName: 'over_all_productivity_reports',
+                fileName: 'VLP - Overall-Productivity Report',
                 fileType
               });
             }

@@ -238,7 +238,7 @@ this.formattedData = [];
    const url = `${environment.live_url}/${environment.job_reports}/${query}&job-status=[${this.statusList}]&report-type=job-time-report&file-type=${fileType}`;
    downloadFileFromUrl({
      url,
-     fileName: 'job_time_report',
+     fileName: 'VLP - Job Time Report',
      fileType
    });
  }

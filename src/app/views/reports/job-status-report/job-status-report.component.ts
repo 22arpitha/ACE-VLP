@@ -283,6 +283,7 @@ onApplyDateFilter(filteredDate:string, filteredKey: string): void {
    });
    query += (this.userRole ==='Admin' || (this.userRole !='Admin' && this.client_id)) ? '':`&employee-id=${this.user_id}`;
    query += this.client_id ? `&client=${this.client_id}` : '';
+  let fileName:any = this.selectedClientIds.length === 1 ? `VLP - ${this.getClientNameById(this.selectedClientIds[0])} Status Report` : 'VLP - Job Status Report';
     if (this.selectedClientIds?.length) {
         query += `&client-ids=[${this.selectedClientIds.join(',')}]`;
       }
@@ -304,7 +305,7 @@ onApplyDateFilter(filteredDate:string, filteredKey: string): void {
    const url = `${environment.live_url}/${environment.job_reports}/${query}&job-status=[${this.statusList}]&report-type=job-status-report&file-type=${fileType}`;
    downloadFileFromUrl({
      url,
-     fileName: 'job_status_report',
+     fileName: fileName,
      fileType
    });
  }
@@ -528,4 +529,9 @@ public sendEamils(){
 //     this.getClienList();
 //     this.getJobList();
 // }
+
+getClientNameById(clientId: number): string {
+    const client = this.clientName.find(c => c.id === clientId);
+    return client ? client.name : 'NA';
+  }
             }

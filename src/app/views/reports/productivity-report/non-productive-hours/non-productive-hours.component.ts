@@ -140,7 +140,7 @@ export class NonProductiveHoursComponent implements OnInit,OnChanges {
      const url = `${environment.live_url}/${environment.timesheet}/${query}&file-type=${fileType}`;
      downloadFileFromUrl({
        url,
-       fileName: 'non_productive_hours',
+       fileName: 'VLP - Non-Productive Hours Report',
        fileType
      });
    }

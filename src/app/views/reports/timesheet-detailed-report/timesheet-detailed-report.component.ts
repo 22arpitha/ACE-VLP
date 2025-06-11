@@ -195,7 +195,7 @@ exportCsvOrPdf(fileType) {
   const url = `${environment.live_url}/${environment.timesheet_reports}/${query}&file-type=${fileType}&timsheet-type=detailed`;
   downloadFileFromUrl({
     url,
-    fileName: 'timesheet_details',
+    fileName: 'VLP - Timesheet Detail Report',
     fileType
   });
 }

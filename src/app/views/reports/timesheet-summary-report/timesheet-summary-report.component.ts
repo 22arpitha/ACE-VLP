@@ -127,7 +127,7 @@ export class TimesheetSummaryReportComponent implements OnInit {
       query += `&employee-ids=[${this.selectedEmployeeId}]`;
     }
     const url = `${environment.live_url}/${environment.timesheet_reports}/${query}&file-type=${fileType}&timsheet-type=summary`;
-    downloadFileFromUrl({ url, fileName: 'timesheet_summary', fileType: fileType as 'csv' | 'pdf' });
+    downloadFileFromUrl({ url, fileName: 'VLP - Timesheet Summary Report', fileType: fileType as 'csv' | 'pdf' });
   }
 
   filterByDate(date: string): void {

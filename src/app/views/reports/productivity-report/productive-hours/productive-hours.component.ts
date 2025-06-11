@@ -132,7 +132,7 @@ exportCsvOrPdf(fileType) {
   const url = `${environment.live_url}/${environment.productivity_reports}/${query}&file-type=${fileType}&productivity-type=productive-hour`;
   downloadFileFromUrl({
     url,
-    fileName: 'productive_hours_report',
+    fileName: 'VLP - Productive Hours Report',
     fileType
   });
 }
