@@ -364,7 +364,7 @@ getClienList(){
             finalQuery += `&job-ids=[${params.job_ids.join(',')}]`;
           }if (params?.group_ids?.length) {
             finalQuery += `&group-ids=[${params.group_ids.join(',')}]`;
-          }if (params?.job_allocation_date) {
+          }if (params?.job_allocation_date.startDate && params.job_allocation_date.endDate) {
             // console.log(params.job_allocation_date)
              finalQuery += `&start-date=${params.job_allocation_date.startDate}&end-date=${params.job_allocation_date.endDate}`
           }if (params?.job_status_date) {
