@@ -46,6 +46,10 @@ export class JobsOfEndclientComponent implements OnInit {
     filterQuery: string;
     jobList:any = [];
     jobAllocationDate: string | null;
+     dateRange = {
+      start: '',
+      end: ''
+    };
     statusDate: any;
     user_id:any;
     userRole:any;
@@ -59,8 +63,13 @@ export class JobsOfEndclientComponent implements OnInit {
      this.end_client_id = this.activateRoute.snapshot.paramMap.get('id')
      this.BreadCrumbsTitle = this.endClientData + ' - Jobs';
      this.common_service.setTitle(this.BreadCrumbsTitle);
-     this.getJobsOfEndClient(`?page=${1}&page_size=${50}&end-client=${this.end_client_id}`);
-  }
+     if(this.userRole!='Admin'){
+     this.getJobsOfEndClient(`?page=${1}&page_size=${50}&end-client=${this.end_client_id}&employee-id=${this.user_id}`);
+     } 
+     else{
+      this.getJobsOfEndClient(`?page=${1}&page_size=${50}&end-client=${this.end_client_id}`)
+     }
+    }
 
   ngOnInit(){
       this.getEmployees();
@@ -162,10 +171,12 @@ export class JobsOfEndclientComponent implements OnInit {
         this.userRole === 'accountant' ? this.filterQuery += `&employee-ids=[${this.filters.employees.join(',')}]` :
         this.filterQuery += `&employee-ids=[${this.filters.employees.join(',')}]` ;
       }
-      
-      if (this.jobAllocationDate) {
-        this.filterQuery += `&job-allocation-date=[${this.jobAllocationDate}]`;
-      }
+      if (this.dateRange.start && this.dateRange.end) {
+      this.filterQuery += `&start-date=${this.dateRange.start}&end-date=${this.dateRange.end}`;
+    }
+      // if (this.jobAllocationDate) {
+      //   this.filterQuery += `&job-allocation-date=[${this.jobAllocationDate}]`;
+      // }
       if (this.statusDate) {
         this.filterQuery += `&job-status-date=[${this.statusDate}]`;
       }
@@ -195,23 +206,32 @@ export class JobsOfEndclientComponent implements OnInit {
     }
     this.filterData()
   }
-    onDateSelected(event: any): void {
-      const selectedDate = event.value;
-      if (selectedDate) {
-       this.jobAllocationDate = this.datePipe.transform(selectedDate, 'yyyy-MM-dd');
-      }
-      this.filterData()
-    }
-    clearDateFilter(){
-      this.jobAllocationDate = null;
-      this.dateFilterValue = null;
-      this.filterData()
-    }
+   
     clearStatusDateFilter(){
       this.statusDate = null;
       this.statusDateFilterValue = null;
       this.filterData()
     }
+    allocationStartDate(event: any): void {
+    // console.log(event)
+    const selectedDate = event.value;
+    if (selectedDate) {
+     this.dateRange.start = this.datePipe.transform(selectedDate, 'yyyy-MM-dd');
+    }
+  }
+  allocationEndDate(event: any): void {
+    // console.log(event)
+    const selectedDate = event.value;
+    if (selectedDate) {
+     this.dateRange.end = this.datePipe.transform(selectedDate, 'yyyy-MM-dd');
+    }
+    this.filterData()
+  }
+    clearDateFilter(){
+    this.dateRange.start ='';
+    this.dateRange.end =''
+    this.filterData()
+  }
 
     getEmployeeName(employees: any): string {
     const employee = employees.find((emp:any) => emp?.is_primary === true);

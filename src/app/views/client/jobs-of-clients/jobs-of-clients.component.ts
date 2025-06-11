@@ -47,6 +47,10 @@ export class JobsOfClientsComponent implements OnInit {
     statusDate: any;
     user_id:any;
     userRole:any;
+    dateRange = {
+      start: '',
+      end: ''
+    };
     constructor(private datePipe: DatePipe,private common_service: CommonServiceService,private activateRoute:ActivatedRoute,private router: Router,
       private api: ApiserviceService,
     ) {
@@ -149,10 +153,13 @@ export class JobsOfClientsComponent implements OnInit {
           this.userRole === 'accountant' ? this.filterQuery += `&employee-ids=[${this.filters.employees.join(',')}]` :
           this.filterQuery += `&employee-ids=[${this.filters.employees.join(',')}]` ;
         }
-        
-        if (this.jobAllocationDate) {
-          this.filterQuery += `&job-allocation-date=[${this.jobAllocationDate}]`;
+         if (this.dateRange.start && this.dateRange.end) {
+          this.filterQuery += `&start-date=${this.dateRange.start}&end-date=${this.dateRange.end}`;
         }
+        
+        // if (this.jobAllocationDate) {
+        //   this.filterQuery += `&job-allocation-date=[${this.jobAllocationDate}]`;
+        // }
         if (this.statusDate) {
           this.filterQuery += `&job-status-date=[${this.statusDate}]`;
         }
@@ -175,13 +182,7 @@ export class JobsOfClientsComponent implements OnInit {
       }
       this.filterData()
       }
-      onDateSelected(event: any): void {
-        const selectedDate = event.value;
-        if (selectedDate) {
-         this.jobAllocationDate = this.datePipe.transform(selectedDate, 'yyyy-MM-dd');
-        }
-        this.filterData()
-      }
+      
       onStatusDateSelected(event: any): void {
     const selectedDate = event.value;
     if (selectedDate) {
@@ -189,16 +190,35 @@ export class JobsOfClientsComponent implements OnInit {
     }
     this.filterData()
   }
-      clearDateFilter(){
-        this.jobAllocationDate = null;
-        this.dateFilterValue = null;
-        this.filterData()
-      }
-      clearStatusDateFilter(){
-        this.statusDate = null;
-        this.statusDateFilterValue = null;
-        this.filterData()
-      }
+  clearStatusDateFilter(){
+    this.statusDate = null;
+    this.statusDateFilterValue = null;
+    this.filterData()
+  }
+
+  allocationStartDate(event: any): void {
+    // console.log(event)
+    const selectedDate = event.value;
+    if (selectedDate) {
+     this.dateRange.start = this.datePipe.transform(selectedDate, 'yyyy-MM-dd');
+    }
+    // this.filterData()
+  }
+  allocationEndDate(event: any): void {
+    // console.log(event)
+    const selectedDate = event.value;
+    if (selectedDate) {
+     this.dateRange.end = this.datePipe.transform(selectedDate, 'yyyy-MM-dd');
+    }
+    this.filterData()
+  }
+  
+  clearDateFilter(){
+    this.dateRange.start ='';
+    this.dateRange.end =''
+    this.filterData()
+  }
+      
     getEmployeeName(employees: any): string {
     const employee = employees.find((emp:any) => emp?.is_primary === true);
     return employee ? employee?.employee_name : '';

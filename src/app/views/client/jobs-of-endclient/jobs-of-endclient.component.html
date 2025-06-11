@@ -27,28 +27,36 @@
                 <th scope="col">Allocated On
                   <button
                     mat-icon-button
-                    (click)="setDateFilterColumn($event); picker.open()"
+                    (click)="picker1.open()"
                     class="ms-1 btn-menu-trigger"
-                    *ngIf="!dateFilterValue">
+                    *ngIf="!dateRange.start">
                   <i class="bi bi-calendar"></i>
 
                 </button>
                   <button mat-icon-button container="body"
-                  ngbTooltip="Clear Job Allocation Date" placement="top"  *ngIf="dateFilterValue" (click)="clearDateFilter()" class="ms-1 btn-menu-trigger">
+                  ngbTooltip="Clear Job Allocation Date" placement="top"  *ngIf="dateRange.start" (click)="clearDateFilter()" class="ms-1 btn-menu-trigger">
                     <i class="bi bi-x-circle"></i>
                   </button>
 
                 <mat-form-field class="opacity-0 position-absolute date-picker-input">
-                  <mat-label>Choose a date</mat-label>
-                  <input
-                    matInput
-                    [matDatepicker]="picker"
-                    [(ngModel)]="dateFilterValue"
-                    (dateChange)="onDateSelected($event)"
-                  />
-                  <mat-hint>MM/DD/YYYY</mat-hint>
-                  <mat-datepicker #picker></mat-datepicker>
-                </mat-form-field>
+                      <mat-label>Choose a date range</mat-label>
+                      <mat-date-range-input [rangePicker]="picker1">
+                        <input
+                          matStartDate
+                          placeholder="Start date"
+                          [(ngModel)]="dateRange.start"
+                          (dateChange)="allocationStartDate($event)"
+                        />
+                        <input
+                          matEndDate
+                          placeholder="End date"
+                          [(ngModel)]="dateRange.end"
+                          (dateChange)="allocationEndDate($event)"
+                        />
+                      </mat-date-range-input>
+                      <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+                      <mat-date-range-picker #picker1></mat-date-range-picker>
+                    </mat-form-field>
 
                 </th>
                 <th scope="col">Employee 
@@ -86,7 +94,7 @@
                 <th scope="col">Status Date 
                   <button
                   mat-icon-button
-                  (click)="setDateFilterColumn($event); datepicker.open()"
+                  (click)="datepicker.open()"
                   class="ms-1 btn-menu-trigger"
                   *ngIf="!statusDateFilterValue">
                 <i class="bi bi-calendar"></i>

@@ -115,14 +115,14 @@
                        Allocated On
                       <button
                         mat-icon-button
-                        (click)="setDateFilterColumn($event); picker1.open()"
+                        (click)="picker1.open()"
                         class="ms-1 btn-menu-trigger"
-                        *ngIf="!dateFilterValue">
+                        *ngIf="!dateRange.start && !dateRange.end">
                       <i class="bi bi-calendar"></i>
 
                     </button>
                       <button mat-icon-button container="body"
-                      ngbTooltip="Clear Job Allocation Date" placement="top"  *ngIf="dateFilterValue" (click)="clearDateFilter()" class="ms-1 btn-menu-trigger">
+                      ngbTooltip="Clear Job Allocation Date" placement="top"  *ngIf="dateRange.start || dateRange.end" (click)="clearDateFilter()" class="ms-1 btn-menu-trigger">
                         <i class="bi bi-x-circle"></i>
                       </button>
 
@@ -210,7 +210,7 @@
                       Status Date
                       <button
                       mat-icon-button
-                      (click)="setDateFilterColumn($event); datepicker.open()"
+                      (click)="datepicker.open()"
                       class="ms-1 btn-menu-trigger"
                       *ngIf="!statusDateFilterValue">
                     <i class="bi bi-calendar"></i>
