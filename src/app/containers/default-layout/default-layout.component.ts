@@ -158,7 +158,7 @@ export class DefaultLayoutComponent {
   mySubscription: boolean = false;
   orgId: any;
   subscriptionData = [];
-
+  isSidebarCollapsed:boolean=false;
   constructor(
     private ngxService: NgxUiLoaderService,
     private api: ApiserviceService,
@@ -269,6 +269,7 @@ export class DefaultLayoutComponent {
       }
     });
     item.isExpanded = !item.isExpanded;
+    this.isSidebarCollapsed = false;
   }
 
   setInitialExpandedState() {
@@ -377,5 +378,9 @@ export class DefaultLayoutComponent {
       //console.log('headNavdata', headNavdata);
       this.router.navigate([`${headNavdata.link}`]);
     }
+  }
+
+  toggleSidebar(){
+    this.isSidebarCollapsed = !this.isSidebarCollapsed;
   }
 }
