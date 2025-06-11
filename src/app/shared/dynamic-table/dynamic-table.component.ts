@@ -579,11 +579,13 @@ onDateChange(event: any,key:any) {
   this.resetWeekDate = true;
 }
 onEndDateChange(event: any,key) {
+if(event.value){
   const selectedDate = event.value;
   const formattedDate = this.datePipe.transform(selectedDate, 'yyyy-MM-dd');
 //  this.rows.at(index).patchValue({ month: formattedDate });
   this.selectedDateRange = formattedDate;
   this.actionEvent.emit({ actionType: 'dateRange', detail: {startDate:this.dateRangeStartDate,endDate:formattedDate,key:key}});
   this.resetWeekDate = true;
+}
 }
 }
