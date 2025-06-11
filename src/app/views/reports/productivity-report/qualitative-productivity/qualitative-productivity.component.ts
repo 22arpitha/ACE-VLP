@@ -139,7 +139,7 @@ BreadCrumbsTitle: any = 'Qualitative Productivity';
           const url = `${environment.live_url}/${environment.productivity_reports}/${query}&file-type=${fileType}&productivity-type=qualitative`;
           downloadFileFromUrl({
             url,
-            fileName: 'qualitative_report',
+            fileName: 'VLP - Qualitative Productivity Report',
             fileType
           });
         }

@@ -268,7 +268,7 @@ export class ClientListComponent implements OnInit {
       // console.log('blob',blob);
       const a = document.createElement('a');
       a.href = URL.createObjectURL(blob);
-      a.download = `client_details.${type}`;
+      a.download = `Client Details.${type}`;
       a.click();
     });
     }

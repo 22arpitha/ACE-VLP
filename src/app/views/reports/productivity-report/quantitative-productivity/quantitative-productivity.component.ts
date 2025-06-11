@@ -148,7 +148,7 @@ export class QuantitativeProductivityComponent implements OnInit,OnChanges {
            const url = `${environment.live_url}/${environment.productivity_reports}/${query}&productivity-type=quantitative&file-type=${fileType}`;
            downloadFileFromUrl({
              url,
-             fileName: 'quantitative_report',
+             fileName: 'VLP - Quantitative Productivity Report',
              fileType
            });
          }
