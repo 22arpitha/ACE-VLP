@@ -131,7 +131,7 @@ exportCsvOrPdf(fileType) {
   const url = `${environment.live_url}/${environment.productivity_reports}/${query}&file-type=${fileType}&productivity-type=non-billable`;
   downloadFileFromUrl({
     url,
-    fileName: 'non-billable_report',
+    fileName: 'VLP - Non-Billable Hours Report',
     fileType
   });
 }

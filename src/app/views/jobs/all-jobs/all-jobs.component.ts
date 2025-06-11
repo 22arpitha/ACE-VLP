@@ -558,7 +558,7 @@ this.allGroupNames =[];
       //console.log('blob',blob);
       const a = document.createElement('a');
       a.href = URL.createObjectURL(blob);
-      a.download = `job_details.${type}`;
+      a.download = `VLP - Job Details.${type}`;
       a.click();
     });
   }
