@@ -77,8 +77,8 @@ export class AllJobsComponent implements OnInit {
   jobAllocationDate: string | null;
   statusDate: any;
   dateRange = {
-  start: null,
-  end: null
+  start: '',
+  end: ''
 };
 
    columns = [
@@ -594,13 +594,17 @@ jobStatusList(status:any){
   }
   this.filterData()
   }
+
+  setDateRangeFilterColumn(event){
+    console.log(event.value)
+  }
   allocationStartDate(event: any): void {
     // console.log(event)
     const selectedDate = event.value;
     if (selectedDate) {
      this.dateRange.start = this.datePipe.transform(selectedDate, 'yyyy-MM-dd');
     }
-    this.filterData()
+    // this.filterData()
   }
   allocationEndDate(event: any): void {
     // console.log(event)
@@ -621,8 +625,8 @@ jobStatusList(status:any){
   }
   clearDateFilter(){
     this.jobAllocationDate = null;
-    this.dateFilterValue = null;
-  
+    this.dateRange.start ='';
+    this.dateRange.end =''
     this.filterData()
   }
   clearStatusDateFilter(){
