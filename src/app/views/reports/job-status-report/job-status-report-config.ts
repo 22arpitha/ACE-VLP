@@ -61,7 +61,7 @@ export const tableColumns  = [
     sortable: true
   },
   {
-    label: 'Percentage of Completion',
+    label: 'POC (%)',
     key: 'percentage_of_completion',
     sortable: true
   },
