@@ -156,6 +156,7 @@ onApplyFilter(filteredData: any[], filteredKey: string): void {
   });
 }
 onApplyDateFilter(filteredDate:string): void {
+  console.log('filteredDate',filteredDate);
 this.selectedDate = filteredDate;
 this.getTableData({
     page: 1,

@@ -132,7 +132,7 @@
                   <button
                     mat-icon-button
                     *ngIf="columnFilters[col.key]"
-                    (click)="clearDateFilter(col.key)"
+                    (click)="clearRangeDateFilter(col.key)"
                     class="ms-1 btn-menu-trigger"
                     [attr.aria-label]="'Clear date filter for ' + col.label"
                   >

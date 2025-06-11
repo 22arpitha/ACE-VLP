@@ -320,6 +320,16 @@ clearDateFilter(columnKey: string): void {
   }
   // Parent component is expected to handle the data refresh.
 }
+clearRangeDateFilter(columnKey: string): void {
+  this.columnFilters[columnKey] = null; // Clear the stored filter for this specific column
+  this.actionEvent.emit({ actionType:'dateRange' , detail: null, key:columnKey });
+
+  // If the column being cleared is the one currently active in the datepicker, reset dateFilterValue
+  if (this.activeDateColumn === columnKey) {
+    this.dateFilterValue = null;
+  }
+  // Parent component is expected to handle the data refresh.
+}
 
 navigateToEmployee(event,col:any){
   if ('keyId' in event) {
@@ -506,7 +516,7 @@ public getFileName(url:any){
 
 public onFileSelected(event: Event,index:any): void {
   const input = event.target as HTMLInputElement;
-  if (input.files && input.files.length > 0) {
+  if (input.files && input.files?.length > 0) {
     const selectedFile = input.files[0];
     this.file[index] = selectedFile;
     this.selectedFile[index] = this.file[index];
@@ -530,13 +540,13 @@ public openFileInNewTab(index:any){
 window.open(this.fileLink[index], '_blank');
 }
 public async UpdateFileFieldData(workCulData: any) {
-  if (workCulData && workCulData.length >= 1) {
+  if (workCulData && workCulData?.length >= 1) {
     // Use for...of to ensure we await properly inside the loop
-    for (let index = 0; index < workCulData.length; index++) {
+    for (let index = 0; index < workCulData?.length; index++) {
       // Handle each file type asynchronously
       if (this.file && this.file[index]) {
         workCulData[index].work_ethics_file = await this.convertFileToBase64(this.file[index]);
-        workCulData[index].file_name = this.selectedFile[index].name;
+        workCulData[index].file_name = this.selectedFile[index]?.name;
       }
     }
   }
@@ -583,6 +593,7 @@ if(event.value){
   const selectedDate = event.value;
   const formattedDate = this.datePipe.transform(selectedDate, 'yyyy-MM-dd');
 //  this.rows.at(index).patchValue({ month: formattedDate });
+  this.columnFilters[key]=formattedDate;
   this.selectedDateRange = formattedDate;
   this.actionEvent.emit({ actionType: 'dateRange', detail: {startDate:this.dateRangeStartDate,endDate:formattedDate,key:key}});
   this.resetWeekDate = true;
