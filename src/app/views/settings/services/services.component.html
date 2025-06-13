@@ -76,9 +76,7 @@
           </tbody>
         </table>
       </div>
-
     </div>
-
     <div *ngIf="allServiceList.length === 0">
       <app-generic-norecards></app-generic-norecards>
     </div>
@@ -86,11 +84,8 @@
   <div class="row mx-0 my-2 px-2" [ngClass]="{'disabled-section': isEditItem}">
     <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0" *ngIf="allServiceList.length > 0">
       <div class="pagination-container p-0 pt-2">
-        <!-- Pagination Controls (Center-Aligned) -->
         <pagination-controls previousLabel="Prev" nextLabel="Next" (pageChange)="onTableDataChange($event)">
         </pagination-controls>
-
-        <!-- Items Per Page Selector (Right-Aligned) -->
         <div class="items-per-page-container">
           <div>Items per page</div>
           <mat-select [(ngModel)]="tableSize" (selectionChange)="onTableSizeChange($event)" placeholder="10" disableOptionCentering panelClass="paginationPanelClass"

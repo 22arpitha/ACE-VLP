@@ -1,22 +1,23 @@
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, FormGroupDirective, Validators } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { Observable } from 'rxjs';
+import { SubModuleService } from '../../../service/sub-module.service';
+import { FormErrorScrollUtilityService } from '../../../service/form-error-scroll-utility-service.service';
+import { CanComponentDeactivate } from '../../../auth-guard/can-deactivate.guard';
 import { CommonServiceService } from '../../../service/common-service.service';
 import { ApiserviceService } from '../../../service/apiservice.service';
 import { GenericDeleteComponent } from '../../../generic-components/generic-delete/generic-delete.component';
 import { GenericEditComponent } from '../../../generic-components/generic-edit/generic-edit.component';
 import { environment } from '../../../../environments/environment';
-import { SubModuleService } from 'src/app/service/sub-module.service';
-import { Observable } from 'rxjs';
-import { FormErrorScrollUtilityService } from 'src/app/service/form-error-scroll-utility-service.service';
-import { CanComponentDeactivate } from 'src/app/auth-guard/can-deactivate.guard';
+
 @Component({
   selector: 'app-job-type',
   templateUrl: './job-type.component.html',
   styleUrls: ['./job-type.component.scss']
 })
 export class JobTypeComponent implements CanComponentDeactivate, OnInit,OnDestroy {
-  @ViewChild(FormGroupDirective) formGroupDirective!: FormGroupDirective;
+ @ViewChild(FormGroupDirective) formGroupDirective!: FormGroupDirective;
  @ViewChild('formInputField') formInputField: ElementRef;
   BreadCrumbsTitle: any = 'Job Type';
   isEditItem: boolean = false;
@@ -52,9 +53,7 @@ export class JobTypeComponent implements CanComponentDeactivate, OnInit,OnDestro
     this.user_id = sessionStorage.getItem('user_id');
     this.userRole = sessionStorage.getItem('user_role_name');
     this.getModuleAccess();
-
     this.initializeForm();
-    this.getAllJobTypes('?page=1&page_size=50');
     this.jobTypeForm?.valueChanges?.subscribe(() => {
       const currentFormValue = this.jobTypeForm?.getRawValue();
       const isInvalid = this.jobTypeForm?.touched && this.jobTypeForm?.invalid;
@@ -63,6 +62,7 @@ export class JobTypeComponent implements CanComponentDeactivate, OnInit,OnDestro
      this.formUtilityService.setUnsavedChanges(unSavedChanges);
     });
   }
+
   ngOnDestroy(): void {
 this.formUtilityService.resetHasUnsavedValue();
   }
@@ -70,12 +70,13 @@ this.formUtilityService.resetHasUnsavedValue();
     this.accessControlService.getAccessForActiveUrl(this.user_id).subscribe((access) => {
       if (access) {
         this.accessPermissions = access[0].operations;
-        // console.log('Access Permissions:', this.accessPermissions);
-      } else {
-        console.log('No matching access found.');
+        this.getAllJobTypes('?page=1&page_size=50');
       }
+    },(error: any) => {
+      this.apiService.showError(error?.error?.detail);
     });
   }
+
   public initializeForm() {
     this.jobTypeForm = this.fb.group({
       job_type_name: ['', [Validators.required, Validators.pattern(/^[a-zA-Z0-9!@#$%^&*()_+{}\[\]:;"'<>,.?/\\|`~\-]+( [a-zA-Z0-9!@#$%^&*()_+{}\[\]:;"'<>,.?/\\|`~\-]+)*$/), Validators.maxLength(50)]],
@@ -83,17 +84,15 @@ this.formUtilityService.resetHasUnsavedValue();
       stand_around_time: ['', [Validators.required, Validators.pattern(/^\d{1,3}$/), Validators.maxLength(3), Validators.min(0)]],
     });
     this.initialFormValue = this.jobTypeForm?.getRawValue();
-
   }
+
   public get f() {
+    
     return this.jobTypeForm.controls;
   }
 
   public validateKeyPress(event: KeyboardEvent) {
-    // Get the key code of the pressed key
     const keyCode = event.which || event.keyCode;
-
-    // Allow only digits (0-9), backspace, and arrow keys
     if ((keyCode < 48 || keyCode > 57) && keyCode !== 8 && keyCode !== 37 && keyCode !== 39 && keyCode !== 46) {
       event.preventDefault(); // Prevent the default action (i.e., entering the character)
     }
@@ -105,9 +104,8 @@ this.formUtilityService.resetHasUnsavedValue();
       const noOfPages: number = respData.total_pages
       this.count = noOfPages * this.tableSize;
       this.page = respData.current_page;
-    }, (error: any) => {
-      this.apiService.showError(error.detail);
-
+    },(error: any) => {
+    this.apiService.showError(error?.error?.detail);
     })
   }
 
@@ -141,7 +139,6 @@ this.formUtilityService.resetHasUnsavedValue();
             this.resetFormState();
             this.getAllJobTypes(`?page=1&page_size=${this.tableSize}`);
           }
-
         }, (error: any) => {
           this.apiService.showError(error?.error?.detail);
         });
@@ -173,7 +170,6 @@ this.formUtilityService.resetHasUnsavedValue();
 
   public onTableSizeChange(event: any): void {
     if (event) {
-
       this.tableSize = Number(event.value);
       let query = `?page=${1}&page_size=${this.tableSize}`
       if (this.term) {
@@ -198,7 +194,6 @@ this.formUtilityService.resetHasUnsavedValue();
           modelRef.close();
         }
       })
-
     }
   }
 
@@ -211,10 +206,8 @@ this.formUtilityService.resetHasUnsavedValue();
         if (this.term) {
           query += `&search=${this.term}`
         }
-
         this.getAllJobTypes(query)
       }
-
     }, (error => {
       this.apiService.showError(error?.error?.detail)
     }))
@@ -227,7 +220,6 @@ this.formUtilityService.resetHasUnsavedValue();
         backdrop: 'static',
         centered: true
       });
-
       modalRef.componentInstance.status.subscribe(resp => {
         if (resp === 'ok') {
           this.selectedJobtype = item?.id;
@@ -242,7 +234,6 @@ this.formUtilityService.resetHasUnsavedValue();
     } catch (error) {
       console.error('Error opening modal:', error);
     }
-
   }
 
   public scrollToField(){
@@ -276,6 +267,7 @@ this.formUtilityService.resetHasUnsavedValue();
   canDeactivate(): Observable<boolean> {
     const currentFormValue = this.jobTypeForm?.getRawValue();
     const isFormChanged:boolean =  JSON.stringify(currentFormValue) !== JSON.stringify(this.initialFormValue);
+    
     return this.formUtilityService.isFormDirtyOrInvalidCheck(isFormChanged,this.jobTypeForm);
   }
 }

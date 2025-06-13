@@ -1,16 +1,16 @@
 import { Component, HostListener, OnInit, ViewChild } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { FormBuilder, FormGroup, FormGroupDirective, Validators } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Observable } from 'rxjs';
-import { FormBuilder, FormGroup, FormGroupDirective, Validators } from '@angular/forms';
-import { CommonServiceService } from '../../../service/common-service.service';
-import { ActivatedRoute, Router } from '@angular/router';
-import { ApiserviceService } from '../../../service/apiservice.service';
-import { environment } from '../../../../environments/environment';
-import { GenericDeleteComponent } from '../../../generic-components/generic-delete/generic-delete.component';
 import { SubModuleService } from '../../../service/sub-module.service';
 import { FormErrorScrollUtilityService } from '../../../service/form-error-scroll-utility-service.service';
 import { CanComponentDeactivate } from '../../../auth-guard/can-deactivate.guard';
-import { GenericRedirectionConfirmationComponent } from 'src/app/generic-components/generic-redirection-confirmation/generic-redirection-confirmation.component';
+import { GenericRedirectionConfirmationComponent } from '../../../generic-components/generic-redirection-confirmation/generic-redirection-confirmation.component';
+import { CommonServiceService } from '../../../service/common-service.service';
+import { ApiserviceService } from '../../../service/apiservice.service';
+import { environment } from '../../../../environments/environment';
+import { GenericDeleteComponent } from '../../../generic-components/generic-delete/generic-delete.component';
 
 @Component({
   selector: 'app-create-update-employee',

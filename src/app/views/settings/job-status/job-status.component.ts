@@ -1,21 +1,23 @@
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, FormGroupDirective } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { Observable } from 'rxjs';
+import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
+import { CanComponentDeactivate } from '../../../auth-guard/can-deactivate.guard';
+import { SubModuleService } from '../../../service/sub-module.service';
+import { FormErrorScrollUtilityService } from '../../../service/form-error-scroll-utility-service.service';
 import { CommonServiceService } from '../../../service/common-service.service';
 import { ApiserviceService } from '../../../service/apiservice.service';
 import { GenericDeleteComponent } from '../../../generic-components/generic-delete/generic-delete.component';
 import { GenericEditComponent } from '../../../generic-components/generic-edit/generic-edit.component';
 import { environment } from '../../../../environments/environment';
-import { SubModuleService } from '../../../service/sub-module.service';
-import { CanComponentDeactivate } from '../../../auth-guard/can-deactivate.guard';
-import { FormErrorScrollUtilityService } from '../../../service/form-error-scroll-utility-service.service';
-import { Observable } from 'rxjs';
-import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
+
 @Component({
   selector: 'app-job-status',
   templateUrl: './job-status.component.html',
   styleUrls: ['./job-status.component.scss']
 })
+
 export class JobStatusComponent implements CanComponentDeactivate, OnInit,OnDestroy {
   BreadCrumbsTitle: any = 'Job Status';
   @ViewChild(FormGroupDirective) formGroupDirective!: FormGroupDirective;
@@ -51,6 +53,7 @@ export class JobStatusComponent implements CanComponentDeactivate, OnInit,OnDest
   };
   filteredList: any;
   allJobStatusName: { id: any; name: string; }[];
+  
   constructor(private fb: FormBuilder, private modalService: NgbModal,private accessControlService:SubModuleService,
     private common_service: CommonServiceService, private apiService: ApiserviceService,
     private formUtilityService:FormErrorScrollUtilityService
@@ -62,10 +65,7 @@ export class JobStatusComponent implements CanComponentDeactivate, OnInit,OnDest
     this.user_id = sessionStorage.getItem('user_id');
     this.userRole = sessionStorage.getItem('user_role_name');
     this.getModuleAccess();
-
     this.initializeForm();
-    this.getAllJobStatus('?page=1&page_size=50');
-    this.getStatusGroupList();
     this.jobStatusForm?.valueChanges?.subscribe(() => {
       const currentFormValue = this.jobStatusForm?.getRawValue();
       const isInvalid = this.jobStatusForm?.touched && this.jobStatusForm?.invalid;
@@ -83,12 +83,14 @@ export class JobStatusComponent implements CanComponentDeactivate, OnInit,OnDest
     this.accessControlService.getAccessForActiveUrl(this.user_id).subscribe((access) => {
       if (access) {
         this.accessPermissions = access[0].operations;
-        // console.log('Access Permissions:', this.accessPermissions);
-      } else {
-        console.log('No matching access found.');
+        this.getAllJobStatus('?page=1&page_size=50');
+        this.getStatusGroupList();
       }
+    },(error: any) => {
+      this.apiService.showError(error?.error?.detail);
     });
   }
+
   public initializeForm() {
     this.jobStatusForm = this.fb.group({
       status_name: ['', [Validators.pattern(/^[a-zA-Z0-9!@#$%^&*()_+{}\[\]:;"'<>,.?/\\|`~\-]+( [a-zA-Z0-9!@#$%^&*()_+{}\[\]:;"'<>,.?/\\|`~\-]+)*$/), Validators.required, Validators.maxLength(50)]],
@@ -97,14 +99,18 @@ export class JobStatusComponent implements CanComponentDeactivate, OnInit,OnDest
     });
     this.initialFormValue = this.jobStatusForm?.getRawValue();
   }
+
   public get f() {
+    
     return this.jobStatusForm.controls;
   }
 
   filteredStatusGroupList() {
     if (!this.searchStatusGroupText) {
+      
       return this.allStatusGroupList;
     }
+    
     return this.allStatusGroupList.filter((status:any) =>
       status?.group_name?.toLowerCase()?.includes(this.searchStatusGroupText?.toLowerCase())
     );
@@ -115,10 +121,7 @@ export class JobStatusComponent implements CanComponentDeactivate, OnInit,OnDest
   }
 
   public validateKeyPress(event: KeyboardEvent) {
-    // Get the key code of the pressed key
     const keyCode = event.which || event.keyCode;
-
-    // Allow only digits (0-9), backspace, and arrow keys
     if ((keyCode < 48 || keyCode > 57) && keyCode !== 8 && keyCode !== 37 && keyCode !== 39) {
       event.preventDefault(); // Prevent the default action (i.e., entering the character)
     }
@@ -132,8 +135,7 @@ export class JobStatusComponent implements CanComponentDeactivate, OnInit,OnDest
       this.count = noOfPages * this.tableSize;
       this.page = respData.current_page;
     }, (error: any) => {
-      this.apiService.showError(error.detail);
-
+      this.apiService.showError(error?.error?.detail);
     })
   }
 
@@ -143,8 +145,7 @@ export class JobStatusComponent implements CanComponentDeactivate, OnInit,OnDest
     if (this.term) {
       query += `&search=${this.term}`
     }
-    // this.getAllJobStatus(query);
-    this.filterData()
+    this.filterData();
   }
   public saveJobTypeDetails() {
     if (this.jobStatusForm.invalid) {
@@ -162,13 +163,12 @@ export class JobStatusComponent implements CanComponentDeactivate, OnInit,OnDest
           this.apiService.showError(error?.error?.detail);
         });
       } else {
-        this.apiService.postData(`${environment.live_url}/${environment.settings_job_status}/`, this.jobStatusForm.value).subscribe((respData: any) => {
+          this.apiService.postData(`${environment.live_url}/${environment.settings_job_status}/`, this.jobStatusForm.value).subscribe((respData: any) => {
           if (respData) {
             this.apiService.showSuccess(respData['message']);
             this.resetFormState();
             this.getAllJobStatus(`?page=1&page_size=${this.tableSize}`);
           }
-
         }, (error: any) => {
           this.apiService.showError(error?.error?.detail);
         });
@@ -183,7 +183,6 @@ export class JobStatusComponent implements CanComponentDeactivate, OnInit,OnDest
     this.term ='';
     this.initialFormValue = this.jobStatusForm?.getRawValue();
   }
-
   public sort(direction: string, column: string) {
     Object.keys(this.arrowState).forEach(key => {
       this.arrowState[key] = false;
@@ -204,8 +203,7 @@ export class JobStatusComponent implements CanComponentDeactivate, OnInit,OnDest
       if (this.term) {
         query += `&search=${this.term}`
       }
-      // this.getAllJobStatus(query);
-      this.filterData()
+      this.filterData();
     }
   }
   public confirmDelete(content: any) {
@@ -224,12 +222,10 @@ export class JobStatusComponent implements CanComponentDeactivate, OnInit,OnDest
           modelRef.close();
         }
       })
-
     }
   }
 
   public deleteContent(item) {
-
     this.apiService.delete(`${environment.live_url}/${environment.settings_job_status}/${item?.id}/`).subscribe(async (data: any) => {
       if (data) {
         this.allJobStatusList = []
@@ -238,11 +234,8 @@ export class JobStatusComponent implements CanComponentDeactivate, OnInit,OnDest
         if (this.term) {
           query += `&search=${this.term}`
         }
-
-        // this.getAllJobStatus(query)
-        this.filterData()
+        this.filterData();
       }
-
     }, (error => {
       this.apiService.showError(error?.error?.detail)
     }))
@@ -255,7 +248,6 @@ export class JobStatusComponent implements CanComponentDeactivate, OnInit,OnDest
         backdrop: 'static',
         centered: true
       });
-
       modalRef.componentInstance.status.subscribe(resp => {
         if (resp === 'ok') {
           this.selectedJobStatus = item?.id;
@@ -292,10 +284,10 @@ export class JobStatusComponent implements CanComponentDeactivate, OnInit,OnDest
       this.term = input;
       this.page = 1;
       const query = `?page=${this.page}&page_size=${this.tableSize}&search=${this.term}`;
-      this.filterData()
+      this.filterData();
     } if (!input) {
       const query = `?page=${this.page}&page_size=${this.tableSize}`;
-      this.filterData()
+      this.filterData();
     }
   }
   public getStatusGroupList() {
@@ -304,7 +296,6 @@ export class JobStatusComponent implements CanComponentDeactivate, OnInit,OnDest
       this.allStatusGroupList = respData;
     }, (error: any) => {
       this.apiService.showError(error.detail);
-
     });
   }
 
@@ -317,6 +308,7 @@ export class JobStatusComponent implements CanComponentDeactivate, OnInit,OnDest
   canDeactivate(): Observable<boolean> {
     const currentFormValue = this.jobStatusForm?.getRawValue();
     const isFormChanged:boolean =  JSON.stringify(currentFormValue) !== JSON.stringify(this.initialFormValue);
+    
     return this.formUtilityService.isFormDirtyOrInvalidCheck(isFormChanged,this.jobStatusForm);
   }
   getFilterBaseUrl(): string {
@@ -330,7 +322,6 @@ export class JobStatusComponent implements CanComponentDeactivate, OnInit,OnDest
     if (this.filters.status_group_name.length) {
       this.filterQuery += `&status-group-ids=[${this.filters.status_group_name.join(',')}]`;
     }
-
     this.apiService.getData(`${environment.live_url}/${environment.settings_job_status}/${this.filterQuery}`).subscribe((res: any) => {
       this.allJobStatusList = res?.results;
       this.filteredList = res?.results;
@@ -338,14 +329,18 @@ export class JobStatusComponent implements CanComponentDeactivate, OnInit,OnDest
       this.count = noOfPages * this.tableSize;
       this.count = res?.['total_no_of_record']
       this.page = res?.['current_page'];
-    });
+    },(error: any) => {
+          this.apiService.showError(error?.error?.detail);
+        });
   }
   getFilterList(){
     this.apiService.getData(`${environment.live_url}/${environment.settings_job_status}/`).subscribe(
       (res: any) => {
         this.filteredList = res;
         this.allJobStatusName = this.getUniqueValues(job => ({ id: job.id, name: job.status_group_name }));
-    })
+    },(error: any) => {
+          this.apiService.showError(error?.error?.detail);
+        })
     }
   getUniqueValues(
     extractor: (item: any) => { id: any; name: string }
@@ -362,9 +357,6 @@ export class JobStatusComponent implements CanComponentDeactivate, OnInit,OnDest
   }
 
   public drop(event: CdkDragDrop<any[]>) {
-    // console.log(event);
-    // moveItemInArray(this.allJobStatusList, event.previousIndex, event.currentIndex);
-    // console.log('Previous:',event.previousIndex,'Current:',event.currentIndex);
     const previousIndexAbsolute = (this.page - 1) * this.tableSize + event.previousIndex;
     const currentIndexAbsolute = (this.page - 1) * this.tableSize + event.currentIndex;
     moveItemInArray(this.allJobStatusList, previousIndexAbsolute, currentIndexAbsolute);
@@ -378,11 +370,9 @@ export class JobStatusComponent implements CanComponentDeactivate, OnInit,OnDest
     };
     this.apiService.updateData(`${environment.live_url}/${environment.settings_job_status}/${currentIndexdata.id}/`, data).subscribe((respData: any) => {
           if (respData) {
-            // this.apiService.showSuccess('Data rearranged successfully');
-            // this.resetFormState();
             this.getAllJobStatus(`?page=1&page_size=${this.tableSize}`);
           }
-        }, (error: any) => {
+        },(error: any) => {
           this.apiService.showError(error?.error?.detail);
         });
   }

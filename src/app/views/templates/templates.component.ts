@@ -1,16 +1,16 @@
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormGroupDirective, FormGroup, FormBuilder, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { GenericDeleteComponent } from '../../generic-components/generic-delete/generic-delete.component';
-import { GenericEditComponent } from '../../generic-components/generic-edit/generic-edit.component';
-import { ApiserviceService } from '../../service/apiservice.service';
-import { CommonServiceService } from '../../service/common-service.service';
-import { environment } from '../../../environments/environment';
 import { Observable, of } from 'rxjs';
-import { SubModuleService } from '../../../app/service/sub-module.service';
-import {fullUrlToFile} from '../../shared/fileUtils.utils';
 import { CanComponentDeactivate } from '../../auth-guard/can-deactivate.guard';
 import { FormErrorScrollUtilityService } from '../../service/form-error-scroll-utility-service.service';
+import { ApiserviceService } from '../../service/apiservice.service';
+import { CommonServiceService } from '../../service/common-service.service';
+import { SubModuleService } from '../../../app/service/sub-module.service';
+import { GenericDeleteComponent } from '../../generic-components/generic-delete/generic-delete.component';
+import { GenericEditComponent } from '../../generic-components/generic-edit/generic-edit.component';
+import { environment } from '../../../environments/environment';
+import {fullUrlToFile} from '../../shared/fileUtils.utils';
 
 @Component({
   selector: 'app-templates',
@@ -28,8 +28,8 @@ export class TemplatesComponent implements CanComponentDeactivate, OnInit, OnDes
   allTemplatesList: any = [];
   page = 1;
   count = 0;
-  tableSize = 5;
-  tableSizes = [5, 10, 25, 50, 100];
+ tableSize = 50;
+  tableSizes = [50,75,100];
   currentIndex: any;
   sortValue: string = '';
   directionValue: string = '';
@@ -51,13 +51,11 @@ initialFormValue:any;
         private formUtilityService:FormErrorScrollUtilityService) {
       this.common_service.setTitle(this.BreadCrumbsTitle)
     }
-
   ngOnInit(): void {
     this.user_id = sessionStorage.getItem('user_id');
     this.userRole = sessionStorage.getItem('user_role_name');
     this.getModuleAccess();
     this.initializeForm();
-    this.getAllTemplates('?page=1&page_size=5');
     this.templateForm?.valueChanges?.subscribe(() => {
       const currentFormValue = this.templateForm?.getRawValue();
       const isInvalid = this.templateForm.touched && this.templateForm.invalid;
@@ -73,10 +71,10 @@ this.formUtilityService.resetHasUnsavedValue();
     this.accessControlService.getAccessForActiveUrl(this.user_id).subscribe((access) => {
       if (access) {
         this.accessPermissions = access[0].operations;
-        // console.log('Access Permissions:', this.accessPermissions);
-      } else {
-        console.log('No matching access found.');
+        this.getAllTemplates('?page=1&page_size=5');
       }
+    },(error: any) => {
+      this.apiService.showError(error?.error?.error?.detail);
     });
   }
 
@@ -93,7 +91,6 @@ this.formUtilityService.resetHasUnsavedValue();
   public get f() {
     return this.templateForm?.controls;
   }
-
   public getAllTemplates(pramas: any) {
     this.allTemplatesList = [];
     this.apiService.getData(`${environment.live_url}/${environment.templates}/${pramas}`).subscribe((respData: any) => {
@@ -103,11 +100,9 @@ this.formUtilityService.resetHasUnsavedValue();
       this.page = respData?.current_page;
     }, (error: any) => {
       this.apiService.showError(error?.error?.error?.detail);
-
     })
   }
   public saveTemplateDetails() {
-    // console.log(this.templateForm.controls)
     if (this.templateForm.invalid) {
       this.templateForm.markAllAsTouched();
       this.formUtilityService.setUnsavedChanges(true);
@@ -131,14 +126,12 @@ this.formUtilityService.resetHasUnsavedValue();
             this.resetFormState();
             this.getAllTemplates(`?page=1&page_size=${this.tableSize}`);
           }
-
         }, (error: any) => {
           this.apiService.showError(error?.error?.detail);
         });
       }
     }
   }
-
 public createFromData(){
   this.formData = new FormData();
   if (this.file) {
@@ -147,6 +140,7 @@ public createFromData(){
     this.formData.set("password", this.templateForm?.get('password')?.value || '');
     this.formData.set("when_to_use", this.templateForm?.get('when_to_use')?.value || '');
   }
+
   return this.formData;
 }
 
@@ -166,9 +160,6 @@ public createFromData(){
   }
 
   public sort(direction: string, column: string) {
-    // Object.keys(this.arrowState).forEach(key => {
-    //   this.arrowState[key] = false;
-    // });
     this.arrowState[column] = direction === 'asc' ? true : false;
     this.directionValue = direction;
     this.sortValue = column;
@@ -188,7 +179,6 @@ public createFromData(){
   }
   public onTableSizeChange(event: any): void {
     if (event) {
-
       this.tableSize = Number(event.value);
       let query = `?page=${1}&page_size=${this.tableSize}`
       if (this.term) {
@@ -213,7 +203,6 @@ public createFromData(){
           modelRef.close();
         }
       })
-
     }
   }
   public deleteContent(item: any) {
@@ -225,10 +214,8 @@ public createFromData(){
         if (this.term) {
           query += `&search=${this.term}`
         }
-
         this.getAllTemplates(query);
       }
-
     }, (error => {
       this.apiService.showError(error?.error?.detail)
     }))
@@ -241,7 +228,6 @@ public createFromData(){
         backdrop: 'static',
         centered: true
       });
-
       modalRef.componentInstance.status.subscribe(resp => {
         if (resp === 'ok') {
           this.selectedTemplate = item?.id;
@@ -260,21 +246,18 @@ public createFromData(){
   public getSelectedTemplateDetails(id: any) {
     this.apiService.getData(`${environment.live_url}/${environment.templates}/${id}/`).subscribe((respData: any) => {
       this.templateForm.patchValue({ 'template_name': respData?.template_name });
-      // this.templateForm.patchValue({ 'template_file': respData?.template_file });
       this.templateForm.patchValue({ 'password': respData?.password });
       this.templateForm.patchValue({ 'when_to_use': respData?.when_to_use });
       this.templateForm.get('template_file')?.setValidators(null);
       this.templateForm.get('template_file')?.setErrors(null);
-
-      console.error('Controls:', this.templateForm.controls);
       fullUrlToFile(respData?.template_file, this.getFileName(respData?.template_file))
     .then(file => {
       this.file = file;
       this.selectedFile = this.file;
     }
-    )
-    .catch(error => console.error('Error:', error));
-
+    ).catch(error => {
+      console.error('Url Conversion Error:',error);
+      this.apiService.showError('Unable to convert URL to a policy file.')});
     }, (error: any) => {
       this.apiService.showError(error?.error?.detail);
     })
@@ -285,7 +268,6 @@ public createFromData(){
       this.formInputField?.nativeElement?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   }
-
   public filterSearch(event) {
     const input = event?.target?.value?.trim() || ''; // Fallback to empty string if undefined
     if (input && input.length >= 2) {
@@ -298,14 +280,10 @@ public createFromData(){
       this.getAllTemplates(query);
     }
   }
-
   public onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
-
-    if (input.files && input.files.length > 0) {
+    if (input.files && input.files?.length > 0) {
       const selectedFile = input.files[0];
-
-      // Validate file type
       if (
         selectedFile.type === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" || // Excel
         selectedFile.type === "application/vnd.ms-excel" || // Excel (older format)
@@ -314,11 +292,9 @@ public createFromData(){
       )  {
         this.file = selectedFile;
         this.selectedFile = this.file;
-
-        // Reset input value after a slight delay to allow re-selection
         setTimeout(() => {
           input.value = "";
-        }, 100); // Small delay to ensure the selection is registered
+        }, 100);
       } else {
         this.apiService.showError("Invalid file type. Only Excel files are allowed.");
         this.selectedFile = null;
@@ -331,21 +307,19 @@ public createFromData(){
   }
   public fileFormatValidator(control: AbstractControl): Observable<ValidationErrors | null> {
     const allowedFormats = ['.xlsx','.xls','.doc','.docx'];
-    const maxSize = 10 * 1024 * 1024; // 10 MB in bytes
+    const maxSize = 10 * 1024 * 1024;
     const file = control.value;
-
     if (file) {
-      // console.log('file',file);
       const fileExtension = (/[.]/.exec(file)) ? file.split('.').pop()?.toLowerCase() : '';
-      // console.log('fileExtension',fileExtension);
       const fileSize = file.size;
-
         if (allowedFormats.includes(fileExtension)) {
-            return of({ accept: false }); // Invalid file format
+
+            return of({ accept: false });
         }
 
         if (fileSize > maxSize) {
-            return of({ maxSize: true }); // File size exceeds the limit
+            
+          return of({ maxSize: true });
         }
     }
 
@@ -353,6 +327,7 @@ public createFromData(){
 }
 
   public getFileName(url:any){
+
     return url.split('/').pop();
   }
 
@@ -371,5 +346,6 @@ public createFromData(){
     const isFormChanged:boolean =  JSON.stringify(currentFormValue) !== JSON.stringify(this.initialFormValue);
     return this.formUtilityService.isFormDirtyOrInvalidCheck(isFormChanged,this.templateForm);
   }
+  
   }
 

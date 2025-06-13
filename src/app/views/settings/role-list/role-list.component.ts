@@ -1,21 +1,23 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
+import { Router } from '@angular/router';
 import { FormBuilder, FormGroup, FormGroupDirective, Validators } from '@angular/forms';
-import { ApiserviceService } from '../../../service/apiservice.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { Observable } from 'rxjs';
+import { CanComponentDeactivate } from '../../../auth-guard/can-deactivate.guard';
+import{SubModuleService} from '../../../service/sub-module.service'
+import { FormErrorScrollUtilityService } from '../../../service/form-error-scroll-utility-service.service';
+import { ApiserviceService } from '../../../service/apiservice.service';
 import { CommonServiceService } from '../../../service/common-service.service';
 import { GenericDeleteComponent } from '../../../generic-components/generic-delete/generic-delete.component';
 import { GenericEditComponent } from '../../../generic-components/generic-edit/generic-edit.component';
 import { environment } from '../../../../environments/environment';
-import { Router } from '@angular/router';
-import{SubModuleService} from '../../../service/sub-module.service'
-import { CanComponentDeactivate } from 'src/app/auth-guard/can-deactivate.guard';
-import { FormErrorScrollUtilityService } from 'src/app/service/form-error-scroll-utility-service.service';
-import { Observable } from 'rxjs';
+
 @Component({
   selector: 'app-role-list',
   templateUrl: './role-list.component.html',
   styleUrls: ['./role-list.component.scss']
 })
+
 export class RoleListComponent implements CanComponentDeactivate, OnInit {
   @ViewChild(FormGroupDirective) formGroupDirective!: FormGroupDirective;
   BreadCrumbsTitle: any = 'Roles';
@@ -38,6 +40,7 @@ export class RoleListComponent implements CanComponentDeactivate, OnInit {
   user_id: any;
   userRole: any;
   initialFormValue:any;
+  
   constructor(
     private common_service: CommonServiceService, private fb: FormBuilder, private api: ApiserviceService,
     private modalService: NgbModal, private router:Router,
@@ -51,7 +54,6 @@ export class RoleListComponent implements CanComponentDeactivate, OnInit {
     this.userRole = sessionStorage.getItem('user_role_name');
     this.intialForm();
     this.getModuleAccess();
-    this.getAllRolesList(`?page=${1}&page_size=${50}`);
   }
 
   intialForm() {
@@ -60,10 +62,14 @@ export class RoleListComponent implements CanComponentDeactivate, OnInit {
     });
     this.initialFormValue = this.rolesForm?.getRawValue();
   }
+  
   get f() {
+    
     return this.rolesForm.controls;
   }
+  
   getContinuousIndex(index: number): number {
+    
     return (this.page - 1) * this.tableSize + index + 1;
   }
   arrow: boolean = false
@@ -75,15 +81,14 @@ export class RoleListComponent implements CanComponentDeactivate, OnInit {
     this.directionValue = direction;
     this.sortValue = column;
   }
-
   getModuleAccess(){
     this.accessControlService.getAccessForActiveUrl(this.user_id).subscribe((access) => {
       if (access) {
         this.accessPermissions = access[0].operations;
-        // console.log('Access Permissions:', this.accessPermissions);
-      } else {
-        console.log('No matching access found.');
+        this.getAllRolesList(`?page=${1}&page_size=${50}`);
       }
+    },(error: any) => {
+      this.api.showError(error?.error?.detail);
     });
   }
 
@@ -91,7 +96,6 @@ export class RoleListComponent implements CanComponentDeactivate, OnInit {
     this.api.getData(`${environment.live_url}/${environment.settings_roles}/${params}`).subscribe(
       (res: any) => {
         this.allRoles = [];
-        // console.log(res.results)
         this.allRoles = res.results;
         const noOfPages: number = res?.['total_pages']
         this.count = noOfPages * this.tableSize;
@@ -113,6 +117,7 @@ export class RoleListComponent implements CanComponentDeactivate, OnInit {
     }
   }
   getFilterBaseUrl(): string {
+    
     return `?page=${this.page}&page_size=${this.tableSize}`;
   }
 
@@ -123,10 +128,8 @@ export class RoleListComponent implements CanComponentDeactivate, OnInit {
       if (this.term) {
         let query = this.getFilterBaseUrl()
         query += `&search=${this.term}`
-        // console.log(this.term)
         this.getAllRolesList(query);
       } else {
-        // console.log(this.term,'no')
         this.getAllRolesList(this.getFilterBaseUrl());
       }
     }
@@ -137,10 +140,8 @@ export class RoleListComponent implements CanComponentDeactivate, OnInit {
     if (this.term) {
       let query = this.getFilterBaseUrl()
       query += `&search=${this.term}`
-      // console.log(this.term)
       this.getAllRolesList(query);
     } else {
-      // console.log(this.term,'no')
       this.getAllRolesList(this.getFilterBaseUrl());
     }
   }
@@ -148,7 +149,6 @@ export class RoleListComponent implements CanComponentDeactivate, OnInit {
   saveCountryDetails() {
     if (this.rolesForm.invalid) {
       this.rolesForm.markAllAsTouched();
-      // this.api.showError('Invalid Form!');
     } else {
       if (this.isEditItem) {
         this.api.updateData(`${environment.live_url}/${environment.settings_roles}/${this.selectedItemId}/`, this.rolesForm.value).subscribe((respData: any) => {
@@ -157,7 +157,7 @@ export class RoleListComponent implements CanComponentDeactivate, OnInit {
             this.resetFormState();
             this.getAllRolesList(`?page=1&page_size=${this.tableSize}`);
           }
-        }, (error: any) => {
+        },(error: any) => {
           this.api.showError(error?.error?.detail);
         });
       } else {
@@ -165,7 +165,6 @@ export class RoleListComponent implements CanComponentDeactivate, OnInit {
           if (respData) {
             this.api.showSuccess(respData['message']);
             this.resetFormState();
-            // this.getAllRolesList('?page=1&page_size=5');
             this.router.navigate([`/settings/roles-access/${respData?.result?.id}`])
           }
         }, (error: any) => {
@@ -178,7 +177,6 @@ export class RoleListComponent implements CanComponentDeactivate, OnInit {
     this.formGroupDirective?.resetForm();
     this.isEditItem = false;
     this.initialFormValue = this.rolesForm?.getRawValue();
-
   }
   async edit(item: any) {
     this.selectedItemId = item?.id;
@@ -189,7 +187,6 @@ export class RoleListComponent implements CanComponentDeactivate, OnInit {
         backdrop: 'static',
         centered: true
       });
-
       modalRef.componentInstance.status.subscribe(resp => {
         if (resp === 'ok') {
           modalRef.dismiss();
@@ -210,7 +207,6 @@ export class RoleListComponent implements CanComponentDeactivate, OnInit {
       this.api.showError(error?.error?.detail);
     })
   }
-
   delete(id: any) {
     if (id) {
       const modelRef = this.modalService.open(GenericDeleteComponent, {
@@ -227,7 +223,6 @@ export class RoleListComponent implements CanComponentDeactivate, OnInit {
           modelRef.close();
         }
       })
-
     }
   }
   public deleteContent(id: any) {
@@ -241,7 +236,6 @@ export class RoleListComponent implements CanComponentDeactivate, OnInit {
         }
         this.getAllRolesList(query);
       }
-
     }, (error => {
       this.api.showError(error?.error?.error)
     }))
@@ -251,13 +245,15 @@ export class RoleListComponent implements CanComponentDeactivate, OnInit {
     this.resetFormState();
     this.getAllRolesList(`?page=${1}&page_size=${50}`);
   }
+
   roleAccess(id:any){
-    // console.log(id)
     this.router.navigate([`/settings/roles-access/${id}`])
   }
+  
   canDeactivate(): Observable<boolean> {
     const currentFormValue = this.rolesForm?.getRawValue();
     const isFormChanged:boolean =  JSON.stringify(currentFormValue) !== JSON.stringify(this.initialFormValue);
+    
     return this.formUtilityService.isFormDirtyOrInvalidCheck(isFormChanged,this.rolesForm);
   }
 }

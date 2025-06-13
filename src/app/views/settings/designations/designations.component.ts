@@ -1,24 +1,23 @@
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, FormGroupDirective } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { Observable } from 'rxjs';
+import { CanComponentDeactivate } from '../../../auth-guard/can-deactivate.guard';
+import { SubModuleService } from '../../../../app/service/sub-module.service';
+import { FormErrorScrollUtilityService } from '../../../service/form-error-scroll-utility-service.service';
 import { CommonServiceService } from '../../../service/common-service.service';
 import { ApiserviceService } from '../../../service/apiservice.service';
 import { GenericDeleteComponent } from '../../../generic-components/generic-delete/generic-delete.component';
 import { GenericEditComponent } from '../../../generic-components/generic-edit/generic-edit.component';
 import { environment } from '../../../../environments/environment';
-import { SubModuleService } from '../../../../app/service/sub-module.service';
-import { Observable } from 'rxjs';
-import { FormErrorScrollUtilityService } from '../../../service/form-error-scroll-utility-service.service';
-import { CanComponentDeactivate } from '../../../auth-guard/can-deactivate.guard';
-
 
 @Component({
   selector: 'app-designations',
   templateUrl: './designations.component.html',
   styleUrls: ['./designations.component.scss']
 })
-export class DesignationsComponent implements CanComponentDeactivate, OnInit,OnDestroy {
 
+export class DesignationsComponent implements CanComponentDeactivate, OnInit,OnDestroy {
   BreadCrumbsTitle: any = 'Designation';
   @ViewChild(FormGroupDirective) formGroupDirective!: FormGroupDirective;
    @ViewChild('formInputField') formInputField: ElementRef;
@@ -44,6 +43,7 @@ export class DesignationsComponent implements CanComponentDeactivate, OnInit,OnD
   user_id: any;
   userRole: any;
   initialFormValue:any;
+
   constructor(private fb: FormBuilder, private modalService: NgbModal,private accessControlService:SubModuleService,
     private common_service: CommonServiceService, private apiService: ApiserviceService,
     private formUtilityService:FormErrorScrollUtilityService
@@ -56,8 +56,6 @@ export class DesignationsComponent implements CanComponentDeactivate, OnInit,OnD
     this.userRole = sessionStorage.getItem('user_role_name');
     this.getModuleAccess();
     this.initializeForm();
-    this.getAllDesignation('?page=1&page_size=50');
-    this.getAllRolesList();
     this.designationForm?.valueChanges?.subscribe(() => {
       const currentFormValue = this.designationForm?.getRawValue();
       const isInvalid = this.designationForm?.touched && this.designationForm?.invalid;
@@ -74,10 +72,11 @@ this.formUtilityService.resetHasUnsavedValue();
     this.accessControlService.getAccessForActiveUrl(this.user_id).subscribe((access) => {
       if (access) {
         this.accessPermissions = access[0].operations;
-        // console.log('Access Permissions:', this.accessPermissions);
-      } else {
-        console.log('No matching access found.');
+        this.getAllDesignation('?page=1&page_size=50');
+        this.getAllRolesList();
       }
+    },(error: any) => {
+      this.apiService.showError(error?.error?.detail);
     });
   }
   public initializeForm() {
@@ -95,12 +94,11 @@ this.formUtilityService.resetHasUnsavedValue();
     this.allDesignationStatusList = [];
     this.apiService.getData(`${environment.live_url}/${environment.settings_designation}/${pramas}`).subscribe((respData: any) => {
       this.allDesignationStatusList = respData.results;
-      // console.log( this.allDesignationStatusList)
       const noOfPages: number = respData.total_pages
       this.count = noOfPages * this.tableSize;
       this.page = respData.current_page;
     }, (error: any) => {
-      this.apiService.showError(error.detail);
+      this.apiService.showError(error?.error?.detail);
 
     })
   }
@@ -115,7 +113,6 @@ this.formUtilityService.resetHasUnsavedValue();
   }
   public saveJobTypeDetails() {
     if (this.designationForm.invalid) {
-      // this.apiService.showError('Invalid!');
       this.designationForm.markAllAsTouched();
       this.formUtilityService.setUnsavedChanges(true);
     } else {
@@ -136,7 +133,6 @@ this.formUtilityService.resetHasUnsavedValue();
             this.resetFormState();
             this.getAllDesignation(`?page=1&page_size=${this.tableSize}`);
           }
-
         }, (error: any) => {
           this.apiService.showError(error?.error?.detail);
         });
@@ -160,13 +156,13 @@ this.formUtilityService.resetHasUnsavedValue();
     this.directionValue = direction;
     this.sortValue = column;
   }
+
   public getContinuousIndex(index: number): number {
 
     return (this.page - 1) * this.tableSize + index + 1;
   }
   public onTableSizeChange(event: any): void {
     if (event) {
-
       this.tableSize = Number(event.value);
       let query = `?page=${1}&page_size=${this.tableSize}`
       if (this.term) {
@@ -191,12 +187,9 @@ this.formUtilityService.resetHasUnsavedValue();
           modelRef.close();
         }
       })
-
     }
   }
-
   public deleteContent(item) {
-
     this.apiService.delete(`${environment.live_url}/${environment.settings_designation}/${item?.id}/`).subscribe(async (data: any) => {
       if (data) {
         this.allDesignationStatusList = []
@@ -205,10 +198,8 @@ this.formUtilityService.resetHasUnsavedValue();
         if (this.term) {
           query += `&search=${this.term}`
         }
-
         this.getAllDesignation(query)
       }
-
     }, (error => {
       this.apiService.showError(error?.error?.detail)
     }))
@@ -221,7 +212,6 @@ this.formUtilityService.resetHasUnsavedValue();
         backdrop: 'static',
         centered: true
       });
-
       modalRef.componentInstance.status.subscribe(resp => {
         if (resp === 'ok') {
           this.selectedDesignationStatus = item?.id;
@@ -237,6 +227,7 @@ this.formUtilityService.resetHasUnsavedValue();
       console.error('Error opening modal:', error);
     }
   }
+
   public scrollToField(){
     if (this.formInputField) {
       this.formInputField?.nativeElement?.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -268,19 +259,21 @@ this.formUtilityService.resetHasUnsavedValue();
       this.RolesList = respData;
     }, (error: any) => {
       this.apiService.showError(error.detail);
-
     })
   }
 
   public getRoleName(id: any) {
     const itemStatusGroup = this.RolesList.find((s: any) => s?.id === id);
 
-    return itemStatusGroup?.designation_name
+    return itemStatusGroup?.designation_name;
   }
+
   canDeactivate(): Observable<boolean> {
     const currentFormValue = this.designationForm?.getRawValue();
     const isFormChanged:boolean =  JSON.stringify(currentFormValue) !== JSON.stringify(this.initialFormValue);
+    
     return this.formUtilityService.isFormDirtyOrInvalidCheck(isFormChanged,this.designationForm);
   }
+
 }
 

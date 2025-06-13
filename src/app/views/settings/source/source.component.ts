@@ -1,24 +1,25 @@
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, FormGroupDirective, Validators } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { Observable } from 'rxjs/internal/Observable';
+import { Observable } from 'rxjs';
+import { CanComponentDeactivate } from '../../../auth-guard/can-deactivate.guard';
+import { SubModuleService } from '../../../service/sub-module.service';
+import { FormErrorScrollUtilityService } from '../../../service/form-error-scroll-utility-service.service';
 import { CommonServiceService } from '../../../service/common-service.service';
 import { ApiserviceService } from '../../../service/apiservice.service';
 import { GenericDeleteComponent } from '../../../generic-components/generic-delete/generic-delete.component';
 import { GenericEditComponent } from '../../../generic-components/generic-edit/generic-edit.component';
 import { environment } from '../../../../environments/environment';
-import { SubModuleService } from '../../../service/sub-module.service';
-import { CanComponentDeactivate } from '../../../auth-guard/can-deactivate.guard';
-import { FormErrorScrollUtilityService } from '../../../service/form-error-scroll-utility-service.service';
+
 @Component({
   selector: 'app-source',
   templateUrl: './source.component.html',
   styleUrls: ['./source.component.scss']
 })
+
 export class SourceComponent implements CanComponentDeactivate, OnInit,OnDestroy {
   @ViewChild(FormGroupDirective) formGroupDirective!: FormGroupDirective;
-   @ViewChild('formInputField') formInputField: ElementRef;
-
+  @ViewChild('formInputField') formInputField: ElementRef;
   BreadCrumbsTitle: any = 'Source';
   isEditItem: boolean = false;
   sourceForm: FormGroup;
@@ -40,6 +41,7 @@ export class SourceComponent implements CanComponentDeactivate, OnInit,OnDestroy
   user_id: any;
   userRole: any;
   initialFormValue:any;
+  
   constructor(private fb: FormBuilder, private modalService: NgbModal,private accessControlService:SubModuleService,
     private common_service: CommonServiceService, private apiService: ApiserviceService,private formUtilityService:FormErrorScrollUtilityService) {
     this.common_service.setTitle(this.BreadCrumbsTitle)
@@ -50,7 +52,6 @@ export class SourceComponent implements CanComponentDeactivate, OnInit,OnDestroy
     this.userRole = sessionStorage.getItem('user_role_name');
     this.getModuleAccess();
     this.initializeForm();
-    this.getAllSource('?page=1&page_size=50');
     this.sourceForm?.valueChanges?.subscribe(() => {
       const currentFormValue = this.sourceForm?.getRawValue();
       const isInvalid = this.sourceForm?.touched && this.sourceForm?.invalid;
@@ -66,10 +67,10 @@ this.formUtilityService.resetHasUnsavedValue();
     this.accessControlService.getAccessForActiveUrl(this.user_id).subscribe((access) => {
       if (access) {
         this.accessPermissions = access[0].operations;
-        console.log('Access Permissions:', this.accessPermissions);
-      } else {
-        console.log('No matching access found.');
+        this.getAllSource('?page=1&page_size=50');
       }
+    }, (error: any) => {
+      this.apiService.showError(error?.error?.detail);
     });
   }
 
@@ -81,6 +82,7 @@ this.formUtilityService.resetHasUnsavedValue();
   }
 
   public get f() {
+    
     return this.sourceForm?.controls;
   }
 
@@ -93,7 +95,6 @@ this.formUtilityService.resetHasUnsavedValue();
       this.page = respData?.current_page;
     }, (error: any) => {
       this.apiService.showError(error?.error?.detail);
-
     })
   }
   public saveSourceDetails() {
@@ -118,7 +119,6 @@ this.formUtilityService.resetHasUnsavedValue();
             this.resetFormState();
             this.getAllSource(`?page=1&page_size=${this.tableSize}`);
           }
-
         }, (error: any) => {
           this.apiService.showError(error?.error?.detail);
         });
@@ -139,6 +139,7 @@ this.formUtilityService.resetHasUnsavedValue();
     this.directionValue = direction;
     this.sortValue = column;
   }
+
   public getContinuousIndex(index: number): number {
 
     return (this.page - 1) * this.tableSize + index + 1;
@@ -154,7 +155,6 @@ this.formUtilityService.resetHasUnsavedValue();
   }
   public onTableSizeChange(event: any): void {
     if (event) {
-
       this.tableSize = Number(event.value);
       let query = `?page=${1}&page_size=${this.tableSize}`
       if (this.term) {
@@ -179,7 +179,6 @@ this.formUtilityService.resetHasUnsavedValue();
           modelRef.close();
         }
       })
-
     }
   }
   public deleteContent(item: any) {
@@ -191,10 +190,8 @@ this.formUtilityService.resetHasUnsavedValue();
         if (this.term) {
           query += `&search=${this.term}`
         }
-
         this.getAllSource(query);
       }
-
     }, (error => {
       this.apiService.showError(error?.error?.detail)
     }))
@@ -206,7 +203,6 @@ this.formUtilityService.resetHasUnsavedValue();
         backdrop: 'static',
         centered: true
       });
-
       modalRef.componentInstance.status.subscribe(resp => {
         if (resp === 'ok') {
           this.selectedSource = item?.id;
@@ -252,6 +248,7 @@ this.formUtilityService.resetHasUnsavedValue();
   canDeactivate(): Observable<boolean> {
     const currentFormValue = this.sourceForm?.getRawValue();
     const isFormChanged:boolean =  JSON.stringify(currentFormValue) !== JSON.stringify(this.initialFormValue);
+    
     return this.formUtilityService.isFormDirtyOrInvalidCheck(isFormChanged,this.sourceForm);
   }
 

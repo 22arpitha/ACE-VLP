@@ -1,15 +1,16 @@
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, FormGroupDirective, Validators } from '@angular/forms';
-import { ApiserviceService } from '../../../service/apiservice.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { Observable } from 'rxjs';
+import { CanComponentDeactivate } from '../../../auth-guard/can-deactivate.guard';
+import { SubModuleService } from '../../../service/sub-module.service';
+import { FormErrorScrollUtilityService } from '../../../service/form-error-scroll-utility-service.service';
+import { ApiserviceService } from '../../../service/apiservice.service';
 import { CommonServiceService } from '../../../service/common-service.service';
 import { GenericDeleteComponent } from '../../../generic-components/generic-delete/generic-delete.component';
 import { GenericEditComponent } from '../../../generic-components/generic-edit/generic-edit.component';
 import { environment } from '../../../../environments/environment';
-import { SubModuleService } from 'src/app/service/sub-module.service';
-import { FormErrorScrollUtilityService } from 'src/app/service/form-error-scroll-utility-service.service';
-import { CanComponentDeactivate } from 'src/app/auth-guard/can-deactivate.guard';
-import { Observable } from 'rxjs';
+
 @Component({
   selector: 'app-country',
   templateUrl: './country.component.html',
@@ -44,14 +45,12 @@ export class CountryComponent implements CanComponentDeactivate, OnInit,OnDestro
     private modalService: NgbModal,private accessControlService:SubModuleService,
     private formUtilityService:FormErrorScrollUtilityService
   ) { }
-
   ngOnInit(): void {
     this.common_service.setTitle(this.BreadCrumbsTitle);
     this.user_id = sessionStorage.getItem('user_id');
     this.userRole = sessionStorage.getItem('user_role_name');
     this.getModuleAccess();
     this.intialForm();
-    this.getAllCountryList(`?page=${1}&page_size=${50}`);
     this.countryForm?.valueChanges?.subscribe(() => {
       const currentFormValue = this.countryForm?.getRawValue();
       const isInvalid = this.countryForm.touched && this.countryForm.invalid;
@@ -68,10 +67,10 @@ this.formUtilityService.resetHasUnsavedValue();
     this.accessControlService.getAccessForActiveUrl(this.user_id).subscribe((access) => {
       if (access) {
         this.accessPermissions = access[0].operations;
-        // console.log('Access Permissions:', this.accessPermissions);
-      } else {
-        console.log('No matching access found.');
+        this.getAllCountryList(`?page=${1}&page_size=${50}`);
       }
+    },(error: any) => {
+        this.api.showError(error?.error?.detail);
     });
   }
 
@@ -81,12 +80,17 @@ this.formUtilityService.resetHasUnsavedValue();
     });
     this.initialFormValue = this.countryForm?.getRawValue();
   }
+
   get f() {
+    
     return this.countryForm.controls;
   }
+
   getContinuousIndex(index: number): number {
+    
     return (this.page - 1) * this.tableSize + index + 1;
   }
+
   arrow: boolean = false
   sort(direction: string, column: string) {
     this.arrowState[column] = direction === 'asc' ? true : false;
@@ -119,10 +123,11 @@ this.formUtilityService.resetHasUnsavedValue();
       this.getAllCountryList(this.getFilterBaseUrl());
     }
   }
+  
   getFilterBaseUrl(): string {
+    
     return `?page=${this.page}&page_size=${this.tableSize}`;
   }
-
   onTableSizeChange(event: any): void {
     if (event) {
       this.page = 1;
@@ -130,31 +135,24 @@ this.formUtilityService.resetHasUnsavedValue();
       if (this.term) {
         let query = this.getFilterBaseUrl()
         query += `&search=${this.term}`
-        // console.log(this.term)
         this.getAllCountryList(query);
       } else {
-        // console.log(this.term,'no')
         this.getAllCountryList(this.getFilterBaseUrl());
       }
     }
   }
-
   onTableDataChange(event: any) {
     this.page = event;
     if (this.term) {
       let query = this.getFilterBaseUrl()
       query += `&search=${this.term}`
-      // console.log(this.term)
       this.getAllCountryList(query);
     } else {
-      // console.log(this.term,'no')
       this.getAllCountryList(this.getFilterBaseUrl());
     }
   }
-
   saveCountryDetails() {
     if (this.countryForm.invalid) {
-      // console.log(this.countryForm.value)
       this.countryForm.markAllAsTouched();
       this.formUtilityService.setUnsavedChanges(true);
     } else {
@@ -181,6 +179,7 @@ this.formUtilityService.resetHasUnsavedValue();
       }
     }
   }
+  
   public resetFormState() {
     this.formGroupDirective.resetForm();
     this.formUtilityService.resetHasUnsavedValue();
@@ -189,14 +188,12 @@ this.formUtilityService.resetHasUnsavedValue();
     this.initialFormValue = this.countryForm?.getRawValue();
   }
   async edit(item: any) {
-
     try {
       const modalRef = await this.modalService.open(GenericEditComponent, {
         size: 'sm',
         backdrop: 'static',
         centered: true
       });
-
       modalRef.componentInstance.status.subscribe(resp => {
         if (resp === 'ok') {
           this.selectedItemId = item?.id;
@@ -225,7 +222,6 @@ this.formUtilityService.resetHasUnsavedValue();
       this.api.showError(error?.error?.detail);
     })
   }
-
   delete(id: any) {
     if (id) {
       const modelRef = this.modalService.open(GenericDeleteComponent, {
@@ -242,7 +238,6 @@ this.formUtilityService.resetHasUnsavedValue();
           modelRef.close();
         }
       })
-
     }
   }
   public deleteContent(id: any) {
@@ -254,10 +249,8 @@ this.formUtilityService.resetHasUnsavedValue();
         if (this.term) {
           query += `&search=${this.term}`
         }
-
         this.getAllCountryList(query)
       }
-
     }, (error => {
       this.api.showError(error?.error?.detail)
     }))
@@ -267,9 +260,12 @@ this.formUtilityService.resetHasUnsavedValue();
     this.resetFormState();
     this.getAllCountryList(`?page=${1}&page_size=${50}`);
   }
+
   canDeactivate(): Observable<boolean> {
     const currentFormValue = this.countryForm?.getRawValue();
     const isFormChanged:boolean =  JSON.stringify(currentFormValue) !== JSON.stringify(this.initialFormValue);
+    
     return this.formUtilityService.isFormDirtyOrInvalidCheck(isFormChanged,this.countryForm);
   }
+  
 }

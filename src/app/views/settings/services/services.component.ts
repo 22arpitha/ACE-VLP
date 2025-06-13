@@ -1,21 +1,22 @@
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, FormGroupDirective, Validators } from '@angular/forms';
+import { Observable } from 'rxjs';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { CanComponentDeactivate } from '../../../auth-guard/can-deactivate.guard';
+import { SubModuleService } from '../../../service/sub-module.service';
+import { FormErrorScrollUtilityService } from '../../../service/form-error-scroll-utility-service.service';
 import { ApiserviceService } from '../../../service/apiservice.service';
 import { CommonServiceService } from '../../../service/common-service.service';
 import { GenericDeleteComponent } from '../../../generic-components/generic-delete/generic-delete.component';
 import { GenericEditComponent } from '../../../generic-components/generic-edit/generic-edit.component';
 import { environment } from '../../../../environments/environment';
-import { SubModuleService } from '../../../service/sub-module.service';
-import { CanComponentDeactivate } from 'src/app/auth-guard/can-deactivate.guard';
-import { FormErrorScrollUtilityService } from 'src/app/service/form-error-scroll-utility-service.service';
-import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-services',
   templateUrl: './services.component.html',
   styleUrls: ['./services.component.scss']
 })
+
 export class ServicesComponent implements CanComponentDeactivate, OnInit,OnDestroy {
   BreadCrumbsTitle: any = 'Services';
   @ViewChild(FormGroupDirective) formGroupDirective!: FormGroupDirective;
@@ -40,6 +41,7 @@ export class ServicesComponent implements CanComponentDeactivate, OnInit,OnDestr
   user_id: any;
   userRole: any;
   initialFormValue:any;
+  
   constructor(private fb: FormBuilder, private modalService: NgbModal,private accessControlService:SubModuleService,
     private common_service: CommonServiceService,
     private apiService: ApiserviceService,
@@ -52,7 +54,6 @@ export class ServicesComponent implements CanComponentDeactivate, OnInit,OnDestr
     this.userRole = sessionStorage.getItem('user_role_name');
     this.getModuleAccess();
     this.initializeForm();
-    this.getAllServices('?page=1&page_size=50');
     this.serviceForm?.valueChanges?.subscribe(() => {
       const currentFormValue = this.serviceForm?.getRawValue();
       const isInvalid = this.serviceForm?.touched && this.serviceForm?.invalid;
@@ -68,11 +69,11 @@ this.formUtilityService.resetHasUnsavedValue();
   getModuleAccess(){
     this.accessControlService.getAccessForActiveUrl(this.user_id).subscribe((access) => {
       if (access) {
-        this.accessPermissions = access[0].operations;
-        // console.log('Access Permissions:', this.accessPermissions);
-      } else {
-        console.log('No matching access found.');
+      this.accessPermissions = access[0].operations;  
+      this.getAllServices('?page=1&page_size=50');
       }
+    },(error: any) => {
+      this.apiService.showError(error?.error?.detail);
     });
   }
   public initializeForm() {
@@ -81,7 +82,9 @@ this.formUtilityService.resetHasUnsavedValue();
     });
     this.initialFormValue=this.serviceForm?.getRawValue();
   }
+
   public get f() {
+    
     return this.serviceForm?.controls;
   }
 
@@ -94,7 +97,6 @@ this.formUtilityService.resetHasUnsavedValue();
       this.page = respData?.current_page;
     }, (error: any) => {
       this.apiService.showError(error?.error?.detail);
-
     })
   }
   public saveServiceDetails() {
@@ -119,7 +121,6 @@ this.formUtilityService.resetHasUnsavedValue();
             this.resetFormState();
             this.getAllServices(`?page=1&page_size=${this.tableSize}`);
           }
-
         }, (error: any) => {
           this.apiService.showError(error?.error?.detail);
         });
@@ -132,7 +133,6 @@ this.formUtilityService.resetHasUnsavedValue();
     this.formUtilityService.resetHasUnsavedValue();
     this.isEditItem = false;
     this.initialFormValue = this.serviceForm?.getRawValue();
-
   }
 
   sort(direction: string, column: string) {
@@ -156,7 +156,6 @@ this.formUtilityService.resetHasUnsavedValue();
   }
   public onTableSizeChange(event: any): void {
     if (event) {
-
       this.tableSize = Number(event.value);
       let query = `?page=${1}&page_size=${this.tableSize}`
       if (this.term) {
@@ -181,7 +180,6 @@ this.formUtilityService.resetHasUnsavedValue();
           modelRef.close();
         }
       })
-
     }
   }
   public deleteContent(item: any) {
@@ -193,10 +191,8 @@ this.formUtilityService.resetHasUnsavedValue();
         if (this.term) {
           query += `&search=${this.term}`
         }
-
         this.getAllServices(query);
       }
-
     }, (error => {
       this.apiService.showError(error?.error?.detail)
     }))
@@ -209,7 +205,6 @@ this.formUtilityService.resetHasUnsavedValue();
         backdrop: 'static',
         centered: true
       });
-
       modalRef.componentInstance.status.subscribe(resp => {
         if (resp === 'ok') {
           this.selectedService = item?.id;
@@ -245,9 +240,11 @@ this.formUtilityService.resetHasUnsavedValue();
       this.getAllServices(query);
     }
   }
+
 canDeactivate(): Observable<boolean> {
     const currentFormValue = this.serviceForm?.getRawValue();
     const isFormChanged:boolean =  JSON.stringify(currentFormValue) !== JSON.stringify(this.initialFormValue);
+    
     return this.formUtilityService.isFormDirtyOrInvalidCheck(isFormChanged,this.serviceForm);
   }
 }

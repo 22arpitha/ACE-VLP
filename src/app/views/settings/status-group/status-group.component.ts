@@ -11,15 +11,15 @@ import { GenericDeleteComponent } from '../../../generic-components/generic-dele
 import { GenericEditComponent } from '../../../generic-components/generic-edit/generic-edit.component';
 import { environment } from '../../../../environments/environment';
 
-
 @Component({
   selector: 'app-status-group',
   templateUrl: './status-group.component.html',
   styleUrls: ['./status-group.component.scss']
 })
+
 export class StatusGroupComponent implements CanComponentDeactivate, OnInit,OnDestroy {
   @ViewChild(FormGroupDirective) formGroupDirective!: FormGroupDirective;
-   @ViewChild('formInputField') formInputField: ElementRef;
+  @ViewChild('formInputField') formInputField: ElementRef;
   BreadCrumbsTitle: any = 'Status Group';
   isEditItem: boolean = false;
   statusGroupForm: FormGroup;
@@ -41,11 +41,11 @@ export class StatusGroupComponent implements CanComponentDeactivate, OnInit,OnDe
   user_id: any;
   userRole: any;
   initialFormValue:any;
+  
   constructor(private fb: FormBuilder, private modalService: NgbModal,private accessControlService:SubModuleService,
-    private common_service: CommonServiceService, private apiService: ApiserviceService,
+  private common_service: CommonServiceService, private apiService: ApiserviceService,
   private formUtilityService:FormErrorScrollUtilityService) {
     this.common_service.setTitle(this.BreadCrumbsTitle)
-
   }
 
   ngOnInit(): void {
@@ -53,7 +53,6 @@ export class StatusGroupComponent implements CanComponentDeactivate, OnInit,OnDe
     this.userRole = sessionStorage.getItem('user_role_name');
     this.getModuleAccess();
     this.initializeForm();
-    this.getAllStatusGroup('?page=1&page_size=50');
     this.statusGroupForm?.valueChanges?.subscribe(() => {
       const currentFormValue = this.statusGroupForm?.getRawValue();
       const isInvalid = this.statusGroupForm?.touched && this.statusGroupForm?.invalid;
@@ -69,10 +68,10 @@ this.formUtilityService.resetHasUnsavedValue();
     this.accessControlService.getAccessForActiveUrl(this.user_id).subscribe((access) => {
       if (access) {
         this.accessPermissions = access[0].operations;
-        // console.log('Access Permissions:', this.accessPermissions);
-      } else {
-        console.log('No matching access found.');
+        this.getAllStatusGroup('?page=1&page_size=50');
       }
+    },(error: any) => {
+      this.apiService.showError(error?.error?.detail);
     });
   }
 
@@ -84,6 +83,7 @@ this.formUtilityService.resetHasUnsavedValue();
   }
 
   public get f() {
+    
     return this.statusGroupForm?.controls;
   }
 
@@ -96,7 +96,6 @@ this.formUtilityService.resetHasUnsavedValue();
       this.page = respData?.current_page;
     }, (error: any) => {
       this.apiService.showError(error?.error?.detail);
-
     })
   }
   public saveStatusGroupDetails() {
@@ -121,7 +120,6 @@ this.formUtilityService.resetHasUnsavedValue();
             this.resetFormState();
             this.getAllStatusGroup(`?page=1&page_size=${this.tableSize}`);
           }
-
         }, (error: any) => {
           this.apiService.showError(error?.error?.detail);
         });
@@ -157,7 +155,6 @@ this.formUtilityService.resetHasUnsavedValue();
   }
   public onTableSizeChange(event: any): void {
     if (event) {
-
       this.tableSize = Number(event.value);
       let query = `?page=${1}&page_size=${this.tableSize}`
       if (this.term) {
@@ -182,7 +179,6 @@ this.formUtilityService.resetHasUnsavedValue();
           modelRef.close();
         }
       })
-
     }
   }
   public deleteContent(item: any) {
@@ -194,10 +190,8 @@ this.formUtilityService.resetHasUnsavedValue();
         if (this.term) {
           query += `&search=${this.term}`
         }
-
         this.getAllStatusGroup(query);
       }
-
     }, (error => {
       this.apiService.showError(error?.error?.detail)
     }))
@@ -210,7 +204,6 @@ this.formUtilityService.resetHasUnsavedValue();
         backdrop: 'static',
         centered: true
       });
-
       modalRef.componentInstance.status.subscribe(resp => {
         if (resp === 'ok') {
           this.selectedStatusGroup = item?.id;
@@ -226,7 +219,6 @@ this.formUtilityService.resetHasUnsavedValue();
       console.error('Error opening modal:', error);
     }
   }
-
 
   public scrollToField(){
     if (this.formInputField) {
@@ -252,9 +244,11 @@ this.formUtilityService.resetHasUnsavedValue();
       this.getAllStatusGroup(query);
     }
   }
-canDeactivate(): Observable<boolean> {
+
+  canDeactivate(): Observable<boolean> {
   const currentFormValue = this.statusGroupForm?.getRawValue();
   const isFormChanged:boolean =  JSON.stringify(currentFormValue) !== JSON.stringify(this.initialFormValue);
+  
   return this.formUtilityService.isFormDirtyOrInvalidCheck(isFormChanged,this.statusGroupForm);
 }
 }
