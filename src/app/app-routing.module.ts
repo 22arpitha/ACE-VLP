@@ -39,13 +39,6 @@ const routes: Routes = [
           ),
       },
       {
-        path: 'department',
-        loadChildren: () =>
-          import('./views/department/department.module').then(
-            (m) => m.DepartmentModule
-          ),
-      },
-      {
         path: 'accounts',
         loadChildren: () =>
           import('./views/accounts/accounts.module').then(
@@ -104,18 +97,6 @@ const routes: Routes = [
           import('./views/project-status/project-status.module').then(
             (m) => m.ProjectStatusModule
           ),
-      },
-      {
-        path: 'task',
-        loadChildren: () =>
-          import('./views/task-category/task-category.module').then(
-            (m) => m.TaskCategoryModule
-          ),
-      },
-      {
-        path: 'project',
-        loadChildren: () =>
-          import('./views/project/project.module').then((m) => m.ProjectModule),
       },
       {
         path: 'review',

@@ -30,6 +30,10 @@
   overflow-x: auto;
   margin-bottom: 20px;
 }
+::ng-deep .table-wrapper .mat-icon-button{
+  width: 27px !important;
+  height: 40px !important;
+}
 .jobs mat-select.mat-select-table {
   border: 1px solid #929292 !important;
   border-radius: 8px !important;

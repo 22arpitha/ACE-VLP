@@ -5,7 +5,6 @@ import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { forkJoin } from 'rxjs';
-import { GenericEditComponent } from '../../../generic-components/generic-edit/generic-edit.component';
 import { ApiserviceService } from '../../../service/apiservice.service';
 import { CommonServiceService } from '../../../service/common-service.service';
 import { SubModuleService } from '../../../service/sub-module.service';
@@ -76,7 +75,7 @@ export class AllJobsComponent implements OnInit {
   jobList:any = [];
   jobAllocationDate: string | null;
   statusDate: any;
-  dateRange = {
+  dateRange:any = {
   start: '',
   end: ''
 };
@@ -99,8 +98,6 @@ export class AllJobsComponent implements OnInit {
     private common_service: CommonServiceService,
     private accessControlService: SubModuleService,
     private router: Router,
-    private modalService: NgbModal,
-    private dialog: MatDialog,
     private apiService: ApiserviceService,
     private fb: FormBuilder,
     private datePipe: DatePipe) {
@@ -664,5 +661,4 @@ jobStatusValidation(data: any, index: any): boolean {
 }
 
 
-// (userRole!='Admin' && item?.only_admin_can_change_job_status) && item.estimated_time=='00:00' && i >= internalReviewOneIndex
 }

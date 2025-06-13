@@ -8,7 +8,7 @@ import { FormErrorScrollUtilityService } from '../../../service/form-error-scrol
 import { environment } from '../../../../environments/environment';
 import {urlToFile,fileToBase64} from '../../../shared/fileUtils.utils';
 import { CanComponentDeactivate } from '../../../auth-guard/can-deactivate.guard';
-import { GenericRedirectionConfirmationComponent } from 'src/app/generic-components/generic-redirection-confirmation/generic-redirection-confirmation.component';
+import{GenericRedirectionConfirmationComponent} from '../../../generic-components/generic-redirection-confirmation/generic-redirection-confirmation.component'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({

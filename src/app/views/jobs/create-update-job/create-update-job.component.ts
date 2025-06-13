@@ -1,6 +1,6 @@
 import { DatePipe } from '@angular/common';
 import { ChangeDetectorRef, Component, EventEmitter, HostListener, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
-import { FormArray, FormBuilder, FormControl, FormGroup, FormGroupDirective, Validators } from '@angular/forms';
+import { FormArray, FormBuilder, FormGroup, FormGroupDirective, Validators } from '@angular/forms';
 import { MatPaginator } from '@angular/material/paginator';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -14,7 +14,7 @@ import { FormErrorScrollUtilityService } from '../../../service/form-error-scrol
 import { SubModuleService } from '../../../service/sub-module.service';
 import { CanComponentDeactivate } from '../../../auth-guard/can-deactivate.guard';
 import { MatMenuTrigger } from '@angular/material/menu';
-import { GenericRedirectionConfirmationComponent } from 'src/app/generic-components/generic-redirection-confirmation/generic-redirection-confirmation.component';
+import{GenericRedirectionConfirmationComponent} from '../../../generic-components/generic-redirection-confirmation/generic-redirection-confirmation.component'
 
 
 @Component({
@@ -250,14 +250,6 @@ export class CreateUpdateJobComponent implements CanComponentDeactivate, OnInit,
     });
   }
 
-
-  // public getJobUniqueNumber() {
-  //   this.apiService.getData(`${environment.live_url}/${environment.jobs}/?get-unique-id=true`).subscribe((respData: any) => {
-  //     this.jobFormGroup.patchValue({ 'job_number': respData?.unique_id });
-  //   }, (error => {
-  //     this.apiService.showError(error?.error?.detail);
-  //   }));
-  // }
   public getJobBillingOptions() {
     this.jobBillingOption = {};
     this.apiService.getData(`${environment.live_url}/${environment.jobs}/?get-options=True`).subscribe((respData: any) => {
@@ -306,26 +298,7 @@ export class CreateUpdateJobComponent implements CanComponentDeactivate, OnInit,
       }
     }
 
-    this.getManagers(queryparams)
-    // old code
-    // this.apiService.getData(`${environment.live_url}/${environment.employee}/?is_active=True&employee=True&designation=manager`).subscribe((respData: any) => {
-    //   this.allManagerList = respData;
-    //   if (this.user_role_name === 'Accountant' && !this.job_id) {
-    //     console.log('accpont')
-    //     const employeesDetailsArray = this.jobFormGroup.get('employees') as FormArray;
-    //     employeesDetailsArray?.at(0)?.patchValue({ 'employee': this.allEmployeeList[0]?.user_id });
-    //     if (this.allManagerList.length >= 1) {
-    //       console.log('wwwwwwwwwww')
-    //       employeesDetailsArray?.at(0)?.patchValue({ 'manager': this.allEmployeeList[0]?.reporting_manager_id });
-    //     }
-    //     employeesDetailsArray?.at(0)?.patchValue({ 'is_primary': true });
-    //     employeesDetailsArray?.at(0)?.get('employee')?.disable();
-    //     employeesDetailsArray?.at(0)?.get('manager')?.disable();
-    //     employeesDetailsArray?.at(0)?.get('is_primary')?.disable();
-    //   }
-    // }, (error => {
-    //   this.apiService.showError(error?.error?.detail)
-    // }));
+    this.getManagers(queryparams);
   }
 
   public getManagers(queryparams: any) {
@@ -934,16 +907,6 @@ onManagerSelectOpened(opened: boolean, index: number): void {
     this.getManagers(managerQuery);
     this.updateDropdownOptionlist();
 
-    // old code
-    // let queryparams;
-    // if (event.cheked === true) {
-    //   this.selectOtherEmpFlag = event.cheked;
-    //   queryparams = `?is_active=True&employee=True`;
-    // } else {
-    //   this.selectOtherEmpFlag = event.cheked;
-    //   queryparams = `?is_active=True&employee=True&employee_id=${this.user_id}&is_manager=True`;
-    // }
-    // this.getEmployees(queryparams);
   }
 
 updateDropdownOptionlist(){
