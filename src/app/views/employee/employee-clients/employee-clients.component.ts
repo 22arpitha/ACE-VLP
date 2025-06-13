@@ -4,10 +4,10 @@ import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { ApiserviceService } from 'src/app/service/apiservice.service';
-import { CommonServiceService } from 'src/app/service/common-service.service';
-import { SubModuleService } from 'src/app/service/sub-module.service';
-import { environment } from 'src/environments/environment';
+import { ApiserviceService } from '../../../service/apiservice.service';
+import { CommonServiceService } from '../../../service/common-service.service';
+import { SubModuleService } from '../../../service/sub-module.service';
+import { environment } from '../../../../environments/environment';
 import { ClientContactDetailsPopupComponent } from '../../client/client-contact-details-popup/client-contact-details-popup.component';
 import { IdNamePair } from '../all-employee/all-employee.component';
 
@@ -51,22 +51,16 @@ export class EmployeeClientsComponent implements OnInit {
       filterQuery: string;
       constructor(
         private common_service: CommonServiceService,
-        private accessControlService:SubModuleService,
-        private router:Router,
-        private modalService: NgbModal,
         private dialog:MatDialog,
-        private apiService: ApiserviceService,
-        private http: HttpClient,private activeRoute: ActivatedRoute,
-        private datePipe:DatePipe) {
+        private apiService: ApiserviceService,private activeRoute: ActivatedRoute) {
       this.userRole = sessionStorage.getItem('user_role_name');
       this.common_service.setTitle('Client Details');
        if (this.activeRoute.snapshot.paramMap.get('id')) {
       this.user_id = this.activeRoute.snapshot.paramMap.get('id');
       this.getCurrentClientList();
-    }
-        
        }
-  
+       }
+
         ngOnInit() {
         this.getAllCountryList();
         this.getAllSourceList();
@@ -125,14 +119,14 @@ export class EmployeeClientsComponent implements OnInit {
             this.page = res?.['current_page'];
           },(error: any) => {
             this.apiService.showError(error?.error?.detail);
-  
           });
       }
       public getCurrentClients(){
-        this.page = 1;
-        this.tableSize = 50;
+      this.page = 1;
+      this.tableSize = 50;
       this.getCurrentClientList();
       }
+      
       public getClientsHistory(){
         this.page = 1;
         this.tableSize = 50;
@@ -146,6 +140,7 @@ export class EmployeeClientsComponent implements OnInit {
           this.filterData()
         }
       }
+      
       public onTableDataChange(event: any) {
         this.page = event;
         this.filterData()
@@ -160,11 +155,10 @@ export class EmployeeClientsComponent implements OnInit {
           this.filterData();
         }
       }
-  
+
       public getFilterBaseUrl(): string {
           return `?page=${this.page}&page_size=${this.tableSize}&search=${this.term}&employee-id=${this.user_id}`;
         }
-  
       public sort(direction: string, column: string) {
         Object.keys(this.arrowState).forEach(key => {
           this.arrowState[key] = false;
@@ -184,8 +178,6 @@ export class EmployeeClientsComponent implements OnInit {
         data: { contact_details: item?.contact_details }
       });
       }
-  
-  
       public downloadOption(type:any){
         let status:any
       if(this.isCurrent){
@@ -212,13 +204,11 @@ export class EmployeeClientsComponent implements OnInit {
         a.click();
       });
       }
-  
       filterData() {
         this.filterQuery = this.getFilterBaseUrl()
         if (this.filters.country.length) {
           this.filterQuery += `&country-ids=[${this.filters.country.join(',')}]`;
         }
-  
         if (this.filters.source.length) {
           this.filterQuery += `&source-ids=[${this.filters.source.join(',')}]`;
         }
@@ -233,7 +223,9 @@ export class EmployeeClientsComponent implements OnInit {
           this.filteredList = res?.results;
           this.count = res?.['total_no_of_record'];
           this.page = res?.['current_page'];
-        });
+        },(error => {
+            this.apiService.showError(error?.error?.detail)
+          }));
       }
   
       onFilterChange(event: any, filterType: string) {

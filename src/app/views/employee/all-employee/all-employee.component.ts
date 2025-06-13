@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { GenericEditComponent } from '../../../generic-components/generic-edit/generic-edit.component';
 import { ApiserviceService } from '../../../service/apiservice.service';
 import { CommonServiceService } from '../../../service/common-service.service';
 import { environment } from '../../../../environments/environment';
@@ -70,11 +69,10 @@ designation__designation_name:false,
       if (access) {
         this.access_name=access[0]
         this.accessPermissions = access[0].operations;
-        // console.log('Access Permissions:', access);
-      } else {
-        console.log('No matching access found.');
       }
-    });
+    },(error => {
+            this.apiService.showError(error?.error?.detail)
+          }));
   }
 
   public openCreateEmployeePage(){
@@ -87,24 +85,6 @@ designation__designation_name:false,
     this.selectedItemId = item?.user_id;
       sessionStorage.setItem('access-name', this.access_name?.name)
       this.router.navigate(['/settings/update-employee/',this.selectedItemId]);
-    // try {
-    //   const modalRef = await this.modalService.open(GenericEditComponent, {
-    //     size: 'sm',
-    //     backdrop: 'static',
-    //     centered: true
-    //   });
-
-    //   modalRef.componentInstance.status.subscribe(resp => {
-    //     if (resp === 'ok') {
-    //       modalRef.dismiss();
-
-    //     } else {
-    //       modalRef.dismiss();
-    //     }
-    //   });
-    // } catch (error) {
-    //   console.error('Error opening modal:', error);
-    // }
   }
 public getAllRoleList() {
     this.allRoleNames = [];
@@ -114,7 +94,6 @@ public getAllRoleList() {
       }
     }, (error: any) => {
       this.apiService.showError(error.detail);
-
     })
   }
 
@@ -146,7 +125,9 @@ this.apiService.getData(`${environment.live_url}/${environment.employee}/${query
         this.count = noOfPages * this.tableSize;
         this.count = res?.['total_no_of_record']
         this.page = res?.['current_page'];
-      }
+      },(error => {
+            this.apiService.showError(error?.error?.detail)
+          })
     )
   }
 
@@ -165,7 +146,9 @@ this.apiService.getData(`${environment.live_url}/${environment.employee}/${query
         this.count = noOfPages * this.tableSize;
         this.count = res?.['total_no_of_record']
         this.page = res?.['current_page'];
-      }
+      },(error => {
+            this.apiService.showError(error?.error?.detail)
+          })
     )
   }
   public onTableSizeChange(event: any): void {
@@ -234,7 +217,9 @@ this.apiService.getData(`${environment.live_url}/${environment.employee}/${query
         this.count = noOfPages * this.tableSize;
         this.count = res?.['total_no_of_record']
         this.page = res?.['current_page'];
-      }
+      },(error => {
+            this.apiService.showError(error?.error?.detail)
+          })
     )
   }
 }

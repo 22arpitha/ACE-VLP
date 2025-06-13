@@ -71,7 +71,6 @@
                 </mat-error>
               </mat-form-field>
             </div>
-
             <div class="col-12 col-sm-12 col-md-6 col-lg-3  align-content-center">
               <button mat-raised-button class="cancel-button mat-btn-s" type="button" (click)="resetFormState()">
                 Cancel</button>
@@ -96,15 +95,13 @@
         <table class="table table table-hover table-list">
           <thead>
             <tr>
-              <!-- <th></th> -->
               <th>
                 Sl no
               </th>
               <th>
                 Status Group
                 <i *ngIf="!arrowState['status_group_name']" (click)="sort('asc', 'status_group_name')" class="bi bi-arrow-down"></i>
-                <i *ngIf="arrowState['status_group_name']" (click)="sort('desc', 'status_group_name')" class="bi bi-arrow-up"></i>
-               
+                <i *ngIf="arrowState['status_group_name']" (click)="sort('desc', 'status_group_name')" class="bi bi-arrow-up"></i>               
               </th>
               <th>Job Status
                 <i *ngIf="!arrowState['status_name']" (click)="sort('asc', 'status_name')" class="bi bi-arrow-down"></i>
@@ -124,7 +121,6 @@
                                  currentPage: page,
                                  totalItems: count
                                }; let i=index' cdkDrag>
-                              <!-- <td><i class="bi bi-grip-vertical" cdkDragHandle style="cursor: grab;"></i></td> -->
               <td>{{getContinuousIndex(i)}}</td>
               <td>{{status_item?.status_group_name || '-'}}</td>
               <td>{{status_item?.status_name || '-'}}</td>
@@ -142,7 +138,6 @@
           </tbody>
         </table>
       </div>
-
     </div>
     <div *ngIf="allJobStatusList.length === 0">
       <app-generic-norecards></app-generic-norecards>
@@ -151,11 +146,8 @@
   <div class="row mx-0 my-2 px-2" [ngClass]="{'disabled-section': isEditItem}">
     <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0" *ngIf="allJobStatusList.length > 0">
       <div class="pagination-container p-0 pt-2">
-        <!-- Pagination Controls (Center-Aligned) -->
         <pagination-controls previousLabel="Prev" nextLabel="Next" (pageChange)="onTableDataChange($event)">
         </pagination-controls>
-
-        <!-- Items Per Page Selector (Right-Aligned) -->
         <div class="items-per-page-container">
           <div>Items per page</div>
           <mat-select [(ngModel)]="tableSize" (selectionChange)="onTableSizeChange($event)" placeholder="10" disableOptionCentering panelClass="paginationPanelClass"

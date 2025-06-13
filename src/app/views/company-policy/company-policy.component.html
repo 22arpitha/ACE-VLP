@@ -49,22 +49,6 @@
                   </mat-error>
                 </mat-form-field>
               </div>
-              <!-- <div class="col-12 col-sm-12 col-md-6 col-lg-3 px-2">
-                <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
-                  <mat-label>When To Use<b class="r-star">*</b></mat-label>
-                  <input matInput placeholder="Enter When To Use" formControlName="when_to_use" autocomplete="off">
-                  <mat-error *ngIf="f['when_to_use']?.invalid && f['when_to_use']?.touched || f['when_to_use']?.dirty">
-                    <span *ngIf="f['when_to_use'].errors?.['required']">When To Use is required</span>
-                    <span
-                      *ngIf="!f['when_to_use'].errors?.['required'] && f['when_to_use'].errors?.['pattern'] && !f['when_to_use'].errors?.['maxlength']">
-                      Invalid name. Extra space and special charaters are not allowed
-                    </span>
-                    <span *ngIf="!f['when_to_use'].errors?.['required'] && f['when_to_use'].errors?.['maxlength']">
-                        When To Use cannot exceed 20 characters.
-                    </span>
-                  </mat-error>
-                </mat-form-field>
-              </div> -->
               <div class="col-12 col-sm-12 col-md-6 col-lg-3  d-flex">
                 <button mat-raised-button class="cancel-button mat-btn-s" type="button" (click)="resetFormState()">
                   Cancel</button>
@@ -100,7 +84,6 @@
                 </th>
                 <th>Policy File</th>
                 <th *ngIf="userRole==='Admin'">Password</th>
-                <!-- <th>When To Use</th> -->
                 <th>Access</th>
                 <th>Action</th>
               </tr>
@@ -140,9 +123,7 @@
             </tbody>
           </table>
         </div>
-  
       </div>
-  
       <div *ngIf="allCompanyPolicyList.length === 0">
         <app-generic-norecards></app-generic-norecards>
       </div>
@@ -150,11 +131,8 @@
     <div class="row mx-0 my-2 px-2" [ngClass]="{'disabled-section': isEditItem}">
       <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0" *ngIf="allCompanyPolicyList.length > 0">
         <div class="pagination-container p-0 pt-2">
-          <!-- Pagination Controls (Center-Aligned) -->
           <pagination-controls previousLabel="Prev" nextLabel="Next" (pageChange)="onTableDataChange($event)">
           </pagination-controls>
-  
-          <!-- Items Per Page Selector (Right-Aligned) -->
           <div class="items-per-page-container">
             <div>Items per page</div>
             <mat-select [(ngModel)]="tableSize" (selectionChange)="onTableSizeChange($event)" placeholder="10" disableOptionCentering panelClass="paginationPanelClass"

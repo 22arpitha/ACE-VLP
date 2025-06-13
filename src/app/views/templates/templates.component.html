@@ -7,8 +7,7 @@
             <div class="col-12 col-sm-12 col-md-6 col-lg-3 px-2">
               <mat-form-field appearance="outline" class="w-100 custom-mat-form-field no-padding-bottom">
                 <mat-label>Template Name<b class="r-star">*</b></mat-label>
-                <input matInput placeholder="Enter Template Name" formControlName="template_name" autocomplete="off" >
-                
+                <input matInput placeholder="Enter Template Name" formControlName="template_name" autocomplete="off" >    
               </mat-form-field>
               <div style="font-size: 11px;padding-left: 10px;color:#f44336" *ngIf="f['template_name']?.invalid && f['template_name']?.touched || f['template_name']?.dirty">
                   <span *ngIf="f['template_name'].errors?.['required']">Template Name is required</span>
@@ -38,13 +37,11 @@
                   file.</span>
                 <span *ngIf="f['template_file'].errors?.['maxSize']">File size exceeds 10MB.</span>
               </div>
-
             </div>
             <div class="col-12 col-sm-12 col-md-6 col-lg-3 px-2">
               <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
                 <mat-label>Password<b class="r-star"></b></mat-label>
                 <input matInput placeholder="Enter Password" formControlName="password" autocomplete="off">
-                
               </mat-form-field>
               <div style="font-size: 11px;padding-left: 10px;color:#f44336" *ngIf="f['password']?.invalid && f['password']?.touched || f['password']?.dirty">
                 <span *ngIf="f['password'].errors?.['required']">Password is required</span>
@@ -61,7 +58,6 @@
               <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
                 <mat-label>When To Use<b class="r-star"></b></mat-label>
                 <input matInput placeholder="Enter When To Use" formControlName="when_to_use" autocomplete="off">
-                
               </mat-form-field>
               <div style="font-size: 11px;padding-left: 10px;color:#f44336" *ngIf="f['when_to_use']?.invalid && f['when_to_use']?.touched || f['when_to_use']?.dirty">
                 <span *ngIf="f['when_to_use'].errors?.['required']">When To Use is required</span>
@@ -148,9 +144,7 @@
           </tbody>
         </table>
       </div>
-
     </div>
-
     <div *ngIf="allTemplatesList.length === 0">
       <app-generic-norecards></app-generic-norecards>
     </div>
@@ -158,11 +152,8 @@
   <div class="row mx-0 my-2 px-2" [ngClass]="{'disabled-section': isEditItem}">
     <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0" *ngIf="allTemplatesList.length > 0">
       <div class="pagination-container p-0 pt-2">
-        <!-- Pagination Controls (Center-Aligned) -->
         <pagination-controls previousLabel="Prev" nextLabel="Next" (pageChange)="onTableDataChange($event)">
         </pagination-controls>
-
-        <!-- Items Per Page Selector (Right-Aligned) -->
         <div class="items-per-page-container">
           <div>Items per page</div>
           <mat-select [(ngModel)]="tableSize" (selectionChange)="onTableSizeChange($event)" placeholder="10" disableOptionCentering panelClass="paginationPanelClass"

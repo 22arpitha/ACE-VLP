@@ -1,18 +1,18 @@
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormGroupDirective, FormGroup, FormBuilder, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { GenericDeleteComponent } from '../../generic-components/generic-delete/generic-delete.component';
-import { GenericEditComponent } from '../../generic-components/generic-edit/generic-edit.component';
-import { ApiserviceService } from '../../service/apiservice.service';
-import { CommonServiceService } from '../../service/common-service.service';
-import { environment } from '../../../environments/environment';
 import { Observable, of } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
-import {PdfViewComponent} from '../pdf-view/pdf-view.component'
+import { CanComponentDeactivate } from '../../auth-guard/can-deactivate.guard';
+import { FormErrorScrollUtilityService } from '../../service/form-error-scroll-utility-service.service';
+import { ApiserviceService } from '../../service/apiservice.service';
+import { CommonServiceService } from '../../service/common-service.service';
 import { SubModuleService } from '../../../app/service/sub-module.service';
+import { GenericDeleteComponent } from '../../generic-components/generic-delete/generic-delete.component';
+import { GenericEditComponent } from '../../generic-components/generic-edit/generic-edit.component';
+import {PdfViewComponent} from '../pdf-view/pdf-view.component'
+import { environment } from '../../../environments/environment';
 import {fullUrlToFile} from '../../shared/fileUtils.utils';
-import { CanComponentDeactivate } from 'src/app/auth-guard/can-deactivate.guard';
-import { FormErrorScrollUtilityService } from 'src/app/service/form-error-scroll-utility-service.service';
 
 @Component({
   selector: 'app-company-policy',
@@ -23,7 +23,6 @@ export class CompanyPolicyComponent implements CanComponentDeactivate, OnInit,On
   @ViewChild(FormGroupDirective) formGroupDirective!: FormGroupDirective;
   @ViewChild('fileInput') fileInput: ElementRef;
   @ViewChild('formInputField') formInputField: ElementRef;
-
   BreadCrumbsTitle: any = 'Company Policy';
   isEditItem: boolean = false;
   companyPolicyForm: FormGroup;
@@ -31,8 +30,8 @@ export class CompanyPolicyComponent implements CanComponentDeactivate, OnInit,On
   allCompanyPolicyList: any = [];
   page = 1;
   count = 0;
-  tableSize = 5;
-  tableSizes = [5, 10, 25, 50, 100];
+   tableSize = 50;
+  tableSizes = [50,75,100];
   currentIndex: any;
   sortValue: string = '';
   directionValue: string = '';
@@ -62,7 +61,6 @@ export class CompanyPolicyComponent implements CanComponentDeactivate, OnInit,On
     this.userRole = sessionStorage.getItem('user_role_name');
     this.getModuleAccess();
     this.initializeForm();
-    this.getAllCompanyPolicy('?page=1&page_size=5');
     this.companyPolicyForm?.valueChanges?.subscribe(() => {
       const currentFormValue = this.companyPolicyForm?.getRawValue();
       const isInvalid = this.companyPolicyForm.touched && this.companyPolicyForm.invalid;
@@ -78,10 +76,10 @@ this.formUtilityService.resetHasUnsavedValue();
     this.accessControlService.getAccessForActiveUrl(this.user_id).subscribe((access) => {
       if (access) {
         this.accessPermissions = access[0].operations;
-        // console.log('Access Permissions:', this.accessPermissions);
-      } else {
-        console.log('No matching access found.');
+        this.getAllCompanyPolicy('?page=1&page_size=5');
       }
+    },(error:any)=>{
+      this.apiService.showError(error?.error?.detail);
     });
   }
 
@@ -109,7 +107,6 @@ this.formUtilityService.resetHasUnsavedValue();
       this.page = respData?.current_page;
     }, (error: any) => {
       this.apiService.showError(error?.error?.detail);
-
     })
   }
   public savePolicyDetails() {
@@ -143,7 +140,6 @@ this.formUtilityService.resetHasUnsavedValue();
       }
     }
   }
-
   public createFromData() {
     this.formData = new FormData();
     if (this.file) {
@@ -171,9 +167,6 @@ this.formUtilityService.resetHasUnsavedValue();
   }
 
   public sort(direction: string, column: string) {
-    // Object.keys(this.arrowState).forEach(key => {
-    //   this.arrowState[key] = false;
-    // });
     this.arrowState[column] = direction === 'asc' ? true : false;
     this.directionValue = direction;
     this.sortValue = column;
@@ -218,7 +211,6 @@ this.formUtilityService.resetHasUnsavedValue();
           modelRef.close();
         }
       })
-
     }
   }
   public deleteContent(item: any) {
@@ -230,10 +222,8 @@ this.formUtilityService.resetHasUnsavedValue();
         if (this.term) {
           query += `&search=${this.term}`
         }
-
         this.getAllCompanyPolicy(query);
       }
-
     }, (error => {
       this.apiService.showError(error?.error?.detail)
     }))
@@ -246,7 +236,6 @@ this.formUtilityService.resetHasUnsavedValue();
         backdrop: 'static',
         centered: true
       });
-
       modalRef.componentInstance.status.subscribe(resp => {
         if (resp === 'ok') {
           this.selectedTemplate = item?.id;
@@ -265,12 +254,10 @@ this.formUtilityService.resetHasUnsavedValue();
   public getSelectedTemplateDetails(id: any) {
     this.apiService.getData(`${environment.live_url}/${environment.company_policy}/${id}/`).subscribe((respData: any) => {
       this.companyPolicyForm.patchValue({ 'policy_name': respData?.policy_name });
-      // this.companyPolicyForm.patchValue({ 'policy_file': respData?.policy_file });
       this.companyPolicyForm.patchValue({ 'password': respData?.password });
       this.companyPolicyForm.patchValue({ 'when_to_use': respData?.when_to_use });
       this.companyPolicyForm.get('policy_file')?.setValidators(null);
       this.companyPolicyForm.get('policy_file')?.setErrors(null);
-
       console.error('Controls:', this.companyPolicyForm.controls);
       fullUrlToFile(respData?.policy_file, this.getFileName(respData?.policy_file))
         .then(file => {
@@ -278,14 +265,15 @@ this.formUtilityService.resetHasUnsavedValue();
           this.selectedFile = this.file;
         }
         )
-        .catch(error => console.error('Error:', error));
-
+        .catch(error => {
+            console.error('Url Conversion Error:',error);
+           this.apiService.showError('Unable to convert URL to a policy file.')});
     }, (error: any) => {
       this.apiService.showError(error?.error?.detail);
     })
   }
   public filterSearch(event) {
-    const input = event?.target?.value?.trim() || ''; // Fallback to empty string if undefined
+    const input = event?.target?.value?.trim() || '';
     if (input && input.length >= 2) {
       this.term = input;
       this.page = 1;
@@ -298,49 +286,22 @@ this.formUtilityService.resetHasUnsavedValue();
   }
 
   public onFileSelected(event: any): void {
-    const file = event.target.files[0]; // Get the selected file
+    const file = event.target.files[0];
     if (file) {
-      const allowedExtensions = ['doc', 'docx', 'pdf']; // Allowed extensions
+      const allowedExtensions = ['doc', 'docx', 'pdf'];
       const fileExtension = file.name.split('.').pop().toLowerCase();
-
-      // Validate file type
       if (!allowedExtensions.includes(fileExtension)) {
         this.companyPolicyForm.controls['policy_file']?.setErrors({ accept: true });
         return;
       }
-
-      // Validate file size (10MB limit)
-      if (file.size > 10 * 1024 * 1024) { // 10MB limit
+      if (file.size > 10 * 1024 * 1024) {
         this.companyPolicyForm.controls['policy_file']?.setErrors({ maxSize: true });
         return;
       }
       this.file = file;
-      this.selectedFile = file; // Store the selected file
-      // console.log('selectedFile', this.selectedFile)
+      this.selectedFile = file;
       this.companyPolicyForm.controls['policy_file']?.setValue(file);
     }
-    // const input = event.target as HTMLInputElement;
-
-    // if (input.files && input.files.length > 0) {
-    //   const selectedFile = input.files[0];
-
-    //   // Validate file type
-    //   if (
-    //     selectedFile.type === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" ||
-    //     selectedFile.type === "application/vnd.ms-excel"
-    //   ) {
-    //     this.file = selectedFile;
-    //     this.selectedFile = this.file;
-
-    //     // Reset input value after a slight delay to allow re-selection
-    //     setTimeout(() => {
-    //       input.value = "";
-    //     }, 100); // Small delay to ensure the selection is registered
-    //   } else {
-    //     this.apiService.showError("Invalid file type. Only Excel files are allowed.");
-    //     this.selectedFile = null;
-    //   }
-    // }
   }
 
   public triggerFileInput() {
@@ -348,21 +309,19 @@ this.formUtilityService.resetHasUnsavedValue();
   }
   public fileFormatValidator(control: AbstractControl): Observable<ValidationErrors | null> {
     const allowedFormats = ['.xlsx', '.xls'];
-    const maxSize = 10 * 1024 * 1024; // 10 MB in bytes
+    const maxSize = 10 * 1024 * 1024;
     const file = control.value;
 
     if (file) {
-      // console.log('file', file);
       const fileExtension = (/[.]/.exec(file)) ? file.split('.').pop()?.toLowerCase() : '';
-      // console.log('fileExtension', fileExtension);
       const fileSize = file.size;
-
       if (allowedFormats.includes(fileExtension)) {
-        return of({ accept: false }); // Invalid file format
-      }
 
+        return of({ accept: false });
+      }
       if (fileSize > maxSize) {
-        return of({ maxSize: true }); // File size exceeds the limit
+
+        return of({ maxSize: true });
       }
     }
 
@@ -380,7 +339,6 @@ this.formUtilityService.resetHasUnsavedValue();
       this.formInputField?.nativeElement?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   }
-
   public downloadFile(url: any) {
     fetch(url.policy_file)
     .then(res => res.blob())
@@ -393,11 +351,8 @@ this.formUtilityService.resetHasUnsavedValue();
         URL.revokeObjectURL(link.href);
     });
   }
-
   previewFile(data:any){
-    // console.log(data)
     const fileExtension = data?.policy_file?.split('.')?.pop()?.toLowerCase() || 'unknown';
-    // console.log(fileExtension)
     this.openFileViewer(data.policy_file,fileExtension)
   }
 
@@ -408,10 +363,10 @@ this.formUtilityService.resetHasUnsavedValue();
     });
   }
 
-
   canDeactivate(): Observable<boolean> {
     const currentFormValue = this.companyPolicyForm?.getRawValue();
     const isFormChanged:boolean =  JSON.stringify(currentFormValue) !== JSON.stringify(this.initialFormValue);
+    
     return this.formUtilityService.isFormDirtyOrInvalidCheck(isFormChanged,this.companyPolicyForm);
   }
 }
