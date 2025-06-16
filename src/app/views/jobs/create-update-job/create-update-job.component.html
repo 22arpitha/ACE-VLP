@@ -121,7 +121,7 @@
         <mat-label>Periodicity <b class="r-star">*</b></mat-label>
         <mat-select formControlName="periodicity" autocomplete="off"
                 placeholder="Periodicity" panelClass="custom-select-panel"
-                [disableOptionCentering]="true" (selectionChange)="onPeroidicityChange($event)">
+                [disableOptionCentering]="true"  (selectionChange)="onPeroidicityChange($event)">
                 <div class="mat-select-search-wrapper d-flex">
                   <input matInput [(ngModel)]="searchPeroidicityText" autofocus [ngModelOptions]="{standalone: true}" placeholder="Search Periodicity" class="mat-select-search">
                   <mat-icon class="search-icon" *ngIf="!searchPeroidicityText">search</mat-icon>
@@ -140,15 +140,24 @@
 <!-- period -->
 <div class="col-12 col-sm-12 col-md-6 col-lg-3 no-padding pl-0 pr-5">
  <!-- Input field with the calendar icon -->
-<mat-form-field appearance="outline"  [ngClass]="{ 'highlight-background': !shouldDisableFields}" class="w-100 custom-mat-form-field">
+<mat-form-field appearance="outline" [ngClass]="{ 'highlight-background': !shouldDisableFields}" class="w-100 custom-mat-form-field">
    <mat-label>Period <b class="r-star">*</b></mat-label>
-  <input matInput formControlName="period" #trigger="matMenuTrigger" placeholder="{{ modeName === 'Quaterly' ? 'Qx YYYY' : modeName === 'Monthly' ? 'Mon YYYY' : 'YYYY' }}" readonly [matMenuTriggerFor]="pickerMenu">
-  <mat-icon mat-icon-button
+  <input matInput formControlName="period" #trigger="matMenuTrigger" placeholder="{{ modeName === 'Quaterly' ? 'Qx YYYY' : modeName === 'Monthly' ? 'Mon YYYY' : 'YYYY' }}" readonly [matMenuTriggerFor]="pickerMenu" [disabled]="disablePeriodField">
+  <!-- <mat-icon mat-icon-button
   matSuffix
   [matMenuTriggerFor]="pickerMenu"
   #trigger="matMenuTrigger"
   type="button"
-  aria-label="Open picker">calendar_today</mat-icon>
+  aria-label="Open picker">calendar_today</mat-icon> -->
+  <button mat-icon-button
+          matSuffix
+          [matMenuTriggerFor]="pickerMenu"
+          [disabled]="disablePeriodField"
+          type="button"
+          aria-label="Open picker">
+    <mat-icon>calendar_today</mat-icon>
+  </button>
+
 <mat-error *ngIf="f['period']?.invalid && f['period']?.touched || f['period']?.dirty">
             <span  *ngIf="f['period']?.errors?.['required']">Period is required</span>
       </mat-error>

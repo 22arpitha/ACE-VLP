@@ -88,7 +88,7 @@ export class CreateUpdateJobComponent implements CanComponentDeactivate, OnInit,
   yearRangeStart: number;
   selectedMonth: string | null = null;
   selectedQuarter: string | null = null;
-  modeName: 'Monthly' | 'Quaterly' | 'Yearly';
+  modeName: 'Monthly' | 'Quaterly' | 'Yearly'|'One off';
   months: string[] = [
     'January', 'February', 'March', 'April', 'May', 'June',
     'July', 'August', 'September', 'October', 'November', 'December'
@@ -437,10 +437,27 @@ onManagerSelectOpened(opened: boolean, index: number): void {
   }
 
 
+  disablePeriodField:boolean = false;
   public onPeroidicityChange(event: any) {
     const peroidicityId = event.value;
     this.jobFormGroup.get('period')?.reset(null, { emitEvent: false });
     this.modeName = this.allPeroidicitylist.find((peroidicity: any) => peroidicity.id === peroidicityId)?.periodicty_name;
+    this.checkthePerodicityName()
+  }
+  checkthePerodicityName(){
+    const periodControl = this.jobFormGroup.get('period');
+    if (this.modeName === 'One off') {
+      this.disablePeriodField = true
+      this.jobFormGroup.get('period')?.disable(); 
+      periodControl?.clearValidators(); 
+      periodControl?.setErrors(null);
+      this.getCombinationJobName();
+    } else {
+      this.disablePeriodField = false;
+      this.jobFormGroup.get('period')?.enable(); 
+      periodControl?.setValidators([Validators.required]);  
+    }
+    periodControl?.updateValueAndValidity();
   }
   public onServiceChange(event: any) {
     // console.log('event', event);
@@ -592,6 +609,7 @@ onManagerSelectOpened(opened: boolean, index: number): void {
           this.selectAllEmpFlag = respData?.all_employees,
           this.getAllEmployeeList();
         this.modeName = this.allPeroidicitylist.find((peroidicity: any) => peroidicity.id === Number(respData?.periodicity))?.periodicty_name;
+        this.checkthePerodicityName()
         // this.getEndClientBasedGroup(respData?.end_client);
         this.jobFormGroup.patchValue({
           job_name: respData?.job_name,
@@ -782,10 +800,11 @@ onManagerSelectOpened(opened: boolean, index: number): void {
       this.jobFormGroup.markAllAsTouched();
       this.formErrorScrollService.setUnsavedChanges(true);
       this.formErrorScrollService.scrollToFirstError(this.jobFormGroup);
+      console.log('this.jobFormGroup',this.jobFormGroup.controls)
     } else {
       if (this.isEditItem) {
         this.formData = this.createFromData();
-        // console.log(typeof this.formData.is_allocated)
+        // console.log(this.formData)
         this.apiService.updateData(`${environment.live_url}/${environment.jobs}/${this.job_id}/`, this.formData).subscribe((respData: any) => {
           if (respData) {
             this.apiService.showSuccess(respData['message']);
@@ -1033,11 +1052,17 @@ this.filteredManagerLists[index]=[...this.allManagerList];
     let endClientName = this.getSelectedEndClient(this.jobFormGroup?.get('end_client')?.value);
     let service_name = this.getSelectedService(this.jobFormGroup?.get('service')?.value);
     let period_name = this.jobFormGroup?.get('period')?.value;
+    if(this.modeName!='One off'){
     if (this.jobFormGroup?.get('end_client')?.valid && this.jobFormGroup?.get('service')?.valid && this.jobFormGroup?.get('period')?.valid) {
       let job_name = `${endClientName} ${service_name} ${period_name}`;
       this.jobFormGroup?.patchValue({ 'job_name': job_name });
+      }
+    }else{
+     if (this.jobFormGroup?.get('end_client')?.valid && this.jobFormGroup?.get('service')?.valid) {
+      let job_name = `${endClientName} ${service_name}`;
+      this.jobFormGroup?.patchValue({ 'job_name': job_name });
+      }
     }
-
 
   }
 
