@@ -40,7 +40,8 @@ export class PeriodicityComponent implements OnInit,OnChanges {
     this.allPeroidicitylist = [];
     this.apiService.getData(`${environment.live_url}/${environment.settings_periodicty}/`).subscribe(
       (res: any) => {
-        this.allPeroidicitylist = res;
+        this.allPeroidicitylist = res.filter((element:any)=>element?.periodicty_name != 'One off')
+        // this.allPeroidicitylist = res;
         if(this.defaultSelection){
            this.selectedPeriodicityVal = this.allPeroidicitylist?.find((element):any => element?.periodicty_name ==='Monthly')?.id;
         this.selectPeriodicity.emit(this.selectedPeriodicityVal);
