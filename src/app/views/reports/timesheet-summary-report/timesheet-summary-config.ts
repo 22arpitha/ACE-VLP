@@ -11,6 +11,7 @@
     { label: 'Fri', key: 'Friday',keyId:'Friday_date', sortable: true,navigation:true },
     { label: 'Sat', key: 'Saturday', keyId:'Saturday_date', sortable: true,navigation:true },
     { label: 'Total Time', key: 'employee_worked_hours', sortable: true },
+    { label: 'Excepted Time', key: 'total_working_hours', sortable: true },
     { label: 'Shortfall', key: 'short_fall', sortable: true },
     { label: 'Status', key: 'is_locked', sortable: true }
 
