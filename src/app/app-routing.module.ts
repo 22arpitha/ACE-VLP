@@ -64,13 +64,20 @@ const routes: Routes = [
         loadChildren: () =>
           import('./views/people/people.module').then((m) => m.PeopleModule),
       },
-      {
+{
         path: 'leave',
         loadChildren: () =>
-          import('./views/leave-holiday-list/leave-holiday-list.module').then(
-            (m) => m.LeaveHolidayListModule
+          import('./views/leave/leave.module').then(
+            (m) => m.LeaveModule
           ),
       },
+      // {
+      //   path: 'leave',
+      //   loadChildren: () =>
+      //     import('./views/leave-holiday-list/leave-holiday-list.module').then(
+      //       (m) => m.LeaveHolidayListModule
+      //     ),
+      // },
       {
         path: 'client',
         loadChildren: () =>

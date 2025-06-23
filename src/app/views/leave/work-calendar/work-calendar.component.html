@@ -1,0 +1,72 @@
+<div class="container-wrapper settings-main-content px-0">
+    <section class="settings-form-bg px-0">
+        <div class="row mx-0">
+            <div class="col-12">
+                <form [formGroup]="workCalendarForm">
+                    <div class="row  mx-0">
+                        <h5 class="my-2 fw-bold">Week Definition</h5>
+                        <!-- Week starts on -->
+                        <div class="col-sm-12 col-md-6 col-lg-4 my-1 no-padding pl-0 pr-5">
+                            <!-- [ngClass]="{ 'highlight-background': !shouldDisableFields}" -->
+                            <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+                                <mat-label>Week starts on <b class="r-star">*</b></mat-label>
+                                <mat-select formControlName="week_starts_on" autocomplete="off"
+                                    placeholder="Select week" panelClass="custom-select-panel"
+                                    [disableOptionCentering]="true">
+                                    <mat-option *ngFor="let item of weeks" [value]="item?.week">
+                                        {{item?.week}}
+                                    </mat-option>
+                                </mat-select>
+                                <mat-error
+                                    *ngIf="f['week_starts_on']?.invalid && f['week_starts_on']?.touched || f['week_starts_on']?.dirty">
+                                    <span *ngIf="f['week_starts_on']?.errors?.['required']">Week Starts on is
+                                        required</span>
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                        <!-- Work week starts on -->
+                        <div class="col-sm-12 col-md-6 col-lg-4 my-1 no-padding pl-0 pr-5">
+                            <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+                                <mat-label>Work week starts on <b class="r-star">*</b></mat-label>
+                                <mat-select formControlName="week_starts_on" autocomplete="off"
+                                    placeholder="Select week" panelClass="custom-select-panel"
+                                    [disableOptionCentering]="true">
+                                    <mat-option *ngFor="let item of weeks" [value]="item?.week">
+                                        {{item?.week}}
+                                    </mat-option>
+                                </mat-select>
+                                <mat-error
+                                    *ngIf="f['week_starts_on']?.invalid && f['week_starts_on']?.touched || f['week_starts_on']?.dirty">
+                                    <span *ngIf="f['week_starts_on']?.errors?.['required']">Work week starts on is
+                                        required</span>
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                        <!-- Work week ends on -->
+                        <div class="col-sm-12 col-md-6 col-lg-4 my-1 no-padding pl-0 pr-5">
+                            <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+                                <mat-label>Work week ends on <b class="r-star">*</b></mat-label>
+                                <mat-select formControlName="week_starts_on" autocomplete="off"
+                                    placeholder="Select week" panelClass="custom-select-panel"
+                                    [disableOptionCentering]="true">
+                                    <mat-option *ngFor="let item of weeks" [value]="item?.week">
+                                        {{item?.week}}
+                                    </mat-option>
+                                </mat-select>
+                                <mat-error
+                                    *ngIf="f['week_starts_on']?.invalid && f['week_starts_on']?.touched || f['week_starts_on']?.dirty">
+                                    <span *ngIf="f['week_starts_on']?.errors?.['required']">Work week ends on is
+                                        required</span>
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                         <h5 class="my-2 fw-bold">Define Weekend</h5>
+                        <div class="div-12">
+                             <mat-checkbox color="primary" class="example-margin" formControlName="half_work_day"  ><h5 class="c-header">Half working day & half weekend</h5></mat-checkbox>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+</div>
