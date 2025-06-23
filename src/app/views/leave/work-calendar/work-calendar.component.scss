@@ -5,6 +5,51 @@
   padding: 0.5em 0 !important;
   padding-bottom: 1em !important;
 }
-// ::ng-deep .mat-form-field-wrapper {
-//   padding: 15px 0 !important;
-// }
+::ng-deep .mat-form-field-wrapper {
+  padding: 15px 0 !important;
+}
+.weekend-table-wrapper {
+  border-radius: 10px;
+  overflow-x: auto;
+  background-color: #fff;
+}
+
+.weekend-table {
+  // width: 100%;
+  table-layout: fixed;
+  border-collapse: separate;
+  border-spacing: 8px;
+}
+
+.weekend-table th,
+.weekend-table td {
+  text-align: center;
+  background-color: #f3f0f0;
+  border-radius: 6px;
+  padding: 6px;
+  font-size: 13px;
+  box-sizing: border-box;
+}
+
+.weekend-table .day-name {
+  text-align: center;
+  padding-left: 10px;
+  font-weight: 600;
+  width: 120px;
+  min-width: 120px;
+  max-width: 120px;
+}
+
+.weekend-table th:not(.day-name),
+.weekend-table td:not(.day-name) {
+  width: 80px !important;
+  min-width: 50px;
+  max-width: 50px;
+}
+
+input[type="checkbox"] {
+  width: 14px;
+  height: 14px;
+  cursor: pointer;
+  accent-color: #007bff;
+}

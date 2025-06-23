@@ -60,9 +60,45 @@
                                 </mat-error>
                             </mat-form-field>
                         </div>
-                         <h5 class="my-2 fw-bold">Define Weekend</h5>
-                        <div class="div-12">
-                             <mat-checkbox color="primary" class="example-margin" formControlName="half_work_day"  ><h5 class="c-header">Half working day & half weekend</h5></mat-checkbox>
+                        <h5 class="mt-1 mb-3 fw-bold">Define Weekend</h5>
+                        <div class="div-12 mb-3">
+                            <mat-checkbox color="primary" class="example-margin" formControlName="half_work_day">
+                                <h5 class="c-header">Half working day & half weekend</h5>
+                            </mat-checkbox>
+                        </div>
+                        <div class="col-10 p-0 m-0">
+                            <div class="weekend-table-wrapper">
+                                <table class="weekend-table">
+                                    <thead>
+                                        <tr>
+                                            <th class="day-name"></th>
+                                            <th>All</th>
+                                            <th>1st</th>
+                                            <th>2nd</th>
+                                            <th>3rd</th>
+                                            <th>4th</th>
+                                            <th>5th</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr *ngFor="let day of definedWeekend">
+                                            <td class="day-name">{{ day.week }}</td>
+                                            <td><input type="checkbox" [ngModelOptions]="{standalone: true}"
+                                                    [(ngModel)]="day.all" (change)="onAllSelect(day)" /></td>
+                                            <td><input type="checkbox" [ngModelOptions]="{standalone: true}"
+                                                    [(ngModel)]="day.first" (change)="OnSingleSelection(day)" /></td>
+                                            <td><input type="checkbox" [ngModelOptions]="{standalone: true}"
+                                                    [(ngModel)]="day.second" (change)="OnSingleSelection(day)" /></td>
+                                            <td><input type="checkbox" [ngModelOptions]="{standalone: true}"
+                                                    [(ngModel)]="day.third" (change)="OnSingleSelection(day)" /></td>
+                                            <td><input type="checkbox" [ngModelOptions]="{standalone: true}"
+                                                    [(ngModel)]="day.fourth" (change)="OnSingleSelection(day)" /></td>
+                                            <td><input type="checkbox" [ngModelOptions]="{standalone: true}"
+                                                    [(ngModel)]="day.fifth" (change)="OnSingleSelection(day)" /></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </form>
