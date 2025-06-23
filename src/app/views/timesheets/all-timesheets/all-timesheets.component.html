@@ -72,7 +72,7 @@
       </div>
       <div class="col-12 mt-3 col-sm-12 col-md-4 col-lg-4 text-end s-m px-0" *ngIf="userRole === 'Admin'"></div>
 
-      <div class="col-12 mt-3 col-sm-12 col-md-4 col-lg-5 text-end s-m px-0">
+      <div class="col-12 mt-3 col-sm-12 col-md-4 col-lg-3 text-end s-m px-0">
         <button
           mat-raised-button
           class="mat-btn-s order-sm-1 order-3"
@@ -84,21 +84,33 @@
           Submit Week TimeSheet
         </button>
       </div>
-      <div class="col-12 mt-3 col-sm-12 col-md-4 col-lg-2 text-end" *ngIf="userRole !== 'Admin'">
-        <div
-          class="order-sm-1 order-3 w-100 bg-shortfall p-0"
-          type="button"
-        >
-          <div class="w-100">ShortFall</div> <div>{{shortfall}}</div>
-      </div>
-      </div>
-      <div class="col-12 mt-3 col-sm-12 col-md-4 col-lg-2 text-end" *ngIf="userRole !== 'Admin'">
+            <div class="col-12 mt-3 col-sm-12 col-md-4 col-lg-2 text-end" *ngIf="userRole !== 'Admin'">
         <div
           class="order-sm-1 order-3 w-100 bg-total p-0"
           type="button"
           
         >
-          <div class="w-100">Total Time</div> <div>{{total_working_hours}}</div>
+          <div class="w-100">Total Time</div> <div><b>{{total_working_hours}}</b></div>
+      </div>
+      </div>
+            <div class="col-12 mt-3 col-sm-12 col-md-4 col-lg-2 text-end" *ngIf="userRole !== 'Admin'">
+        <div
+          class="order-sm-1 order-3 w-100 bg-total p-0"
+          type="button"
+        >
+          <div class="w-100">Excepted Time</div> <div><b>{{total_excepted_hours}}</b></div>
+      </div>
+      </div>
+      <div class="col-12 mt-3 col-sm-12 col-md-4 col-lg-2 text-end" *ngIf="userRole !== 'Admin'">
+        <div
+          class="order-sm-1 order-3 w-100 bg-shortfall p-0"
+          type="button"
+        >
+          <div class="w-100">ShortFall</div> 
+          <div *ngIf="isShortFall(total_working_hours,total_excepted_hours); else noShortFall"><b>{{shortfall}}</b></div>
+          <ng-template #noShortFall>
+            <b>No shortfall</b>
+          </ng-template>
       </div>
       </div>
       </div>

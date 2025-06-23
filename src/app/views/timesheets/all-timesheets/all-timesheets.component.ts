@@ -64,6 +64,7 @@ export class AllTimesheetsComponent implements OnInit {
   initalTimesheetList:any = [];
   timesheetDate: string | null;
   total_working_hours: any;
+  total_excepted_hours: any;
   shortfall: any;
   constructor(
     private common_service: CommonServiceService,
@@ -305,6 +306,7 @@ this.allJobsNames=[];
       (res: any) => {
         this.allTimesheetsList = res?.results;
         this.total_working_hours = res?.total_time_spent;
+        this.total_excepted_hours = res?.total_working_hours;
         this.shortfall = res?.shortfall;
         const noOfPages: number = res?.['total_pages']
         this.count = noOfPages * this.tableSize;
@@ -594,4 +596,32 @@ this.allJobsNames=[];
     }
 
   }
+
+private timeToMinutes(time: string): number {
+    if (!time) {
+        return 0;
+    }
+
+    const match = time.match(/^(\d+):(\d{2})$/);
+    if (!match) {
+        return 0;
+    }
+
+    const [, hoursStr, minutesStr] = match;
+    const hours = Number(hoursStr);
+    const minutes = Number(minutesStr);
+
+    if (isNaN(hours) || isNaN(minutes) || minutes < 0 || minutes >= 60) {
+        return 0;
+    }
+
+    return hours * 60 + minutes;
+}
+
+
+
+isShortFall(total_working_hour: string, excepted_hours: string): boolean {
+    return this.timeToMinutes(total_working_hour) < this.timeToMinutes(excepted_hours);
+}
+
 }
