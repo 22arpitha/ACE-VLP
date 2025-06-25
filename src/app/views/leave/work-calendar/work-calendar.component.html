@@ -1,13 +1,13 @@
-<div class="container-wrapper settings-main-content px-0">
+<!-- <div class="container-wrapper settings-main-content px-0">
     <section class="settings-form-bg px-0">
         <div class="row mx-0">
             <div class="col-12">
                 <form [formGroup]="workCalendarForm">
                     <div class="row  mx-0">
                         <h5 class="my-2 fw-bold">Week Definition</h5>
-                        <!-- Week starts on -->
+                        Week starts on
                         <div class="col-sm-12 col-md-6 col-lg-4 my-1 no-padding pl-0 pr-5">
-                            <!-- [ngClass]="{ 'highlight-background': !shouldDisableFields}" -->
+                            [ngClass]="{ 'highlight-background': !shouldDisableFields}"
                             <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
                                 <mat-label>Week starts on <b class="r-star">*</b></mat-label>
                                 <mat-select formControlName="week_starts_on" autocomplete="off"
@@ -24,7 +24,7 @@
                                 </mat-error>
                             </mat-form-field>
                         </div>
-                        <!-- Work week starts on -->
+                        Work week starts on
                         <div class="col-sm-12 col-md-6 col-lg-4 my-1 no-padding pl-0 pr-5">
                             <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
                                 <mat-label>Work week starts on <b class="r-star">*</b></mat-label>
@@ -42,7 +42,7 @@
                                 </mat-error>
                             </mat-form-field>
                         </div>
-                        <!-- Work week ends on -->
+                        Work week ends on
                         <div class="col-sm-12 col-md-6 col-lg-4 my-1 no-padding pl-0 pr-5">
                             <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
                                 <mat-label>Work week ends on <b class="r-star">*</b></mat-label>
@@ -103,6 +103,163 @@
                     </div>
                 </form>
             </div>
+        </div>
+    </section>
+</div> -->
+
+
+
+<div class="container-wrapper settings-main-content px-0">
+    <section class="settings-form-bg px-0">
+        <form [formGroup]="workCalendarForm">
+            <h5 class="m-2 fw-bold">Week Definition</h5>
+            <div class="row mx-0">
+                <div class="col-sm-12 col-md-12 col-lg-5">
+                    <div class="row mx-0">
+                        <div class="col-12 col-lg-6 no-padding pl-0 pr-5">
+                            <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+                                <mat-label>Week starts on <b class="r-star">*</b></mat-label>
+                                <mat-select formControlName="week_starts_on" autocomplete="off"
+                                    placeholder="Select week" panelClass="custom-select-panel"
+                                    [disableOptionCentering]="true">
+                                    <mat-option *ngFor="let item of weeks" [value]="item?.week">
+                                        {{item?.week}}
+                                    </mat-option>
+                                </mat-select>
+                                <mat-error
+                                    *ngIf="f['week_starts_on']?.invalid && f['week_starts_on']?.touched || f['week_starts_on']?.dirty">
+                                    <span *ngIf="f['week_starts_on']?.errors?.['required']">Week Starts on is
+                                        required</span>
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-12 col-lg-6 no-padding pl-0 pr-5">
+                            <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+                                <mat-label>Work week starts on <b class="r-star">*</b></mat-label>
+                                <mat-select formControlName="work_week_starts_on" autocomplete="off"
+                                    placeholder="Select week" panelClass="custom-select-panel"
+                                    [disableOptionCentering]="true">
+                                    <mat-option *ngFor="let item of weeks" [value]="item?.week">
+                                        {{item?.week}}
+                                    </mat-option>
+                                </mat-select>
+                                <mat-error
+                                    *ngIf="f['work_week_starts_on']?.invalid && f['work_week_starts_on']?.touched || f['work_week_starts_on']?.dirty">
+                                    <span *ngIf="f['work_week_starts_on']?.errors?.['required']">Work week starts on is
+                                        required</span>
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                        <br>
+                        <div class="col-12 col-lg-6 no-padding pl-0 pr-5">
+                            <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+                                <mat-label>Work week ends on <b class="r-star">*</b></mat-label>
+                                <mat-select formControlName="work_week_ends_on" autocomplete="off"
+                                    placeholder="Select week" panelClass="custom-select-panel"
+                                    [disableOptionCentering]="true">
+                                    <mat-option *ngFor="let item of weeks" [value]="item?.week">
+                                        {{item?.week}}
+                                    </mat-option>
+                                </mat-select>
+                                <mat-error
+                                    *ngIf="f['work_week_ends_on']?.invalid && f['work_week_ends_on']?.touched || f['work_week_ends_on']?.dirty">
+                                    <span *ngIf="f['work_week_ends_on']?.errors?.['required']">Work week ends on is
+                                        required</span>
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                        <h5 class="mt-2 mb-2 fw-bold">Calendar year definition</h5>
+                        <div class="col-12 col-lg-12 pl-0 pr-5">
+                            <mat-radio-group class="radio-group" formControlName="current_year"
+                                (change)="onRadioChange($event)">
+                                <mat-radio-button class="individual-radio" value="Current">Current year (January to
+                                    December)</mat-radio-button>
+                                <mat-radio-button class="individual-radio" value="Custom">Custom year</mat-radio-button>
+                            </mat-radio-group>
+                            <mat-error
+                                *ngIf="f['current_year']?.invalid && f['current_year']?.touched || f['current_year']?.dirty">
+                                <span *ngIf="f['current_year']?.errors?.['required']">Calendar year definition is
+                                    required</span>
+                            </mat-error>
+                        </div>
+                        <div class="col-12 col-lg-6 no-padding pl-0 pr-5"
+                            *ngIf="workCalendarForm?.get('current_year')?.value==='Custom'">
+                            <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+                                <mat-label>Start Date <b class="r-star">*</b></mat-label>
+                                <input matInput [matDatepicker]="picker1" placeholder="Enter Start date"
+                                    formControlName="custom_start_date" autocomplete="off"
+                                    (dateInput)="startDateFun($event)">
+                                <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+                                <mat-datepicker #picker1></mat-datepicker>
+                                <mat-error
+                                    *ngIf="f['custom_start_date']?.invalid && f['custom_start_date']?.touched || f['custom_start_date']?.dirty">
+                                    <span *ngIf="f['custom_start_date']?.errors?.['required']">Start Date is
+                                        required</span>
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-12 col-lg-6 no-padding pl-0 pr-5"
+                            *ngIf="workCalendarForm?.get('current_year')?.value==='Custom'">
+                            <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+                                <mat-label>End Date<b class="r-star">*</b></mat-label>
+                                <input matInput [matDatepicker]="picker2" placeholder="Enter End date"
+                                    formControlName="custom_end_date" autocomplete="off" [min]="minDate">
+                                <button *ngIf="workCalendarForm?.get('custom_end_date')?.value" ngbTooltip="Clear"
+                                    matSuffix mat-icon-button aria-label="Clear" type="button">
+                                    <mat-icon>close</mat-icon>
+                                </button>
+                                <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+                                <mat-datepicker #picker2></mat-datepicker>
+                                <mat-error
+                                    *ngIf="f['custom_end_date']?.invalid && f['custom_end_date']?.touched || f['custom_end_date']?.dirty">
+                                    <span *ngIf="f['custom_end_date']?.errors?.['required']">End date is required</span>
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-lg-7 mt-3">
+                    <div class="weekend-table-wrapper">
+                        <table class="weekend-table">
+                            <thead>
+                                <tr>
+                                    <th class="day-name">Days</th>
+                                    <th>All</th>
+                                    <th>1st</th>
+                                    <th>2nd</th>
+                                    <th>3rd</th>
+                                    <th>4th</th>
+                                    <th>5th</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let day of definedWeekend">
+                                    <td class="day-name">{{ day.week }}</td>
+                                    <td><input type="checkbox" [ngModelOptions]="{standalone: true}"
+                                            [(ngModel)]="day.all" (change)="onAllSelect(day)" /></td>
+                                    <td><input type="checkbox" [ngModelOptions]="{standalone: true}"
+                                            [(ngModel)]="day.first" (change)="OnSingleSelection(day)" /></td>
+                                    <td><input type="checkbox" [ngModelOptions]="{standalone: true}"
+                                            [(ngModel)]="day.second" (change)="OnSingleSelection(day)" /></td>
+                                    <td><input type="checkbox" [ngModelOptions]="{standalone: true}"
+                                            [(ngModel)]="day.third" (change)="OnSingleSelection(day)" /></td>
+                                    <td><input type="checkbox" [ngModelOptions]="{standalone: true}"
+                                            [(ngModel)]="day.fourth" (change)="OnSingleSelection(day)" /></td>
+                                    <td><input type="checkbox" [ngModelOptions]="{standalone: true}"
+                                            [(ngModel)]="day.fifth" (change)="OnSingleSelection(day)" /></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </form>
+        <div class="my-3 px-4">
+            <!-- *ngIf="((user_role_name !== 'Admin' && accessPermissions[0]?.update) || user_role_name === 'Admin') && isEditItem" -->
+            <button mat-raised-button class="proceedbtn mat-btn-s me-3" type="submit" (click)="saveWorkCalendarData()">
+                <span>Save</span></button>
+            <button mat-raised-button class="cancel-button mat-btn-s" type="button" (click)="cancelAndBack()">
+                <span>Cancel</span></button>
         </div>
     </section>
 </div>

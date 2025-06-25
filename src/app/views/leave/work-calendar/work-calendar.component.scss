@@ -1,5 +1,5 @@
 .settings-form-bg {
-  max-height: 70vh !important;
+  max-height: 75vh !important;
 }
 ::ng-deep .mat-form-field-infix {
   padding: 0.5em 0 !important;
@@ -20,13 +20,16 @@
   border-collapse: separate;
   border-spacing: 8px;
 }
+// .weekend-table th{
+//   color: #126eb4 !important;
+// }
 
 .weekend-table th,
 .weekend-table td {
   text-align: center;
   background-color: #f3f0f0;
   border-radius: 6px;
-  padding: 6px;
+  padding: 7px;
   font-size: 13px;
   box-sizing: border-box;
 }
@@ -47,9 +50,18 @@
   max-width: 50px;
 }
 
-input[type="checkbox"] {
-  width: 14px;
-  height: 14px;
-  cursor: pointer;
-  accent-color: #007bff;
+.weekend-table input[type="checkbox"] {
+  width: 14px !important;
+  height: 14px !important;
+  cursor: pointer !important;
+  accent-color: #007bff !important;
+}
+.radio-group {
+  display: flex !important;
+  flex-direction: column !important;
+  margin: 15px 0 !important;
+  align-items: flex-start !important;
+}
+.individual-radio {
+  margin: 5px;
 }
