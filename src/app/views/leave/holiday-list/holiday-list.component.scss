@@ -1,0 +1,23 @@
+.settings-table-bg{
+    max-height: 75vh !important;
+}
+.table-wrapper{
+    max-height: 55vh !important;
+    overflow-x: auto;
+    margin-bottom: 20px;
+}
+.close-btn{
+  position: absolute;
+  right: 8px;
+  top: -5px;
+}
+.holidays th:first-child, td:first-child{
+    width: auto !important;
+}
+.custom-details-dialog{
+    // width: 80% !important;
+    justify-content: center !important;
+}
+::ng-deep .holidays .mat-dialog-container {
+    width: 80% !important;
+}

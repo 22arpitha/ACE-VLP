@@ -1,0 +1,88 @@
+<div class=" px-0">
+    <section class="p-0 create-update-holiday">
+        <div class="row mx-0">
+            <div class="col-12 mx-0">
+                <form [formGroup]="holidayForm" class="p-0">
+                    <div class="row mx-0">
+                        <div class="col-12 my-2">
+                            <h4>{{headingText}}</h4>
+                        </div>
+                        <div class="col-12 col-lg-6">
+                            <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+                                <mat-label>Name <b class="r-star">*</b></mat-label>
+                                <input matInput placeholder="Enter Holiday Name" appAlphabetOnly
+                                    formControlName="holiday_name" autocomplete="off" pattern="^(?!\s)(.*\S)?$">
+                                <mat-error
+                                    *ngIf="f['holiday_name']?.invalid && f['holiday_name']?.touched || f['holiday_name']?.dirty">
+                                    <span *ngIf="f['holiday_name'].errors?.['required']">Holiday Name is required</span>
+                                    <span
+                                        *ngIf="!f['holiday_name'].errors?.['required'] && f['holiday_name'].errors?.['pattern'] && !f['holiday_name'].errors?.['maxlength']">
+                                        Invalid name. Extra space, numbers and special charaters are not allowed
+                                    </span>
+                                    <span
+                                        *ngIf="!f['holiday_name'].errors?.['required'] && f['holiday_name'].errors?.['maxlength']">
+                                        Holiday name cannot exceed 20 characters.
+                                    </span>
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-12 col-lg-6">
+                            <mat-form-field appearance="outline" class="w-100 p-0 custom-mat-form-field">
+                                <mat-label>Date <b class="r-star">*</b></mat-label>
+                                <input matInput [matDatepicker]="picker1" formControlName="holiday_date"
+                                    autocomplete="off">
+                                <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+                                <mat-datepicker #picker1></mat-datepicker>
+                                <mat-error
+                                    *ngIf="f['holiday_date']?.invalid && f['holiday_date']?.touched || f['holiday_date']?.dirty">
+                                    <span *ngIf="f['holiday_date']?.errors?.['required']">Date is
+                                        required</span>
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-12 col-lg-6">
+                            <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+                                <mat-label>Classification<b class="r-star">*</b></mat-label>
+                                <mat-select formControlName="classification" autocomplete="off"
+                                    placeholder="Select week" panelClass="custom-select-panel" [disableOptionCentering]="true">
+                                    <mat-option value="holiday">Holiday</mat-option>
+                                </mat-select>
+                                <mat-error
+                                    *ngIf="f['classification']?.invalid && f['classification']?.touched || f['classification']?.dirty">
+                                    <span *ngIf="f['classification']?.errors?.['required']">Classificationis
+                                        required</span>
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-12 col-lg-6">
+                            <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+                                <mat-label>Description <b class="r-star"></b></mat-label>
+                                <input matInput placeholder="Enter Holiday Name" appAlphabetOnly
+                                    formControlName="description" autocomplete="off" pattern="^(?!\s)(.*\S)?$">
+                                <mat-error
+                                    *ngIf="f['description']?.invalid && f['description']?.touched || f['description']?.dirty">
+                                    <span *ngIf="f['description'].errors?.['required']">Description is required</span>
+                                    <span
+                                        *ngIf="!f['description'].errors?.['required'] && f['description'].errors?.['pattern'] && !f['description'].errors?.['maxlength']">
+                                        Invalid description. Extra space, numbers and special charaters are not allowed
+                                    </span>
+                                    <span
+                                        *ngIf="!f['description'].errors?.['required'] && f['description'].errors?.['maxlength']">
+                                        Description cannot exceed 100 characters.
+                                    </span>
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-12 my-4 px-2 text-start">
+                            <button mat-raised-button class="proceedbtn mat-btn-s me-2" type="button"
+                                (click)="updateInvoice()">{{buttonName}}</button>
+                            <button mat-button class="cancel-button mat-btn-s" type="button"
+                                (click)="closeEditDetails()">
+                                Close</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+</div>

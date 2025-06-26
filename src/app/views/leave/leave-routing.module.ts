@@ -3,6 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 import {LeaveComponent} from'./leave.component';
 import {WorkCalendarComponent} from './work-calendar/work-calendar.component';
 import { LeaveApplyComponent } from './leave-apply/leave-apply.component';
+import { HolidayListComponent } from './holiday-list/holiday-list.component';
 
 const routes: Routes = [
   {
@@ -14,6 +15,10 @@ const routes: Routes = [
       {
         path:'leave-application',
         component: LeaveApplyComponent,
+      },
+      {
+        path:'holidays',
+        component: HolidayListComponent,
       }
     ]
   }

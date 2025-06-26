@@ -8,12 +8,16 @@ import { SharedModule } from '../../shared/shared.module';
 import { HttpClientModule } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
 import { LeaveComponent } from './leave.component';
+import { HolidayListComponent } from './holiday-list/holiday-list.component';
+import { CreateUpdateHolidayComponent } from './create-update-holiday/create-update-holiday.component';
 
 @NgModule({
   declarations: [
     WorkCalendarComponent,
     LeaveApplyComponent,
-    LeaveComponent
+    LeaveComponent,
+    HolidayListComponent,
+    CreateUpdateHolidayComponent,
   ],
   imports: [
     CommonModule,

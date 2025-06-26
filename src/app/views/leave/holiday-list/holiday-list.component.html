@@ -1,0 +1,129 @@
+<div class="container-wrapper settings-main-content px-0">
+    <section class="settings-table-bg px-3 holidays">
+        <div class="row mx-0 my-1 px-0 py-2">
+            <div class="col-12 mt-2 col-sm-12 col-md-4 col-lg-3 search-div px-0">
+              <!-- <input type="search" (input)="filterSearch($event)" class="form-control p-2 sizeinput" [(ngModel)]="term"
+                placeholder="Search by Invoice " aria-describedby="emailHelp" autocomplete="off">
+              <i *ngIf="!term" class="bi bi-search" id="search-icon-tab"></i> -->
+            </div>
+
+            <div class="col-12 mt-2 col-sm-12 col-md-4 col-lg-3"></div>
+            <div class="col-12 mt-2 col-sm-12 col-md-4 col-lg-6 text-end px-0">
+                <button mat-raised-button class="proceedbtn mat-btn-s" type="button" (click)="openCreateHolidayPage()" *ngIf="userRole !='Admin' && accessPermissions[0]?.create || userRole === 'Admin'">Add Holidays</button>
+              </div>
+        </div>
+          <div class="row mx-1 my-2 px-0 table-wrapper">
+            <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0 ">
+              <table class="table table table-hover table-list">
+                <thead>
+                  <tr>
+                    <th scope="col">Name
+                      <i *ngIf="!arrowState['invoice_number']" (click)="sort('asc','invoice_number')" class="bi bi-arrow-down"></i>
+                      <i (click)="sort('desc','invoice_number')" *ngIf="arrowState['invoice_number']"
+                        class="bi bi-arrow-up"></i>
+                    </th>
+                    <th scope="col">Date
+                      <i *ngIf="!arrowState['created_date']" (click)="sort('asc','created_date')" class="bi bi-arrow-down"></i>
+                        <i (click)="sort('desc','created_date')" *ngIf="arrowState['created_date']"
+                          class="bi bi-arrow-up"></i>
+                          <!-- <button *ngIf="!startDate && !endDate"
+                          mat-icon-button
+                          (click)="setDateFilterColumn($event); picker1.open()"
+                          class="ms-1 btn-menu-trigger"
+                        >
+                        <i class="bi bi-calendar"></i>
+                      </button>
+                      <button mat-icon-button container="body"
+                      ngbTooltip="Clear Invoice Date" placement="top"  *ngIf="startDate && endDate" (click)="clearDateFilter()" class="ms-1 btn-menu-trigger">
+                        <i class="bi bi-x-circle"></i>
+                      </button> -->
+
+                    <!-- <mat-form-field class="opacity-0 position-absolute">
+                    <mat-date-range-input [rangePicker]="picker1">
+                        <input
+                          matStartDate
+                          placeholder="Start date"
+                          [(ngModel)]="startDate"
+                          (dateChange)="onStartDateChange($event)"
+                        />
+                        <input
+                          matEndDate
+                          placeholder="End date"
+                          [(ngModel)]="endDate"
+                          (dateChange)="onEndDateChange($event)"
+                        />
+                      </mat-date-range-input>
+                      <mat-datepicker-toggle
+                        matIconSuffix
+                        [for]="picker1"
+                      ></mat-datepicker-toggle>
+                      <mat-date-range-picker #picker1></mat-date-range-picker>
+                  </mat-form-field> -->
+                    </th>
+                    <th scope="col" class="name-col">Holiday Classification
+                      <i *ngIf="!arrowState['client_name']" (click)="sort('asc','client_name')" class="bi bi-arrow-down"></i>
+                      <i (click)="sort('desc','client_name')" *ngIf="arrowState['client_name']"
+                        class="bi bi-arrow-up"></i>
+                        <!-- <button mat-icon-button [matMenuTriggerFor]="clientFilterMenu" [ngClass]="filters.client_name.length>=1 ? 'filterdColumn':''">
+                        <span *ngIf="filters.client_name.length>=1">{{filters.client_name.length.toString().padStart(2, '0')}}</span>
+                          
+                          <i class="bi-funnel" *ngIf="filters.client_name.length===0"></i>
+                        </button>
+
+                        <mat-menu #clientFilterMenu="matMenu">
+                          <app-generic-table-filter
+                            [options]="allClientNames"
+                            [(selectedOptions)]="filters.client_name"
+                            (selectedOptionsChange)="filterData()"
+                          ></app-generic-table-filter>
+                        </mat-menu> -->
+                    </th>
+                    <th scope="col">Action </th>
+                  </tr>
+                </thead>
+                <tbody>
+
+                  <ng-container *ngIf="(allHolidayList) as result">
+                    <tr *ngFor='let item of result | customSort:directionValue:sortValue|paginate : {
+                             itemsPerPage: tableSize,
+                             currentPage: page,
+                             totalItems: count
+                           }; let i=index'>
+                           <td>Lorem ipsum dolor sit amet consectetur adipisicing elit.</td>
+                           <td>{{(item?.created_date || '-')}}</td>
+                           <td>{{item?.client_name || '-'}}</td>
+                      <td>
+                        <ng-container *ngIf="item">
+                        <img src="../../../../assets/images/Edit.svg" class="icon-image" type="button" container="body"
+                          ngbTooltip="Edit" (click)="edit(item)" *ngIf="userRole !='Admin' && (accessPermissions[0]?.view || accessPermissions[0]?.update) || userRole === 'Admin'"/>
+                        </ng-container>
+                      <ng-template #noContact>-</ng-template>
+                    </td>
+                    </tr>
+                  </ng-container>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="row mx-1 my-2 px-0" *ngIf="allHolidayList?.length === 0" >
+            <app-generic-norecards></app-generic-norecards>
+          </div>
+
+    </section>
+    <div class="row mx-0 px-3" *ngIf="allHolidayList?.length > 0">
+        <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0">
+          <div class="pagination-container p-0">
+            <pagination-controls previousLabel="Prev" nextLabel="Next" (pageChange)="onTableDataChange($event)">
+            </pagination-controls>
+            <div class="items-per-page-container">
+              <div>Items per page</div>
+              <mat-select [(ngModel)]="tableSize" (selectionChange)="onTableSizeChange($event)" placeholder="10" disableOptionCentering panelClass="paginationPanelClass"
+                class="page-size">
+                <mat-option *ngFor="let size of tableSizes" [value]="size">{{size}}</mat-option>
+              </mat-select>
+            </div>
+          </div>
+        </div>
+      </div>
+  </div>

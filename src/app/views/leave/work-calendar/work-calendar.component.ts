@@ -23,7 +23,7 @@ export class WorkCalendarComponent implements OnInit {
     { week: 'Saturday' }
   ]
   definedWeekend = [
-    { week: 'Sunday', all: true, first: true, second: true, third: true, fourth: true, fifth: true },
+    { week: 'Sunday', all: false, first: false, second: false, third: false, fourth: false, fifth: false },
     { week: 'Monday', all: false, first: false, second: false, third: false, fourth: false, fifth: false },
     { week: 'Tuesday', all: false, first: false, second: false, third: false, fourth: false, fifth: false },
     { week: 'Wednesday', all: false, first: false, second: false, third: false, fourth: false, fifth: false },
@@ -31,6 +31,7 @@ export class WorkCalendarComponent implements OnInit {
     { week: 'Friday', all: false, first: false, second: false, third: false, fourth: false, fifth: false },
     { week: 'Saturday', all: false, first: false, second: false, third: false, fourth: false, fifth: false }
   ]
+  filteredWeekendDays: any = this.definedWeekend;
   constructor(
     private common_service: CommonServiceService,
     private accessControlService: SubModuleService,
@@ -59,6 +60,48 @@ export class WorkCalendarComponent implements OnInit {
   get f() {
     return this.workCalendarForm.controls;
   }
+  onWeekStartChange(selectedDay: string) {
+    this.rotateWeeks(selectedDay);
+  }
+  rotatedWeeks = [
+    { week: 'Sunday' },
+    { week: 'Monday' },
+    { week: 'Tuesday' },
+    { week: 'Wednesday' },
+    { week: 'Thursday' },
+    { week: 'Friday' },
+    { week: 'Saturday' }
+  ];
+  rotateWeeks(startDay: string) {
+    const index = this.weeks.findIndex(item => item.week === startDay);
+    if (index !== -1) {
+      this.rotatedWeeks = [
+        ...this.weeks.slice(index),
+        ...this.weeks.slice(0, index)
+      ];
+    }
+  }
+
+  selectedSartAndEndWork(event: any) {
+    const week_starts_on: any = this.workCalendarForm.value.work_week_starts_on;
+    const week_ends_on: any = this.workCalendarForm.value.work_week_ends_on;
+    console.log(week_starts_on, week_ends_on)
+    const startIndex = this.definedWeekend.findIndex(item => item.week === week_starts_on);
+    const endIndex = this.definedWeekend.findIndex(item => item.week === week_ends_on);
+    if (startIndex === -1 || endIndex === -1) {
+      this.filteredWeekendDays = [];
+      return;
+    }
+
+    if (startIndex <= endIndex) {
+      this.filteredWeekendDays = this.definedWeekend.slice(startIndex, endIndex + 1);
+    } else {
+      this.filteredWeekendDays = [
+        ...this.definedWeekend.slice(startIndex),
+        ...this.definedWeekend.slice(0, endIndex + 1)
+      ];
+    }
+  }
   onRadioChange(event: any): void {
     console.log('Selected value:', event.value);
     const startCtrl = this.workCalendarForm?.get('custom_start_date');
@@ -79,7 +122,7 @@ export class WorkCalendarComponent implements OnInit {
   startDateFun(event) {
     this.minDate = event.value
   }
-  
+
   onAllSelect(day: any) {
     const val = day.all;
     day.first = val;
