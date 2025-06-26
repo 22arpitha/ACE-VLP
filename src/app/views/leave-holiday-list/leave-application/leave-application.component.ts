@@ -32,7 +32,7 @@ export class LeaveApplicationComponent implements OnInit {
   url: any;
   fileUrl: string | ArrayBuffer;
   user_id;
-  userRole:string;
+  userRole:string | null;
   accessPermissions:any = []
   balanceLeave: any;
   workingDays: number;

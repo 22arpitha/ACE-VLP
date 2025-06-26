@@ -21,6 +21,7 @@ import { AccessToModulesComponent } from './access-to-modules/access-to-modules.
 import { PeriodicityComponent } from './periodicity/periodicity.component';
 import { PeriodComponent } from './period/period.component';
 import { DragDropModule } from '@angular/cdk/drag-drop';
+import { LeaveConfigurationComponent } from './leave-configuration/leave-configuration.component';
 @NgModule({
   declarations: [
     SettingsComponent,
@@ -36,7 +37,8 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
     RolesAccessComponent,
     AccessToModulesComponent,
     PeriodicityComponent,
-    PeriodComponent
+    PeriodComponent,
+    LeaveConfigurationComponent
   ],
   imports: [
     CommonModule,

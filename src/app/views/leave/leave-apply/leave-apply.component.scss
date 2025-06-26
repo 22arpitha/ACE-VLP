@@ -1,0 +1,18 @@
+::ng-deep .mat-form-field-infix{
+    padding: 0.5em 0 !important;
+    padding-bottom: 1em !important;
+}
+::ng-deep .mat-form-field-wrapper{
+    padding: 8px 0px!important;
+}
+.balance-info-content{
+    border-left: 1px solid lightgray;
+    padding: 4px 15px;
+}
+.bg-leave-details{
+    padding: 15px;
+    background: #FBFBFB !important;
+    border-radius: 8px;
+    // min-height: 100px;
+    max-height: max-content;
+}

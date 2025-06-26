@@ -42,6 +42,7 @@ import { GenericTableFilterComponent } from './generic-table-filter/generic-tabl
 import { WeekPickerComponent } from './week-picker/week-picker.component';
 import { NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
 import { QuarterMonthYearPickerComponent } from './quarter-month-year-picker/quarter-month-year-picker.component';
+import { MatOptionModule } from '@angular/material/core';
 
 @NgModule({
   declarations: [
@@ -69,6 +70,7 @@ import { QuarterMonthYearPickerComponent } from './quarter-month-year-picker/qua
     MatFormFieldModule,
     MatButtonModule,
     MatSelectModule,
+    MatOptionModule,
     MatInputModule,
     MatListModule,
     MatBadgeModule,

@@ -6,6 +6,7 @@ import { JobTypeComponent } from './job-type/job-type.component';
 import { SourceComponent } from './source/source.component';
 import { StatusGroupComponent } from './status-group/status-group.component';
 import { LeaveTypeComponent } from './leave-type/leave-type.component';
+import { LeaveConfigurationComponent } from './leave-configuration/leave-configuration.component';
 import { JobStatusComponent } from './job-status/job-status.component';
 import { ServicesComponent } from './services/services.component';
 import { AllEmployeeComponent } from '../employee/all-employee/all-employee.component';
@@ -53,6 +54,11 @@ const routes: Routes = [
       {
         path: 'leave-type',
         component: LeaveTypeComponent,
+        canDeactivate:[CanDeactivateGuard]
+      },
+      {
+        path: 'leave-config',
+        component: LeaveConfigurationComponent,
         canDeactivate:[CanDeactivateGuard]
       },
       {

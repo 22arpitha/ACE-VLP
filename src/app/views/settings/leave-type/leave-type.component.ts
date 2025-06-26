@@ -1,15 +1,15 @@
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { CommonServiceService } from '../../../service/common-service.service';
 import { FormBuilder, FormGroup, FormGroupDirective, Validators } from '@angular/forms';
-import { ApiserviceService } from '../../../service/apiservice.service';
-import { environment } from '../../../../environments/environment';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { Observable } from 'rxjs';
+import { CommonServiceService } from '../../../service/common-service.service';
+import { SubModuleService } from '../../../service/sub-module.service';
+import { ApiserviceService } from '../../../service/apiservice.service';
+import { FormErrorScrollUtilityService } from '../../../service/form-error-scroll-utility-service.service';
 import { GenericDeleteComponent } from '../../../generic-components/generic-delete/generic-delete.component';
 import { GenericEditComponent } from '../../../generic-components/generic-edit/generic-edit.component';
-import { SubModuleService } from '../../../service/sub-module.service';
-import { CanComponentDeactivate } from 'src/app/auth-guard/can-deactivate.guard';
-import { FormErrorScrollUtilityService } from 'src/app/service/form-error-scroll-utility-service.service';
-import { Observable } from 'rxjs';
+import { environment } from '../../../../environments/environment';
+import { CanComponentDeactivate } from '../../../auth-guard/can-deactivate.guard';
 
 @Component({
   selector: 'app-leave-type',
