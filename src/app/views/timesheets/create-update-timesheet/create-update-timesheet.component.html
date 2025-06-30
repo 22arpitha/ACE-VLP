@@ -11,7 +11,7 @@
                                 <input matInput [matDatepicker]="picker2" placeholder="Enter Date"
                                     formControlName="date" autocomplete="off" [max]="currentDate" (dateChange)="dateSelected($event)">
                                 <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
-                                <mat-datepicker #picker2></mat-datepicker>
+                                <mat-datepicker #picker2 [dateClass]="dateClass"></mat-datepicker>
                                 <mat-error *ngIf="f['date']?.invalid && f['date']?.touched || f['date']?.dirty">
                                     <span *ngIf="f['date']?.errors?.['required']">Date is required</span>
                                 </mat-error>

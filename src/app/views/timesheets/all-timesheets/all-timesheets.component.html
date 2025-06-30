@@ -152,7 +152,7 @@
                     (dateChange)="onDateSelected($event)"
                   />
                   <mat-hint>MM/DD/YYYY</mat-hint>
-                  <mat-datepicker #picker></mat-datepicker>
+                  <mat-datepicker #picker [dateClass]="dateClass"></mat-datepicker>
                 </mat-form-field>
               </th>
               <th scope="col" *ngIf="userRole === 'Admin'">
@@ -196,7 +196,7 @@
                         matIconSuffix
                         [for]="picker1"
                       ></mat-datepicker-toggle>
-                      <mat-date-range-picker #picker1></mat-date-range-picker>
+                      <mat-date-range-picker [dateClass]="dateClass" #picker1></mat-date-range-picker>
                 </mat-form-field>
               </th>
               <th scope="col" *ngIf="userRole === 'Admin'">

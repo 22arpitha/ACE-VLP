@@ -255,4 +255,7 @@ BreadCrumbsTitle: any = 'Invoices';
       }
       this.filterData()
     }
+    dateClass = (date: Date) => {
+      return date.getDay() === 0 ? 'sunday-highlight' : '';
+    };
 }

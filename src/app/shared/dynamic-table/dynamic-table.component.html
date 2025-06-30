@@ -114,7 +114,7 @@
                       (dateChange)="onDateSelected($event)"
                       [attr.aria-label]="'Date input for ' + col.label"
                     />
-                    <mat-datepicker #picker></mat-datepicker>
+                    <mat-datepicker #picker [dateClass]="dateClass"></mat-datepicker>
                   </mat-form-field>
                 </ng-container>
                 <ng-container *ngSwitchCase="'daterange'">
@@ -155,9 +155,9 @@
                       </mat-date-range-input>
                       <mat-datepicker-toggle
                         matIconSuffix
-                        [for]="picker1"
+                        [for]="picker1" z
                       ></mat-datepicker-toggle>
-                      <mat-date-range-picker #picker1></mat-date-range-picker>
+                      <mat-date-range-picker #picker1 [dateClass]="dateClass"></mat-date-range-picker>
                   </mat-form-field>
                 </ng-container>
                 <ng-container *ngSwitchCase="'multi-select'">

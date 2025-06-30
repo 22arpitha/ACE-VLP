@@ -623,5 +623,8 @@ private timeToMinutes(time: string): number {
 isShortFall(total_working_hour: string, excepted_hours: string): boolean {
     return this.timeToMinutes(total_working_hour) < this.timeToMinutes(excepted_hours);
 }
+dateClass = (date: Date) => {
+  return date.getDay() === 0 ? 'sunday-highlight' : '';
+};
 
 }

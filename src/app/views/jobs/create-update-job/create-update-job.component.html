@@ -253,7 +253,7 @@
         <input matInput [matDatepicker]="picker1" placeholder="Enter Job Allocation Date"
             formControlName="job_allocation_date" autocomplete="off" (dateInput)="joiningDateFun($event)">
             <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
-             <mat-datepicker #picker1></mat-datepicker>
+             <mat-datepicker #picker1 [dateClass]="dateClass"></mat-datepicker>
              <mat-error *ngIf="f['job_allocation_date']?.invalid && f['job_allocation_date']?.touched || f['job_allocation_date']?.dirty">
                 <span  *ngIf="f['job_allocation_date']?.errors?.['required']">Job Allocation Date is required</span>
           </mat-error>
@@ -306,7 +306,7 @@
         <input matInput [matDatepicker]="picker2" placeholder="Enter Status Date"
             formControlName="job_status_date" autocomplete="off" (dateInput)="statusDateFun($event)">
             <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
-             <mat-datepicker #picker2></mat-datepicker>
+             <mat-datepicker #picker2 [dateClass]="dateClass"></mat-datepicker>
              <mat-error *ngIf="f['job_status_date']?.invalid && f['job_status_date']?.touched || f['job_status_date']?.dirty">
                 <span  *ngIf="f['job_status_date']?.errors?.['required']">Status Date is required</span>
           </mat-error>

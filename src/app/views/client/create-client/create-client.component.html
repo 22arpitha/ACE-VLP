@@ -124,7 +124,7 @@
         <input matInput [matDatepicker]="picker1" placeholder="Enter Start date"
             formControlName="service_start_date" autocomplete="off">
             <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
-             <mat-datepicker #picker1></mat-datepicker>
+             <mat-datepicker #picker1 [dateClass]="dateClass"></mat-datepicker>
              <mat-error *ngIf="f['service_start_date']?.invalid && f['service_start_date']?.touched || f['service_start_date']?.dirty">
                 <span  *ngIf="f['service_start_date']?.errors?.['required']">Start Date is required</span>
           </mat-error>
@@ -141,7 +141,7 @@
               <mat-icon>close</mat-icon>
             </button>
             <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
-             <mat-datepicker #picker2></mat-datepicker>
+             <mat-datepicker #picker2 [dateClass]="dateClass"></mat-datepicker>
              <mat-error *ngIf="f['service_end_date']?.invalid && f['service_end_date']?.touched || f['service_end_date']?.dirty">
                 <span  *ngIf="f['service_end_date']?.errors?.['required']">End date is required</span>
           </mat-error>
@@ -305,7 +305,7 @@
         <input matInput [matDatepicker]="picker3" placeholder="Enter Start date"
             formControlName="start_date" autocomplete="off">
             <mat-datepicker-toggle matSuffix [for]="picker3"></mat-datepicker-toggle>
-             <mat-datepicker #picker3></mat-datepicker>
+             <mat-datepicker #picker3 [dateClass]="dateClass"></mat-datepicker>
     </mat-form-field>
      <div class="px-2" *ngIf="emp?.get('start_date')?.invalid && emp?.get('start_date')?.touched || emp?.get('start_date')?.dirty">
                 <span class="text-errors" *ngIf="emp?.get('start_date')?.errors?.['required']">Start Date is required</span>
@@ -317,7 +317,7 @@
         <input matInput [matDatepicker]="picker4" placeholder="Enter Start date"
             formControlName="end_date" autocomplete="off">
             <mat-datepicker-toggle matSuffix [for]="picker4"></mat-datepicker-toggle>
-             <mat-datepicker #picker4></mat-datepicker>
+             <mat-datepicker #picker4 [dateClass]="dateClass"></mat-datepicker>
     </mat-form-field>
           </td>
             <td>

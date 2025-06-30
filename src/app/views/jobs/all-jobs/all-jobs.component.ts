@@ -144,8 +144,12 @@ export class AllJobsComponent implements OnInit {
 
   loadInitialData(){
     let query = `?status=True`;
+    let manager_query =  `?is_active=True&employee=True&designation=manager`;
    query += this.userRole ==='Admin' ? '':`&employee-id=${this.user_id}`;
     this.allJobStatus=[];
+    if (this.userRole === 'Manager') {
+        manager_query = `?is_active=True&employee=True&employee_id=${this.user_id}&is_manager=True`
+      }
     this.allStatusNames=[];
     this.allJobTypeNames=[];
     this.allEmployeelist=[];
@@ -157,7 +161,7 @@ export class AllJobsComponent implements OnInit {
       _res_job_status:this.apiService.getData(`${environment.live_url}/${environment.settings_job_status}/`),
       _res_job_type:this.apiService.getData(`${environment.live_url}/${environment.settings_job_type}/`),
     _res_employees:this.apiService.getData(`${environment.live_url}/${environment.employee}/?is_active=True&employee=True`), 
-    _res_Managers:this.apiService.getData(`${environment.live_url}/${environment.employee}/?is_active=True&employee=True&designation=manager`),
+    _res_Managers:this.apiService.getData(`${environment.live_url}/${environment.employee}/${manager_query}`),
     _res_clients:this.apiService.getData(`${environment.live_url}/${environment.clients}/${query}`),   
     }).subscribe((data:any)=>{
       if(data._res_job_status && data._res_job_status?.length>=1){
@@ -183,10 +187,17 @@ export class AllJobsComponent implements OnInit {
       }
       if(data._res_Managers && data._res_Managers?.length>=1){
     this.allManagerlist = data._res_Managers;
-    this.allManagerNames = data._res_Managers?.map((emp: any) => ({
-      id: emp?.user_id,
-      name: emp?.user__first_name
+    if(this.userRole==='Manager' || this.userRole==='Accountant'){
+      this.allManagerNames = data._res_Managers?.map((emp: any) => ({
+      id: emp?.reporting_manager_id,
+      name: emp?.reporting_manager_id__first_name
     }))
+    } else {
+      this.allManagerNames = data._res_Managers?.map((emp: any) => ({
+        id: emp?.user_id,
+        name: emp?.user__first_name
+      }))
+    }
       }
       if(data._res_clients && data._res_clients?.length>=1){
         this.allClientNames = data._res_clients?.map((item: any) => ({
@@ -659,6 +670,8 @@ jobStatusValidation(data: any, index: any): boolean {
 
   return false;
 }
-
+dateClass = (date: Date) => {
+  return date.getDay() === 0 ? 'sunday-highlight' : '';
+};
 
 }

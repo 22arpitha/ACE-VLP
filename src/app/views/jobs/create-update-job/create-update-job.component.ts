@@ -1239,4 +1239,8 @@ this.filteredManagerLists[index]=[...this.allManagerList];
     this.showSelection = false;
     this.cdr.detectChanges();
   }
+
+  dateClass = (date: Date) => {
+  return date.getDay() === 0 ? 'sunday-highlight' : '';
+};
 }

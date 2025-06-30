@@ -386,4 +386,8 @@ unloadNotification($event: BeforeUnloadEvent): void {
     $event.preventDefault();
   }
 }
+
+dateClass = (date: Date) => {
+  return date.getDay() === 0 ? 'sunday-highlight' : '';
+};
 }

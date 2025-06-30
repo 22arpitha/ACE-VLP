@@ -55,7 +55,7 @@
                         />
                       </mat-date-range-input>
                       <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
-                      <mat-date-range-picker #picker1></mat-date-range-picker>
+                      <mat-date-range-picker #picker1 [dateClass]="dateClass"></mat-date-range-picker>
                     </mat-form-field>
 
                 </th>
@@ -111,7 +111,7 @@
                   (dateChange)="onStatusDateSelected($event)"
                 />
                 <mat-hint>MM/DD/YYYY</mat-hint>
-                <mat-datepicker #datepicker></mat-datepicker>
+                <mat-datepicker #datepicker [dateClass]="dateClass"></mat-datepicker>
               </mat-form-field>
             </th>
                 

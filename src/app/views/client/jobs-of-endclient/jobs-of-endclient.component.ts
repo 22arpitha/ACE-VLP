@@ -237,4 +237,7 @@ export class JobsOfEndclientComponent implements OnInit {
     const employee = employees.find((emp:any) => emp?.is_primary === true);
     return employee ? employee?.employee_name : '';
   }
+  dateClass = (date: Date) => {
+  return date.getDay() === 0 ? 'sunday-highlight' : '';
+};
 }

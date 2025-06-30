@@ -599,4 +599,9 @@ if(event.value){
   this.resetWeekDate = true;
 }
 }
+
+dateClass = (date: Date) => {
+  return date.getDay() === 0 ? 'sunday-highlight' : '';
+};
+
 }

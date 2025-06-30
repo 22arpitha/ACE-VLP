@@ -466,4 +466,8 @@ getJobStatusList() {
     }
   )
 }
+
+dateClass = (date: Date) => {
+  return date.getDay() === 0 ? 'sunday-highlight' : '';
+};
 }
