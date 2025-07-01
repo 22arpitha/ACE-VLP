@@ -31,7 +31,7 @@ export class AllJobsComponent implements OnInit {
   directionValue: string = '';
   selectedItemId: any;
   arrowState: { [key: string]: boolean } = {
-    group_name:false,
+    group_name: false,
     job_number: false,
     job_name: false,
     job_type_name: false,
@@ -41,26 +41,26 @@ export class AllJobsComponent implements OnInit {
   page = 1;
   count = 0;
   tableSize = 50;
-  tableSizes = [50,75,100];
+  tableSizes = [50, 75, 100];
   currentIndex: any;
   allJobsList: any = [];
-  internalReviewOneIndex:any
+  internalReviewOneIndex: any
   allJobStatus: any = [];
   accessPermissions = []
   user_id: any;
   userRole: any;
-  allEmployeelist:any=[];
-  allManagerlist:any=[];
+  allEmployeelist: any = [];
+  allManagerlist: any = [];
   dateFilterValue: any = null;
   statusDateFilterValue: any = null;
-  statusList:String[]=[];
-  filters: { group_name: string[];job_type_name: string[]; client_name: string[];employees:string[];manager:string[],status_name:string[] } = {
+  statusList: String[] = [];
+  filters: { group_name: string[]; job_type_name: string[]; client_name: string[]; employees: string[]; manager: string[], status_name: string[] } = {
     group_name: [],
     job_type_name: [],
     client_name: [],
-    employees:[],
-    manager:[],
-    status_name:[],
+    employees: [],
+    manager: [],
+    status_name: [],
   };
 
 
@@ -72,28 +72,28 @@ export class AllJobsComponent implements OnInit {
   allGroupNames: IdNamePair[] = [];
   filteredList = [];
   filterQuery: string;
-  jobList:any = [];
+  jobList: any = [];
   jobAllocationDate: string | null;
   statusDate: any;
-  dateRange:any = {
-  start: '',
-  end: ''
-};
+  dateRange: any = {
+    start: '',
+    end: ''
+  };
 
-   columns = [
-  { key: 'sl_no', label: 'Sl No', visible: true },
-  { key: 'job_number', label: 'Job Id', visible: true },
-  { key: 'job_name', label: 'Job', visible: true },
-  { key: 'job_type_name', label: 'Job Type', visible: true },
-  { key: 'client_name', label: 'Client', visible: true },
-  { key: 'group_name', label: 'Group', visible: false },
-  { key: 'job_allocation_date', label: 'Allocated On', visible: false },
-  { key: 'employees', label: 'Employees', visible: true },
-  { key: 'manager', label: 'Manager', visible: true },
-   { key: 'status_name', label: 'Status', visible: true },
-   { key: 'percentage_of_completion', label: 'Percentage Of Completion', visible: true },
-   { key: 'job_status_date', label: 'Status Date', visible: true },
-];
+  columns = [
+    { key: 'sl_no', label: 'Sl No', visible: true },
+    { key: 'job_number', label: 'Job Id', visible: true },
+    { key: 'job_name', label: 'Job', visible: true },
+    { key: 'job_type_name', label: 'Job Type', visible: true },
+    { key: 'client_name', label: 'Client', visible: true },
+    { key: 'group_name', label: 'Group', visible: false },
+    { key: 'job_allocation_date', label: 'Allocated On', visible: false },
+    { key: 'employees', label: 'Employees', visible: true },
+    { key: 'manager', label: 'Manager', visible: true },
+    { key: 'status_name', label: 'Status', visible: true },
+    { key: 'percentage_of_completion', label: 'Percentage Of Completion', visible: true },
+    { key: 'job_status_date', label: 'Status Date', visible: true },
+  ];
   constructor(
     private common_service: CommonServiceService,
     private accessControlService: SubModuleService,
@@ -111,10 +111,10 @@ export class AllJobsComponent implements OnInit {
     // this.getAllEmployeeList();
     // this.getAllActiveManagerList();
     // this.getClientList();
-     this.common_service.jobStatus$.subscribe((status:boolean)=>{
-      if(status){
-         this.getJobsHistoryList();
-      }else{
+    this.common_service.jobStatus$.subscribe((status: boolean) => {
+      if (status) {
+        this.getJobsHistoryList();
+      } else {
         this.getCurrentJobsList();
       }
     })
@@ -126,7 +126,7 @@ export class AllJobsComponent implements OnInit {
     //   this.getCurrentJobs();
     //  }, 500);
   }
-  access_name:any;
+  access_name: any;
 
   getUniqueValues(
     extractor: (item: any) => { id: any; name: string }
@@ -142,92 +142,93 @@ export class AllJobsComponent implements OnInit {
     return Array.from(seen, ([id, name]) => ({ id, name }));
   }
 
-  loadInitialData(){
+  loadInitialData() {
     let query = `?status=True`;
-    let manager_query =  `?is_active=True&employee=True&designation=manager`;
-   query += this.userRole ==='Admin' ? '':`&employee-id=${this.user_id}`;
-    this.allJobStatus=[];
-    if (this.userRole === 'Manager') {
-        manager_query = `?is_active=True&employee=True&employee_id=${this.user_id}&is_manager=True`
-      }
-    this.allStatusNames=[];
-    this.allJobTypeNames=[];
-    this.allEmployeelist=[];
-    this.allEmployeeNames=[];
-    this.allManagerlist=[]
-    this.allManagerNames=[];
-    this.allClientNames=[];
+    let manager_query = `?is_active=True&employee=True&designation=manager`;
+    query += this.userRole === 'Admin' ? '' : `&employee-id=${this.user_id}`;
+    this.allJobStatus = [];
+    if (this.userRole === 'Manager' || this.userRole === 'Accountant') {
+      manager_query = `${this.user_id}/`
+    }
+    this.allStatusNames = [];
+    this.allJobTypeNames = [];
+    this.allEmployeelist = [];
+    this.allEmployeeNames = [];
+    this.allManagerlist = []
+    this.allManagerNames = [];
+    this.allClientNames = [];
     forkJoin({
-      _res_job_status:this.apiService.getData(`${environment.live_url}/${environment.settings_job_status}/`),
-      _res_job_type:this.apiService.getData(`${environment.live_url}/${environment.settings_job_type}/`),
-    _res_employees:this.apiService.getData(`${environment.live_url}/${environment.employee}/?is_active=True&employee=True`), 
-    _res_Managers:this.apiService.getData(`${environment.live_url}/${environment.employee}/${manager_query}`),
-    _res_clients:this.apiService.getData(`${environment.live_url}/${environment.clients}/${query}`),   
-    }).subscribe((data:any)=>{
-      if(data._res_job_status && data._res_job_status?.length>=1){
-        data._res_job_status.forEach((element:any)=>{
-          element['valueChanged']=false
+      _res_job_status: this.apiService.getData(`${environment.live_url}/${environment.settings_job_status}/`),
+      _res_job_type: this.apiService.getData(`${environment.live_url}/${environment.settings_job_type}/`),
+      _res_employees: this.apiService.getData(`${environment.live_url}/${environment.employee}/?is_active=True&employee=True`),
+      _res_Managers: this.apiService.getData(`${environment.live_url}/${environment.employee}/${manager_query}`),
+      _res_clients: this.apiService.getData(`${environment.live_url}/${environment.clients}/${query}`),
+    }).subscribe((data: any) => {
+      // console.log(data)
+      if (data._res_job_status && data._res_job_status?.length >= 1) {
+        data._res_job_status.forEach((element: any) => {
+          element['valueChanged'] = false
         })
         this.allJobStatus = data._res_job_status;
         this.internalReviewOneIndex = this.allJobStatus.findIndex(status => status.status_name.toLowerCase() === 'internal review 1');
         this.jobStatusList('True');
       }
-      if(data._res_job_type && data._res_job_type?.length>=1){
-         this.allJobTypeNames = data._res_job_type?.map((item: any) => ({
+      if (data._res_job_type && data._res_job_type?.length >= 1) {
+        this.allJobTypeNames = data._res_job_type?.map((item: any) => ({
           id: item.id,
           name: item.job_type_name
         }));
       }
-      if(data._res_employees && data._res_employees?.length>=1){
-         this.allEmployeelist = data._res_employees;
-    this.allEmployeeNames = data._res_employees?.map((emp: any) => ({
-      id: emp?.user_id,
-      name: emp?.user__first_name
-    }))
+      if (data._res_employees && data._res_employees?.length >= 1) {
+        this.allEmployeelist = data._res_employees;
+        this.allEmployeeNames = data._res_employees?.map((emp: any) => ({
+          id: emp?.user_id,
+          name: emp?.user__first_name
+        }))
       }
-      if(data._res_Managers && data._res_Managers?.length>=1){
-    this.allManagerlist = data._res_Managers;
-    if(this.userRole==='Manager' || this.userRole==='Accountant'){
-      this.allManagerNames = data._res_Managers?.map((emp: any) => ({
-      id: emp?.reporting_manager_id,
-      name: emp?.reporting_manager_id__first_name
-    }))
-    } else {
-      this.allManagerNames = data._res_Managers?.map((emp: any) => ({
-        id: emp?.user_id,
-        name: emp?.user__first_name
-      }))
-    }
+      if (data._res_Managers) {
+        this.allManagerlist = data._res_Managers;
+        if (this.userRole === 'Manager' || this.userRole === 'Accountant') {
+          this.allManagerNames = [{
+            id: data._res_Managers?.reporting_manager_id,
+            name: data._res_Managers?.reporting_manager_id__first_name
+          }]
+        } else {
+          this.allManagerNames = data._res_Managers?.map((emp: any) => ({
+            id: emp?.user_id,
+            name: emp?.user__first_name
+          }))
+        }
       }
-      if(data._res_clients && data._res_clients?.length>=1){
+      if (data._res_clients && data._res_clients?.length >= 1) {
         this.allClientNames = data._res_clients?.map((item: any) => ({
           id: item.id,
           name: item.client_name
         }));
-        let clientIds = this.allClientNames.map((client:any)=>client.id);
-        if(clientIds && clientIds.length>=1){
+        let clientIds = this.allClientNames.map((client: any) => client.id);
+        if (clientIds && clientIds.length >= 1) {
 
-        this.getAllCientsBaseGroupList(clientIds);
+          this.getAllCientsBaseGroupList(clientIds);
         }
       }
       this.getCurrentJobs();
-    },(error)=>{
+    }, (error) => {
       this.apiService.showError(error?.error?.detail)
     });
   }
-//   getClientList(){
-//       let query = `?status=True`;
-//  query += this.userRole ==='Admin' ? '':`&employee-id=${this.user_id}`;
-//     this.apiService.getData(`${environment.live_url}/${environment.clients}/${query}`).subscribe((res: any) => {
-//       if(res){
-//         this.allClientNames = res?.map((item: any) => ({
-//           id: item.id,
-//           name: item.client_name
-//         }));
-//       }
-//     })
-//     return this.allClientNames;
-//   }
+  //   getClientList(){
+  //       let query = `?status=True`;
+  //  query += this.userRole ==='Admin' ? '':`&employee-id=${this.user_id}`;
+  //     this.apiService.getData(`${environment.live_url}/${environment.clients}/${query}`).subscribe((res: any) => {
+  //       if(res){
+  //         this.allClientNames = res?.map((item: any) => ({
+  //           id: item.id,
+  //           name: item.client_name
+  //         }));
+  //       }
+  //     })
+  //     return this.allClientNames;
+  //   }
   applyClientFilter() {
     this.filterData();
   }
@@ -249,15 +250,15 @@ export class AllJobsComponent implements OnInit {
     }
     if (this.filters.employees.length) {
       this.userRole === 'accountant' ? this.filterQuery += `&employee-ids=[${this.filters.employees.join(',')}]` :
-      this.filterQuery += `&employee-ids=[${this.filters.employees.join(',')}]` ;
+        this.filterQuery += `&employee-ids=[${this.filters.employees.join(',')}]`;
     }
     if (this.filters.manager.length) {
 
-      this.userRole === 'manager' ? this.filterQuery += `&manager-ids=[${this.filters.manager.join(',')}]`:
-      this.filterQuery += `&manager-ids=[${this.filters.manager.join(',')}]` ;
+      this.userRole === 'manager' ? this.filterQuery += `&manager-ids=[${this.filters.manager.join(',')}]` :
+        this.filterQuery += `&manager-ids=[${this.filters.manager.join(',')}]`;
     }
-     
-     if (this.dateRange.start && this.dateRange.end) {
+
+    if (this.dateRange.start && this.dateRange.end) {
       this.filterQuery += `&start-date=${this.dateRange.start}&end-date=${this.dateRange.end}`;
     }
     // if (this.jobAllocationDate) {
@@ -266,15 +267,15 @@ export class AllJobsComponent implements OnInit {
     if (this.statusDate) {
       this.filterQuery += `&job-status-date=[${this.statusDate}]`;
     }
-    if(this.isCurrent && this.filters.status_name.length==0){
-   this.jobStatusList('True');
-    this.filterQuery +=`&job-status=[${this.statusList}]`;
+    if (this.isCurrent && this.filters.status_name.length == 0) {
+      this.jobStatusList('True');
+      this.filterQuery += `&job-status=[${this.statusList}]`;
     }
-    else if(!this.isCurrent && this.filters.status_name.length==0){
-    this.jobStatusList('False');
-    this.filterQuery +=`&job-status=[${this.statusList}]`;
-    }else{
-    this.filterQuery += `&job-status=[${this.filters.status_name.join(',')}]` ;
+    else if (!this.isCurrent && this.filters.status_name.length == 0) {
+      this.jobStatusList('False');
+      this.filterQuery += `&job-status=[${this.statusList}]`;
+    } else {
+      this.filterQuery += `&job-status=[${this.filters.status_name.join(',')}]`;
     }
     this.apiService.getData(`${environment.live_url}/${environment.jobs}/${this.filterQuery}`).subscribe((res: any) => {
       this.allJobsList = res?.results;
@@ -286,10 +287,10 @@ export class AllJobsComponent implements OnInit {
   getModuleAccess() {
     this.accessControlService.getAccessForActiveUrl(this.user_id).subscribe((access) => {
       if (access) {
-        this.access_name=access[0]
+        this.access_name = access[0]
         this.accessPermissions = access[0].operations;
       } else {
-      //  console.log('No matching access found.');
+        //  console.log('No matching access found.');
       }
     });
   }
@@ -316,29 +317,29 @@ export class AllJobsComponent implements OnInit {
   //   })
   //   return this.allJobTypeNames;
   // }
-getAllCientsBaseGroupList(clientIds:any){
-// console.log('ClientIDs:',clientIds);
-let query = this.userRole ==='Admin' ? '': `?client-ids=[${clientIds}]`
-this.allGroupNames =[];
+  getAllCientsBaseGroupList(clientIds: any) {
+    // console.log('ClientIDs:',clientIds);
+    let query = this.userRole === 'Admin' ? '' : `?client-ids=[${clientIds}]`
+    this.allGroupNames = [];
     this.apiService.getData(`${environment.live_url}/${environment.clients_group}/${query}`).subscribe((respData: any) => {
-    this.allGroupNames = respData?.map((group: any) => ({
-      id: group?.id,
-      name: group?.group_name
-    }))
-    },(error => {
+      this.allGroupNames = respData?.map((group: any) => ({
+        id: group?.id,
+        name: group?.group_name
+      }))
+    }, (error => {
       this.apiService.showError(error?.error?.detail)
     }));
-}
+  }
 
-  getAllEmployeeList(){
-    this.allEmployeelist =[];
+  getAllEmployeeList() {
+    this.allEmployeelist = [];
     this.apiService.getData(`${environment.live_url}/${environment.employee}/?is_active=True&employee=True`).subscribe((respData: any) => {
-    this.allEmployeelist = respData;
-    this.allEmployeeNames = respData?.map((emp: any) => ({
-      id: emp?.user_id,
-      name: emp?.user__first_name
-    }))
-    },(error => {
+      this.allEmployeelist = respData;
+      this.allEmployeeNames = respData?.map((emp: any) => ({
+        id: emp?.user_id,
+        name: emp?.user__first_name
+      }))
+    }, (error => {
       this.apiService.showError(error?.error?.detail)
     }));
   }
@@ -367,7 +368,7 @@ this.allGroupNames =[];
     })
   }
   openCreateClientPage() {
-     sessionStorage.setItem('access-name', this.access_name?.name)
+    sessionStorage.setItem('access-name', this.access_name?.name)
     this.router.navigate(['/jobs/create-job']);
 
   }
@@ -385,7 +386,7 @@ this.allGroupNames =[];
     //   modalRef.componentInstance.status.subscribe(resp => {
     //     if (resp === 'ok') {
     //       modalRef.dismiss();
-           
+
     //     } else {
     //       modalRef.dismiss();
     //     }
@@ -395,11 +396,11 @@ this.allGroupNames =[];
     // }
   }
   getCurrentJobsList() {
-    this.allJobsList=[];
-    this.filteredList=[];
+    this.allJobsList = [];
+    this.filteredList = [];
     this.isHistory = false;
     this.isCurrent = true;
-     this.jobStatusList('True');
+    this.jobStatusList('True');
     let query = `${this.getFilterBaseUrl()}&job-status=[${this.statusList}]`;
     this.apiService.getData(`${environment.live_url}/${environment.jobs}/${query}`).subscribe((res: any) => {
       this.allJobsList = res?.results;
@@ -407,11 +408,12 @@ this.allGroupNames =[];
       const noOfPages: number = res?.['total_pages']
       this.count = noOfPages * this.tableSize;
       this.count = res?.['total_no_of_record'];
-      this.page = res?.['current_page'];    });
+      this.page = res?.['current_page'];
+    });
   }
   getJobsHistoryList() {
-    this.allJobsList=[];
-    this.filteredList=[];
+    this.allJobsList = [];
+    this.filteredList = [];
     this.isCurrent = false;
     this.isHistory = true;
     this.jobStatusList('False');
@@ -442,12 +444,12 @@ this.allGroupNames =[];
     if (event) {
       this.page = 1;
       this.tableSize = Number(event.value);
-       this.filterData()
+      this.filterData()
     }
   }
   onTableDataChange(event: any) {
     this.page = event;
-     this.filterData();
+    this.filterData();
   }
   filterSearch(event: any) {
     this.term = event.target.value?.trim();
@@ -482,7 +484,7 @@ this.allGroupNames =[];
     return (this.page - 1) * this.tableSize + index + 1;
   }
 
-  changedStatusName:any
+  changedStatusName: any
   onStatusChange(item: any, event: any) {
     const selectedStatusId = event.value;
     const selectedStatus = this.allJobStatus.find(status => status.id == selectedStatusId);
@@ -525,92 +527,94 @@ this.allGroupNames =[];
     }
   }
   saveJobStausPercentage(item: any) {
-    if(!item.isInvalid){
-      if(!this.changedStatusName){
+    if (!item.isInvalid) {
+      if (!this.changedStatusName) {
         this.changedStatusName = item.job_status_name
       }
-      let temp_status=this.changedStatusName.toLowerCase();
-      let formData:any= {'job_status':item?.job_status,'percentage_of_completion':item.percentage_of_completion,
+      let temp_status = this.changedStatusName.toLowerCase();
+      let formData: any = {
+        'job_status': item?.job_status, 'percentage_of_completion': item.percentage_of_completion,
         status: (temp_status === 'cancelled' || temp_status === 'completed') ? false : true
       }
-      this.apiService.updateData(`${environment.live_url}/${environment.jobs_percetage}/${item.id}/`,formData).subscribe((respData: any) => {
+      this.apiService.updateData(`${environment.live_url}/${environment.jobs_percetage}/${item.id}/`, formData).subscribe((respData: any) => {
         if (respData) {
           this.apiService.showSuccess(respData['message']);
           this.filterData();
-    }},(error: any) => {
-      this.apiService.showError(error?.error?.detail);
-    });
-  }
+        }
+      }, (error: any) => {
+        this.apiService.showError(error?.error?.detail);
+      });
+    }
   }
   getEmployeeName(employees: any): string {
-    const employee = employees.find((emp:any) => emp?.is_primary === true);
+    const employee = employees.find((emp: any) => emp?.is_primary === true);
     return employee ? employee?.employee_name : '';
   }
   getManagerName(employees: any): string {
-    const manager = employees.find((man:any) => man?.is_primary === true);
+    const manager = employees.find((man: any) => man?.is_primary === true);
     return manager ? manager?.manager_name : '';
   }
 
-  downloadOption(type:any){
-  let status:any
-    if(this.isCurrent){
+  downloadOption(type: any) {
+    let status: any
+    if (this.isCurrent) {
       status = 'True';
-   this.jobStatusList(status);
+      this.jobStatusList(status);
     }
-    else{
+    else {
       status = 'False';
       this.jobStatusList(status);
     }
     let query = '';
-    if(this.filterQuery){
+    if (this.filterQuery) {
       query = this.filterQuery + `&file-type=${type}`;
-    }else{
+    } else {
       query = `?page=${this.page}&page_size=${this.tableSize}&file-type=${type}&job-status=[${this.statusList}]`;
-      query +=this.userRole !== 'Admin' ? `&employee-id=${this.user_id}` : '';
+      query += this.userRole !== 'Admin' ? `&employee-id=${this.user_id}` : '';
     }
     let apiUrl = `${environment.live_url}/${environment.job_details}/${query}`;
     fetch(apiUrl)
-    .then(res => res.blob())
-    .then(blob => {
-      //console.log('blob',blob);
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(blob);
-      a.download = `VLP - Job Details.${type}`;
-      a.click();
-    });
+      .then(res => res.blob())
+      .then(blob => {
+        //console.log('blob',blob);
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = `VLP - Job Details.${type}`;
+        a.click();
+      });
   }
 
-jobStatusList(status:any){
-  const isActive = status === 'True';
-  this.statusList = this.allJobStatus
-    ?.filter((jobstatus: any) => isActive
-      ? jobstatus?.status_name !== "Cancelled" && jobstatus?.status_name !== "Completed"
-      : jobstatus?.status_name === "Cancelled" || jobstatus?.status_name === "Completed")
-    .map((status: any) => status?.status_name);
+  jobStatusList(status: any) {
+    const isActive = status === 'True';
+    this.statusList = this.allJobStatus
+      ?.filter((jobstatus: any) => isActive
+        ? jobstatus?.status_name !== "Cancelled" && jobstatus?.status_name !== "Completed"
+        : jobstatus?.status_name === "Cancelled" || jobstatus?.status_name === "Completed")
+      .map((status: any) => status?.status_name);
     this.allStatusNames = this.allJobStatus
-    ?.filter((jobstatus: any) => isActive ? jobstatus?.status_name !== "Cancelled" && jobstatus?.status_name !== "Completed"
-      : jobstatus?.status_name === "Cancelled" || jobstatus?.status_name === "Completed").map((status:any) => ({
-      id: status?.status_name,name: status?.status_name
-    }))
-    
-}
+      ?.filter((jobstatus: any) => isActive ? jobstatus?.status_name !== "Cancelled" && jobstatus?.status_name !== "Completed"
+        : jobstatus?.status_name === "Cancelled" || jobstatus?.status_name === "Completed").map((status: any) => ({
+          id: status?.status_name, name: status?.status_name
+        }))
 
-  setDateFilterColumn(event){
+  }
+
+  setDateFilterColumn(event) {
     const selectedDate = event.value;
-  if (selectedDate) {
-    this.statusDate = this.datePipe.transform(selectedDate, 'yyyy-MM-dd');
-  }
-  this.filterData()
+    if (selectedDate) {
+      this.statusDate = this.datePipe.transform(selectedDate, 'yyyy-MM-dd');
+    }
+    this.filterData()
   }
 
-  setDateRangeFilterColumn(event){
+  setDateRangeFilterColumn(event) {
     console.log(event.value)
   }
   allocationStartDate(event: any): void {
     // console.log(event)
     const selectedDate = event.value;
     if (selectedDate) {
-     this.dateRange.start = this.datePipe.transform(selectedDate, 'yyyy-MM-dd');
+      this.dateRange.start = this.datePipe.transform(selectedDate, 'yyyy-MM-dd');
     }
     // this.filterData()
   }
@@ -618,7 +622,7 @@ jobStatusList(status:any){
     // console.log(event)
     const selectedDate = event.value;
     if (selectedDate) {
-     this.dateRange.end = this.datePipe.transform(selectedDate, 'yyyy-MM-dd');
+      this.dateRange.end = this.datePipe.transform(selectedDate, 'yyyy-MM-dd');
     }
     this.filterData()
   }
@@ -627,51 +631,51 @@ jobStatusList(status:any){
     // console.log(event)
     const selectedDate = event.value;
     if (selectedDate) {
-     this.statusDate = this.datePipe.transform(selectedDate, 'yyyy-MM-dd');
+      this.statusDate = this.datePipe.transform(selectedDate, 'yyyy-MM-dd');
     }
     this.filterData()
   }
-  clearDateFilter(){
+  clearDateFilter() {
     this.jobAllocationDate = null;
-    this.dateRange.start ='';
-    this.dateRange.end =''
+    this.dateRange.start = '';
+    this.dateRange.end = ''
     this.filterData()
   }
-  clearStatusDateFilter(){
+  clearStatusDateFilter() {
     this.statusDate = null;
     this.statusDateFilterValue = null;
     this.filterData()
   }
 
   isColumnVisible(key: string): boolean {
-  const col = this.columns.find(c => c.key === key);
-  return col ? col.visible : false;
-}
+    const col = this.columns.find(c => c.key === key);
+    return col ? col.visible : false;
+  }
   resetColumns() {
-  this.columns.forEach(col => col.visible = true);
-}
-
-jobStatusValidation(data: any, index: any): boolean {
-  if (data.estimated_time == '00:00' && index >= this.internalReviewOneIndex) {
-    return true;
-  }
-  if (this.userRole !== 'Admin') {
-    if (data.only_admin_can_change_job_status) {
-      return true;
-    }
-    if (!data.only_admin_can_change_job_status && index >= this.internalReviewOneIndex) {
-      return true;
-    }
-  } else {
-    if (index >= this.internalReviewOneIndex) {
-      return true;
-    }
+    this.columns.forEach(col => col.visible = true);
   }
 
-  return false;
-}
-dateClass = (date: Date) => {
-  return date.getDay() === 0 ? 'sunday-highlight' : '';
-};
+  jobStatusValidation(data: any, index: any): boolean {
+    if (data.estimated_time == '00:00' && index >= this.internalReviewOneIndex) {
+      return true;
+    }
+    if (this.userRole !== 'Admin') {
+      if (data.only_admin_can_change_job_status) {
+        return true;
+      }
+      if (!data.only_admin_can_change_job_status && index >= this.internalReviewOneIndex) {
+        return true;
+      }
+    } else {
+      if (index >= this.internalReviewOneIndex) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+  dateClass = (date: Date) => {
+    return date.getDay() === 0 ? 'sunday-highlight' : '';
+  };
 
 }
