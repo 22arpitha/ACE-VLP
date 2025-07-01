@@ -31,13 +31,13 @@ const routes: Routes = [
     canActivateChild: [ActivateChildGuard],
     canActivate:[AuthGuard],
     children: [
-      {
-        path: 'dashboards',
-        loadChildren: () =>
-          import('./views/dashboard/dashboard.module').then(
-            (m) => m.DashboardModule
-          ),
-      },
+      // {
+      //   path: 'dashboards',
+      //   loadChildren: () =>
+      //     import('./views/dashboard/dashboard.module').then(
+      //       (m) => m.DashboardModule
+      //     ),
+      // },
       {
         path: 'accounts',
         loadChildren: () =>
