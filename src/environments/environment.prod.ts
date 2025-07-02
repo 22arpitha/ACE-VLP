@@ -62,7 +62,13 @@ productivity_reports:'productivity-reports',
 upload_assessment:'upload-assessment',
 over_all_productivity_reports:'over-all-productivity-reports',
 download_excel :'download-excel',
+//  leave related API end points
+work_calendar:`work_calender`,
+holiday_calendar:`holiday_calendar`,
 
+
+
+// project ace
   leave_application: 'leave-application',
   timesheetCalender: 'time-sheets-calender',
   taskProjectCategories: 'task-project-categories',

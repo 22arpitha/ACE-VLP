@@ -1,5 +1,5 @@
 .settings-form-bg {
-  max-height: 75vh !important;
+  max-height: 80vh !important;
 }
 ::ng-deep .mat-form-field-infix {
   padding: 0.5em 0 !important;
@@ -64,4 +64,13 @@
 }
 .individual-radio {
   margin: 5px;
+}
+::ng-deep .work-calendar .highlight-background .mat-form-field-flex {
+    background-color: rgb(235 235 235) !important;
+    pointer-events: none !important;
+  }
+
+  .proceedbtn:disabled {
+    background-color: #cccccc !important;
+    color: #666666;
 }

@@ -1,12 +1,19 @@
 <div class="container-wrapper settings-main-content px-0">
-    <section class="settings-form-bg px-0">
+    <section class="settings-form-bg px-0 work-calendar">
         <form [formGroup]="workCalendarForm">
-            <h5 class="m-2 fw-bold">Week Definition</h5>
+            <div class="d-flex justify-content-between">
+                <h5 class="m-2 fw-bold">Week Definition</h5>
+                <button mat-raised-button class="proceedbtn mat-btn-s me-3" type="button" [disabled]="isEnabledEdit"
+                    (click)="enbleFields()">
+                    <span>Edit</span></button>
+            </div>
             <div class="row mx-0">
                 <div class="col-sm-12 col-md-12 col-lg-5">
                     <div class="row mx-0">
                         <div class="col-12 col-lg-6 no-padding pl-0 pr-5">
-                            <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+                            <mat-form-field appearance="outline"
+                                [ngClass]="{ 'highlight-background':!shouldDisableFields}"
+                                class="w-100 custom-mat-form-field">
                                 <mat-label>Week starts on <b class="r-star">*</b></mat-label>
                                 <mat-select formControlName="week_starts_on" autocomplete="off"
                                     placeholder="Select week" panelClass="custom-select-panel"
@@ -23,7 +30,9 @@
                             </mat-form-field>
                         </div>
                         <div class="col-12 col-lg-6 no-padding pl-0 pr-5">
-                            <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+                            <mat-form-field appearance="outline"
+                                [ngClass]="{ 'highlight-background':!shouldDisableFields}"
+                                class="w-100 custom-mat-form-field">
                                 <mat-label>Work week starts on <b class="r-star">*</b></mat-label>
                                 <mat-select formControlName="work_week_starts_on" autocomplete="off"
                                     placeholder="Select week" panelClass="custom-select-panel"
@@ -42,7 +51,9 @@
                         </div>
                         <br>
                         <div class="col-12 col-lg-6 no-padding pl-0 pr-5">
-                            <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+                            <mat-form-field appearance="outline"
+                                [ngClass]="{ 'highlight-background':!shouldDisableFields}"
+                                class="w-100 custom-mat-form-field">
                                 <mat-label>Work week ends on <b class="r-star">*</b></mat-label>
                                 <mat-select formControlName="work_week_ends_on" autocomplete="off"
                                     placeholder="Select week" panelClass="custom-select-panel"
@@ -61,45 +72,49 @@
                         </div>
                         <h5 class="mt-2 mb-2 fw-bold">Calendar year definition</h5>
                         <div class="col-12 col-lg-12 pl-0 pr-5">
-                            <mat-radio-group class="radio-group" formControlName="current_year"
-                                (change)="onRadioChange($event)">
-                                <mat-radio-button class="individual-radio" value="Current">Current year (January to
+                            <mat-radio-group class="radio-group" formControlName="custom_year"
+                                [disabled]="!shouldDisableFields" (change)="onRadioChange($event)">
+                                <mat-radio-button class="individual-radio" [value]="false">Current year (January to
                                     December)</mat-radio-button>
-                                <mat-radio-button class="individual-radio" value="Custom">Custom year</mat-radio-button>
+                                <mat-radio-button class="individual-radio" [value]="true">Custom year</mat-radio-button>
                             </mat-radio-group>
                             <mat-error
-                                *ngIf="f['current_year']?.invalid && f['current_year']?.touched || f['current_year']?.dirty">
-                                <span *ngIf="f['current_year']?.errors?.['required']">Calendar year definition is
+                                *ngIf="f['custom_year']?.invalid && f['custom_year']?.touched || f['custom_year']?.dirty">
+                                <span *ngIf="f['custom_year']?.errors?.['required']">Calendar year definition is
                                     required</span>
                             </mat-error>
                         </div>
                         <div class="col-12 col-lg-6 no-padding pl-0 pr-5"
-                            *ngIf="workCalendarForm?.get('current_year')?.value==='Custom'">
-                            <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+                            *ngIf="workCalendarForm?.get('custom_year')?.value">
+                            <mat-form-field appearance="outline"
+                                [ngClass]="{ 'highlight-background':!shouldDisableFields}"
+                                class="w-100 custom-mat-form-field">
                                 <mat-label>Start Date <b class="r-star">*</b></mat-label>
                                 <input matInput [matDatepicker]="picker1" placeholder="Enter Start date"
-                                    formControlName="custom_start_date" autocomplete="off"
+                                    formControlName="custom_year_start_date" autocomplete="off"
                                     (dateInput)="startDateFun($event)">
                                 <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
                                 <mat-datepicker #picker1></mat-datepicker>
                                 <mat-error
-                                    *ngIf="f['custom_start_date']?.invalid && f['custom_start_date']?.touched || f['custom_start_date']?.dirty">
-                                    <span *ngIf="f['custom_start_date']?.errors?.['required']">Start Date is
+                                    *ngIf="f['custom_year_start_date']?.invalid && f['custom_year_start_date']?.touched || f['custom_year_start_date']?.dirty">
+                                    <span *ngIf="f['custom_year_start_date']?.errors?.['required']">Start Date is
                                         required</span>
                                 </mat-error>
                             </mat-form-field>
                         </div>
                         <div class="col-12 col-lg-6 no-padding pl-0 pr-5"
-                            *ngIf="workCalendarForm?.get('current_year')?.value==='Custom'">
-                            <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+                            *ngIf="workCalendarForm?.get('custom_year')?.value">
+                            <mat-form-field appearance="outline"
+                                [ngClass]="{ 'highlight-background':!shouldDisableFields}"
+                                class="w-100 custom-mat-form-field">
                                 <mat-label>End Date<b class="r-star">*</b></mat-label>
                                 <input matInput [matDatepicker]="picker2" placeholder="Enter End date"
-                                    formControlName="custom_end_date" autocomplete="off" [min]="minDate">
+                                    formControlName="custom_year_end_date" autocomplete="off" [min]="minDate">
                                 <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
                                 <mat-datepicker #picker2></mat-datepicker>
                                 <mat-error
-                                    *ngIf="f['custom_end_date']?.invalid && f['custom_end_date']?.touched || f['custom_end_date']?.dirty">
-                                    <span *ngIf="f['custom_end_date']?.errors?.['required']">End date is required</span>
+                                    *ngIf="f['custom_year_end_date']?.invalid && f['custom_year_end_date']?.touched || f['custom_year_end_date']?.dirty">
+                                    <span *ngIf="f['custom_year_end_date']?.errors?.['required']">End date is required</span>
                                 </mat-error>
                             </mat-form-field>
                         </div>
@@ -109,6 +124,29 @@
                     <div class="weekend-table-wrapper">
                         <table class="weekend-table">
                             <thead>
+                                <tr>
+                                    <th class="day-name">Day</th>
+                                    <th *ngFor="let key of columnKeys">{{ key }}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let day of filteredWeekendDays">
+                                    <td>{{ day.day }}</td>
+                                    <td *ngFor="let key of columnKeys">
+                                        <input type="checkbox" [ngModelOptions]="{ standalone: true }" 
+                                             [(ngModel)]="getHolidayRef(day, key).is_holiday" [disabled]="!shouldDisableFields"
+                                            (change)="onCheckboxChange(day, key)" />
+                                    </td>
+                                </tr>
+                                <!-- <tr *ngFor="let day of filteredWeekendDays">
+                                    <td>{{ day.day }}</td>
+                                    <td *ngFor="let key of columnKeys">
+                                        <input type="checkbox" [ngModelOptions]="{ standalone: true }" [disabled]="!shouldDisableFields"
+                                            [(ngModel)]="day[key]" (change)="onCheckboxChange(day, key)" />
+                                    </td>
+                                </tr> -->
+                            </tbody>
+                            <!-- <thead>
                                 <tr>
                                     <th class="day-name">Days</th>
                                     <th>All</th>
@@ -120,22 +158,23 @@
                                 </tr>
                             </thead>
                             <tbody>
+                               
                                 <tr *ngFor="let day of filteredWeekendDays">
                                     <td class="day-name">{{ day.week }}</td>
                                     <td><input type="checkbox" [ngModelOptions]="{standalone: true}"
-                                            [(ngModel)]="day.all" (change)="onAllSelect(day)" /></td>
+                                            [(ngModel)]="day.all" [disabled]="!shouldDisableFields" (change)="onAllSelect(day)" /></td>
                                     <td><input type="checkbox" [ngModelOptions]="{standalone: true}"
-                                            [(ngModel)]="day.first" (change)="OnSingleSelection(day)" /></td>
+                                            [(ngModel)]="day.first" [disabled]="!shouldDisableFields" (change)="OnSingleSelection(day)" /></td>
                                     <td><input type="checkbox" [ngModelOptions]="{standalone: true}"
-                                            [(ngModel)]="day.second" (change)="OnSingleSelection(day)" /></td>
+                                            [(ngModel)]="day.second" [disabled]="!shouldDisableFields" (change)="OnSingleSelection(day)" /></td>
                                     <td><input type="checkbox" [ngModelOptions]="{standalone: true}"
-                                            [(ngModel)]="day.third" (change)="OnSingleSelection(day)" /></td>
+                                            [(ngModel)]="day.third" [disabled]="!shouldDisableFields" (change)="OnSingleSelection(day)" /></td>
                                     <td><input type="checkbox" [ngModelOptions]="{standalone: true}"
-                                            [(ngModel)]="day.fourth" (change)="OnSingleSelection(day)" /></td>
+                                            [(ngModel)]="day.fourth" [disabled]="!shouldDisableFields" (change)="OnSingleSelection(day)" /></td>
                                     <td><input type="checkbox" [ngModelOptions]="{standalone: true}"
-                                            [(ngModel)]="day.fifth" (change)="OnSingleSelection(day)" /></td>
+                                            [(ngModel)]="day.fifth" [disabled]="!shouldDisableFields" (change)="OnSingleSelection(day)" /></td>
                                 </tr>
-                            </tbody>
+                            </tbody> -->
                         </table>
                     </div>
                 </div>
@@ -143,9 +182,11 @@
         </form>
         <div class="my-3 px-4">
             <!-- *ngIf="((user_role_name !== 'Admin' && accessPermissions[0]?.update) || user_role_name === 'Admin') && isEditItem" -->
-            <button mat-raised-button class="proceedbtn mat-btn-s me-3" type="submit" (click)="saveWorkCalendarData()">
+            <button mat-raised-button class="proceedbtn mat-btn-s me-3" type="submit" (click)="saveWorkCalendarData()"
+                [disabled]="!shouldDisableFields">
                 <span>Save</span></button>
-            <button mat-raised-button class="cancel-button mat-btn-s" type="button" (click)="cancelAndBack()">
+            <button mat-raised-button class="cancel-button mat-btn-s" type="button" (click)="cancelAndBack()"
+                [disabled]="!shouldDisableFields">
                 <span>Cancel</span></button>
         </div>
     </section>

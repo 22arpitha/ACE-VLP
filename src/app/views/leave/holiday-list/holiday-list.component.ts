@@ -63,7 +63,6 @@ BreadCrumbsTitle: any = 'Holiday Lists';
        this.user_id = sessionStorage.getItem('user_id');
        this.userRole = sessionStorage.getItem('user_role_name');
        this.getModuleAccess();
-       this.getAllActiveClients();
      }
  
      access_name:any ;
@@ -119,22 +118,6 @@ BreadCrumbsTitle: any = 'Holiday Lists';
        }
      }
  
-   public getAllActiveClients() {
-     let query:any
-     if(this.userRole ==='Admin'){
-       query = '?status=True'
-     } else{
-       query = `?status=True&employee-id=${this.user_id}`
-     }
-     this.apiService.getData(`${environment.live_url}/${environment.clients}/${query}`).subscribe(
-       (res: any) => {
-         if(res && res.length>=1){
-         this.allClientNames = res.map((client:any) => ({ id: client.id, name: client.client_name }));
-         }
-       }, (error: any) => {
-         this.apiService.showError(error?.error?.detail);
-       });
-   }
        public getAllHolidayList(){
          let query = this.getFilterBaseUrl();
          this.apiService.getData(`${environment.live_url}/${environment.client_invoice}/${query}`).subscribe(
