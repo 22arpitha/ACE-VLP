@@ -598,6 +598,7 @@ onManagerSelectOpened(opened: boolean, index: number): void {
 
   public getJobDetails(id: any) {
     this.apiService.getData(`${environment.live_url}/${environment.jobs}/${id}/`).subscribe((respData: any) => {
+        console.log(respData)
       if (respData) {
         this.BreadCrumbsTitle = this.BreadCrumbsTitle + ` (${respData.job_number})`
         this.common_service.setTitle(this.BreadCrumbsTitle);
@@ -624,7 +625,7 @@ onManagerSelectOpened(opened: boolean, index: number): void {
           job_status_date: respData?.job_status_date ? new Date(respData?.job_status_date)?.toISOString() : null,
           job_status: respData?.job_status,
           percentage_of_completion: Number(respData?.percentage_of_completion),
-          option: respData?.option.toString(),
+          option: respData?.option?.toString(),
           job_notes: respData?.job_notes,
           created_by: respData?.created_by,
           updated_by: respData?.updated_by,
