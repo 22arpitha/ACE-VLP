@@ -18,13 +18,13 @@
                 <thead>
                   <tr>
                     <th scope="col">Name
-                      <i *ngIf="!arrowState['invoice_number']" (click)="sort('asc','invoice_number')" class="bi bi-arrow-down"></i>
-                      <i (click)="sort('desc','invoice_number')" *ngIf="arrowState['invoice_number']"
+                      <i *ngIf="!arrowState['name']" (click)="sort('asc','name')" class="bi bi-arrow-down"></i>
+                      <i (click)="sort('desc','name')" *ngIf="arrowState['name']"
                         class="bi bi-arrow-up"></i>
                     </th>
                     <th scope="col">Date
-                      <i *ngIf="!arrowState['created_date']" (click)="sort('asc','created_date')" class="bi bi-arrow-down"></i>
-                        <i (click)="sort('desc','created_date')" *ngIf="arrowState['created_date']"
+                      <i *ngIf="!arrowState['date']" (click)="sort('asc','date')" class="bi bi-arrow-down"></i>
+                        <i (click)="sort('desc','date')" *ngIf="arrowState['date']"
                           class="bi bi-arrow-up"></i>
                           <!-- <button *ngIf="!startDate && !endDate"
                           mat-icon-button
@@ -61,10 +61,10 @@
                   </mat-form-field> -->
                     </th>
                     <th scope="col" class="name-col">Holiday Classification
-                      <i *ngIf="!arrowState['client_name']" (click)="sort('asc','client_name')" class="bi bi-arrow-down"></i>
-                      <i (click)="sort('desc','client_name')" *ngIf="arrowState['client_name']"
+                      <i *ngIf="!arrowState['classification']" (click)="sort('asc','classification')" class="bi bi-arrow-down"></i>
+                      <i (click)="sort('desc','classification')" *ngIf="arrowState['classification']"
                         class="bi bi-arrow-up"></i>
-                        <!-- <button mat-icon-button [matMenuTriggerFor]="clientFilterMenu" [ngClass]="filters.client_name.length>=1 ? 'filterdColumn':''">
+                        <!-- <button mat-icon-button [matMenuTriggerFor]="clientFilterMenu" [ngClass]="filters.classification.length>=1 ? 'filterdColumn':''">
                         <span *ngIf="filters.client_name.length>=1">{{filters.client_name.length.toString().padStart(2, '0')}}</span>
                           
                           <i class="bi-funnel" *ngIf="filters.client_name.length===0"></i>
@@ -89,9 +89,9 @@
                              currentPage: page,
                              totalItems: count
                            }; let i=index'>
-                           <td>Lorem ipsum dolor sit amet consectetur adipisicing elit.</td>
-                           <td>{{(item?.created_date || '-')}}</td>
-                           <td>{{item?.client_name || '-'}}</td>
+                           <td>{{item.name}}</td>
+                           <td>{{(item?.date || '-')}}</td>
+                           <td>{{item?.classification || '-'}}</td>
                       <td>
                         <ng-container *ngIf="item">
                         <img src="../../../../assets/images/Edit.svg" class="icon-image" type="button" container="body"

@@ -25,6 +25,7 @@ export class CommonServiceService {
    clientActiveTabindex$ = new BehaviorSubject(0);
    jobActiveTabindex$ = new BehaviorSubject(0);
 
+   dashboardActiveTabindex$ = new BehaviorSubject(0)
 
 
    subTitle$ = this.previousPage.asObservable()
@@ -59,5 +60,8 @@ export class CommonServiceService {
    }
     setJobActiveTabindex(index:any){
     this.jobActiveTabindex$.next(index)
+   }
+    setDashboardActiveTabindex(index:any){
+    this.dashboardActiveTabindex$.next(index)
    }
 }

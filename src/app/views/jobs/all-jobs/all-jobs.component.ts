@@ -164,7 +164,6 @@ export class AllJobsComponent implements OnInit {
       _res_Managers: this.apiService.getData(`${environment.live_url}/${environment.employee}/${manager_query}`),
       _res_clients: this.apiService.getData(`${environment.live_url}/${environment.clients}/${query}`),
     }).subscribe((data: any) => {
-      // console.log(data)
       if (data._res_job_status && data._res_job_status?.length >= 1) {
         data._res_job_status.forEach((element: any) => {
           element['valueChanged'] = false
@@ -401,7 +400,11 @@ export class AllJobsComponent implements OnInit {
     this.isHistory = false;
     this.isCurrent = true;
     this.jobStatusList('True');
-    let query = `${this.getFilterBaseUrl()}&job-status=[${this.statusList}]`;
+    // const joinedStatusList = this.statusList.join(','); // no encoding!
+    // let query = `${this.getFilterBaseUrl()}&job-status=${joinedStatusList}`;
+    // // let jobStatusParam = encodeURIComponent(JSON.stringify(this.statusList));
+    // // let query = `${this.getFilterBaseUrl()}&job-status=${jobStatusParam}`;
+    let query:any = `${this.getFilterBaseUrl()}&job-status=[${this.statusList}]`;
     this.apiService.getData(`${environment.live_url}/${environment.jobs}/${query}`).subscribe((res: any) => {
       this.allJobsList = res?.results;
       this.filteredList = res?.results;
@@ -417,6 +420,7 @@ export class AllJobsComponent implements OnInit {
     this.isCurrent = false;
     this.isHistory = true;
     this.jobStatusList('False');
+    // console.log('history',this.statusList)
     let query = `${this.getFilterBaseUrl()}&job-status=[${this.statusList}]`;
     this.apiService.getData(`${environment.live_url}/${environment.jobs}/${query}`).subscribe(
       (res: any) => {
@@ -586,17 +590,14 @@ export class AllJobsComponent implements OnInit {
 
   jobStatusList(status: any) {
     const isActive = status === 'True';
-    this.statusList = this.allJobStatus
-      ?.filter((jobstatus: any) => isActive
+    this.statusList = this.allJobStatus?.filter((jobstatus: any) => isActive
         ? jobstatus?.status_name !== "Cancelled" && jobstatus?.status_name !== "Completed"
         : jobstatus?.status_name === "Cancelled" || jobstatus?.status_name === "Completed")
       .map((status: any) => status?.status_name);
-    this.allStatusNames = this.allJobStatus
-      ?.filter((jobstatus: any) => isActive ? jobstatus?.status_name !== "Cancelled" && jobstatus?.status_name !== "Completed"
+    this.allStatusNames = this.allJobStatus?.filter((jobstatus: any) => isActive ? jobstatus?.status_name !== "Cancelled" && jobstatus?.status_name !== "Completed"
         : jobstatus?.status_name === "Cancelled" || jobstatus?.status_name === "Completed").map((status: any) => ({
           id: status?.status_name, name: status?.status_name
         }))
-
   }
 
   setDateFilterColumn(event) {

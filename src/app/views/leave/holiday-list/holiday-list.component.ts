@@ -24,9 +24,9 @@ BreadCrumbsTitle: any = 'Holiday Lists';
      directionValue: string = '';
      selectedItemId:any;
      arrowState: { [key: string]: boolean } = {
-       invoice_date:false,
-       invoice_number:false,
-       client_name:false,
+       name:false,
+       date:false,
+       classification:false,
      };
      startDate:any;
      endDate:any;
@@ -52,11 +52,12 @@ BreadCrumbsTitle: any = 'Holiday Lists';
        private datePipe:DatePipe,
        private apiService: ApiserviceService,private http: HttpClient) {
        this.common_service.setTitle(this.BreadCrumbsTitle)
-       this.getAllHolidayList();
+       
      }
  
      ngOnInit(): void {
        this.initalCall();
+       this.getAllHolidayList();
      }
  
      public initalCall(){
@@ -120,8 +121,9 @@ BreadCrumbsTitle: any = 'Holiday Lists';
  
        public getAllHolidayList(){
          let query = this.getFilterBaseUrl();
-         this.apiService.getData(`${environment.live_url}/${environment.client_invoice}/${query}`).subscribe(
+         this.apiService.getData(`${environment.live_url}/${environment.holiday_calendar}/${query}`).subscribe(
        (res: any) => {
+        console.log(res,'holiday list')
          this.allHolidayList = res?.results;
          const noOfPages: number = res?.['total_pages']
          this.count = noOfPages * this.tableSize;
@@ -156,9 +158,9 @@ BreadCrumbsTitle: any = 'Holiday Lists';
  
      getFilterBaseUrl(): string {
        const base = `?page=${this.page}&page_size=${this.tableSize}`;
-       const searchParam = this.term?.trim().length >= 2 ? `&search=${this.term.trim()}` : '';
- 
-       return `${base}${searchParam}`;
+      //  const searchParam = this.term?.trim().length >= 2 ? `&search=${this.term.trim()}` : '';
+      // return `${base}${searchParam}`;
+       return `${base}`;
      }
  
      public sort(direction: string, column: string) {
@@ -176,13 +178,14 @@ BreadCrumbsTitle: any = 'Holiday Lists';
  
      public openEditInvoicePopup(item:any){
        this.dialog.open(CreateUpdateHolidayComponent, {
-       data: { edit:true,item_id:21 },
+       data: { edit:true,item_id:item.id },
        panelClass: 'custom-details-dialog',
        disableClose: true
      });
      this.dialog.afterAllClosed.subscribe((resp:any)=>{
-       // console.log('resp',resp);
+      //  console.log('resp',resp);
        this.initalCall();
+       this.getAllHolidayList();
      });
      }
  
@@ -204,15 +207,12 @@ BreadCrumbsTitle: any = 'Holiday Lists';
  
      filterData() {
        this.filterQuery = this.getFilterBaseUrl()
-       if (this.filters.client_name.length) {
-         this.filterQuery += `&client-ids=[${this.filters.client_name.join(',')}]`;
-       }
-       // if (this.invoiceDate) {
-       //   this.filterQuery += `&dates=[${this.invoiceDate}]`;
-       // }
-       if(this.startDate && this.endDate){
-         this.filterQuery += `&start-date=${this.startDate}&end-date=${this.endDate}`;
-       }
+      //  if (this.filters.client_name.length) {
+      //    this.filterQuery += `&client-ids=[${this.filters.client_name.join(',')}]`;
+      //  }
+      //  if(this.startDate && this.endDate){
+      //    this.filterQuery += `&start-date=${this.startDate}&end-date=${this.endDate}`;
+      //  }
        this.apiService.getData(`${environment.live_url}/${environment.client_invoice}/${this.filterQuery}`).subscribe((res: any) => {
          this.allHolidayList = res?.results;
          const noOfPages: number = res?.['total_pages']

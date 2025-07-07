@@ -3,7 +3,7 @@
         <form [formGroup]="workCalendarForm">
             <div class="d-flex justify-content-between">
                 <h5 class="m-2 fw-bold">Week Definition</h5>
-                <button mat-raised-button class="proceedbtn mat-btn-s me-3" type="button" [disabled]="isEnabledEdit"
+                <button *ngIf="itemId" mat-raised-button class="proceedbtn mat-btn-s me-3" type="button" [disabled]="isEnabledEdit"
                     (click)="enbleFields()">
                     <span>Edit</span></button>
             </div>
@@ -37,7 +37,7 @@
                                 <mat-select formControlName="work_week_starts_on" autocomplete="off"
                                     placeholder="Select week" panelClass="custom-select-panel"
                                     [disabled]="!workCalendarForm.get('week_starts_on')?.value"
-                                    [disableOptionCentering]="true" (selectionChange)="selectedSartAndEndWork($event)">
+                                    [disableOptionCentering]="true" (selectionChange)="selectedSartAndEndWork()">
                                     <mat-option *ngFor="let item of rotatedWeeks" [value]="item?.week">
                                         {{item?.week}}
                                     </mat-option>
@@ -58,7 +58,7 @@
                                 <mat-select formControlName="work_week_ends_on" autocomplete="off"
                                     placeholder="Select week" panelClass="custom-select-panel"
                                     [disabled]="!workCalendarForm.get('week_starts_on')?.value"
-                                    [disableOptionCentering]="true" (selectionChange)="selectedSartAndEndWork($event)">
+                                    [disableOptionCentering]="true" (selectionChange)="selectedSartAndEndWork()">
                                     <mat-option *ngFor="let item of rotatedWeeks" [value]="item?.week">
                                         {{item?.week}}
                                     </mat-option>
@@ -184,7 +184,7 @@
             <!-- *ngIf="((user_role_name !== 'Admin' && accessPermissions[0]?.update) || user_role_name === 'Admin') && isEditItem" -->
             <button mat-raised-button class="proceedbtn mat-btn-s me-3" type="submit" (click)="saveWorkCalendarData()"
                 [disabled]="!shouldDisableFields">
-                <span>Save</span></button>
+                <span>{{buttonName}}</span></button>
             <button mat-raised-button class="cancel-button mat-btn-s" type="button" (click)="cancelAndBack()"
                 [disabled]="!shouldDisableFields">
                 <span>Cancel</span></button>
