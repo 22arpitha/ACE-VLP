@@ -29,6 +29,7 @@ export const tableColumns  = [
     filterType: 'multi-select',
     sortable: true
   },
+ 
   {
     label: 'Status',
     key: 'job_status_name',
@@ -41,6 +42,11 @@ export const tableColumns  = [
   {
     label: 'Task',
     key: 'task',
+    sortable: true
+  },
+   {
+    label: 'PRIM EMP',
+    key: 'is_primary',
     sortable: true
   },
   { label: 'Est. Hrs', key: 'estimated_time', sortable: true },

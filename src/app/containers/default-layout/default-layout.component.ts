@@ -196,7 +196,7 @@ export class DefaultLayoutComponent {
     this.ngxService.startLoader('loader-01');
     setTimeout(() => {
       this.ngxService.stopLoader('loader-01');
-    }, 1000);
+    }, 500);
 
     // if (this.user_role_Name && this.user_role_Name !== 'SuperAdmin') {
     //   this.getMySubscription()

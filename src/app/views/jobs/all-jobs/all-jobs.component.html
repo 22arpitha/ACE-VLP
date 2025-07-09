@@ -199,7 +199,7 @@
 
                       <mat-menu #statusFilterMenu="matMenu">
                         <app-generic-table-filter
-                          [options]="allStatusNames"
+                          [options]="allStatuGroupNames"
                           [(selectedOptions)]="filters.status_name"
                           (selectedOptionsChange)="filterData()"
                         ></app-generic-table-filter>

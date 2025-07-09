@@ -46,6 +46,7 @@ export class AllJobsComponent implements OnInit {
   allJobsList: any = [];
   internalReviewOneIndex: any
   allJobStatus: any = [];
+  groupList:any = []
   accessPermissions = []
   user_id: any;
   userRole: any;
@@ -68,7 +69,7 @@ export class AllJobsComponent implements OnInit {
   allJobTypeNames: IdNamePair[] = [];
   allManagerNames: IdNamePair[] = [];
   allEmployeeNames: IdNamePair[] = [];
-  allStatusNames: IdNamePair[] = [];
+  allStatuGroupNames: IdNamePair[] = [];
   allGroupNames: IdNamePair[] = [];
   filteredList = [];
   filterQuery: string;
@@ -150,7 +151,7 @@ export class AllJobsComponent implements OnInit {
     if (this.userRole === 'Manager' || this.userRole === 'Accountant') {
       manager_query = `${this.user_id}/`
     }
-    this.allStatusNames = [];
+    this.allStatuGroupNames = [];
     this.allJobTypeNames = [];
     this.allEmployeelist = [];
     this.allEmployeeNames = [];
@@ -158,18 +159,23 @@ export class AllJobsComponent implements OnInit {
     this.allManagerNames = [];
     this.allClientNames = [];
     forkJoin({
+       _res_status_group: this.apiService.getData(`${environment.live_url}/${environment.settings_status_group}/`),
       _res_job_status: this.apiService.getData(`${environment.live_url}/${environment.settings_job_status}/`),
       _res_job_type: this.apiService.getData(`${environment.live_url}/${environment.settings_job_type}/`),
       _res_employees: this.apiService.getData(`${environment.live_url}/${environment.employee}/?is_active=True&employee=True`),
       _res_Managers: this.apiService.getData(`${environment.live_url}/${environment.employee}/${manager_query}`),
       _res_clients: this.apiService.getData(`${environment.live_url}/${environment.clients}/${query}`),
     }).subscribe((data: any) => {
+      if (data._res_status_group && data._res_status_group?.length >= 1){
+        this.groupList = data._res_status_group
+      }
       if (data._res_job_status && data._res_job_status?.length >= 1) {
         data._res_job_status.forEach((element: any) => {
           element['valueChanged'] = false
+          console.log(data._res_job_status)
         })
         this.allJobStatus = data._res_job_status;
-        this.internalReviewOneIndex = this.allJobStatus.findIndex(status => status.status_name.toLowerCase() === 'internal review 1');
+        this.internalReviewOneIndex = this.allJobStatus.findIndex(status => status?.status_name.toLowerCase() === 'internal review 1');
         this.jobStatusList('True');
       }
       if (data._res_job_type && data._res_job_type?.length >= 1) {
@@ -421,6 +427,7 @@ export class AllJobsComponent implements OnInit {
     this.isHistory = true;
     this.jobStatusList('False');
     // console.log('history',this.statusList)
+    // this.allStatuGroupNames
     let query = `${this.getFilterBaseUrl()}&job-status=[${this.statusList}]`;
     this.apiService.getData(`${environment.live_url}/${environment.jobs}/${query}`).subscribe(
       (res: any) => {
@@ -594,10 +601,15 @@ export class AllJobsComponent implements OnInit {
         ? jobstatus?.status_name !== "Cancelled" && jobstatus?.status_name !== "Completed"
         : jobstatus?.status_name === "Cancelled" || jobstatus?.status_name === "Completed")
       .map((status: any) => status?.status_name);
-    this.allStatusNames = this.allJobStatus?.filter((jobstatus: any) => isActive ? jobstatus?.status_name !== "Cancelled" && jobstatus?.status_name !== "Completed"
-        : jobstatus?.status_name === "Cancelled" || jobstatus?.status_name === "Completed").map((status: any) => ({
+      // this.allStatusNames = this.allJobStatus
+      this.allStatuGroupNames = this.allJobStatus?.filter((status: any) => isActive ? status?.status_name !== "Cancelled" && status?.status_name !== "Completed"
+        : status?.status_name === "Cancelled" || status?.status_name === "Completed").map((status: any) => ({
           id: status?.status_name, name: status?.status_name
         }))
+    // this.allStatuGroupNames = this.groupList?.filter((group: any) => isActive ? group?.group_name !== "Cancelled" && group?.group_name !== "Completed"
+    //     : group?.group_name === "Cancelled" || group?.group_name === "Completed").map((status: any) => ({
+    //       id: status?.group_name, name: status?.group_name
+    //     }))
   }
 
   setDateFilterColumn(event) {
