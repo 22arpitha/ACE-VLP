@@ -9,6 +9,7 @@ import { environment } from '../../../../environments/environment';
 import { SubModuleService } from '../../../service/sub-module.service';
 import { GenericDeleteComponent } from '../../../generic-components/generic-delete/generic-delete.component';
 import { GenericTimesheetConfirmationComponent } from '../../../generic-components/generic-timesheet-confirmation/generic-timesheet-confirmation.component';
+import { firstValueFrom } from 'rxjs';
 export interface IdNamePair {
   id: any;
   name: string;
@@ -87,7 +88,7 @@ export class AllTimesheetsComponent implements OnInit {
     this.getModuleAccess();
     this.getEmployees();
     this.getAllActiveClients();
-    this.getAllUserbasedActiveJobsList();
+    // this.getAllUserbasedActiveJobsList();
     this.getTaskList();
     if (this.userRole != 'Admin') {
       this.getWeekData();
@@ -209,6 +210,38 @@ this.allJobsNames=[];
       this.apiService.showError(error?.error?.detail)
     }));
   }
+
+  fetchJobs = async (page: number, search: string): Promise<{ results: any[]; hasMore: boolean; totalCount: number }> => {
+  const pageSize = 30;
+  const query = `?status=True&page=${page}&page_size=${pageSize}&search=${search || ''}` +
+                (this.userRole !== 'Admin' ? `&employee-id=${this.user_id}` : '');
+
+  try {
+    const response: any = await firstValueFrom(
+      this.apiService.getData(`${environment.live_url}/${environment.jobs}/${query}`)
+    );
+
+    const mapped = response.results?.map((job: any) => ({
+      id: job.id,
+      name: job.job_name
+    })) || [];
+
+    return {
+      results: mapped,
+      hasMore: response.next_page !== null,
+      totalCount: response.total_no_of_record
+    };
+  } catch (error) {
+    this.apiService.showError(error?.error?.detail || 'Failed to load jobs');
+    return {
+      results: [],
+      hasMore: false,
+      totalCount: 0
+    };
+  }
+};
+
+
 
   access_name: any;
   getModuleAccess() {

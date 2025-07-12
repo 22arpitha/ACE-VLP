@@ -276,9 +276,10 @@
 
                 <mat-menu #jobFilterMenu="matMenu">
                   <app-generic-table-filter
-                    [options]="allJobsNames"
+                    
                     [(selectedOptions)]="filters.job_name"
                     (selectedOptionsChange)="onFilterChange($event, 'job_name')"
+                    [fetchOptions]="fetchJobs"
                   ></app-generic-table-filter>
                 </mat-menu>
               </th>
