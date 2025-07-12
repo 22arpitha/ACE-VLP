@@ -187,16 +187,16 @@ export class DefaultLayoutComponent {
 
     this.testingFunction();
 
-    this.ngxService.start();
-    setTimeout(() => {
-      this.ngxService.stop();
-    }, 1000);
-    this.ngxService.startBackground('do-background-things');
-    this.ngxService.stopBackground('do-background-things');
-    this.ngxService.startLoader('loader-01');
-    setTimeout(() => {
-      this.ngxService.stopLoader('loader-01');
-    }, 500);
+    // this.ngxService.start();
+    // setTimeout(() => {
+    //   this.ngxService.stop();
+    // }, 500);
+    // this.ngxService.startBackground('do-background-things');
+    // this.ngxService.stopBackground('do-background-things');
+    // this.ngxService.startLoader('loader-01');
+    // setTimeout(() => {
+    //   this.ngxService.stopLoader('loader-01');
+    // }, 500);
 
     // if (this.user_role_Name && this.user_role_Name !== 'SuperAdmin') {
     //   this.getMySubscription()

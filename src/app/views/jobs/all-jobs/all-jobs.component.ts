@@ -172,7 +172,7 @@ export class AllJobsComponent implements OnInit {
       if (data._res_job_status && data._res_job_status?.length >= 1) {
         data._res_job_status.forEach((element: any) => {
           element['valueChanged'] = false
-          console.log(data._res_job_status)
+          // console.log(data._res_job_status)
         })
         this.allJobStatus = data._res_job_status;
         this.internalReviewOneIndex = this.allJobStatus.findIndex(status => status?.status_name.toLowerCase() === 'internal review 1');
@@ -410,7 +410,8 @@ export class AllJobsComponent implements OnInit {
     // let query = `${this.getFilterBaseUrl()}&job-status=${joinedStatusList}`;
     // // let jobStatusParam = encodeURIComponent(JSON.stringify(this.statusList));
     // // let query = `${this.getFilterBaseUrl()}&job-status=${jobStatusParam}`;
-    let query:any = `${this.getFilterBaseUrl()}&job-status=[${this.statusList}]`;
+    if(this.statusList.length!=0){
+      let query:any = `${this.getFilterBaseUrl()}&job-status=[${this.statusList}]`;
     this.apiService.getData(`${environment.live_url}/${environment.jobs}/${query}`).subscribe((res: any) => {
       this.allJobsList = res?.results;
       this.filteredList = res?.results;
@@ -418,7 +419,7 @@ export class AllJobsComponent implements OnInit {
       this.count = noOfPages * this.tableSize;
       this.count = res?.['total_no_of_record'];
       this.page = res?.['current_page'];
-    });
+    });}
   }
   getJobsHistoryList() {
     this.allJobsList = [];
