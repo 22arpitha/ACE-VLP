@@ -1,0 +1,171 @@
+<div class="container-wrapper settings-main-content jobs px-0">
+    <section class="settings-table-bg px-3">
+
+        <!-- Filters Row -->
+        <div class="row mx-0 my-1 px-0 py-2">
+            <div class="col-sm-12 col-md-6 col-lg-9">
+                <div class="row mx-0 gx-0 align-content-center">
+                    <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-1 pe-2">
+                    <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+                        <mat-label>Leave<b class="r-star">*</b></mat-label>
+                        <mat-select autocomplete="off" placeholder="Select leave type"
+                            panelClass="custom-select-panel" [(ngModel)]="filters.leave"
+                            (selectionChange)="filterData()">
+                            <div class="mat-select-search-wrapper d-flex">
+                                <input matInput [(ngModel)]="searchLeave" autofocus
+                                    [ngModelOptions]="{standalone: true}" placeholder="Search Job Status"
+                                    class="mat-select-search">
+                                <mat-icon class="search-icon" *ngIf="!searchLeave">search</mat-icon>
+                                <mat-icon class="search-icon" *ngIf="searchLeave" type="button"
+                                    (click)="clearSearch('leave_type')">close</mat-icon>
+                            </div>
+                            <mat-option *ngFor="let leave of filteredLeaveTypes();let i = index"
+                                [value]="leave.value">{{
+                                leave.label }}</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+
+                </div>
+
+                <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-1 pe-2">
+                    <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+                        <mat-label>All Data<b class="r-star">*</b></mat-label>
+                        <mat-select autocomplete="off" placeholder="Select leave type"
+                            panelClass="custom-select-panel" [(ngModel)]="filters.data"
+                            (selectionChange)="filterData()">
+                            <mat-option *ngFor="let data of dataOptions" [value]="data.value">{{
+                                data.label }}</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+
+                <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-1 pe-2">
+                    <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+                        <mat-label>All Requests<b class="r-star">*</b></mat-label>
+                        <mat-select autocomplete="off" placeholder="Select leave type"
+                            panelClass="custom-select-panel" [(ngModel)]="filters.request"
+                            (selectionChange)="filterData()">
+                            <mat-option *ngFor="let request of requestOptions" [value]="request.value">{{
+                                request.label }}</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+                </div>
+            </div>
+
+            <div class="col-sm-12 col-md-6 col-lg-3 text-end align-content-center">
+                <button mat-raised-button class="proceedbtn mat-btn-s" (click)="addRequest()">Add Request</button>
+            </div>
+        </div>
+
+        <!-- Table -->
+        <div class="row mx-1 my-2 px-0 table-wrapper">
+            <div class="col-12 px-0">
+                <table class="table table-hover table-list">
+                    <thead>
+                        <tr>
+                            <th>
+                                <mat-checkbox [(ngModel)]="selectAll" (change)="toggleAllSelection()"></mat-checkbox>
+                            </th>
+                            <th>S.NO</th>
+                            <th>
+                                Employee Name
+                                <i *ngIf="!arrowState['employee_name']" class="bi bi-arrow-down"
+                                    (click)="sort('asc', 'employee_name')"></i>
+                                <i *ngIf="arrowState['employee_name']" class="bi bi-arrow-up"
+                                    (click)="sort('desc', 'employee_name')"></i>
+                            </th>
+                            <th>
+                                Reporting To
+                                <i *ngIf="!arrowState['reporting_to']" class="bi bi-arrow-down"
+                                    (click)="sort('asc', 'reporting_to')"></i>
+                                <i *ngIf="arrowState['reporting_to']" class="bi bi-arrow-up"
+                                    (click)="sort('desc', 'reporting_to')"></i>
+                            </th>
+                            <th>
+                                Worked Date
+                                <i *ngIf="!arrowState['worked_date']" class="bi bi-arrow-down"
+                                    (click)="sort('asc', 'worked_date')"></i>
+                                <i *ngIf="arrowState['worked_date']" class="bi bi-arrow-up"
+                                    (click)="sort('desc', 'worked_date')"></i>
+                            </th>
+                            <th>
+                                Expiry Date
+                                <i *ngIf="!arrowState['expiry_date']" class="bi bi-arrow-down"
+                                    (click)="sort('asc', 'expiry_date')"></i>
+                                <i *ngIf="arrowState['expiry_date']" class="bi bi-arrow-up"
+                                    (click)="sort('desc', 'expiry_date')"></i>
+                            </th>
+                            <th>Status</th>
+                            <th>
+                                Credited
+                                <i *ngIf="!arrowState['credited']" class="bi bi-arrow-down"
+                                    (click)="sort('asc', 'credited')"></i>
+                                <i *ngIf="arrowState['credited']" class="bi bi-arrow-up"
+                                    (click)="sort('desc', 'credited')"></i>
+                            </th>
+                            <th>
+                                Taken
+                                <i *ngIf="!arrowState['taken']" class="bi bi-arrow-down"
+                                    (click)="sort('asc', 'taken')"></i>
+                                <i *ngIf="arrowState['taken']" class="bi bi-arrow-up"
+                                    (click)="sort('desc', 'taken')"></i>
+                            </th>
+                            <th>
+                                Balance
+                                <i *ngIf="!arrowState['balance']" class="bi bi-arrow-down"
+                                    (click)="sort('asc', 'balance')"></i>
+                                <i *ngIf="arrowState['balance']" class="bi bi-arrow-up"
+                                    (click)="sort('desc', 'balance')"></i>
+                            </th>
+                            <th>Reason</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <ng-container *ngIf="filteredList?.length > 0">
+                            <tr
+                                *ngFor="let item of filteredList | customSort:directionValue:sortValue | paginate: { itemsPerPage: tableSize, currentPage: page }; let i=index">
+                                <td>
+                                    <mat-checkbox [(ngModel)]="item.selected"></mat-checkbox>
+                                </td>
+                                <td>{{getContinuousIndex(i)}}</td>
+                                <td>{{ item.employee_name }}</td>
+                                <td>{{ item.reporting_to }}</td>
+                                <td>{{ item.worked_date | date: 'dd/MM/yyyy' }}</td>
+                                <td>{{ item.expiry_date | date: 'dd/MM/yyyy' }}</td>
+                                <td class="bg-success">Book Comp Off</td>
+                                <td>{{ item.credited }}</td>
+                                <td>{{ item.taken }}</td>
+                                <td>{{ item.balance }}</td>
+                                <td>{{ item.reason }}</td>
+                            </tr>
+                        </ng-container>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- No Records -->
+        <div class="row mx-1 my-2 px-0" *ngIf="filteredList?.length === 0">
+            <app-generic-norecards></app-generic-norecards>
+        </div>
+
+        <!-- Pagination -->
+        <div class="row mx-0 px-3" *ngIf="filteredList?.length > 0">
+            <div class="col-12 px-0">
+                <div class="pagination-container p-0">
+                    <pagination-controls previousLabel="Prev" nextLabel="Next" (pageChange)="onTableDataChange($event)">
+                    </pagination-controls>
+                    <div class="items-per-page-container">
+                        <div>Items per page</div>
+                        <mat-select [(ngModel)]="tableSize" (selectionChange)="onTableSizeChange($event)"
+                            panelClass="paginationPanelClass" class="page-size">
+                            <mat-option *ngFor="let size of tableSizes" [value]="size">{{ size }}</mat-option>
+                        </mat-select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </section>
+</div>
