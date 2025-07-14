@@ -1,28 +1,39 @@
-::ng-deep .mat-form-field-infix{
+::ng-deep .leave-config .mat-form-field-infix{
     padding: 0.5em 0 !important;
     padding-bottom: 1em !important;
 }
-::ng-deep .mat-form-field-wrapper{
-    padding: 8px 0 !important;
+// ::ng-deep .mat-form-field-wrapper{
+//     padding: 8px 0 !important;
+// }
+::ng-deep .leave-config .mat-form-field-wrapper {
+  padding: 15px 0 !important;
 }
-.bg-accrual-content{
+
+.leave-config .bg-accrual-content{
     padding: 15px 0px;
     background: #FBFBFB !important;
     border-radius: 8px;
     min-height: 100px;
     max-height: max-content;
 }
-.bg-prorate-content{
+.leave-config .bg-prorate-content{
     padding: 15px 0px;
     background: #fff;
     border-radius: 8px;
     min-height: 100px;
     max-height: max-content;
 }
-.bg-carry-forward-content{
+.leave-config .bg-carry-forward-content{
     padding: 15px 10px;
     background: #FBFBFB;
     border-radius: 8px;
     min-height: 100px;
     max-height: max-content;
+}
+::ng-deep .leave-config .highlight-background .mat-form-field-flex {
+  background-color: rgb(235 235 235) !important;
+  pointer-events: none !important;
+}
+::ng-deep .leave-config .mat-radio-button{
+  margin-right: 15px;
 }

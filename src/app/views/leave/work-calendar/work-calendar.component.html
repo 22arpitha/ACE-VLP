@@ -10,7 +10,7 @@
             <div class="row mx-0">
                 <div class="col-sm-12 col-md-12 col-lg-5">
                     <div class="row mx-0">
-                        <div class="col-12 col-lg-6 no-padding pl-0 pr-5">
+                        <!-- <div class="col-12 col-lg-6 no-padding pl-0 pr-5">
                             <mat-form-field appearance="outline"
                                 [ngClass]="{ 'highlight-background':!shouldDisableFields}"
                                 class="w-100 custom-mat-form-field">
@@ -28,15 +28,14 @@
                                         required</span>
                                 </mat-error>
                             </mat-form-field>
-                        </div>
+                        </div> -->
                         <div class="col-12 col-lg-6 no-padding pl-0 pr-5">
                             <mat-form-field appearance="outline"
                                 [ngClass]="{ 'highlight-background':!shouldDisableFields}"
                                 class="w-100 custom-mat-form-field">
-                                <mat-label>Work week starts on <b class="r-star">*</b></mat-label>
+                                <mat-label>Week starts on <b class="r-star">*</b></mat-label>
                                 <mat-select formControlName="work_week_starts_on" autocomplete="off"
                                     placeholder="Select week" panelClass="custom-select-panel"
-                                    [disabled]="!workCalendarForm.get('week_starts_on')?.value"
                                     [disableOptionCentering]="true" (selectionChange)="selectedSartAndEndWork()">
                                     <mat-option *ngFor="let item of rotatedWeeks" [value]="item?.week">
                                         {{item?.week}}
@@ -44,20 +43,18 @@
                                 </mat-select>
                                 <mat-error
                                     *ngIf="f['work_week_starts_on']?.invalid && f['work_week_starts_on']?.touched || f['work_week_starts_on']?.dirty">
-                                    <span *ngIf="f['work_week_starts_on']?.errors?.['required']">Work week starts on is
+                                    <span *ngIf="f['work_week_starts_on']?.errors?.['required']">Week starts on is
                                         required</span>
                                 </mat-error>
                             </mat-form-field>
                         </div>
-                        <br>
                         <div class="col-12 col-lg-6 no-padding pl-0 pr-5">
                             <mat-form-field appearance="outline"
                                 [ngClass]="{ 'highlight-background':!shouldDisableFields}"
                                 class="w-100 custom-mat-form-field">
-                                <mat-label>Work week ends on <b class="r-star">*</b></mat-label>
+                                <mat-label>Week ends on <b class="r-star">*</b></mat-label>
                                 <mat-select formControlName="work_week_ends_on" autocomplete="off"
                                     placeholder="Select week" panelClass="custom-select-panel"
-                                    [disabled]="!workCalendarForm.get('week_starts_on')?.value"
                                     [disableOptionCentering]="true" (selectionChange)="selectedSartAndEndWork()">
                                     <mat-option *ngFor="let item of rotatedWeeks" [value]="item?.week">
                                         {{item?.week}}
@@ -65,7 +62,7 @@
                                 </mat-select>
                                 <mat-error
                                     *ngIf="f['work_week_ends_on']?.invalid && f['work_week_ends_on']?.touched || f['work_week_ends_on']?.dirty">
-                                    <span *ngIf="f['work_week_ends_on']?.errors?.['required']">Work week ends on is
+                                    <span *ngIf="f['work_week_ends_on']?.errors?.['required']">Week ends on is
                                         required</span>
                                 </mat-error>
                             </mat-form-field>

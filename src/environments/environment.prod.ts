@@ -14,6 +14,12 @@ export const environment = {
   // live_url:'https://vlpuat.thestorywallcafe.com/api-vlp',
   // socket_url:'projectacedevelop.thestorywallcafe.com',
 
+  
+  // Staging URL
+  // media_url: 'https://staging.vlpworkflow.com',
+  // live_url:'https://staging.vlpworkflow.com/api-vlp',
+  // socket_url:'projectacedevelop.thestorywallcafe.com',
+
  //  vlp Auth
  login:`login`,
  forgot_password:`forgot-password`,

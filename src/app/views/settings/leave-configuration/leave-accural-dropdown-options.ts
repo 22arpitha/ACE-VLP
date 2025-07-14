@@ -16,9 +16,7 @@ export const ACCURAL_DAYS_OPTIONS:any=[
       value: day,
     };
   }),
-  { label: 'Last Date', value: 'last_date' },
-  { label: 'Policy Date', value: 'policy_date' },
-  { label: 'Joining Date', value: 'joining_date' },
+  { label: 'Last Day', value: 'last day' },
 ];
 
 export const ACCURAL_MONTH_OPTIONS:any=[
@@ -43,7 +41,7 @@ export const ACCURAL_MONTH_OPTIONS:any=[
 export const EFFECTIVE_PERIOD_OPTIONS= [
   { label: 'Yearly', value: 'yearly' },
   { label: 'Monthly', value: 'monthly' },
-  { label: 'Days', value: 'day' }
+  // { label: 'Days', value: 'day' }
 ]
 export const EFFECTIVE_FROM_OPTIONS = [
   { label: 'Date Of Joning', value: 'date_of_joining'},

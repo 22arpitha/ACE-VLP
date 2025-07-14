@@ -278,7 +278,7 @@ export class WorkCalendarComponent implements OnInit {
 
   initialform() {
     this.workCalendarForm = this.fb.group({
-      week_starts_on: ['', Validators.required],
+      // week_starts_on: ['', Validators.required],
       work_week_starts_on: ['', Validators.required],
       work_week_ends_on: ['', Validators.required],
       year: [''],
@@ -306,7 +306,7 @@ export class WorkCalendarComponent implements OnInit {
           this.shouldDisableFields = false;
         }
         this.workCalendarForm.patchValue({
-          week_starts_on: resData[0]?.week_starts_on,
+          // week_starts_on: resData[0]?.week_starts_on,
           work_week_starts_on: resData[0]?.work_week_starts_on,
           work_week_ends_on: resData[0]?.work_week_ends_on,
           year: resData[0]?.year,
