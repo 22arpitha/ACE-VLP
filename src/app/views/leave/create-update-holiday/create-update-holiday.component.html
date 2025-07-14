@@ -10,17 +10,15 @@
                         <div class="col-12 col-lg-6">
                             <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
                                 <mat-label>Name <b class="r-star">*</b></mat-label>
-                                <input matInput placeholder="Enter Holiday Name" appAlphabetOnly
-                                    formControlName="name" autocomplete="off" pattern="^(?!\s)(.*\S)?$">
-                                <mat-error
-                                    *ngIf="f['name']?.invalid && f['name']?.touched || f['name']?.dirty">
+                                <input matInput placeholder="Enter Holiday Name" appAlphabetOnly formControlName="name"
+                                    autocomplete="off" pattern="^(?!\s)(.*\S)?$">
+                                <mat-error *ngIf="f['name']?.invalid && f['name']?.touched || f['name']?.dirty">
                                     <span *ngIf="f['name'].errors?.['required']">Holiday Name is required</span>
                                     <span
                                         *ngIf="!f['name'].errors?.['required'] && f['name'].errors?.['pattern'] && !f['name'].errors?.['maxlength']">
                                         Invalid name. Extra space, numbers and special charaters are not allowed
                                     </span>
-                                    <span
-                                        *ngIf="!f['name'].errors?.['required'] && f['name'].errors?.['maxlength']">
+                                    <span *ngIf="!f['name'].errors?.['required'] && f['name'].errors?.['maxlength']">
                                         Holiday name cannot exceed 30 characters.
                                     </span>
                                 </mat-error>
@@ -29,18 +27,16 @@
                         <div class="col-12 col-lg-6">
                             <mat-form-field appearance="outline" class="w-100 p-0 custom-mat-form-field">
                                 <mat-label>Date <b class="r-star">*</b></mat-label>
-                                <input matInput [matDatepicker]="picker1" formControlName="date"
-                                    autocomplete="off">
+                                <input matInput [matDatepicker]="picker1" formControlName="date" autocomplete="off">
                                 <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
                                 <mat-datepicker #picker1></mat-datepicker>
-                                <mat-error
-                                    *ngIf="f['date']?.invalid && f['date']?.touched || f['date']?.dirty">
+                                <mat-error *ngIf="f['date']?.invalid && f['date']?.touched || f['date']?.dirty">
                                     <span *ngIf="f['date']?.errors?.['required']">Date is
                                         required</span>
                                 </mat-error>
                             </mat-form-field>
                         </div>
-                        <div class="col-12 col-lg-6">
+                        <!-- <div class="col-12 col-lg-6">
                             <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
                                 <mat-label>Classification<b class="r-star">*</b></mat-label>
                                 <mat-select formControlName="classification" autocomplete="off"
@@ -53,7 +49,7 @@
                                         required</span>
                                 </mat-error>
                             </mat-form-field>
-                        </div>
+                        </div> -->
                         <div class="col-12 col-lg-6">
                             <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
                                 <mat-label>Description <b class="r-star"></b></mat-label>
@@ -73,16 +69,21 @@
                                 </mat-error>
                             </mat-form-field>
                         </div>
-                        <div class="col-12 my-4 px-2 text-start">
-                            <button mat-raised-button class="proceedbtn mat-btn-s me-2" type="button"
-                                (click)="addOrUpdateHoliday()">{{buttonName}}</button>
-                            <button mat-button class="cancel-button mat-btn-s" type="button"
-                                mat-dialog-close>
-                                Close</button>
-                        </div>
+                        <div class="col-12 my-4 px-2 d-flex justify-content-around">
+                            <div>
+                                <button mat-raised-button class="proceedbtn mat-btn-s me-2" type="button"
+                                    (click)="addOrUpdateHoliday()">{{buttonName}}</button>
+                                <button mat-button class="cancel-button mat-btn-s" type="button" mat-dialog-close>
+                                    Close</button>
+                            </div>
+                            <div *ngIf="data?.item_id">
+                                <button mat-button class="delete-item-button mat-btn-s" type="button" (click)="delete()">
+                                    delete</button>
+                            </div>
                     </div>
-                </form>
             </div>
+            </form>
         </div>
-    </section>
+</div>
+</section>
 </div>

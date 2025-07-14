@@ -1,0 +1,89 @@
+<div class=" px-0">
+    <section class="p-0 add-custom-balance">
+        <div class="row mx-0">
+            <div class="col-12 mx-0">
+                <form [formGroup]="compOffForm" class="p-0">
+                    <div class="row mx-0">
+                        <div class="col-12 my-2">
+                            <h4>{{headingText}}</h4>
+                        </div>
+                        <div class="col-12">
+                            <mat-form-field appearance="outline" class="w-100 p-0 custom-mat-form-field">
+                                <mat-label>Worked Date <b class="r-star">*</b></mat-label>
+                                <input matInput [matDatepicker]="picker1" formControlName="worked_date"
+                                    (dateInput)="workedDateFun($event)" autocomplete="off">
+                                <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+                                <mat-datepicker #picker1></mat-datepicker>
+                                <mat-error
+                                    *ngIf="f['worked_date']?.invalid && f['worked_date']?.touched || f['worked_date']?.dirty">
+                                    <span *ngIf="f['worked_date']?.errors?.['required']">Worked Date is
+                                        required</span>
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-12">
+                            <mat-form-field appearance="outline" class="w-100 p-0 custom-mat-form-field">
+                                <mat-label>Expiry Date <b class="r-star">*</b></mat-label>
+                                <input matInput [matDatepicker]="picker2" formControlName="expiry_date" [min]="minDate"
+                                    autocomplete="off">
+                                <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+                                <mat-datepicker #picker2></mat-datepicker>
+                                <mat-error
+                                    *ngIf="f['expiry_date']?.invalid && f['expiry_date']?.touched || f['expiry_date']?.dirty">
+                                    <span *ngIf="f['expiry_date']?.errors?.['required']">Expiry Date is
+                                        required</span>
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-12">
+                            <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+                                <mat-label>Duration<b class="r-star">*</b></mat-label>
+                                <mat-select formControlName="duration" autocomplete="off" placeholder="Select duration"
+                                    panelClass="custom-select-panel" [disableOptionCentering]="true">
+                                    <mat-option value="full day">Full day</mat-option>
+                                    <mat-option value="half day">Half day</mat-option>
+                                </mat-select>
+                                <mat-error
+                                    *ngIf="f['duration']?.invalid && f['duration']?.touched || f['duration']?.dirty">
+                                    <span *ngIf="f['duration']?.errors?.['required']">Duration
+                                        required</span>
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-12">
+                            <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+                                <mat-label>Reason <b class="r-star">*</b></mat-label>
+                                <textarea matInput placeholder="Enter Reason" appAlphabetOnly formControlName="reason"
+                                    autocomplete="off" pattern="^(?!\s)(.*\S)?$"></textarea>
+                                <mat-error *ngIf="f['reason']?.invalid && f['reason']?.touched || f['reason']?.dirty">
+                                    <span *ngIf="f['reason'].errors?.['required']">Reason is required</span>
+                                    <span
+                                        *ngIf="!f['reason'].errors?.['required'] && f['reason'].errors?.['pattern'] && !f['reason'].errors?.['maxlength']">
+                                        Invalid description. Extra space, numbers and special charaters are not allowed
+                                    </span>
+                                    <span
+                                        *ngIf="!f['reason'].errors?.['required'] && f['reason'].errors?.['maxlength']">
+                                        Reason cannot exceed 100 characters.
+                                    </span>
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-12 my-4 px-2 d-flex justify-content-around">
+                            <div>
+                                <button mat-raised-button class="proceedbtn mat-btn-s me-2" type="button"
+                                    (click)="addOrUpdateHoliday()">{{buttonName}}</button>
+                                <button mat-button class="cancel-button mat-btn-s" type="button" mat-dialog-close>
+                                    Close</button>
+                            </div>
+                            <div *ngIf="data?.item_id">
+                                <button mat-button class="delete-item-button mat-btn-s" type="button"
+                                    (click)="delete()">
+                                    delete</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+</div>

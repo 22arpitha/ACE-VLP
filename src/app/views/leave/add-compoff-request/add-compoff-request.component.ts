@@ -3,25 +3,32 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { ApiserviceService } from '../../../service/apiservice.service';
 import { environment } from '../../../../environments/environment';
+import { error } from 'console';
 import { DatePipe } from '@angular/common';
 import { GenericDeleteComponent } from '../../../generic-components/generic-delete/generic-delete.component';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { SubModuleService } from 'src/app/service/sub-module.service';
 
 @Component({
-  selector: 'app-create-update-holiday',
-  templateUrl: './create-update-holiday.component.html',
-  styleUrls: ['./create-update-holiday.component.scss']
+  selector: 'app-add-compoff-request',
+  templateUrl: './add-compoff-request.component.html',
+  styleUrls: ['./add-compoff-request.component.scss']
 })
-export class CreateUpdateHolidayComponent implements OnInit {
-  holidayForm: FormGroup;
+export class AddCompoffRequestComponent implements OnInit {
+  compOffForm: FormGroup;
   headingText: string;
   buttonName: string;
+  minDate: string;
+  accessPermissions = [];
+  user_id: any;
+  userRole: any;
   constructor(
     private fb: FormBuilder,
     private apiService: ApiserviceService,
     private datepipe: DatePipe,
     private modalService: NgbModal,
-    public dialogRef: MatDialogRef<CreateUpdateHolidayComponent>,
+    private accessControlService: SubModuleService,
+    public dialogRef: MatDialogRef<AddCompoffRequestComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) { }
 
@@ -30,9 +37,9 @@ export class CreateUpdateHolidayComponent implements OnInit {
     if (this.data.edit) {
       this.headingText = 'Update Holiday Details';
       this.buttonName = 'Update';
-      this.getHolidayDataById();
+      // this.getHolidayDataById();
     } else {
-      this.headingText = 'Add Holidays'
+      this.headingText = 'Add Request'
       this.buttonName = 'Add'
     }
     console.log(this.data)
@@ -49,23 +56,36 @@ export class CreateUpdateHolidayComponent implements OnInit {
   //   }, 100); // Delay needed to ensure datepicker DOM is rendered
   // }
 
+  access_name: any;
+  getModuleAccess() {
+    this.accessControlService.getAccessForActiveUrl(this.user_id).subscribe((access) => {
+      if (access) {
+        this.access_name = access[0]
+        this.accessPermissions = access[0].operations;
+        // console.log('Access Permissions:', access);
+      } else {
+        console.log('No matching access found.');
+      }
+    });
+  }
+
   initialForm() {
-    this.holidayForm = this.fb.group({
-      name: ['', [Validators.required, Validators.pattern(/^[a-zA-Z]+( [a-zA-Z]+)*$/), Validators.maxLength(30)]],
-      date: ['', Validators.required],
-      // classification: ['', Validators.required],
-      description: ['', [Validators.pattern(/^[a-zA-Z]+( [a-zA-Z]+)*$/), Validators.maxLength(100)]]
+    this.compOffForm = this.fb.group({
+      worked_date: ['', Validators.required],
+      duration: ['', Validators.required],
+      expiry_date: ['', Validators.required],
+      reason: ['', Validators.required, [Validators.pattern(/^[a-zA-Z]+( [a-zA-Z]+)*$/), Validators.maxLength(100)]]
     })
   }
 
   get f() {
-    return this.holidayForm.controls;
+    return this.compOffForm.controls;
   }
 
   getHolidayDataById() {
     this.apiService.getData(`${environment.live_url}/${environment.holiday_calendar}/${this.data.item_id}/`).subscribe(
       (res: any) => {
-        this.holidayForm.patchValue({
+        this.compOffForm.patchValue({
           name: res.name,
           date: res.date,
           // classification: res.classification,
@@ -79,12 +99,12 @@ export class CreateUpdateHolidayComponent implements OnInit {
   }
 
   addOrUpdateHoliday() {
-    if (this.holidayForm.invalid) {
-      this.holidayForm.markAllAsTouched();
+    if (this.compOffForm.invalid) {
+      this.compOffForm.markAllAsTouched();
     } else {
-      this.holidayForm.patchValue({ date: this.datepipe.transform(this.holidayForm?.get('date')?.value, 'YYYY-MM-dd') })
+      this.compOffForm.patchValue({ date: this.datepipe.transform(this.compOffForm?.get('date')?.value, 'YYYY-MM-dd') })
       if (this.data.edit) {
-        this.apiService.updateData(`${environment.live_url}/${environment.holiday_calendar}/${this.data.item_id}/`, this.holidayForm.value).subscribe(
+        this.apiService.updateData(`${environment.live_url}/${environment.holiday_calendar}/${this.data.item_id}/`, this.compOffForm.value).subscribe(
           (res: any) => {
             console.log(res);
             this.apiService.showSuccess(res['message']);
@@ -95,7 +115,7 @@ export class CreateUpdateHolidayComponent implements OnInit {
           }
         )
       } else {
-        this.apiService.postData(`${environment.live_url}/${environment.holiday_calendar}/`, this.holidayForm.value).subscribe(
+        this.apiService.postData(`${environment.live_url}/${environment.holiday_calendar}/`, this.compOffForm.value).subscribe(
           (res: any) => {
             console.log(res);
             this.apiService.showSuccess(res['message']);
@@ -108,24 +128,9 @@ export class CreateUpdateHolidayComponent implements OnInit {
       }
     }
   }
-  //    disabledDatesWithTooltip = [
-  //   { date: new Date(2025, 6, 4), reason: 'Independence Day' },
-  //   { date: new Date(2025, 6, 10), reason: 'Maintenance Day' },
-  //   { date: new Date(2025, 6, 15), reason: 'Company Holiday' },
-  // ];
-  //   dateFilter = (d: Date | null): boolean => {
-  //   const date = d?.setHours(0, 0, 0, 0);
-  //   return !this.disabledDatesWithTooltip.some(disabled =>
-  //     disabled.date.setHours(0, 0, 0, 0) === date
-  //   );
-  // };
-  // dateClass = (d: Date): string => {
-  //   const match = this.disabledDatesWithTooltip.find(
-  //     x => x.date.setHours(0, 0, 0, 0) === d.setHours(0, 0, 0, 0)
-  //   );
-  //   return match ? `disabled-tooltip tooltip-${d.getTime()}` : '';
-  // };
-
+  workedDateFun(event) {
+    this.minDate = event.value
+  }
   public closeEditDetails() {
     this.dialogRef.close();
   }

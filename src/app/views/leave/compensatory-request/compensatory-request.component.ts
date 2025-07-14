@@ -1,4 +1,11 @@
+import { DatePipe } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { ApiserviceService } from 'src/app/service/apiservice.service';
+import { SubModuleService } from 'src/app/service/sub-module.service';
+import { CreateUpdateHolidayComponent } from '../create-update-holiday/create-update-holiday.component';
+import { AddCompoffRequestComponent } from '../add-compoff-request/add-compoff-request.component';
 
 @Component({
   selector: 'app-compensatory-request',
@@ -14,6 +21,9 @@ export class CompensatoryRequestComponent implements OnInit {
   sortValue: string = '';
   directionValue: string = '';
   selectedItemId: any;
+  accessPermissions = [];
+  user_id: any;
+  userRole: any;
   arrowState: { [key: string]: boolean } = {
    employee_name: false,
     reporting_to: false,
@@ -25,7 +35,10 @@ export class CompensatoryRequestComponent implements OnInit {
     reason: false,
   };
   searchLeave:any
-  constructor() { }
+  constructor(private accessControlService: SubModuleService,
+modalService: NgbModal, private dialog: MatDialog,
+    private datePipe: DatePipe,
+    private apiService: ApiserviceService,) { }
 
   ngOnInit(): void {
   }
@@ -138,6 +151,19 @@ requestOptions = [
     }
   }
 
+  access_name: any;
+  getModuleAccess() {
+    this.accessControlService.getAccessForActiveUrl(this.user_id).subscribe((access) => {
+      if (access) {
+        this.access_name = access[0]
+        this.accessPermissions = access[0].operations;
+        // console.log('Access Permissions:', access);
+      } else {
+        console.log('No matching access found.');
+      }
+    });
+  }
+
   selectAll = false;
 
   onTableDataChange(event: any) {
@@ -153,8 +179,19 @@ requestOptions = [
   }
 
   addRequest() {
-    // logic to open add request form
-  }
+    sessionStorage.setItem('access-name', this.access_name?.name)
+       //  this.router.navigate(['/invoice/create-invoice']);
+       this.dialog.open(AddCompoffRequestComponent, {
+         data: { edit: false },
+         panelClass: 'custom-details-dialog',
+         disableClose: true
+       });
+       this.dialog.afterAllClosed.subscribe((resp: any) => {
+         // console.log('resp',resp);
+        //  this.initalCall();
+       });
+   
+     }
 
   toggleAllSelection() {
     this.filteredList.forEach((item: any) => item.selected = this.selectAll);

@@ -4,6 +4,8 @@ import {LeaveComponent} from'./leave.component';
 import {WorkCalendarComponent} from './work-calendar/work-calendar.component';
 import { LeaveApplyComponent } from './leave-apply/leave-apply.component';
 import { HolidayListComponent } from './holiday-list/holiday-list.component';
+import { CanDeactivateGuard } from '../../auth-guard/can-deactivate.guard';
+import { DashboardComponent } from './dashboard/dashboard.component';
 
 const routes: Routes = [
   {
@@ -11,14 +13,22 @@ const routes: Routes = [
       {
         path:'work-calendar',
         component: WorkCalendarComponent,
+        canDeactivate:[CanDeactivateGuard]
       },
       {
         path:'leave-application',
         component: LeaveApplyComponent,
+        canDeactivate:[CanDeactivateGuard]
       },
       {
         path:'holidays',
         component: HolidayListComponent,
+        canDeactivate:[CanDeactivateGuard]
+      },
+      {
+        path:'dashboard',
+        component: DashboardComponent,
+        canDeactivate:[CanDeactivateGuard]
       }
     ]
   }

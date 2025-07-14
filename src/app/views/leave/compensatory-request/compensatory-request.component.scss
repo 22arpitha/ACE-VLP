@@ -13,17 +13,10 @@
   width: 27px !important;
   height: 40px !important;
 }
-.jobs mat-select.mat-select-table {
+.comp-off mat-select.mat-select-table {
   border: 1px solid #929292 !important;
   border-radius: 8px !important;
   padding: 4px 0px !important;
-}
-::ng-deep .jobs .input-css input.mat-input-element {
-  margin-top: 0 !important;
-  border-radius: 8px !important;
-  border: 1px solid #929292 !important;
-  padding: 4px 9px !important;
-  width: 70px !important;
 }
 
 ::ng-deep .custom-select-dropdown {
@@ -44,22 +37,31 @@
 .mat-select-search {
   width: 100%;
 }
- .custom-select-panel {
-    max-height: 300px; /* Set a max height for the dropdown */
-    overflow-y: auto; /* Make sure dropdown scrolls if it overflows */
-  }
-  .search-icon{
-    font-size:x-large;
-    color: #ccc;
-  }
-  ::ng-deep .mat-form-field-infix{
-    padding: 0.5em 0 !important;
-    padding-bottom: 1em !important;
-  }
-  ::ng-deep .mat-form-field-wrapper{
-    padding: 15px 0 !important;
-  }
-  ::ng-deep .mat-form-field-appearance-outline .mat-form-field-prefix,
-  ::ng-deep .mat-form-field-appearance-outline .mat-form-field-suffix {
-    top: .25em !important;
-  }
+.custom-select-panel {
+  max-height: 300px; /* Set a max height for the dropdown */
+  overflow-y: auto; /* Make sure dropdown scrolls if it overflows */
+}
+.search-icon {
+  font-size: x-large;
+  color: #ccc;
+}
+::ng-deep .mat-form-field-infix {
+  padding: 0.5em 0 !important;
+  padding-bottom: 1em !important;
+}
+::ng-deep .mat-form-field-wrapper {
+  padding: 15px 0 !important;
+}
+::ng-deep .mat-form-field-appearance-outline .mat-form-field-prefix,
+::ng-deep .mat-form-field-appearance-outline .mat-form-field-suffix {
+  top: 0.25em !important;
+}
+::ng-deep .comp-off .mat-form-field-appearance-outline .mat-form-field-outline {
+  background: white !important;
+}
+.custom-details-dialog{
+    justify-content: center !important;
+}
+::ng-deep .comp-off .mat-dialog-container {
+    width: 50% !important;
+}

@@ -1,0 +1,14 @@
+::ng-deep .custom-details-dialog{
+    justify-content: center !important;
+}
+::ng-deep .mat-dialog-container {
+    width: 40% !important;
+    padding: 10px !important;
+}
+::ng-deep .mat-form-field-infix{
+    padding: 0.5em 0 !important;
+    padding-bottom: 1em !important;
+}
+::ng-deep .mat-form-field-wrapper{
+    padding: 15px 0 !important;
+}

@@ -10,6 +10,12 @@ import { RouterModule } from '@angular/router';
 import { LeaveComponent } from './leave.component';
 import { HolidayListComponent } from './holiday-list/holiday-list.component';
 import { CreateUpdateHolidayComponent } from './create-update-holiday/create-update-holiday.component';
+import { DashboardComponent } from './dashboard/dashboard.component';
+import { CustomizeBalanceComponent } from './customize-balance/customize-balance.component';
+import { LeaveRequestComponent } from './leave-request/leave-request.component';
+import { CompensatoryRequestComponent } from './compensatory-request/compensatory-request.component';
+import { AddCompoffRequestComponent } from './add-compoff-request/add-compoff-request.component';
+import { AddCustomizeBalanceComponent } from './add-customize-balance/add-customize-balance.component';
 
 @NgModule({
   declarations: [
@@ -18,6 +24,12 @@ import { CreateUpdateHolidayComponent } from './create-update-holiday/create-upd
     LeaveComponent,
     HolidayListComponent,
     CreateUpdateHolidayComponent,
+    DashboardComponent,
+    CustomizeBalanceComponent,
+    LeaveRequestComponent,
+    CompensatoryRequestComponent,
+    AddCompoffRequestComponent,
+    AddCustomizeBalanceComponent,
   ],
   imports: [
     CommonModule,

@@ -17,11 +17,7 @@
               <table class="table table table-hover table-list">
                 <thead>
                   <tr>
-                    <th scope="col">Name
-                      <i *ngIf="!arrowState['name']" (click)="sort('asc','name')" class="bi bi-arrow-down"></i>
-                      <i (click)="sort('desc','name')" *ngIf="arrowState['name']"
-                        class="bi bi-arrow-up"></i>
-                    </th>
+                    <th scope="col"> S.No</th>
                     <th scope="col">Date
                       <i *ngIf="!arrowState['date']" (click)="sort('asc','date')" class="bi bi-arrow-down"></i>
                         <i (click)="sort('desc','date')" *ngIf="arrowState['date']"
@@ -60,10 +56,16 @@
                       <mat-date-range-picker #picker1></mat-date-range-picker>
                   </mat-form-field> -->
                     </th>
-                    <th scope="col" class="name-col">Holiday Classification
+                    
+                    <th scope="col">Name
+                      <i *ngIf="!arrowState['name']" (click)="sort('asc','name')" class="bi bi-arrow-down"></i>
+                      <i (click)="sort('desc','name')" *ngIf="arrowState['name']"
+                        class="bi bi-arrow-up"></i>
+                    </th>
+                    <!-- <th scope="col" class="name-col">Holiday Classification
                       <i *ngIf="!arrowState['classification']" (click)="sort('asc','classification')" class="bi bi-arrow-down"></i>
                       <i (click)="sort('desc','classification')" *ngIf="arrowState['classification']"
-                        class="bi bi-arrow-up"></i>
+                        class="bi bi-arrow-up"></i> -->
                         <!-- <button mat-icon-button [matMenuTriggerFor]="clientFilterMenu" [ngClass]="filters.classification.length>=1 ? 'filterdColumn':''">
                         <span *ngIf="filters.client_name.length>=1">{{filters.client_name.length.toString().padStart(2, '0')}}</span>
                           
@@ -77,8 +79,8 @@
                             (selectedOptionsChange)="filterData()"
                           ></app-generic-table-filter>
                         </mat-menu> -->
-                    </th>
-                    <th scope="col">Action </th>
+                    <!-- </th> -->
+                    <!-- <th scope="col">Action </th> -->
                   </tr>
                 </thead>
                 <tbody>
@@ -89,16 +91,17 @@
                              currentPage: page,
                              totalItems: count
                            }; let i=index'>
-                           <td>{{item.name}}</td>
-                           <td>{{(item?.date || '-')}}</td>
-                           <td>{{item?.classification || '-'}}</td>
-                      <td>
+                           <td (click)="edit(item)">{{getContinuousIndex(i)}}</td>
+                           <td (click)="edit(item)">{{(item?.date || '-')}}</td>
+                           <td (click)="edit(item)" class="text-nowrap">{{item.name}}</td>
+                           <!-- <td (click)="edit(item)">{{item?.classification || '-'}}</td> -->
+                      <!-- <td>
                         <ng-container *ngIf="item">
                         <img src="../../../../assets/images/Edit.svg" class="icon-image" type="button" container="body"
                           ngbTooltip="Edit" (click)="edit(item)" *ngIf="userRole !='Admin' && (accessPermissions[0]?.view || accessPermissions[0]?.update) || userRole === 'Admin'"/>
                         </ng-container>
                       <ng-template #noContact>-</ng-template>
-                    </td>
+                    </td> -->
                     </tr>
                   </ng-container>
                 </tbody>
