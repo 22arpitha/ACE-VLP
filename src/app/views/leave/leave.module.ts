@@ -16,6 +16,7 @@ import { LeaveRequestComponent } from './leave-request/leave-request.component';
 import { CompensatoryRequestComponent } from './compensatory-request/compensatory-request.component';
 import { AddCompoffRequestComponent } from './add-compoff-request/add-compoff-request.component';
 import { AddCustomizeBalanceComponent } from './add-customize-balance/add-customize-balance.component';
+import { ViewLeaveRequestComponent } from './view-leave-request/view-leave-request.component';
 
 @NgModule({
   declarations: [
@@ -30,6 +31,7 @@ import { AddCustomizeBalanceComponent } from './add-customize-balance/add-custom
     CompensatoryRequestComponent,
     AddCompoffRequestComponent,
     AddCustomizeBalanceComponent,
+    ViewLeaveRequestComponent,
   ],
   imports: [
     CommonModule,

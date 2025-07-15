@@ -37,7 +37,6 @@ export class CompensatoryRequestComponent implements OnInit {
   searchLeave:any
   constructor(private accessControlService: SubModuleService,
 modalService: NgbModal, private dialog: MatDialog,
-    private datePipe: DatePipe,
     private apiService: ApiserviceService,) { }
 
   ngOnInit(): void {
@@ -68,6 +67,7 @@ requestOptions = [
 
   filteredList = [
     {
+      id:1,
       selected: false,
       employee_name: 'Livia Mango',
       reporting_to: 'Cheyenne Korsgaard',
@@ -79,6 +79,7 @@ requestOptions = [
       reason: 'Worked on Saturday'
     },
     {
+      id:2,
       selected: false,
       employee_name: 'Zain Rhiel Madsen',
       reporting_to: 'Leo Ekstrom Bothman',
@@ -90,6 +91,7 @@ requestOptions = [
       reason: 'Worked on Saturday'
     },
     {
+      id:3,
       selected: false,
       employee_name: 'Corey Stanton',
       reporting_to: 'Zaria Korsgaard',
@@ -101,6 +103,7 @@ requestOptions = [
       reason: 'Worked on Saturday'
     },
     {
+      id:4,
       selected: false,
       employee_name: 'Jaylen Torff',
       reporting_to: 'Patryn Korsgaard',
@@ -112,6 +115,7 @@ requestOptions = [
       reason: 'Worked on Saturday'
     },
     {
+      id:5,
       selected: false,
       employee_name: 'Corey Herwitz',
       reporting_to: 'Charlie Geidt',
@@ -178,11 +182,11 @@ requestOptions = [
     // apply filters to your data
   }
 
-  addRequest() {
+  addOrViewRequest(edit, item) {
     sessionStorage.setItem('access-name', this.access_name?.name)
        //  this.router.navigate(['/invoice/create-invoice']);
        this.dialog.open(AddCompoffRequestComponent, {
-         data: { edit: false },
+         data: { edit: edit, item_id: item?.id },
          panelClass: 'custom-details-dialog',
          disableClose: true
        });

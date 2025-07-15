@@ -1,0 +1,69 @@
+.mat-btn-s {
+  margin: 0px 5px;
+}
+.settings-table-bg {
+  max-height: 75vh !important;
+}
+.table-wrapper {
+  max-height: 55vh !important;
+  overflow-x: auto;
+  margin-bottom: 20px;
+}
+::ng-deep .table-wrapper .mat-icon-button {
+  width: 27px !important;
+  height: 40px !important;
+}
+.jobs mat-select.mat-select-table {
+  border: 1px solid #929292 !important;
+  border-radius: 8px !important;
+  padding: 4px 0px !important;
+}
+::ng-deep .jobs .input-css input.mat-input-element {
+  margin-top: 0 !important;
+  border-radius: 8px !important;
+  border: 1px solid #929292 !important;
+  padding: 4px 9px !important;
+  width: 70px !important;
+}
+
+::ng-deep .custom-select-dropdown {
+  margin-top: 27px !important;
+  margin-bottom: 28px !important;
+}
+.close-btn {
+  position: absolute;
+  right: 8px;
+  top: -5px;
+}
+
+.mat-select-search-wrapper {
+  padding: 8px;
+  background-color: #fff;
+}
+
+.mat-select-search {
+  width: 100%;
+}
+ .custom-select-panel {
+    max-height: 300px; /* Set a max height for the dropdown */
+    overflow-y: auto; /* Make sure dropdown scrolls if it overflows */
+  }
+  .search-icon{
+    font-size:x-large;
+    color: #ccc;
+  }
+  ::ng-deep .mat-form-field-infix{
+    padding: 0.5em 0 !important;
+    padding-bottom: 1em !important;
+  }
+  ::ng-deep .mat-form-field-wrapper{
+    padding: 15px 0 !important;
+  }
+  ::ng-deep .mat-form-field-appearance-outline .mat-form-field-prefix,
+  ::ng-deep .mat-form-field-appearance-outline .mat-form-field-suffix {
+    top: .25em !important;
+  }
+
+  ::ng-deep .leave-requests .mat-form-field-appearance-outline .mat-form-field-outline {
+  background: white !important;
+}

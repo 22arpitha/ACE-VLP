@@ -31,6 +31,7 @@ separatorKeysCodes: number[] = [ENTER, COMMA];
   uploadFile: any;
   url: any;
   fileUrl: string | ArrayBuffer;
+  minDate: any;
   constructor(private apiService: ApiserviceService,private common_service: CommonServiceService,
   ) {
     this.common_service.setTitle(this.BreadCrumbsTitle);
@@ -54,6 +55,10 @@ separatorKeysCodes: number[] = [ENTER, COMMA];
         this.apiService.showError(error?.error?.detail);
       })
     }
+     startDateFun(event) {
+    this.minDate = event.value
+  }
+
 
     public getAllEmployeeList(){
     this.allEmployeeEmailsList =[];

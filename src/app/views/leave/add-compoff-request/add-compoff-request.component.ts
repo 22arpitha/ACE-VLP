@@ -3,7 +3,6 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { ApiserviceService } from '../../../service/apiservice.service';
 import { environment } from '../../../../environments/environment';
-import { error } from 'console';
 import { DatePipe } from '@angular/common';
 import { GenericDeleteComponent } from '../../../generic-components/generic-delete/generic-delete.component';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -35,8 +34,8 @@ export class AddCompoffRequestComponent implements OnInit {
   ngOnInit(): void {
     this.initialForm();
     if (this.data.edit) {
-      this.headingText = 'Update Holiday Details';
-      this.buttonName = 'Update';
+      this.headingText = 'Compensatory Request';
+      this.buttonName = 'Approve';
       // this.getHolidayDataById();
     } else {
       this.headingText = 'Add Request'
@@ -159,6 +158,10 @@ export class AddCompoffRequestComponent implements OnInit {
         modelRef.close();
       }
     })
+
+  }
+
+  approve(){
 
   }
 }

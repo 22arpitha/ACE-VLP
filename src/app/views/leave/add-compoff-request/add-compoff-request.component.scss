@@ -12,3 +12,13 @@
 ::ng-deep .mat-form-field-wrapper{
     padding: 15px 0 !important;
 }
+.add-compoff .label-name{
+    font-size: 18px !important;
+    margin-bottom: 5px !important;
+}
+@media screen and (max-width: 991px) {
+  ::ng-deep .mat-dialog-container {
+    width: 90% !important;
+    height: 80vh !important
+  }
+}

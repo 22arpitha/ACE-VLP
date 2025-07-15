@@ -1,12 +1,16 @@
 <div class=" px-0">
-    <section class="p-0 add-custom-balance">
+    <section class="p-0 add-compoff">
         <div class="row mx-0">
-            <div class="col-12 mx-0">
+            <div class="col-12 my-3 d-flex justify-content-between align-items-center">
+                <h4>{{headingText}}</h4>
+                <div *ngIf="data.edit">
+                    <i class="bi bi-clock-history fs-4 text-warning"></i>
+                    <span class="fs-6 text-dark ms-2 align-items-center">Pending</span>
+                </div>
+            </div>
+            <div class="col-12 mx-0" *ngIf="!data.edit">
                 <form [formGroup]="compOffForm" class="p-0">
                     <div class="row mx-0">
-                        <div class="col-12 my-2">
-                            <h4>{{headingText}}</h4>
-                        </div>
                         <div class="col-12">
                             <mat-form-field appearance="outline" class="w-100 p-0 custom-mat-form-field">
                                 <mat-label>Worked Date <b class="r-star">*</b></mat-label>
@@ -70,19 +74,50 @@
                         </div>
                         <div class="col-12 my-4 px-2 d-flex justify-content-around">
                             <div>
-                                <button mat-raised-button class="proceedbtn mat-btn-s me-2" type="button"
-                                    (click)="addOrUpdateHoliday()">{{buttonName}}</button>
-                                <button mat-button class="cancel-button mat-btn-s" type="button" mat-dialog-close>
+                                <button mat-button class="cancel-button mat-btn-s me-2" type="button" mat-dialog-close>
                                     Close</button>
-                            </div>
-                            <div *ngIf="data?.item_id">
-                                <button mat-button class="delete-item-button mat-btn-s" type="button"
-                                    (click)="delete()">
-                                    delete</button>
+                                <button mat-raised-button class="proceedbtn mat-btn-s" type="button"
+                                    (click)="addOrUpdateHoliday()">{{buttonName}}</button>
                             </div>
                         </div>
                     </div>
                 </form>
+            </div>
+            <div class="col-12 mx-0 my-3" *ngIf="data.edit">
+                <div class="row mx-0">
+                    <div class="col-sm-12 col-md-6 col-lg-6 my-2">
+                        <h4 class="label-name">Employee Name</h4>
+                        <p>Arpitha</p>
+                    </div>
+                    <div class="col-sm-12 col-md-6 col-lg-6 my-2">
+                        <h4 class="label-name">Worked Date</h4>
+                        <p>22/05/2022</p>
+                    </div>
+                    <div class="col-sm-12 col-md-6 col-lg-6 my-2">
+                        <h4 class="label-name">Duration</h4>
+                        <p>Half Day</p>
+                    </div>
+                    <div class="col-sm-12 col-md-6 col-lg-6 my-2">
+                        <h4 class="label-name">Credited</h4>
+                        <p>0.5</p>
+                    </div>
+                    <div class="col-sm-12 col-md-6 col-lg-6 my-2">
+                        <h4 class="label-name">Expiry Date</h4>
+                        <p>25/05/2022</p>
+                    </div>
+                    <div class="col-sm-12 col-md-6 col-lg-6 my-2">
+                        <h4 class="label-name">Reason</h4>
+                        <p>Working on a priority task which was pending</p>
+                    </div>
+                    <div class="col-12 my-4 px-2 d-flex justify-content-around">
+                            <div>
+                                <button mat-button class="cancel-button mat-btn-s me-2" type="button" mat-dialog-close>
+                                    Close</button>
+                                <button mat-raised-button class="proceedbtn mat-btn-s " type="button"
+                                    (click)="approve()">Approve</button>
+                            </div>
+                        </div>
+                </div>
             </div>
         </div>
     </section>

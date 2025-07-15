@@ -1,0 +1,69 @@
+<div class=" px-0">
+    <section class="p-0 view-leave-request">
+        <div class="row mx-0">
+            <div class="col-12 my-3">
+                <h4>Leave Request Details</h4>
+            </div>
+            <div class="col-12 mx-0 my-3">
+                <div class="row mx-0">
+                    <div class="col-sm-12 col-md-6 col-lg-6 my-2">
+                        <h4 class="label-name">Employee Id</h4>
+                        <p>EKT1017</p>
+                    </div>
+                    <div class="col-sm-12 col-md-6 col-lg-6 my-2">
+                        <h4 class="label-name">Leave Type</h4>
+                        <p>Casual Leave</p>
+                    </div>
+                    <div class="col-sm-12 col-md-6 col-lg-6 my-2">
+                        <h4 class="label-name">From</h4>
+                        <p>22/05/2022</p>
+                    </div>
+                    <div class="col-sm-12 col-md-6 col-lg-6 my-2">
+                        <h4 class="label-name">To</h4>
+                        <p>25/05/2022</p>
+                    </div>
+                    <div class="col-sm-12 col-md-6 col-lg-6 my-2">
+                        <h4 class="label-name">Applying To</h4>
+                        <p>mahesh@ekfrazo.com</p>
+                    </div>
+                    <div class="col-sm-12 col-md-6 col-lg-6 my-2">
+                        <h4 class="label-name">CC To</h4>
+                        <p>Shruti Gaur (EKT11156) , NADEEM EHSAN (EKT1015)</p>
+                    </div>
+                    <div class="col-sm-12 col-md-6 col-lg-6 my-2">
+                        <h4 class="label-name">Date of request</h4>
+                        <p>20/05/2022</p>
+                    </div>
+                    <div class="col-sm-12 col-md-6 col-lg-6 my-2">
+                        <h4 class="label-name">Reason</h4>
+                        <p>Working on a priority task which was pending</p>
+                    </div>
+                    <div class="col-12 col-lg-5">
+                        <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+                            <mat-label>Reason for rejecting<b class="r-star">*</b></mat-label>
+                            <textarea matInput placeholder="Enter reason" autocomplete="off"
+                                [formControl]="reasonControl" 
+                                style="height: 50px !important;"></textarea>
+                                 <mat-error *ngIf="reasonControl.invalid && (reasonControl.dirty || reasonControl.touched)">
+      Reason is required
+    </mat-error>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-12 my-4 px-2 d-flex justify-content-around">
+                        <div>
+                            <button mat-button class="cancel-button mat-btn-s me-2" type="button" mat-dialog-close>
+                                Close</button>
+                            <button mat-raised-button class="proceedbtn mat-btn-s  me-2" type="button"
+                                (click)="approve()">Approve</button>
+                            <button mat-button class="delete-item-button mat-btn-s" type="button"
+                                (click)="onRejectClick()">
+                                Reject</button>
+                        </div>
+                        <button mat-button class="delete-item-button mat-btn-s" type="button" (click)="delete()">
+                            Delete</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
