@@ -212,7 +212,7 @@ this.allJobsNames=[];
   }
 
   fetchJobs = async (page: number, search: string): Promise<{ results: any[]; hasMore: boolean; totalCount: number }> => {
-  const pageSize = 30;
+  const pageSize = 10;
   const query = `?status=True&page=${page}&page_size=${pageSize}&search=${search || ''}` +
                 (this.userRole !== 'Admin' ? `&employee-id=${this.user_id}` : '');
 
