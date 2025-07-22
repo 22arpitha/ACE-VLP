@@ -37,3 +37,10 @@
 ::ng-deep .leave-config .mat-radio-button{
   margin-right: 15px;
 }
+::ng-deep .leave-config .mat-radio-label-content{
+  white-space: normal !important;
+}
+.proceedbtn:disabled {
+    background-color: #cccccc !important;
+    color: #666666;
+}

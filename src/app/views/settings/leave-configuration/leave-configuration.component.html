@@ -1,13 +1,16 @@
 <div class="container-wrapper settings-main-content leave-config px-0">
-  <section class="settings-form-bg">
+  <section class="settings-form-bg p-sm-1">
     <form [formGroup]="leaveTypeForm">
       <div class="row mx-0 my-0 p-0">
-        <div class="col-12 col-sm-12 col-md-12 col-lg-12  my-1 px-0">
+        <div class="col-sm-12 col-md-12 col-lg-12 pl-0 pr-5 text-end"  *ngIf="item_id">
+          <button mat-raised-button class="proceedbtn mat-btn-s" [disabled]="editLeaveType" type="button" (click)="enableEdit()">Edit</button>
+        </div>
+        <div class="col-12  my-1 px-0">
           <p><b>Leave Provisioning</b></p>
           <span>Configure leave allocation settings for this policy.</span>
         </div>
         <div class="col-12 col-sm-12 col-md-3 col-lg-3 my-1 no-padding pl-0 pr-5">
-          <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+          <mat-form-field appearance="outline" [ngClass]="{ 'highlight-background':!editLeaveType}" class="w-100 custom-mat-form-field">
             <mat-label>Leave Type<b class="r-star">*</b></mat-label>
             <input matInput placeholder="Enter Leave Type" appAlphabetOnly formControlName="leave_type_name"
               autocomplete="off">
@@ -25,7 +28,7 @@
           </mat-form-field>
         </div>
         <div class="col-12 col-sm-12 col-md-6 col-lg-4 my-1 no-padding pl-0 pr-5">
-          <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+          <mat-form-field appearance="outline" [ngClass]="{ 'highlight-background':!editLeaveType}" class="w-100 custom-mat-form-field">
             <mat-label>Description</mat-label>
             <textarea matInput placeholder="Enter Description" formControlName="leave_description"
               autocomplete="off"></textarea>
@@ -41,26 +44,47 @@
           </mat-form-field>
         </div>
         <div class="col-sm-12 col-md-3 col-lg-2 my-1 no-padding pl-0 pr-5">
-              <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
-                <mat-label>Utilization<b class="r-star"></b></mat-label>
-                <input matInput type="number" formControlName="utilization" placeholder="Utilization"
-                  autocomplete="off">
-                <mat-error
-                  *ngIf="f['utilization']?.invalid && f['utilization']?.touched || f['utilization']?.dirty">
-                  <span *ngIf="f['utilization'].errors?.['required']">Utilization is required</span>
-                  <span
-                    *ngIf="!f['utilization'].errors?.['required'] && f['utilization'].errors?.['maxlength']">
-                    Utilization cannot exceed 3 digits.
-                  </span>
-                  <span *ngIf="!f['utilization'].errors?.['required'] && f['utilization'].errors?.['pattern']">
-                    Only digits allowed (max 2 digits, no decimals).
-                  </span>
-                  <span *ngIf="!f['utilization'].errors?.['required'] && f['utilization'].errors?.['min']">
-                    Utilization cannot be negative.
-                  </span>
-                </mat-error>
-              </mat-form-field>
-            </div>
+          <mat-form-field appearance="outline" [ngClass]="{ 'highlight-background':!editLeaveType}" class="w-100 custom-mat-form-field">
+            <mat-label>Utilization Before<b class="r-star"></b></mat-label>
+            <input matInput type="number" formControlName="utilization_before" placeholder="Utilization Before"
+              autocomplete="off">
+            <mat-error
+              *ngIf="f['utilization_before']?.invalid && f['utilization_before']?.touched || f['utilization_before']?.dirty">
+              <span *ngIf="f['utilization_before'].errors?.['required']">Utilization is required</span>
+              <span
+                *ngIf="!f['utilization_before'].errors?.['required'] && f['utilization_before'].errors?.['maxlength']">
+                Utilization cannot exceed 3 digits.
+              </span>
+              <span *ngIf="!f['utilization_before'].errors?.['required'] && f['utilization_before'].errors?.['pattern']">
+                Only digits allowed (max 2 digits, no decimals).
+              </span>
+              <span *ngIf="!f['utilization_before'].errors?.['required'] && f['utilization_before'].errors?.['min']">
+                Utilization cannot be negative.
+              </span>
+            </mat-error>
+          </mat-form-field>
+        </div>
+        <div class="col-sm-12 col-md-3 col-lg-2 my-1 no-padding pl-0 pr-5">
+          <mat-form-field appearance="outline" [ngClass]="{ 'highlight-background':!editLeaveType}" class="w-100 custom-mat-form-field">
+            <mat-label>Utilization After<b class="r-star"></b></mat-label>
+            <input matInput type="number" formControlName="utilization_after" placeholder="Utilization After"
+              autocomplete="off">
+            <mat-error
+              *ngIf="f['utilization_after']?.invalid && f['utilization_after']?.touched || f['utilization_after']?.dirty">
+              <span *ngIf="f['utilization_after'].errors?.['required']">Utilization is required</span>
+              <span
+                *ngIf="!f['utilization_after'].errors?.['required'] && f['utilization_after'].errors?.['maxlength']">
+                Utilization cannot exceed 3 digits.
+              </span>
+              <span *ngIf="!f['utilization_after'].errors?.['required'] && f['utilization_after'].errors?.['pattern']">
+                Only digits allowed (max 2 digits, no decimals).
+              </span>
+              <span *ngIf="!f['utilization_after'].errors?.['required'] && f['utilization_after'].errors?.['min']">
+                Utilization cannot be negative.
+              </span>
+            </mat-error>
+          </mat-form-field>
+        </div>
       </div>
       <div class="row mx-0 my-0 p-0">
         <div class="col-12 col-sm-12 col-md-12 col-lg-12 my-1 px-0">
@@ -68,8 +92,8 @@
         </div>
         <div class="col-12 col-sm-12 col-md-12 col-lg-12 my-1 px-0">
           <div class="row mx-0 my-0 p-0">
-            <div class="col-sm-12 col-md-3 col-lg-2 my-1 no-padding pl-0 pr-5">
-              <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+            <div class="col-sm-12 col-md-3 col-lg-2 my-1 pr-0 pr-md-5">
+              <mat-form-field appearance="outline" [ngClass]="{ 'highlight-background':!editLeaveType}" class="w-100 custom-mat-form-field">
                 <mat-label>Effective After<b class="r-star">*</b></mat-label>
                 <input matInput type="number" formControlName="effective_value" placeholder="Effective after"
                   autocomplete="off">
@@ -89,8 +113,8 @@
                 </mat-error>
               </mat-form-field>
             </div>
-            <div class="col-sm-12 col-md-3 col-lg-3 my-1 no-padding pl-0 pr-5">
-              <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+            <div class="col-sm-12 col-md-3 col-lg-3 my-1 pr-0 pr-md-5">
+              <mat-form-field appearance="outline" [ngClass]="{ 'highlight-background':!editLeaveType}" class="w-100 custom-mat-form-field">
                 <mat-label>Effective Period<b class="r-star">*</b></mat-label>
                 <mat-select placeholder="Effective Period" autocomplete="off" panelClass="custom-select-panel"
                   [disableOptionCentering]="true" formControlName="effective_cycle">
@@ -106,8 +130,8 @@
                 </mat-error>
               </mat-form-field>
             </div>
-            <div class="col-sm-12 col-md-3 col-lg-3 my-1 no-padding pl-0 pr-5">
-              <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+            <div class="col-sm-12 col-md-3 col-lg-3 my-1 pr-0 pr-md-5">
+              <mat-form-field appearance="outline" [ngClass]="{ 'highlight-background':!editLeaveType}" class="w-100 custom-mat-form-field">
                 <mat-label>Effective From<b class="r-star">*</b></mat-label>
                 <mat-select placeholder="Status Group" autocomplete="off" formControlName="leave_effective_from"
                   panelClass="custom-select-panel" [disableOptionCentering]="true">
@@ -129,7 +153,7 @@
           <div class="row mx-0 my-0 px-3">
             <div class="col-12 col-sm-12 col-md-12 col-lg-12 my-1 px-0">
               <mat-checkbox color="primary" class="example-margin" formControlName="is_accrual"
-                (change)="isAccuralEnabled($event)">
+                (change)="isAccuralEnabled($event)" [disabled]="!editLeaveType">
                 <h5 class="c-header">Accrual</h5>
               </mat-checkbox>
             </div>
@@ -138,9 +162,7 @@
             </div>
           </div>
           <div class="row mx-3 my-0 p-0">
-            <div class="col-12 col-sm-12 col-md-12 col-lg-6 my-1 px-0">
-              <div class="row mx-0 my-0 px-2">
-                <div class="col-4 col-sm-4 col-md-4 col-lg-4 my-1 px-0">
+                <div class="col-sm-12 col-md-3 col-lg-2 my-1 no-padding pl-0 pr-5">
                   <mat-form-field appearance="outline"
                     [ngClass]="{ 'highlight-background':!leaveTypeForm.get('is_accrual')?.value}"
                     class="w-100 custom-mat-form-field">
@@ -155,7 +177,7 @@
                     </mat-error>
                   </mat-form-field>
                 </div>
-                <div class="col-8 col-sm-8 col-md-8 col-lg-8 my-1 no-padding pl-5 pr-0">
+                <div class="col-sm-12 col-md-3 col-lg-3 my-1 no-padding pl-5 pr-0">
                   <mat-form-field appearance="outline"
                     [ngClass]="{ 'highlight-background':!leaveTypeForm.get('is_accrual')?.value}"
                     class="w-100 custom-mat-form-field">
@@ -175,9 +197,26 @@
                     </mat-error>
                   </mat-form-field>
                 </div>
-              </div>
+                 <div class="col-sm-12 col-md-3 col-lg-3 my-1 no-padding pl-0 pr-5">
+                  <mat-form-field appearance="outline"
+                    [ngClass]="{ 'highlight-background':!leaveTypeForm.get('is_accrual')?.value}"
+                    class="w-100 custom-mat-form-field">
+                    <mat-label>Prorate Accrual<b class="r-star">*</b></mat-label>
+                    <mat-select placeholder="Prorate Accrual" formControlName="prorate_accrual" autocomplete="off"
+                      panelClass="custom-select-panel" [disableOptionCentering]="true">
+                      <mat-option value="Start and End of Policy">Start and End of Policy</mat-option>
+                    </mat-select>
+                    <mat-error
+                      *ngIf="f['prorate_accrual']?.invalid && f['prorate_accrual']?.touched || f['prorate_accrual']?.dirty">
+                      <span *ngIf="f['prorate_accrual'].errors?.['required']">
+                        Prorate Accrual is required.
+                      </span>
+                    </mat-error>
+                  </mat-form-field>
+                </div>
+          </div>
               <div class="row mx-0 my-0 px-2">
-                <div class="col-4 col-sm-4 col-md-4 col-lg-4 my-1 px-0"
+                <div class="col-sm-12 col-md-3 col-lg-3 my-1 pr-0 pr-md-5"
                   *ngIf="leaveTypeForm.get('accrual_cycle')?.value==='yearly' || leaveTypeForm.get('accrual_cycle')?.value==='monthly'">
                   <mat-form-field appearance="outline"
                     [ngClass]="{ 'highlight-background':!leaveTypeForm.get('is_accrual')?.value}"
@@ -197,7 +236,7 @@
                     </mat-error>
                   </mat-form-field>
                 </div>
-                <div class="col-8 col-sm-8 col-md-8 col-lg-8 my-1 no-padding pl-2 pr-0"
+                <div class="col-sm-12 col-md-3 col-lg-3 my-1 pr-0 pr-md-5"
                   *ngIf="leaveTypeForm.get('accrual_cycle')?.value==='yearly'">
                   <mat-form-field appearance="outline"
                     [ngClass]="{ 'highlight-background':!leaveTypeForm.get('is_accrual')?.value}"
@@ -260,39 +299,14 @@
                   </mat-form-field>
                 </div>
               </div> -->
-            </div>
-            <div class="col-12 col-sm-12 col-md-12 col-lg-6 my-1 px-2 ">
-              <!-- <div class="row mx-0 my-0 p-0">
-                <p class="mb-0"><b>Accrual Proration</b></p>
-              </div> -->
-              <div class="row mx-0 my-0 p-0">
-                <div class="col-12 col-sm-12 col-md-5 col-lg-5 my-1 px-0">
-                  <mat-form-field appearance="outline"
-                    [ngClass]="{ 'highlight-background':!leaveTypeForm.get('is_accrual')?.value}"
-                    class="w-100 custom-mat-form-field">
-                    <mat-label>Prorate Accrual<b class="r-star">*</b></mat-label>
-                    <mat-select placeholder="Prorate Accrual" formControlName="prorate_accural" autocomplete="off"
-                      panelClass="custom-select-panel" [disableOptionCentering]="true">
-                      <mat-option value="Start and End of Policy">Start and End of Policy</mat-option>
-                    </mat-select>
-                    <mat-error
-                      *ngIf="f['prorate_accural']?.invalid && f['prorate_accural']?.touched || f['prorate_accural']?.dirty">
-                      <span *ngIf="f['prorate_accural'].errors?.['required']">
-                        Prorate Accrual is required.
-                      </span>
-                    </mat-error>
-                  </mat-form-field>
-                </div>
-
-              </div>
-            </div>
-          </div>
+            <!-- </div> -->
           <div class="row mx-0 my-0 px-0">
             <div class="col-12 col-sm-12 col-md-12 col-lg-12 my-1 bg-prorate-content my-1 no-padding pl-5 pr-0">
+              <!-- reset checkbox -->
               <div class="row row mx-2 my-0 px-2">
                 <div class="col-12 col-sm-12 col-md-12 col-lg-12 my-1 px-0">
                   <mat-checkbox color="primary" class="example-margin" formControlName="is_reset"
-                    (change)="isAccuralReseted($event)">
+                    (change)="isAccuralReseted($event)" [disabled]="!editLeaveType">
                     <h5 class="c-header">Reset</h5>
                   </mat-checkbox>
                 </div>
@@ -300,14 +314,16 @@
                   <span>Defines the Reset, Carryforward and encashment of leave balance.</span>
                 </div>
               </div>
+              <!-- reset fields -->
               <div class="row mx-2 my-0 px-0">
-                <div class="col-4 col-sm-4 col-md-3 col-lg-3 my-1 px-0">
+                <div class="col-sm-12 col-md-3 col-lg-3 my-1 pr-0 pr-md-5">
                   <mat-form-field appearance="outline"
                     [ngClass]="{ 'highlight-background':!leaveTypeForm.get('is_reset')?.value}"
                     class="w-100 custom-mat-form-field">
                     <mat-label>Reset Accrual Cycle<b class="r-star">*</b></mat-label>
                     <mat-select placeholder="Leave Accrual Cycle" formControlName="reset_cycle" autocomplete="off"
-                      panelClass="custom-select-panel" [disableOptionCentering]="true" (selectionChange)="accrualAndResetLeaveCycle($event,'reset')">
+                      panelClass="custom-select-panel" [disableOptionCentering]="true"
+                      (selectionChange)="accrualAndResetLeaveCycle($event,'reset')">
                       <mat-option *ngFor="let period of effectivePeriodList" [value]="period.value">
                         {{ period.label }}
                       </mat-option>
@@ -320,7 +336,7 @@
                     </mat-error>
                   </mat-form-field>
                 </div>
-                <div class="col-4 col-sm-4 col-md-3 col-lg-3 my-1 no-padding pl-2 pr-0">
+                <div class="col-sm-12 col-md-3 col-lg-3 my-1 pr-0 pr-md-5">
                   <mat-form-field appearance="outline"
                     [ngClass]="{ 'highlight-background':!leaveTypeForm.get('is_reset')?.value}"
                     class="w-100 custom-mat-form-field">
@@ -338,7 +354,8 @@
                     </mat-error>
                   </mat-form-field>
                 </div>
-                <div class="col-4 col-sm-4 col-md-3 col-lg-3 my-1 px-0" *ngIf="leaveTypeForm.get('reset_cycle')?.value==='yearly'">
+                <div class="col-sm-12 col-md-3 col-lg-3 my-1 pr-0 pr-md-5"
+                  *ngIf="leaveTypeForm.get('reset_cycle')?.value==='yearly'">
                   <mat-form-field appearance="outline"
                     [ngClass]="{ 'highlight-background':!leaveTypeForm.get('is_reset')?.value}"
                     class="w-100 custom-mat-form-field">
@@ -359,9 +376,9 @@
                 </div>
               </div>
               <div class="row mx-2 my-0 px-0">
-                <div class="col-12 col-sm-12 col-md-12 col-lg-12 my-1 px-0 bg-carry-forward-content">
+                <div class="col-sm-12 col-md-12 col-lg-12 my-1 px-0 bg-carry-forward-content">
                   <div class="row mx-0 my-0 px-3">
-                    <div class="col-12 col-sm-12 col-md-12 col-lg-12 my-1 px-0">
+                    <div class="col-sm-12 col-md-12 col-lg-12 my-1 px-0">
                       <mat-checkbox color="primary" class="example-margin" formControlName="is_carry_forward"
                         (change)="isCarryForwardEnabled($event)" [disabled]="!leaveTypeForm.get('is_reset')?.value">
                         <h5 class="c-header">Carry forward unused leaves</h5>
@@ -369,7 +386,7 @@
                     </div>
                   </div>
                   <div class="row mx-2 my-0 px-2">
-                    <div class="col-4 col-sm-4 col-md-3 col-lg-3 my-1 px-0">
+                    <div class="col-sm-12 col-md-3 col-lg-3 my-1 pr-0 pr-md-5">
                       <mat-form-field appearance="outline"
                         [ngClass]="{'highlight-background':!leaveTypeForm.get('is_carry_forward')?.value}"
                         class="w-100 custom-mat-form-field">
@@ -380,14 +397,37 @@
                             {{ carrryForward.label }}
                           </mat-option>
                         </mat-select>
+                        <mat-error
+                          *ngIf="f['carry_forward_cycle']?.invalid && f['carry_forward_cycle']?.touched || f['carry_forward_cycle']?.dirty">
+                          <span *ngIf="f['carry_forward_cycle'].errors?.['required']">
+                            Carry Forward is required.
+                          </span>
+                        </mat-error>
                       </mat-form-field>
                     </div>
-                    <div class="col-4 col-sm-4 col-md-2 col-lg-2 my-1 no-padding pl-2 pr-0">
+                    <div class="col-sm-12 col-md-2 col-lg-2 my-1 pr-0 pr-md-5">
                       <mat-form-field appearance="outline"
                         [ngClass]="{'highlight-background':!leaveTypeForm.get('is_carry_forward')?.value}"
                         class="w-100 custom-mat-form-field">
                         <mat-label>Days<b class="r-star">*</b></mat-label>
-                        <input matInput placeholder="Enter Days" formControlName="carry_forward_day" autocomplete="off">
+                        <input matInput type="number" placeholder="Enter Days" formControlName="carry_forward_days"
+                          autocomplete="off">
+                        <mat-error
+                          *ngIf="f['effective_value']?.invalid && f['carry_forward_days']?.touched || f['carry_forward_days']?.dirty">
+                          <span *ngIf="f['carry_forward_days'].errors?.['required']">Days is required</span>
+                          <span
+                            *ngIf="!f['carry_forward_days'].errors?.['required'] && f['carry_forward_days'].errors?.['maxlength']">
+                            Days cannot exceed 3 digits.
+                          </span>
+                          <span
+                            *ngIf="!f['carry_forward_days'].errors?.['required'] && f['carry_forward_days'].errors?.['pattern']">
+                            Only digits allowed (max 2 digits, no decimals).
+                          </span>
+                          <span
+                            *ngIf="!f['carry_forward_days'].errors?.['required'] && f['carry_forward_days'].errors?.['min']">
+                            Days cannot be negative.
+                          </span>
+                        </mat-error>
                       </mat-form-field>
                     </div>
                     <!-- <div class="col-4 col-sm-4 col-md-2 col-lg-2 my-1 px-0">
@@ -396,54 +436,26 @@
                         <input matInput placeholder="Enter Days" autocomplete="off">
                       </mat-form-field>
                     </div> -->
-                  </div>  
+                  </div>
                 </div>
               </div>
-              <div class="row mx-0 my-0 px-2">
-                <div class="col-12 col-sm-12 col-md-12 col-lg-12 my-1 px-0 bg-carry-forward-content">
-                  <div class="row mx-0 my-0 px-3">
-                    <div class="col-12 col-sm-12 col-md-12 col-lg-12 my-1 px-0">
-                      <mat-radio-group formControlName="encash_value" >
-                        <mat-radio-button class="radio-button" value="Encash unused leaves above limit"
+              <div class="row mx-2 my-1 bg-carry-forward-content">
+                <!-- <div class="col-sm-12 col-md-12 col-lg-12 my-1 px-0 bg-carry-forward-content"> -->
+                  <!-- <div class="row mx-0 my-0 px-3"> -->
+                    <div class="col-sm-12 col-md-12 col-lg-12 my-1 px-0">
+                      <mat-radio-group formControlName="encash_leaves_above_limit">
+                        <mat-radio-button class="radio-button" value="true"
                           [disabled]="!leaveTypeForm.get('is_reset')?.value">
-                            Encash unused leaves above limit
-                          </mat-radio-button>
-                          <mat-radio-button class="radio-button" value="Encash unused leaves with expiry"
+                          Encash unused leaves above limit
+                        </mat-radio-button>
+                        <mat-radio-button class="radio-button" value="false"
                           [disabled]="!leaveTypeForm.get('is_reset')?.value">
-                            Encash unused leaves with expiry
-                          </mat-radio-button>
+                          Encash unused leaves with expiry
+                        </mat-radio-button>
                       </mat-radio-group>
-                      <!-- <mat-checkbox color="primary" formControlName="encash_above_limit" class="example-margin"
-                        (change)="isEncashEnabled($event)" [disabled]="!leaveTypeForm.get('is_reset')?.value">
-                        <h5 class="c-header">Encash above leaves</h5>
-                      </mat-checkbox> -->
                     </div>
-                    <!-- <div class="col-12 col-sm-12 col-md-12 col-lg-3 my-1 px-0">
-                      <mat-checkbox color="primary" formControlName="encash_over_limit" class="example-margin"
-                        (change)="isEncashEnabled($event)" [disabled]="!leaveTypeForm.get('is_reset')?.value">
-                        <h5 class="c-header">Encash below leaves</h5>
-                      </mat-checkbox>
-                    </div> -->
-                  </div>
-                  <!-- <div class="row mx-0 my-0 p-0">
-                    <div class="col-4 col-sm-4 col-md-2 col-lg-2 my-1 no-padding pl-2 pr-0">
-                      <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
-                        <mat-label>Days<b class="r-star">*</b></mat-label>
-                        <input matInput placeholder="Enter Days" autocomplete="off">
-                      </mat-form-field>
-                    </div>
-                    <div class="col-4 col-sm-4 col-md-2 col-lg-2 my-1 px-0">
-                      <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
-                        <mat-label>Limits<b class="r-star">*</b></mat-label>
-                        <mat-select placeholder="Limits" autocomplete="off" panelClass="custom-select-panel"
-                          [disableOptionCentering]="true">
-                          <mat-option value="Units">Units</mat-option>
-                          <mat-option value="percentage">Percentage</mat-option>
-                        </mat-select>
-                      </mat-form-field>
-                    </div>
-                  </div> -->
-                </div>
+                  <!-- </div>
+                </div> -->
               </div>
 
             </div>
@@ -454,7 +466,7 @@
         <div class="action-btn d-flex gap-1 my-1 px-0">
           <button mat-raised-button class="cancel-button mat-btn-s" type="button" (click)="backToLeaveTypes()">
             Cancel</button>
-          <button mat-raised-button class="proceedbtn mat-btn-s" type="submit" (click)="addOrUpdate()">Save</button>
+          <button mat-raised-button class="proceedbtn mat-btn-s" type="submit" (click)="addOrUpdate()">{{item_id ? 'Update': 'Add'}}</button>
         </div>
       </div>
     </form>

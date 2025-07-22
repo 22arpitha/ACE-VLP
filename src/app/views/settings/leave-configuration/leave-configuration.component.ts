@@ -7,7 +7,9 @@ import { FormErrorScrollUtilityService } from '../../../service/form-error-scrol
 import { SubModuleService } from '../../../service/sub-module.service';
 import { ACCURAL_DAYS_OPTIONS, ACCURAL_MONTH_OPTIONS, EFFECTIVE_FROM_OPTIONS, EFFECTIVE_PERIOD_OPTIONS } from '../../../views/settings/leave-configuration/leave-accural-dropdown-options';
 import { CARRYFORWARD_FROM_OPTIONS } from './leave-accural-dropdown-options';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
+import { environment } from '../../../../environments/environment';
+import { Observable } from 'rxjs';
 @Component({
   selector: 'app-leave-configuration',
   templateUrl: './leave-configuration.component.html',
@@ -20,6 +22,8 @@ export class LeaveConfigurationComponent implements OnInit {
   userRole: any;
   initialFormValue: any;
   leaveTypeForm: FormGroup;
+  item_id:any;
+  editLeaveType:boolean = false;
   accrualDaysList = ACCURAL_DAYS_OPTIONS;
   accrualMonthList = ACCURAL_MONTH_OPTIONS;
   effectivePeriodList = EFFECTIVE_PERIOD_OPTIONS;
@@ -27,8 +31,15 @@ export class LeaveConfigurationComponent implements OnInit {
   carryForwardList = CARRYFORWARD_FROM_OPTIONS;
   constructor(private fb: FormBuilder, private modalService: NgbModal, private accessControlService: SubModuleService,
     private common_service: CommonServiceService, private apiService: ApiserviceService, private router: Router,
-    private formUtilityService: FormErrorScrollUtilityService) {
-    this.common_service.setTitle(this.BreadCrumbsTitle);
+    private formUtilityService: FormErrorScrollUtilityService , private activeRouter: ActivatedRoute) {
+      this.common_service.setTitle(this.BreadCrumbsTitle);
+      this.item_id = this.activeRouter.snapshot.paramMap.get('id')
+      if(this.item_id){
+        this.getLeaveTypeDetails();
+        this.editLeaveType = false;
+      } else{
+        this.editLeaveType = true;
+      }
   }
 
   ngOnInit(): void {
@@ -43,6 +54,42 @@ export class LeaveConfigurationComponent implements OnInit {
       let unSavedChanges = isFormChanged || isInvalid;
       this.formUtilityService.setUnsavedChanges(unSavedChanges);
     });
+  }
+
+  getLeaveTypeDetails(){
+    this.apiService.getData(`${environment.live_url}/${environment.settings_leave_type}/${this.item_id}/`).subscribe(
+      (res:any)=>{
+        this.leaveTypeForm.patchValue({
+          leave_type_name: res.leave_type_name,
+          leave_description: res.leave_description,
+          utilization_before: res.utilization_before,
+          utilization_after: res.utilization_after,
+          effective_value: res.effective_value,
+          effective_cycle: res.effective_cycle,
+          leave_effective_from: res.leave_effective_from,
+          is_accrual: res.is_accrual,
+          accrual_cycle: res.accrual_cycle,
+          accrual_day: res.accrual_day,
+          accrual_month: res.accrual_month,
+          accrual_credits: res.accrual_credits,
+          prorate_accrual: res.prorate_accrual,
+          is_reset: res.is_reset,
+          reset_cycle: res.reset_cycle,
+          reset_day: res.reset_day,
+          reset_month: res.reset_month,
+          is_carry_forward: res.is_carry_forward,
+          carry_forward_cycle: res.carry_forward_cycle,
+          carry_forward_days: res.carry_forward_days,
+          encash_leaves_above_limit: res.encash_leaves_above_limit,
+        })
+      }
+    )
+  }
+  public enableEdit() {
+    if (this.userRole === 'Admin') {
+      this.editLeaveType = true;
+    }
+    // this.router.navigate(['/jobs/update-kpi/', this.job_id]);
   }
   ngOnDestroy(): void {
     this.formUtilityService.resetHasUnsavedValue();
@@ -62,7 +109,8 @@ export class LeaveConfigurationComponent implements OnInit {
     this.leaveTypeForm = this.fb.group({
       leave_type_name: ['', [Validators.required, Validators.pattern(/^[a-zA-Z]+( [a-zA-Z]+)*$/), , Validators.maxLength(20)]],
       leave_description: ['', [Validators.pattern(/^[a-zA-Z0-9!@#$%^&*()_+{}\[\]:;"'<>,.?/\\|`~\-]+( [a-zA-Z0-9!@#$%^&*()_+{}\[\]:;"'<>,.?/\\|`~\-]+)*$/), Validators.maxLength(200)]],
-      utilization: [''],
+      utilization_before: [''],
+      utilization_after: [''],
       effective_value: ['', [Validators.required, Validators.pattern(/^\d{1,2}$/), Validators.maxLength(2), Validators.min(0)]],
       effective_cycle: ['', Validators.required],
       leave_effective_from: ['', Validators.required],
@@ -73,15 +121,15 @@ export class LeaveConfigurationComponent implements OnInit {
       accrual_credits: [''],
       // policy_date: [''],
       // policy_month: [''],
-      prorate_accural: [''],
+      prorate_accrual: [''],
       is_reset: [false],
       reset_cycle: [''],
       reset_day: [''],
       reset_month: [''],
       is_carry_forward: [false],
       carry_forward_cycle: [''],
-      carry_forward_day: [''],
-      encash_value: [''],
+      carry_forward_days: [''],
+      encash_leaves_above_limit: [''],
     });
     this.initialFormValue = this.leaveTypeForm?.getRawValue();
   }
@@ -110,7 +158,7 @@ export class LeaveConfigurationComponent implements OnInit {
       'accrual_day',
       'accrual_month',
       'accrual_credits',
-      'prorate_accural',
+      'prorate_accrual',
     ]);
   }
 
@@ -149,11 +197,11 @@ export class LeaveConfigurationComponent implements OnInit {
       'reset_day',
       'reset_month',
       'is_carry_forward',
-      'encash_value',
+      'encash_leaves_above_limit',
     ];
 
     if (!event.checked) {
-      controls.push('carry_forward_cycle', 'carry_forward_day');
+      controls.push('carry_forward_cycle', 'carry_forward_days');
     }
     console.log(controls)
     this.simpleToggleRequired(event.checked, controls);
@@ -163,7 +211,7 @@ export class LeaveConfigurationComponent implements OnInit {
     //   'reset_month',
     //   'is_carry_forward',
     //   'carry_forward_cycle',
-    //   'carry_forward_day',
+    //   'carry_forward_days',
     //   'encash_above_limit',
     //   'encash_over_limit',
     // ]);
@@ -172,7 +220,7 @@ export class LeaveConfigurationComponent implements OnInit {
   public isCarryForwardEnabled(event: any) {
     this.simpleToggleRequired(event.checked, [
       'carry_forward_cycle',
-      'carry_forward_day',
+      'carry_forward_days',
     ]);
   }
 
@@ -181,13 +229,41 @@ export class LeaveConfigurationComponent implements OnInit {
   }
   addOrUpdate() {
     if (this.leaveTypeForm.invalid) {
+      this.leaveTypeForm.markAllAsTouched();
       console.log('error', this.leaveTypeForm.controls)
     } else {
       console.log('succes', this.leaveTypeForm.value)
+      if(this.item_id){
+        this.apiService.updateData(`${environment.live_url}/${environment.settings_leave_type}/${this.item_id}/`,this.leaveTypeForm.value).subscribe(
+          (res:any)=>{
+            this.apiService.showSuccess(res?.message);
+            this.router.navigate(['/settings/leave-type'])
+          },
+          (error:any)=>{
+            this.apiService.showError(error?.message);
+          }
+        )
+      } else{
+        this.apiService.postData(`${environment.live_url}/${environment.settings_leave_type}/`,this.leaveTypeForm.value).subscribe(
+          (res:any)=>{
+            this.apiService.showSuccess(res?.message);
+            this.router.navigate(['/settings/leave-type'])
+          },
+          (error:any)=>{
+            this.apiService.showError(error?.message);
+          }
+        )
+      }
     }
   }
 
   backToLeaveTypes() {
     this.router.navigate(['/settings/leave-type'])
   }
+
+  canDeactivate(): Observable<boolean> {
+      const currentFormValue = this.leaveTypeForm?.getRawValue();
+      const isFormChanged: boolean = JSON.stringify(currentFormValue) !== JSON.stringify(this.initialFormValue);
+      return this.formUtilityService.isFormDirtyOrInvalidCheck(isFormChanged, this.leaveTypeForm);
+    }
 }

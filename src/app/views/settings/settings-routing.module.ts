@@ -62,6 +62,11 @@ const routes: Routes = [
         canDeactivate:[CanDeactivateGuard]
       },
       {
+        path: 'leave-config/:id',
+        component: LeaveConfigurationComponent,
+        canDeactivate:[CanDeactivateGuard]
+      },
+      {
         path: 'services',
         component: ServicesComponent,
         canDeactivate:[CanDeactivateGuard]
