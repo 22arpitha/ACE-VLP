@@ -63,7 +63,7 @@ export class JobStatusReportComponent implements OnInit {
     this.user_id = sessionStorage.getItem('user_id');
     this.userRole = sessionStorage.getItem('user_role_name');
     this.getJobList();
-    this.getGroupList();
+    // this.getGroupList();
     this.getClienList();
     this.getStatusList();
     }
@@ -93,9 +93,11 @@ export class JobStatusReportComponent implements OnInit {
   getStatusList(){
   this.api.getData(`${environment.live_url}/${environment.settings_job_status}/`).subscribe((res: any) => {
     if(res){
+      console.log(res)
       this.statusName = res?.map((item: any) => ({
         id: item.id,
-        name: item.status_name
+        name: item.status_name // for job status 
+        // name: item.group_name // for status group
       }));
     }
   })
@@ -319,6 +321,11 @@ getClienList(){
         name: item.client_name
       }));
     }
+    let clientIds = this.clientName.map((client: any) => client.id);
+        if (clientIds && clientIds.length >= 1) {
+
+          this.getGroupList(clientIds);
+        }
   })
   return this.clientName;
 }
@@ -335,15 +342,26 @@ getClienList(){
     })
     return this.jobName;
   }
-  getGroupList(){
-    this.api.getData(`${environment.live_url}/${environment.settings_status_group}/`).subscribe((res: any) => {
-      if(res){
-        this.groupName = res?.map((item: any) => ({
-          id: item.id,
-          name: item.group_name
-        }));
-      }
-    })}
+  getGroupList(clientIds){
+    let query = this.userRole === 'Admin' ? '' : `?client-ids=[${clientIds}]`
+    this.groupName = [];
+    this.api.getData(`${environment.live_url}/${environment.clients_group}/${query}`).subscribe((respData: any) => {
+      this.groupName = respData?.map((group: any) => ({
+        id: group?.id,
+        name: group?.group_name
+      }))
+    }, (error => {
+      this.api.showError(error?.error?.detail)
+    }));
+    // this.api.getData(`${environment.live_url}/${environment.settings_status_group}/`).subscribe((res: any) => {
+    //   if(res){
+    //     this.groupName = res?.map((item: any) => ({
+    //       id: item.id,
+    //       name: item.group_name
+    //     }));
+    //   }
+    // })
+  }
  // Fetch table data from API with given params
  async getTableData(params?: { page?: number; pageSize?: number; searchTerm?: string;client_ids?:any;job_ids?:any;group_ids?:any;job_allocation_date?:any;job_status_date?:any,job_status?: any[]; }) {
   let finalQuery;

@@ -51,7 +51,8 @@ export class TimesheetDetailedReportComponent implements OnInit {
    ngOnInit() {
     this.common_service.setTitle(this.BreadCrumbsTitle)
     this.tableData = getTableColumns(this.user_role_name);
-    this.getJobList();
+    // this.getJobList();
+    this.getTableData();
   }
 
 
@@ -221,10 +222,10 @@ getClienList(){
           id: item.id,
           name: item.job_name
         }));
-        this.getTaskList();
-        this.getClienList();
-        this.getEmployeeList();
-        this.getTableData();
+        // this.getTaskList();
+        // this.getClienList();
+        // this.getEmployeeList();
+        // this.getTableData();
       }
     })
     return this.jobName;
