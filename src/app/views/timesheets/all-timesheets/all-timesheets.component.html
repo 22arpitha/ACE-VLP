@@ -115,6 +115,7 @@
       </div>
       </div>
     </div>
+
     <div class="row mx-1 my-2 px-0 table-wrapper">
       <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0">
         <table class="table table table-hover table-list">
@@ -213,7 +214,7 @@
                 ></i>
                 <button
                   mat-icon-button
-                  [matMenuTriggerFor]="employeeFilterMenu"
+                  [matMenuTriggerFor]="employeeFilterMenu" (menuOpened)="onEmployeeFilterOpened()"
                   [ngClass]="filters.employee_name.length>=1 ? 'filterdColumn':''">
                         <span *ngIf="filters.employee_name.length>=1">{{filters.employee_name.length?.toString().padStart(2, '0')}}</span>
                           <i class="bi-funnel" *ngIf="filters.employee_name.length===0"></i>
@@ -222,12 +223,18 @@
 
                 <mat-menu #employeeFilterMenu="matMenu">
                   <app-generic-table-filter
+                    #employeeFilter
+                    [(selectedOptions)]="filters.employee_name"
+                    (selectedOptionsChange)="onFilterChange($event, 'employee_name')"
+                    [fetchOptions]="fetchEmployees">
+                    </app-generic-table-filter>
+                  <!-- <app-generic-table-filter
                     [options]="allEmployeeNames"
                     [(selectedOptions)]="filters.employee_name"
                     (selectedOptionsChange)="
                       onFilterChange($event, 'employee_name')
                     "
-                  ></app-generic-table-filter>
+                  ></app-generic-table-filter> -->
                 </mat-menu>
               </th>
               <th scope="col" class="name-col">
@@ -242,19 +249,25 @@
                   *ngIf="arrowState['client_name']"
                   class="bi bi-arrow-up"
                 ></i>
-                <button mat-icon-button [matMenuTriggerFor]="clientFilterMenu" [ngClass]="filters.client_name.length>=1 ? 'filterdColumn':''">
+                <button mat-icon-button [matMenuTriggerFor]="clientFilterMenu" (menuOpened)="onClientFilterOpened()" [ngClass]="filters.client_name.length>=1 ? 'filterdColumn':''">
                         <span *ngIf="filters.client_name.length>=1">{{filters.client_name.length?.toString().padStart(2, '0')}}</span>
                           <i class="bi-funnel" *ngIf="filters.client_name.length===0"></i>
                 </button>
-
-                <mat-menu #clientFilterMenu="matMenu">
+               
+                <mat-menu #clientFilterMenu="matMenu" >
                   <app-generic-table-filter
+                    [(selectedOptions)]="filters.client_name"
+                    (selectedOptionsChange)="onFilterChange($event, 'client_name')"
+                    [fetchOptions]="fetchClients"
+                    #clientFilter
+                  ></app-generic-table-filter>
+                  <!-- <app-generic-table-filter
                     [options]="allClientNames"
                     [(selectedOptions)]="filters.client_name"
                     (selectedOptionsChange)="
                       onFilterChange($event, 'client_name')
                     "
-                  ></app-generic-table-filter>
+                  ></app-generic-table-filter> -->
                 </mat-menu>
               </th>
               <th scope="col" class="name-col">
@@ -269,14 +282,14 @@
                   *ngIf="arrowState['job_name']"
                   class="bi bi-arrow-up"
                 ></i>
-                <button mat-icon-button [matMenuTriggerFor]="jobFilterMenu" [ngClass]="filters.job_name.length>=1 ? 'filterdColumn':''">
+                <button mat-icon-button [matMenuTriggerFor]="jobFilterMenu" (menuOpened)="onJobsFilterOpened()" [ngClass]="filters.job_name.length>=1 ? 'filterdColumn':''">
                         <span *ngIf="filters.job_name.length>=1">{{filters.job_name.length?.toString().padStart(2, '0')}}</span>
                           <i class="bi-funnel" *ngIf="filters.job_name.length===0"></i>
                 </button>
 
                 <mat-menu #jobFilterMenu="matMenu">
                   <app-generic-table-filter
-                    
+                    #jobNameFilter
                     [(selectedOptions)]="filters.job_name"
                     (selectedOptionsChange)="onFilterChange($event, 'job_name')"
                     [fetchOptions]="fetchJobs"

@@ -9,12 +9,13 @@
       type="text"
       class="form-control"
       placeholder="Search"
+      (input)="onSearchInput($event)"
       [(ngModel)]="filterSearchText"
-      (ngModelChange)="filterOptions()"
-    />
-  </div>
-<div class="custom-mat-select-list-style" [attr.scroll]="fetchOptions ? '' : null">
-<mat-selection-list class="dynamic-mat-selection" [attr.scroll]="fetchOptions ? '' : null" (scroll)="fetchOptions && onScroll($event)">
+      />
+    </div>
+    <!-- (ngModelChange)="filterOptions()" -->
+<div class="custom-mat-select-list-style" [attr.scroll]="fetchOptions  ? '' : null">
+<mat-selection-list class="dynamic-mat-selection" [attr.scroll]="fetchOptions  ? '' : null" (scroll)="fetchOptions  && onScroll($event)">
     <mat-list-option
       *ngFor="let option of displayOptions"
       [value]="option.id"

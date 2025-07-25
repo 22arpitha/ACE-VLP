@@ -29,7 +29,7 @@ export const environment = {
 settings_country: `country`,
 settings_source: `source`,
 settings_status_group: `status-group`,
-settings_leave_type: `leave-type`,
+settings_leave_type: `leave_type`,
 settings_job_status: `job-status`,
 settings_job_type: `job-type`,
 settings_service: `service`,

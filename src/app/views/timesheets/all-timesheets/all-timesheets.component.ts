@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { DatePipe } from '@angular/common';
@@ -10,6 +10,8 @@ import { SubModuleService } from '../../../service/sub-module.service';
 import { GenericDeleteComponent } from '../../../generic-components/generic-delete/generic-delete.component';
 import { GenericTimesheetConfirmationComponent } from '../../../generic-components/generic-timesheet-confirmation/generic-timesheet-confirmation.component';
 import { firstValueFrom } from 'rxjs';
+import { DropDownPaginationService } from '../../../service/drop-down-pagination.service';
+import { GenericTableFilterComponent } from '../../../shared/generic-table-filter/generic-table-filter.component';
 export interface IdNamePair {
   id: any;
   name: string;
@@ -21,6 +23,9 @@ export interface IdNamePair {
 
 })
 export class AllTimesheetsComponent implements OnInit {
+   @ViewChild('clientFilter') clientFilter!: GenericTableFilterComponent;
+   @ViewChild('employeeFilter') employeeFilter!: GenericTableFilterComponent;
+   @ViewChild('jobNameFilter') jobNameFilter!: GenericTableFilterComponent;
   selectedDate: any;
   BreadCrumbsTitle: any = 'Timesheets';
   term: any = '';
@@ -41,28 +46,28 @@ export class AllTimesheetsComponent implements OnInit {
   page = 1;
   count = 0;
   tableSize = 50;
-  tableSizes = [50,75,100];
+  tableSizes = [50, 75, 100];
   currentIndex: any;
   allTimesheetsList: any = [];
   idsOfTimesheet: any = [];
   accessPermissions = []
   user_id: any;
   userRole: any;
-  filters: { client_name: string[],job_name: string[],employee_name:string[],task_nmae:string[]} = {
+  filters: { client_name: string[], job_name: string[], employee_name: string[], task_nmae: string[] } = {
     client_name: [],
-    job_name:[],
-    employee_name:[],
-    task_nmae:[],
+    job_name: [],
+    employee_name: [],
+    task_nmae: [],
   }
-  allClientNames:IdNamePair[] = [];
-  allJobsNames:IdNamePair[] = [];
-  allEmployeeNames:IdNamePair[] = [];
-  allTaskNames:IdNamePair[] = [];
+  allClientNames: IdNamePair[] = [];
+  allJobsNames: IdNamePair[] = [];
+  allEmployeeNames: IdNamePair[] = [];
+  allTaskNames: IdNamePair[] = [];
   dateFilterValue: any = null;
   resetWeekDate: boolean = false;
-  datepicker:any;
+  datepicker: any;
   filterQuery: string;
-  initalTimesheetList:any = [];
+  initalTimesheetList: any = [];
   timesheetDate: string | null;
   total_working_hours: any;
   total_excepted_hours: any;
@@ -73,7 +78,8 @@ export class AllTimesheetsComponent implements OnInit {
     private modalService: NgbModal,
     private accessControlService: SubModuleService,
     private apiService: ApiserviceService,
-    private datePipe: DatePipe) {
+    private datePipe: DatePipe,
+    private dropdownService:DropDownPaginationService) {
     this.common_service.setTitle(this.BreadCrumbsTitle)
 
     this.user_id = sessionStorage.getItem('user_id');
@@ -86,19 +92,19 @@ export class AllTimesheetsComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     this.getModuleAccess();
-    this.getEmployees();
-    this.getAllActiveClients();
+    // this.getEmployees();
+    // this.getAllActiveClients();
     // this.getAllUserbasedActiveJobsList();
     this.getTaskList();
     if (this.userRole != 'Admin') {
       this.getWeekData();
     } else {
-      this.startDate ='';
-      this.endDate='';
+      this.startDate = '';
+      this.endDate = '';
       this.getTimesheets();
     }
   }
-
+  
   isTodayFriday(): boolean {
     const storeDate = this.selectedDate ? new Date(this.selectedDate) : new Date();
     const today = new Date();
@@ -108,7 +114,7 @@ export class AllTimesheetsComponent implements OnInit {
     const isFriday = today.getDay() === 5;
     const hasData = this.allTimesheetsList && this.allTimesheetsList.length > 0;
 
-    if(this.weekTimesheetSubmitted){
+    if (this.weekTimesheetSubmitted) {
       return true;
     }
     // 1. Current week and today is Friday, and has data => enable (return false)
@@ -157,89 +163,214 @@ export class AllTimesheetsComponent implements OnInit {
   }
 
   public getAllActiveClients() {
-    let query:any
-    if(this.userRole ==='Admin'){
+    let query: any
+    if (this.userRole === 'Admin') {
       query = '?status=True'
-    } else{
+    } else {
       query = `?status=True&employee-id=${this.user_id}`
     }
     this.apiService.getData(`${environment.live_url}/${environment.clients}/${query}`).subscribe(
       (res: any) => {
         this.allClientNames = res?.map((client: any) => ({
-            id: client.id, name: client.client_name
-          }));
+          id: client.id, name: client.client_name
+        }));
       }, (error: any) => {
         this.apiService.showError(error?.error?.detail);
       });
   }
 
-  getTaskList(){
-      this.apiService.getData(`${environment.live_url}/${environment.timesheet}/?get-tasks=True`).subscribe((res: any) => {
-        if(res){
-          this.allTaskNames = res?.map((item: any) => ({
-            id: item.id,
-            name: item.value
-          }));
-        }
-      },(error: any) => {
-        this.apiService.showError(error?.error?.detail);
-      })
-    }
+  getTaskList() {
+    this.apiService.getData(`${environment.live_url}/${environment.timesheet}/?get-tasks=True`).subscribe((res: any) => {
+      if (res) {
+        this.allTaskNames = res?.map((item: any) => ({
+          id: item.id,
+          name: item.value
+        }));
+      }
+    }, (error: any) => {
+      this.apiService.showError(error?.error?.detail);
+    })
+  }
 
-public getEmployees() {
+  public getEmployees() {
     let queryparams = `?is_active=True&employee=True`;
     this.allEmployeeNames = [];
     this.apiService.getData(`${environment.live_url}/${environment.employee}/${queryparams}`).subscribe((respData: any) => {
-      if(respData && respData.length>=1){
-      this.allEmployeeNames = respData.map((emp:any) => ({ id: emp.user_id, name: emp.user__full_name }));
-    }
+      if (respData && respData.length >= 1) {
+        this.allEmployeeNames = respData.map((emp: any) => ({ id: emp.user_id, name: emp.user__full_name }));
+      }
     }, (error => {
       this.apiService.showError(error?.error?.detail)
     }));
   }
 
-getAllUserbasedActiveJobsList() {
-let query = `?status=True`;
-query +=this.userRole !== 'Admin' ? `&employee-id=${this.user_id}` : '';
-this.allJobsNames=[];
-    this.apiService.getData(`${environment.live_url}/${environment.jobs}/${query}`).subscribe((res: any) => {
-      if(res && res.length>=1){
-      this.allJobsNames = res?.map(((jobs:any) => ({ id: jobs.id, name: jobs.job_name })));
+  // getAllUserbasedActiveJobsList() {
+  // let query = `?status=True`;
+  // query +=this.userRole !== 'Admin' ? `&employee-id=${this.user_id}` : '';
+  // this.allJobsNames=[];
+  //     this.apiService.getData(`${environment.live_url}/${environment.jobs}/${query}`).subscribe((res: any) => {
+  //       if(res && res.length>=1){
+  //       this.allJobsNames = res?.map(((jobs:any) => ({ id: jobs.id, name: jobs.job_name })));
+  //       }
+  //       }, (error => {
+  //       this.apiService.showError(error?.error?.detail)
+  //     }));
+  //   }
+
+  //   fetchJobs = async (page: number, search: string): Promise<{ results: any[]; hasMore: boolean; totalCount: number }> => {
+  //   const pageSize = 10;
+  //   const query = `?status=True&page=${page}&page_size=${pageSize}&search=${search || ''}` +
+  //                 (this.userRole !== 'Admin' ? `&employee-id=${this.user_id}` : '');
+
+  //   try {
+  //     const response: any = await firstValueFrom(
+  //       this.apiService.getData(`${environment.live_url}/${environment.jobs}/${query}`)
+  //     );
+
+  //     const mapped = response.results?.map((job: any) => ({
+  //       id: job.id,
+  //       name: job.job_name
+  //     })) || [];
+
+  //     return {
+  //       results: mapped,
+  //       hasMore: response.next_page !== null,
+  //       totalCount: response.total_no_of_record
+  //     };
+  //   } catch (error) {
+  //     this.apiService.showError(error?.error?.detail || 'Failed to load jobs');
+  //     return {
+  //       results: [],
+  //       hasMore: false,
+  //       totalCount: 0
+  //     };
+  //   }
+  // };
+
+
+  fetchDropdownData = async (
+    endpoint: string,
+    page: number,
+    search: string,
+    mapItem: (item: any) => { id: any, name: string },
+    extraParams: any = {}
+  ): Promise<{ results: any[], hasMore: boolean, totalCount: number }> => {
+    const pageSize = 10;
+    const params = new URLSearchParams();
+
+    // params.set('status', 'True');
+    params.set('page', String(page));
+    params.set('page_size', String(pageSize));
+
+    if (search) {
+      params.set('search', search);
+    }
+
+    // Add any extra params (like employee=True for employee API)
+    for (const key in extraParams) {
+      if (extraParams[key] !== undefined && extraParams[key] !== null) {
+        params.set(key, extraParams[key]);
       }
-      }, (error => {
-      this.apiService.showError(error?.error?.detail)
-    }));
-  }
+    }
 
-  fetchJobs = async (page: number, search: string): Promise<{ results: any[]; hasMore: boolean; totalCount: number }> => {
-  const pageSize = 10;
-  const query = `?status=True&page=${page}&page_size=${pageSize}&search=${search || ''}` +
-                (this.userRole !== 'Admin' ? `&employee-id=${this.user_id}` : '');
+    const query = `?${params.toString()}`;
 
-  try {
-    const response: any = await firstValueFrom(
-      this.apiService.getData(`${environment.live_url}/${environment.jobs}/${query}`)
+    try {
+      const response: any = await firstValueFrom(
+        this.apiService.getData(`${environment.live_url}/${endpoint}/${query}`)
+      );
+
+      const mapped = response.results?.map(mapItem) || [];
+
+      return {
+        results: mapped,
+        hasMore: response.next_page !== null,
+        totalCount: response.total_no_of_record || mapped.length
+      };
+    } catch (error) {
+      this.apiService.showError(error?.error?.detail || 'Failed to fetch data');
+      return {
+        results: [],
+        hasMore: false,
+        totalCount: 0
+      };
+    }
+  };
+
+
+  fetchJobs = (page: number, search: string) => {
+     const extraParams = {
+      status: 'True'
+     }
+    return this.dropdownService.fetchDropdownData(
+      environment.jobs,
+      page,
+      search,
+      (item) => ({ id: item.id, name: item.job_name }),
+      extraParams
     );
+  };
 
-    const mapped = response.results?.map((job: any) => ({
-      id: job.id,
-      name: job.job_name
-    })) || [];
+    fetchClients = (page: number, search: string) => {
+        const extraParams = {
+        status: 'True'
+      }
+      console.log(search, extraParams,'client funcion')
+      return this.dropdownService.fetchDropdownData(
+        environment.clients,
+        page,
+        search,
+        (item) => ({ id: item.id, name: item.client_name }),
+        extraParams
+      );
+    };
 
-    return {
-      results: mapped,
-      hasMore: response.next_page !== null,
-      totalCount: response.total_no_of_record
-    };
-  } catch (error) {
-    this.apiService.showError(error?.error?.detail || 'Failed to load jobs');
-    return {
-      results: [],
-      hasMore: false,
-      totalCount: 0
-    };
+    
+
+    
+  fetchEmployees = (page: number, search: string) => {
+    const extraParams = {
+    is_active: 'True',
+    employee: 'True',
+    ...(this.userRole !== 'Admin' && { 'employee-id': this.user_id })
+  };
+    return  this.dropdownService.fetchDropdownData(
+      environment.employee,
+      page,
+      search,
+      (item) => ({ id: item.user_id, name: item.user__full_name }),
+      extraParams
+    );
+  };
+  
+// GenericTableFilterComponent -> fetchClients (input) -> DropDownPaginationService -> API
+
+  onClientFilterOpened() {
+    console.log(this.clientFilter)
+  if (this.clientFilter) {
+    this.clientFilter.onMenuOpened(); // this triggers the API
   }
-};
+}
+  onEmployeeFilterOpened(){
+     if (this.employeeFilter) {
+    this.employeeFilter.onMenuOpened(); // this triggers the API
+  }
+}
+  onJobsFilterOpened(){
+    if (this.jobNameFilter) {
+  this.jobNameFilter.onMenuOpened(); // this triggers the API
+  }
+  }
+  
+
+
+
+
+
+
+
+
+
 
 
 
@@ -355,7 +486,7 @@ this.allJobsNames=[];
         if (res.length > 0) {
           this.idsOfTimesheet = [];
           res?.forEach((element: any) => {
-              // console.log('element',element.id);
+            // console.log('element',element.id);
             this.idsOfTimesheet.push(element.id)
           })
         }
@@ -399,13 +530,13 @@ this.allJobsNames=[];
       if (this.term) {
         query += `&search=${this.term}`;
       }
-        return query;
+      return query;
     } else {
       let query = `?page=${this.page}&page_size=${this.tableSize}`;
       if (this.term) {
         query += `&search=${this.term}`;
       }
-       return `?timesheet-employee=${this.user_id}&page=${this.page}&page_size=${this.tableSize}&search=${this.term}`;
+      return `?timesheet-employee=${this.user_id}&page=${this.page}&page_size=${this.tableSize}&search=${this.term}`;
     }
   }
 
@@ -538,12 +669,12 @@ this.allJobsNames=[];
           "unlock": true
         }
         this.apiService.updateData(`${environment.live_url}/${environment.submit_weekly_timesheet}/`, putData).subscribe(
-          (res:any)=>{
+          (res: any) => {
             // console.log(res)
             this.apiService.showSuccess(res.detail);
             this.getTimesheets()
           },
-          (error)=>{
+          (error) => {
             this.apiService.showError(error.error)
           }
         )
@@ -559,23 +690,24 @@ this.allJobsNames=[];
   // Filter related
 
 
-  clearDateFilter(){
+  clearDateFilter() {
     this.timesheetDate = null;
     this.dateFilterValue = null;
     this.datepicker = null;
-    this.startDate ='';
-    this.endDate='';
+    this.startDate = '';
+    this.endDate = '';
     this.filterData();
   }
   onDateSelected(event: any): void {
     const selectedDate = event.value;
     if (selectedDate) {
-     this.timesheetDate = this.datePipe.transform(selectedDate, 'yyyy-MM-dd');
+      this.timesheetDate = this.datePipe.transform(selectedDate, 'yyyy-MM-dd');
     }
     this.filterData();
   }
 
   onFilterChange(event: any, filterType: string) {
+    console.log(event, filterType)
     const selectedOptions = event;
     this.filters[filterType] = selectedOptions;
     this.filterData();
@@ -593,27 +725,28 @@ this.allJobsNames=[];
     }
     if (this.filters.employee_name.length) {
       this.userRole === 'Accountant' ? filterQuery += `&timesheet-employee-ids=[${this.filters.employee_name.join(',')}]` :
-      filterQuery += `&timesheet-employee-ids=[${this.filters.employee_name.join(',')}]` ;
+        filterQuery += `&timesheet-employee-ids=[${this.filters.employee_name.join(',')}]`;
     }
     if (this.filters.task_nmae.length) {
       filterQuery += `&timesheet-task-ids=[${this.filters.task_nmae.join(',')}]`;
     }
     if (this.userRole === 'Admin') {
-      if(this.startDate && this.endDate) {
-      filterQuery += `&start-date=${this.startDate}&end-date=${this.endDate}`;
-     }
+      if (this.startDate && this.endDate) {
+        filterQuery += `&start-date=${this.startDate}&end-date=${this.endDate}`;
+      }
     }
-     if (this.userRole !== 'Admin') {
-      if(this.timesheetDate) {
-      filterQuery += `&timesheet-dates=[${this.timesheetDate}]`;
-     }
+    if (this.userRole !== 'Admin') {
+      if (this.timesheetDate) {
+        filterQuery += `&timesheet-dates=[${this.timesheetDate}]`;
+      }
     }
+    console.log('client filter query=====>',filterQuery)
     this.apiService.getData(`${environment.live_url}/${environment.vlp_timesheets}/${filterQuery}`).subscribe(
       (res: any) => {
-    this.allTimesheetsList = res?.results;
-      this.count = res?.['total_no_of_record'];
-      this.page = res?.['current_page'];
-    });
+        this.allTimesheetsList = res?.results;
+        this.count = res?.['total_no_of_record'];
+        this.page = res?.['current_page'];
+      });
   }
   onDateChange(event: any) {
     this.startDate = '';
@@ -624,20 +757,20 @@ this.allJobsNames=[];
     this.endDate = '';
     this.endDate = event.value;
     this.endDate = this.datePipe.transform(this.endDate, 'yyyy-MM-dd');
-    if(this.startDate && this.endDate){
+    if (this.startDate && this.endDate) {
       this.filterData();
     }
 
   }
 
-private timeToMinutes(time: string): number {
+  private timeToMinutes(time: string): number {
     if (!time) {
-        return 0;
+      return 0;
     }
 
     const match = time.match(/^(\d+):(\d{2})$/);
     if (!match) {
-        return 0;
+      return 0;
     }
 
     const [, hoursStr, minutesStr] = match;
@@ -645,19 +778,19 @@ private timeToMinutes(time: string): number {
     const minutes = Number(minutesStr);
 
     if (isNaN(hours) || isNaN(minutes) || minutes < 0 || minutes >= 60) {
-        return 0;
+      return 0;
     }
 
     return hours * 60 + minutes;
-}
+  }
 
 
 
-isShortFall(total_working_hour: string, excepted_hours: string): boolean {
+  isShortFall(total_working_hour: string, excepted_hours: string): boolean {
     return this.timeToMinutes(total_working_hour) < this.timeToMinutes(excepted_hours);
-}
-dateClass = (date: Date) => {
-  return date.getDay() === 0 ? 'sunday-highlight' : '';
-};
+  }
+  dateClass = (date: Date) => {
+    return date.getDay() === 0 ? 'sunday-highlight' : '';
+  };
 
 }
