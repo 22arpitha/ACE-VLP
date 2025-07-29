@@ -603,14 +603,14 @@ export class AllJobsComponent implements OnInit {
         : jobstatus?.status_name === "Cancelled" || jobstatus?.status_name === "Completed")
       .map((status: any) => status?.status_name);
       // this.allStatusNames = this.allJobStatus
-      this.allStatuGroupNames = this.allJobStatus?.filter((status: any) => isActive ? status?.status_name !== "Cancelled" && status?.status_name !== "Completed"
-        : status?.status_name === "Cancelled" || status?.status_name === "Completed").map((status: any) => ({
-          id: status?.status_name, name: status?.status_name
+      // this.allStatuGroupNames = this.allJobStatus?.filter((status: any) => isActive ? status?.status_name !== "Cancelled" && status?.status_name !== "Completed"
+      //   : status?.status_name === "Cancelled" || status?.status_name === "Completed").map((status: any) => ({
+      //     id: status?.status_name, name: status?.status_name
+      //   }))
+    this.allStatuGroupNames = this.groupList?.filter((group: any) => isActive ? group?.group_name !== "Cancelled" && group?.group_name !== "Completed"
+        : group?.group_name === "Cancelled" || group?.group_name === "Completed").map((status: any) => ({
+          id: status?.group_name, name: status?.group_name
         }))
-    // this.allStatuGroupNames = this.groupList?.filter((group: any) => isActive ? group?.group_name !== "Cancelled" && group?.group_name !== "Completed"
-    //     : group?.group_name === "Cancelled" || group?.group_name === "Completed").map((status: any) => ({
-    //       id: status?.group_name, name: status?.group_name
-    //     }))
   }
 
   setDateFilterColumn(event) {

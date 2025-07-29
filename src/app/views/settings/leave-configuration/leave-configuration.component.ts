@@ -5,7 +5,7 @@ import { ApiserviceService } from '../../../service/apiservice.service';
 import { CommonServiceService } from '../../../service/common-service.service';
 import { FormErrorScrollUtilityService } from '../../../service/form-error-scroll-utility-service.service';
 import { SubModuleService } from '../../../service/sub-module.service';
-import { ACCURAL_DAYS_OPTIONS, ACCURAL_MONTH_OPTIONS, EFFECTIVE_FROM_OPTIONS, EFFECTIVE_PERIOD_OPTIONS } from '../../../views/settings/leave-configuration/leave-accural-dropdown-options';
+import { ACCURAL_DAYS_OPTIONS, ACCURAL_MONTH_OPTIONS, EFFECTIVE_FROM_OPTIONS, EFFECTIVE_PERIOD_OPTIONS, PERIOD_OPTIONS } from '../../../views/settings/leave-configuration/leave-accural-dropdown-options';
 import { CARRYFORWARD_FROM_OPTIONS } from './leave-accural-dropdown-options';
 import { ActivatedRoute, Router } from '@angular/router';
 import { environment } from '../../../../environments/environment';
@@ -27,6 +27,7 @@ export class LeaveConfigurationComponent implements OnInit {
   accrualDaysList = ACCURAL_DAYS_OPTIONS;
   accrualMonthList = ACCURAL_MONTH_OPTIONS;
   effectivePeriodList = EFFECTIVE_PERIOD_OPTIONS;
+  periodList = PERIOD_OPTIONS;
   effectiveFromList = EFFECTIVE_FROM_OPTIONS;
   carryForwardList = CARRYFORWARD_FROM_OPTIONS;
   constructor(private fb: FormBuilder, private modalService: NgbModal, private accessControlService: SubModuleService,

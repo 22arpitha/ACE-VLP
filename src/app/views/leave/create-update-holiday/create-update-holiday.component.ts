@@ -91,7 +91,8 @@ export class CreateUpdateHolidayComponent implements OnInit {
             this.dialogRef.close();
           },
           (error: any) => {
-            console.log('error', error)
+            console.log('error', error);
+            this.apiService.showError(error.error.detail.name);
           }
         )
       } else {
@@ -102,7 +103,8 @@ export class CreateUpdateHolidayComponent implements OnInit {
             this.dialogRef.close();
           },
           (error: any) => {
-            console.log('error', error)
+            console.log('error', error);
+            this.apiService.showError(error.error.detail.name);
           }
         )
       }

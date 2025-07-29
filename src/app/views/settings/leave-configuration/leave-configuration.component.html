@@ -185,7 +185,7 @@
                     <mat-select placeholder="Leave Accrual Cycle" formControlName="accrual_cycle" autocomplete="off"
                       panelClass="custom-select-panel" [disableOptionCentering]="true"
                       (selectionChange)="accrualAndResetLeaveCycle($event,'accrual')">
-                      <mat-option *ngFor="let period of effectivePeriodList" [value]="period.value">
+                      <mat-option *ngFor="let period of periodList" [value]="period.value">
                         {{ period.label }}
                       </mat-option>
                     </mat-select>
@@ -217,26 +217,6 @@
           </div>
               <div class="row mx-0 my-0 px-2">
                 <div class="col-sm-12 col-md-3 col-lg-3 my-1 pr-0 pr-md-5"
-                  *ngIf="leaveTypeForm.get('accrual_cycle')?.value==='yearly' || leaveTypeForm.get('accrual_cycle')?.value==='monthly'">
-                  <mat-form-field appearance="outline"
-                    [ngClass]="{ 'highlight-background':!leaveTypeForm.get('is_accrual')?.value}"
-                    class="w-100 custom-mat-form-field">
-                    <mat-label>Day of Accrual<b class="r-star">*</b></mat-label>
-                    <mat-select placeholder="Day of Accrual" formControlName="accrual_day" autocomplete="off"
-                      panelClass="custom-select-panel" [disableOptionCentering]="true">
-                      <mat-option *ngFor="let day of accrualDaysList" [value]="day.value">
-                        {{day.label}}
-                      </mat-option>
-                    </mat-select>
-                    <mat-error
-                      *ngIf="f['accrual_day']?.invalid && f['accrual_day']?.touched || f['accrual_day']?.dirty">
-                      <span *ngIf="f['accrual_day'].errors?.['required']">
-                        Day of Accrual is required.
-                      </span>
-                    </mat-error>
-                  </mat-form-field>
-                </div>
-                <div class="col-sm-12 col-md-3 col-lg-3 my-1 pr-0 pr-md-5"
                   *ngIf="leaveTypeForm.get('accrual_cycle')?.value==='yearly'">
                   <mat-form-field appearance="outline"
                     [ngClass]="{ 'highlight-background':!leaveTypeForm.get('is_accrual')?.value}"
@@ -252,6 +232,26 @@
                       *ngIf="f['accrual_month']?.invalid && f['accrual_month']?.touched || f['accrual_month']?.dirty">
                       <span *ngIf="f['accrual_month'].errors?.['required']">
                         Accrual Month is required.
+                      </span>
+                    </mat-error>
+                  </mat-form-field>
+                </div>
+                <div class="col-sm-12 col-md-3 col-lg-3 my-1 pr-0 pr-md-5"
+                  *ngIf="leaveTypeForm.get('accrual_cycle')?.value==='yearly' || leaveTypeForm.get('accrual_cycle')?.value==='monthly'">
+                  <mat-form-field appearance="outline"
+                    [ngClass]="{ 'highlight-background':!leaveTypeForm.get('is_accrual')?.value}"
+                    class="w-100 custom-mat-form-field">
+                    <mat-label>Day of Accrual<b class="r-star">*</b></mat-label>
+                    <mat-select placeholder="Day of Accrual" formControlName="accrual_day" autocomplete="off"
+                      panelClass="custom-select-panel" [disableOptionCentering]="true">
+                      <mat-option *ngFor="let day of accrualDaysList" [value]="day.value">
+                        {{day.label}}
+                      </mat-option>
+                    </mat-select>
+                    <mat-error
+                      *ngIf="f['accrual_day']?.invalid && f['accrual_day']?.touched || f['accrual_day']?.dirty">
+                      <span *ngIf="f['accrual_day'].errors?.['required']">
+                        Day of Accrual is required.
                       </span>
                     </mat-error>
                   </mat-form-field>
@@ -324,7 +324,7 @@
                     <mat-select placeholder="Leave Accrual Cycle" formControlName="reset_cycle" autocomplete="off"
                       panelClass="custom-select-panel" [disableOptionCentering]="true"
                       (selectionChange)="accrualAndResetLeaveCycle($event,'reset')">
-                      <mat-option *ngFor="let period of effectivePeriodList" [value]="period.value">
+                      <mat-option *ngFor="let period of periodList" [value]="period.value">
                         {{ period.label }}
                       </mat-option>
                     </mat-select>
@@ -332,6 +332,26 @@
                       *ngIf="f['reset_cycle']?.invalid && f['reset_cycle']?.touched || f['reset_cycle']?.dirty">
                       <span *ngIf="f['reset_cycle'].errors?.['required']">
                         Reset accrual cycle is required.
+                      </span>
+                    </mat-error>
+                  </mat-form-field>
+                </div>
+                 <div class="col-sm-12 col-md-3 col-lg-3 my-1 pr-0 pr-md-5"
+                  *ngIf="leaveTypeForm.get('reset_cycle')?.value==='yearly'">
+                  <mat-form-field appearance="outline"
+                    [ngClass]="{ 'highlight-background':!leaveTypeForm.get('is_reset')?.value}"
+                    class="w-100 custom-mat-form-field">
+                    <mat-label>Accrual Month<b class="r-star">*</b></mat-label>
+                    <mat-select placeholder="Accrual Month" formControlName="reset_month" autocomplete="off"
+                      panelClass="custom-select-panel" [disableOptionCentering]="true">
+                      <mat-option *ngFor="let month of accrualMonthList" [value]="month.value">
+                        {{ month.label }}
+                      </mat-option>
+                    </mat-select>
+                    <mat-error
+                      *ngIf="f['reset_month']?.invalid && f['reset_month']?.touched || f['reset_month']?.dirty">
+                      <span *ngIf="f['reset_month'].errors?.['required']">
+                        Accrual Month is required.
                       </span>
                     </mat-error>
                   </mat-form-field>
@@ -350,26 +370,6 @@
                     <mat-error *ngIf="f['reset_day']?.invalid && f['reset_day']?.touched || f['reset_day']?.dirty">
                       <span *ngIf="f['reset_day'].errors?.['required']">
                         Day of accural is required.
-                      </span>
-                    </mat-error>
-                  </mat-form-field>
-                </div>
-                <div class="col-sm-12 col-md-3 col-lg-3 my-1 pr-0 pr-md-5"
-                  *ngIf="leaveTypeForm.get('reset_cycle')?.value==='yearly'">
-                  <mat-form-field appearance="outline"
-                    [ngClass]="{ 'highlight-background':!leaveTypeForm.get('is_reset')?.value}"
-                    class="w-100 custom-mat-form-field">
-                    <mat-label>Accrual Month<b class="r-star">*</b></mat-label>
-                    <mat-select placeholder="Accrual Month" formControlName="reset_month" autocomplete="off"
-                      panelClass="custom-select-panel" [disableOptionCentering]="true">
-                      <mat-option *ngFor="let month of accrualMonthList" [value]="month.value">
-                        {{ month.label }}
-                      </mat-option>
-                    </mat-select>
-                    <mat-error
-                      *ngIf="f['reset_month']?.invalid && f['reset_month']?.touched || f['reset_month']?.dirty">
-                      <span *ngIf="f['reset_month'].errors?.['required']">
-                        Accrual Month is required.
                       </span>
                     </mat-error>
                   </mat-form-field>

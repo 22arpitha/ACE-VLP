@@ -91,13 +91,13 @@ export class JobStatusReportComponent implements OnInit {
   }
 
   getStatusList(){
-  this.api.getData(`${environment.live_url}/${environment.settings_job_status}/`).subscribe((res: any) => {
+  this.api.getData(`${environment.live_url}/${environment.settings_status_group}/`).subscribe((res: any) => {
     if(res){
       console.log(res)
       this.statusName = res?.map((item: any) => ({
         id: item.id,
-        name: item.status_name // for job status 
-        // name: item.group_name // for status group
+        // name: item.status_name // for job status 
+        name: item.group_name // for status group
       }));
     }
   })

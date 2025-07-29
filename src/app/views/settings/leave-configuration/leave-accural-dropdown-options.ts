@@ -41,7 +41,11 @@ export const ACCURAL_MONTH_OPTIONS:any=[
 export const EFFECTIVE_PERIOD_OPTIONS= [
   { label: 'Yearly', value: 'yearly' },
   { label: 'Monthly', value: 'monthly' },
-  // { label: 'Days', value: 'day' }
+  { label: 'Days', value: 'day' }
+]
+export const PERIOD_OPTIONS= [
+  { label: 'Yearly', value: 'yearly' },
+  { label: 'Monthly', value: 'monthly' },
 ]
 export const EFFECTIVE_FROM_OPTIONS = [
   { label: 'Date Of Joning', value: 'date_of_joining'},
@@ -51,6 +55,6 @@ export const EFFECTIVE_FROM_OPTIONS = [
 export const CARRYFORWARD_FROM_OPTIONS = [
   { label: 'Carry Forward', value: 'carry_forward'},
   // { label: 'Carry Forward With Expiry', value: 'carry_forward_with_expiry'},
-  { label: 'Carry Forward With Overlimit', value: 'carry_forward_with_Overlimit'}
+  // { label: 'Carry Forward With Overlimit', value: 'carry_forward_with_Overlimit'}
 ]
 
