@@ -1,9 +1,11 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { CommonServiceService } from '../../../service/common-service.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ApiserviceService } from '../../../service/apiservice.service';
 import { environment } from '../../../../environments/environment';
 import { DatePipe } from '@angular/common';
+import { GenericTableFilterComponent } from '../../../shared/generic-table-filter/generic-table-filter.component';
+import { DropDownPaginationService } from '../../../service/drop-down-pagination.service';
 export interface IdNamePair {
   id: any;
   name: string;
@@ -14,6 +16,8 @@ export interface IdNamePair {
   styleUrls: ['./jobs-of-endclient.component.scss']
 })
 export class JobsOfEndclientComponent implements OnInit {
+  @ViewChild('jobStatusFilter') jobStatusFilter!: GenericTableFilterComponent;
+  @ViewChild('employeeFilter') employeeFilter!: GenericTableFilterComponent;
   endClientData: any;
   BreadCrumbsTitle: any
   allJobs = []
@@ -54,7 +58,7 @@ export class JobsOfEndclientComponent implements OnInit {
     user_id:any;
     userRole:any;
   constructor( private datePipe: DatePipe,private common_service: CommonServiceService,private activateRoute:ActivatedRoute,private router: Router,
-    private api: ApiserviceService,
+    private api: ApiserviceService, private dropdownService: DropDownPaginationService,
   ) {
     this.user_id = sessionStorage.getItem('user_id');
     this.userRole = sessionStorage.getItem('user_role_name');
@@ -72,8 +76,8 @@ export class JobsOfEndclientComponent implements OnInit {
     }
 
   ngOnInit(){
-      this.getEmployees();
-      this.getAllJobStatus();
+      // this.getEmployees();
+      // this.getAllJobStatus();
     }
 
   getContinuousIndex(index: number): number {
@@ -240,4 +244,33 @@ export class JobsOfEndclientComponent implements OnInit {
   dateClass = (date: Date) => {
   return date.getDay() === 0 ? 'sunday-highlight' : '';
 };
+
+fetchEmployees = (page: number, search: string) => {
+    const extraParams = {
+      is_active: 'True',
+      employee: 'True',
+    };
+    return this.dropdownService.fetchDropdownData$(
+      environment.employee,
+      page,
+      search,
+      (item) => ({ id: item.user_id, name: item.user__full_name }),
+      extraParams
+    );
+  };
+fetchJobStatus = (page: number, search: string) => {
+    return this.dropdownService.fetchDropdownData$(
+      environment.settings_job_status,
+      page,
+      search,
+      (item) => ({ id: item.id, name: item.status_name }),
+    );
+}
+
+openFilter(filter: any): void {
+    if (filter) {
+      filter.onMenuOpened();
+    }
+  }
+
 }

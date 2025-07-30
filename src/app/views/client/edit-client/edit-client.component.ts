@@ -11,6 +11,8 @@ import { CanComponentDeactivate } from '../../../auth-guard/can-deactivate.guard
 import { FormErrorScrollUtilityService } from '../../../service/form-error-scroll-utility-service.service';
 import { Observable } from 'rxjs';
 import { SubModuleService } from '../../../service/sub-module.service';
+import { GenericTableFilterComponent } from '../../../shared/generic-table-filter/generic-table-filter.component';
+import { DropDownPaginationService } from '../../../service/drop-down-pagination.service';
 export interface IdNamePair {
   id: any;
   name: string;
@@ -23,6 +25,7 @@ export interface IdNamePair {
 export class EditClientComponent implements CanComponentDeactivate, OnInit {
   @ViewChild(FormGroupDirective) formGroupDirective!: FormGroupDirective;
   @ViewChild('formInputField') formInputField: ElementRef;
+  @ViewChild('groupFilter') groupFilter!: GenericTableFilterComponent;
   isEditItem: boolean = false;
   endClientForm: FormGroup;
   selectedJobStatus: any;
@@ -62,7 +65,8 @@ export class EditClientComponent implements CanComponentDeactivate, OnInit {
     private apiService: ApiserviceService,
     private formErrorScrollService:FormErrorScrollUtilityService,
     private accessControlService:SubModuleService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private dropdownService: DropDownPaginationService,
   ) {
     this.user_id = sessionStorage.getItem('user_id');
     this.user_role_name = sessionStorage.getItem('user_role_name');
@@ -365,5 +369,20 @@ getUniqueValues(
       this.filters[filterType] = selectedOptions;
       this.filterData();
     }
+
+    fetchGroupClients = (page: number, search: string) => {
+    return this.dropdownService.fetchDropdownData$(
+      environment.clients_group,
+      page,
+      search,
+      (item) => ({ id: item.id, name: item.group_name }),
+    );
+}
+
+openFilter(filter: any): void {
+    if (filter) {
+      filter.onMenuOpened();
+    }
+  }
 }
 

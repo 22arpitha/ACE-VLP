@@ -1,14 +1,14 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { DatePipe } from '@angular/common';
 import { Router } from '@angular/router';
-import { MatDialog } from '@angular/material/dialog';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { forkJoin } from 'rxjs';
 import { ApiserviceService } from '../../../service/apiservice.service';
 import { CommonServiceService } from '../../../service/common-service.service';
 import { SubModuleService } from '../../../service/sub-module.service';
 import { environment } from '../../../../environments/environment';
+import { GenericTableFilterComponent } from '../../../shared/generic-table-filter/generic-table-filter.component';
+import { DropDownPaginationService } from '../../../service/drop-down-pagination.service';
 
 export interface IdNamePair {
   id: any;
@@ -22,6 +22,13 @@ export interface IdNamePair {
 
 
 export class AllJobsComponent implements OnInit {
+  //  @ViewChildren(GenericTableFilterComponent) allFilters!: QueryList<GenericTableFilterComponent>;
+  @ViewChild('clientFilter') clientFilter!: GenericTableFilterComponent;
+  @ViewChild('employeeFilter') employeeFilter!: GenericTableFilterComponent;
+  @ViewChild('jobTypeFilter') jobTypeFilter!: GenericTableFilterComponent;
+  @ViewChild('groupClientFilter') groupClientFilter!: GenericTableFilterComponent;
+  @ViewChild('managerFilter') managerFilter!: GenericTableFilterComponent;
+  @ViewChild('satusGroupFilter') satusGroupFilter!: GenericTableFilterComponent;
   jobStatusForm: FormGroup
   BreadCrumbsTitle: any = 'Jobs';
   term: any = '';
@@ -46,7 +53,7 @@ export class AllJobsComponent implements OnInit {
   allJobsList: any = [];
   internalReviewOneIndex: any
   allJobStatus: any = [];
-  groupList:any = []
+  groupList: any = []
   accessPermissions = []
   user_id: any;
   userRole: any;
@@ -101,6 +108,7 @@ export class AllJobsComponent implements OnInit {
     private router: Router,
     private apiService: ApiserviceService,
     private fb: FormBuilder,
+    private dropdownService: DropDownPaginationService,
     private datePipe: DatePipe) {
     this.common_service.setTitle(this.BreadCrumbsTitle);
     this.user_id = sessionStorage.getItem('user_id');
@@ -125,7 +133,7 @@ export class AllJobsComponent implements OnInit {
     this.initialForm();
     //  setTimeout(() => {
     //   this.getCurrentJobs();
-    //  }, 500);
+    //  }, 500)
   }
   access_name: any;
 
@@ -159,14 +167,14 @@ export class AllJobsComponent implements OnInit {
     this.allManagerNames = [];
     this.allClientNames = [];
     forkJoin({
-       _res_status_group: this.apiService.getData(`${environment.live_url}/${environment.settings_status_group}/`),
+      _res_status_group: this.apiService.getData(`${environment.live_url}/${environment.settings_status_group}/`),
       _res_job_status: this.apiService.getData(`${environment.live_url}/${environment.settings_job_status}/`),
       _res_job_type: this.apiService.getData(`${environment.live_url}/${environment.settings_job_type}/`),
       _res_employees: this.apiService.getData(`${environment.live_url}/${environment.employee}/?is_active=True&employee=True`),
       _res_Managers: this.apiService.getData(`${environment.live_url}/${environment.employee}/${manager_query}`),
       _res_clients: this.apiService.getData(`${environment.live_url}/${environment.clients}/${query}`),
     }).subscribe((data: any) => {
-      if (data._res_status_group && data._res_status_group?.length >= 1){
+      if (data._res_status_group && data._res_status_group?.length >= 1) {
         this.groupList = data._res_status_group
       }
       if (data._res_job_status && data._res_job_status?.length >= 1) {
@@ -410,16 +418,17 @@ export class AllJobsComponent implements OnInit {
     // let query = `${this.getFilterBaseUrl()}&job-status=${joinedStatusList}`;
     // // let jobStatusParam = encodeURIComponent(JSON.stringify(this.statusList));
     // // let query = `${this.getFilterBaseUrl()}&job-status=${jobStatusParam}`;
-    if(this.statusList.length!=0){
-      let query:any = `${this.getFilterBaseUrl()}&job-status=[${this.statusList}]`;
-    this.apiService.getData(`${environment.live_url}/${environment.jobs}/${query}`).subscribe((res: any) => {
-      this.allJobsList = res?.results;
-      this.filteredList = res?.results;
-      const noOfPages: number = res?.['total_pages']
-      this.count = noOfPages * this.tableSize;
-      this.count = res?.['total_no_of_record'];
-      this.page = res?.['current_page'];
-    });}
+    if (this.statusList.length != 0) {
+      let query: any = `${this.getFilterBaseUrl()}&job-status=[${this.statusList}]`;
+      this.apiService.getData(`${environment.live_url}/${environment.jobs}/${query}`).subscribe((res: any) => {
+        this.allJobsList = res?.results;
+        this.filteredList = res?.results;
+        const noOfPages: number = res?.['total_pages']
+        this.count = noOfPages * this.tableSize;
+        this.count = res?.['total_no_of_record'];
+        this.page = res?.['current_page'];
+      });
+    }
   }
   getJobsHistoryList() {
     this.allJobsList = [];
@@ -599,18 +608,18 @@ export class AllJobsComponent implements OnInit {
   jobStatusList(status: any) {
     const isActive = status === 'True';
     this.statusList = this.allJobStatus?.filter((jobstatus: any) => isActive
-        ? jobstatus?.status_name !== "Cancelled" && jobstatus?.status_name !== "Completed"
-        : jobstatus?.status_name === "Cancelled" || jobstatus?.status_name === "Completed")
+      ? jobstatus?.status_name !== "Cancelled" && jobstatus?.status_name !== "Completed"
+      : jobstatus?.status_name === "Cancelled" || jobstatus?.status_name === "Completed")
       .map((status: any) => status?.status_name);
-      // this.allStatusNames = this.allJobStatus
-      // this.allStatuGroupNames = this.allJobStatus?.filter((status: any) => isActive ? status?.status_name !== "Cancelled" && status?.status_name !== "Completed"
-      //   : status?.status_name === "Cancelled" || status?.status_name === "Completed").map((status: any) => ({
-      //     id: status?.status_name, name: status?.status_name
-      //   }))
+    // this.allStatusNames = this.allJobStatus
+    // this.allStatuGroupNames = this.allJobStatus?.filter((status: any) => isActive ? status?.status_name !== "Cancelled" && status?.status_name !== "Completed"
+    //   : status?.status_name === "Cancelled" || status?.status_name === "Completed").map((status: any) => ({
+    //     id: status?.status_name, name: status?.status_name
+    //   }))
     this.allStatuGroupNames = this.groupList?.filter((group: any) => isActive ? group?.group_name !== "Cancelled" && group?.group_name !== "Completed"
-        : group?.group_name === "Cancelled" || group?.group_name === "Completed").map((status: any) => ({
-          id: status?.group_name, name: status?.group_name
-        }))
+      : group?.group_name === "Cancelled" || group?.group_name === "Completed").map((status: any) => ({
+        id: status?.group_name, name: status?.group_name
+      }))
   }
 
   setDateFilterColumn(event) {
@@ -692,4 +701,100 @@ export class AllJobsComponent implements OnInit {
     return date.getDay() === 0 ? 'sunday-highlight' : '';
   };
 
+
+  fetchJobTypes = (page: number, search: string) => {
+    //  const extraParams = {
+    //   status: 'True'
+    //  }
+    return this.dropdownService.fetchDropdownData$(
+      environment.settings_job_type,
+      page,
+      search,
+      (item) => ({ id: item.id, name: item.job_type_name }),
+      // extraParams
+    );
+  };
+
+  fetchClients = (page: number, search: string) => {
+    // this.userRole === 'Admin' ? '' : `&employee-id=${this.user_id}`
+    const extraParams = {
+      status: 'True',
+      ...(this.userRole !== 'Admin' && { 'employee-id': this.user_id })
+    }
+    console.log(search, extraParams, 'client funcion')
+    return this.dropdownService.fetchDropdownData$(
+      environment.clients,
+      page,
+      search,
+      (item) => ({ id: item.id, name: item.client_name }),
+      extraParams
+    );
+  };
+
+  fetchEmployees = (page: number, search: string) => {
+    const extraParams = {
+      is_active: 'True',
+      employee: 'True',
+      // ...(this.userRole !== 'Admin' && { 'employee-id': this.user_id })
+    };
+    return this.dropdownService.fetchDropdownData$(
+      environment.employee,
+      page,
+      search,
+      (item) => ({ id: item.user_id, name: item.user__full_name }),
+      extraParams
+    );
+  };
+
+  fetchGroupClients = (page: number, search: string) => {
+    return this.dropdownService.fetchDropdownData$(
+      environment.clients_group,
+      page,
+      search,
+      (item) => ({ id: item.id, name: item.group_name }),
+    );
+  };
+
+  fetchManagers = (page: number, search: string) => {
+    let extraParams: any = {
+      is_active: 'True',
+      employee: 'True',
+      designation: 'manager'
+    };
+    if (this.userRole === 'Manager' || this.userRole === 'Accountant') {
+      extraParams = { userId: this.user_id };
+    }
+    return this.dropdownService.fetchDropdownData$(
+      environment.employee,
+      page,
+      search,
+      (item) => ({ id: item.user_id, name: item.user__full_name }),
+      extraParams
+    );
+  };
+
+  fetchStatusGroup = (page: number, search: string) => {
+    
+    return this.dropdownService.fetchDropdownData$(
+      environment.settings_status_group,
+      page,
+      search,
+      (item) => ({  id: item?.group_name, name: item?.group_name })
+    );
+  };
+
+  openFilter(filter: any): void {
+    if (filter) {
+      filter.onMenuOpened();
+    }
+  }
+
+
+//   resetAllFilters() {
+//   this.allFilters.forEach(filter => {
+//     filter.clearSearch();
+//   });
+// }
+
 }
+
