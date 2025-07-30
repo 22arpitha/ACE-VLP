@@ -9,7 +9,7 @@ import { environment } from '../../../../environments/environment';
 import { SubModuleService } from '../../../service/sub-module.service';
 import { GenericDeleteComponent } from '../../../generic-components/generic-delete/generic-delete.component';
 import { GenericTimesheetConfirmationComponent } from '../../../generic-components/generic-timesheet-confirmation/generic-timesheet-confirmation.component';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, Observable } from 'rxjs';
 import { DropDownPaginationService } from '../../../service/drop-down-pagination.service';
 import { GenericTableFilterComponent } from '../../../shared/generic-table-filter/generic-table-filter.component';
 export interface IdNamePair {
@@ -26,6 +26,9 @@ export class AllTimesheetsComponent implements OnInit {
    @ViewChild('clientFilter') clientFilter!: GenericTableFilterComponent;
    @ViewChild('employeeFilter') employeeFilter!: GenericTableFilterComponent;
    @ViewChild('jobNameFilter') jobNameFilter!: GenericTableFilterComponent;
+//    fetchEmployees!: (page: number, search: string) => Observable<{ results: any[], hasMore: boolean, totalCount?: number }>;
+// fetchClients!: (page: number, search: string) => Observable<{ results: any[], hasMore: boolean, totalCount?: number }>;
+// fetchJobs!: (page: number, search: string) => Observable<{ results: any[], hasMore: boolean, totalCount?: number }>;
   selectedDate: any;
   BreadCrumbsTitle: any = 'Timesheets';
   term: any = '';
@@ -90,7 +93,7 @@ export class AllTimesheetsComponent implements OnInit {
     this.endDate = this.datePipe.transform(endDate, 'yyyy-MM-dd');
   }
 
-  async ngOnInit(): Promise<void> {
+   ngOnInit() {
     this.getModuleAccess();
     // this.getEmployees();
     // this.getAllActiveClients();
@@ -103,6 +106,12 @@ export class AllTimesheetsComponent implements OnInit {
       this.endDate = '';
       this.getTimesheets();
     }
+  //   this.fetchEmployees = this._fetchEmployees.bind(this);
+  // this.fetchClients = this._fetchClients.bind(this);
+  // this.fetchJobs = this._fetchJobs.bind(this);
+  // this.fetchEmployees = (page, search) => this._fetchEmployees(page, search);
+  // this.fetchClients = (page, search) => this._fetchClients(page, search);
+  // this.fetchJobs = (page, search) => this._fetchJobs(page, search);
   }
   
   isTodayFriday(): boolean {
@@ -217,92 +226,12 @@ export class AllTimesheetsComponent implements OnInit {
   //     }));
   //   }
 
-  //   fetchJobs = async (page: number, search: string): Promise<{ results: any[]; hasMore: boolean; totalCount: number }> => {
-  //   const pageSize = 10;
-  //   const query = `?status=True&page=${page}&page_size=${pageSize}&search=${search || ''}` +
-  //                 (this.userRole !== 'Admin' ? `&employee-id=${this.user_id}` : '');
-
-  //   try {
-  //     const response: any = await firstValueFrom(
-  //       this.apiService.getData(`${environment.live_url}/${environment.jobs}/${query}`)
-  //     );
-
-  //     const mapped = response.results?.map((job: any) => ({
-  //       id: job.id,
-  //       name: job.job_name
-  //     })) || [];
-
-  //     return {
-  //       results: mapped,
-  //       hasMore: response.next_page !== null,
-  //       totalCount: response.total_no_of_record
-  //     };
-  //   } catch (error) {
-  //     this.apiService.showError(error?.error?.detail || 'Failed to load jobs');
-  //     return {
-  //       results: [],
-  //       hasMore: false,
-  //       totalCount: 0
-  //     };
-  //   }
-  // };
-
-
-  fetchDropdownData = async (
-    endpoint: string,
-    page: number,
-    search: string,
-    mapItem: (item: any) => { id: any, name: string },
-    extraParams: any = {}
-  ): Promise<{ results: any[], hasMore: boolean, totalCount: number }> => {
-    const pageSize = 10;
-    const params = new URLSearchParams();
-
-    // params.set('status', 'True');
-    params.set('page', String(page));
-    params.set('page_size', String(pageSize));
-
-    if (search) {
-      params.set('search', search);
-    }
-
-    // Add any extra params (like employee=True for employee API)
-    for (const key in extraParams) {
-      if (extraParams[key] !== undefined && extraParams[key] !== null) {
-        params.set(key, extraParams[key]);
-      }
-    }
-
-    const query = `?${params.toString()}`;
-
-    try {
-      const response: any = await firstValueFrom(
-        this.apiService.getData(`${environment.live_url}/${endpoint}/${query}`)
-      );
-
-      const mapped = response.results?.map(mapItem) || [];
-
-      return {
-        results: mapped,
-        hasMore: response.next_page !== null,
-        totalCount: response.total_no_of_record || mapped.length
-      };
-    } catch (error) {
-      this.apiService.showError(error?.error?.detail || 'Failed to fetch data');
-      return {
-        results: [],
-        hasMore: false,
-        totalCount: 0
-      };
-    }
-  };
-
 
   fetchJobs = (page: number, search: string) => {
      const extraParams = {
       status: 'True'
      }
-    return this.dropdownService.fetchDropdownData(
+    return this.dropdownService.fetchDropdownData$(
       environment.jobs,
       page,
       search,
@@ -316,7 +245,7 @@ export class AllTimesheetsComponent implements OnInit {
         status: 'True'
       }
       console.log(search, extraParams,'client funcion')
-      return this.dropdownService.fetchDropdownData(
+      return this.dropdownService.fetchDropdownData$(
         environment.clients,
         page,
         search,
@@ -324,9 +253,6 @@ export class AllTimesheetsComponent implements OnInit {
         extraParams
       );
     };
-
-    
-
     
   fetchEmployees = (page: number, search: string) => {
     const extraParams = {
@@ -334,7 +260,7 @@ export class AllTimesheetsComponent implements OnInit {
     employee: 'True',
     ...(this.userRole !== 'Admin' && { 'employee-id': this.user_id })
   };
-    return  this.dropdownService.fetchDropdownData(
+    return  this.dropdownService.fetchDropdownData$(
       environment.employee,
       page,
       search,
@@ -343,28 +269,67 @@ export class AllTimesheetsComponent implements OnInit {
     );
   };
   
-// GenericTableFilterComponent -> fetchClients (input) -> DropDownPaginationService -> API
-
+  
   onClientFilterOpened() {
     console.log(this.clientFilter)
-  if (this.clientFilter) {
-    this.clientFilter.onMenuOpened(); // this triggers the API
+    if (this.clientFilter) {
+      this.clientFilter.onMenuOpened();
+    }
   }
-}
   onEmployeeFilterOpened(){
-     if (this.employeeFilter) {
-    this.employeeFilter.onMenuOpened(); // this triggers the API
+    if (this.employeeFilter) {
+      this.employeeFilter.onMenuOpened();
+    }
   }
-}
   onJobsFilterOpened(){
     if (this.jobNameFilter) {
-  this.jobNameFilter.onMenuOpened(); // this triggers the API
+      this.jobNameFilter.onMenuOpened();
+    }
   }
-  }
+  // GenericTableFilterComponent -> fetchClients (input) -> DropDownPaginationService -> API
   
 
 
+// private _fetchEmployees(page: number, search: string) {
+//   const extraParams = {
+//     is_active: 'True',
+//     employee: 'True',
+//     ...(this.userRole !== 'Admin' && { 'employee-id': this.user_id })
+//   };
+//   return this.dropdownService.fetchDropdownData$(
+//     environment.employee,
+//     page,
+//     search,
+//     (item) => ({ id: item.user_id, name: item.user__full_name }),
+//     extraParams
+//   );
+// }
 
+// private _fetchClients(page: number, search: string) {
+//   const extraParams = {
+//     status: 'True'
+//   };
+//   return this.dropdownService.fetchDropdownData$(
+//     environment.clients,
+//     page,
+//     search,
+//     (item) => ({ id: item.id, name: item.client_name }),
+//     extraParams
+//   );
+// }
+
+// private _fetchJobs(page: number, search: string) {
+//   const extraParams = {
+//     status: 'True'
+//   };
+//   return this.dropdownService.fetchDropdownData$(
+//     environment.jobs,
+//     page,
+//     search,
+//     (item) => ({ id: item.id, name: item.job_name }),
+//     extraParams
+//   );
+// }
 
 
 
@@ -716,6 +681,7 @@ export class AllTimesheetsComponent implements OnInit {
 
   filterData() {
     let filterQuery = this.getFilterBaseUrl()
+    // console.log(filterQuery)
     if (this.filters.client_name.length) {
       filterQuery += `&client-ids=[${this.filters.client_name.join(',')}]`;
     }
@@ -746,6 +712,9 @@ export class AllTimesheetsComponent implements OnInit {
         this.allTimesheetsList = res?.results;
         this.count = res?.['total_no_of_record'];
         this.page = res?.['current_page'];
+          // this.fetchEmployees = this._fetchEmployees.bind(this);
+          // this.fetchClients = this._fetchClients.bind(this);
+          // this.fetchJobs = this._fetchJobs.bind(this);
       });
   }
   onDateChange(event: any) {
