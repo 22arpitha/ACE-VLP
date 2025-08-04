@@ -412,6 +412,15 @@ export class GenericTableFilterComponent implements OnInit, OnChanges {
       this.fetchMoreOptions(this.latestSearchTerm);
     }
   }
+
+  clearSelection(): void {
+  this.selectedOptions = [];
+  this.selectedOptionsChange.emit([]);
+  this.filterSearchText = '';
+  this.currentPage = 1;
+  this.hasMore = true;
+  this.fetchMoreOptions(this.filterSearchText); 
+}
 }
 
 

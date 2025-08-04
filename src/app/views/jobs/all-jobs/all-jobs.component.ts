@@ -2,7 +2,7 @@ import { Component, OnInit, ViewChild, } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { DatePipe } from '@angular/common';
 import { Router } from '@angular/router';
-import { forkJoin } from 'rxjs';
+import { forkJoin, map } from 'rxjs';
 import { ApiserviceService } from '../../../service/apiservice.service';
 import { CommonServiceService } from '../../../service/common-service.service';
 import { SubModuleService } from '../../../service/sub-module.service';
@@ -115,6 +115,7 @@ export class AllJobsComponent implements OnInit {
     this.userRole = sessionStorage.getItem('user_role_name');
     this.getModuleAccess();
     this.loadInitialData();
+    this.getCurrentJobs();
     // this.getJobStatusList();
     // this.getJobTypeList();
     // this.getAllEmployeeList();
@@ -130,6 +131,7 @@ export class AllJobsComponent implements OnInit {
   }
 
   ngOnInit() {
+    console.log(this.isCurrent)
     this.initialForm();
     //  setTimeout(() => {
     //   this.getCurrentJobs();
@@ -169,10 +171,10 @@ export class AllJobsComponent implements OnInit {
     forkJoin({
       _res_status_group: this.apiService.getData(`${environment.live_url}/${environment.settings_status_group}/`),
       _res_job_status: this.apiService.getData(`${environment.live_url}/${environment.settings_job_status}/`),
-      _res_job_type: this.apiService.getData(`${environment.live_url}/${environment.settings_job_type}/`),
-      _res_employees: this.apiService.getData(`${environment.live_url}/${environment.employee}/?is_active=True&employee=True`),
-      _res_Managers: this.apiService.getData(`${environment.live_url}/${environment.employee}/${manager_query}`),
-      _res_clients: this.apiService.getData(`${environment.live_url}/${environment.clients}/${query}`),
+      // _res_job_type: this.apiService.getData(`${environment.live_url}/${environment.settings_job_type}/`),
+      // _res_employees: this.apiService.getData(`${environment.live_url}/${environment.employee}/?is_active=True&employee=True`),
+      // _res_Managers: this.apiService.getData(`${environment.live_url}/${environment.employee}/${manager_query}`),
+      // _res_clients: this.apiService.getData(`${environment.live_url}/${environment.clients}/${query}`),
     }).subscribe((data: any) => {
       if (data._res_status_group && data._res_status_group?.length >= 1) {
         this.groupList = data._res_status_group
@@ -418,7 +420,8 @@ export class AllJobsComponent implements OnInit {
     // let query = `${this.getFilterBaseUrl()}&job-status=${joinedStatusList}`;
     // // let jobStatusParam = encodeURIComponent(JSON.stringify(this.statusList));
     // // let query = `${this.getFilterBaseUrl()}&job-status=${jobStatusParam}`;
-    if (this.statusList.length != 0) {
+    // add this ==> this.statusList.length != 0 ( when you are displaying the job status)
+    if (this.allStatuGroupNames.length != 0) {
       let query: any = `${this.getFilterBaseUrl()}&job-status=[${this.statusList}]`;
       this.apiService.getData(`${environment.live_url}/${environment.jobs}/${query}`).subscribe((res: any) => {
         this.allJobsList = res?.results;
@@ -454,11 +457,13 @@ export class AllJobsComponent implements OnInit {
     this.page = 1;
     this.tableSize = 50;
     this.getCurrentJobsList();
+    this.resetFilters();
   }
   getJobsHistory() {
     this.page = 1;
     this.tableSize = 50;
     this.getJobsHistoryList();
+    this.resetFilters();
   }
 
   onTableSizeChange(event: any): void {
@@ -773,15 +778,65 @@ export class AllJobsComponent implements OnInit {
     );
   };
 
+  // fetchStatusGroup = (page: number, search: string) => {
+
+  //   return this.dropdownService.fetchDropdownData$(
+  //     environment.settings_status_group,
+  //     page,
+  //     search,
+  //     (item) => ({ id: item?.group_name, name: item?.group_name })
+  //   ).pipe(
+  //     map((res: any) => {
+  //       console.log('Raw API response:', res);
+
+  //       const filteredResults = res.results.filter((group: any) =>
+  //         this.isCurrent
+  //           ? group?.group_name !== "Cancelled" && group?.group_name !== "Completed"
+  //           : group?.group_name === "Cancelled" || group?.group_name === "Completed"
+  //       ).map((status: any) => ({
+  //         id: status?.group_name,               // keep numeric ID
+  //         name: status?.group_name      // dropdown display
+  //       }));
+
+  //       console.log('Filtered results:', filteredResults);
+
+  //       return {
+  //         ...res,
+  //         results: filteredResults
+  //       };
+  //     })
+  //   );
+  // };
+
   fetchStatusGroup = (page: number, search: string) => {
-    
-    return this.dropdownService.fetchDropdownData$(
-      environment.settings_status_group,
-      page,
-      search,
-      (item) => ({  id: item?.group_name, name: item?.group_name })
-    );
-  };
+  return this.dropdownService.fetchDropdownData$(
+    environment.settings_status_group,
+    page,
+    search,
+    (item:any) => {
+      // Apply filter: if item should be excluded, return null
+      if (this.isCurrent) {
+        if (item.group_name === 'Cancelled' || item.group_name === 'Completed') {
+          return null;
+        }
+      } else {
+        if (item.group_name !== 'Cancelled' && item.group_name !== 'Completed') {
+          return null;
+        }
+      }
+
+      return { id: item.id, name: item.group_name };
+    }
+  ).pipe(
+    map((res: any) => {
+      return {
+        ...res,
+        results: res.results.filter((x: any) => x !== null) // remove nulls
+      };
+    })
+  );
+};
+
 
   openFilter(filter: any): void {
     if (filter) {
@@ -790,11 +845,16 @@ export class AllJobsComponent implements OnInit {
   }
 
 
-//   resetAllFilters() {
-//   this.allFilters.forEach(filter => {
-//     filter.clearSearch();
-//   });
-// }
+  //   resetAllFilters() {
+  //   this.allFilters.forEach(filter => {
+  //     filter.clearSearch();
+  //   });
+  // }
+
+  resetFilters(): void {
+  // clears only status group filter
+  this.satusGroupFilter?.clearSelection();
+}
 
 }
 
