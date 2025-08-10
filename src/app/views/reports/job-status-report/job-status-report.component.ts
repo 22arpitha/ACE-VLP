@@ -64,8 +64,8 @@ export class JobStatusReportComponent implements OnInit {
     this.userRole = sessionStorage.getItem('user_role_name');
     this.getJobList();
     // this.getGroupList();
-    this.getClienList();
-    this.getStatusList();
+    // this.getClienList();
+    // this.getStatusList();
     }
 
    async ngOnInit() {
@@ -363,118 +363,118 @@ getClienList(){
     // })
   }
  // Fetch table data from API with given params
- async getTableData(params?: { page?: number; pageSize?: number; searchTerm?: string;client_ids?:any;job_ids?:any;group_ids?:any;job_allocation_date?:any;job_status_date?:any,job_status?: any[]; }) {
-  let finalQuery;
-  this.formattedData = []; // Initialize/clear
-   const page = params?.page ?? this.page;
-   const pageSize = params?.pageSize ?? this.tableSize;
-   const searchTerm = params?.searchTerm ?? this.term;
-   const query = buildPaginationQuery({ page, pageSize, searchTerm });
-   this.jobStatusList(this.tabStatus);
-    // console.log(this.groupName,'groupName');
-       finalQuery = query + `&job-status=[${this.statusList}]`;
-       finalQuery += (this.userRole ==='Admin' || (this.userRole !='Admin' && this.client_id)) ? '':`&employee-id=${this.user_id}`;
-       finalQuery += this.client_id ? `&client=${this.client_id}` : '';
-       finalQuery += `&report-type=job-status-report`;
-        if (params?.client_ids?.length) {
-            finalQuery += `&client-ids=[${params.client_ids.join(',')}]`;
-          }if (params?.job_ids?.length) {
-            finalQuery += `&job-ids=[${params?.job_ids.join(',')}]`;
-          }if (params?.group_ids?.length) {
-            finalQuery += `&group-ids=[${params.group_ids.join(',')}]`;
-          }if (params?.job_allocation_date?.startDate && params?.job_allocation_date?.endDate) {
-            // console.log(params.job_allocation_date)
-             finalQuery += `&start-date=${params?.job_allocation_date?.startDate}&end-date=${params?.job_allocation_date?.endDate}`
-          }if (params?.job_status_date) {
-            finalQuery += `&job-status-date=[${params?.job_status_date}]`;
-          }if (params?.job_status?.length) {
-            finalQuery += `&job-status-ids=[${params?.job_status.join(',')}]`;
-          }
+//  async getTableData(params?: { page?: number; pageSize?: number; searchTerm?: string;client_ids?:any;job_ids?:any;group_ids?:any;job_allocation_date?:any;job_status_date?:any,job_status?: any[]; }) {
+//   let finalQuery;
+//   this.formattedData = []; // Initialize/clear
+//    const page = params?.page ?? this.page;
+//    const pageSize = params?.pageSize ?? this.tableSize;
+//    const searchTerm = params?.searchTerm ?? this.term;
+//    const query = buildPaginationQuery({ page, pageSize, searchTerm });
+//    this.jobStatusList(this.tabStatus);
+//     // console.log(this.groupName,'groupName');
+//        finalQuery = query + `&job-status=[${this.statusList}]`;
+//        finalQuery += (this.userRole ==='Admin' || (this.userRole !='Admin' && this.client_id)) ? '':`&employee-id=${this.user_id}`;
+//        finalQuery += this.client_id ? `&client=${this.client_id}` : '';
+//        finalQuery += `&report-type=job-status-report`;
+//         if (params?.client_ids?.length) {
+//             finalQuery += `&client-ids=[${params.client_ids.join(',')}]`;
+//           }if (params?.job_ids?.length) {
+//             finalQuery += `&job-ids=[${params?.job_ids.join(',')}]`;
+//           }if (params?.group_ids?.length) {
+//             finalQuery += `&group-ids=[${params.group_ids.join(',')}]`;
+//           }if (params?.job_allocation_date?.startDate && params?.job_allocation_date?.endDate) {
+//             // console.log(params.job_allocation_date)
+//              finalQuery += `&start-date=${params?.job_allocation_date?.startDate}&end-date=${params?.job_allocation_date?.endDate}`
+//           }if (params?.job_status_date) {
+//             finalQuery += `&job-status-date=[${params?.job_status_date}]`;
+//           }if (params?.job_status?.length) {
+//             finalQuery += `&job-status-ids=[${params?.job_status.join(',')}]`;
+//           }
 
-      // Inner API call for actual table data
-      await this.api.getData(`${environment.live_url}/${environment.jobs}/${finalQuery}`).subscribe((response: any) => {
-        if(response && response.results && Array.isArray(response.results) && response.results.length >=1){
-          this.formattedData = response.results.map((item: any, i: number) => ({
-            sl: (page - 1) * pageSize + i + 1,
-            ...item,
-            is_primary:item?.employees?.find((emp: any) => emp?.is_primary === true)?.employee_name || '',
-          }));
-          //console.log(this.formattedData);
-          this.tableConfig = {
-           columns: tableColumns?.map(col => {
-              let filterOptions:any = [];
-              if (col.filterable) {
-                if (col.key === 'client_name') {
-                  filterOptions = this.clientName;
-                }else if (col.key === 'job_name') {
-                  filterOptions = this.jobName;
-                }else if (col.key === 'group_name') {
-                  filterOptions = this.groupName;
-                }else if (col.key === 'job_status_name') {
-                   filterOptions = this.statusName;
-                 }
-              }
-              return { ...col, filterOptions };
-            }),
-           data: this.formattedData,
-           searchTerm: this.term,
-           actions: [],
-           accessConfig: [],
-           tableSize: pageSize,
-           pagination: true,
-           searchable: true,
-           headerTabs:true,
-           showIncludeAllJobs:true,
-           includeAllJobsEnable:this.isIncludeAllJobEnable ? this.isIncludeAllJobEnable : false,
-           includeAllJobsValue:this.isIncludeAllJobValue ? this.isIncludeAllJobValue : false,
-           selectedClientId:this.client_id ? this.client_id:null,
-           sendEmail:true,
-           currentPage:page,
-           totalRecords: response.total_no_of_record, // Correctly use 'response' from inner call
-           showDownload:true,
-           searchPlaceholder:'Search by Client/Group/Job',
-          };
-        }else{
-          this.tableConfig = {
-              columns: tableColumns?.map(col => {
-                      let filterOptions:any = [];
-                      if (col.filterable) {
-                        if (col.key === 'client_name') { filterOptions = this.clientName; }
-                        else if (col.key === 'job_name') { filterOptions = this.jobName; }
-                         else if (col.key === 'job_status_name') {
-                   filterOptions = this.statusName;
-                 }
-                        else if (col.key === 'group_name') {
-                  filterOptions = this.groupName;
-                }
-                      }
-                      return { ...col, filterOptions };
-                    }),
-                data: [],
-                searchTerm: this.term,
-                actions: [],
-                accessConfig: [],
-                tableSize: pageSize,
-                pagination: true,
-                searchable: true,
-                headerTabs:true,
-                showIncludeAllJobs:true,
-                includeAllJobsEnable:this.isIncludeAllJobEnable ? this.isIncludeAllJobEnable : false,
-                includeAllJobsValue:this.isIncludeAllJobValue ? this.isIncludeAllJobValue : false,
-                selectedClientId:this.client_id ? this.client_id:null,
-                sendEmail:true,
-                currentPage:page,
-                totalRecords: 0,
-                showDownload:true,
-                searchPlaceholder:'Search by Client/Group/Job',
-              };
-        }
-      }, (error: any) => { // Error handling for inner API call
-        this.api.showError(error?.error?.detail);
-        this.formattedData = [];
-        this.tableConfig = { ...this.tableConfig, data: [], totalRecords: 0, currentPage: page };
-      });
- }
+//       // Inner API call for actual table data
+//       await this.api.getData(`${environment.live_url}/${environment.jobs}/${finalQuery}`).subscribe((response: any) => {
+//         if(response && response.results && Array.isArray(response.results) && response.results.length >=1){
+//           this.formattedData = response.results.map((item: any, i: number) => ({
+//             sl: (page - 1) * pageSize + i + 1,
+//             ...item,
+//             is_primary:item?.employees?.find((emp: any) => emp?.is_primary === true)?.employee_name || '',
+//           }));
+//           //console.log(this.formattedData);
+//           this.tableConfig = {
+//            columns: tableColumns?.map(col => {
+//               let filterOptions:any = [];
+//               if (col.filterable) {
+//                 if (col.key === 'client_name') {
+//                   filterOptions = this.clientName;
+//                 }else if (col.key === 'job_name') {
+//                   filterOptions = this.jobName;
+//                 }else if (col.key === 'group_name') {
+//                   filterOptions = this.groupName;
+//                 }else if (col.key === 'job_status_name') {
+//                    filterOptions = this.statusName;
+//                  }
+//               }
+//               return { ...col, filterOptions };
+//             }),
+//            data: this.formattedData,
+//            searchTerm: this.term,
+//            actions: [],
+//            accessConfig: [],
+//            tableSize: pageSize,
+//            pagination: true,
+//            searchable: true,
+//            headerTabs:true,
+//            showIncludeAllJobs:true,
+//            includeAllJobsEnable:this.isIncludeAllJobEnable ? this.isIncludeAllJobEnable : false,
+//            includeAllJobsValue:this.isIncludeAllJobValue ? this.isIncludeAllJobValue : false,
+//            selectedClientId:this.client_id ? this.client_id:null,
+//            sendEmail:true,
+//            currentPage:page,
+//            totalRecords: response.total_no_of_record, // Correctly use 'response' from inner call
+//            showDownload:true,
+//            searchPlaceholder:'Search by Client/Group/Job',
+//           };
+//         }else{
+//           this.tableConfig = {
+//               columns: tableColumns?.map(col => {
+//                       let filterOptions:any = [];
+//                       if (col.filterable) {
+//                         if (col.key === 'client_name') { filterOptions = this.clientName; }
+//                         else if (col.key === 'job_name') { filterOptions = this.jobName; }
+//                          else if (col.key === 'job_status_name') {
+//                    filterOptions = this.statusName;
+//                  }
+//                         else if (col.key === 'group_name') {
+//                   filterOptions = this.groupName;
+//                 }
+//                       }
+//                       return { ...col, filterOptions };
+//                     }),
+//                 data: [],
+//                 searchTerm: this.term,
+//                 actions: [],
+//                 accessConfig: [],
+//                 tableSize: pageSize,
+//                 pagination: true,
+//                 searchable: true,
+//                 headerTabs:true,
+//                 showIncludeAllJobs:true,
+//                 includeAllJobsEnable:this.isIncludeAllJobEnable ? this.isIncludeAllJobEnable : false,
+//                 includeAllJobsValue:this.isIncludeAllJobValue ? this.isIncludeAllJobValue : false,
+//                 selectedClientId:this.client_id ? this.client_id:null,
+//                 sendEmail:true,
+//                 currentPage:page,
+//                 totalRecords: 0,
+//                 showDownload:true,
+//                 searchPlaceholder:'Search by Client/Group/Job',
+//               };
+//         }
+//       }, (error: any) => { // Error handling for inner API call
+//         this.api.showError(error?.error?.detail);
+//         this.formattedData = [];
+//         this.tableConfig = { ...this.tableConfig, data: [], totalRecords: 0, currentPage: page };
+//       });
+//  }
 
    onSearch(term: string): void {
      this.term = term;
@@ -552,4 +552,232 @@ getClientNameById(clientId: number): string {
     const client = this.clientName.find(c => c.id === clientId);
     return client ? client.name : 'NA';
   }
+
+
+
+  
+// new code
+private updateFilterColumn(key: string, cache: any) {
+    this.tableConfig.columns = this.tableConfig.columns.map(col =>
+      col.paramskeyId === key
+        ? {
+            ...col,
+            filterOptions: cache.data,
+            currentPage: cache.page,
+            totalPages: Math.ceil(cache.total / 20)
+          }
+        : col
+    );
+  }
+
+async getTableData(params?: { page?: number; pageSize?: number; searchTerm?: string;client_ids?:any;job_ids?:any;group_ids?:any;job_allocation_date?:any;job_status_date?:any,job_status?: any[]; }) {
+    let finalQuery;
+   const page = params?.page ?? this.page;
+    const pageSize = params?.pageSize ?? this.tableSize;
+    const searchTerm = params?.searchTerm ?? this.term;
+
+    let query = buildPaginationQuery({ page, pageSize, searchTerm });
+    this.jobStatusList(this.tabStatus);
+       finalQuery = query + `&job-status=[${this.statusList}]`;
+       finalQuery += (this.userRole ==='Admin' || (this.userRole !='Admin' && this.client_id)) ? '':`&employee-id=${this.user_id}`;
+       finalQuery += this.client_id ? `&client=${this.client_id}` : '';
+       finalQuery += `&report-type=job-status-report`;
+        if (params?.client_ids?.length) {
+            finalQuery += `&client-ids=[${params.client_ids.join(',')}]`;
+          }if (params?.job_ids?.length) {
+            finalQuery += `&job-ids=[${params?.job_ids.join(',')}]`;
+          }if (params?.group_ids?.length) {
+            finalQuery += `&group-ids=[${params.group_ids.join(',')}]`;
+          }if (params?.job_allocation_date?.startDate && params?.job_allocation_date?.endDate) {
+            // console.log(params.job_allocation_date)
+             finalQuery += `&start-date=${params?.job_allocation_date?.startDate}&end-date=${params?.job_allocation_date?.endDate}`
+          }if (params?.job_status_date) {
+            finalQuery += `&job-status-date=[${params?.job_status_date}]`;
+          }if (params?.job_status?.length) {
+            finalQuery += `&job-status-ids=[${params?.job_status.join(',')}]`;
+          }
+      await this.api.getData(`${environment.live_url}/${environment.jobs}/${finalQuery}`).subscribe((res: any) => {
+     if(res?.results){
+      this.formattedData = res?.results?.map((item: any, i: number) => ({
+        sl: (page - 1) * pageSize + i + 1,
+        ...item,
+         is_primary:item?.employees?.find((emp: any) => emp?.is_primary === true)?.employee_name || '',
+      }));
+      this.tableConfig = {
+          columns: tableColumns.map(col => {
+            let filterOptions: any = [];
+
+            // Try to retain old filterOptions
+            const existingCol = this.tableConfig?.columns?.find(c => c.key === col.key);
+            if (existingCol?.filterOptions?.length) {
+              filterOptions = existingCol.filterOptions;
+            } else if (col.filterable) {
+              // Fallback to initial options if none present
+              if (col.key === 'client_name') {
+                  filterOptions = this.clientName;
+                }else if (col.key === 'job_name') {
+                  filterOptions = this.jobName;
+                }else if (col.key === 'group_name') {
+                  filterOptions = this.groupName;
+                }else if (col.key === 'job_status_name') {
+                   filterOptions = this.statusName;
+                 }
+            }
+
+            return {
+              ...col,
+              filterOptions
+            };
+          }),
+        data: this.formattedData,
+           searchTerm: this.term,
+           actions: [],
+           accessConfig: [],
+           tableSize: pageSize,
+           pagination: true,
+           searchable: true,
+           headerTabs:true,
+           showIncludeAllJobs:true,
+           includeAllJobsEnable:this.isIncludeAllJobEnable ? this.isIncludeAllJobEnable : false,
+           includeAllJobsValue:this.isIncludeAllJobValue ? this.isIncludeAllJobValue : false,
+           selectedClientId:this.client_id ? this.client_id:null,
+           sendEmail:true,
+           currentPage:page,
+           totalRecords: res.total_no_of_record, // Correctly use 'response' from inner call
+           showDownload:true,
+           searchPlaceholder:'Search by Client/Group/Job',
+    }
+  }else{
+          this.tableConfig = {
+              columns: tableColumns?.map(col => {
+                      let filterOptions:any = [];
+                      if (col.filterable) {
+                        if (col.key === 'client_name') { filterOptions = this.clientName; }
+                        else if (col.key === 'job_name') { filterOptions = this.jobName; }
+                         else if (col.key === 'job_status_name') {
+                   filterOptions = this.statusName;
+                 }
+                        else if (col.key === 'group_name') {
+                  filterOptions = this.groupName;
+                }
+                      }
+                      return { ...col, filterOptions };
+                    }),
+                data: [],
+                searchTerm: this.term,
+                actions: [],
+                accessConfig: [],
+                tableSize: pageSize,
+                pagination: true,
+                searchable: true,
+                headerTabs:true,
+                showIncludeAllJobs:true,
+                includeAllJobsEnable:this.isIncludeAllJobEnable ? this.isIncludeAllJobEnable : false,
+                includeAllJobsValue:this.isIncludeAllJobValue ? this.isIncludeAllJobValue : false,
+                selectedClientId:this.client_id ? this.client_id:null,
+                sendEmail:true,
+                currentPage:page,
+                totalRecords: 0,
+                showDownload:true,
+                searchPlaceholder:'Search by Client/Group/Job',
+              };
+        }
+    },(error: any) => { // Error handling for inner API call
+        this.api.showError(error?.error?.detail);
+        this.formattedData = [];
+        this.tableConfig = { ...this.tableConfig, data: [], totalRecords: 0, currentPage: page };
+      });
+    
+}
+
+
+  filterDataCache: {
+  [key: string]: { data: any[], page: number, total: number, searchTerm: string }
+} = {};
+
+getFilterOptions(event: { detail: any; key: string }) {
+  const { detail, key } = event;
+  console.log(this.selectedClientIds,'id')
+  let cache = this.filterDataCache[key];
+  const searchTerm = detail.search || '';
+
+  if (!cache || detail.reset || cache.searchTerm !== searchTerm) {
+  cache = this.filterDataCache[key] = {
+    data: [],
+    page: 0,
+    total: 0,
+    searchTerm
+  };
+}
+
+  // If already loaded all records, don’t fetch again
+  if (cache.data.length >= cache.total && cache.total > 0) {
+    this.updateFilterColumn(key, cache);
+    return;
+  }
+
+  const nextPage = cache.page + 1;
+  let query = `?page=${nextPage}&page_size=${detail.pageSize}`;
+  if (searchTerm) query += `&search=${searchTerm}`;
+
+  let endpoint = '';
+  if (key === 'client-ids') {
+    endpoint = environment.clients;
+    query += `&status=True`;
+    query += this.userRole === 'Admin' ? '' : `&employee-id=${this.user_id}`;
+  }
+  if (key === 'job-ids'){
+    endpoint = environment.jobs
+    query +=  this.userRole ==='Admin' ? '': `&employee-id=${this.user_id}`;
+  } ;
+  if (key === 'job-status-ids'){
+    endpoint = environment.settings_status_group;
+  } 
+  // if (key === 'timesheet-task-ids') {
+  //   // Task filter static
+  //   this.updateFilterColumn(key, { data: this.taskName, page: 1, total: this.taskName.length, searchTerm: '' });
+  //   return;
+  // }
+
+  this.api.getData(`${environment.live_url}/${endpoint}/${query}`)
+    .subscribe((res: any) => {
+      if (!res) return;
+
+      const fieldMap: any = {
+        'client-ids': { id: 'id', name: 'client_name' },
+        'job-ids': { id: 'id', name: 'job_name' },
+        'job-status-ids': { id: 'id', name: 'group_name' },
+      };
+
+      const newData = res.results?.map((item: any) => ({
+        id: item[fieldMap[key]?.id] || '',
+        name: item[fieldMap[key]?.name] || ''
+      }));
+
+      cache.data = [
+        ...cache.data,
+        ...newData.filter(opt => !cache.data.some(existing => existing.id === opt.id))
+      ];
+      cache.page = nextPage;
+      cache.total = res.total_no_of_record || cache.total;
+      
+      this.updateFilterColumn(key, cache);
+    });
+}
+
+// when filter opens or checkboxes selected
+onFilterOpened(event: any) {
+  this.getFilterOptions({ detail: { page: 1, pageSize: 10, search: event.search, reset: event.reset }, key: event.column.paramskeyId });
+}
+
+// when user scrolls
+onFilterScrolled(event: any) {
+  this.getFilterOptions({ detail: { page: event.page, pageSize: 10, search: event.search }, key: event.column.paramskeyId });
+}
+onFilterSearched(event: any) {
+  this.getFilterOptions({ 
+    detail: { page: 1, pageSize: 10, search: event.search, reset: event.reset }, 
+    key: event.column.paramskeyId 
+  });
+}
             }

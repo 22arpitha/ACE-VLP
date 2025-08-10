@@ -1,10 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ApiserviceService } from '../../../service/apiservice.service';
 import { CommonServiceService } from '../../../service/common-service.service';
 import { environment } from '../../../../environments/environment';
 import { SubModuleService } from '../../../service/sub-module.service';
+import { GenericTableFilterComponent } from '../../../shared/generic-table-filter/generic-table-filter.component';
+import { DropDownPaginationService } from '../../../service/drop-down-pagination.service';
 export interface IdNamePair {
   id: any;
   name: string;
@@ -15,6 +17,7 @@ export interface IdNamePair {
   styleUrls: ['./all-employee.component.scss']
 })
 export class AllEmployeeComponent implements OnInit {
+   @ViewChild('roleFilter') roleFilter!: GenericTableFilterComponent;
   BreadCrumbsTitle: any = 'Employee';
   term:any='';
   isCurrent:boolean=true;
@@ -45,7 +48,7 @@ designation__designation_name:false,
   filteredemployeeList:any =[];
   constructor(private common_service: CommonServiceService,
     private router:Router,private modalService: NgbModal,private accessControlService:SubModuleService,
-    private apiService: ApiserviceService) {
+    private apiService: ApiserviceService, private dropdownService: DropDownPaginationService,) {
     this.common_service.setTitle(this.BreadCrumbsTitle)
     this.common_service.empolyeeStatus$.subscribe((status:boolean)=>{
       if(status){
@@ -60,7 +63,7 @@ designation__designation_name:false,
     this.user_id = sessionStorage.getItem('user_id');
     this.userRole = sessionStorage.getItem('user_role_name');
     this.getModuleAccess();
-    this.getAllRoleList();
+    // this.getAllRoleList();
   }
 
   access_name:any ;
@@ -221,5 +224,20 @@ this.apiService.getData(`${environment.live_url}/${environment.employee}/${query
             this.apiService.showError(error?.error?.detail)
           })
     )
+  }
+
+  fetchRoles = (page: number, search: string) => {
+    return this.dropdownService.fetchDropdownData$(
+      environment.settings_roles,
+      page,
+      search,
+      (role) => ({ id: role?.id, name: role?.designation_name }),
+    );
+  };
+
+  openFilter(filter: any): void {
+    if (filter) {
+      filter.onMenuOpened();
+    }
   }
 }

@@ -109,3 +109,7 @@ button.filterdColumn {
     font-weight:700;
   }
 }
+.dropdown-scroll {
+  max-height: 250px; /* or whatever fits */
+  overflow-y: auto;
+}

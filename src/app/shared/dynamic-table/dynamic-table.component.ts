@@ -1,5 +1,5 @@
 // dynamic-table.component.ts
-import { Component, ElementRef, EventEmitter, Input, OnInit, Output, QueryList, SimpleChanges, ViewChildren, ViewContainerRef } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnChanges, OnInit, Output, QueryList, SimpleChanges, ViewChildren, ViewContainerRef } from '@angular/core';
 import { MatMenuTrigger } from '@angular/material/menu';
 import { DatePipe } from '@angular/common';
 import { DynamicTableConfig } from './dynamic-table-config.model';
@@ -11,6 +11,8 @@ import { OverlayRef } from '@angular/cdk/overlay';
 import { NgbDropdownConfig } from '@ng-bootstrap/ng-bootstrap';
 import { MAT_DATE_RANGE_SELECTION_STRATEGY } from '@angular/material/datepicker';
 import { WeeklySelectionStrategy } from '../weekly-selection-strategy';
+import { Subject } from 'rxjs';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 @Component({
   selector: 'app-dynamic-table',
   templateUrl: './dynamic-table.component.html',
@@ -18,7 +20,14 @@ import { WeeklySelectionStrategy } from '../weekly-selection-strategy';
   providers: [NgbDropdownConfig]
 
 })
-export class DynamicTableComponent implements OnInit {
+export class DynamicTableComponent implements OnInit, OnChanges {
+@Output() filterOpened = new EventEmitter<any>(); // new
+@Output() filterScrolled = new EventEmitter<any>(); //new
+nextPage: { [key: string]: number } = {}; //new
+@Output() filterSearched = new EventEmitter<any>(); //new
+searchSubjects: { [key: string]: Subject<string> } = {}; // new
+selectedItemsMap: { [key: string]: any[] } = {};  //new
+
   @Input() config!: DynamicTableConfig;
   overlayRef: OverlayRef | null = null;
   filterTriggers: { [key: string]: MatMenuTrigger } = {};
@@ -80,13 +89,14 @@ selectedFile:(File | null)[] = [];
   ngOnInit(): void {
 this.tempFilters = JSON.parse(JSON.stringify(this.columnFilters));
    }
-onSelectionChange(newSelected: any[], col: any): void {
-  const key = col.key;
-  this.tempFilters[key] = newSelected;
-  this.columnFilters[key] = newSelected;
-  this.onFilterChange(newSelected, col); // Emits to API
-  this.applyFilters(); // Applies locally
-}
+// onSelectionChange(newSelected: any[], col: any): void {
+//   const key = col.key;
+//   this.tempFilters[key] = newSelected;
+//   this.columnFilters[key] = newSelected;
+//   // this.onFilterChange(newSelected, col); // Emits to API
+//    this.onFilterChange(newSelected, col, true);
+//   this.applyFilters(); // Applies locally
+// }
 
   // Add this trackBy function
   trackByColumnKey(index: number, col: any): string {
@@ -106,6 +116,7 @@ onSelectionChange(newSelected: any[], col: any): void {
     };
   }
   private initializeTable(): void {
+    // console.log('initial data ',this.config)
     if(this.config.data && this.config.data?.length > 0){
      this.filteredData = this.config.data;
     }else{
@@ -138,30 +149,37 @@ onSelectionChange(newSelected: any[], col: any): void {
     this.applyFilters();
   }
 
-  // Removed async, added guard based on lastEmittedFilters
-  onFilterChange(selectedValue: any, columnConfig: any) {
-    const filterKey = columnConfig.key; // The key used for columnFilters
-    const backendParamKey = columnConfig.paramskeyId || filterKey; // The key to be sent to backend
-    const currentFilterValueStr = JSON.stringify(selectedValue);
-    const lastEmittedValueStr = this.lastEmittedFilters[filterKey];
+  private suppressNextFilterEvent = false;
+onFilterChange(selectedValue: any, columnConfig: any, fromCheckbox: boolean = false) {
+  // console.log('onFilterChange triggered', { fromCheckbox, selectedValue });
+  const filterKey = columnConfig.key;
+  const backendParamKey = columnConfig.paramskeyId || filterKey;
+  const currentFilterValueStr = JSON.stringify(selectedValue);
+  const lastEmittedValueStr = this.lastEmittedFilters[filterKey];
 
-    // Only emit if the filter value has actually changed since the last emission for this key
-    if (currentFilterValueStr !== lastEmittedValueStr) {
-      this.lastEmittedFilters[filterKey] = currentFilterValueStr;
+  if (currentFilterValueStr !== lastEmittedValueStr) {
+    this.lastEmittedFilters[filterKey] = currentFilterValueStr;
 
-      // console.log(`Emitting filter change for ${filterKey} (backend key: ${backendParamKey}). Value:`, selectedValue);
+    if (fromCheckbox) {
+      this.suppressNextFilterEvent = true; // stop duplicate
       this.actionEvent.emit({
         actionType: 'filter',
         detail: selectedValue,
-        key: backendParamKey
+        key: backendParamKey,
+        fromFilter: true
       });
     } else {
-      // console.log(`Filter value for ${filterKey} (backend key: ${backendParamKey}) has not changed since last emit. Emission skipped.`);
+      this.filterEvent.emit({
+        detail: { page: 1, pageSize: 20, search: '', reset: true },
+        key: backendParamKey
+      });
     }
-    if(this.config.showIncludeAllJobs){
-        this.isIncludeFlagEnableLogic();
-      }
   }
+
+  if (this.config.showIncludeAllJobs) {
+    this.isIncludeFlagEnableLogic();
+  }
+}
 
     applyFilters(): void {
       this.filteredData = this.config.data?.filter(row => {
@@ -265,18 +283,18 @@ onSelectionChange(newSelected: any[], col: any): void {
   //     );
   //   return filtered;
   // }
-getFilteredOptions(columnKey: string): any[] {
-  const allOptions = this.config.columns.find(col => col.key === columnKey)?.filterOptions || [];
-  const searchText = this.filterSearchText[columnKey]?.toLowerCase() || '';
-  const selectedIds = this.columnFilters[columnKey] || [];
+// getFilteredOptions(columnKey: string): any[] {
+//   const allOptions = this.config.columns.find(col => col.key === columnKey)?.filterOptions || [];
+//   const searchText = this.filterSearchText[columnKey]?.toLowerCase() || '';
+//   const selectedIds = this.columnFilters[columnKey] || [];
 
-  const selected = allOptions.filter((opt:any) => selectedIds.includes(opt.id));
-  const searched = allOptions.filter((opt:any) => opt.name?.toLowerCase().includes(searchText));
+//   const selected = allOptions.filter((opt:any) => selectedIds.includes(opt.id));
+//   const searched = allOptions.filter((opt:any) => opt.name?.toLowerCase().includes(searchText));
 
-  const merged = [...selected, ...searched];
-  const uniqueMap = new Map(merged.map((opt:any) => [opt.id, opt]));
-  return Array.from(uniqueMap.values());
-}
+//   const merged = [...selected, ...searched];
+//   const uniqueMap = new Map(merged.map((opt:any) => [opt.id, opt]));
+//   return Array.from(uniqueMap.values());
+// }
 
 onTableDataChange(event: any) {
   this.actionEvent.emit({ actionType:'tableDataChange' , detail:event });
@@ -344,12 +362,16 @@ navigateToEmployee(event,col:any){
 public getCurrentDatasetList(){
   this.isHistory = false;
   this.isCurrent = true;
+   this.tempFilters = {};
+   this.columnFilters = {};
   this.actionEvent.emit({ actionType: 'headerTabs', action:'True' });
 }
 
 public getHistoryDatasetList(){
   this.isCurrent = false;
   this.isHistory = true;
+  this.tempFilters = {}
+  this.columnFilters = {};
   this.actionEvent.emit({ actionType: 'headerTabs', action:'False'});
 }
 // Include All Jobs Checkbox event
@@ -603,5 +625,291 @@ if(event.value){
 dateClass = (date: Date) => {
   return date.getDay() === 0 ? 'sunday-highlight' : '';
 };
+
+
+
+@Output() filterEvent = new EventEmitter<{ detail: any, key: string }>();
+
+// onFilterOpen(col: any, isOpen: boolean) {
+//   if (isOpen) {
+//     console.log('onFilterOpen triggered for', col.key);
+//     this.filterEvent.emit({
+//       detail: { page: 1, pageSize: 10, search: '', reset: true },
+//       key: col.paramskeyId
+//     });
+//   }
+// }
+
+
+filterDataCache: {
+  [key: string]: { data: any[], total: number, page: number, searchTerm: string }
+} = {};
+
+
+// onFilterScroll(event: Event, col: any) {
+//   console.log('onFilterScroll triggered for', col.key);
+//   const target = event.target as HTMLElement;
+//   const cache = this.filterDataCache[col.paramskeyId];
+
+//   // check if user scrolled to the bottom
+//   if (target.scrollHeight - target.scrollTop <= target.clientHeight + 20) {
+//     if (!cache || cache.data.length < cache.total) {
+//       this.filterEvent.emit({
+//         detail: { 
+//           page: cache ? cache.page + 1 : 1, 
+//           pageSize: 20, 
+//           search: this.filterSearchText[col.key] || '', 
+//           reset: false 
+//         },
+//         key: col.paramskeyId
+//       });
+//     }
+//   }
+// }
+
+// Clear search input + reload
+// clearFilterSearch(col: any) {
+//   this.filterSearchText[col.key] = '';
+//   this.filterEvent.emit({
+//     detail: { page: 1, pageSize: 20, search: '', reset: true },
+//     key: col.paramskeyId
+//   });
+// }
+
+
+// onFilterSearch(col: any) {
+//   console.log('onFilterSearch triggere',this.filterSearchText[col.key])
+//   this.filterEvent.emit({
+//     detail: { page: 1, pageSize: 20, search: this.filterSearchText[col.key] || '', reset: true },
+//     key: col.paramskeyId
+//   });
+// }
+
+
+
+
+
+
+// new code 5-08-2025
+
+// getFilteredOptions(columnKey: string): any[] {
+//   const allOptions = this.config.columns.find(col => col.key === columnKey)?.filterOptions || [];
+//   const searchText = (this.filterSearchText[columnKey] || '').toLowerCase();
+//   const selectedIds = this.columnFilters[columnKey] || [];
+
+//   // Always keep selected first
+//   const selected = allOptions.filter((opt:any) => selectedIds.includes(opt.id));
+
+//   // Apply search to only the rest
+//   const others = allOptions
+//     .filter((opt:any) => !selectedIds.includes(opt.id))
+//     .filter((opt:any) => opt.name?.toLowerCase().includes(searchText));
+
+//   return [...selected, ...others];
+// }
+
+
+
+getFilteredOptions(columnKey: string): any[] {
+  const apiOptions = this.config.columns.find(col => col.key === columnKey)?.filterOptions || [];
+  const searchText = (this.filterSearchText[columnKey] || '').toLowerCase();
+  const selectedIds = this.columnFilters[columnKey] || [];
+
+  // Ensure selectedItemsMap for this column is always up-to-date
+  if (!this.selectedItemsMap[columnKey]) {
+    this.selectedItemsMap[columnKey] = [];
+  }
+
+  // Merge any newly fetched API options into the stored selected items
+  const allSelected = [
+    ...this.selectedItemsMap[columnKey],
+    ...apiOptions.filter((opt:any) => selectedIds.includes(opt.id))
+  ].filter((v, i, arr) => arr.findIndex(o => o.id === v.id) === i); // remove duplicates
+
+  // Update stored selected items
+  this.selectedItemsMap[columnKey] = allSelected;
+
+  // Merge selected items with API options (keep selected first)
+  const others = apiOptions
+    .filter((opt:any) => !selectedIds.includes(opt.id))
+    .filter((opt:any) => opt.name?.toLowerCase().includes(searchText));
+
+  return [...allSelected, ...others];
+}
+
+
+
+
+loadingFilters: any = {};
+onFilterOpen(col: any, isOpen: boolean) {
+  if (isOpen) {
+  const columnConfig = this.config.columns.find(c => c.key === col.key);
+  if (columnConfig?.filterOptions && columnConfig.filterOptions.length > 0) {
+    return;
+  }
+  this.nextPage[col.key] = 1;
+  this.loadingFilters[col.key] = false;
+     this.loadingFilters[col.key] = false;
+    this.filterOpened.emit({
+      column: col,
+      page: 1,
+      search: this.filterSearchText[col.key] || ''
+    });
+  }
+}
+
+onFilterScroll(event: any, col: any) {
+  const element = event.target;
+   const key = col.key;
+  if (element.scrollTop + element.clientHeight >= element.scrollHeight - 10 && !this.loadingFilters[key]) {
+     this.loadingFilters[key] = true;
+    const pageToLoad = this.nextPage[col.key] || 2;
+    this.filterScrolled.emit({
+      column: col,
+      page: pageToLoad,
+      search: this.filterSearchText[col.key] || ''
+    });
+    this.nextPage[col.key] = pageToLoad + 1;
+    setTimeout(() => this.loadingFilters[key] = false, 300);
+  }
+}
+
+// onSelectionChange(newSelected: any[], col: any) {
+//   // this.tempFilters[col.key] = newSelected;
+//   //  const filterKey = columnConfig.key;
+//   // const backendParamKey = columnConfig.paramskeyId || filterKey;
+//   // const currentFilterValueStr = JSON.stringify(selectedValue);
+//   // const lastEmittedValueStr = this.lastEmittedFilters[filterKey];
+
+//   // if (currentFilterValueStr !== lastEmittedValueStr) {
+//   //   this.lastEmittedFilters[filterKey] = currentFilterValueStr;
+//   // }
+//   this.columnFilters[col.key] = newSelected;
+//   console.log('newSelected',newSelected,col)
+//   if(col?.filterOptions){
+//    this.actionEvent.emit({
+//     actionType: 'filter',
+//     detail: newSelected,
+//     key: col.paramskeyId,
+//     fromFilter: true
+//   });
+// }
+// }
+selectedFilterOptions: { [key: string]: any[] } = {};
+onSelectionChange(newSelected: any[], col: any) {
+  // this.columnFilters[col.key] = newSelected;
+  // this.tempFilters[col.key] = newSelected;
+  // this.selectedFilterOptions[col.paramskeyId] = [...newSelected];
+  // console.log('selectedFilterOptions',this.selectedFilterOptions)
+  // console.log('newSelected',newSelected,col)
+  //   if(col?.filterOptions){
+  //    this.actionEvent.emit({
+  //     actionType: 'filter',
+  //     detail: newSelected,
+  //     key: col.paramskeyId,
+  //     fromFilter: true
+  //   });
+  // }
+
+   this.columnFilters[col.key] = [...newSelected];
+  this.tempFilters[col.key] = [...newSelected];
+  this.selectedFilterOptions[col.paramskeyId] = [...newSelected];
+  const existing = this.selectedItemsMap[col.key] || [];
+  const stillSelected = existing.filter(item => newSelected.includes(item.id));
+  const newlySelected = (col.filterOptions || []).filter(opt =>
+    newSelected.includes(opt.id)
+  );
+  this.selectedItemsMap[col.key] = [...stillSelected, ...newlySelected]
+    .filter((item, idx, arr) => arr.findIndex(o => o.id === item.id) === idx);
+  if (col?.filterOptions) {
+    this.actionEvent.emit({
+      actionType: 'filter',
+      detail: newSelected,
+      key: col.paramskeyId,
+      fromFilter: true
+    });
+  }
+ if (this.config.showIncludeAllJobs) {
+    this.isIncludeFlagEnableLogic();
+  }
+
+}
+
+
+onSearchInput(col: any) {
+  // const searchText = this.filterSearchText[col.key] || '';
+  // if (searchText.length === 0 || searchText.length >= 2) {
+  //    this.nextPage[col.key] = 1; 
+  //   this.filterSearched.emit({
+  //     column: col,
+  //     page: 1,
+  //     search: searchText,
+  //     reset: true
+  //   });
+  // }
+  const key = col.key;
+  const searchText = this.filterSearchText[key] || '';
+
+  if (!this.searchSubjects[key]) {
+    this.searchSubjects[key] = new Subject<string>();
+    this.searchSubjects[key]
+      .pipe(
+        debounceTime(300),
+        distinctUntilChanged()
+      )
+      .subscribe((value) => {
+        if (value.length === 0 || value.length >= 2) {
+          this.nextPage[key] = 1;
+          this.filterSearched.emit({
+            column: col,
+            page: 1,
+            search: value,
+            reset: true
+          });
+        }
+      });
+  }
+
+  this.searchSubjects[key].next(searchText);
+}
+
+
+
+
+
+clearFilterSearch(col: any) {
+  // console.log('this.config',this.tempFilters[col.key])
+   
+  this.filterSearchText[col.key] = '';
+  this.nextPage[col.key] = 2; // reset pagination
+  this.filterSearched.emit({
+    column: col,
+    page: 1,
+    search: '',
+    reset: true
+  });
+
+
+
+
+  // checkbox selection new code 
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 }

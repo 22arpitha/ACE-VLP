@@ -161,12 +161,12 @@
                   </mat-form-field>
                 </ng-container>
                 <ng-container *ngSwitchCase="'multi-select'">
-                  <div ngbDropdown class="d-inline-block" container="body">
+                  <div ngbDropdown class="d-inline-block"  container="body"  (openChange)="onFilterOpen(col, $event)">
                     <button id="dropdownBasic1" mat-icon-button ngbDropdownToggle [ngClass]="tempFilters[col.key]?.length>=1 ? 'filterdColumn':''">
                           <span *ngIf="tempFilters[col.key]?.length>=1">{{tempFilters[col.key]?.length.toString().padStart(2, '0')}}</span> 
                       <i class="bi-funnel" *ngIf="!tempFilters[col.key] || tempFilters[col.key]?.length===0"></i>
                     </button>
-                    <div ngbDropdownMenu aria-labelledby="dropdownBasic1" class="p-2" (click)="$event.stopPropagation()">
+                    <div ngbDropdownMenu aria-labelledby="dropdownBasic1"  class="p-2" (click)="$event.stopPropagation()" (scroll)="onFilterScroll($event, col)">
                       <ng-container *ngIf="col.key as columnKey" >
                         <div class="position-relative mb-2" >
                           <i
@@ -176,13 +176,15 @@
                               'bi-search': !filterSearchText[columnKey]
                             }"
                             style="cursor: pointer"
-                            (click)="filterSearchText[columnKey] && (filterSearchText[columnKey] = '')"
-                          ></i>
+                            (click)="clearFilterSearch(col)"
+                            ></i>
+                            <!-- (click)="filterSearchText[columnKey] && (filterSearchText[columnKey] = '')" -->
                           <input
                             type="text"
                             class="form-control"
                             placeholder="Search"
                             [(ngModel)]="filterSearchText[columnKey]"
+                            (input)="onSearchInput(col)"
                           />
                         </div>
 
@@ -198,8 +200,10 @@
                             {{ option.name }}
                           </mat-list-option>
                         </mat-selection-list> -->
-                        <mat-selection-list
-                          [ngModel]="tempFilters[columnKey]"
+
+                        <!-- <div  >
+                          <mat-selection-list (scroll)="onFilterScroll($event, col)"
+                           [(ngModel)]="tempFilters[columnKey]"
                           (ngModelChange)="onSelectionChange($event, col)"
                           [multiple]="true"
                         >
@@ -210,6 +214,23 @@
                             {{ option.name }}
                           </mat-list-option>
                         </mat-selection-list>
+                        </div> -->
+
+                        <div  >
+                          <mat-selection-list (scroll)="onFilterScroll($event, col)"
+                           [(ngModel)]="columnFilters[columnKey]"
+                          (ngModelChange)="onSelectionChange($event, col)"
+                          [multiple]="true"
+                        >
+                          <mat-list-option
+                            *ngFor="let option of getFilteredOptions(columnKey)"
+                            [value]="option.id"
+                          >
+                            {{ option.name }}
+                          </mat-list-option>
+                        </mat-selection-list>
+                        </div>
+                        
                       </ng-container>
                     </div>
                   </div>

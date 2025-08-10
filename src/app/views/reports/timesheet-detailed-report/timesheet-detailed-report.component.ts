@@ -51,10 +51,22 @@ export class TimesheetDetailedReportComponent implements OnInit {
    ngOnInit() {
     this.common_service.setTitle(this.BreadCrumbsTitle)
     this.tableData = getTableColumns(this.user_role_name);
+    this.getTaskList();
+        // this.getClienList();
+        // this.getEmployeeList();
+        // this.getTableData();
     // this.getJobList();
-    this.getTableData();
+    // this.getTableData();
+    if (
+      !this.selectedClientIds.length &&
+      !this.selectedJobIds.length &&
+      !this.selectedTaskIds.length &&
+      !this.selectedEmployeeIds.length
+    ) {
+     this.getTableData();
+    }
   }
-
+  
 
 onTableDataChange(event: any) {
   const page = event;
@@ -92,13 +104,14 @@ onTableSizeChange(event: any): void {
 }
 
 // Called from <app-dynamic-table> via @Output actionEvent
-handleAction(event: { actionType: string; detail: any,key:string }) {
+handleAction(event: { actionType: string; detail: any,key:string,fromFilter?: boolean }) {
   switch (event.actionType) {
     case 'tableDataChange':
       this.onTableDataChange(event.detail);
       break;
       case 'tableSizeChange':
-      this.onTableSizeChange(event.detail);
+        if (!event.fromFilter) this.onTableSizeChange(event.detail);
+      // this.onTableSizeChange(event.detail);
       break;
       case 'search':
       this.onSearch(event.detail);
@@ -112,26 +125,26 @@ handleAction(event: { actionType: string; detail: any,key:string }) {
       case 'filter':
       this.onApplyFilter(event.detail,event.key);
       break;
+     
       case 'dateRange':
         // console.log(event.detail, event.key);
       this.onApplyDateFilter(event.detail);
       break;
-    default:
-      this.getTableData({
-        page: 1,
-        pageSize: this.tableSize,
-        searchTerm: this.term,
-        client_ids: this.selectedClientIds,
-        job_ids: this.selectedJobIds,
-        task_ids: this.selectedTaskIds,
-        employee_ids: this.selectedEmployeeIds,
-        timesheet_dates: this.selectedDate
-      });
+      default:
+
+    //   this.getTableData({
+    //     page: 1,
+    //     pageSize: this.tableSize,
+    //     searchTerm: this.term,
+    //     client_ids: this.selectedClientIds,
+    //     job_ids: this.selectedJobIds,
+    //     task_ids: this.selectedTaskIds,
+    //     employee_ids: this.selectedEmployeeIds,
+    //     timesheet_dates: this.selectedDate
+    //   });
   }
 }
 onApplyFilter(filteredData: any[], filteredKey: string): void {
-  // console.log(filteredData, filteredKey);
-
   if (filteredKey === 'client-ids') {
     this.selectedClientIds = filteredData;
   }
@@ -144,7 +157,6 @@ onApplyFilter(filteredData: any[], filteredKey: string): void {
   if (filteredKey === 'timesheet-employee-ids') {
     this.selectedEmployeeIds = filteredData;
   }
-
   this.getTableData({
     page: 1,
     pageSize: this.tableSize,
@@ -157,7 +169,6 @@ onApplyFilter(filteredData: any[], filteredKey: string): void {
   });
 }
 onApplyDateFilter(filteredDate:string): void {
-  console.log('filteredDate',filteredDate);
 this.selectedDate = filteredDate;
 this.getTableData({
     page: 1,
@@ -252,7 +263,114 @@ getClienList(){
         })
         return this.employeeName;
       }
-// Fetch table data from API with given params
+// Fetch table data from API with given params vignesh code 
+// async getTableData(params?: { page?: number; pageSize?: number; searchTerm?: string;client_ids?:any;job_ids?:any;task_ids?:any;employee_ids?:any,timesheet_dates?:any }) {
+
+//    const page = params?.page ?? this.page;
+//     const pageSize = params?.pageSize ?? this.tableSize;
+//     const searchTerm = params?.searchTerm ?? this.term;
+
+//     let query = buildPaginationQuery({ page, pageSize, searchTerm });
+//     query +=`&timesheet-report-type=detailed`;
+//     if(this.user_role_name !== 'Admin'){
+//       query +=`&timesheet-employee=${this.user_id}`
+//       }if (params?.client_ids?.length) {
+//         query += `&client-ids=[${params.client_ids.join(',')}]`;
+//       }
+//       if (params?.job_ids?.length) {
+//         query += `&job-ids=[${params.job_ids.join(',')}]`;
+//       }
+//       if (params?.task_ids?.length) {
+//         query += `&timesheet-task-ids=[${params.task_ids.join(',')}]`;
+//       }
+//       if (params?.employee_ids?.length) {
+//         query += `&timesheet-employee-ids=[${params.employee_ids.join(',')}]`;
+//       }
+//       if(params?.timesheet_dates){
+//         query += `&start-date=${params.timesheet_dates.startDate}&end-date=${params.timesheet_dates.endDate}`
+//       }
+//       await this.api.getData(`${environment.live_url}/${environment.timesheet}/${query}`).subscribe((res: any) => {
+//      if(res){
+//       const formattedData = res?.results?.map((item: any, i: number) => ({
+//         sl: (page - 1) * pageSize + i + 1,
+//         ...item
+//       }));
+
+
+//       this.tableConfig = {
+//         columns: this.tableData.map(col => {
+//           let filterOptions:any = [];
+
+//           if (col.filterable) {
+//             if (col.key === 'client_name') {
+//               filterOptions = this.clientName;
+//             }
+//             else if (col.key === 'job_name') {
+//               filterOptions = this.jobName;
+//             } else if (col.key === 'task_name') {
+//               filterOptions = this.taskName;
+//             }else if (col.key === 'employee_name') {
+//               filterOptions = this.employeeName;
+//             }
+//           }
+
+//           return {
+//             ...col,
+//             filterOptions
+//           };
+//         }),
+
+//         data: formattedData,
+//         searchTerm: this.term,
+//         actions: [],
+//         accessConfig: [],
+//         tableSize: pageSize,
+//         pagination: true,
+//         searchable: true,
+//         currentPage:page,
+//         totalRecords: res.total_no_of_record,
+//         showDownload:true,
+//         timesheetDetailedReport:true,
+//         searchPlaceholder:'Search by Client/Job',
+//       };
+//     }
+//     });
+// }
+
+
+
+
+
+
+  onSearch(term: string): void {
+    this.term = term;
+    this.getTableData({
+      page: 1,
+      pageSize: this.tableSize,
+      searchTerm: term,
+      client_ids: this.selectedClientIds,
+      job_ids: this.selectedJobIds,
+      task_ids: this.selectedTaskIds,
+      employee_ids: this.selectedEmployeeIds,
+      timesheet_dates: this.selectedDate
+    });
+  }
+
+
+  
+  // new code
+  private updateFilterColumn(key: string, cache: any) {
+    this.tableConfig.columns = this.tableConfig.columns.map(col =>
+      col.paramskeyId === key
+        ? {
+            ...col,
+            filterOptions: cache.data,
+            currentPage: cache.page,
+            totalPages: Math.ceil(cache.total / 20)
+          }
+        : col
+    );
+  }
 async getTableData(params?: { page?: number; pageSize?: number; searchTerm?: string;client_ids?:any;job_ids?:any;task_ids?:any;employee_ids?:any,timesheet_dates?:any }) {
 
    const page = params?.page ?? this.page;
@@ -284,30 +402,32 @@ async getTableData(params?: { page?: number; pageSize?: number; searchTerm?: str
         sl: (page - 1) * pageSize + i + 1,
         ...item
       }));
-
       this.tableConfig = {
-        columns: this.tableData.map(col => {
-          let filterOptions:any = [];
+          columns: this.tableData.map(col => {
+            let filterOptions: any = [];
 
-          if (col.filterable) {
-            if (col.key === 'client_name') {
-              filterOptions = this.clientName;
+            // Try to retain old filterOptions
+            const existingCol = this.tableConfig?.columns?.find(c => c.key === col.key);
+            if (existingCol?.filterOptions?.length) {
+              filterOptions = existingCol.filterOptions;
+            } else if (col.filterable) {
+              // Fallback to initial options if none present
+              if (col.key === 'client_name') {
+                filterOptions = this.clientName;
+              } else if (col.key === 'job_name') {
+                filterOptions = this.jobName;
+              } else if (col.key === 'task_name') {
+                filterOptions = this.taskName;
+              } else if (col.key === 'employee_name') {
+                filterOptions = this.employeeName;
+              }
             }
-            else if (col.key === 'job_name') {
-              filterOptions = this.jobName;
-            } else if (col.key === 'task_name') {
-              filterOptions = this.taskName;
-            }else if (col.key === 'employee_name') {
-              filterOptions = this.employeeName;
-            }
-          }
 
-          return {
-            ...col,
-            filterOptions
-          };
-        }),
-
+            return {
+              ...col,
+              filterOptions
+            };
+          }),
         data: formattedData,
         searchTerm: this.term,
         actions: [],
@@ -320,22 +440,106 @@ async getTableData(params?: { page?: number; pageSize?: number; searchTerm?: str
         showDownload:true,
         timesheetDetailedReport:true,
         searchPlaceholder:'Search by Client/Job',
-      };
     }
+  }
+    });
+    
+}
+
+
+  filterDataCache: {
+  [key: string]: { data: any[], page: number, total: number, searchTerm: string }
+} = {};
+
+getFilterOptions(event: { detail: any; key: string }) {
+  const { detail, key } = event;
+  let cache = this.filterDataCache[key];
+  const searchTerm = detail.search || '';
+
+  if (!cache || detail.reset || cache.searchTerm !== searchTerm) {
+  cache = this.filterDataCache[key] = {
+    data: [],
+    page: 0,
+    total: 0,
+    searchTerm
+  };
+}
+
+  // If already loaded all records, don’t fetch again
+  if (cache.data.length >= cache.total && cache.total > 0) {
+    this.updateFilterColumn(key, cache);
+    return;
+  }
+
+  const nextPage = cache.page + 1;
+  let query = `?page=${nextPage}&page_size=${detail.pageSize}`;
+  if (searchTerm) query += `&search=${searchTerm}`;
+
+  let endpoint = '';
+  if (key === 'client-ids') {
+    endpoint = environment.clients;
+    query += `&status=True`;
+    query += this.user_role_name === 'Admin' ? '' : `&employee-id=${this.user_id}`;
+  }
+  if (key === 'job-ids'){
+    endpoint = environment.jobs
+    query +=  this.user_role_name ==='Admin' ? '': `&employee-id=${this.user_id}`;
+  } ;
+  if (key === 'timesheet-employee-ids'){
+    endpoint = environment.employee;
+    query +=  `&is_active=True&employee=True`
+  } 
+  if (key === 'timesheet-task-ids') {
+    // Task filter static
+    this.updateFilterColumn(key, { data: this.taskName, page: 1, total: this.taskName.length, searchTerm: '' });
+    return;
+  }
+
+  this.api.getData(`${environment.live_url}/${endpoint}/${query}`)
+    .subscribe((res: any) => {
+      if (!res) return;
+
+      const fieldMap: any = {
+        'client-ids': { id: 'id', name: 'client_name' },
+        'job-ids': { id: 'id', name: 'job_name' },
+        'timesheet-employee-ids': { id: 'user_id', name: 'user__full_name' },
+      };
+
+      const newData = res.results?.map((item: any) => ({
+        id: item[fieldMap[key]?.id] || '',
+        name: item[fieldMap[key]?.name] || ''
+      }));
+
+      cache.data = [
+        ...cache.data,
+        ...newData.filter(opt => !cache.data.some(existing => existing.id === opt.id))
+      ];
+      cache.page = nextPage;
+      cache.total = res.total_no_of_record || cache.total;
+      
+      this.updateFilterColumn(key, cache);
     });
 }
-  onSearch(term: string): void {
-    this.term = term;
-    this.getTableData({
-      page: 1,
-      pageSize: this.tableSize,
-      searchTerm: term,
-      client_ids: this.selectedClientIds,
-      job_ids: this.selectedJobIds,
-      task_ids: this.selectedTaskIds,
-      employee_ids: this.selectedEmployeeIds,
-      timesheet_dates: this.selectedDate
-    });
-  }
+
+// when filter opens or checkboxes selected
+onFilterOpened(event: any) {
+  this.getFilterOptions({ detail: { page: 1, pageSize: 10, search: event.search, reset: event.reset }, key: event.column.paramskeyId });
+}
+
+// when user scrolls
+onFilterScrolled(event: any) {
+  this.getFilterOptions({ detail: { page: event.page, pageSize: 10, search: event.search }, key: event.column.paramskeyId });
+}
+onFilterSearched(event: any) {
+  this.getFilterOptions({ 
+    detail: { page: 1, pageSize: 10, search: event.search, reset: event.reset }, 
+    key: event.column.paramskeyId 
+  });
+}
+
+
+
+
+
 
 }

@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -12,6 +12,8 @@ import { environment } from '../../../../environments/environment';
 import { EditInvoiceComponent } from '../edit-invoice/edit-invoice.component';
 import { MAT_DATE_RANGE_SELECTION_STRATEGY } from '@angular/material/datepicker';
 import { WeeklySelectionStrategy } from '../../../shared/weekly-selection-strategy';
+import { DropDownPaginationService } from '../../../service/drop-down-pagination.service';
+import { GenericTableFilterComponent } from '../../../shared/generic-table-filter/generic-table-filter.component';
 
 
 @Component({
@@ -20,7 +22,7 @@ import { WeeklySelectionStrategy } from '../../../shared/weekly-selection-strate
   styleUrls: ['./all-invoice.component.scss']
 })
 export class AllInvoiceComponent implements OnInit {
-
+@ViewChild('clientFilter') clientFilter!: GenericTableFilterComponent;
 BreadCrumbsTitle: any = 'Invoices';
     term:any='';
     sortValue: string = '';
@@ -52,7 +54,7 @@ BreadCrumbsTitle: any = 'Invoices';
     datepicker: null;
     constructor(private common_service: CommonServiceService,private accessControlService:SubModuleService,
       private router:Router,private modalService: NgbModal,private dialog:MatDialog,
-      private datePipe:DatePipe,
+      private datePipe:DatePipe,private dropdownService: DropDownPaginationService,
       private apiService: ApiserviceService,private http: HttpClient) {
       this.common_service.setTitle(this.BreadCrumbsTitle)
       this.getAllInvoiceList();
@@ -66,7 +68,7 @@ BreadCrumbsTitle: any = 'Invoices';
       this.user_id = sessionStorage.getItem('user_id');
       this.userRole = sessionStorage.getItem('user_role_name');
       this.getModuleAccess();
-      this.getAllActiveClients();
+      // this.getAllActiveClients();
     }
 
     access_name:any ;
@@ -258,4 +260,28 @@ BreadCrumbsTitle: any = 'Invoices';
     dateClass = (date: Date) => {
       return date.getDay() === 0 ? 'sunday-highlight' : '';
     };
+
+
+    fetchClients = (page: number, search: string) => {
+    // this.userRole === 'Admin' ? '' : `&employee-id=${this.user_id}`
+    const extraParams = {
+      status: 'True',
+      ...(this.userRole !== 'Admin' && { 'employee-id': this.user_id })
+    }
+    console.log(search, extraParams, 'client funcion')
+    return this.dropdownService.fetchDropdownData$(
+      environment.clients,
+      page,
+      search,
+      (item) => ({ id: item.id, name: item.client_name }),
+      extraParams
+    );
+  };
+
+  openFilter(filter: any): void {
+    if (filter) {
+      filter.onMenuOpened();
+    }
+  }
+  
 }
