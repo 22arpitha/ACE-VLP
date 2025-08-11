@@ -62,7 +62,7 @@ export class JobStatusReportComponent implements OnInit {
    ) {
     this.user_id = sessionStorage.getItem('user_id');
     this.userRole = sessionStorage.getItem('user_role_name');
-    this.getJobList();
+    // this.getJobList();
     // this.getGroupList();
     // this.getClienList();
     // this.getStatusList();
@@ -164,8 +164,8 @@ export class JobStatusReportComponent implements OnInit {
        break;
        case 'headerTabs':
         this.tabStatus = event['action'];
-        this.getClienList();
-        this.getJobList();
+        // this.getClienList();
+        // this.getJobList();
         this.page=1;
         this.getTableData({
           page: this.page,
@@ -733,6 +733,11 @@ getFilterOptions(event: { detail: any; key: string }) {
   if (key === 'job-status-ids'){
     endpoint = environment.settings_status_group;
   } 
+  if (key === 'group-ids'){
+    endpoint = environment.clients_group;
+    query += this.userRole === 'Admin' ? '' : `?employee_id=${this.user_id}`
+  }
+ 
   // if (key === 'timesheet-task-ids') {
   //   // Task filter static
   //   this.updateFilterColumn(key, { data: this.taskName, page: 1, total: this.taskName.length, searchTerm: '' });
@@ -747,6 +752,7 @@ getFilterOptions(event: { detail: any; key: string }) {
         'client-ids': { id: 'id', name: 'client_name' },
         'job-ids': { id: 'id', name: 'job_name' },
         'job-status-ids': { id: 'id', name: 'group_name' },
+        'group-ids':{ id: 'id', name: 'group_name' }
       };
 
       const newData = res.results?.map((item: any) => ({

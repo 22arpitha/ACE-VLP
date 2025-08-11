@@ -17,6 +17,7 @@ import { CompensatoryRequestComponent } from './compensatory-request/compensator
 import { AddCompoffRequestComponent } from './add-compoff-request/add-compoff-request.component';
 import { AddCustomizeBalanceComponent } from './add-customize-balance/add-customize-balance.component';
 import { ViewLeaveRequestComponent } from './view-leave-request/view-leave-request.component';
+import { UserDashboardComponent } from './user-dashboard/user-dashboard.component';
 
 @NgModule({
   declarations: [
@@ -32,6 +33,7 @@ import { ViewLeaveRequestComponent } from './view-leave-request/view-leave-reque
     AddCompoffRequestComponent,
     AddCustomizeBalanceComponent,
     ViewLeaveRequestComponent,
+    UserDashboardComponent,
   ],
   imports: [
     CommonModule,

@@ -752,11 +752,15 @@ export class AllJobsComponent implements OnInit {
   };
 
   fetchGroupClients = (page: number, search: string) => {
+    const extraParams = {
+      ...(this.userRole !== 'Admin' && { 'employee_id': this.user_id })
+    }
     return this.dropdownService.fetchDropdownData$(
       environment.clients_group,
       page,
       search,
       (item) => ({ id: item.id, name: item.group_name }),
+      extraParams
     );
   };
 
