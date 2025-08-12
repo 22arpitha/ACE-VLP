@@ -41,16 +41,17 @@
                             <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
                                 <mat-label> Jobs<b class="r-star">*</b></mat-label>
                                 <mat-select formControlName="job_id" autocomplete="off" placeholder="Select job"
-                                    panelClass="custom-select-panel" [disableOptionCentering]="true">
+                                    panelClass="custom-select-panel" [disableOptionCentering]="true" (openedChange)="onDropdownOpened($event, 'job_id')">
                                     <div class="mat-select-search-wrapper d-flex">
-                                        <input matInput [(ngModel)]="searchJobText" autofocus
+                                        <input matInput [(ngModel)]="dropdownState.job_id.search" (ngModelChange)="onSearch('job_id', $event)" autofocus
                                             [ngModelOptions]="{standalone: true}" placeholder="Search job"
                                             class="mat-select-search">
-                                        <mat-icon class="search-icon" *ngIf="!searchJobText">search</mat-icon>
-                                        <mat-icon class="search-icon" *ngIf="searchJobText" type="button"
-                                            (click)="clearSearch('jobs')">close</mat-icon>
+                                        <mat-icon class="search-icon" *ngIf="!dropdownState.job_id.search">search</mat-icon>
+                                        <mat-icon class="search-icon" *ngIf="dropdownState.job_id.search" type="button"
+                                            (click)="clearSearchDropD('job_id')">close</mat-icon>
                                     </div>
-                                    <mat-option *ngFor="let item of filteredJobsList()" [value]="item?.id">
+                                    <mat-option hidden disabled></mat-option>
+                                    <mat-option *ngFor="let item of getOptionsWithSelectedOnTop('job_id')" [value]="item?.id">
                                         {{item?.job_name}}
                                     </mat-option>
                                 </mat-select>

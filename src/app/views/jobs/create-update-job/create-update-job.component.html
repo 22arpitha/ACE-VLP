@@ -32,15 +32,18 @@
 <div class="col-12 col-sm-12 col-md-6 col-lg-3 my-1 no-padding pl-0 pr-5">
     <mat-form-field appearance="outline"  [ngClass]="{ 'highlight-background':!shouldDisableFields}" class="w-100 custom-mat-form-field">
         <mat-label>Client <b class="r-star">*</b></mat-label>
-        <mat-select formControlName="client" autocomplete="off"
+        <mat-select  formControlName="client" autocomplete="off" 
                 placeholder="Client" panelClass="custom-select-panel"
-                [disableOptionCentering]="true" (selectionChange)="onClientChange($event)" >
+                 (selectionChange)="onClientChange($event)" (openedChange)="onDropdownOpened($event, 'client')" >
+                <!-- [(ngModel)]="searchClientText" -->
                 <div class="mat-select-search-wrapper d-flex">
-                  <input matInput [(ngModel)]="searchClientText" autofocus [ngModelOptions]="{standalone: true}" placeholder="Search Client" class="mat-select-search">
-                  <mat-icon class="search-icon" *ngIf="!searchClientText">search</mat-icon>
-                  <mat-icon class="search-icon" *ngIf="searchClientText" type="button" (click)="clearSearch('client')">close</mat-icon>
+                  <input matInput  [(ngModel)]="dropdownState.client.search" (ngModelChange)="onSearch('client', $event)"  autofocus [ngModelOptions]="{standalone: true}" placeholder="Search Client" class="mat-select-search">
+                  <mat-icon class="search-icon" *ngIf="!dropdownState.client.search">search</mat-icon>
+                  <mat-icon class="search-icon"  *ngIf="dropdownState.client.search" type="button" (click)="clearSearchDropD('client')">close</mat-icon>
                 </div>
-                <mat-option *ngFor="let item of filteredClientList()" [value]="item?.id">
+                <mat-option *ngIf="allClientslist.length === 0" hidden disabled>
+                </mat-option>
+                <mat-option *ngFor="let item of getOptionsWithSelectedOnTop('client')" [value]="item?.id">
                     {{item?.client_name}}
                 </mat-option>
         </mat-select>
@@ -49,20 +52,24 @@
       </mat-error>
     </mat-form-field>
  
-</div> 
+</div>
+
 <!-- End Client Dropdown -->
 <div class="col-12 col-sm-12 col-md-6 col-lg-3 my-1 no-padding pl-0 pr-5">
   <mat-form-field appearance="outline"  [ngClass]="{ 'highlight-background': !shouldDisableFields}" class="w-100 custom-mat-form-field">
       <mat-label>End Client <b class="r-star">*</b></mat-label>
       <mat-select formControlName="end_client" autocomplete="off"
-              placeholder="End Client" panelClass="custom-select-panel"
+              placeholder="End Client" panelClass="custom-select-panel" 
+              (openedChange)="onDropdownOpened($event, 'end_client')" [disabled]="!jobFormGroup?.get('client')?.value"
               [disableOptionCentering]="true" (selectionChange)="onEndClientChange($event)">
               <div class="mat-select-search-wrapper d-flex">
-                <input matInput [(ngModel)]="searchEndClientText" autofocus [ngModelOptions]="{standalone: true}" placeholder="Search End Client" class="mat-select-search" >
-                <mat-icon class="search-icon" *ngIf="!searchEndClientText">search</mat-icon>
-                <mat-icon class="search-icon" *ngIf="searchEndClientText" type="button" (click)="clearSearch('endClient')">close</mat-icon>
+                <input matInput  [(ngModel)]="dropdownState.end_client.search" (ngModelChange)="onSearch('end_client', $event)" autofocus [ngModelOptions]="{standalone: true}" placeholder="Search End Client" class="mat-select-search" >
+                <mat-icon class="search-icon" *ngIf="!dropdownState.end_client.search">search</mat-icon>
+                <mat-icon class="search-icon" *ngIf="dropdownState.end_client.search" type="button" (click)="clearSearchDropD('end_client')">close</mat-icon>
               </div>
-              <mat-option *ngFor="let item of filteredEndClientList()" [value]="item?.id">
+              <mat-option *ngIf="endClientslists.length === 0" hidden disabled>
+                </mat-option>
+              <mat-option *ngFor="let item of getOptionsWithSelectedOnTop('end_client')" [value]="item?.id">
                   {{item?.client_name}}
               </mat-option>
       </mat-select>
@@ -109,7 +116,7 @@
                     {{item?.service_name}}
                 </mat-option>
         </mat-select>
-        <mat-error *ngIf="f['service']?.invalid && f['service']?.touched || f['client']?.dirty">
+        <mat-error *ngIf="f['service']?.invalid && f['service']?.touched || f['service']?.dirty">
             <span  *ngIf="f['service']?.errors?.['required']">Service is required</span>
       </mat-error>
     </mat-form-field>
@@ -229,14 +236,16 @@
     <mat-form-field appearance="outline"  [ngClass]="{ 'highlight-background': !shouldDisableFields}" class="w-100 custom-mat-form-field">
         <mat-label>Job Type <b class="r-star">*</b></mat-label>
         <mat-select formControlName="job_type" autocomplete="off"
-                placeholder="Job Type" panelClass="custom-select-panel"
-                [disableOptionCentering]="true">
+                placeholder="Job Type" panelClass="custom-select-panel" (selectionChange)="commonOnchangeFun($event, 'job_type')"
+                [disableOptionCentering]="true" (openedChange)="onDropdownOpened($event, 'job_type')">
                 <div class="mat-select-search-wrapper d-flex">
-                  <input matInput [(ngModel)]="searchJobTypeText" autofocus [ngModelOptions]="{standalone: true}" placeholder="Search Job Type" class="mat-select-search">
-                  <mat-icon class="search-icon" *ngIf="!searchJobTypeText">search</mat-icon>
-                  <mat-icon class="search-icon" *ngIf="searchJobTypeText" type="button" (click)="clearSearch('job_type')">close</mat-icon>
+                  <input matInput [(ngModel)]="dropdownState.job_type.search" (ngModelChange)="onSearch('job_type', $event)" autofocus [ngModelOptions]="{standalone: true}" placeholder="Search Job Type" class="mat-select-search">
+                  <mat-icon class="search-icon" *ngIf="!dropdownState.job_type.search">search</mat-icon>
+                  <mat-icon class="search-icon" *ngIf="dropdownState.job_type.search" type="button" (click)="clearSearchDropD('job_type')">close</mat-icon>
                 </div>
-                <mat-option *ngFor="let item of filteredJobTypeList()" [value]="item?.id">
+                <mat-option *ngIf="allJobtypeList.length === 0" hidden disabled>
+                </mat-option>
+                <mat-option *ngFor="let item of getOptionsWithSelectedOnTop('job_type')" [value]="item?.id">
                     {{item?.job_type_name}}
                 </mat-option>
         </mat-select>
@@ -285,7 +294,7 @@
                 <div class="mat-select-search-wrapper d-flex">
                   <input matInput [(ngModel)]="searchJobStatusText" autofocus [ngModelOptions]="{standalone: true}" placeholder="Search Job Status" class="mat-select-search">
                   <mat-icon class="search-icon" *ngIf="!searchJobStatusText">search</mat-icon>
-                  <mat-icon class="search-icon" *ngIf="searchJobStatusText" type="button" (click)="clearSearch('job_type')">close</mat-icon>
+                  <mat-icon class="search-icon" *ngIf="searchJobStatusText" type="button" (click)="clearSearch('job_status')">close</mat-icon>
                 </div>
                 <mat-option *ngFor="let item of filteredJobStatusList();let i = index" [value]="item?.id" [disabled]="!isEditItem && i >= internalReviewOneIndex">
                   {{item?.status_name}}

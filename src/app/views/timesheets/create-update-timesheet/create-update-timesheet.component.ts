@@ -1,4 +1,4 @@
-import { Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component,ChangeDetectorRef, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DatePipe } from '@angular/common';
 import { FormBuilder, FormGroup, FormGroupDirective, Validators } from '@angular/forms';
@@ -44,7 +44,7 @@ weekTimesheetSubmitted: boolean = false;
 errorMessage:any='';
   constructor(private fb: FormBuilder, private apiService: ApiserviceService, private datePipe: DatePipe,
     private accessControlService: SubModuleService, private router: Router, private common_service: CommonServiceService,
-    private activeRoute: ActivatedRoute, private formErrorScrollService: FormErrorScrollUtilityService
+    private activeRoute: ActivatedRoute, private formErrorScrollService: FormErrorScrollUtilityService,private cdr: ChangeDetectorRef
   ) {
     this.user_id = sessionStorage.getItem('user_id');
     this.user_role_name = sessionStorage.getItem('user_role_name')
@@ -157,7 +157,7 @@ this.formErrorScrollService.resetHasUnsavedValue();
     this.apiService.getData(`${environment.live_url}/${environment.jobs}/${queryparams}`).subscribe(
       (res: any) => {
         // console.log('jobs data', res)
-        this.jobsList = res
+        // this.jobsList = res
       },
       (error: any) => {
         this.apiService.showError(error?.error?.detail);
@@ -364,7 +364,7 @@ this.timesheetFormGroup.controls['time_spent']?.reset();
   getTimesheetDetails(id: any) {
     this.apiService.getData(`${environment.live_url}/${environment.vlp_timesheets}/${id}/`).subscribe(
       (res: any) => {
-         this.timesheetFormGroup.patchValue({
+        this.timesheetFormGroup.patchValue({
           date: res.date,
           employee_id: res.employee_id,
           client_id: res.client_id,
@@ -376,6 +376,7 @@ this.timesheetFormGroup.controls['time_spent']?.reset();
           notes: res.notes,
           created_by: res.created_by,
         });
+        this.patchDropdownValuesForEdit(res);
       },
       (error: any) => {
         this.apiService.showError(error?.error?.detail);
@@ -457,9 +458,10 @@ getJobStatusList() {
         this.statusList = this.allJobStatus
         ?.filter((jobstatus: any) =>jobstatus?.status_name !== "Cancelled" && jobstatus?.status_name !== "Completed")?.map((status: any) => status?.status_name);
       }
-    setTimeout(() => {
-      this.getEmployeeJobsList();
-    }, 300);
+      // commented because added pagination for jobs
+    // setTimeout(() => {
+    //   this.getEmployeeJobsList();
+    // }, 300);
     },
     (error:any)=>{
       this.apiService.showError(error?.error?.detail);
@@ -470,4 +472,197 @@ getJobStatusList() {
 dateClass = (date: Date) => {
   return date.getDay() === 0 ? 'sunday-highlight' : '';
 };
+
+
+// new code =====================================
+
+pageSizeDropdown = 10;
+
+dropdownState = {
+    job_id: {
+    page: 1,
+    list: [],
+    search: '',
+    totalPages: 1,
+    loading: false,
+    initialized: false
+  },
+};
+
+dropdownEndpoints = {
+  job_id: environment.jobs,
+};
+
+private scrollListeners: { [key: string]: (event: Event) => void } = {};
+
+// Selected items for pagination dropdowns
+selectedItemsMap: { [key: string]: any[] } = {
+  job_id: [],
+  client:[]
+};
+
+
+removeScrollListener(key: string) {
+  const panel = document.querySelector('.cdk-overlay-container .mat-select-panel');
+  if (panel && this.scrollListeners[key]) {
+    panel.removeEventListener('scroll', this.scrollListeners[key]);
+    delete this.scrollListeners[key];
+  }
+}
+
+// Scroll handler for infinite scroll
+onScroll(key: string, event: Event) {
+  const target = event.target as HTMLElement;
+  const state = this.dropdownState[key];
+
+  const scrollTop = target.scrollTop;
+  const scrollHeight = target.scrollHeight;
+  const clientHeight = target.clientHeight;
+
+  const atBottom = scrollHeight - scrollTop <= clientHeight + 5;
+  if (atBottom && !state.loading && state.page < state.totalPages) {
+    state.page++;
+    this.fetchData(key, true);
+  }
+}
+
+// Search input for pagination 
+onSearch(key: string, text: string) {
+  const state = this.dropdownState[key];
+  state.search = text.trim();
+  state.page = 1;
+  state.list = [];
+  this.fetchData(key, false);
+}
+
+// Clear search input
+clearSearchDropD(key: string) {
+  this.dropdownState[key].search = '';
+  this.dropdownState[key].page = 1;
+  this.dropdownState[key].list = [];
+  this.fetchData(key, false);
+}
+
+// Fetch data from API with pagination and search
+fetchData(key: string, append = false) {
+  const state = this.dropdownState[key];
+  state.loading = true;
+  let query = `page=${state.page}&page_size=${this.pageSizeDropdown}`;
+  if (state.search) {
+    query += `&search=${encodeURIComponent(state.search)}`;
+  }
+  if (key === 'job_id') {
+    query += `&job-status=[${this.statusList}]&employee-id=${this.user_id}`;
+  }
+  this.apiService.getData(`${environment.live_url}/${this.dropdownEndpoints[key]}/?${query}`)
+    .subscribe((res: any) => {
+      state.totalPages = Math.ceil(res.total_no_of_record / this.pageSizeDropdown);
+      const selectedItems = this.selectedItemsMap[key] || [];
+      const selectedIds = selectedItems.map(item => item.id);
+      const filteredResults = res.results.filter(
+        (item: any) => !selectedIds.includes(item.id)
+      );
+      if (append) {
+        state.list = [...state.list, ...filteredResults];
+      } else {
+        state.list = [...selectedItems, ...filteredResults];
+      }
+
+      state.loading = false;
+      this.cdr.detectChanges();
+    }, () => {
+      state.loading = false;
+    });
+}
+
+// Update selectedItemsMap with full objects to keep selected at top & no duplicates
+updateSelectedItems(key: string, selectedIds: any[]) {
+  if (!Array.isArray(selectedIds)) {
+    selectedIds = selectedIds != null ? [selectedIds] : [];
+  }
+  const state = this.dropdownState[key];
+  let selectedItems = this.selectedItemsMap[key] || [];
+   // removing the unselected datas
+  selectedItems = selectedItems.filter(item => selectedIds.includes(item.id));
+
+  // Add new selected items from currently loaded list if missing
+  selectedIds.forEach(id => {
+    if (!selectedItems.some(item => item.id === id)) {
+      const found = state.list.find(item => item.id === id);
+      if (found) {
+        selectedItems.push(found);
+      } else {
+        // if we want then fetch item from API if not found 
+      }
+    }
+  });
+  this.selectedItemsMap[key] = selectedItems;
+}
+
+// Return options with selected items on top, no duplicates
+getOptionsWithSelectedOnTop(key: string) {
+  const state = this.dropdownState[key];
+  const selectedItems = this.selectedItemsMap[key] || [];
+  const unselectedItems = state.list.filter(item =>
+    !selectedItems.some(sel => sel.id === item.id)
+  );
+
+  return [...selectedItems, ...unselectedItems];
+}
+
+onDropdownOpened(isOpen, key: string) {
+  if (isOpen) {
+    // ⬇⬇ ADD THIS BLOCK ⬇⬇
+    if (!this.dropdownState[key].initialized || this.dropdownState[key].list.length === 0) {
+      this.dropdownState[key].page = 1;
+      this.fetchData(key, false);  
+      this.dropdownState[key].initialized = true;
+    }
+    setTimeout(() => {
+      this.removeScrollListener(key); 
+      const panel = document.querySelector('.cdk-overlay-container .mat-select-panel');
+      if (panel) {
+        this.scrollListeners[key] = (event: Event) => this.onScroll(key, event);
+        panel.addEventListener('scroll', this.scrollListeners[key]);
+      }
+    }, 0);
+  } else {
+    this.removeScrollListener(key);
+  }
+}
+
+commonOnchangeFun(event, key){
+  this.updateSelectedItems(key, event.value);
+}
+
+patchDropdownValuesForEdit(data: any) {
+  const setDropdownValue = (key: string, idKey: string, nameKey: string) => {
+    const idVal = data?.[idKey];
+    const nameVal = data?.[nameKey];
+    if (idVal != null) {
+      const obj: any = { id: idVal, [nameKey]: nameVal ?? '' };
+      this.selectedItemsMap[key] = [obj];
+      this.timesheetFormGroup.get(key)?.patchValue(idVal);
+      if (!this.dropdownState[key]) {
+        this.dropdownState[key] = {
+          page: 1,
+          list: [],
+          search: '',
+          totalPages: 1,
+          loading: false,
+          initialized: false
+        };
+      }
+      this.dropdownState[key].list = this.dropdownState[key].list.filter(
+        (it: any) => it?.id !== idVal
+      );
+      this.dropdownState[key].list.unshift(obj);
+    }
+  };
+  setDropdownValue('job_id', 'job_id', 'job_name');
+  this.cdr.detectChanges();
+}
+
+
+
 }
