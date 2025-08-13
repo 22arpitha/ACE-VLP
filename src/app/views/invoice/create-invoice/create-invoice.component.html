@@ -11,14 +11,15 @@
     <mat-form-field appearance="outline" class="w-100 custom-mat-form-field no-padding-bottom">
         <mat-label>Client <b class="r-star">*</b></mat-label>
         <mat-select #clientSelect [(ngModel)]="selectedClientId" [ngModelOptions]="{standalone: true}" autocomplete="off"
-                placeholder="Client" panelClass="custom-select-panel"
+                placeholder="Client" panelClass="custom-select-panel" (openedChange)="onDropdownOpened($event, 'client')"
                 [disableOptionCentering]="true" (selectionChange)="onClientChange($event)" >
                 <div class="mat-select-search-wrapper d-flex">
-                  <input matInput [(ngModel)]="searchClientText" autofocus [ngModelOptions]="{standalone: true}" placeholder="Search Client" class="mat-select-search">
-                  <mat-icon class="search-icon" *ngIf="!searchClientText">search</mat-icon>
-                  <mat-icon class="search-icon" *ngIf="searchClientText" type="button" (click)="clearSearch()">close</mat-icon>
+                  <input matInput [(ngModel)]="dropdownState.client.search" (ngModelChange)="onSearch('client', $event)" autofocus [ngModelOptions]="{standalone: true}" placeholder="Search Client" class="mat-select-search">
+                  <mat-icon class="search-icon" *ngIf="!dropdownState.client.search">search</mat-icon>
+                  <mat-icon class="search-icon" *ngIf="dropdownState.client.search" type="button" (click)="clearSearchDropD('client')">close</mat-icon>
                 </div>
-                <mat-option *ngFor="let item of filteredClientList()" [value]="item?.id">
+                <mat-option hidden disabled></mat-option>
+                <mat-option *ngFor="let item of getOptionsWithSelectedOnTop('client')" [value]="item?.id">
                     {{item?.client_name}}
                 </mat-option>
         </mat-select>

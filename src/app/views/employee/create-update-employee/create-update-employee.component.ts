@@ -274,7 +274,7 @@ export class CreateUpdateEmployeeComponent implements CanComponentDeactivate, On
     this.apiService.getProfileDetails(`?role_id=${1}`).subscribe(
       (res: any) => {
         // console.log('admin',res);
-        let data = [];
+        let data :any= [];
         // data.push({ 'first_name': res.first_name, 'id': res.id });
         res.forEach((element: any) => {
           data.push({ 'first_name': element?.first_name, 'last_name': element?.last_name || '', 'user_id': element.id });

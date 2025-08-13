@@ -380,6 +380,9 @@ onManagerSelectOpened(opened: boolean, index: number): void {
     this.jobFormGroup?.get('group')?.reset();
     this.jobFormGroup?.get('job_name')?.reset();
     this.dropdownState.end_client.initialized = false;
+    if(this.isEditItem){
+      this.selectedItemsMap['end_client'] = []
+    }
     this.updateSelectedItems('client', event.value);
     // this.getClientBasedEndClient(client_id);
   }
@@ -1075,7 +1078,7 @@ this.filteredManagerLists[index]=[...this.allManagerList];
   }
 
   private getSelectedEndClient(id: any) {
-     const endClient = this.dropdownState.end_client.list.find((endClient: any) => endClient?.id === id) // new code
+     const endClient :any = this.dropdownState.end_client.list.find((endClient: any) => endClient?.id === id) // new code
     // const endClient = this.endClientslists.find((endClient: any) => endClient?.id === id)
     return endClient?.client_name || '';
   }
@@ -1352,7 +1355,7 @@ fetchData(key: string, append = false) {
     query += `&status=True`;
   }
   if(key === 'end_client'){
-    query += `&client=${this.jobFormGroup.get('client').value}`
+    query += `&client=${this.jobFormGroup.get('client')?.value}`
   }
 
   this.apiService.getData(`${environment.live_url}/${this.dropdownEndpoints[key]}/?${query}`)
@@ -1462,7 +1465,7 @@ patchDropdownValuesForEdit(data: any) {
     }
   };
   setDropdownValue('client', 'client', 'client_name');
-  setDropdownValue('end_client', 'end_client', 'end_client');
+  setDropdownValue('end_client', 'end_client', 'end_client_name');
   setDropdownValue('job_type', 'job_type', 'job_type_name');
   this.cdr.detectChanges();
 }

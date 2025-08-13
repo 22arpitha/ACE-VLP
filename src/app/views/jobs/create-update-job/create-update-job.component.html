@@ -70,7 +70,7 @@
               <mat-option *ngIf="endClientslists.length === 0" hidden disabled>
                 </mat-option>
               <mat-option *ngFor="let item of getOptionsWithSelectedOnTop('end_client')" [value]="item?.id">
-                  {{item?.client_name}}
+                  {{item?.client_name || item.end_client_name }}
               </mat-option>
       </mat-select>
       <mat-error *ngIf="f['end_client']?.invalid && f['end_client']?.touched || f['end_client']?.dirty">

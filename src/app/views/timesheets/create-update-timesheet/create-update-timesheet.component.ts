@@ -498,7 +498,6 @@ private scrollListeners: { [key: string]: (event: Event) => void } = {};
 // Selected items for pagination dropdowns
 selectedItemsMap: { [key: string]: any[] } = {
   job_id: [],
-  client:[]
 };
 
 
