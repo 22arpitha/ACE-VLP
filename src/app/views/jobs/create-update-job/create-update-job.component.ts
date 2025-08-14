@@ -402,6 +402,7 @@ onManagerSelectOpened(opened: boolean, index: number): void {
     this.jobFormGroup?.get('group')?.reset();
     this.getCombinationJobName();
     this.getEndClientBasedGroup(endClient_id);
+    this.updateSelectedItems('end_client', event.value);
     // if (this.isEditItem) {
     //   this.getCombinationJobName();
     // }

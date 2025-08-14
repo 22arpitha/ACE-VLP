@@ -284,15 +284,29 @@
                   
                   <!-- Search input field inside the panel -->
                   <div class="mat-select-search-wrapper d-flex">
-                    <input matInput [(ngModel)]="searchEmployeeTextList[((currentPage - 1) * pageSize + i)]" [ngModelOptions]="{standalone: true}" placeholder="Search Employee" class="mat-select-search" (ngModelChange)="filterEmployeeList(((currentPage - 1) * pageSize + i))">
+                    <!-- <input matInput [(ngModel)]="searchEmployeeTextList[((currentPage - 1) * pageSize + i)]" [ngModelOptions]="{standalone: true}" placeholder="Search Employee" class="mat-select-search" (ngModelChange)="filterEmployeeList(((currentPage - 1) * pageSize + i))">
                     <mat-icon class="search-icon" *ngIf="!searchEmployeeTextList[((currentPage - 1) * pageSize + i)]">search</mat-icon>
-                    <mat-icon class="search-icon" *ngIf="searchEmployeeTextList[((currentPage - 1) * pageSize + i)]" type="button" (click)="clearSearch('emp',((currentPage - 1) * pageSize + i))">close</mat-icon>
+                    <mat-icon class="search-icon" *ngIf="searchEmployeeTextList[((currentPage - 1) * pageSize + i)]" type="button" (click)="clearSearch('emp',((currentPage - 1) * pageSize + i))">close</mat-icon> -->
+                    <input matInput 
+                      [(ngModel)]="dropdownState['emp_' + ((currentPage - 1) * pageSize + i)].search"
+                      [ngModelOptions]="{standalone: true}"
+                      placeholder="Search Employee"
+                      (ngModelChange)="onSearch('emp_' + ((currentPage - 1) * pageSize + i), $event)">
+                    <mat-icon class="search-icon" *ngIf="!dropdownState['emp_' + ((currentPage - 1) * pageSize + i)].search">search</mat-icon>
+                    <mat-icon class="search-icon" *ngIf="dropdownState['emp_' + ((currentPage - 1) * pageSize + i)].search"
+                      (click)="clearSearchDropD('emp_' + ((currentPage - 1) * pageSize + i))">close</mat-icon>
                   </div>
               
                   <!-- Filtered options -->
-                  <mat-option *ngFor="let emp of filteredEmployeeLists[((currentPage - 1) * pageSize + i)]" [value]="emp?.user_id">
+                  <!-- <mat-option *ngFor="let emp of filteredEmployeeLists[((currentPage - 1) * pageSize + i)]" [value]="emp?.user_id">
                     {{ emp?.user__full_name }}
-                  </mat-option>
+                  </mat-option> -->
+                  <mat-option hidden disabled></mat-option>
+                   <mat-option *ngFor="let empOpt of getOptionsWithSelectedOnTop('emp_' + ((currentPage - 1) * pageSize + i))"
+                      [value]="empOpt.user_id">
+                      {{ empOpt.user__full_name }}
+                    </mat-option>
+
                 </mat-select>
               </mat-form-field>
               <div class="px-2" *ngIf="emp?.get('employee_id')?.invalid && emp?.get('employee_id')?.touched || emp?.get('employee_id')?.dirty">

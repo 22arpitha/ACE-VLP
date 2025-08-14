@@ -215,6 +215,8 @@ export class CreateClientComponent implements CanComponentDeactivate, OnInit, On
     if (opened && !this.filteredEmployeeLists[index]?.length) {
       this.filteredEmployeeLists[index] = [...this.allEmployeeList];
     }
+    // below code is for employee pagination
+    this.onDropdownOpened(opened,index);
   }
 
   public clearSearch(key: any, i?: any) {
@@ -279,7 +281,7 @@ export class CreateClientComponent implements CanComponentDeactivate, OnInit, On
         this.employeeDetails = respData?.employee_details;
         const empDetailsArray = this.clientFormGroup.get('employee_details') as FormArray;
         empDetailsArray.clear();
-        respData?.employee_details?.forEach(({ employee, start_date, end_date }, index, array) => {
+        respData?.employee_details?.forEach(({ employee, start_date, end_date,user__full_name }, index, array) => {
           const isLastItem = index === array?.length - 1;
           this.filteredEmployeeLists[index] = this.allEmployeeList;
           const empForm = this.fb.group({
@@ -288,6 +290,16 @@ export class CreateClientComponent implements CanComponentDeactivate, OnInit, On
             end_date: [{ value: end_date, disabled: !isLastItem }]
           });
           empDetailsArray.push(empForm);
+          
+          
+          // emp dropdown code, selected stays on top)
+          this.initEmployeeDropdownState(index);
+          this.selectedItemsMap[`emp_${index}`] = [{
+            user_id: employee,
+            user__full_name: user__full_name 
+          }];
+        this.dropdownState[`emp_${index}`].list = this.selectedItemsMap[`emp_${index}`];
+
           const totalItems = this.employeeFormArray.length;
           const totalPages = Math.ceil(totalItems / this.pageSize);
           this.currentPage = totalPages; // go to last page
@@ -630,12 +642,16 @@ export class CreateClientComponent implements CanComponentDeactivate, OnInit, On
         this.employeeFormArray.markAllAsTouched();
         this.employeeFormArray.push(this.createEmployeeControl());
         const newIndex = this.employeeFormArray.length - 1;
+        // below is new code 
+        this.initEmployeeDropdownState(newIndex);
         this.filteredEmployeeLists[newIndex] = [...this.allEmployeeList];
       }
     }
     else {
       this.filteredEmployeeLists[0] = [...this.allEmployeeList];
       this.employeeFormArray.push(this.createEmployeeControl());
+      // below is new code 
+       this.initEmployeeDropdownState(0);
     }
     const totalItems = this.employeeFormArray.length;
     const totalPages = Math.ceil(totalItems / this.pageSize);
@@ -681,6 +697,7 @@ export class CreateClientComponent implements CanComponentDeactivate, OnInit, On
     }
 
     this.searchEmployeeTextList[i] = '';
+    this.updateSelectedItems(`emp_${i}`,event.value)
   }
 
   public editEmpployee(index: number) {
@@ -807,4 +824,157 @@ export class CreateClientComponent implements CanComponentDeactivate, OnInit, On
     return date.getDay() === 0 ? 'sunday-highlight' : '';
   };
 
+
+
+  // =============== new code =====================
+
+pageSizeDropdown = 10;
+
+dropdownState: { [key: string]: any } = {};
+selectedItemsMap: { [key: string]: any[] } = {};
+scrollListeners: { [key: string]: (event: Event) => void } = {};
+
+dropdownEndpoints = {
+  emp: environment.employee
+};
+
+initEmployeeDropdownState(index: number) {
+  const key = `emp_${index}`;
+  if (!this.dropdownState[key]) {
+    this.dropdownState[key] = {
+      page: 1,
+      list: [],
+      search: '',
+      totalPages: 1,
+      loading: false,
+      initialized: false
+    };
+    this.selectedItemsMap[key] = [];
+  }
+}
+
+
+fetchData(key: string, append = false) {
+  const state = this.dropdownState[key];
+  state.loading = true;
+
+  let query = `page=${state.page}&page_size=${this.pageSizeDropdown}`;
+  if (state.search) {
+    query += `&search=${encodeURIComponent(state.search)}`;
+  }
+  if (key.startsWith('emp_')) {
+    query += `&is_active=True&employee=True`;
+  }
+
+  this.apiService.getData(`${environment.live_url}/${this.dropdownEndpoints.emp}/?${query}`)
+    .subscribe((res: any) => {
+      state.totalPages = Math.ceil(res.total_no_of_record / this.pageSizeDropdown);
+      const selectedItems = this.selectedItemsMap[key] || [];
+      const selectedIds = selectedItems.map(item => item.user_id);
+
+      const filteredResults = res.results.filter(
+        (item: any) => !selectedIds.includes(item.user_id)
+      );
+
+      if (append) {
+        state.list = [...state.list, ...filteredResults];
+      } else {
+        state.list = [...selectedItems, ...filteredResults];
+      }
+      // console.log(this.dropdownState)
+      state.loading = false;
+      this.cdr.detectChanges();
+    }, () => {
+      state.loading = false;
+    });
+}
+
+onSearch(key: string, text: string) {
+  const state = this.dropdownState[key];
+  state.search = text.trim();
+  state.page = 1;
+  state.list = [];
+  this.fetchData(key, false);
+}
+
+clearSearchDropD(key: string) {
+  const state = this.dropdownState[key];
+  state.search = '';
+  state.page = 1;
+  state.list = [];
+  this.fetchData(key, false);
+}
+
+
+removeScrollListener(key: string) {
+  const panel = document.querySelector('.cdk-overlay-container .mat-select-panel');
+  if (panel && this.scrollListeners[key]) {
+    panel.removeEventListener('scroll', this.scrollListeners[key]);
+    delete this.scrollListeners[key];
+  }
+}
+
+onScroll(key: string, event: Event) {
+  const target = event.target as HTMLElement;
+  const state = this.dropdownState[key];
+  const atBottom = target.scrollHeight - target.scrollTop <= target.clientHeight + 5;
+
+  if (atBottom && !state.loading && state.page < state.totalPages) {
+    state.page++;
+    this.fetchData(key, true);
+  }
+}
+
+
+onDropdownOpened(isOpen: boolean, index: number) {
+  // console.log(isOpen)
+  const key = `emp_${index}`;
+  if (isOpen) {
+    if (!this.dropdownState[key]?.initialized || this.dropdownState[key].list.length === 0) {
+      this.dropdownState[key].page = 1;
+      this.fetchData(key, false);
+      this.dropdownState[key].initialized = true;
+    }
+    setTimeout(() => {
+      this.removeScrollListener(key);
+      const panel = document.querySelector('.cdk-overlay-container .mat-select-panel');
+      if (panel) {
+        this.scrollListeners[key] = (event: Event) => this.onScroll(key, event);
+        panel.addEventListener('scroll', this.scrollListeners[key]);
+      }
+    }, 0);
+  } else {
+    this.removeScrollListener(key);
+  }
+}
+
+updateSelectedItems(key: string, selectedId: any) {
+  const state = this.dropdownState[key];
+  let selectedItems = this.selectedItemsMap[key] || [];
+
+  selectedItems = selectedItems.filter(item => item.user_id === selectedId);
+
+  if (!selectedItems.some(item => item.user_id === selectedId)) {
+    const found = state.list.find(item => item.user_id === selectedId);
+    if (found) {
+      selectedItems.push(found);
+    }
+  }
+
+  this.selectedItemsMap[key] = selectedItems;
+}
+
+getOptionsWithSelectedOnTop(key: string) {
+  const state = this.dropdownState[key];
+  const selectedItems = this.selectedItemsMap[key] || [];
+  const unselectedItems = state.list.filter(item =>
+    !selectedItems.some(sel => sel.user_id === item.user_id)
+  );
+  return [...selectedItems, ...unselectedItems];
+}
+
+
+
+
+  
 }
