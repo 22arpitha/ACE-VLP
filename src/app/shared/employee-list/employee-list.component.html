@@ -1,18 +1,23 @@
 <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
   <mat-label>Select Employee</mat-label>
   <mat-select [(ngModel)]="selectedEmployeeVal" [ngModelOptions]="{standalone: true}" [disableOptionCentering]="true" [disabled]="user_role_name==='Accountant'? true : false"
-    autocomplete="off" placeholder="Select" panelClass="custom-select-panel" (selectionChange)="onSelectedEmployee($event)">
+    autocomplete="off" placeholder="Select" panelClass="custom-select-panel" (selectionChange)="onSelectedEmployee($event)" (openedChange)="onDropdownOpened($event, 'employee')">
     
     <!-- Search input field inside the panel -->
     <div class="mat-select-search-wrapper d-flex">
-      <input matInput [(ngModel)]="searchEmployeeText" [ngModelOptions]="{standalone: true}" placeholder="Search Employee" class="mat-select-search">
-      <mat-icon class="search-icon" *ngIf="!searchEmployeeText">search</mat-icon>
-      <mat-icon class="search-icon" *ngIf="searchEmployeeText" type="button" (click)="clearSearch()">close</mat-icon>
+      <input matInput [(ngModel)]="dropdownState.employee.search" (ngModelChange)="onSearch('employee', $event)" [ngModelOptions]="{standalone: true}" placeholder="Search Employee" class="mat-select-search">
+      <mat-icon class="search-icon" *ngIf="!dropdownState.employee.search">search</mat-icon>
+      <mat-icon class="search-icon" *ngIf="dropdownState.employee.search" type="button" (click)="clearSearchDropD('employee')">close</mat-icon>
     </div>
 
-    <!-- Filtered options -->
-    <mat-option *ngFor="let emp of filteredEmployeeList()" [value]="emp?.user_id">
-      {{ emp?.user__full_name }}
+    <mat-option hidden disabled></mat-option>
+    <mat-option *ngFor="let item of getOptionsWithSelectedOnTop('employee')" [value]="item?.user_id" 
+      >
+        {{item?.user__full_name}}
     </mat-option>
+    <!-- Filtered options -->
+    <!-- <mat-option *ngFor="let emp of filteredEmployeeList()" [value]="emp?.user_id">
+      {{ emp?.user__full_name }}
+    </mat-option> -->
   </mat-select>
 </mat-form-field>

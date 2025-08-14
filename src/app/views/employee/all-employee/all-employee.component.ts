@@ -34,7 +34,7 @@ designation__designation_name:false,
   page = 1;
   count = 0;
   tableSize = 50;
-  tableSizes = [50,75,100];
+  tableSizes = [10,50,75,100];
   currentIndex: any;
   allEmployeeList:any=[];
   accessPermissions = []
@@ -197,12 +197,15 @@ this.apiService.getData(`${environment.live_url}/${environment.employee}/${query
   onFilterChange(event: any, filterType: string) {
     const selectedOptions = event;
     this.filters[filterType] = selectedOptions;
+    this.page = 1
     this.filterData();
   }
 
   filterData() {
     this.filterQuery = this.getFilterBaseUrl();
+    
     if (this.filters.designation__designation_name.length) {
+      this.page = 1;
       this.filterQuery += `&designation-ids=[${this.filters.designation__designation_name.join(',')}]`;
     }
 
