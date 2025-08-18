@@ -10,7 +10,7 @@ import { environment } from '../../../environments/environment';
 })
 export class PeriodComponent implements OnInit,OnChanges {
   peroidslist:any=[];
-  @Input() mode: 'Monthly' | 'Quaterly' | 'Yearly'  = 'Monthly';
+  @Input() mode: 'Monthly' | 'Quarterly' | 'Yearly'  = 'Monthly';
   @Input() defaultSelection: boolean = false;
   @Input() resetFilterField: boolean = false;
   monthControl = new FormControl('');

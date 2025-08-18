@@ -1,7 +1,7 @@
 <!-- Input field with the calendar icon -->
 <mat-form-field appearance="outline" class="w-100">
    <mat-label>Period <b class="r-star">*</b></mat-label>
-  <input matInput [formControl]="control" placeholder="{{ mode === 'Quaterly' ? 'Qx YYYY' : mode === 'Monthly' ? 'Mon YYYY' : 'YYYY' }}" readonly [matMenuTriggerFor]="pickerMenu">
+  <input matInput [formControl]="control" placeholder="{{ mode === 'Quarterly' ? 'Qx YYYY' : mode === 'Monthly' ? 'Mon YYYY' : 'YYYY' }}" readonly [matMenuTriggerFor]="pickerMenu">
   <button
   mat-icon-button
   matSuffix
@@ -39,7 +39,7 @@
     </ng-container>
 
     <!-- Quarter Mode -->
-    <ng-container *ngIf="mode === 'Quaterly' && showSelection">
+    <ng-container *ngIf="mode === 'Quarterly' && showSelection">
       <button mat-button *ngFor="let item of quarters" (click)="select(item.value);$event.stopPropagation()" class="picker-item">
         <b>{{ item.value }}</b> — <small>{{ item.months.join(', ') }}</small>
       </button>

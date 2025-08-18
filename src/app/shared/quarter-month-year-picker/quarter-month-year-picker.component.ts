@@ -9,7 +9,7 @@ import { MatMenuTrigger } from '@angular/material/menu';
 })
 
 export class QuarterMonthYearPickerComponent implements OnInit {
-  @Input() mode: 'Monthly' | 'Quaterly' | 'Yearly' = 'Monthly';
+  @Input() mode: 'Monthly' | 'Quarterly' | 'Yearly' = 'Monthly';
   @Input() defaultSelectPreviousMonth: boolean = false;
   @Input() control = new FormControl('');
   @Output() valueChange = new EventEmitter<{ year: string; month_list: string }>();
@@ -50,7 +50,7 @@ export class QuarterMonthYearPickerComponent implements OnInit {
       if (this.mode === 'Monthly') {
         this.selectedMonth = prevMonth;
         this.emitValue(prevMonth);
-      } else if (this.mode === 'Quaterly') {
+      } else if (this.mode === 'Quarterly') {
         const quarter = this.quarters.find(q => q.months.includes(prevMonth));
         if (quarter) {
           this.selectedQuarter = quarter.value;
@@ -69,7 +69,7 @@ export class QuarterMonthYearPickerComponent implements OnInit {
   parseInput(val: string) {
     val = (val || '').toUpperCase().trim();
 
-    if (this.mode === 'Quaterly') {
+    if (this.mode === 'Quarterly') {
       const match = val.match(/^Q([1-4])\s*(\d{4})?$/);
       if (match) {
         this.selectedQuarter = `Q${match[1]}`;
@@ -105,7 +105,7 @@ export class QuarterMonthYearPickerComponent implements OnInit {
     
     let monthList: string[] = [];
 
-    if (this.mode === 'Quaterly') {
+    if (this.mode === 'Quarterly') {
       const quarter = this.quarters.find(q => q.value === period);
       if (quarter) {
         monthList = quarter.months;
@@ -127,7 +127,7 @@ export class QuarterMonthYearPickerComponent implements OnInit {
     if (this.mode === 'Monthly') {
       return !!this.selectedMonth && !!this.year;
     }
-    if (this.mode === 'Quaterly') {
+    if (this.mode === 'Quarterly') {
       return !!this.selectedQuarter && !!this.year;
     }
     if (this.mode === 'Yearly') {
@@ -139,7 +139,7 @@ export class QuarterMonthYearPickerComponent implements OnInit {
   select(period: string) {
     if (this.mode === 'Monthly') {
       this.selectedMonth = period;
-    } else if (this.mode === 'Quaterly') {
+    } else if (this.mode === 'Quarterly') {
       this.selectedQuarter = period;
     }
 
@@ -157,7 +157,7 @@ export class QuarterMonthYearPickerComponent implements OnInit {
 
   const currentPeriod =
     this.mode === 'Monthly' ? this.selectedMonth :
-    this.mode === 'Quaterly' ? this.selectedQuarter :
+    this.mode === 'Quarterly' ? this.selectedQuarter :
     this.year?.toString();
   this.showSelection = true;
   if (this.mode === 'Yearly') {
