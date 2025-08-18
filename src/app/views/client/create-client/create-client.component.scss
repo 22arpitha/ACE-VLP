@@ -12,9 +12,7 @@
 .settings-table-bg{
   max-height: max-content !important;
 }
-.settings-table-bg ::ng-deep .mat-form-field-appearance-outline .mat-form-field-outline{
-// background: #fff;
-}
+
 table .contact-form-content ::ng-deep .mat-form-field-appearance-outline .mat-form-field-wrapper,
 table .contact-form-content ::ng-deep .mat-form-field-wrapper {
 margin: 0 !important;
@@ -52,9 +50,6 @@ padding: 0 !important;
   display: none !important;
 }
 
-.contact-details-table tbody tr td{
-  // text-align: start !important;
-}
 textarea[matInput] {
   min-height: 50px; 
   max-height: max-content;

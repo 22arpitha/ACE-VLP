@@ -88,7 +88,7 @@ export class CreateUpdateJobComponent implements CanComponentDeactivate, OnInit,
   yearRangeStart: number;
   selectedMonth: string | null = null;
   selectedQuarter: string | null = null;
-  modeName: 'Monthly' | 'Quaterly' | 'Yearly'|'One off';
+  modeName: 'Monthly' | 'Quarterly' | 'Yearly'|'One off';
   months: string[] = [
     'January', 'February', 'March', 'April', 'May', 'June',
     'July', 'August', 'September', 'October', 'November', 'December'
@@ -164,7 +164,7 @@ export class CreateUpdateJobComponent implements CanComponentDeactivate, OnInit,
       add_employees: [''],
       only_admin_can_change_job_status: ['']
     });
-    // this.initialFormValue = this.jobFormGroup?.getRawValue();
+    this.initialFormValue = this.jobFormGroup?.getRawValue();
     this.filteredEmployeeLists[0] = [...this.allEmployeeList];
     this.filteredManagerLists[0] = [...this.allManagerList];
   }
@@ -334,7 +334,7 @@ export class CreateUpdateJobComponent implements CanComponentDeactivate, OnInit,
 }
 
 onSelectOpened(opened: boolean, index: number): void {
-  console.log(opened,'ojjj')
+  // console.log(opened,'ojjj')
   if (opened && !this.filteredEmployeeLists[index]?.length) {
     this.filteredEmployeeLists[index] = [...this.allEmployeeList];
   }
@@ -374,7 +374,7 @@ onManagerSelectOpened(opened: boolean, index: number): void {
   }
 
   public onClientChange(event: any) {
-    console.log(event)
+    // console.log(event)
     const client_id = event.value;
     this.jobFormGroup?.get('end_client')?.reset();
     this.jobFormGroup?.get('group')?.reset();
@@ -504,7 +504,7 @@ onManagerSelectOpened(opened: boolean, index: number): void {
             const status = job?.status_name?.toLowerCase?.();
             return status === 'yet to start';
           });
-          console.log(data)
+          // console.log(data)
           this.jobFormGroup.patchValue({ job_status: data[0]?.id })
           this.jobFormGroup.patchValue({ percentage_of_completion: data[0]?.percentage_of_completion })
         }
@@ -606,7 +606,7 @@ onManagerSelectOpened(opened: boolean, index: number): void {
 
   public getJobDetails(id: any) {
     this.apiService.getData(`${environment.live_url}/${environment.jobs}/${id}/`).subscribe((respData: any) => {
-        console.log(respData)
+        // console.log(respData)
       if (respData) {
         this.BreadCrumbsTitle = this.BreadCrumbsTitle + ` (${respData.job_number})`
         this.common_service.setTitle(this.BreadCrumbsTitle);
@@ -1151,7 +1151,7 @@ this.filteredManagerLists[index]=[...this.allManagerList];
   parseInput(val: string) {
     val = (val || '').toUpperCase().trim();
 
-    if (this.modeName === 'Quaterly') {
+    if (this.modeName === 'Quarterly') {
       const match = val.match(/^Q([1-4])\s*(\d{4})?$/);
       if (match) {
         this.selectedQuarter = `Q${match[1]}`;
@@ -1191,7 +1191,7 @@ this.filteredManagerLists[index]=[...this.allManagerList];
     if (this.modeName === 'Monthly') {
       return !!this.selectedMonth && !!this.year;
     }
-    if (this.modeName === 'Quaterly') {
+    if (this.modeName === 'Quarterly') {
       return !!this.selectedQuarter && !!this.year;
     }
     if (this.modeName === 'Yearly') {
@@ -1203,7 +1203,7 @@ this.filteredManagerLists[index]=[...this.allManagerList];
   select(period: string) {
     if (this.modeName === 'Monthly') {
       this.selectedMonth = period;
-    } else if (this.modeName === 'Quaterly') {
+    } else if (this.modeName === 'Quarterly') {
       this.selectedQuarter = period;
     }
 
@@ -1223,7 +1223,7 @@ this.filteredManagerLists[index]=[...this.allManagerList];
 
     const currentPeriod =
       this.modeName === 'Monthly' ? this.selectedMonth :
-        this.modeName === 'Quaterly' ? this.selectedQuarter :
+        this.modeName === 'Quarterly' ? this.selectedQuarter :
           this.year.toString();
     this.showSelection = true;
     if (this.modeName === 'Yearly') {
@@ -1354,6 +1354,9 @@ fetchData(key: string, append = false) {
   }
   if (key === 'client') {
     query += `&status=True`;
+    if (this.user_role_name != 'Admin')  {
+      query += `&employee-id=${this.user_id}`;
+    }
   }
   if(key === 'end_client'){
     query += `&client=${this.jobFormGroup.get('client')?.value}`

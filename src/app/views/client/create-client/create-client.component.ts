@@ -55,7 +55,6 @@ export class CreateClientComponent implements CanComponentDeactivate, OnInit, On
   selectedClient: any = [];
   isEditItem: boolean = false;
   client_id: any;
-  user_role_name: any;
   isAdmin: boolean = false;
   pageSize = 5;
   currentPage = 1;
@@ -69,7 +68,8 @@ export class CreateClientComponent implements CanComponentDeactivate, OnInit, On
   userRole: any;
   user_id: any;
   initialFormValue: any;
-  isEnabledEdit: boolean;
+  isEnabledEdit: boolean = false;
+  shouldDisableFileds: boolean = false;
   employeeDetails = [];
   constructor(private fb: FormBuilder, private activeRoute: ActivatedRoute, private accessControlService: SubModuleService,
     private common_service: CommonServiceService, private router: Router, private datepipe: DatePipe, private modalService: NgbModal, private cdr: ChangeDetectorRef,
@@ -77,7 +77,7 @@ export class CreateClientComponent implements CanComponentDeactivate, OnInit, On
     this.common_service.setTitle(this.BreadCrumbsTitle)
     this.user_id = sessionStorage.getItem('user_id');
     this.userRole = sessionStorage.getItem('user_role_name');
-    this.getModuleAccess()
+    // this.getModuleAccess()
     if (this.activeRoute.snapshot.paramMap.get('id')) {
       this.common_service.setTitle('Update ' + this.BreadCrumbsTitle)
       this.client_id = this.activeRoute.snapshot.paramMap?.get('id')
@@ -93,11 +93,11 @@ export class CreateClientComponent implements CanComponentDeactivate, OnInit, On
       this.getSourceList();
       this.getAllEmployeeList();
     }
+    this.getModuleAccess()
   }
 
   ngOnInit(): void {
     this.editor = new Editor();
-
     this.intialForm();
     this.clientFormGroup?.valueChanges?.subscribe(() => {
       const currentFormValue = this.clientFormGroup?.getRawValue();
@@ -114,32 +114,58 @@ export class CreateClientComponent implements CanComponentDeactivate, OnInit, On
     this.formErrorScrollService.resetHasUnsavedValue();
   }
 
-  shouldDisableFileds: boolean = true;
+  
   getModuleAccess() {
     this.accessControlService.getAccessForActiveUrl(this.user_id).subscribe(
       (res: any) => {
         // console.log(res);
         let temp = res.find((item: any) => item.name === sessionStorage.getItem('access-name'));
-        // console.log('temp',temp)
+        // console.log('temps',temp)
         this.accessPermissions = temp.operations;
         // console.log(this.accessPermissions)
         if (this.userRole != 'Admin') {
           if (this.client_id) {
-            this.shouldDisableFileds = this.accessPermissions[0]?.['update'];
-            this.isEnabledEdit = false;
+            if(this.accessPermissions[0]?.['update']){
+              this.isEnabledEdit = false;
+            } else{
+              this.isEnabledEdit = true;
+            }
           } else {
+            this.isEnabledEdit = false;
             this.shouldDisableFileds = this.accessPermissions[0]?.['create'];
-            this.isEnabledEdit = true;
           }
-        } else {
-          this.shouldDisableFileds = true;
-          if (this.isEditItem) {
+        } 
+        else if (this.userRole === 'Admin') {
+          if (this.client_id) {
             this.isEnabledEdit = false;
-          } else {
+            this.shouldDisableFileds = false;
+          } else{
             this.isEnabledEdit = true;
+            this.shouldDisableFileds = true;
           }
-
         }
+
+        // if (this.userRole != 'Admin') {
+        //   if (this.client_id) {
+        //     this.shouldDisableFileds = this.accessPermissions[0]?.['update'];
+        //     this.isEnabledEdit = false;
+
+        //     console.log(this.shouldDisableFileds,this.isEnabledEdit)
+        //   } else {
+        //     this.shouldDisableFileds = this.accessPermissions[0]?.['create'];
+        //     this.isEnabledEdit = true;
+        //   }
+        // } else {
+        //   console.log('admin')
+        //   if (this.isEditItem) {
+        //     this.isEnabledEdit = false;
+        //     this.shouldDisableFileds = true;
+        //   } else {
+        //     this.isEnabledEdit = true;
+        //     this.shouldDisableFileds = false;
+        //   }
+        //   console.log(this.shouldDisableFileds,this.isEnabledEdit)
+        // }
         // console.log('this.shouldDisableFileds', this.shouldDisableFileds)
 
       }
@@ -471,6 +497,16 @@ export class CreateClientComponent implements CanComponentDeactivate, OnInit, On
 
   public enbleFields() {
     this.isEnabledEdit = true;
+    if (this.userRole === 'Admin') {
+      this.isEnabledEdit = true;
+      this.shouldDisableFileds = true;
+    }
+    else {
+      this.isEnabledEdit = true;
+      if(this.client_id){
+         this.shouldDisableFileds = this.accessPermissions[0]?.['update'];
+      }
+    }
   }
 
   public backBtnFunc(): void {
