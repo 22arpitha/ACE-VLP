@@ -1,1 +1,142 @@
-<p>user-dashboard works!</p>
+<div class="container-wrapper settings-main-content px-0">
+  <section class="settings-table-bg">
+    <div class="row mx-0 my-2 px-0 table-wrapper">
+
+      <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0 ">
+
+        <div class="py-2">
+          <span class="fw-bold"><u>All Leaves</u></span>
+        </div>
+
+        <div class="row mb-2" *ngIf="userRole == 'Manager'">
+          <div class="col-2">
+            <ng-multiselect-dropdown [placeholder]="'Select Employee'" [settings]="dropdownSettings"
+              [data]="all_employees_under_manager" [(ngModel)]="selectedItems" (onSelect)="onItemSelect($event)"
+              (onSelectAll)="onSelectAll($event)">
+            </ng-multiselect-dropdown>
+          </div>
+
+        </div>
+
+
+
+        <table class="table table table-hover table-list">
+          <thead>
+            <tr>
+              <th scope="col"> Leaves </th>
+              <th scope="col"> Opening Balance</th>
+              <th scope="col">Accrued</th>
+              <th scope="col">Utilized </th>
+              <th scope="col">Cl Balance </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let i of all_leaves">
+              <td>{{i.leave_type}}</td>
+              <td>{{i.total_number_of_leaves}}</td>
+              <td>{{i.accrued}}</td>
+              <td>{{i.consumed_leaves}}</td>
+              <td>{{i.remaining_leaves}}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="col-12" *ngIf="all_leaves?.length === 0">
+      <app-generic-norecards></app-generic-norecards>
+    </div>
+  </section>
+
+  <div class="row mt-3">
+    <div class="col-md-4">
+      <section class="settings-table-bg">
+        <div class="row mx-0 my-2 px-0 table-wrapper" style="overflow-x: hidden;">
+          <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0 ">
+            <div class="py-2">
+              <span class="fw-bold ps-3"><u>Upcoming Holidays</u></span>
+            </div>
+            <div class="row p-3" *ngFor="let i of upcoming_holidays">
+              <div class="col-4 fw-bold">{{i.date}}</div>
+              <div class="col-6 fw-bold">{{i.name}}</div>
+            </div>
+          </div>
+        </div>
+        <!-- <div class="col-12"  *ngIf="all_leaves?.length === 0">
+              <app-generic-norecards></app-generic-norecards>
+            </div> -->
+
+      </section>
+    </div>
+
+    <div class="col-md-8">
+      <section class="settings-table-bg">
+        <div class="row mx-0 my-2 px-0 table-wrapper" style="overflow-x: hidden;">
+          <div class="col-12 px-0">
+            <div class="py-2">
+              <span class="fw-bold"><u>Upcoming Leaves</u></span>
+            </div>
+
+            <!-- Header Row -->
+            <div class="row fw-bold border-bottom py-2">
+              <div class="col-3">Date</div>
+              <div class="col-5">Reason</div>
+            </div>
+
+            <!-- Data Rows -->
+            <div class="row py-2 my-1">
+              <div class="col-3">14/08/2025</div>
+              <div class="col-5">Lorem ipsum dolor sit amet consectetur adipisicing elit. Optio, dolorem?</div>
+            </div>
+            <div class="row py-2 my-1">
+              <div class="col-3">20/08/2025</div>
+              <div class="col-5">Lorem ipsum dolor sit amet consectetur adipisicing elit. Adipisci eligendi alias illum
+                voluptatum!</div>
+            </div>
+            <div class="row py-2 my-1">
+              <div class="col-3">15/08/2025</div>
+              <div class="col-5">Lorem ipsum dolor sit amet consectetur adipisicing elit. Fugiat incidunt repellendus
+                eum fuga?</div>
+            </div>
+            <div class="row py-2 my-1">
+              <div class="col-3">05/08/2025</div>
+              <div class="col-5">Lorem ipsum dolor sit amet consectetur adipisicing elit. Quaerat, odit?</div>
+            </div>
+            <div class="row py-2 my-1">
+              <div class="col-3">10/08/2025</div>
+              <div class="col-5">Lorem ipsum dolor sit.</div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+    </div>
+
+
+  </div>
+
+
+  <!-- <div class="row">
+      <div class="col-6 w-100">
+          <div class="pt-4 ps-2">
+              <span class="fw-bold fs-5">Upcoming Leaves</span>
+      
+              <table>
+                  <thead>
+                      <tr>
+                          <th>Date</th>
+                          <th>Reason</th>
+                          <th>Is Approved</th>
+                      </tr>
+                  </thead>
+                  <tbody>
+                      <tr>
+                          <td></td>
+                      </tr>
+                  </tbody>
+              </table>
+            </div>
+      </div>
+    </div> -->
+
+</div>

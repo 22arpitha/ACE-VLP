@@ -152,13 +152,16 @@
         <div class="col-12 col-sm-12 col-md-12 col-lg-12 my-1 px-0 bg-accrual-content">
           <div class="row mx-0 my-0 px-3">
             <div class="col-12 col-sm-12 col-md-12 col-lg-12 my-1 px-0">
+              <!-- <mat-checkbox color="primary" class="example-margin" formControlName="is_accrual"
+                (change)="isAccuralEnabled($event)" [disabled]="!editLeaveType"> -->
               <mat-checkbox color="primary" class="example-margin" formControlName="is_accrual"
-                (change)="isAccuralEnabled($event)" [disabled]="!editLeaveType">
-                <h5 class="c-header">Accrual</h5>
+                (change)="isAccuralEnabled($event)" [disabled]="true">
+                <h5 class="c-header">Accrual <span class="r-star">*</span></h5>
               </mat-checkbox>
             </div>
             <div class="col-12 col-sm-12 col-md-12 col-lg-12 my-1 px-0">
-              <span>Defines how much and when leave gets credited to an employee.</span>
+              <span>Defines how much and when leave gets credited to an employee.</span><br>
+              <!-- <span class="r-star"> (mandatory to add accrual)</span> -->
             </div>
           </div>
           <div class="row mx-3 my-0 p-0">
@@ -305,8 +308,10 @@
               <!-- reset checkbox -->
               <div class="row row mx-2 my-0 px-2">
                 <div class="col-12 col-sm-12 col-md-12 col-lg-12 my-1 px-0">
+                  <!-- <mat-checkbox color="primary" class="example-margin" formControlName="is_reset"
+                    (change)="isAccuralReseted($event)" [disabled]="!editLeaveType"> -->
                   <mat-checkbox color="primary" class="example-margin" formControlName="is_reset"
-                    (change)="isAccuralReseted($event)" [disabled]="!editLeaveType">
+                    (change)="isAccuralReseted($event)" [disabled]="true">
                     <h5 class="c-header">Reset</h5>
                   </mat-checkbox>
                 </div>
@@ -444,15 +449,17 @@
                   <!-- <div class="row mx-0 my-0 px-3"> -->
                     <div class="col-sm-12 col-md-12 col-lg-12 my-1 px-0">
                       <mat-radio-group formControlName="encash_leaves_above_limit">
-                        <mat-radio-button class="radio-button" value="true"
+                        <mat-radio-button class="radio-button" [value]="true"
                           [disabled]="!leaveTypeForm.get('is_reset')?.value">
                           Encash unused leaves above limit
                         </mat-radio-button>
-                        <mat-radio-button class="radio-button" value="false"
+                        <mat-radio-button class="radio-button" [value]="true"
                           [disabled]="!leaveTypeForm.get('is_reset')?.value">
                           Encash unused leaves with expiry
                         </mat-radio-button>
                       </mat-radio-group>
+
+                      
                     </div>
                   <!-- </div>
                 </div> -->

@@ -48,8 +48,8 @@ export const PERIOD_OPTIONS= [
   { label: 'Monthly', value: 'monthly' },
 ]
 export const EFFECTIVE_FROM_OPTIONS = [
-  { label: 'Date Of Joning', value: 'date_of_joining'},
-  { label: 'Date Of Confirmation', value: 'date_of_confirmation'}
+  { label: 'Date Of Joning', value: 'Date Of Joning'},
+  { label: 'Date Of Confirmation', value: 'Date Of Confirmation'}
 ]
 
 export const CARRYFORWARD_FROM_OPTIONS = [

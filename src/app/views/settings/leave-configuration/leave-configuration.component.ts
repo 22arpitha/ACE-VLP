@@ -115,22 +115,23 @@ export class LeaveConfigurationComponent implements OnInit {
       effective_value: ['', [Validators.required, Validators.pattern(/^\d{1,2}$/), Validators.maxLength(2), Validators.min(0)]],
       effective_cycle: ['', Validators.required],
       leave_effective_from: ['', Validators.required],
-      is_accrual: [false],
-      accrual_cycle: [''],
-      accrual_day: [''],
-      accrual_month: [''],
-      accrual_credits: [''],
+      is_accrual: [true],
+      accrual_cycle: ['', Validators.required],
+      accrual_day: ['', Validators.required],
+      accrual_month: ['', Validators.required],
+      accrual_credits: ['', Validators.required],
       // policy_date: [''],
       // policy_month: [''],
-      prorate_accrual: [''],
-      is_reset: [false],
-      reset_cycle: [''],
-      reset_day: [''],
-      reset_month: [''],
+      prorate_accrual: ['', Validators.required],
+      is_reset: [true],
+      reset_cycle: ['', Validators.required],
+      reset_day: ['', Validators.required],
+      reset_month: ['', Validators.required],
       is_carry_forward: [false],
       carry_forward_cycle: [''],
-      carry_forward_days: [''],
-      encash_leaves_above_limit: [''],
+      carry_forward_days: [0],
+      encash_leaves_above_limit: [false],
+      encash_leaves_with_expiry: [false]
     });
     this.initialFormValue = this.leaveTypeForm?.getRawValue();
   }
@@ -229,9 +230,21 @@ export class LeaveConfigurationComponent implements OnInit {
 
   }
   addOrUpdate() {
+
+    if (this.leaveTypeForm.value.encash_leaves_above_limit == true){
+        this.leaveTypeForm.value.encash_leaves_with_expiry = false
+    }
+    if (this.leaveTypeForm.value.encash_leaves_with_expiry == true){
+        this.leaveTypeForm.value.encash_leaves_above_limit = false
+    }else{
+      this.leaveTypeForm.value.encash_leaves_above_limit = false
+      this.leaveTypeForm.value.encash_leaves_with_expiry = false
+    }
+
+
     if (this.leaveTypeForm.invalid) {
       this.leaveTypeForm.markAllAsTouched();
-      console.log('error', this.leaveTypeForm.controls)
+      console.log('error', this.leaveTypeForm.value)
     } else {
       console.log('succes', this.leaveTypeForm.value)
       if(this.item_id){

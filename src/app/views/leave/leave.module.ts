@@ -18,6 +18,7 @@ import { AddCompoffRequestComponent } from './add-compoff-request/add-compoff-re
 import { AddCustomizeBalanceComponent } from './add-customize-balance/add-customize-balance.component';
 import { ViewLeaveRequestComponent } from './view-leave-request/view-leave-request.component';
 import { UserDashboardComponent } from './user-dashboard/user-dashboard.component';
+import { NgMultiSelectDropDownModule } from 'ng-multiselect-dropdown';
 
 @NgModule({
   declarations: [
@@ -42,7 +43,8 @@ import { UserDashboardComponent } from './user-dashboard/user-dashboard.componen
     FormsModule,
     SharedModule,
     HttpClientModule,
-    RouterModule
+    RouterModule,
+    NgMultiSelectDropDownModule
   ]
 })
 export class LeaveModule { }
