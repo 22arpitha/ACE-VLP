@@ -661,4 +661,15 @@ export class ApiserviceService {
   addUsersForExistingPlan(data){
     return this.http.post(`${this.baseurl}/add-users-to-existing-subscription/`,data)
   }
+
+  getEmployeeLeaves(employee_id:any){
+    return this.http.get(`${this.baseurl}/employee_leaves/?employee=${employee_id}`)
+  }
+
+  getUpcomingHolidays(){
+    return this.http.get(`${this.baseurl}/holiday_calendar/?is-upcoming=True`)
+  }
+  getAlEmployeesUnderManager(manager_id:any){
+    return this.http.get(`${this.baseurl}/?page=1&page_size=10&is_active=True&employee=True&reporting_manager_id=${manager_id}`)
+  }
 }

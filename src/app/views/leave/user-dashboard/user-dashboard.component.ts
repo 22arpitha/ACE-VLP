@@ -10,19 +10,69 @@ import { environment } from '../../../../environments/environment';
   styleUrls: ['./user-dashboard.component.scss']
 })
 export class UserDashboardComponent implements OnInit {
-BreadCrumbsTitle: any = 'Dashboard';
- accessPermissions = [];
+
+  all_employees_under_manager: any = [];
+  selectedItems: any = [];
+  dropdownSettings: any = {};
+
+
+  BreadCrumbsTitle: any = 'Dashboard';
+  accessPermissions = [];
   user_id: any;
   userRole: any;
+
   constructor(private common_service: CommonServiceService, private accessControlService: SubModuleService,
     private apiService: ApiserviceService,) {
-       this.common_service.setTitle(this.BreadCrumbsTitle)
-     }
+    this.common_service.setTitle(this.BreadCrumbsTitle)
+  }
+
+  getAlEmployeesUnderManager(){
+    this.apiService.getAlEmployeesUnderManager(this.user_id).subscribe(
+      (res:any)=>{
+        this.all_employees_under_manager = res.results
+      },
+      err=>{
+
+      }
+    )
+  }
+
+  onItemSelect(event: any) { }
+  onSelectAll(event: any) { }
 
   ngOnInit(): void {
     this.user_id = sessionStorage.getItem('user_id');
     this.userRole = sessionStorage.getItem('user_role_name');
     this.getModuleAccess();
+    this.getEmployeeLeaves();
+    this.getUpcomingHoliday();
+  }
+
+  all_leaves: any;
+
+  getEmployeesByManager() {
+
+  }
+
+  getEmployeeLeaves() {
+    this.apiService.getEmployeeLeaves(this.user_id).subscribe(
+      (res: any) => {
+        this.all_leaves = res.results
+      },
+      (err) => {
+
+      }
+    )
+  }
+
+  upcoming_holidays: any;
+
+  getUpcomingHoliday() {
+    this.apiService.getUpcomingHolidays().subscribe(
+      (res: any) => {
+        this.upcoming_holidays = res
+      }
+    )
   }
 
   getModuleAccess() {

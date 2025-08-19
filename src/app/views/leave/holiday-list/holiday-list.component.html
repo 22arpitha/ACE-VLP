@@ -18,6 +18,11 @@
                 <thead>
                   <tr>
                     <th scope="col"> S.No</th>
+                    <th scope="col">Name
+                      <i *ngIf="!arrowState['name']" (click)="sort('asc','name')" class="bi bi-arrow-down"></i>
+                      <i (click)="sort('desc','name')" *ngIf="arrowState['name']"
+                        class="bi bi-arrow-up"></i>
+                    </th>
                     <th scope="col">Date
                       <i *ngIf="!arrowState['date']" (click)="sort('asc','date')" class="bi bi-arrow-down"></i>
                         <i (click)="sort('desc','date')" *ngIf="arrowState['date']"
@@ -57,11 +62,7 @@
                   </mat-form-field> -->
                     </th>
                     
-                    <th scope="col">Name
-                      <i *ngIf="!arrowState['name']" (click)="sort('asc','name')" class="bi bi-arrow-down"></i>
-                      <i (click)="sort('desc','name')" *ngIf="arrowState['name']"
-                        class="bi bi-arrow-up"></i>
-                    </th>
+                    
                     <!-- <th scope="col" class="name-col">Holiday Classification
                       <i *ngIf="!arrowState['classification']" (click)="sort('asc','classification')" class="bi bi-arrow-down"></i>
                       <i (click)="sort('desc','classification')" *ngIf="arrowState['classification']"
@@ -92,8 +93,8 @@
                              totalItems: count
                            }; let i=index'>
                            <td (click)="edit(item)">{{getContinuousIndex(i)}}</td>
-                           <td (click)="edit(item)">{{(item?.date || '-')}}</td>
                            <td (click)="edit(item)" class="text-nowrap">{{item.name}}</td>
+                           <td (click)="edit(item)">{{(item?.date || '-')}}</td>
                            <!-- <td (click)="edit(item)">{{item?.classification || '-'}}</td> -->
                       <!-- <td>
                         <ng-container *ngIf="item">
