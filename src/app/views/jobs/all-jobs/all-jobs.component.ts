@@ -2,7 +2,7 @@ import { Component, OnInit, ViewChild, } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { DatePipe } from '@angular/common';
 import { Router } from '@angular/router';
-import { forkJoin, map } from 'rxjs';
+import { debounceTime, distinctUntilChanged, filter, forkJoin, map, Subject } from 'rxjs';
 import { ApiserviceService } from '../../../service/apiservice.service';
 import { CommonServiceService } from '../../../service/common-service.service';
 import { SubModuleService } from '../../../service/sub-module.service';
@@ -70,7 +70,7 @@ export class AllJobsComponent implements OnInit {
     manager: [],
     status_name: [],
   };
-
+private searchSubject = new Subject<string>();
 
   allClientNames: IdNamePair[] = [];
   allJobTypeNames: IdNamePair[] = [];
@@ -115,19 +115,21 @@ export class AllJobsComponent implements OnInit {
     this.userRole = sessionStorage.getItem('user_role_name');
     this.getModuleAccess();
     this.loadInitialData();
-    this.getCurrentJobs();
+    // this.getCurrentJobs(); 
     // this.getJobStatusList();
     // this.getJobTypeList();
     // this.getAllEmployeeList();
     // this.getAllActiveManagerList();
     // this.getClientList();
-    this.common_service.jobStatus$.subscribe((status: boolean) => {
-      if (status) {
-        this.getJobsHistoryList();
-      } else {
-        this.getCurrentJobsList();
-      }
-    })
+
+    // this.common_service.jobStatus$.subscribe((status: boolean) => {
+    //   if (status) {
+    //     this.getJobsHistoryList();
+    //   } else {
+    //     console.log("is it coming here")
+    //     this.getCurrentJobsList();
+    //   }
+    // })
   }
 
   ngOnInit() {
@@ -136,6 +138,15 @@ export class AllJobsComponent implements OnInit {
     //  setTimeout(() => {
     //   this.getCurrentJobs();
     //  }, 500)
+
+    this.searchSubject.pipe(
+          debounceTime(300),
+          distinctUntilChanged(),
+          filter((term: string) => term === '' || term.length >= 2)
+        ).subscribe((search: string) => {
+          this.term = search
+          this.filterData();
+        });
   }
   access_name: any;
 
@@ -226,7 +237,8 @@ export class AllJobsComponent implements OnInit {
           this.getAllCientsBaseGroupList(clientIds);
         }
       }
-      this.getCurrentJobs();
+      // this.getCurrentJobs();
+      this.filterData();
     }, (error) => {
       this.apiService.showError(error?.error?.detail)
     });
@@ -478,14 +490,19 @@ export class AllJobsComponent implements OnInit {
     this.filterData();
   }
   filterSearch(event: any) {
-    this.term = event.target.value?.trim();
-    if (this.term && this.term.length >= 2) {
-      this.page = 1;
-      this.filterData()
+      const value = event?.target?.value || '';
+    if (value && value.length >= 2) {
+      this.page = 1
     }
-    else if (!this.term) {
-      this.filterData();
-    }
+    this.searchSubject.next(value);
+    // this.term = event.target.value?.trim();
+    // if (this.term && this.term.length >= 2) {
+    //   this.page = 1;
+    //   this.filterData()
+    // }
+    // else if (!this.term) {
+    //   this.filterData();
+    // }
   }
 
   getFilterBaseUrl(): string {
@@ -501,6 +518,7 @@ export class AllJobsComponent implements OnInit {
     Object.keys(this.arrowState).forEach(key => {
       this.arrowState[key] = false;
     });
+    console.log(direction, column,this.arrowState)
     this.arrowState[column] = direction === 'asc' ? true : false;
     this.directionValue = direction;
     this.sortValue = column;

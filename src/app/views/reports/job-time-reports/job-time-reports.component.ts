@@ -190,17 +190,24 @@ onApplyFilter(filteredData: any[], filteredKey: string): void {
 
   if (filteredKey === 'client-ids') {
     this.selectedClientIds = filteredData;
-    if(filteredData && filteredData?.length===0){
-      this.isIncludeAllJobEnable=true;
-      this.isIncludeAllJobValue=false;
-      this.client_id=null;
-    }else if(filteredData && filteredData?.length>1){
+    if(filteredData && filteredData.length===0 || filteredData.length>1){
       this.isIncludeAllJobEnable=true;
       this.isIncludeAllJobValue=false;
       this.client_id=null;
     }else{
       this.isIncludeAllJobEnable=false;
     }
+    // if(filteredData && filteredData?.length===0){
+    //   this.isIncludeAllJobEnable=true;
+    //   this.isIncludeAllJobValue=false;
+    //   this.client_id=null;
+    // }else if(filteredData && filteredData?.length>1){
+    //   this.isIncludeAllJobEnable=true;
+    //   this.isIncludeAllJobValue=false;
+    //   this.client_id=null;
+    // }else{
+    //   this.isIncludeAllJobEnable=false;
+    // }
   }
   if (filteredKey === 'job-ids') {
     this.selectedJobIds = filteredData;
@@ -479,7 +486,7 @@ public viewtimesheetDetails(item:any){
         finalQuery += `&job-status-ids=[${params.job_status.join(',')}]`;
       }
     await this.api.getData(`${environment.live_url}/${environment.jobs}/${finalQuery}`).subscribe((res: any) => {
-      if(res && res.results && Array.isArray(res.results) && res.results.length >=1){
+      if(res.results){
       this.formattedData = res.results?.map((item: any, i: number) => ({
         sl: (page - 1) * pageSize + i + 1,
         ...item,

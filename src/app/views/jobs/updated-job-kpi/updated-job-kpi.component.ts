@@ -478,6 +478,13 @@ public onPageChanged(event: any) {
                       selectedFile.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document" ||
                       selectedFile.type === "application/pdf"
                     ) {
+                      // the first time you’re uploading then replace it with empty array to avoid undefined
+                      this.mrpFile[rowIndex] = this.mrpFile[rowIndex] || [];
+                      this.selectedMrpFile[rowIndex] = this.selectedMrpFile[rowIndex] || [];
+                      this.mrpFileLink[rowIndex] = this.mrpFileLink[rowIndex] || [];
+
+                      console.log(this.selectedMrpFile)
+                      console.log(this.mrpFile)
                       this.mrpFile[rowIndex][mrpIndex] = selectedFile;
                       this.selectedMrpFile[rowIndex][mrpIndex] = this.mrpFile[rowIndex][mrpIndex];
                       this.mrpFileLink[rowIndex][mrpIndex]=null;
@@ -506,6 +513,11 @@ public onPageChanged(event: any) {
                       selectedFile.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document" ||
                       selectedFile.type === "application/pdf"
                     ) {
+                      // the first time you’re uploading then replace it with empty array to avoid undefined 
+                       this.crpFile[rowIndex] = this.crpFile[rowIndex] || [];
+                      this.selectedCrpFile[rowIndex] = this.selectedCrpFile[rowIndex] || [];
+                      this.crpFileLink[rowIndex] = this.crpFileLink[rowIndex] || [];
+
                       this.crpFile[rowIndex][crpIndex] = selectedFile;
                       this.selectedCrpFile[rowIndex][crpIndex] = this.crpFile[rowIndex][crpIndex];
                       this.crpFileLink[rowIndex][crpIndex]=null;

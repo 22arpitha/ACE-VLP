@@ -375,7 +375,7 @@
       </div>
 </section>
 <section class="d-flex align-items-center mx-0 my-3 px-2"  *ngIf="userRole === 'Admin'">
-    <mat-checkbox [disabled]="shouldDisableFileds" color="primary" class="example-margin" formControlName="allow_sending_status_report_to_client" ><h5 class="c-header">Allow sending the status report to client</h5></mat-checkbox>
+    <mat-checkbox [disabled]="!shouldDisableFileds" color="primary" class="example-margin" formControlName="allow_sending_status_report_to_client" ><h5 class="c-header">Allow sending the status report to client</h5></mat-checkbox>
   </section>
 <div class="row mx-0 my-3 px-2">
     <div class="col-12 col-sm-12 col-md-6 col-lg-3 align-content-center px-0">
