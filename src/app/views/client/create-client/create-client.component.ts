@@ -697,28 +697,59 @@ export class CreateClientComponent implements CanComponentDeactivate, OnInit, On
   }
 
 
+  // removeEmployee(index: number) {
+  //   if (this.employeeFormArray?.length > 1) {
+  //     this.employeeFormArray?.removeAt(index);
+  //     if (this.searchEmployeeTextList && this.searchEmployeeTextList.length > index) {
+  //       this.searchEmployeeTextList.splice(index, 1);
+  //     }
+  //     if (this.filteredEmployeeLists && this.filteredEmployeeLists.length > index) {
+  //       this.filteredEmployeeLists.splice(index, 1);
+  //     }
+  //     const lastItemIndex = this.employeeFormArray?.length - 1;
+  //     const lastItem = this.employeeFormArray?.at(lastItemIndex);
+  //     if (lastItem) {
+  //       ['employee_id', 'start_date', 'end_date']?.forEach(field => lastItem?.get(field)?.enable());
+  //     }
+  //   }
+  //   const totalItems = this.employeeFormArray.length;
+  //   const totalPages = Math.ceil(totalItems / this.pageSize);
+  //   if (this.currentPage > totalPages) {
+  //     this.currentPage = Math.max(1, totalPages);
+  //     this.setCurrentPageRows();
+  //   }
+  // }
+
+
   removeEmployee(index: number) {
-    if (this.employeeFormArray?.length > 1) {
-      this.employeeFormArray?.removeAt(index);
-      if (this.searchEmployeeTextList && this.searchEmployeeTextList.length > index) {
-        this.searchEmployeeTextList.splice(index, 1);
-      }
-      if (this.filteredEmployeeLists && this.filteredEmployeeLists.length > index) {
-        this.filteredEmployeeLists.splice(index, 1);
-      }
-      const lastItemIndex = this.employeeFormArray?.length - 1;
-      const lastItem = this.employeeFormArray?.at(lastItemIndex);
-      if (lastItem) {
-        ['employee_id', 'start_date', 'end_date']?.forEach(field => lastItem?.get(field)?.enable());
-      }
-    }
-    const totalItems = this.employeeFormArray.length;
-    const totalPages = Math.ceil(totalItems / this.pageSize);
-    if (this.currentPage > totalPages) {
-      this.currentPage = Math.max(1, totalPages);
-      this.setCurrentPageRows();
+  if (this.employeeFormArray?.length > 1) {
+    this.employeeFormArray.removeAt(index);
+
+    const newDropdownState: any = {};
+    const newSelectedItemsMap: any = {};
+    this.employeeFormArray.controls.forEach((_, i) => {
+      newDropdownState[`emp_${i}`] = this.dropdownState[`emp_${i >= index ? i + 1 : i}`] || this.initEmployeeDropdownState(i);
+      newSelectedItemsMap[`emp_${i}`] = this.selectedItemsMap[`emp_${i >= index ? i + 1 : i}`] || [];
+    });
+    this.dropdownState = newDropdownState;
+    this.selectedItemsMap = newSelectedItemsMap;
+
+    const lastItemIndex = this.employeeFormArray?.length - 1;
+    const lastItem = this.employeeFormArray?.at(lastItemIndex);
+    if (lastItem) {
+      ['employee_id', 'start_date', 'end_date'].forEach(field => lastItem?.get(field)?.enable());
     }
   }
+
+  const totalItems = this.employeeFormArray.length;
+  const totalPages = Math.ceil(totalItems / this.pageSize);
+  if (this.currentPage > totalPages) {
+    this.currentPage = Math.max(1, totalPages);
+  }
+  this.setCurrentPageRows();
+}
+
+
   public onEmployeeChange(event: any, i: any) {
     const formArray = this.employeeFormArray.controls;
     const isEmployeeDuplicate = formArray.some((control: any, index: number) => {
@@ -853,7 +884,7 @@ export class CreateClientComponent implements CanComponentDeactivate, OnInit, On
     const currentEmployee = data.value.employee_id;
     const matchedDetail = this.employeeDetails.find(emp => emp.employee === currentEmployee);
     const showDelete = matchedDetail?.show_delete ?? false;
-    return !showDelete;
+    return showDelete;
   }
 
   dateClass = (date: Date) => {
