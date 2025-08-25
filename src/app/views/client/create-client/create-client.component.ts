@@ -880,11 +880,11 @@ export class CreateClientComponent implements CanComponentDeactivate, OnInit, On
   }
 
   shouldShowAddButton(data: any): boolean {
-
+    console.log(data)
     const currentEmployee = data.value.employee_id;
     const matchedDetail = this.employeeDetails.find(emp => emp.employee === currentEmployee);
     const showDelete = matchedDetail?.show_delete ?? false;
-    return showDelete;
+    return !showDelete;
   }
 
   dateClass = (date: Date) => {
