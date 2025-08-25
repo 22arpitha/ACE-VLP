@@ -159,9 +159,14 @@ private createMrpCrpGroup(): FormGroup {
     });
     return jobDetailsResponse;
   })
-).subscribe(combinedResult => {
+).subscribe((combinedResult:any) => {
   console.log('combinedResult',combinedResult);
-  const [hours, minutes] = combinedResult['budget_time']?.split(":");
+  let hours: string = '000';
+  let minutes: string = '00';
+  if (combinedResult.budget_time) {
+    [hours, minutes] = combinedResult.budget_time.split(":");
+  }
+  // const [hours, minutes] = combinedResult.budget_time?.split(":");
   const formattedbudget_time = `${hours}:${minutes}`;
   if (combinedResult['employees'] && Array.isArray(combinedResult['employees']) && combinedResult['employees']?.length >= 1) {
     const employeesDetailsArray = this.jobKPIFormGroup.get('data') as FormArray;

@@ -4,9 +4,9 @@ export const environment = {
   Razorpay_live_key:'rzp_test_Z6PoT6HRL71TiC',
 
   // Testing url
-  media_url: 'https://vlp.thestorywallcafe.com',
-  live_url:'https://vlp.thestorywallcafe.com/api-vlp',
-  socket_url:'projectacedevelop.thestorywallcafe.com',
+  // media_url: 'https://vlp.thestorywallcafe.com',
+  // live_url:'https://vlp.thestorywallcafe.com/api-vlp',
+  // socket_url:'projectacedevelop.thestorywallcafe.com',
 
   // UAT url
   // media_url: 'https://vlpuat.thestorywallcafe.com',
@@ -15,9 +15,9 @@ export const environment = {
   
   
   // Staging URL
-  // media_url: 'https://staging.vlpworkflow.com',
-  // live_url:'https://staging.vlpworkflow.com/api-vlp',
-  // socket_url:'projectacedevelop.thestorywallcafe.com',
+  media_url: 'https://staging.vlpworkflow.com',
+  live_url:'https://staging.vlpworkflow.com/api-vlp',
+  socket_url:'projectacedevelop.thestorywallcafe.com',
 
   //  vlp Auth
   login:`login`,
@@ -56,6 +56,7 @@ end_clients:'end-clients',
 end_client_jobs:`end-client-jobs`,
 // jobs
 jobs:`jobs`,
+jobs_search:`jobs-search`,
 jobs_kpi:'kpi',
 // timesheet
 vlp_timesheets:`timesheet`,

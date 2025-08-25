@@ -490,7 +490,7 @@ dropdownState = {
 };
 
 dropdownEndpoints = {
-  job_id: environment.jobs,
+  job_id: environment.jobs_search,
 };
 
 private scrollListeners: { [key: string]: (event: Event) => void } = {};
@@ -551,7 +551,7 @@ fetchData(key: string, append = false) {
     query += `&search=${encodeURIComponent(state.search)}`;
   }
   if (key === 'job_id') {
-    query += `&job-status=[${this.statusList}]&employee-id=${this.user_id}`;
+    query += `&employee-id=${this.user_id}`;
   }
   this.apiService.getData(`${environment.live_url}/${this.dropdownEndpoints[key]}/?${query}`)
     .subscribe((res: any) => {
