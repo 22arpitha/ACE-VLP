@@ -50,17 +50,17 @@
             <tr>
               <th scope="col" *ngIf="isColumnVisible('sl_no')"> S.No</th>
               <th scope="col" *ngIf="isColumnVisible('job_number')">Job Id
-                <i *ngIf="!arrowState['job_number']" (click)="sort('asc','job_number')" class="bi bi-arrow-down"></i>
-                <i (click)="sort('desc','job_number')" *ngIf="arrowState['job_number']" class="bi bi-arrow-up"></i>
+                <i *ngIf="!arrowState['job_number']" (click)="sort('ascending','job_number')" class="bi bi-arrow-down"></i>
+                <i (click)="sort('descending','job_number')" *ngIf="arrowState['job_number']" class="bi bi-arrow-up"></i>
               </th>
               <th scope="col" class="name-col" *ngIf="isColumnVisible('job_name')">Job
-                <i *ngIf="!arrowState['job_name']" (click)="sort('asc','job_name')" class="bi bi-arrow-down"></i>
-                <i (click)="sort('desc','job_name')" *ngIf="arrowState['job_name']" class="bi bi-arrow-up"></i>
+                <i *ngIf="!arrowState['job_name']" (click)="sort('ascending','job_name')" class="bi bi-arrow-down"></i>
+                <i (click)="sort('descending','job_name')" *ngIf="arrowState['job_name']" class="bi bi-arrow-up"></i>
               </th>
               <th scope="col" *ngIf="isColumnVisible('job_type_name')">Job Type
-                <i *ngIf="!arrowState['job_type_name']" (click)="sort('asc','job_type_name')"
+                <i *ngIf="!arrowState['job_type__job_type_name']" (click)="sort('ascending','job_type__job_type_name')"
                   class="bi bi-arrow-down"></i>
-                <i (click)="sort('desc','job_type_name')" *ngIf="arrowState['job_type_name']"
+                <i (click)="sort('descending','job_type__job_type_name')" *ngIf="arrowState['job_type__job_type_name']"
                   class="bi bi-arrow-up"></i>
                 <!-- Filter Trigger -->
                 <button mat-icon-button [matMenuTriggerFor]="jobTypeFilterMenu"
@@ -76,8 +76,8 @@
                 </mat-menu>
               </th>
               <th scope="col" class="name-col" *ngIf="isColumnVisible('client_name')">Client
-                <i *ngIf="!arrowState['client_name']" (click)="sort('asc','client_name')" class="bi bi-arrow-down"></i>
-                <i (click)="sort('desc','client_name')" *ngIf="arrowState['client_name']" class="bi bi-arrow-up"></i>
+                <i *ngIf="!arrowState['client__client_name']" (click)="sort('ascending','client__client_name')" class="bi bi-arrow-down"></i>
+                <i (click)="sort('descending','client__client_name')" *ngIf="arrowState['client__client_name']" class="bi bi-arrow-up"></i>
                 <!-- Filter Trigger -->
                 <button mat-icon-button [matMenuTriggerFor]="clientFilterMenu" (menuOpened)="openFilter(clientFilter)"
                   [ngClass]="filters.client_name.length>=1 ? 'filterdColumn':''">
@@ -93,8 +93,8 @@
                 </mat-menu>
               </th>
               <th scope="col" *ngIf="isColumnVisible('group_name')"> Group
-                <i *ngIf="!arrowState['group_name']" (click)="sort('asc','group_name')" class="bi bi-arrow-down"></i>
-                <i (click)="sort('desc','group_name')" *ngIf="arrowState['group_name']" class="bi bi-arrow-up"></i>
+                <i *ngIf="!arrowState['group_name']" (click)="sort('ascending','group_name')" class="bi bi-arrow-down"></i>
+                <i (click)="sort('descending','group_name')" *ngIf="arrowState['group_name']" class="bi bi-arrow-up"></i>
                 <button mat-icon-button [matMenuTriggerFor]="groupFilterMenu" (menuOpened)="openFilter(groupClientFilter)"
                   [ngClass]="filters.group_name.length>=1 ? 'filterdColumn':''">
                   <span *ngIf="filters.group_name.length>=1">{{filters.group_name.length.toString().padStart(2,

@@ -40,7 +40,8 @@ export class ClientListComponent implements OnInit {
   arrowState: { [key: string]: boolean } = {
     client_number: false,
     client_name: false,
-    user__email: false,
+    country__country_name: false,
+    source__source_name: false,
     designation__designation_name: false,
     is_active: false,
   };
@@ -234,9 +235,10 @@ export class ClientListComponent implements OnInit {
     Object.keys(this.arrowState).forEach(key => {
       this.arrowState[key] = false;
     });
-    this.arrowState[column] = direction === 'asc' ? true : false;
+    this.arrowState[column] = direction === 'ascending' ? true : false;
     this.directionValue = direction;
     this.sortValue = column;
+    this.filterData()
   }
 
   public getContinuousIndex(index: number): number {
@@ -287,6 +289,9 @@ export class ClientListComponent implements OnInit {
 
     if (this.filters.source.length) {
       this.filterQuery += `&source-ids=[${this.filters.source.join(',')}]`;
+    }
+    if(this.directionValue && this.sortValue){
+      this.filterQuery += `&sort-by=${this.sortValue}&sort-type=${this.directionValue}`
     }
     if (this.isCurrent) {
       this.filterQuery += `&status=True`;

@@ -220,9 +220,10 @@ getUniqueValues(
     Object.keys(this.arrowState).forEach(key => {
       this.arrowState[key] = false;
     });
-    this.arrowState[column] = direction === 'asc' ? true : false;
+    this.arrowState[column] = direction === 'ascending' ? true : false;
     this.directionValue = direction;
     this.sortValue = column;
+    this.filterData();
   }
   public getContinuousIndex(index: number): number {
 
@@ -356,6 +357,10 @@ getUniqueValues(
       if (this.filters.group_name.length) {
         this.filterQuery += `&group-ids=[${this.filters.group_name.join(',')}]`;
       }
+       if(this.directionValue && this.sortValue){
+        this.filterQuery += `&sort-by=${this.sortValue}&sort-type=${this.directionValue}`
+       }
+
       this.apiService.getData(`${environment.live_url}/${environment.end_clients}/${this.filterQuery}`).subscribe((res: any) => {
         this.allEndClients = res?.results;
         this.filteredList = res?.results;

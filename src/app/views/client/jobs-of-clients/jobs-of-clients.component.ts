@@ -99,9 +99,13 @@ export class JobsOfClientsComponent implements OnInit {
     }
     arrow: boolean = false
     sort(direction: string, column: string) {
-      this.arrowState[column] = direction === 'asc' ? true : false;
+       Object.keys(this.arrowState).forEach(key => {
+      this.arrowState[key] = false;
+    });
+      this.arrowState[column] = direction === 'ascending' ? true : false;
       this.directionValue = direction;
       this.sortValue = column;
+      this.filterData();
     }
     getJobsOfClient(params: any) {
         this.api.getData(`${environment.live_url}/${environment.jobs}/${params}`).subscribe(
@@ -160,7 +164,9 @@ export class JobsOfClientsComponent implements OnInit {
          if (this.dateRange.start && this.dateRange.end) {
           this.filterQuery += `&start-date=${this.dateRange.start}&end-date=${this.dateRange.end}`;
         }
-        
+         if(this.directionValue && this.sortValue){
+          this.filterQuery += `&sort-by=${this.sortValue}&sort-type=${this.directionValue}`
+        }
         // if (this.jobAllocationDate) {
         //   this.filterQuery += `&job-allocation-date=[${this.jobAllocationDate}]`;
         // }

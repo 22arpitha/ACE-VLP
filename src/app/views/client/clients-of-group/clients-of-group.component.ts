@@ -47,9 +47,15 @@ export class ClientsOfGroupComponent implements OnInit {
   }
   arrow: boolean = false
   sort(direction: string, column: string) {
-    this.arrowState[column] = direction === 'asc' ? true : false;
+     Object.keys(this.arrowState).forEach(key => {
+      this.arrowState[key] = false;
+    });
+    this.arrowState[column] = direction === 'ascending' ? true : false;
     this.directionValue = direction;
     this.sortValue = column;
+    let query = this.getFilterBaseUrl()
+    query += `&sort-by=${this.sortValue}&sort-type=${this.directionValue}`
+    this.getAllClientOfGroup(query);
   }
 
   getAllClientOfGroup(params: any) {

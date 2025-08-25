@@ -41,14 +41,16 @@ export class AllJobsComponent implements OnInit {
     group_name: false,
     job_number: false,
     job_name: false,
-    job_type_name: false,
-    client_name: false,
+    job_type__job_type_name: false,
+    client__client_name: false,
     is_active: false,
   };
   page = 1;
   count = 0;
   tableSize = 50;
   tableSizes = [50, 75, 100];
+  sortColumn:string;
+  sortType:string;
   currentIndex: any;
   allJobsList: any = [];
   internalReviewOneIndex: any
@@ -288,6 +290,9 @@ private searchSubject = new Subject<string>();
     if (this.dateRange.start && this.dateRange.end) {
       this.filterQuery += `&start-date=${this.dateRange.start}&end-date=${this.dateRange.end}`;
     }
+    if(this.directionValue && this.sortValue){
+      this.filterQuery += `&sort-by=${this.sortValue}&sort-type=${this.directionValue}`
+    }
     // if (this.jobAllocationDate) {
     //   this.filterQuery += `&job-allocation-date=[${this.jobAllocationDate}]`;
     // }
@@ -518,10 +523,10 @@ private searchSubject = new Subject<string>();
     Object.keys(this.arrowState).forEach(key => {
       this.arrowState[key] = false;
     });
-    console.log(direction, column,this.arrowState)
-    this.arrowState[column] = direction === 'asc' ? true : false;
+    this.arrowState[column] = direction === 'ascending' ? true : false;
     this.directionValue = direction;
     this.sortValue = column;
+    this.filterData()
   }
 
   getContinuousIndex(index: number): number {
