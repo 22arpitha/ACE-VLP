@@ -91,6 +91,8 @@ this.formUtilityService.resetHasUnsavedValue();
   public get f() {
     return this.templateForm?.controls;
   }
+
+  
   public getAllTemplates(pramas: any) {
     this.allTemplatesList = [];
     this.apiService.getData(`${environment.live_url}/${environment.templates}/${pramas}`).subscribe((respData: any) => {
@@ -160,9 +162,14 @@ public createFromData(){
   }
 
   public sort(direction: string, column: string) {
-    this.arrowState[column] = direction === 'asc' ? true : false;
+    this.arrowState[column] = direction === 'ascending' ? true : false;
     this.directionValue = direction;
     this.sortValue = column;
+    let query = `?page=${this.page}&page_size=${this.tableSize}&sort-by=${this.sortValue}&sort-type=${this.directionValue}`;
+    if (this.term) {
+      query += `&search=${this.term}`
+    }
+    this.getAllTemplates(query);
   }
 
   public getContinuousIndex(index: number): number {

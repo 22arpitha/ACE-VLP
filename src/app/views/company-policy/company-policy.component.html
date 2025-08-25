@@ -78,8 +78,8 @@
                   Sl no
                 </th>
                 <th>Policy Name
-                  <i *ngIf="!arrowState['policy_name']" (click)="sort('asc', 'policy_name')" class="bi bi-arrow-down"></i>
-                  <i *ngIf="arrowState['policy_name']" (click)="sort('desc', 'policy_name')" class="bi bi-arrow-up"></i>                    
+                  <i *ngIf="!arrowState['policy_name']" (click)="sort('ascending', 'policy_name')" class="bi bi-arrow-down"></i>
+                  <i *ngIf="arrowState['policy_name']" (click)="sort('descending', 'policy_name')" class="bi bi-arrow-up"></i>                    
                
                 </th>
                 <th>Policy File</th>

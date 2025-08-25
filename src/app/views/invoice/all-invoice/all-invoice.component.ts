@@ -178,9 +178,10 @@ BreadCrumbsTitle: any = 'Invoices';
       Object.keys(this.arrowState).forEach(key => {
         this.arrowState[key] = false;
       });
-      this.arrowState[column] = direction === 'asc' ? true : false;
+      this.arrowState[column] = direction === 'ascending' ? true : false;
       this.directionValue = direction;
       this.sortValue = column;
+       this.filterData()
     }
 
     public getContinuousIndex(index: number): number {
@@ -223,6 +224,9 @@ BreadCrumbsTitle: any = 'Invoices';
       if (this.filters.client_name.length) {
         this.filterQuery += `&client-ids=[${this.filters.client_name.join(',')}]`;
       }
+      if(this.directionValue && this.sortValue){
+      this.filterQuery += `&sort-by=${this.sortValue}&sort-type=${this.directionValue}`
+    }
       // if (this.invoiceDate) {
       //   this.filterQuery += `&dates=[${this.invoiceDate}]`;
       // }

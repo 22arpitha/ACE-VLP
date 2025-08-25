@@ -184,9 +184,10 @@ this.apiService.getData(`${environment.live_url}/${environment.employee}/${query
     Object.keys(this.arrowState).forEach(key => {
       this.arrowState[key] = false;
     });
-    this.arrowState[column] = direction === 'asc' ? true : false;
+    this.arrowState[column] = direction === 'ascending' ? true : false;
     this.directionValue = direction;
     this.sortValue = column;
+    this.filterData();
   }
 
   public getContinuousIndex(index: number): number {
@@ -208,7 +209,9 @@ this.apiService.getData(`${environment.live_url}/${environment.employee}/${query
       this.page = 1;
       this.filterQuery += `&designation-ids=[${this.filters.designation__designation_name.join(',')}]`;
     }
-
+    if(this.directionValue && this.sortValue){
+      this.filterQuery += `&sort-by=${this.sortValue}&sort-type=${this.directionValue}`
+    }
     if(this.isCurrent){
       this.filterQuery += `&is_active=True`;
     }

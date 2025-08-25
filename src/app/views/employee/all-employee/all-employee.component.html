@@ -22,23 +22,23 @@
                   <tr>
                     <th scope="col"> S.No</th>
                     <th scope="col">Emp No
-                      <i *ngIf="!arrowState['employee_number']" (click)="sort('asc','employee_number')" class="bi bi-arrow-down"></i>
-                <i (click)="sort('desc','employee_number')" *ngIf="arrowState['employee_number']"
+                      <i *ngIf="!arrowState['employee_number']" (click)="sort('ascending','employee_number')" class="bi bi-arrow-down"></i>
+                <i (click)="sort('descending','employee_number')" *ngIf="arrowState['employee_number']"
                   class="bi bi-arrow-up"></i>
                     </th>
                     <th scope="col">Employee
-                      <i *ngIf="!arrowState['user__full_name']" (click)="sort('asc','user__full_name')" class="bi bi-arrow-down"></i>
-                      <i (click)="sort('desc','user__full_name')" *ngIf="arrowState['user__full_name']"
+                      <i *ngIf="!arrowState['user__full_name']" (click)="sort('ascending','user__full_name')" class="bi bi-arrow-down"></i>
+                      <i (click)="sort('descending','user__full_name')" *ngIf="arrowState['user__full_name']"
                         class="bi bi-arrow-up"></i>
                     </th>
                     <th scope="col">Emp Email
-                      <i *ngIf="!arrowState['user__email']" (click)="sort('asc','user__email')" class="bi bi-arrow-down"></i>
-                      <i (click)="sort('desc','user__email')" *ngIf="arrowState['user__email']"
+                      <i *ngIf="!arrowState['user__email']" (click)="sort('ascending','user__email')" class="bi bi-arrow-down"></i>
+                      <i (click)="sort('descending','user__email')" *ngIf="arrowState['user__email']"
                         class="bi bi-arrow-up"></i>
                     </th>
                     <th scope="col">Role
-                      <i *ngIf="!arrowState['designation__designation_name']" (click)="sort('asc','designation__designation_name')" class="bi bi-arrow-down"></i>
-                      <i (click)="sort('desc','designation__designation_name')" *ngIf="arrowState['designation__designation_name']"
+                      <i *ngIf="!arrowState['designation__designation_name']" (click)="sort('ascending','designation__designation_name')" class="bi bi-arrow-down"></i>
+                      <i (click)="sort('descending','designation__designation_name')" *ngIf="arrowState['designation__designation_name']"
                         class="bi bi-arrow-up"></i>
                         <button mat-icon-button [matMenuTriggerFor]="roleFilterMenu" (menuOpened)="openFilter(roleFilter)" [ngClass]="filters.designation__designation_name.length>=1 ? 'filterdColumn':''">
                         <span *ngIf="filters.designation__designation_name.length>=1">{{filters.designation__designation_name.length.toString().padStart(2, '0')}}</span>

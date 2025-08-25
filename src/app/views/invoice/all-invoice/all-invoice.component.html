@@ -19,8 +19,8 @@
                 <thead>
                   <tr>
                     <th scope="col">Invoice Date
-                      <i *ngIf="!arrowState['created_date']" (click)="sort('asc','created_date')" class="bi bi-arrow-down"></i>
-                        <i (click)="sort('desc','created_date')" *ngIf="arrowState['created_date']"
+                      <i *ngIf="!arrowState['created_date']" (click)="sort('ascending','created_date')" class="bi bi-arrow-down"></i>
+                        <i (click)="sort('descending','created_date')" *ngIf="arrowState['created_date']"
                           class="bi bi-arrow-up"></i>
                           <button *ngIf="!startDate && !endDate"
                           mat-icon-button
@@ -57,13 +57,13 @@
                   </mat-form-field>
                     </th>
                     <th scope="col">Invoice Number
-                      <i *ngIf="!arrowState['invoice_number']" (click)="sort('asc','invoice_number')" class="bi bi-arrow-down"></i>
-                      <i (click)="sort('desc','invoice_number')" *ngIf="arrowState['invoice_number']"
+                      <i *ngIf="!arrowState['invoice_number']" (click)="sort('ascending','invoice_number')" class="bi bi-arrow-down"></i>
+                      <i (click)="sort('descending','invoice_number')" *ngIf="arrowState['invoice_number']"
                         class="bi bi-arrow-up"></i>
                     </th>
                     <th scope="col" class="name-col">Client
-                      <i *ngIf="!arrowState['client_name']" (click)="sort('asc','client_name')" class="bi bi-arrow-down"></i>
-                      <i (click)="sort('desc','client_name')" *ngIf="arrowState['client_name']"
+                      <i *ngIf="!arrowState['client_name']" (click)="sort('ascending','client_name')" class="bi bi-arrow-down"></i>
+                      <i (click)="sort('descending','client_name')" *ngIf="arrowState['client_name']"
                         class="bi bi-arrow-up"></i>
                         <button mat-icon-button [matMenuTriggerFor]="clientFilterMenu" (menuOpened)="openFilter(clientFilter)" [ngClass]="filters.client_name.length>=1 ? 'filterdColumn':''">
                         <span *ngIf="filters.client_name.length>=1">{{filters.client_name.length.toString().padStart(2, '0')}}</span>
@@ -80,8 +80,8 @@
                         </mat-menu>
                     </th>
                     <th scope="col">Amount
-                      <i *ngIf="!arrowState['total_amount']" (click)="sort('asc','total_amount')" class="bi bi-arrow-down"></i>
-                      <i (click)="sort('desc','total_amount')" *ngIf="arrowState['total_amount']"
+                      <i *ngIf="!arrowState['total_amount']" (click)="sort('ascending','total_amount')" class="bi bi-arrow-down"></i>
+                      <i (click)="sort('descending','total_amount')" *ngIf="arrowState['total_amount']"
                         class="bi bi-arrow-up"></i>
                     </th>
                     <th scope="col">Action </th>
