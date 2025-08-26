@@ -60,7 +60,7 @@ export class CreateUpdateJobComponent implements CanComponentDeactivate, OnInit,
   selectAllEmpFlag: boolean = false;
   selectOtherEmpFlag: boolean = false;
   jobDetails: any = []
-  estimatedTime: any;
+  estimatedTime: any = '00:00';
   editJobDetails: boolean = false;
   internalReviewOneIndex:any;
   toolbar: Toolbar = [
@@ -380,9 +380,8 @@ onManagerSelectOpened(opened: boolean, index: number): void {
     this.jobFormGroup?.get('group')?.reset();
     this.jobFormGroup?.get('job_name')?.reset();
     this.dropdownState.end_client.initialized = false;
-    if(this.isEditItem){
-      this.selectedItemsMap['end_client'] = []
-    }
+    this.selectedItemsMap['end_client'] = []
+    this.dropdownState.end_client.list = []
     this.updateSelectedItems('client', event.value);
     // this.getClientBasedEndClient(client_id);
   }
@@ -491,10 +490,10 @@ onManagerSelectOpened(opened: boolean, index: number): void {
     this.allJobStatusList = [];
     this.apiService.getData(`${environment.live_url}/${environment.settings_job_status}/`).subscribe(
       (res: any) => {
+        this.internalReviewOneIndex = res.findIndex(status => status.status_name.toLowerCase() === 'internal review 1');
         if (this.job_id) {
           this.allJobStatusList = res;
         } else {
-          this.internalReviewOneIndex = res.findIndex(status => status.status_name.toLowerCase() === 'internal review 1');
           // console.log('this.internalReviewOneIndex',this.internalReviewOneIndex)
           this.allJobStatusList = res.filter(job => {
             const status = job.status_name.toLowerCase();
@@ -612,6 +611,7 @@ onManagerSelectOpened(opened: boolean, index: number): void {
         this.common_service.setTitle(this.BreadCrumbsTitle);
         this.jobDetails = respData;
         this.estimatedTime = respData?.estimated_time
+        console.log(this.estimatedTime)
         // new code
       this.patchDropdownValuesForEdit(respData);
 

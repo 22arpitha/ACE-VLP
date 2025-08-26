@@ -296,10 +296,10 @@
                   <mat-icon class="search-icon" *ngIf="!searchJobStatusText">search</mat-icon>
                   <mat-icon class="search-icon" *ngIf="searchJobStatusText" type="button" (click)="clearSearch('job_status')">close</mat-icon>
                 </div>
-                <mat-option *ngFor="let item of filteredJobStatusList();let i = index" [value]="item?.id" [disabled]="!isEditItem && i >= internalReviewOneIndex">
+                <mat-option *ngFor="let item of filteredJobStatusList();let i = index" [value]="item?.id" [disabled]="estimatedTime==='00:00' &&i >= internalReviewOneIndex">
                   {{item?.status_name}}
                 </mat-option>
-                <!-- [disabled]="shouldDisableStatus(item?.status_name)" -->
+                <!-- [disabled]="!isEditItem && i >= internalReviewOneIndex" -->
         </mat-select>
         <mat-error *ngIf="f['job_status']?.invalid && f['job_status']?.touched || f['job_status']?.dirty">
             <span  *ngIf="f['job_status']?.errors?.['required']">Job Status is required</span>
