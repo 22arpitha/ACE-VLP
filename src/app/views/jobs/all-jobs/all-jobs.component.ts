@@ -707,23 +707,31 @@ private searchSubject = new Subject<string>();
   }
 
   jobStatusValidation(data: any, index: any): boolean {
-    if (data.estimated_time == '00:00' && index >= this.internalReviewOneIndex) {
+     if (data.estimated_time === '00:00' && index >= this.internalReviewOneIndex) {
       return true;
     }
     if (this.userRole !== 'Admin') {
-      if (data.only_admin_can_change_job_status) {
-        return true;
-      }
-      if (!data.only_admin_can_change_job_status && index >= this.internalReviewOneIndex) {
-        return true;
-      }
-    } else {
-      if (index >= this.internalReviewOneIndex) {
-        return true;
-      }
+      return data.only_admin_can_change_job_status ? true : false;
     }
-
     return false;
+    // below code is matching the flows
+    // if (data.estimated_time == '00:00' && index >= this.internalReviewOneIndex) {
+    //   return true;
+    // }
+    // if (this.userRole !== 'Admin') {
+    //   if (data.only_admin_can_change_job_status) {
+    //     return true;
+    //   }
+    //   if (!data.only_admin_can_change_job_status && index >= this.internalReviewOneIndex) {
+    //     return true;
+    //   }
+    // } else {
+    //   if (index >= this.internalReviewOneIndex) {
+    //     return true;
+    //   }
+    // }
+
+    // return false;
   }
   dateClass = (date: Date) => {
     return date.getDay() === 0 ? 'sunday-highlight' : '';
