@@ -468,9 +468,10 @@ onManagerSelectOpened(opened: boolean, index: number): void {
   }
   public onServiceChange(event: any) {
     // console.log('event', event);
-    if (this.isEditItem) {
-      this.getCombinationJobName();
-    }
+    this.getCombinationJobName();
+    // if (this.isEditItem) {
+    //   this.getCombinationJobName();
+    // }
   }
   public onPeroidChange() {
     this.getCombinationJobName();
@@ -611,7 +612,6 @@ onManagerSelectOpened(opened: boolean, index: number): void {
         this.common_service.setTitle(this.BreadCrumbsTitle);
         this.jobDetails = respData;
         this.estimatedTime = respData?.estimated_time
-        console.log(this.estimatedTime)
         // new code
       this.patchDropdownValuesForEdit(respData);
 
@@ -1081,7 +1081,7 @@ this.filteredManagerLists[index]=[...this.allManagerList];
   private getSelectedEndClient(id: any) {
      const endClient :any = this.dropdownState.end_client.list.find((endClient: any) => endClient?.id === id) // new code
     // const endClient = this.endClientslists.find((endClient: any) => endClient?.id === id)
-    return endClient?.client_name || '';
+    return endClient?.client_name || endClient?.end_client_name || '';
   }
   private getSelectedService(id: any) {
     const service = this.allServiceslist.find((service: any) => service?.id === id)
