@@ -70,6 +70,9 @@ export class ViewInvoiceComponent implements OnInit {
       }
   public getInvoiceDetailsList(){
       let query = this.getFilterBaseUrl();
+      if(this.directionValue && this.sortValue){
+      query += `&sort-by=${this.sortValue}&sort-type=${this.directionValue}`
+    }
   this.apiService.getData(`${environment.live_url}/${environment.client_invoice}/${query}`).subscribe(
         (res: any) => {
           // console.log(res?.results);
@@ -146,9 +149,11 @@ public deleteClient(){
         Object.keys(this.arrowState).forEach(key => {
           this.arrowState[key] = false;
         });
-        this.arrowState[column] = direction === 'asc' ? true : false;
+        this.arrowState[column] = direction === 'ascending' ? true : false;
         this.directionValue = direction;
         this.sortValue = column;
+        
+        this.getInvoiceDetailsList();
       }
     
       public getContinuousIndex(index: number): number {

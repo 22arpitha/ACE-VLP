@@ -150,7 +150,7 @@ private createMrpCrpGroup(): FormGroup {
      jobDetailsResponse['employees'].forEach((emp:any) => {
       if(kpiJobDetailsResponse['data'] && kpiJobDetailsResponse['data'].length>=1){
         kpiJobDetailsResponse['data']?.forEach((kpiEmp:any) => {
-          console.log('kpiEmp',kpiEmp);
+          // console.log('kpiEmp',kpiEmp);
           if(emp?.employee == kpiEmp.employee){
             emp['kpi']=kpiEmp;
           }
@@ -488,8 +488,6 @@ public onPageChanged(event: any) {
                       this.selectedMrpFile[rowIndex] = this.selectedMrpFile[rowIndex] || [];
                       this.mrpFileLink[rowIndex] = this.mrpFileLink[rowIndex] || [];
 
-                      console.log(this.selectedMrpFile)
-                      console.log(this.mrpFile)
                       this.mrpFile[rowIndex][mrpIndex] = selectedFile;
                       this.selectedMrpFile[rowIndex][mrpIndex] = this.mrpFile[rowIndex][mrpIndex];
                       this.mrpFileLink[rowIndex][mrpIndex]=null;

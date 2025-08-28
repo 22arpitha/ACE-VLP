@@ -185,7 +185,7 @@ export class CreateClientComponent implements CanComponentDeactivate, OnInit, On
       client_file: [null],
       contact_details: this.fb.array([this.createContactGroup()], this.duplicateNameValidator),
       employee_details: this.fb.array([]),
-      allow_sending_status_report_to_client: [false],
+      allow_sending_status_report_to_client: [{value:false,disable:!this.shouldDisableFileds}],
       practice_notes: [''],
     });
   }

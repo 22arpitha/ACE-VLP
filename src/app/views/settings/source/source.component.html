@@ -48,8 +48,8 @@
                 Sl no
               </th>
               <th>Source
-                <i *ngIf="!arrowState['source_name']" (click)="sort('asc', 'source_name')" class="bi bi-arrow-down"></i>
-                <i *ngIf="arrowState['source_name']" (click)="sort('desc', 'source_name')" class="bi bi-arrow-up"></i>
+                <i *ngIf="!arrowState['source_name']" (click)="sort('ascending', 'source_name')" class="bi bi-arrow-down"></i>
+                <i *ngIf="arrowState['source_name']" (click)="sort('descending', 'source_name')" class="bi bi-arrow-up"></i>
               </th>
               <th>Action</th>
             </tr>

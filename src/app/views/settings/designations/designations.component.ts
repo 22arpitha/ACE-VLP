@@ -31,6 +31,7 @@ export class DesignationsComponent implements CanComponentDeactivate, OnInit,OnD
   tableSize = 50;
   tableSizes = [50,75,100];
   currentIndex: any;
+  filterQuery: string;
   sortValue: string = '';
   directionValue: string = '';
   arrowState: { [key: string]: boolean } = {
@@ -72,7 +73,7 @@ this.formUtilityService.resetHasUnsavedValue();
     this.accessControlService.getAccessForActiveUrl(this.user_id).subscribe((access) => {
       if (access) {
         this.accessPermissions = access[0].operations;
-        this.getAllDesignation('?page=1&page_size=50');
+        this.getAllDesignation();
         this.getAllRolesList();
       }
     },(error: any) => {
@@ -89,10 +90,19 @@ this.formUtilityService.resetHasUnsavedValue();
   public get f() {
     return this.designationForm.controls;
   }
-
-  public getAllDesignation(pramas: any) {
+  getFilterBaseUrl(): string {
+    return `?page=${this.page}&page_size=${this.tableSize}`;
+  }
+  public getAllDesignation() {
+    this.filterQuery = this.getFilterBaseUrl();
+    if(this.term){
+      this.filterQuery += `&search=${this.term}`
+    }
+    if(this.directionValue && this.sortValue){
+      this.filterQuery += `&sort-by=${this.sortValue}&sort-type=${this.directionValue}`
+    }
     this.allDesignationStatusList = [];
-    this.apiService.getData(`${environment.live_url}/${environment.settings_designation}/${pramas}`).subscribe((respData: any) => {
+    this.apiService.getData(`${environment.live_url}/${environment.settings_designation}/${this.filterQuery}`).subscribe((respData: any) => {
       this.allDesignationStatusList = respData.results;
       const noOfPages: number = respData.total_pages
       this.count = noOfPages * this.tableSize;
@@ -105,11 +115,7 @@ this.formUtilityService.resetHasUnsavedValue();
 
   public onTableDataChange(event: any) {
     this.page = event;
-    let query = `?page=${this.page}&page_size=${this.tableSize}`
-    if (this.term) {
-      query += `&search=${this.term}`
-    }
-    this.getAllDesignation(query);
+    this.getAllDesignation();
   }
   public saveJobTypeDetails() {
     if (this.designationForm.invalid) {
@@ -121,7 +127,8 @@ this.formUtilityService.resetHasUnsavedValue();
           if (respData) {
             this.apiService.showSuccess(respData['message']);
             this.resetFormState();
-            this.getAllDesignation(`?page=1&page_size=${this.tableSize}`);
+            this.page = 1;
+            this.getAllDesignation();
           }
         }, (error: any) => {
           this.apiService.showError(error?.error?.detail);
@@ -131,7 +138,8 @@ this.formUtilityService.resetHasUnsavedValue();
           if (respData) {
             this.apiService.showSuccess(respData['message']);
             this.resetFormState();
-            this.getAllDesignation(`?page=1&page_size=${this.tableSize}`);
+            this.page = 1;
+            this.getAllDesignation();
           }
         }, (error: any) => {
           this.apiService.showError(error?.error?.detail);
@@ -152,9 +160,10 @@ this.formUtilityService.resetHasUnsavedValue();
     Object.keys(this.arrowState).forEach(key => {
       this.arrowState[key] = false;
     });
-    this.arrowState[column] = direction === 'asc' ? true : false;
+    this.arrowState[column] = direction === 'ascending' ? true : false;
     this.directionValue = direction;
     this.sortValue = column;
+    this.getAllDesignation();
   }
 
   public getContinuousIndex(index: number): number {
@@ -164,11 +173,7 @@ this.formUtilityService.resetHasUnsavedValue();
   public onTableSizeChange(event: any): void {
     if (event) {
       this.tableSize = Number(event.value);
-      let query = `?page=${1}&page_size=${this.tableSize}`
-      if (this.term) {
-        query += `&search=${this.term}`
-      }
-      this.getAllDesignation(query);
+      this.getAllDesignation();
     }
   }
   public confirmDelete(content: any) {
@@ -194,11 +199,8 @@ this.formUtilityService.resetHasUnsavedValue();
       if (data) {
         this.allDesignationStatusList = []
         this.apiService.showWarning(data.message)
-        let query = `?page=${1}&page_size=${this.tableSize}`
-        if (this.term) {
-          query += `&search=${this.term}`
-        }
-        this.getAllDesignation(query)
+        this.page = 1;
+        this.getAllDesignation()
       }
     }, (error => {
       this.apiService.showError(error?.error?.detail)
@@ -246,11 +248,10 @@ this.formUtilityService.resetHasUnsavedValue();
     if (input && input.length >= 2) {
       this.term = input;
       this.page = 1;
-      const query = `?page=${this.page}&page_size=${this.tableSize}&search=${this.term}`;
-      this.getAllDesignation(query);
+      this.getAllDesignation();
     } if (!input) {
-      const query = `?page=${this.page}&page_size=${this.tableSize}`;
-      this.getAllDesignation(query);
+      this.page = 1;
+      this.getAllDesignation();
     }
   }
   public getAllRolesList() {

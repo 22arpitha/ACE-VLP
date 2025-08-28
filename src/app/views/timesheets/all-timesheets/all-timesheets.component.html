@@ -204,11 +204,11 @@
                 Employee
                 <i
                   *ngIf="!arrowState['employee_name']"
-                  (click)="sort('asc', 'employee_name')"
+                  (click)="sort('ascending', 'employee_name')"
                   class="bi bi-arrow-down"
                 ></i>
                 <i
-                  (click)="sort('desc', 'employee_name')"
+                  (click)="sort('descending', 'employee_name')"
                   *ngIf="arrowState['employee_name']"
                   class="bi bi-arrow-up"
                 ></i>
@@ -241,11 +241,11 @@
                 Client
                 <i
                   *ngIf="!arrowState['client_name']"
-                  (click)="sort('asc', 'client_name')"
+                  (click)="sort('ascending', 'client_name')"
                   class="bi bi-arrow-down"
                 ></i>
                 <i
-                  (click)="sort('desc', 'client_name')"
+                  (click)="sort('descending', 'client_name')"
                   *ngIf="arrowState['client_name']"
                   class="bi bi-arrow-up"
                 ></i>
@@ -274,11 +274,11 @@
                 Job
                 <i
                   *ngIf="!arrowState['job_name']"
-                  (click)="sort('asc', 'job_name')"
+                  (click)="sort('ascending', 'job_name')"
                   class="bi bi-arrow-down"
                 ></i>
                 <i
-                  (click)="sort('desc', 'job_name')"
+                  (click)="sort('descending', 'job_name')"
                   *ngIf="arrowState['job_name']"
                   class="bi bi-arrow-up"
                 ></i>
@@ -301,11 +301,11 @@
                 Task
                 <i
                   *ngIf="!arrowState['task_nmae']"
-                  (click)="sort('asc', 'task_nmae')"
+                  (click)="sort('ascending', 'task_nmae')"
                   class="bi bi-arrow-down"
                 ></i>
                 <i
-                  (click)="sort('desc', 'task_nmae')"
+                  (click)="sort('descending', 'task_nmae')"
                   *ngIf="arrowState['task_nmae']"
                   class="bi bi-arrow-up"
                 ></i>
@@ -329,11 +329,11 @@
                 Notes
                 <i
                   *ngIf="!arrowState['notes']"
-                  (click)="sort('asc', 'notes')"
+                  (click)="sort('ascending', 'notes')"
                   class="bi bi-arrow-down"
                 ></i>
                 <i
-                  (click)="sort('desc', 'notes')"
+                  (click)="sort('descending', 'notes')"
                   *ngIf="arrowState['notes']"
                   class="bi bi-arrow-up"
                 ></i>

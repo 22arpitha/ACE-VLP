@@ -509,9 +509,10 @@ export class AllTimesheetsComponent implements OnInit {
     Object.keys(this.arrowState).forEach(key => {
       this.arrowState[key] = false;
     });
-    this.arrowState[column] = direction === 'asc' ? true : false;
+    this.arrowState[column] = direction === 'ascending' ? true : false;
     this.directionValue = direction;
     this.sortValue = column;
+    this.filterData();
   }
 
   public getContinuousIndex(index: number): number {
@@ -695,6 +696,9 @@ export class AllTimesheetsComponent implements OnInit {
     }
     if (this.filters.task_nmae.length) {
       filterQuery += `&timesheet-task-ids=[${this.filters.task_nmae.join(',')}]`;
+    }
+     if(this.directionValue && this.sortValue){
+      filterQuery += `&sort-by=${this.sortValue}&sort-type=${this.directionValue}`
     }
     if (this.userRole === 'Admin') {
       if (this.startDate && this.endDate) {

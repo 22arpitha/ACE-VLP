@@ -50,33 +50,33 @@
                     ></mat-checkbox>
                   </th>
                     <th scope="col">Job Number
-                      <i *ngIf="!arrowState['job_number']" (click)="sort('asc','job_number')" class="bi bi-arrow-down"></i>
-                <i (click)="sort('desc','job_number')" *ngIf="arrowState['job_number']"
+                      <i *ngIf="!arrowState['job_number']" (click)="sort('ascending','job_number')" class="bi bi-arrow-down"></i>
+                <i (click)="sort('descending','job_number')" *ngIf="arrowState['job_number']"
                   class="bi bi-arrow-up"></i>
                     </th>
                     <th scope="col" class="name-col">Job Name
-                      <i *ngIf="!arrowState['job_name']" (click)="sort('asc','job_name')" class="bi bi-arrow-down"></i>
-                      <i (click)="sort('desc','job_name')" *ngIf="arrowState['job_name']"
+                      <i *ngIf="!arrowState['job_name']" (click)="sort('ascending','job_name')" class="bi bi-arrow-down"></i>
+                      <i (click)="sort('descending','job_name')" *ngIf="arrowState['job_name']"
                         class="bi bi-arrow-up"></i>
                     </th>
                     <th scope="col">Job Status
-                      <i *ngIf="!arrowState['job_status_name']" (click)="sort('asc','job_status_name')" class="bi bi-arrow-down"></i>
-                      <i (click)="sort('desc','job_status_name')" *ngIf="arrowState['job_status_name']"
+                      <i *ngIf="!arrowState['job_status_name']" (click)="sort('ascending','job_status_name')" class="bi bi-arrow-down"></i>
+                      <i (click)="sort('descending','job_status_name')" *ngIf="arrowState['job_status_name']"
                         class="bi bi-arrow-up"></i>
                     </th>
                     <th scope="col">Budget Time (hrs)
-                      <i *ngIf="!arrowState['budget_time']" (click)="sort('asc','budget_time')" class="bi bi-arrow-down"></i>
-                      <i (click)="sort('desc','budget_time')" *ngIf="arrowState['budget_time']"
+                      <i *ngIf="!arrowState['budget_time']" (click)="sort('ascending','budget_time')" class="bi bi-arrow-down"></i>
+                      <i (click)="sort('descending','budget_time')" *ngIf="arrowState['budget_time']"
                         class="bi bi-arrow-up"></i>
                     </th>
                     <th scope="col">Price (Rs)
-                        <i *ngIf="!arrowState['job_price']" (click)="sort('asc','job_price')" class="bi bi-arrow-down"></i>
-                        <i (click)="sort('desc','job_price')" *ngIf="arrowState['job_price']"
+                        <i *ngIf="!arrowState['job_price']" (click)="sort('ascending','job_price')" class="bi bi-arrow-down"></i>
+                        <i (click)="sort('descending','job_price')" *ngIf="arrowState['job_price']"
                           class="bi bi-arrow-up"></i>
                       </th>
                       <th scope="col">Total Amount (Rs)
-                        <i *ngIf="!arrowState['total_price']" (click)="sort('asc','total_price')" class="bi bi-arrow-down"></i>
-                        <i (click)="sort('desc','total_price')" *ngIf="arrowState['total_price']"
+                        <i *ngIf="!arrowState['total_price']" (click)="sort('ascending','total_price')" class="bi bi-arrow-down"></i>
+                        <i (click)="sort('descending','total_price')" *ngIf="arrowState['total_price']"
                           class="bi bi-arrow-up"></i>
                       </th>
                   </tr>

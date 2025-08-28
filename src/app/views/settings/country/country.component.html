@@ -48,8 +48,8 @@
             <tr>
               <th scope="col"> S.No</th>
               <th scope="col">Country Name
-                <i *ngIf="!arrowState['country_name']" (click)="sort('asc', 'country_name')" class="bi bi-arrow-down"></i>
-                <i *ngIf="arrowState['country_name']" (click)="sort('desc', 'country_name')" class="bi bi-arrow-up"></i>  
+                <i *ngIf="!arrowState['country_name']" (click)="sort('ascending', 'country_name')" class="bi bi-arrow-down"></i>
+                <i *ngIf="arrowState['country_name']" (click)="sort('descending', 'country_name')" class="bi bi-arrow-up"></i>  
               </th>
               <th scope="col">Action </th>
             </tr>

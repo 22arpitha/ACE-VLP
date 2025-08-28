@@ -41,6 +41,7 @@ export class SourceComponent implements CanComponentDeactivate, OnInit,OnDestroy
   user_id: any;
   userRole: any;
   initialFormValue:any;
+  filterQuery: string;
   
   constructor(private fb: FormBuilder, private modalService: NgbModal,private accessControlService:SubModuleService,
     private common_service: CommonServiceService, private apiService: ApiserviceService,private formUtilityService:FormErrorScrollUtilityService) {
@@ -67,7 +68,7 @@ this.formUtilityService.resetHasUnsavedValue();
     this.accessControlService.getAccessForActiveUrl(this.user_id).subscribe((access) => {
       if (access) {
         this.accessPermissions = access[0].operations;
-        this.getAllSource('?page=1&page_size=50');
+         this.getAllSource();
       }
     }, (error: any) => {
       this.apiService.showError(error?.error?.detail);
@@ -86,9 +87,21 @@ this.formUtilityService.resetHasUnsavedValue();
     return this.sourceForm?.controls;
   }
 
-  public getAllSource(pramas: any) {
+   getFilterBaseUrl(): string {
+    return `?page=${this.page}&page_size=${this.tableSize}`;
+  }
+
+
+  public getAllSource() {
+    this.filterQuery = this.getFilterBaseUrl();
+    if(this.term){
+      this.filterQuery += `&search=${this.term}`
+    }
+    if(this.directionValue && this.sortValue){
+      this.filterQuery += `&sort-by=${this.sortValue}&sort-type=${this.directionValue}`
+    }
     this.allSourceList = [];
-    this.apiService.getData(`${environment.live_url}/${environment.settings_source}/${pramas}`).subscribe((respData: any) => {
+    this.apiService.getData(`${environment.live_url}/${environment.settings_source}/${this.filterQuery}`).subscribe((respData: any) => {
       this.allSourceList = respData?.results;
       const noOfPages: number = respData?.total_pages
       this.count = noOfPages * this.tableSize;
@@ -107,7 +120,8 @@ this.formUtilityService.resetHasUnsavedValue();
           if (respData) {
             this.apiService.showSuccess(respData['message']);
             this.resetFormState();
-            this.getAllSource(`?page=1&page_size=${this.tableSize}`);
+            this.page =1;
+            this.getAllSource();
           }
         }, (error: any) => {
           this.apiService.showError(error?.error?.detail);
@@ -117,7 +131,8 @@ this.formUtilityService.resetHasUnsavedValue();
           if (respData) {
             this.apiService.showSuccess(respData['message']);
             this.resetFormState();
-            this.getAllSource(`?page=1&page_size=${this.tableSize}`);
+            this.page =1;
+            this.getAllSource();
           }
         }, (error: any) => {
           this.apiService.showError(error?.error?.detail);
@@ -135,9 +150,10 @@ this.formUtilityService.resetHasUnsavedValue();
   }
 
   sort(direction: string, column: string) {
-    this.arrowState[column] = direction === 'asc' ? true : false;
+    this.arrowState[column] = direction === 'ascending' ? true : false;
     this.directionValue = direction;
     this.sortValue = column;
+    this.getAllSource();
   }
 
   public getContinuousIndex(index: number): number {
@@ -147,20 +163,12 @@ this.formUtilityService.resetHasUnsavedValue();
 
   public onTableDataChange(event: any) {
     this.page = event;
-    let query = `?page=${this.page}&page_size=${this.tableSize}`
-    if (this.term) {
-      query += `&search=${this.term}`
-    }
-    this.getAllSource(query);
+    this.getAllSource();
   }
   public onTableSizeChange(event: any): void {
     if (event) {
       this.tableSize = Number(event.value);
-      let query = `?page=${1}&page_size=${this.tableSize}`
-      if (this.term) {
-        query += `&search=${this.term}`
-      }
-      this.getAllSource(query);
+      this.getAllSource();
     }
   }
   public confirmDelete(content: any) {
@@ -186,11 +194,7 @@ this.formUtilityService.resetHasUnsavedValue();
       if (data) {
         this.allSourceList = []
         this.apiService.showSuccess(data.message);
-        let query = `?page=${1}&page_size=${this.tableSize}`
-        if (this.term) {
-          query += `&search=${this.term}`
-        }
-        this.getAllSource(query);
+        this.getAllSource();
       }
     }, (error => {
       this.apiService.showError(error?.error?.detail)
@@ -234,14 +238,13 @@ this.formUtilityService.resetHasUnsavedValue();
 
   public filterSearch(event) {
     const input = event?.target?.value?.trim() || ''; // Fallback to empty string if undefined
-    if (input && input.length >= 2) {
-      this.term = input;
+    if (this.term && this.term.length >= 2) {
       this.page = 1;
-      const query = `?page=1&page_size=${this.tableSize}&search=${this.term}`;
-      this.getAllSource(query);
-    } if (!input) {
-      const query = `?page=${this.page}&page_size=${this.tableSize}`;
-      this.getAllSource(query);
+      this.getAllSource();
+    }
+    else if (!this.term) {
+      this.page = 1;
+      this.getAllSource();
     }
   }
 

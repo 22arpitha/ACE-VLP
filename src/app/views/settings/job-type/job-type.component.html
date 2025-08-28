@@ -88,16 +88,16 @@
                 Sl no
               </th>
               <th>Job Type
-                <i *ngIf="!arrowState['job_type_name']" (click)="sort('asc', 'job_type_name')" class="bi bi-arrow-down"></i>
-                <i *ngIf="arrowState['job_type_name']" (click)="sort('desc', 'job_type_name')" class="bi bi-arrow-up"></i>
+                <i *ngIf="!arrowState['job_type_name']" (click)="sort('ascending', 'job_type_name')" class="bi bi-arrow-down"></i>
+                <i *ngIf="arrowState['job_type_name']" (click)="sort('descending', 'job_type_name')" class="bi bi-arrow-up"></i>
               </th>
               <th>Job Price
-                <i *ngIf="!arrowState['job_price']" (click)="sort('asc', 'job_price')" class="bi bi-arrow-down"></i>
-                <i *ngIf="arrowState['job_price']" (click)="sort('desc', 'job_price')" class="bi bi-arrow-up"></i>
+                <i *ngIf="!arrowState['job_price']" (click)="sort('ascending', 'job_price')" class="bi bi-arrow-down"></i>
+                <i *ngIf="arrowState['job_price']" (click)="sort('descending', 'job_price')" class="bi bi-arrow-up"></i>
               </th>
               <th>Standard Turnaround Time
-                <i *ngIf="!arrowState['stand_around_time']" (click)="sort('asc', 'stand_around_time')" class="bi bi-arrow-down"></i>
-                <i *ngIf="arrowState['stand_around_time']" (click)="sort('desc', 'stand_around_time')" class="bi bi-arrow-up"></i>
+                <i *ngIf="!arrowState['stand_around_time']" (click)="sort('ascending', 'stand_around_time')" class="bi bi-arrow-down"></i>
+                <i *ngIf="arrowState['stand_around_time']" (click)="sort('descending', 'stand_around_time')" class="bi bi-arrow-up"></i>
               </th>
                 <th>Action</th>
             </tr>

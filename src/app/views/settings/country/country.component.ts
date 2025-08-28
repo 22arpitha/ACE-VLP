@@ -30,6 +30,7 @@ export class CountryComponent implements CanComponentDeactivate, OnInit,OnDestro
     country_name: false,
     created_datetime: false,
   };
+  filterQuery: string;
   page = 1;
   count = 0;
   tableSize = 50;
@@ -67,7 +68,7 @@ this.formUtilityService.resetHasUnsavedValue();
     this.accessControlService.getAccessForActiveUrl(this.user_id).subscribe((access) => {
       if (access) {
         this.accessPermissions = access[0].operations;
-        this.getAllCountryList(`?page=${1}&page_size=${50}`);
+         this.getAllCountryList();
       }
     },(error: any) => {
         this.api.showError(error?.error?.detail);
@@ -93,13 +94,24 @@ this.formUtilityService.resetHasUnsavedValue();
 
   arrow: boolean = false
   sort(direction: string, column: string) {
-    this.arrowState[column] = direction === 'asc' ? true : false;
+    Object.keys(this.arrowState).forEach(key => {
+      this.arrowState[key] = false;
+    });
+    this.arrowState[column] = direction === 'ascending' ? true : false;
     this.directionValue = direction;
     this.sortValue = column;
+     this.getAllCountryList();
   }
 
-  getAllCountryList(params: any) {
-    this.api.getData(`${environment.live_url}/${environment.settings_country}/${params}`).subscribe(
+  getAllCountryList() {
+    this.filterQuery = this.getFilterBaseUrl();
+    if(this.term){
+      this.filterQuery += `&search=${this.term}`
+    }
+    if(this.directionValue && this.sortValue){
+      this.filterQuery += `&sort-by=${this.sortValue}&sort-type=${this.directionValue}`
+    }
+    this.api.getData(`${environment.live_url}/${environment.settings_country}/${this.filterQuery}`).subscribe(
       (res: any) => {
         console.log(res.results)
         this.allCountry = res.results;
@@ -115,41 +127,26 @@ this.formUtilityService.resetHasUnsavedValue();
     this.term = event.target.value?.trim();
     if (this.term && this.term.length >= 2) {
       this.page = 1;
-      let query = this.getFilterBaseUrl()
-      query += `&search=${this.term}`
-      this.getAllCountryList(query);
+      this.getAllCountryList();
     }
     else if (!this.term) {
-      this.getAllCountryList(this.getFilterBaseUrl());
+      this.getAllCountryList();
     }
   }
   
   getFilterBaseUrl(): string {
-    
     return `?page=${this.page}&page_size=${this.tableSize}`;
   }
   onTableSizeChange(event: any): void {
     if (event) {
       this.page = 1;
       this.tableSize = Number(event.value);
-      if (this.term) {
-        let query = this.getFilterBaseUrl()
-        query += `&search=${this.term}`
-        this.getAllCountryList(query);
-      } else {
-        this.getAllCountryList(this.getFilterBaseUrl());
-      }
+      this.getAllCountryList();
     }
   }
   onTableDataChange(event: any) {
     this.page = event;
-    if (this.term) {
-      let query = this.getFilterBaseUrl()
-      query += `&search=${this.term}`
-      this.getAllCountryList(query);
-    } else {
-      this.getAllCountryList(this.getFilterBaseUrl());
-    }
+     this.getAllCountryList();
   }
   saveCountryDetails() {
     if (this.countryForm.invalid) {
@@ -161,7 +158,8 @@ this.formUtilityService.resetHasUnsavedValue();
           if (respData) {
             this.api.showSuccess(respData['message']);
             this.resetFormState();
-            this.getAllCountryList(`?page=1&page_size=${this.tableSize}`);
+            this.page =1;
+             this.getAllCountryList();
           }
         }, (error: any) => {
           this.api.showError(error?.error?.detail);
@@ -171,7 +169,8 @@ this.formUtilityService.resetHasUnsavedValue();
           if (respData) {
             this.api.showSuccess(respData['message']);
             this.resetFormState();
-            this.getAllCountryList(`?page=1&page_size=${this.tableSize}`);
+            this.page =1;
+            this.getAllCountryList();
           }
         }, (error: any) => {
           this.api.showError(error?.error?.detail);
@@ -245,11 +244,8 @@ this.formUtilityService.resetHasUnsavedValue();
       if (data) {
         this.allCountry = []
         this.api.showSuccess(data.message)
-        let query = `?page=${1}&page_size=${this.tableSize}`
-        if (this.term) {
-          query += `&search=${this.term}`
-        }
-        this.getAllCountryList(query)
+        this.page = 1;
+         this.getAllCountryList();
       }
     }, (error => {
       this.api.showError(error?.error?.detail)
@@ -258,7 +254,8 @@ this.formUtilityService.resetHasUnsavedValue();
 
   reset() {
     this.resetFormState();
-    this.getAllCountryList(`?page=${1}&page_size=${50}`);
+    this.page =1;
+     this.getAllCountryList();
   }
 
   canDeactivate(): Observable<boolean> {

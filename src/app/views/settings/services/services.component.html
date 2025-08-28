@@ -48,8 +48,8 @@
                 Sl no
               </th>
               <th>Service
-                <i *ngIf="!arrowState['service_name']" (click)="sort('asc', 'service_name')" class="bi bi-arrow-down"></i>
-                <i *ngIf="arrowState['service_name']" (click)="sort('desc', 'service_name')" class="bi bi-arrow-up"></i>
+                <i *ngIf="!arrowState['service_name']" (click)="sort('ascending', 'service_name')" class="bi bi-arrow-down"></i>
+                <i *ngIf="arrowState['service_name']" (click)="sort('descending', 'service_name')" class="bi bi-arrow-up"></i>
               </th>
               <th>Action</th>
             </tr>

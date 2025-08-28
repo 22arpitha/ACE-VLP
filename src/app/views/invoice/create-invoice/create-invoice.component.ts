@@ -135,6 +135,10 @@ total_amount:false,
 
     public getClientBasedJobsList(){
       let query = this.getFilterBaseUrl();
+       if(this.directionValue && this.sortValue){
+         query += `&sort-by=${this.sortValue}&sort-type=${this.directionValue}`
+       }
+
       this.allClientBasedJobsLists=[];
       forkJoin([
               this.apiService.getData(`${environment.live_url}/${environment.jobs}/${query}`),  // First API call for Client related completed jobs list
@@ -256,9 +260,10 @@ const jobsMappedData =  this.jobSelection?.map(({id,
        Object.keys(this.arrowState).forEach(key => {
          this.arrowState[key] = false;
        });
-       this.arrowState[column] = direction === 'asc' ? true : false;
+       this.arrowState[column] = direction === 'ascending' ? true : false;
        this.directionValue = direction;
        this.sortValue = column;
+       this.getClientBasedJobsList();
      }
 
      public getContinuousIndex(index: number): number {

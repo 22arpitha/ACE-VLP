@@ -23,6 +23,7 @@ export class ServicesComponent implements CanComponentDeactivate, OnInit,OnDestr
    @ViewChild('formInputField') formInputField: ElementRef;
   isEditItem: boolean = false;
   serviceForm: FormGroup;
+  filterQuery: string;
   selectedService: any;
   allServiceList: any = [];
   page = 1;
@@ -70,7 +71,7 @@ this.formUtilityService.resetHasUnsavedValue();
     this.accessControlService.getAccessForActiveUrl(this.user_id).subscribe((access) => {
       if (access) {
       this.accessPermissions = access[0].operations;  
-      this.getAllServices('?page=1&page_size=50');
+      this.getAllServices();
       }
     },(error: any) => {
       this.apiService.showError(error?.error?.detail);
@@ -87,10 +88,21 @@ this.formUtilityService.resetHasUnsavedValue();
     
     return this.serviceForm?.controls;
   }
+  
+  getFilterBaseUrl(): string {
+    return `?page=${this.page}&page_size=${this.tableSize}`;
+  }
 
-  public getAllServices(pramas: any) {
+  public getAllServices() {
+    this.filterQuery = this.getFilterBaseUrl();
+    if(this.term){
+      this.filterQuery += `&search=${this.term}`
+    }
+    if(this.directionValue && this.sortValue){
+      this.filterQuery += `&sort-by=${this.sortValue}&sort-type=${this.directionValue}`
+    }
     this.allServiceList = [];
-    this.apiService.getData(`${environment.live_url}/${environment.settings_service}/${pramas}`).subscribe((respData: any) => {
+    this.apiService.getData(`${environment.live_url}/${environment.settings_service}/${this.filterQuery}`).subscribe((respData: any) => {
       this.allServiceList = respData?.results;
       const noOfPages: number = respData?.total_pages
       this.count = noOfPages * this.tableSize;
@@ -109,7 +121,8 @@ this.formUtilityService.resetHasUnsavedValue();
           if (respData) {
             this.apiService.showSuccess(respData['message']);
             this.resetFormState();
-            this.getAllServices(`?page=1&page_size=${this.tableSize}`);
+            this.page = 1
+            this.getAllServices();
           }
         }, (error: any) => {
           this.apiService.showError(error?.error?.detail);
@@ -119,7 +132,8 @@ this.formUtilityService.resetHasUnsavedValue();
           if (respData) {
             this.apiService.showSuccess(respData['message']);
             this.resetFormState();
-            this.getAllServices(`?page=1&page_size=${this.tableSize}`);
+           this.page = 1
+            this.getAllServices();
           }
         }, (error: any) => {
           this.apiService.showError(error?.error?.detail);
@@ -136,9 +150,13 @@ this.formUtilityService.resetHasUnsavedValue();
   }
 
   sort(direction: string, column: string) {
-    this.arrowState[column] = direction === 'asc' ? true : false;
+    Object.keys(this.arrowState).forEach(key => {
+      this.arrowState[key] = false;
+    });
+    this.arrowState[column] = direction === 'ascending' ? true : false;
     this.directionValue = direction;
     this.sortValue = column;
+    this.getAllServices();
   }
 
   public getContinuousIndex(index: number): number {
@@ -149,19 +167,14 @@ this.formUtilityService.resetHasUnsavedValue();
   public onTableDataChange(event: any) {
     this.page = event;
     let query = `?page=${this.page}&page_size=${this.tableSize}`
-    if (this.term) {
-      query += `&search=${this.term}`
-    }
-    this.getAllServices(query);
+    
+    this.getAllServices();
   }
   public onTableSizeChange(event: any): void {
     if (event) {
       this.tableSize = Number(event.value);
-      let query = `?page=${1}&page_size=${this.tableSize}`
-      if (this.term) {
-        query += `&search=${this.term}`
-      }
-      this.getAllServices(query);
+      this.page =1
+      this.getAllServices();
     }
   }
   public confirmDelete(content: any) {
@@ -187,11 +200,8 @@ this.formUtilityService.resetHasUnsavedValue();
       if (data) {
         this.allServiceList = []
         this.apiService.showSuccess(data.message);
-        let query = `?page=${1}&page_size=${this.tableSize}`
-        if (this.term) {
-          query += `&search=${this.term}`
-        }
-        this.getAllServices(query);
+        this.page =1
+        this.getAllServices();
       }
     }, (error => {
       this.apiService.showError(error?.error?.detail)
@@ -230,14 +240,12 @@ this.formUtilityService.resetHasUnsavedValue();
 
   public filterSearch(event) {
     const input = event?.target?.value?.trim() || ''; // Fallback to empty string if undefined
-    if (input && input.length >= 2) {
-      this.term = input;
+    if (this.term && this.term.length >= 2) {
       this.page = 1;
-      const query = `?page=1&page_size=${this.tableSize}&search=${this.term}`;
-      this.getAllServices(query);
-    } if (!input) {
-      const query = `?page=${this.page}&page_size=${this.tableSize}`;
-      this.getAllServices(query);
+      this.getAllServices();
+    }
+    else if (!this.term) {
+      this.getAllServices();
     }
   }
 
