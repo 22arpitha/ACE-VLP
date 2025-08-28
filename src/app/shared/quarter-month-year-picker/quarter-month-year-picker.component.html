@@ -41,7 +41,9 @@
     <!-- Quarter Mode -->
     <ng-container *ngIf="mode === 'Quarterly' && showSelection">
       <button mat-button *ngFor="let item of quarters" (click)="select(item.value);$event.stopPropagation()" class="picker-item">
-        <b>{{ item.value }}</b> — <small>{{ item.months.join(', ') }}</small>
+        <small>{{ item.months.join(', ') }}</small>
+        <!-- below one is commented because the client requested no need of label (Q1, Q2 etc) -->
+        <!-- <b>{{ item.value }}</b> — <small>{{ item.months.join(', ') }}</small> -->
       </button>
     </ng-container>
 
