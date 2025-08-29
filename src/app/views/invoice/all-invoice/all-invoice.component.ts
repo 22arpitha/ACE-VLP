@@ -201,7 +201,9 @@ BreadCrumbsTitle: any = 'Invoices';
     }
 
     public viewInvoiceDetails(item:any){
-      this.router.navigate(['/invoice/view-invoice',item?.id]);
+      this.router.navigate(['/invoice/view-invoice',item?.id], {
+      state: { invoice: item }
+      });
     }
     setDateFilterColumn(event){
       const selectedDate = event.value;
@@ -287,5 +289,5 @@ BreadCrumbsTitle: any = 'Invoices';
       filter.onMenuOpened();
     }
   }
-  
+
 }
