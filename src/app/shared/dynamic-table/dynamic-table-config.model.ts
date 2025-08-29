@@ -3,12 +3,14 @@ export interface TableColumn {
   key: string;
   type?: 'text' | 'date' | 'number';
   sortable?: boolean;
+  sortWithApi?:boolean;
   filterable?: boolean;
   filterType?: 'text' | 'date' | 'multi-select';
   filterOptions?: string[];
   navigation?: boolean;
   inputField?:boolean;
   fileInputField?:boolean;
+  sortKey?:string;
 }
 
 export interface DynamicTableConfig {

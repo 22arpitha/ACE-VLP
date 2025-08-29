@@ -45,7 +45,8 @@ export class TimesheetSummaryReportComponent implements OnInit {
   filterOptions: { id: any; name: string; }[];
   selectedEmployeeId: any = [];
   employeeName: any = [];
-
+  sortValue: string = '';
+  directionValue: string = '';
   constructor(
     private common_service: CommonServiceService,
     private api: ApiserviceService,
@@ -95,6 +96,9 @@ export class TimesheetSummaryReportComponent implements OnInit {
         this.selectedEmployeeId = event.detail;
         this.getTableData({ page: 1, pageSize: this.tableSize, searchTerm: this.term , employee_ids: event.detail});
         break;
+        case 'sorting':
+        this.onSorting(event);
+        break;
       case 'weekDate':
         this.fromDate = event.detail;
         this.getTableData({ page: this.page, pageSize: this.tableSize, searchTerm: this.term , employee_ids:this.selectedEmployeeId, fromdate: this.fromDate })
@@ -106,6 +110,13 @@ export class TimesheetSummaryReportComponent implements OnInit {
         this.getTableData({ page: 1, pageSize: this.tableSize, searchTerm: this.term});
     }
   }
+
+   onSorting(data){
+  this.directionValue = data.detail.directionValue;
+  this.sortValue = data.detail.sortValue;
+     this.getTableData({ page: this.page, pageSize: this.tableSize, searchTerm: this.term , employee_ids:this.selectedEmployeeId, fromdate: this.fromDate })
+   }
+
   getEmployeeDetails(employee,selectedDate): void {
     // console.log('employee Data',employee,selectedDate);
          this.dialog.open(EmployeeDetailsComponent, {
@@ -327,7 +338,9 @@ private updateFilterColumn(key: string, cache: any) {
 
         // Consolidate employee ID filtering logic
         const currentSelectedIds = params?.employee_ids ?? this.selectedEmployeeId ?? [];
-
+        if(this.directionValue && this.sortValue){
+            query += `&sort-by=${this.sortValue}&sort-type=${this.directionValue}`;
+          }
         if (this.user_role_name !== 'Admin') {
             // For Non-Admins:
             if (currentSelectedIds.length > 0) {

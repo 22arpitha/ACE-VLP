@@ -31,19 +31,21 @@ export class EmployeeDetailsComponent implements OnInit {
    userRole: string;
    user_role_name: string;
    user_id: string;
+   sortValue: string = '';
+  directionValue: string = '';
    tableData: ({ label: string; key: string; sortable: boolean; filterable?: undefined; filterType?: undefined; } | { label: string; key: string; sortable: boolean; filterable: boolean; filterType: string; })[];
    constructor(
      private common_service:CommonServiceService,
      private api:ApiserviceService,
       public dialogRef: MatDialogRef<EmployeeDetailsComponent>,
            @Inject(MAT_DIALOG_DATA) public data: any,
-      private datePipe:DatePipe
+      // private datePipe:DatePipe
    ) {
      this.user_id = sessionStorage.getItem('user_id') || '' ;
      this.user_role_name = sessionStorage.getItem('user_role_name') || '';
    }
 
-   ngOnInit(): void {
+   async ngOnInit() {
      this.tableData = getTableColumns(this.user_role_name)
      this.getTableData()
    }
@@ -89,6 +91,9 @@ export class EmployeeDetailsComponent implements OnInit {
        case 'export_csv':
        this.exportCsvOrPdf(event.detail);
        break;
+       case 'sorting':
+        this.onSorting(event);
+      break;
        case 'export_pdf':
        this.exportCsvOrPdf(event.detail);
        break;
@@ -99,6 +104,16 @@ export class EmployeeDetailsComponent implements OnInit {
          searchTerm: this.term
        });
    }
+ }
+
+ onSorting(data){
+  this.directionValue = data.detail.directionValue;
+  this.sortValue = data.detail.sortValue;
+  this.getTableData({
+     page: this.page,
+     pageSize: this.tableSize,
+     searchTerm: this.term
+   });
  }
  exportCsvOrPdf(fileType) {
    let query = buildPaginationQuery({
@@ -115,7 +130,7 @@ export class EmployeeDetailsComponent implements OnInit {
  }
 
  // Fetch table data from API with given params
- getTableData(params?: { page?: number; pageSize?: number; searchTerm?: string, startDate?:string ; endDate?:string }) {
+ async getTableData(params?: { page?: number; pageSize?: number; searchTerm?: string, startDate?:string ; endDate?:string }) {
    const page = params?.page ?? this.page;
    const pageSize = params?.pageSize ?? this.tableSize;
    const searchTerm = params?.searchTerm ?? this.term;
@@ -123,8 +138,11 @@ export class EmployeeDetailsComponent implements OnInit {
    if(this.user_role_name !== 'Admin'){
      query +=`&employee-id=${this.user_id}`
      }
-  query +=`&timesheet-employee=${this.data?.employee.keyId}&timesheet-as-per-date=${this.data.selectedDay}`
-   this.api.getData(`${environment.live_url}/${environment.timesheet}/${query}`).subscribe((res: any) => {
+    query +=`&timesheet-employee=${this.data?.employee.keyId}&timesheet-as-per-date=${this.data.selectedDay}`
+    if(this.directionValue && this.sortValue){
+        query += `&sort-by=${this.sortValue}&sort-type=${this.directionValue}`;
+      }
+   this.api.getData(`${environment.live_url}/${environment.timesheet}/${query}`).subscribe(async (res: any) => {
      const formattedData = res.results.map((item: any, i: number) => ({
        sl: (page - 1) * pageSize + i + 1,
        ...item
@@ -148,6 +166,7 @@ export class EmployeeDetailsComponent implements OnInit {
      };
    });
  }
+ 
    onSearch(term: string): void {
      this.term = term;
      this.getTableData({

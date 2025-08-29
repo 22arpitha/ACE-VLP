@@ -75,8 +75,8 @@
             {{ col.label }}
 
             <!-- Sort Icons -->
-            <i *ngIf="!arrowState[col.key]" (click)="sort('asc', col.key)" class="bi bi-arrow-down ms-1"></i>
-            <i *ngIf="arrowState[col.key]" (click)="sort('desc', col.key)" class="bi bi-arrow-up ms-1"></i>
+            <i *ngIf="!arrowState[col.sortKey] && col.sortable" (click)="sort('ascending', col.sortKey)" class="bi bi-arrow-down ms-1"></i>
+            <i *ngIf="arrowState[col.sortKey]  && col.sortable" (click)="sort('descending', col.sortKey)" class="bi bi-arrow-up ms-1"></i>
 
             <!-- Filter Buttons -->
             <ng-container *ngIf="col.filterable">

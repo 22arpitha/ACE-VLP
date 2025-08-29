@@ -16,7 +16,7 @@
     <button mat-raised-button class="proceedbtn mat-btn-s" type="button" (click)="downloadExcel()">Export to Excel</button>
   </div>
 </div>
-<div class="row ms-2 d-flex align-items-center mb-2">
+<div class="row ms-2 d-flex align-items-center mb-2" *ngIf="url!='/reports/non-productive-hours'">
   <div class="tab-buttons">
     <button
     class=""
@@ -28,7 +28,7 @@
     </button>
   </div>
 </div>
-<div class="container-wrapper settings-main-content px-0">
+<div class="container-wrapper settings-main-content px-0" *ngIf="url!='/reports/non-productive-hours'">
   <div class="tabs">
     <div class="tab-content">
       <ng-container *ngIf="selectedTab === 0">
@@ -54,4 +54,8 @@
       </ng-container>
     </div>
   </div>
+</div>
+
+<div *ngIf="url==='/reports/non-productive-hours'">
+   <app-non-productive-hours [dropdwonFilterData]="commonFilterData" ></app-non-productive-hours>
 </div>

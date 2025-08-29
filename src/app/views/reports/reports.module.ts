@@ -11,6 +11,7 @@ import { ProductivityReportModule } from './productivity-report/productivity-rep
 import { JobStatusReportComponent } from './job-status-report/job-status-report.component';
 import { JobTimeReportsComponent } from './job-time-reports/job-time-reports.component';
 import { JobTimeSheetDetailsPopupComponent } from './common/job-time-sheet-details-popup/job-time-sheet-details-popup.component';
+import { NonProductiveHoursComponent } from './non-productive-hours/non-productive-hours.component';
 
 
 @NgModule({
@@ -22,7 +23,8 @@ import { JobTimeSheetDetailsPopupComponent } from './common/job-time-sheet-detai
     ProductivityReportComponent,
     JobStatusReportComponent,
     JobTimeReportsComponent,
-    JobTimeSheetDetailsPopupComponent
+    JobTimeSheetDetailsPopupComponent,
+    NonProductiveHoursComponent
   ],
   imports: [
     CommonModule,

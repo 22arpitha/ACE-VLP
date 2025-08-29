@@ -2,10 +2,12 @@ export const tableColumns  = [
   {
     label: 'Sl No',
     key: 'sl',
+    sortable: false
   },
   {
     label: 'Client',
     key: 'client_name',
+    sortKey:'client__client_name',
     keyId: 'client',
     paramskeyId: 'client-ids',
     filterable: true,
@@ -15,6 +17,7 @@ export const tableColumns  = [
   {
     label: 'Group',
     key: 'group_name',
+    sortKey:'group_name',
     keyId: 'group',
     paramskeyId: 'group-ids',
     filterable: true,
@@ -24,11 +27,13 @@ export const tableColumns  = [
   {
     label: 'Job Id',
     key: 'job_number',
+    sortKey:'job_number',
     sortable: true
   },
   {
     label: 'Job',
     key: 'job_name',
+    sortKey:'job_name',
     keyId: 'id',
     paramskeyId: 'job-ids',
     filterable: true,
@@ -45,6 +50,7 @@ export const tableColumns  = [
   {
     label: 'Allocated On',
     key: 'job_allocation_date',
+    sortKey:'job_allocation_date',
     filterable: true,
     paramskeyId: 'timesheet-dates',
     filterType: 'daterange',
@@ -54,6 +60,7 @@ export const tableColumns  = [
   {
    label: 'Status',
     key: 'job_status_name',
+    sortKey:'job_status__status_name',
     keyId: 'job_status',
     paramskeyId: 'job-status-ids',
     filterable: true,
@@ -63,11 +70,13 @@ export const tableColumns  = [
   {
     label: 'POC (%)',
     key: 'percentage_of_completion',
+    sortKey:'percentage_of_completion',
     sortable: true
   },
   {
     label: 'Status Date',
     key: 'job_status_date',
+    sortKey:'job_status_date',
     filterable: true,
     filterType: 'date',
     type:'date',
@@ -75,7 +84,8 @@ export const tableColumns  = [
   {
     label: 'PRIM EMP',
     key: 'is_primary',
-    sortable: true
+    sortKey:'not_done',
+    sortable: false
   }
 
 ]

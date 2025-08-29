@@ -56,6 +56,8 @@ export class JobStatusReportComponent implements OnInit {
   selectedStatusIds: any = [];
   selectedStatusDate: any;
   formattedData: any = [];
+  sortValue: string = '';
+  directionValue: string = '';
  constructor(
      private common_service:CommonServiceService,
      private api:ApiserviceService
@@ -202,6 +204,9 @@ export class JobStatusReportComponent implements OnInit {
         // console.log(event.detail, event.key);
       this.onApplyDateFilter(event.detail,event.key);
       break;
+      case 'sorting':
+        this.onSorting(event);
+      break;
       case 'dateFilter':
       this.onApplyDateFilter(event.detail,event.key);
       break;
@@ -218,6 +223,22 @@ export class JobStatusReportComponent implements OnInit {
         job_status: this.selectedStatusIds,
       });
    }
+ }
+
+ onSorting(data){
+  this.directionValue = data.detail.directionValue;
+  this.sortValue = data.detail.sortValue;
+  this.getTableData({
+    page: this.page,
+    pageSize: this.tableSize,
+    searchTerm: this.term,
+    client_ids: this.selectedClientIds,
+    job_ids: this.selectedJobIds,
+    group_ids: this.selectedGroupIds,
+    job_allocation_date: this.selectedDate,
+    job_status_date:this.selectedStatusDate,
+    job_status: this.selectedStatusIds,
+  });
  }
 
  onApplyFilter(filteredData: any[], filteredKey: string): void {
@@ -595,6 +616,9 @@ async getTableData(params?: { page?: number; pageSize?: number; searchTerm?: str
             finalQuery += `&job-status-date=[${params?.job_status_date}]`;
           }if (params?.job_status?.length) {
             finalQuery += `&job-status-ids=[${params?.job_status.join(',')}]`;
+          }
+          if(this.directionValue && this.sortValue){
+            finalQuery += `&sort-by=${this.sortValue}&sort-type=${this.directionValue}`;
           }
       await this.api.getData(`${environment.live_url}/${environment.jobs}/${finalQuery}`).subscribe((res: any) => {
      if(res?.results){

@@ -17,6 +17,8 @@ export class QuantitativeProductivityComponent implements OnInit,OnChanges {
   @Input() dropdwonFilterData:any;
         term: string = '';
       tableSize: number = 50;
+      sortValue: string = '';
+      directionValue: string = '';
       page: any = 1;
       tableSizes = [50,75,100];
            tableConfig:any = {
@@ -112,6 +114,9 @@ export class QuantitativeProductivityComponent implements OnInit,OnChanges {
                case 'search':
                this.onSearch(event.detail);
                break;
+               case 'sorting':
+               this.onSorting(event);
+               break;
                case 'export_csv':
                this.exportCsvOrPdf(event.detail);
                break;
@@ -126,6 +131,17 @@ export class QuantitativeProductivityComponent implements OnInit,OnChanges {
               });
            }
          }
+
+
+         onSorting(data){
+            this.directionValue = data.detail.directionValue;
+            this.sortValue = data.detail.sortValue;
+            this.getTableData({
+                page: this.page,
+                pageSize: this.tableSize,
+                searchTerm: this.term
+              });
+          }
 
          exportCsvOrPdf(fileType) {
            let query = buildPaginationQuery({
@@ -169,6 +185,9 @@ export class QuantitativeProductivityComponent implements OnInit,OnChanges {
           }else{
             finalQuery += this.userRole ==='Admin' ? '':`&employee-id=${this.user_id}`;
            }
+           if(this.directionValue && this.sortValue){
+            finalQuery += `&sort-by=${this.sortValue}&sort-type=${this.directionValue}`;
+          }
            this.api.getData(`${environment.live_url}/${environment.jobs}/${finalQuery}`).subscribe((res: any) => {
             const formattedData = res.results.map((item: any, i: number) => ({
               sl: (page - 1) * pageSize + i + 1,

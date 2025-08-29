@@ -40,7 +40,7 @@ export class EditClientComponent implements CanComponentDeactivate, OnInit {
   directionValue: string = '';
   arrowState: { [key: string]: boolean } = {
     client_name: false,
-    group_name:false,
+    group__group_name:false,
 
   };
   filters: { group_name: string[]} = {

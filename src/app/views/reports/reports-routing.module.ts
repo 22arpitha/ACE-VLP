@@ -7,6 +7,7 @@ import { EmployeeDetailsComponent } from './timesheet-summary-report/employee-de
 import { ProductivityReportComponent } from './productivity-report/productivity-report.component'
 import { JobStatusReportComponent } from './job-status-report/job-status-report.component';
 import {JobTimeReportsComponent} from './job-time-reports/job-time-reports.component'
+import { NonProductiveHoursComponent } from './non-productive-hours/non-productive-hours.component';
 const routes: Routes = [
   {
      path:'',component:ReportsComponent, children:[
@@ -15,7 +16,8 @@ const routes: Routes = [
       {path:'employee-details', component:EmployeeDetailsComponent},
       {path:'job-productivity-report', component:ProductivityReportComponent },
       {path:'job-time-report', component: JobTimeReportsComponent},
-      {path:'job-status-report', component:JobStatusReportComponent}
+      {path:'job-status-report', component:JobStatusReportComponent},
+       {path:'non-productive-hours', component:NonProductiveHoursComponent}
      ]
   }
 ];

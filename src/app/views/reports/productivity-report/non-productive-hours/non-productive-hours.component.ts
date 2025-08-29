@@ -32,6 +32,8 @@ export class NonProductiveHoursComponent implements OnInit,OnChanges {
 
   user_id: string;
   user_role_name: string;
+  sortValue: string = '';
+  directionValue: string = '';
      constructor(
        private common_service:CommonServiceService,
        private api:ApiserviceService,
@@ -112,6 +114,9 @@ export class NonProductiveHoursComponent implements OnInit,OnChanges {
          case 'search':
          this.onSearch(event.detail);
          break;
+         case 'sorting':
+          this.onSorting(event);
+          break;
          case 'export_csv':
          this.exportCsvOrPdf(event.detail);
          break;
@@ -126,6 +131,16 @@ export class NonProductiveHoursComponent implements OnInit,OnChanges {
         });
      }
    }
+
+   onSorting(data){
+      this.directionValue = data.detail.directionValue;
+      this.sortValue = data.detail.sortValue;
+      this.getTableData({
+          page: this.page,
+          pageSize: this.tableSize,
+          searchTerm: this.term
+        });
+    }
    exportCsvOrPdf(fileType) {
    let query=`?client-name=Vedalekha professionals&download=True`;
     if(query){
@@ -160,6 +175,9 @@ export class NonProductiveHoursComponent implements OnInit,OnChanges {
       }else{
        finalQuery += this.user_role_name ==='Admin' ? '':`&timesheet-employee=${this.user_id}`;
       }
+       if(this.directionValue && this.sortValue){
+            finalQuery += `&sort-by=${this.sortValue}&sort-type=${this.directionValue}`;
+        }
      this.api.getData(`${environment.live_url}/${environment.timesheet}/${finalQuery}&client-name=Vedalekha professionals`).subscribe((res: any) => {
        const formattedData = res.results.map((item: any, i: number) => ({
          sl: (page - 1) * pageSize + i + 1,

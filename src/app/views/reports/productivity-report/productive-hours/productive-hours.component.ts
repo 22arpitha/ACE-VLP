@@ -29,6 +29,8 @@ export class ProductiveHoursComponent implements OnInit,OnChanges {
   };
   user_id:any;
   userRole:any;
+  sortValue: string = '';
+  directionValue: string = '';
   constructor(
     private common_service:CommonServiceService,
     private api:ApiserviceService
@@ -103,6 +105,9 @@ handleAction(event: { actionType: string; detail: any }) {
       case 'search':
       this.onSearch(event.detail);
       break;
+      case 'sorting':
+      this.onSorting(event);
+      break;
       case 'export_csv':
       this.exportCsvOrPdf(event.detail);
       break;
@@ -113,6 +118,16 @@ handleAction(event: { actionType: string; detail: any }) {
       console.warn('Unhandled action type:', event.actionType);
   }
 }
+
+onSorting(data){
+            this.directionValue = data.detail.directionValue;
+            this.sortValue = data.detail.sortValue;
+            this.getTableData({
+                page: this.page,
+                pageSize: this.tableSize,
+                searchTerm: this.term
+              });
+          }
 exportCsvOrPdf(fileType) {
   let query = buildPaginationQuery({
     page: this.page,
@@ -151,6 +166,9 @@ exportCsvOrPdf(fileType) {
             finalQuery+= this.dropdwonFilterData.employee_id || this.dropdwonFilterData.periodicity || this.dropdwonFilterData.period ? '&is_dropdown_selected=True' :'';
           }else{
             finalQuery += this.userRole ==='Admin' ? '':`&employee-id=${this.user_id}`;
+           }
+            if(this.directionValue && this.sortValue){
+            finalQuery += `&sort-by=${this.sortValue}&sort-type=${this.directionValue}`;
            }
            this.api.getData(`${environment.live_url}/${environment.jobs}/${finalQuery}`).subscribe((res: any) => {
             const formattedData = res.results.map((item: any, i: number) => ({

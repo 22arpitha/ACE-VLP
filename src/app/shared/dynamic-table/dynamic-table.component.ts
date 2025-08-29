@@ -41,7 +41,7 @@ selectedItemsMap: { [key: string]: any[] } = {};  //new
   currentPage = 1;
   tableSizes = [50,75,100,150,200];
   columnFilters: { [key: string]: any } = {};
-  arrowState: { [key: string]: boolean } = {};
+  arrowState: { [sortKey: string]: boolean } = {};
   sortValue: string = '';
   directionValue: string;
   filterSearchText: { [key: string]: string } = {};
@@ -100,7 +100,7 @@ this.tempFilters = JSON.parse(JSON.stringify(this.columnFilters));
 
   // Add this trackBy function
   trackByColumnKey(index: number, col: any): string {
-    return col.key; // Or any unique identifier for the column
+    return col.sortKey; // Or any unique identifier for the column
   }
 
    get rows(): FormArray {
@@ -122,9 +122,14 @@ this.tempFilters = JSON.parse(JSON.stringify(this.columnFilters));
     }else{
       this.filteredData = [];
     }
-    // console.log('Filtered Data:', this.config.data);
+    // console.log('Filtered Data:', this.config);
     this.config.columns?.forEach(col => {
-      this.arrowState[col.key] = false;
+      // this.arrowState[col.sortKey] = false;
+      if(this.directionValue){
+         this.arrowState[this.sortValue] = this.directionValue === 'ascending'? true : false;
+      } else{
+        this.arrowState[col.sortKey] = false;
+      }
       //this.columnFilters[col.key] = col.filterType === 'multi-select' ? [] : '';
     });
     if(this.config.formContent && this.config.data){
@@ -217,14 +222,14 @@ onFilterChange(selectedValue: any, columnConfig: any, fromCheckbox: boolean = fa
 
   sort(direction: string, column: string) {
     // Reset the state of all columns except the one being sorted
-    Object.keys(this.arrowState).forEach(key => {
-      this.arrowState[key] = false;
+    Object.keys(this.arrowState).forEach(sortKey => {
+      this.arrowState[sortKey] = false;
     });
-
     // Update the state of the currently sorted column
-    this.arrowState[column] = direction === 'asc';
+    this.arrowState[column] = direction === 'ascending'? true : false;
     this.directionValue = direction;
     this.sortValue = column;
+      this.actionEvent.emit({ actionType: 'sorting', detail: {directionValue:this.directionValue,sortValue:this.sortValue}});
   }
 
   onPageChange(event: number): void {

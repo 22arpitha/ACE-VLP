@@ -40,6 +40,8 @@ export class TimesheetDetailedReportComponent implements OnInit {
   selectedTaskIds: any = [];
   selectedEmployeeIds: any = [];
   selectedDate: any;
+  sortValue: string = '';
+  directionValue: string = '';
   constructor(
     private common_service:CommonServiceService,
     private api:ApiserviceService
@@ -125,7 +127,9 @@ handleAction(event: { actionType: string; detail: any,key:string,fromFilter?: bo
       case 'filter':
       this.onApplyFilter(event.detail,event.key);
       break;
-     
+      case 'sorting':
+        this.onSorting(event);
+      break;
       case 'dateRange':
         // console.log(event.detail, event.key);
       this.onApplyDateFilter(event.detail);
@@ -144,6 +148,22 @@ handleAction(event: { actionType: string; detail: any,key:string,fromFilter?: bo
     //   });
   }
 }
+  
+onSorting(data){
+  this.directionValue = data.detail.directionValue;
+  this.sortValue = data.detail.sortValue;
+  this.getTableData({
+      page: this.page,
+      pageSize: this.tableSize,
+      searchTerm: this.term,
+      client_ids: this.selectedClientIds,
+      job_ids: this.selectedJobIds,
+      task_ids: this.selectedTaskIds,
+      employee_ids: this.selectedEmployeeIds,
+      timesheet_dates: this.selectedDate
+    });
+}
+
 onApplyFilter(filteredData: any[], filteredKey: string): void {
   if (filteredKey === 'client-ids') {
     this.selectedClientIds = filteredData;
@@ -395,6 +415,9 @@ async getTableData(params?: { page?: number; pageSize?: number; searchTerm?: str
       }
       if(params?.timesheet_dates){
         query += `&start-date=${params.timesheet_dates.startDate}&end-date=${params.timesheet_dates.endDate}`
+      }
+      if(this.directionValue && this.sortValue){
+        query += `&sort-by=${this.sortValue}&sort-type=${this.directionValue}`;
       }
       await this.api.getData(`${environment.live_url}/${environment.timesheet}/${query}`).subscribe((res: any) => {
      if(res){

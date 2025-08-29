@@ -51,6 +51,8 @@ tableSize: number = 50;
   selectedJobIds: any = [] ;
   selectedStatusIds: any = [];
   formattedData: any = [];
+  sortValue: string = '';
+  directionValue: string = '';
  constructor(
      private common_service:CommonServiceService,
      private api:ApiserviceService,
@@ -140,6 +142,9 @@ tableSize: number = 50;
        case 'export_pdf':
        this.exportCsvOrPdf(event.detail);
        break;
+       case 'sorting':
+        this.onSorting(event);
+        break;
        case 'headerTabs':
         this.tabStatus = event['action'];
         this.getClientList();
@@ -185,6 +190,19 @@ tableSize: number = 50;
         job_status: this.selectedStatusIds,
       });
    }
+ }
+
+ onSorting(data){
+  this.directionValue = data.detail.directionValue;
+  this.sortValue = data.detail.sortValue;
+  this.getTableData({
+    page: this.page,
+    pageSize: this.tableSize,
+    searchTerm: this.term,
+    client_ids: this.selectedClientIds,
+    job_ids: this.selectedJobIds,
+    job_status: this.selectedStatusIds,
+  });
  }
 onApplyFilter(filteredData: any[], filteredKey: string): void {
 
@@ -484,6 +502,9 @@ public viewtimesheetDetails(item:any){
       }
       if (params?.job_status?.length) {
         finalQuery += `&job-status-ids=[${params.job_status.join(',')}]`;
+      }
+      if(this.directionValue && this.sortValue){
+        finalQuery += `&sort-by=${this.sortValue}&sort-type=${this.directionValue}`;
       }
     await this.api.getData(`${environment.live_url}/${environment.jobs}/${finalQuery}`).subscribe((res: any) => {
       if(res.results){

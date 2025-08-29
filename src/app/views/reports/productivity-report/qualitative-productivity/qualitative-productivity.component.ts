@@ -34,6 +34,8 @@ BreadCrumbsTitle: any = 'Qualitative Productivity';
 
        user_id: string;
        user_role_name: string;
+       sortValue: string = '';
+       directionValue: string = '';
           constructor(
             private common_service:CommonServiceService,
             private api:ApiserviceService
@@ -105,6 +107,9 @@ BreadCrumbsTitle: any = 'Qualitative Productivity';
               case 'search':
               this.onSearch(event.detail);
               break;
+              case 'sorting':
+               this.onSorting(event);
+               break;
               case 'export_csv':
               this.exportCsvOrPdf(event.detail);
               break;
@@ -119,6 +124,16 @@ BreadCrumbsTitle: any = 'Qualitative Productivity';
               });
           }
         }
+
+        onSorting(data){
+            this.directionValue = data.detail.directionValue;
+            this.sortValue = data.detail.sortValue;
+            this.getTableData({
+                page: this.page,
+                pageSize: this.tableSize,
+                searchTerm: this.term
+              });
+          }
         exportCsvOrPdf(fileType) {
           let query = buildPaginationQuery({
             page: this.page,
@@ -159,6 +174,9 @@ BreadCrumbsTitle: any = 'Qualitative Productivity';
             query+= this.dropdwonFilterData.employee_id || this.dropdwonFilterData.periodicity || this.dropdwonFilterData.period ? '&is_dropdown_selected=True' :'';
             }else{
             query += this.user_role_name ==='Admin' ? '':`&employee-id=${this.user_id}`;
+           }
+           if(this.directionValue && this.sortValue){
+            query += `&sort-by=${this.sortValue}&sort-type=${this.directionValue}`;
            }
           this.api.getData(`${environment.live_url}/${environment.jobs}/${query}`).subscribe((res: any) => {
             const formattedData = res.results.map((item: any, i: number) => ({

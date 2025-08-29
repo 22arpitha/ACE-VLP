@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { environment } from '../../../../../environments/environment';
 import { ApiserviceService } from 'src/app/service/apiservice.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-tabs',
@@ -16,6 +17,7 @@ resetFilter:boolean=false;
 ondefaultSelection:boolean =true;
 resetBtnDisable:boolean=false;
 modeName:any;
+url:any
 tabs:string[] = ['Overall Productivity', 'Quantitative Productivity', 'Qualitative Productivity','Work Culture and Work Ethics',
    'Productive Hours','Non Billable Hours','Non Productive Hours' ];
   selectedTab: number = 0;
@@ -33,9 +35,10 @@ tabs:string[] = ['Overall Productivity', 'Quantitative Productivity', 'Qualitati
       this.ondefaultSelection=false;
     }
   }
-  constructor(private apiService: ApiserviceService) {
+  constructor(private apiService: ApiserviceService, private router:Router) {
     this.userRole = sessionStorage.getItem('user_role_name');
     this.user_id = sessionStorage.getItem('user_id');
+    this.url = this.router.url;
     this.getAllPeriodicity();
    }
 

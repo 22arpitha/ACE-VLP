@@ -30,6 +30,8 @@ BreadCrumbsTitle: any = 'Non Billable Hours';
       };
       user_id:any;
       userRole:any;
+      sortValue: string = '';
+      directionValue: string = '';
       constructor(
         private common_service:CommonServiceService,
         private api:ApiserviceService
@@ -102,6 +104,9 @@ BreadCrumbsTitle: any = 'Non Billable Hours';
           case 'search':
           this.onSearch(event.detail);
           break;
+          case 'sorting':
+          this.onSorting(event);
+          break;
           case 'export_csv':
           this.exportCsvOrPdf(event.detail);
           break;
@@ -111,6 +116,16 @@ BreadCrumbsTitle: any = 'Non Billable Hours';
         default:
           console.warn('Unhandled action type:', event.actionType);
       }
+    }
+
+   onSorting(data){
+    this.directionValue = data.detail.directionValue;
+    this.sortValue = data.detail.sortValue;
+    this.getTableData({
+        page: this.page,
+        pageSize: this.tableSize,
+        searchTerm: this.term
+      });
     }
 exportCsvOrPdf(fileType) {
   let query = buildPaginationQuery({
@@ -151,6 +166,9 @@ exportCsvOrPdf(fileType) {
           }else{
             finalQuery += this.userRole ==='Admin' ? '':`&employee-id=${this.user_id}`;
            }
+           if(this.directionValue && this.sortValue){
+            finalQuery += `&sort-by=${this.sortValue}&sort-type=${this.directionValue}`;
+            }
            this.api.getData(`${environment.live_url}/${environment.jobs}/${finalQuery}`).subscribe((res: any) => {
       
               const formattedData = res.results.map((item: any, i: number) => ({

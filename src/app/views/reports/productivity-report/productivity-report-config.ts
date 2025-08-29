@@ -26,26 +26,26 @@ export const tableConfig: DynamicTableConfig  = {
   columns:[
   { label: 'Sl No',
     key: 'sl',
-    sortable: true
+    sortable: true,
   },
   { label: 'Quantitative Productivity',
     key: 'quantitativeProductivity',
-    sortable: true
+    sortable: true,
   },
   {
     label: 'Qualitative Productivity',
     key: 'qualitativeProductivity',
-    sortable: true
+    sortable: true,
   },
   {
     label: 'Work Culture and Work Ethics',
     key: 'workCultureandWorkEthics',
-    sortable: true
+    sortable: true,
   },
   {
     label: 'Overall Productivity',
     key: 'overallProductivity',
-    sortable: true
+    sortable: true,
   }
 ],
 data: employeeData,
