@@ -201,7 +201,9 @@
     <!-- Quarter Mode -->
     <ng-container *ngIf="modeName === 'Quarterly' && showSelection">
       <button mat-button *ngFor="let item of quarters" (click)="select(item.value);$event.stopPropagation()" class="picker-item">
-        <b>{{ item.label }}</b> — <small>{{ item.months.join(', ') }}</small>
+        <small>{{ item.months.join(', ') }}</small>
+        <!-- below one is commented because the client requested no need of label (Q1, Q2 etc) -->
+        <!-- <b>{{ item.label }}</b> — <small>{{ item.months.join(', ') }}</small> -->
       </button>
     </ng-container>
 
@@ -296,10 +298,10 @@
                   <mat-icon class="search-icon" *ngIf="!searchJobStatusText">search</mat-icon>
                   <mat-icon class="search-icon" *ngIf="searchJobStatusText" type="button" (click)="clearSearch('job_status')">close</mat-icon>
                 </div>
-                <mat-option *ngFor="let item of filteredJobStatusList();let i = index" [value]="item?.id" [disabled]="!isEditItem && i >= internalReviewOneIndex">
+                <mat-option *ngFor="let item of filteredJobStatusList();let i = index" [value]="item?.id" [disabled]="estimatedTime==='00:00' &&i >= internalReviewOneIndex">
                   {{item?.status_name}}
                 </mat-option>
-                <!-- [disabled]="shouldDisableStatus(item?.status_name)" -->
+                <!-- [disabled]="!isEditItem && i >= internalReviewOneIndex" -->
         </mat-select>
         <mat-error *ngIf="f['job_status']?.invalid && f['job_status']?.touched || f['job_status']?.dirty">
             <span  *ngIf="f['job_status']?.errors?.['required']">Job Status is required</span>
@@ -425,7 +427,7 @@
                         <img src="../../../../assets/images/tick.svg" class="icon-image" type="button" container="body"
                         ngbTooltip="save" (click)="saveChanges((currentPage - 1) * pageSize + i)" *ngIf="emp?.get('employee')?.enabled  && (currentPage - 1) * pageSize + i < employeeFormArray?.length - 1 || (emp?.get('employee')?.enabled && (currentPage - 1) * pageSize + i === allEmployeeList?.length-1)"/>
                         
-                <img src="../../../../assets/images/Delete.svg" class="icon-image" type="button" container="body" ngbTooltip="Delete" (click)="removeEmployee(i)" *ngIf="employeeFormArray.length >= 2" />
+                <img src="../../../../assets/images/Delete.svg" class="icon-image" type="button" container="body" ngbTooltip="Delete" (click)="removeEmployee((currentPage - 1) * pageSize + i)" *ngIf="employeeFormArray.length >= 2" />
                 <img src="../../../../assets/images/addnew.svg" class="icon-image" type="button" container="body"
                 ngbTooltip="add" (click)="addEmployee()" *ngIf="(currentPage - 1) * pageSize + i === employeeFormArray?.length - 1 && employeeFormArray?.length != allEmployeeList?.length"/>
               </ng-container>
