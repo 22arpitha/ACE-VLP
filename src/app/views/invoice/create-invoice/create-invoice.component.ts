@@ -156,12 +156,12 @@ total_amount:false,
     const flatInvoiceJobs = invoices.flatMap((item: any) => item?.client_invoice || []);
     const invoiceJobIds = new Set(flatInvoiceJobs.map((inv: any) => inv?.job_id));
     this.allClientBasedJobsLists = jobsList.filter((job: any) => !invoiceJobIds.has(job?.id));
-    this.count = (responseData.total_no_of_record || 0) - flatInvoiceJobs.length;
+    this.count = (responseData.clientAllJobsList?.total_no_of_record || 0) - flatInvoiceJobs.length;
+    this.page = responseData.clientAllJobsList?.current_page ;
   } else {
     this.allClientBasedJobsLists = jobsList;
-    this.count = responseData.total_no_of_record || 0;
-  }
-  this.page = responseData.current_page || 1;
+    this.count = responseData.clientAllJobsList?.total_no_of_record || 0;
+  };
  });
     }
 
@@ -248,6 +248,7 @@ const jobsMappedData =  this.jobSelection?.map(({id,
      }
 
      public getFilterBaseUrl(): string {
+      console.log(this.page)
       if(this.selectedClientId && this.selectedClientId!=null){
         return `?page=${this.page}&page_size=${this.tableSize}&search=${this.term}&job-status=Completed&client=${this.selectedClientId}`;
       }else{
