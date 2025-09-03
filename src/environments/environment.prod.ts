@@ -5,9 +5,9 @@ export const environment = {
 
 
   // Testing url
-  // media_url: 'https://vlp.thestorywallcafe.com',
-  // live_url:'https://vlp.thestorywallcafe.com/api-vlp',
-  // socket_url:'projectacedevelop.thestorywallcafe.com',
+  media_url: 'https://vlp.thestorywallcafe.com',
+  live_url:'https://vlp.thestorywallcafe.com/api-vlp',
+  socket_url:'projectacedevelop.thestorywallcafe.com',
 
   // UAT url
   // media_url: 'https://vlpuat.thestorywallcafe.com',
@@ -16,9 +16,9 @@ export const environment = {
 
   
   // Staging URL
-  media_url: 'https://staging.vlpworkflow.com',
-  live_url:'https://staging.vlpworkflow.com/api-vlp',
-  socket_url:'projectacedevelop.thestorywallcafe.com',
+  // media_url: 'https://staging.vlpworkflow.com',
+  // live_url:'https://staging.vlpworkflow.com/api-vlp',
+  // socket_url:'projectacedevelop.thestorywallcafe.com',
 
  //  vlp Auth
  login:`login`,
