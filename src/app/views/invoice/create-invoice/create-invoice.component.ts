@@ -33,8 +33,8 @@ total_amount:false,
      };
      page = 1;
      count = 0;
-     tableSize = 5;
-     tableSizes = [5, 10, 25, 50, 100];
+     tableSize = 50;
+     tableSizes = [50, 100, 150];
      currentIndex: any;
      allClientBasedJobsLists:any=[];
      accessPermissions = []
@@ -153,6 +153,8 @@ total_amount:false,
     const invoiceJobIds = new Set(flatInvoiceJobs.map((inv: any) => inv?.job_id));
     this.allClientBasedJobsLists = jobsList.filter((job: any) => !invoiceJobIds.has(job?.id));
     this.count = (responseData.clientAllJobsList?.total_no_of_record || 0) - flatInvoiceJobs.length;
+    // this.count = responseData.clientAllJobsList?.total_no_of_record;
+    // console.log(this.count,flatInvoiceJobs.length)
     this.page = responseData.clientAllJobsList?.current_page ;
   } else {
     this.allClientBasedJobsLists = jobsList;
@@ -244,7 +246,6 @@ const jobsMappedData =  this.jobSelection?.map(({id,
      }
 
      public getFilterBaseUrl(): string {
-      console.log(this.page)
       if(this.selectedClientId && this.selectedClientId!=null){
         return `?page=${this.page}&page_size=${this.tableSize}&search=${this.term}&job-status=Completed&client=${this.selectedClientId}`;
       }else{
