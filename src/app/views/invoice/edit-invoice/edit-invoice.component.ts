@@ -18,6 +18,10 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 })
 export class EditInvoiceComponent implements OnInit {
      term:any='';
+     page = 1;
+    count = 0;
+    tableSize = 50;
+    tableSizes = [50,75,100];
      sortValue: string = '';
      directionValue: string = '';
      selectedItemId:any;
@@ -73,6 +77,8 @@ total_amount:false,
     public getClientBasedJobsList(){
       this.allClientBasedJobsLists=[];
       this.jobSelection=[];
+      let query  = `?page=${this.page}&page_size=${this.tableSize}`;
+       query += this.term?.trim().length >= 2 ? `&search=${this.term.trim()}` : '';
       forkJoin([
         this.apiService.getData(`${environment.live_url}/${environment.jobs}/?search=${this.term}&job-status=Completed&client=${this.client_id}`),  // First API call for Client related completed jobs list
         this.apiService.getData(`${environment.live_url}/${environment.client_invoice}/?invoice-id=${this.invoice_id}`),  // Second API call for Client Generated invoiced jobs details

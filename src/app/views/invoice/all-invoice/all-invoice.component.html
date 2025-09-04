@@ -84,7 +84,7 @@
                       <i (click)="sort('descending','total_amount')" *ngIf="arrowState['total_amount']"
                         class="bi bi-arrow-up"></i>
                     </th>
-                    <th scope="col">Action </th>
+                    <!-- <th scope="col">Action </th> -->
                   </tr>
                 </thead>
                 <tbody>
@@ -94,13 +94,13 @@
                              itemsPerPage: tableSize,
                              currentPage: page,
                              totalItems: count
-                           }; let i=index' >
+                           }; let i=index' (click)="viewInvoiceDetails(item)">
                            <!-- (click)="viewInvoiceDetails(item)" -->
                       <td>{{(item?.created_date || '-')}}</td>
                       <td>{{item?.invoice_number || '-'}}</td>
                       <td>{{item?.client_name || '-'}}</td>
                       <td>{{item?.total_amount || '-'}}</td>
-                      <td>
+                      <!-- <td>
                         <ng-container *ngIf="item">
                         <img src="../../../../assets/images/Edit.svg" class="icon-image" type="button" container="body"
                           ngbTooltip="Edit" (click)="edit(item)" *ngIf="userRole !='Admin' && (accessPermissions[0]?.view || accessPermissions[0]?.update) || userRole === 'Admin'"/>
@@ -109,7 +109,7 @@
                           </span>
                         </ng-container>
                       <ng-template #noContact>-</ng-template>
-                    </td>
+                    </td> -->
                     </tr>
                   </ng-container>
                 </tbody>

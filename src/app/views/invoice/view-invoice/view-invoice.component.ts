@@ -40,6 +40,7 @@ export class ViewInvoiceComponent implements OnInit {
   user_id: any;
   userRole: any;
   invoice_id: any;
+  client_id:any;
   invoice: any;
   constructor(
     private common_service: CommonServiceService,
@@ -62,6 +63,7 @@ export class ViewInvoiceComponent implements OnInit {
     this.initalCall();
     this.getModuleAccess();
     this.invoice = history.state.invoice;
+    console.log(this.invoice)
   }
 
   public initalCall() {
@@ -86,17 +88,19 @@ export class ViewInvoiceComponent implements OnInit {
   }
   public openEditInvoicePopup(item: any) {
     this.dialog.open(EditInvoiceComponent, {
-      data: { invoice_id: item?.id, client_id: item?.client_id },
+      data: { invoice_id: this.invoice_id, client_id: this.client_id },
       panelClass: 'custom-details-dialog',
       disableClose: true,
     });
     this.dialog.afterAllClosed.subscribe((resp: any) => {
       // console.log('resp',resp);
       this.initalCall();
+      this.getInvoiceDetailsList();
     });
   }
 
   async edit(item: any = this.invoice) {
+    console.log(this.invoice)
     this.selectedItemId = item?.id;
     try {
       const modalRef = await this.modalService.open(GenericEditComponent, {
@@ -123,8 +127,9 @@ export class ViewInvoiceComponent implements OnInit {
     this.apiService
       .getData(`${environment.live_url}/${environment.client_invoice}/${query}`)
       .subscribe((res: any) => {
-        // console.log(res?.results);
+        console.log(res);
         this.allClientBasedJobsLists = res;
+        this.client_id = res[0]?.client_id;
         // const noOfPages: number = res?.['total_pages']
         // this.count = noOfPages * this.tableSize;
         // this.count = res?.['total_no_of_record']
