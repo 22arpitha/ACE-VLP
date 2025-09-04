@@ -35,4 +35,9 @@ export const tableColumns = [
    { label: 'Est. Hrs', key: 'estimated_time', sortKey: 'estimated_time', sortable: true },
   { label: 'Act. Hrs', key: 'actual_time', sortKey: 'actual_time', sortable: true},
   { label: 'Rem./Ex. Hrs', key: 'remaining_time', sortKey: 'remaining_time', sortable: true },
+  {
+    label: 'TAT (Days',
+    key: 'diff_days',
+    sortable: false
+  },
   ]

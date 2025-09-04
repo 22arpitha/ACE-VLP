@@ -103,6 +103,7 @@ private searchSubject = new Subject<string>();
     { key: 'status_name', label: 'Status', visible: true },
     { key: 'percentage_of_completion', label: 'Percentage Of Completion', visible: true },
     { key: 'job_status_date', label: 'Status Date', visible: true },
+    { key: 'tat_days', label: 'Status Date', visible: true },
   ];
   constructor(
     private common_service: CommonServiceService,

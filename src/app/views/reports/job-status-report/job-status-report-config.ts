@@ -82,6 +82,11 @@ export const tableColumns  = [
     type:'date',
   },
   {
+    label: 'TAT (Days',
+    key: 'diff_days',
+    sortable: false
+  },
+  {
     label: 'PRIM EMP',
     key: 'is_primary',
     sortKey:'not_done',

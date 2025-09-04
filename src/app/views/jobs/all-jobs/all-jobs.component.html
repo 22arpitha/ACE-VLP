@@ -206,6 +206,7 @@
                   <mat-datepicker #datepicker [dateClass]="dateClass"></mat-datepicker>
                 </mat-form-field>
               </th>
+               <th scope="col"*ngIf="isColumnVisible('tat_days')"><span >TAT (Days)</span></th>
               <!-- <th scope="col" >Action</th> -->
             </tr>
           </thead>
@@ -262,6 +263,13 @@
                 <td (click)="edit(item)" *ngIf="isColumnVisible('job_status_date')"
                   [ngStyle]="{ color: item?.status_date_color ? item?.status_date_color : 'black' }">
                   {{item?.job_status_date | date: 'dd/MM/yyyy'}}</td>
+
+                <th (click)="edit(item)" *ngIf="isColumnVisible('tat_days')">
+                    <span class="circle"  [ngStyle]="{ 'color': item?.tat_days?.color}">
+                      {{ item?.tat_days?.diff_days }}
+                    </span>
+                </th>
+
                 <!-- <td> <ng-container>
                         <img src="../../../../assets/images/Edit.svg" class="icon-image" type="button" container="body"
                           ngbTooltip="Edit" (click)="edit(item)" *ngIf="userRole !='Admin' && (accessPermissions[0]?.update || accessPermissions[0]?.view) || userRole === 'Admin'"/>
