@@ -71,7 +71,7 @@ this.formUtilityService.resetHasUnsavedValue();
     this.accessControlService.getAccessForActiveUrl(this.user_id).subscribe((access) => {
       if (access) {
         this.accessPermissions = access[0].operations;
-        this.getAllTemplates('?page=1&page_size=5');
+        this.getAllTemplates('?page=1&page_size=50');
       }
     },(error: any) => {
       this.apiService.showError(error?.error?.error?.detail);
