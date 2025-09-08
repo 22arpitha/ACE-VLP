@@ -176,14 +176,14 @@
 
               <th scope="col" class="status-col" *ngIf="isColumnVisible('status_name')">Status
                 <button mat-icon-button [matMenuTriggerFor]="statusFilterMenu" (menuOpened)="openFilter(satusGroupFilter)"
-                  [ngClass]="filters.status_name.length>=1 ? 'filterdColumn':''">
-                  <span *ngIf="filters.status_name.length>=1">{{filters.status_name.length.toString().padStart(2,
+                  [ngClass]="filters.status_group_name.length>=1 ? 'filterdColumn':''">
+                  <span *ngIf="filters.status_group_name.length>=1">{{filters.status_group_name.length.toString().padStart(2,
                     '0')}}</span>
-                  <i class="bi-funnel" *ngIf="filters.status_name.length===0"></i>
+                  <i class="bi-funnel" *ngIf="filters.status_group_name.length===0"></i>
                 </button>
 
                 <mat-menu #statusFilterMenu="matMenu">
-                  <app-generic-table-filter #satusGroupFilter [fetchOptions]="fetchStatusGroup" [(selectedOptions)]="filters.status_name"
+                  <app-generic-table-filter #satusGroupFilter [fetchOptions]="fetchStatusGroup" [(selectedOptions)]="filters.status_group_name"
                     (selectedOptionsChange)="filterData()"></app-generic-table-filter>
                 </mat-menu>
               </th>

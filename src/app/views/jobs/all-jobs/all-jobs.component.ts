@@ -64,13 +64,14 @@ export class AllJobsComponent implements OnInit {
   dateFilterValue: any = null;
   statusDateFilterValue: any = null;
   statusList: String[] = [];
-  filters: { group_name: string[]; job_type_name: string[]; client_name: string[]; employees: string[]; manager: string[], status_name: string[] } = {
+  filters: { group_name: string[]; job_type_name: string[]; client_name: string[]; employees: string[]; manager: string[], status_name: string[],status_group_name:string[] } = {
     group_name: [],
     job_type_name: [],
     client_name: [],
     employees: [],
     manager: [],
     status_name: [],
+    status_group_name: []
   };
 private searchSubject = new Subject<string>();
 
@@ -283,7 +284,6 @@ private searchSubject = new Subject<string>();
         this.filterQuery += `&employee-ids=[${this.filters.employees.join(',')}]`;
     }
     if (this.filters.manager.length) {
-
       this.userRole === 'manager' ? this.filterQuery += `&manager-ids=[${this.filters.manager.join(',')}]` :
         this.filterQuery += `&manager-ids=[${this.filters.manager.join(',')}]`;
     }
@@ -300,6 +300,9 @@ private searchSubject = new Subject<string>();
     if (this.statusDate) {
       this.filterQuery += `&job-status-date=[${this.statusDate}]`;
     }
+    if(this.filters.status_group_name.length){
+      this.filterQuery += `&status-group-ids=[${this.filters.status_group_name}]`;
+    }
     if (this.isCurrent && this.filters.status_name.length == 0) {
       this.jobStatusList('True');
       this.filterQuery += `&job-status=[${this.statusList}]`;
@@ -310,7 +313,7 @@ private searchSubject = new Subject<string>();
     } else {
       this.filterQuery += `&job-status=[${this.filters.status_name.join(',')}]`;
     }
-    this.apiService.getData(`${environment.live_url}/${environment.jobs}/${this.filterQuery}`).subscribe((res: any) => {
+    this.apiService.getData(`${environment.live_url}/${environment.only_jobs}/${this.filterQuery}`).subscribe((res: any) => {
       this.allJobsList = res?.results;
       this.filteredList = res?.results;
       this.count = res?.['total_no_of_record'];
@@ -441,7 +444,7 @@ private searchSubject = new Subject<string>();
     // add this ==> this.statusList.length != 0 ( when you are displaying the job status)
     if (this.allStatuGroupNames.length != 0) {
       let query: any = `${this.getFilterBaseUrl()}&job-status=[${this.statusList}]`;
-      this.apiService.getData(`${environment.live_url}/${environment.jobs}/${query}`).subscribe((res: any) => {
+      this.apiService.getData(`${environment.live_url}/${environment.only_jobs}/${query}`).subscribe((res: any) => {
         this.allJobsList = res?.results;
         this.filteredList = res?.results;
         const noOfPages: number = res?.['total_pages']
@@ -460,7 +463,7 @@ private searchSubject = new Subject<string>();
     // console.log('history',this.statusList)
     // this.allStatuGroupNames
     let query = `${this.getFilterBaseUrl()}&job-status=[${this.statusList}]`;
-    this.apiService.getData(`${environment.live_url}/${environment.jobs}/${query}`).subscribe(
+    this.apiService.getData(`${environment.live_url}/${environment.only_jobs}/${query}`).subscribe(
       (res: any) => {
         this.allJobsList = res?.results;
         this.filteredList = res?.results;
@@ -513,7 +516,7 @@ private searchSubject = new Subject<string>();
 
   getFilterBaseUrl(): string {
     const base = `?page=${this.page}&page_size=${this.tableSize}`;
-    const searchParam = this.term?.trim().length >= 2 ? `&search=${this.term.trim()}` : '';
+    const searchParam = this.term?.trim().length >= 2 ? `&search=${encodeURIComponent(this.term.trim())}` : '';
     const employeeParam = this.userRole !== 'Admin' ? `&employee-id=${this.user_id}` : '';
 
     return `${base}${searchParam}${employeeParam}`;
