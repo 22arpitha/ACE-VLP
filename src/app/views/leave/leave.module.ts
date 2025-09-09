@@ -19,6 +19,7 @@ import { AddCustomizeBalanceComponent } from './add-customize-balance/add-custom
 import { ViewLeaveRequestComponent } from './view-leave-request/view-leave-request.component';
 import { UserDashboardComponent } from './user-dashboard/user-dashboard.component';
 import { NgMultiSelectDropDownModule } from 'ng-multiselect-dropdown';
+import { MyLeavesComponent } from './my-leaves/my-leaves.component';
 
 @NgModule({
   declarations: [
@@ -35,6 +36,7 @@ import { NgMultiSelectDropDownModule } from 'ng-multiselect-dropdown';
     AddCustomizeBalanceComponent,
     ViewLeaveRequestComponent,
     UserDashboardComponent,
+    MyLeavesComponent,
   ],
   imports: [
     CommonModule,

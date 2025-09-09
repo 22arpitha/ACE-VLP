@@ -8,6 +8,10 @@ export const environment = {
   live_url:'https://vlp.thestorywallcafe.com/api-vlp',
   socket_url:'projectacedevelop.thestorywallcafe.com',
 
+  // media_url: 'http://127.0.0.1:8000',
+  // live_url:'http://127.0.0.1:8000/api-vlp',
+  // socket_url:'projectacedevelop.thestorywallcafe.com',
+
   // UAT url
   // media_url: 'https://vlpuat.thestorywallcafe.com',
   // live_url:'https://vlpuat.thestorywallcafe.com/api-vlp',
@@ -30,6 +34,7 @@ settings_country: `country`,
 settings_source: `source`,
 settings_status_group: `status-group`,
 settings_leave_type: `leave_type`,
+employee_leave_type: `employee_leaves`,
 settings_job_status: `job-status`,
 settings_job_type: `job-type`,
 settings_service: `service`,
@@ -71,7 +76,8 @@ download_excel :'download-excel',
 //  leave related API end points
 work_calendar:`work_calender`,
 holiday_calendar:`holiday_calendar`,
-
+apply_leaves: `apply_leave`,
+work_calender: `work_calender`,
 
 // project ace
   leave_application: 'leave-application',
@@ -109,7 +115,7 @@ holiday_calendar:`holiday_calendar`,
   city:`city`,
   client:`client`,
   leave_master:`leave-master`,
-  employee_leaves:`employee-leaves`,
+  employee_leaves:`employee_leaves`,
   all_employee:`all-employee`,
   apply_leave:`apply-leave`,
   employee_leave_details:`employee-leave-details`,
