@@ -9,6 +9,10 @@ export const environment = {
   live_url:'https://vlp.thestorywallcafe.com/api-vlp',
   socket_url:'projectacedevelop.thestorywallcafe.com',
 
+  // media_url: 'http://127.0.0.1:8000',
+  // live_url:'http://127.0.0.1:8000/api-vlp',
+  // socket_url:'projectacedevelop.thestorywallcafe.com',
+
   // UAT url
   // media_url: 'https://vlpuat.thestorywallcafe.com',
   // live_url:'https://vlpuat.thestorywallcafe.com/api-vlp',

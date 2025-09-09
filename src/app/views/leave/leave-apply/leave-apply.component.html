@@ -8,19 +8,33 @@
               <p><b>Leave Type</b></p>
             </div>
             <div class="col-5 col-sm-5 col-md-3 col-lg-3 px-0">
-              <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+              <mat-form-field
+                appearance="outline"
+                class="w-100 custom-mat-form-field"
+              >
                 <mat-label>Leave Type<b class="r-star">*</b></mat-label>
-                <mat-select placeholder="Leave Type" autocomplete="off" panelClass="custom-select-panel"
-                  [disableOptionCentering]="true">
-                  <mat-option *ngFor="let leave of allleavetypeList"
-                    [value]="leave.id">{{leave.leave_type_name}}</mat-option>
+                <mat-select
+                  placeholder="Leave Type"
+                  autocomplete="off"
+                  panelClass="custom-select-panel"
+                  [disableOptionCentering]="true"
+                  (selectionChange)="onLeaveTypeChange($event)"
+                  formControlName="leave_type"
+                >
+                  <mat-option
+                    *ngFor="let leave of allleavetypeList"
+                    [value]="leave.id"
+                    >{{ leave.leave_type_name }}</mat-option
+                  >
                 </mat-select>
               </mat-form-field>
             </div>
-            <div class="col-5 col-sm-5 col-md-3 col-lg-3 no-padding pl-5 pr-0 align-self-center">
+            <div
+              class="col-5 col-sm-5 col-md-3 col-lg-3 no-padding pl-5 pr-0 align-self-center"
+            >
               <div class="balance-info-content">
                 <mat-label>Leave Balance</mat-label>
-                <div class="text-clr">23</div>
+                <div class="text-clr">{{ leave_balance }}</div>
               </div>
             </div>
           </div>
@@ -35,51 +49,106 @@
           </div>
           <div class="row mx-0 my-0 p-0">
             <div class="col-5 col-sm-5 col-md-3 col-lg-3 px-0">
-              <mat-form-field appearance="outline" class="w-100 p-0 custom-mat-form-field">
+              <mat-form-field
+                appearance="outline"
+                class="w-100 p-0 custom-mat-form-field"
+              >
                 <mat-label>From</mat-label>
-                <input matInput [matDatepicker]="picker1" (dateInput)="startDateFun($event)" placeholder="Enter From" autocomplete="off">
+                <input
+                  matInput
+                  [matDatepicker]="picker1"
+                  (dateInput)="startDateFun($event)"
+                  placeholder="Enter From"
+                  autocomplete="off"
+                  formControlName="from_date"
+                />
                 <!-- <button ngbTooltip="Clear" matSuffix mat-icon-button aria-label="Clear" type="button">
               <mat-icon>close</mat-icon>
             </button> -->
-                <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+                <mat-datepicker-toggle
+                  matSuffix
+                  [for]="picker1"
+                ></mat-datepicker-toggle>
                 <mat-datepicker #picker1></mat-datepicker>
               </mat-form-field>
             </div>
             <div class="col-5 col-sm-5 col-md-3 col-lg-3 no-padding pl-5 pr-0">
-              <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+              <mat-form-field
+                appearance="outline"
+                class="w-100 custom-mat-form-field"
+              >
                 <mat-label>Session<b class="r-star">*</b></mat-label>
-                <mat-select placeholder="Session" autocomplete="off" panelClass="custom-select-panel"
-                  [disableOptionCentering]="true">
-                  <mat-option *ngFor="let session of sessions" [value]="session.value">{{session.label}}</mat-option>
+                <mat-select
+                  placeholder="Session"
+                  autocomplete="off"
+                  panelClass="custom-select-panel"
+                  [disableOptionCentering]="true"
+                  (selectionChange)="sessionFun1($event)"
+                  formControlName="from_session"
+                >
+                  <mat-option
+                    *ngFor="let session of sessions"
+                    [value]="session.value"
+                    >{{ session.label }}</mat-option
+                  >
                 </mat-select>
               </mat-form-field>
             </div>
           </div>
           <div class="row mx-0 my-0 p-0">
-            <div class="col-6 col-sm-6 col-md-3 col-lg-3 px-0 ">
-              <mat-form-field appearance="outline" class="w-100 p-0 custom-mat-form-field">
+            <div class="col-6 col-sm-6 col-md-3 col-lg-3 px-0">
+              <mat-form-field
+                appearance="outline"
+                class="w-100 p-0 custom-mat-form-field"
+              >
                 <mat-label>To</mat-label>
-                <input matInput [matDatepicker]="picker2" [min]="minDate" placeholder="Enter To" autocomplete="off">
+                <input
+                  matInput
+                  [matDatepicker]="picker2"
+                  [min]="minDate"
+                  (dateInput)="endDateFun($event)"
+                  placeholder="Enter To"
+                  autocomplete="off"
+                  formControlName="to_date"
+                />
                 <!-- <button ngbTooltip="Clear" matSuffix mat-icon-button aria-label="Clear" type="button">
               <mat-icon>close</mat-icon>
             </button> -->
-                <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+                <mat-datepicker-toggle
+                  matSuffix
+                  [for]="picker2"
+                ></mat-datepicker-toggle>
                 <mat-datepicker #picker2></mat-datepicker>
               </mat-form-field>
             </div>
             <div class="col-6 col-sm-6 col-md-3 col-lg-3 no-padding pl-5 pr-0">
-              <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+              <mat-form-field
+                appearance="outline"
+                class="w-100 custom-mat-form-field"
+              >
                 <mat-label>Session<b class="r-star">*</b></mat-label>
-                <mat-select placeholder="Session" autocomplete="off" panelClass="custom-select-panel"
-                  [disableOptionCentering]="true">
-                  <mat-option *ngFor="let session of sessions" [value]="session.value">{{session.label}}</mat-option>
+                <mat-select
+                  placeholder="Session"
+                  autocomplete="off"
+                  panelClass="custom-select-panel"
+                  [disableOptionCentering]="true"
+                  (selectionChange)="sessionFun2($event)"
+                  formControlName="to_session"
+                >
+                  <mat-option
+                    *ngFor="let session of sessions"
+                    [value]="session.value"
+                    >{{ session.label }}</mat-option
+                  >
                 </mat-select>
               </mat-form-field>
             </div>
-            <div class="col-6 col-sm-6 col-md-3 col-lg-3 px-0 align-self-center">
+            <div
+              class="col-6 col-sm-6 col-md-3 col-lg-3 px-0 align-self-center"
+            >
               <div class="balance-info-content">
                 <mat-label>Applying For</mat-label>
-                <div class="text-clr">{{0 || 0}} days</div>
+                <div class="text-clr">{{ totalDays }} days</div>
               </div>
             </div>
           </div>
@@ -90,46 +159,89 @@
           </div>
           <div class="row mx-0 my-0 p-0">
             <div class="col-12 col-sm-12 col-md-6 col-lg-3 px-0">
-              <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+              <mat-form-field
+                appearance="outline"
+                class="w-100 custom-mat-form-field"
+              >
                 <mat-label>Applying To<b class="r-star">*</b></mat-label>
-                <mat-select placeholder="Applying To" autocomplete="off" panelClass="custom-select-panel"
-                  [disableOptionCentering]="true">
-                  <mat-option *ngFor="let manager of reportinManagerDetails"
-                    [value]="manager.reporting_manager_id">{{manager?.reporting_manager_id__first_name +
-                    manager?.reporting_manager_id__last_name}}</mat-option>
+                <mat-select
+                  placeholder="Applying To"
+                  autocomplete="off"
+                  panelClass="custom-select-panel"
+                  [disableOptionCentering]="true"
+                  formControlName="reporting_to"
+                >
+                  <mat-option
+                    *ngFor="let manager of reportinManagerDetails"
+                    [value]="manager.id"
+                    >{{ manager?.full_name }}</mat-option
+                  >
                 </mat-select>
               </mat-form-field>
             </div>
           </div>
           <div class="row mx-0 my-0 p-0">
             <div class="col-12 col-sm-12 col-md-6 col-lg-6 px-0">
-              <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
-                <mat-label>CC</mat-label>
-                <mat-chip-list #chipList aria-label="CC email list">
-                  <mat-chip *ngFor="let email of ccEmailsList" [selectable]="true" [removable]="true"
-                    (removed)="removeEmail(email)">
+              <mat-form-field class="w-100" appearance="outline">
+                <mat-chip-list #chipList>
+                  <mat-chip
+                    *ngFor="let email of selectedEmails"
+                    [selectable]="true"
+                    [removable]="true"
+                    (removed)="remove(email)"
+                  >
                     {{ email }}
                     <mat-icon matChipRemove>cancel</mat-icon>
                   </mat-chip>
-                  <input placeholder="Add email" [matChipInputFor]="chipList"
-                    [matChipInputSeparatorKeyCodes]="separatorKeysCodes" [matChipInputAddOnBlur]="true"
-                    (matChipInputTokenEnd)="addEmail($event)" [formControl]="emailCtrl" [matAutocomplete]="auto">
+                  <input
+                    placeholder="CC"
+                    #emailInput
+                    [formControl]="emailCtrl"
+                    [matAutocomplete]="auto"
+                    [matChipInputFor]="chipList"
+                    [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                    [matChipInputAddOnBlur]="false"
+                    (matChipInputTokenEnd)="add($event)"
+                  />
                 </mat-chip-list>
-                <mat-autocomplete #auto="matAutocomplete" (optionSelected)="selectEmail($event)">
-                  <mat-option *ngFor="let suggestion of filteredEmails" [value]="suggestion?.user__email">
-                    {{ suggestion?.user__email }}
+
+                <mat-autocomplete
+                  #auto="matAutocomplete"
+                  (optionSelected)="selected($event)"
+                >
+                  <mat-option
+                    *ngFor="let email of filteredEmails | async"
+                    [value]="email"
+                  >
+                    {{ email }}
                   </mat-option>
                 </mat-autocomplete>
               </mat-form-field>
-
             </div>
           </div>
           <div class="row mx-0 my-0 p-0">
             <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0">
-              <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+              <mat-form-field
+                appearance="outline"
+                class="w-100 custom-mat-form-field"
+              >
                 <mat-label>Reason:<b class="r-star">*</b></mat-label>
-                <textarea matInput placeholder="Enter reason" autocomplete="off"
-                  style="height: 50px !important;"></textarea>
+                <textarea
+                  matInput
+                  placeholder="Enter reason"
+                  autocomplete="off"
+                  style="height: 50px !important"
+                  formControlName="message"
+                  maxlength="200"
+                  rows="3"
+                ></textarea>
+
+                <mat-hint align="end" class="mt-2">
+                  {{ leaveApplyForm.get("message")?.value?.length || 0 }}/200 ({{
+                    200 - (leaveApplyForm.get("message")?.value?.length || 0)
+                  }}
+                  left)
+                </mat-hint>
               </mat-form-field>
             </div>
           </div>
@@ -140,14 +252,35 @@
           </div>
           <div class="row mx-0 my-0 p-0">
             <div class="col-12 col-sm-12 col-md-4 col-lg-4 px-0">
-              <input type="file" accept="image/*" #fileInput hidden (change)="uploadImageFile($event)">
-              <div class="image-container w-100 d-flex justify-content-between align-items-center"
-                style="padding: 3px 15px;">
-                <img id="imagePreview" *ngIf="fileDataUrl" [src]="fileDataUrl ? fileDataUrl : ''" alt="profile">
+              <input
+                type="file"
+                accept="image/*"
+                #fileInput
+                hidden
+                (change)="onFileChange($event)"
+              />
+              <div
+                class="image-container w-100 d-flex justify-content-between align-items-center"
+                style="padding: 3px 15px"
+              >
+                <img
+                  id="imagePreview"
+                  *ngIf="fileDataUrl"
+                  [src]="fileDataUrl ? fileDataUrl : ''"
+                  alt="profile"
+                />
+                <span *ngIf="fileName" class="ms-2">{{ fileName }}</span>
                 <mat-label *ngIf="!fileDataUrl">File Attachment</mat-label>
-                <button type="button" mat-icon-button>
-                  <mat-icon matTooltip="{{fileDataUrl ? 'Edit' : 'Upload'}}" class="edit-or-upload-icon">{{fileDataUrl ?
-                    'edit' : 'attach_file'}} </mat-icon>
+                <button
+                  type="button"
+                  (click)="openFileDialog()"
+                  mat-icon-button
+                >
+                  <mat-icon
+                    matTooltip="{{ fileDataUrl ? 'Edit' : 'Upload' }}"
+                    class="edit-or-upload-icon"
+                    >{{ fileDataUrl ? "edit" : "attach_file" }}
+                  </mat-icon>
                 </button>
               </div>
             </div>
@@ -156,9 +289,21 @@
       </div>
       <div class="row mx-0 my-2 p-0">
         <div class="action-btn d-flex gap-1 my-1 px-0">
-          <button mat-raised-button class="cancel-button mat-btn-s" type="button">
-            Cancel</button>
-          <button mat-raised-button class="proceedbtn mat-btn-s" type="submit">Save</button>
+          <button
+            mat-raised-button
+            class="cancel-button mat-btn-s"
+            type="button"
+          >
+            Cancel
+          </button>
+          <button
+            mat-raised-button
+            class="proceedbtn mat-btn-s"
+            (click)="onSubmit()"
+            type="submit"
+          >
+            Save
+          </button>
         </div>
       </div>
     </form>

@@ -1,22 +1,29 @@
-<div class="row mx-0 px-0 dashboard-tabs" *ngIf="userRole=='Admin'">
+<div class="row mx-0 px-0 dashboard-tabs">
     <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0">
         <mat-tab-group mat-stretch-tabs="false" mat-align-tabs="start" (selectedTabChange)="onTabChange($event)"
             [(selectedIndex)]="selectedIndex">
-                <mat-tab [disabled]="!clientTabVisible" label="Holidays">
+                <mat-tab [disabled]="!clientTabVisible" label="Holidays" *ngIf="userRole==='Admin'">
                     <app-holiday-list *ngIf="selectedIndex === 0 "></app-holiday-list>
                 </mat-tab>
-                <mat-tab [disabled]="!groupTabVisible" label="Customize Balance">
+                <mat-tab label="Dashboard" *ngIf="userRole!='Admin'">
+                    <app-user-dashboard></app-user-dashboard>
+                    <!-- <app-leave-request *ngIf="selectedIndex === 2 "></app-leave-request> -->
+                </mat-tab>
+                <mat-tab label="Leave Requests" *ngIf="userRole!='Accountant'">
+                    <app-leave-request></app-leave-request>
+                </mat-tab>
+                <mat-tab label="My Leaves" *ngIf="userRole!='Admin'">
+                    <app-my-leaves></app-my-leaves>
+                </mat-tab>
+                 <mat-tab  label="Compensatory Request" *ngIf="userRole==='Admin'">
+                    <app-compensatory-request *ngIf="selectedIndex === 4"></app-compensatory-request>
+                </mat-tab>
+                 <mat-tab [disabled]="!groupTabVisible" label="Customize Balance" *ngIf="userRole==='Admin'">
                     <app-customize-balance *ngIf="selectedIndex === 1"></app-customize-balance>
-                </mat-tab>
-                <mat-tab [disabled]="!endClientTabVisible" label="Leave Requests">
-                    <app-leave-request *ngIf="selectedIndex === 2 "></app-leave-request>
-                </mat-tab>
-                <mat-tab [disabled]="!jobsTabVisible" label="Compensatory Request">
-                    <app-compensatory-request *ngIf="selectedIndex === 3"></app-compensatory-request>
                 </mat-tab>
         </mat-tab-group>
     </div>
 </div>
-<div *ngIf="userRole!=='Admin'">
+<!-- <div *ngIf="userRole!=='Admin'">
     <app-user-dashboard></app-user-dashboard>
-</div>
+</div> -->

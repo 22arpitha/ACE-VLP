@@ -1,0 +1,32 @@
+<div class="container-wrapper settings-main-content px-0">
+  <section class="settings-table-bg">
+    <div class="row mx-0 my-2 px-0 table-wrapper">
+      <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0">
+        <table class="table table table-hover table-list">
+          <thead>
+            <tr>
+            <th scope="col">SL NO</th>
+              <th scope="col">LEAVE TYPE</th>
+              <th scope="col">LEAVE PERIOD</th>
+              <th scope="col">DAYS/HOURS TAKEN</th>
+              <th scope="col">DATE OF REQUEST</th>
+              <th scope="col">STATUS</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let i of my_leaves; let index = index">
+                <td>{{index + 1}}</td>
+              <td>{{i.leave_type_name}}</td>
+              <td>{{i.from_date}} - {{i.to_date}}</td>
+              <td>{{i.number_of_leaves_applying_for}}</td>
+              <td>{{i.created_datetime | date:'dd-MM-yyyy'}}</td>
+              <td *ngIf="i.status === 'Pending'"><span style="background: #ffface; color: #978419;" class="p-2 rounded">PENDING</span></td>
+              <td *ngIf="i.status === 'approved'"><span style="background: #dcfce7; color: #15803d;"  class="p-2 rounded">APPROVED</span></td>
+              <td *ngIf="i.status === 'rejected'"><span style="background:#fee2e2; color: #b91c1c;" class="p-2 rounded">REJECTED</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+</div>
