@@ -93,7 +93,7 @@ export class JobStatusReportComponent implements OnInit {
   getStatusList(){
   this.api.getData(`${environment.live_url}/${environment.settings_status_group}/`).subscribe((res: any) => {
     if(res){
-      console.log(res)
+      // console.log(res)
       this.statusName = res?.map((item: any) => ({
         id: item.id,
         // name: item.status_name // for job status 
@@ -549,7 +549,9 @@ public sendEamils(){
 // }
 
 getClientNameById(clientId: number): string {
-    const client = this.clientName.find(c => c.id === clientId);
+  // console.log(this.filterDataCache['client-ids'])
+    // const client = this.clientName.find(c => c.id === clientId);
+     const client = this.filterDataCache['client-ids'].data.find(c => c.id === clientId);
     return client ? client.name : 'NA';
   }
 
@@ -697,7 +699,7 @@ async getTableData(params?: { page?: number; pageSize?: number; searchTerm?: str
 
 getFilterOptions(event: { detail: any; key: string }) {
   const { detail, key } = event;
-  console.log(this.selectedClientIds,'id')
+  // console.log(this.selectedClientIds,'id')
   let cache = this.filterDataCache[key];
   const searchTerm = detail.search || '';
 
