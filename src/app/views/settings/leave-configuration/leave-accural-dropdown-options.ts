@@ -32,9 +32,9 @@ export const ACCURAL_MONTH_OPTIONS:any=[
   { label: 'October', value: 10 },
   { label: 'November', value: 11 },
   { label: 'December', value: 12 },
-  { label: 'Last Month', value: 'last_month' },
-  { label: 'Policy Month', value: 'policy_month' },
-  { label: 'Joining Month', value: 'joining_month' }
+  // { label: 'Last Month', value: 'last_month' },
+  // { label: 'Policy Month', value: 'policy_month' },
+  // { label: 'Joining Month', value: 'joining_month' }
 ];
 
 

@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { FormBuilder, FormGroup, FormGroupDirective, Validators } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ApiserviceService } from '../../../service/apiservice.service';
 import { CommonServiceService } from '../../../service/common-service.service';
@@ -10,12 +10,14 @@ import { CARRYFORWARD_FROM_OPTIONS } from './leave-accural-dropdown-options';
 import { ActivatedRoute, Router } from '@angular/router';
 import { environment } from '../../../../environments/environment';
 import { Observable } from 'rxjs';
+import { Editor } from 'ngx-editor';
 @Component({
   selector: 'app-leave-configuration',
   templateUrl: './leave-configuration.component.html',
   styleUrls: ['./leave-configuration.component.scss']
 })
 export class LeaveConfigurationComponent implements OnInit {
+  @ViewChild(FormGroupDirective) formGroupDirective!: FormGroupDirective;
   BreadCrumbsTitle: any = 'Leave Configuration';
   accessPermissions = []
   user_id: any;
@@ -30,17 +32,18 @@ export class LeaveConfigurationComponent implements OnInit {
   periodList = PERIOD_OPTIONS;
   effectiveFromList = EFFECTIVE_FROM_OPTIONS;
   carryForwardList = CARRYFORWARD_FROM_OPTIONS;
+  editor!: Editor;
   constructor(private fb: FormBuilder, private modalService: NgbModal, private accessControlService: SubModuleService,
     private common_service: CommonServiceService, private apiService: ApiserviceService, private router: Router,
     private formUtilityService: FormErrorScrollUtilityService , private activeRouter: ActivatedRoute) {
       this.common_service.setTitle(this.BreadCrumbsTitle);
       this.item_id = this.activeRouter.snapshot.paramMap.get('id')
-      if(this.item_id){
-        this.getLeaveTypeDetails();
-        this.editLeaveType = false;
-      } else{
-        this.editLeaveType = true;
-      }
+      // if(this.item_id){
+      //   this.getLeaveTypeDetails();
+      //   this.editLeaveType = false;
+      // } else{
+      //   this.editLeaveType = true;
+      // }
   }
 
   ngOnInit(): void {
@@ -48,6 +51,12 @@ export class LeaveConfigurationComponent implements OnInit {
     this.userRole = sessionStorage.getItem('user_role_name');
     this.getModuleAccess();
     this.initializeForm();
+     if(this.item_id){
+        this.getLeaveTypeDetails();
+        this.editLeaveType = true; // it is because as of now edit button is not need in the edit page
+      } else{
+        this.editLeaveType = true;
+      }
     this.leaveTypeForm?.valueChanges?.subscribe(() => {
       const currentFormValue = this.leaveTypeForm?.getRawValue();
       const isInvalid = this.leaveTypeForm?.touched && this.leaveTypeForm?.invalid;
@@ -57,6 +66,11 @@ export class LeaveConfigurationComponent implements OnInit {
     });
   }
 
+  // ngOnDestroy(): void {
+  //   // Destroy the editor to prevent memory leaks
+  //   this.editor.destroy();
+  //   this.formUtilityService.resetHasUnsavedValue();
+  // }
   getLeaveTypeDetails(){
     this.apiService.getData(`${environment.live_url}/${environment.settings_leave_type}/${this.item_id}/`).subscribe(
       (res:any)=>{
@@ -79,7 +93,7 @@ export class LeaveConfigurationComponent implements OnInit {
           reset_day: res.reset_day,
           reset_month: res.reset_month,
           is_carry_forward: res.is_carry_forward,
-          carry_forward_cycle: res.carry_forward_cycle,
+          carry_forward_cycle: 'carry_forward',
           carry_forward_days: res.carry_forward_days,
           encash_leaves_above_limit: res.encash_leaves_above_limit,
         })
@@ -91,9 +105,6 @@ export class LeaveConfigurationComponent implements OnInit {
       this.editLeaveType = true;
     }
     // this.router.navigate(['/jobs/update-kpi/', this.job_id]);
-  }
-  ngOnDestroy(): void {
-    this.formUtilityService.resetHasUnsavedValue();
   }
   getModuleAccess() {
     this.accessControlService.getAccessForActiveUrl(this.user_id).subscribe((access) => {
@@ -128,7 +139,7 @@ export class LeaveConfigurationComponent implements OnInit {
       reset_day: ['', Validators.required],
       reset_month: ['', Validators.required],
       is_carry_forward: [false],
-      carry_forward_cycle: [''],
+      carry_forward_cycle: ['carry_forward'],
       carry_forward_days: [0],
       encash_leaves_above_limit: [false],
       encash_leaves_with_expiry: [false]
@@ -146,8 +157,8 @@ export class LeaveConfigurationComponent implements OnInit {
       if (enable) {
         control?.setValidators(Validators.required);
       } else {
-        control?.clearValidators();
-        control?.reset();
+          control?.clearValidators();
+          control?.reset();
       }
       control?.updateValueAndValidity();
     });
@@ -178,7 +189,6 @@ export class LeaveConfigurationComponent implements OnInit {
   //   }
   // }
   accrualAndResetLeaveCycle(event: any,text:string) {
-  console.log(event);
   let control_name:any;
   const isYearly = event.value === 'yearly';
   if(text==='accrual'){
@@ -205,7 +215,6 @@ export class LeaveConfigurationComponent implements OnInit {
     if (!event.checked) {
       controls.push('carry_forward_cycle', 'carry_forward_days');
     }
-    console.log(controls)
     this.simpleToggleRequired(event.checked, controls);
     // this.simpleToggleRequired(event.checked, [
     //   'reset_cycle',
@@ -231,26 +240,23 @@ export class LeaveConfigurationComponent implements OnInit {
   }
   addOrUpdate() {
 
-    if (this.leaveTypeForm.value.encash_leaves_above_limit == true){
+    if (this.leaveTypeForm.value.encash_leaves_above_limit === true){
         this.leaveTypeForm.value.encash_leaves_with_expiry = false
     }
-    if (this.leaveTypeForm.value.encash_leaves_with_expiry == true){
-        this.leaveTypeForm.value.encash_leaves_above_limit = false
-    }else{
-      this.leaveTypeForm.value.encash_leaves_above_limit = false
-      this.leaveTypeForm.value.encash_leaves_with_expiry = false
+    else if (this.leaveTypeForm.value.encash_leaves_above_limit === false){
+        this.leaveTypeForm.value.encash_leaves_with_expiry = true
     }
 
 
     if (this.leaveTypeForm.invalid) {
       this.leaveTypeForm.markAllAsTouched();
-      console.log('error', this.leaveTypeForm.value)
+      console.log('error', this.leaveTypeForm.controls)
     } else {
-      console.log('succes', this.leaveTypeForm.value)
       if(this.item_id){
         this.apiService.updateData(`${environment.live_url}/${environment.settings_leave_type}/${this.item_id}/`,this.leaveTypeForm.value).subscribe(
           (res:any)=>{
             this.apiService.showSuccess(res?.message);
+            this.resetFormState();
             this.router.navigate(['/settings/leave-type'])
           },
           (error:any)=>{
@@ -261,6 +267,7 @@ export class LeaveConfigurationComponent implements OnInit {
         this.apiService.postData(`${environment.live_url}/${environment.settings_leave_type}/`,this.leaveTypeForm.value).subscribe(
           (res:any)=>{
             this.apiService.showSuccess(res?.message);
+            this.resetFormState();
             this.router.navigate(['/settings/leave-type'])
           },
           (error:any)=>{
@@ -269,6 +276,13 @@ export class LeaveConfigurationComponent implements OnInit {
         )
       }
     }
+  }
+
+  public resetFormState() {
+    this.formGroupDirective?.resetForm();
+    this.formUtilityService.resetHasUnsavedValue();
+    // this.isEditItem = false;
+    this.initialFormValue = this.leaveTypeForm?.getRawValue();
   }
 
   backToLeaveTypes() {

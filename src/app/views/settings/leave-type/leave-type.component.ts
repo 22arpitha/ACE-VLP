@@ -10,6 +10,7 @@ import { GenericDeleteComponent } from '../../../generic-components/generic-dele
 import { GenericEditComponent } from '../../../generic-components/generic-edit/generic-edit.component';
 import { environment } from '../../../../environments/environment';
 import { CanComponentDeactivate } from '../../../auth-guard/can-deactivate.guard';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-leave-type',
@@ -43,7 +44,7 @@ export class LeaveTypeComponent implements CanComponentDeactivate, OnInit,OnDest
   initialFormValue:any;
   constructor(private fb: FormBuilder, private modalService: NgbModal,private accessControlService:SubModuleService,
     private common_service: CommonServiceService, private apiService: ApiserviceService,
-    private formUtilityService:FormErrorScrollUtilityService) {
+    private formUtilityService:FormErrorScrollUtilityService, private router: Router) {
     this.common_service.setTitle(this.BreadCrumbsTitle)
   }
 
@@ -231,6 +232,7 @@ this.formUtilityService.resetHasUnsavedValue();
     }
   }
   public getSelectedleaveType(id: any) {
+    this.router.navigate([`/settings/leave-config/${id}`])
     this.apiService.getData(`${environment.live_url}/${environment.settings_leave_type}/${id}/`).subscribe((respData: any) => {
       this.leaveTypeForm.patchValue({ 'leave_type_name': respData?.leave_type_name });
     }, (error: any) => {
