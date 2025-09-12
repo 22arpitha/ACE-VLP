@@ -17,7 +17,7 @@ import { DatePipe } from '@angular/common';
 
 })
 export class TimesheetSummaryReportComponent implements OnInit {
-  BreadCrumbsTitle: string = 'Timesheet Summary Report';
+  BreadCrumbsTitle: string = 'Weekly Timesheet Summary Report';
   term: string = '';
   tableSize: number = 50;
   page: number = 1;
