@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output } from '@angular/core';
 import { MAT_DATE_RANGE_SELECTION_STRATEGY } from '@angular/material/datepicker';
 import { WeeklySelectionStrategy } from '../weekly-selection-strategy';
 
@@ -13,7 +13,7 @@ import { WeeklySelectionStrategy } from '../weekly-selection-strategy';
     }
   ]
 })
-export class WeekDatepickerComponent implements OnInit {
+export class WeekDatepickerComponent implements OnInit,OnChanges {
   @Output() weekSelected = new EventEmitter<any>();
   @Input()resetWeek: boolean = false;
   startDate: Date | null = null;

@@ -55,6 +55,11 @@
         </mat-menu>
       </div>
       </div>
+      <!-- reset button -->
+      <!-- <div class="col-auto col-sm-auto col-md-auto col-lg-auto px-0 mx-0 my-1" *ngIf="config.reset">
+          <button mat-raised-button class="cancel-button mat-btn-s" type="button" (click)="reset()">
+          Reset</button>
+      </div> -->
       <div class="col-auto mt-2 col-sm-auto col-md-auto col-lg-auto text-end" *ngIf="config?.sendWorkCulture && userRole!='Accountant'">
         <button mat-raised-button class="mat-btn-s proceedbtn" type="button"  (click)="isEditBtn ? submitWorkCultureDetails() : enableFormFields()"><span *ngIf="!isEditBtn">Edit</span><span *ngIf="isEditBtn">Submit</span></button>
       </div>
@@ -353,7 +358,8 @@
           <td class="bg-transparent"><b>Estimated (hrs) : {{ config?.tableFooterContent?.total_estimated_time !== null && config?.tableFooterContent?.total_estimated_time !== undefined && config?.tableFooterContent?.total_estimated_time !== '' ? config?.tableFooterContent?.total_estimated_time : 'NA' }}</b></td>
           <td class="bg-transparent"><b>Actual Time (hrs) : {{ config?.tableFooterContent?.total_actual_time !== null && config?.tableFooterContent?.total_actual_time !== undefined && config?.tableFooterContent?.total_actual_time !== '' ? config?.tableFooterContent?.total_actual_time : 'NA' }}</b></td>
           <td class="bg-transparent"><b>Average Productivity (hrs): {{ config?.tableFooterContent?.avg_quantitative_productivity !== null && config?.tableFooterContent?.avg_quantitative_productivity !== undefined && config?.tableFooterContent?.avg_quantitative_productivity !== '' ? config?.tableFooterContent?.avg_quantitative_productivity : 'NA' }}</b></td>
-      </tr>
+          <td class="bg-transparent"><b>Actual TAT Days: {{ config?.tableFooterContent?.avg_tat !== null && config?.tableFooterContent?.avg_tat !== undefined && config?.tableFooterContent?.avg_tat !== '' ? config?.tableFooterContent?.avg_tat : 'NA' }}</b></td>
+        </tr>
       <tr *ngIf="config?.averageProductivity" class="bg-transparent" >
         <td colspan="9" class="bg-transparent"></td>
         <td  class="bg-transparent"><b>Average Productivity: {{ config?.tableFooterContent?.avg_qualitative_productivity !== null && config?.tableFooterContent?.avg_qualitative_productivity !== undefined && config?.tableFooterContent?.avg_qualitative_productivity !== '' ? config?.tableFooterContent?.avg_qualitative_productivity : 'NA' }}</b></td>

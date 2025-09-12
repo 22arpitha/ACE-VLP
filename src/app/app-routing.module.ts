@@ -105,11 +105,11 @@ const routes: Routes = [
             (m) => m.ProjectStatusModule
           ),
       },
-      {
-        path: 'review',
-        loadChildren: () =>
-          import('./views/review/review.module').then((m) => m.ReviewModule),
-      },
+      // {
+      //   path: 'review',
+      //   loadChildren: () =>
+      //     import('./views/review/review.module').then((m) => m.ReviewModule),
+      // },
       {
         path: 'approvalTimesheet',
         loadChildren: () =>
@@ -117,13 +117,13 @@ const routes: Routes = [
             (m) => m.ApprovalTimesheetModule
           ),
       },
-      {
-        path: 'myTimesheet',
-        loadChildren: () =>
-          import('./views/my-timesheet/my-timesheet.module').then(
-            (m) => m.MyTimesheetModule
-          ),
-      },
+      // {
+      //   path: 'myTimesheet',
+      //   loadChildren: () =>
+      //     import('./views/my-timesheet/my-timesheet.module').then(
+      //       (m) => m.MyTimesheetModule
+      //     ),
+      // },
       {
         path: 'profile',
         loadChildren: () =>

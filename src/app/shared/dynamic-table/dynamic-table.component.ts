@@ -215,6 +215,7 @@ onFilterChange(selectedValue: any, columnConfig: any, fromCheckbox: boolean = fa
     }
 
   weekDatePicker(event: any) {
+    console.log(event)
     this.selectedDate = event;
     this.actionEvent.emit({ actionType: 'weekDate', detail: this.selectedDate });
     this.resetWeekDate = true;
@@ -256,6 +257,14 @@ onFilterChange(selectedValue: any, columnConfig: any, fromCheckbox: boolean = fa
     this.actionEvent.emit({ actionType:'export_csv' , detail:'csv' });
   }
 
+  reset(){
+    this.config.searchTerm = '';
+    this.currentPage = 1;
+    this.dateRangeStartDate = '';
+    this.selectedDate = ''
+    this.resetWeekDate = true;
+    this.actionEvent.emit({ actionType:'reset' , detail:'' });
+  }
   downloadPDF(): void {
     this.actionEvent.emit({ actionType:'export_pdf' , detail:'pdf' });
   }
