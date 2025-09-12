@@ -10,6 +10,7 @@ import { environment } from '../../../environments/environment';
 import { WebsocketService } from '../../service/websocket.service';
 import { EmployeeStatusWebsocketService } from '../../service/employee-status-websocket.service';
 import { UserAccessWebsocketService } from '../../service/user-access-websocket.service';
+import { BreakpointObserver } from '@angular/cdk/layout';
 
 interface NavItem {
   name: string;
@@ -158,7 +159,8 @@ export class DefaultLayoutComponent {
   mySubscription: boolean = false;
   orgId: any;
   subscriptionData = [];
-
+  isSidebarCollapsed:boolean=true;
+  isDesktop = true;
   constructor(
     private ngxService: NgxUiLoaderService,
     private api: ApiserviceService,
@@ -167,7 +169,8 @@ export class DefaultLayoutComponent {
     private router: Router,
     private webSocket: WebsocketService,
     private employeeSocket: EmployeeStatusWebsocketService,
-    private useraccessSocket: UserAccessWebsocketService
+    private useraccessSocket: UserAccessWebsocketService,
+    private breakpointObserver: BreakpointObserver
   ) {
     // this.common_service.profilePhoto$.subscribe(
     //   (data:any)=>{
@@ -208,6 +211,19 @@ export class DefaultLayoutComponent {
         this.getMySubscription();
       }
     });
+
+    this.breakpointObserver
+      .observe([`(max-width: 1023px)`])
+      .subscribe(result => {
+         this.isDesktop = !result.matches; 
+        if (result.matches) {
+          // Screen <= 1023px → always expanded
+          this.isSidebarCollapsed = false;
+        } else {
+          // Screen >= 1024px → default collapsed
+          this.isSidebarCollapsed = true;
+        }
+      });
   }
 
   getMySubscription() {
@@ -262,13 +278,14 @@ export class DefaultLayoutComponent {
   toggleSubmenu(item: any) {
     this.subModulesAccess = item.access;
     // this.api.setSubModules(this.subModulesAccess)
-    // console.log('subModulesAccess',this.subModulesAccess)
     this.sidebarNavItems.forEach((navItem) => {
       if (navItem !== item) {
         navItem.isExpanded = false;
+        this.isSidebarCollapsed = true;
       }
     });
     item.isExpanded = !item.isExpanded;
+    this.isSidebarCollapsed = false;
   }
 
   setInitialExpandedState() {
@@ -377,5 +394,9 @@ export class DefaultLayoutComponent {
       //console.log('headNavdata', headNavdata);
       this.router.navigate([`${headNavdata.link}`]);
     }
+  }
+
+  toggleSidebar(){
+    this.isSidebarCollapsed = !this.isSidebarCollapsed;
   }
 }

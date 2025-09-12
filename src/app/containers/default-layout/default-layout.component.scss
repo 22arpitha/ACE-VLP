@@ -69,15 +69,65 @@
       margin-bottom: 0;
     }
    .sidebar-toggle-fab {
-    position: absolute;
+   position: absolute;
     top: 13px;
-    right: 7px;
+    right: 0px;
     z-index: 2000;
-    background: #126EB4 !important;
-    color: #fff !important;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    color: #126EB4 !important;
+    box-shadow: none;
     transition: background 0.2s;
+    outline: none !important;
+    border: none !important;
+    background: transparent;
   &:hover {
-    background: #0f5c98 !important;
+    background: transparent !important;
   }
+}
+
+.user-info-content{
+  display: none;
+}
+
+.collapsed-sidebar {
+  .sidebar-label {
+    display: none !important;
+  }
+
+  .expand-icon {
+    display: none !important;
+  }
+
+  .mat-list-item i{
+    font-size: 18px;
+  }
+  .sidebar-toggle-fab{
+    left: 70%;
+    top: 15%;
+  }
+  @media (max-width: 1023px) {
+  .sidebar-toggle-fab {
+    display: none !important;
+  }
+}
+  .sidebar-logo-sidebar{
+    left: 0;
+    position: relative;
+    padding: 0;
+  }
+  .profile-settings-card 
+  {
+    padding: 0 !important;
+    margin: 0 !important;
+  & p {
+    display: none;
+  } 
+  }
+  .user-info-content{
+    display: block;
+ & 
+  p{
+    display: inline-block !important;
+  }
+  }
+
 }
