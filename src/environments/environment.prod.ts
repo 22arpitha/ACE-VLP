@@ -49,6 +49,8 @@ user_access:`user-access`,
 templates:`templates`,
 // vlp Employee
 employee:`user`,
+director_data:`employees`,
+change_manager:`change-manager`,
 // vlp company policy
 company_policy:`company-policy`,
 // vlp clients
@@ -61,6 +63,7 @@ end_clients:'end-clients',
 end_client_jobs:`end-client-jobs`,
 // jobs
 jobs:`jobs`,
+only_jobs:`only-jobs`,
 jobs_kpi:'kpi',
 jobs_search:`jobs-search`,
 // timesheet
@@ -76,6 +79,7 @@ download_excel :'download-excel',
 //  leave related API end points
 work_calendar:`work_calender`,
 holiday_calendar:`holiday_calendar`,
+employees_leave:`employee_leaves`,
 
 
 

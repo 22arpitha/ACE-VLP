@@ -27,7 +27,8 @@ export class UserDashboardComponent implements OnInit {
   }
 
   getAlEmployeesUnderManager(){
-    this.apiService.getAlEmployeesUnderManager(this.user_id).subscribe(
+    let query = `?page=1&page_size=10&is_active=True&employee=True&reporting_manager_id=${this.user_id}`
+    this.apiService.getData(`${environment.live_url}/${environment.employee}/${query}`).subscribe(
       (res:any)=>{
         this.all_employees_under_manager = res.results
       },
@@ -55,7 +56,7 @@ export class UserDashboardComponent implements OnInit {
   }
 
   getEmployeeLeaves() {
-    this.apiService.getEmployeeLeaves(this.user_id).subscribe(
+    this.apiService.getData(`${environment.live_url}/${environment.employees_leave}/?employee=${this.user_id}`).subscribe(
       (res: any) => {
         this.all_leaves = res.results
       },
@@ -68,7 +69,7 @@ export class UserDashboardComponent implements OnInit {
   upcoming_holidays: any;
 
   getUpcomingHoliday() {
-    this.apiService.getUpcomingHolidays().subscribe(
+    this.apiService.getData(`${environment.live_url}/${environment.holiday_calendar}/?is-upcoming=True`).subscribe(
       (res: any) => {
         this.upcoming_holidays = res
       }
