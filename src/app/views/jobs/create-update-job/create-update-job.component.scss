@@ -118,3 +118,7 @@
    background-color: #cccccc !important;
     color: #666666;
 }
+.no-access {
+  pointer-events: none;
+  opacity: 0.6;
+}

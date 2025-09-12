@@ -34,6 +34,7 @@ export class AllJobsComponent implements OnInit {
   term: any = '';
   isCurrent: boolean = true;
   isHistory: boolean = false;
+  isUnassigned:boolean = false
   sortValue: string = '';
   directionValue: string = '';
   selectedItemId: any;
@@ -137,7 +138,6 @@ private searchSubject = new Subject<string>();
   }
 
   ngOnInit() {
-    console.log(this.isCurrent)
     this.initialForm();
     //  setTimeout(() => {
     //   this.getCurrentJobs();
@@ -303,15 +303,18 @@ private searchSubject = new Subject<string>();
     if(this.filters.status_group_name.length){
       this.filterQuery += `&status-group-ids=[${this.filters.status_group_name}]`;
     }
-    if (this.isCurrent && this.filters.status_name.length == 0) {
+    if(this.isUnassigned){
+      this.filterQuery += `&unassigned=True`
+    }
+    if (this.isCurrent && !this.isUnassigned && this.filters.status_name.length == 0) {
       this.jobStatusList('True');
       this.filterQuery += `&job-status=[${this.statusList}]`;
     }
-    else if (!this.isCurrent && this.filters.status_name.length == 0) {
+    else if (!this.isCurrent && !this.isUnassigned && this.filters.status_name.length == 0) {
       this.jobStatusList('False');
       this.filterQuery += `&job-status=[${this.statusList}]`;
     } else {
-      this.filterQuery += `&job-status=[${this.filters.status_name.join(',')}]`;
+      // this.filterQuery += `&job-status=[${this.filters.status_name.join(',')}]`;
     }
     this.apiService.getData(`${environment.live_url}/${environment.only_jobs}/${this.filterQuery}`).subscribe((res: any) => {
       this.allJobsList = res?.results;
@@ -436,6 +439,7 @@ private searchSubject = new Subject<string>();
     this.filteredList = [];
     this.isHistory = false;
     this.isCurrent = true;
+    this.isUnassigned = false;
     this.jobStatusList('True');
     // const joinedStatusList = this.statusList.join(','); // no encoding!
     // let query = `${this.getFilterBaseUrl()}&job-status=${joinedStatusList}`;
@@ -459,6 +463,7 @@ private searchSubject = new Subject<string>();
     this.filteredList = [];
     this.isCurrent = false;
     this.isHistory = true;
+    this.isUnassigned = false;
     this.jobStatusList('False');
     // console.log('history',this.statusList)
     // this.allStatuGroupNames
@@ -474,6 +479,23 @@ private searchSubject = new Subject<string>();
       }
     )
   }
+   getUnassignedJobsList() {
+    this.allJobsList = [];
+    this.filteredList = [];
+    this.isHistory = false;
+    this.isCurrent = false;
+    this.isUnassigned = true;
+      let query: any = `${this.getFilterBaseUrl()}&unassigned=True`;
+      this.apiService.getData(`${environment.live_url}/${environment.only_jobs}/${query}`).subscribe((res: any) => {
+        this.allJobsList = res?.results;
+        this.filteredList = res?.results;
+        const noOfPages: number = res?.['total_pages']
+        this.count = noOfPages * this.tableSize;
+        this.count = res?.['total_no_of_record'];
+        this.page = res?.['current_page'];
+      });
+    
+  }
   getCurrentJobs() {
     this.page = 1;
     this.tableSize = 50;
@@ -485,6 +507,13 @@ private searchSubject = new Subject<string>();
     this.tableSize = 50;
     this.getJobsHistoryList();
     this.resetFilters();
+  }
+
+  getUnassignedJobs(){
+     this.page = 1;
+    this.tableSize = 50;
+    this.getUnassignedJobsList();
+    // this.resetFilters();
   }
 
   onTableSizeChange(event: any): void {
@@ -761,7 +790,6 @@ private searchSubject = new Subject<string>();
       status: 'True',
       ...(this.userRole !== 'Admin' && { 'employee-id': this.user_id })
     }
-    console.log(search, extraParams, 'client funcion')
     return this.dropdownService.fetchDropdownData$(
       environment.clients,
       page,
@@ -817,37 +845,7 @@ private searchSubject = new Subject<string>();
     );
   };
 
-  // fetchStatusGroup = (page: number, search: string) => {
-
-  //   return this.dropdownService.fetchDropdownData$(
-  //     environment.settings_status_group,
-  //     page,
-  //     search,
-  //     (item) => ({ id: item?.group_name, name: item?.group_name })
-  //   ).pipe(
-  //     map((res: any) => {
-  //       console.log('Raw API response:', res);
-
-  //       const filteredResults = res.results.filter((group: any) =>
-  //         this.isCurrent
-  //           ? group?.group_name !== "Cancelled" && group?.group_name !== "Completed"
-  //           : group?.group_name === "Cancelled" || group?.group_name === "Completed"
-  //       ).map((status: any) => ({
-  //         id: status?.group_name,               // keep numeric ID
-  //         name: status?.group_name      // dropdown display
-  //       }));
-
-  //       console.log('Filtered results:', filteredResults);
-
-  //       return {
-  //         ...res,
-  //         results: filteredResults
-  //       };
-  //     })
-  //   );
-  // };
-
-  fetchStatusGroup = (page: number, search: string) => {
+    fetchStatusGroup = (page: number, search: string) => {
   return this.dropdownService.fetchDropdownData$(
     environment.settings_status_group,
     page,

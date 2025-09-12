@@ -122,7 +122,55 @@
     </mat-form-field>
  
 </div> 
-<!-- periodicity -->
+
+  <div class="col-12 col-sm-12 col-md-6 col-lg-3 my-1 no-padding pl-0 pr-5" *ngIf="serviceName==='other services'">
+    <mat-form-field appearance="outline" [ngClass]="{ 'highlight-background': !shouldDisableFields}" class="w-100 custom-mat-form-field">
+        <mat-label>Customer Service <b class="r-star">*</b></mat-label>
+        <textarea matInput placeholder="Enter Customer Service" formControlName="customer_service" autocomplete="off" maxlength="25"></textarea>
+        <mat-error *ngIf="f['customer_service']?.invalid && f['customer_service']?.touched || f['customer_service']?.dirty">
+            <span  *ngIf="f['customer_service']?.errors?.['required']">Customer Service is required
+            </span>
+            <span 
+            *ngIf="f['customer_service']?.errors?.['maxlength']">
+            Customer Service cannot exceed more than 25 characters.
+        </span>
+        <span 
+            *ngIf="f['customer_service']?.errors?.['pattern']">
+            Extra space charaters are not allowed.
+        </span>
+        </mat-error>
+    </mat-form-field>
+    
+    </div>
+
+<!-- Amendment -->
+  <div class="col-12 col-sm-12 col-md-6 col-lg-3 my-1 mb-3 no-padding pl-0 pr-5 align-self-center">
+    <div class="row mx-0 gx-0">
+      <div class="col-6 align-self-center">
+        <mat-checkbox color="primary" [disabled]="!shouldDisableFields" class="example-margin" formControlName="is_amendment" (change)="onSelectionAmendment($event)"><h5 class="c-header">Amendment</h5></mat-checkbox>
+      </div>
+      <div class="col-6" *ngIf="jobFormGroup.get('is_amendment')?.value">
+          <mat-form-field appearance="outline"  [ngClass]="{ 'highlight-background': !shouldDisableFields}" class="w-100 amendment custom-mat-form-field">
+              <mat-label>Number<b class="r-star">*</b></mat-label>
+              <mat-select formControlName="amdment_number" autocomplete="off"
+                      placeholder="Number" panelClass="custom-select-panel"
+                      [disableOptionCentering]="true" (selectionChange)="onAmdmentChange($event)">
+                      
+                      <mat-option value="A1">A1</mat-option>
+                      <mat-option value="A2">A2</mat-option>
+                      <mat-option value="A3">A3</mat-option>
+                      <mat-option value="A4">A4</mat-option>
+                      <mat-option value="A5">A5</mat-option>
+              </mat-select>
+              <mat-error *ngIf="f['amdment_number']?.invalid && f['amdment_number']?.touched || f['amdment_number']?.dirty">
+                  <span  *ngIf="f['amdment_number']?.errors?.['required']">Amdment Number is required</span>
+            </mat-error>
+          </mat-form-field>
+        </div>
+    </div> 
+    </div>
+
+   <!-- periodicity -->
 <div class="col-12 col-sm-12 col-md-6 col-lg-3 my-1 no-padding pl-0 pr-5">
     <mat-form-field appearance="outline"  [ngClass]="{ 'highlight-background': !shouldDisableFields}" class="w-100 custom-mat-form-field">
         <mat-label>Periodicity <b class="r-star">*</b></mat-label>
@@ -327,7 +375,7 @@
  <div class="col-12 col-sm-12 col-md-6 col-lg-4 my-1 mb-3 no-padding pl-0 pr-5 align-self-center" *ngIf="user_role_name === 'Admin'">
         <mat-checkbox color="primary" [disabled]="!shouldDisableFields" class="example-margin" formControlName="only_admin_can_change_job_status" ><h5 class="c-header">Only Admin can change the Status</h5></mat-checkbox>
       </div>
-<div class="col-12 col-sm-12 col-md-6 col-lg-6 my-1  mb-3 no-padding pl-0 pr-5 align-self-center">
+<div class="col-12 col-sm-12 col-md-6 col-lg-5 my-1  mb-3 no-padding pl-0 pr-5 align-self-center">
     <mat-radio-group formControlName="option" >
         <mat-radio-button class="radio-button" *ngFor="let key of objectKeys(jobBillingOption)" [value]="key"
            [disabled]="!shouldDisableFields"
@@ -340,24 +388,30 @@
   </mat-error>
 
 </div>
+     
+
 </div>
-<section class="settings-table-bg" [ngStyle]="{'pointer-events': (user_role_name==='Accountant') ? 'none' : 'all'}">
+<!-- [ngStyle]="{'pointer-events': (user_role_name==='Accountant') ? 'none' : 'all'}" -->
+<section class="settings-table-bg" >
   <div class="row mx-0 no-padding my-1 px-0">
-      <div class="col-12 col-sm-12 col-md-6 col-lg-9 py-1 px-0">
+      <div class="col-12 col-sm-12 col-md-6 col-lg-8 py-1 px-0">
           <h4>Employee Details</h4>
       </div>
-      <div class="col-12 col-sm-12 col-md-6 col-lg-3 no-padding py-1 pl-0 pr-2 text-end" *ngIf="user_role_name === 'Admin'">
-        <mat-checkbox color="primary" class="example-margin" formControlName="all_employees" [disabled]="!shouldDisableFields" (change)="onSelectionAllEmployee($event)" ><h5 class="c-header">All Employees</h5></mat-checkbox>
+      <div class="col-sm-12 col-md-6 col-lg-4 no-padding py-1 pl-0 pr-2 d-flex justify-content-end" >
+         <mat-checkbox color="primary" class="example-margin pe-4" formControlName="unassigned" 
+          [disabled]="isUnassignedDisabled()" (change)="onUnassigned($event)" [matTooltip]="getUnassignedTooltip()"><h5 class="c-header">Unassigned Jobs</h5></mat-checkbox>
+        <mat-checkbox color="primary" *ngIf="user_role_name === 'Admin'" class="example-margin" formControlName="all_employees" [disabled]="!shouldDisableFields" (change)="onSelectionAllEmployee($event)" ><h5 class="c-header">All Employees</h5></mat-checkbox>
       </div>
       <div class="col-12 no-padding py-1 pl-0 pr-2 text-end" *ngIf="user_role_name === 'Admin' && jobFormGroup?.get('all_employees')?.value==true">
         <mat-checkbox color="primary" class="example-margin" [disabled]="!shouldDisableFields" formControlName="add_employees" ><h5 class="c-header">Add all new employees by default</h5></mat-checkbox>
       </div>
-      <div class="col-12 col-sm-12 col-md-6 col-lg-3 no-padding py-1 pl-0 pr-2" *ngIf="user_role_name === 'Manager'">
+      <div class="col-12 no-padding py-1 pl-0 pr-2 text-end" *ngIf="user_role_name === 'Manager'">
         <mat-checkbox color="primary" class="example-margin" [disabled]="!shouldDisableFields" (change)="onSelectOtherEmployee($event)" formControlName="is_allocated" ><h5 class="c-header">Allocate to another employee</h5></mat-checkbox>
     
       </div>
     </div>
-  <div class="row mx-0 my-1 px-0">
+    <!-- [ngStyle]="{'pointer-events': (user_role_name==='Accountant') ? 'none' : 'all'}" -->
+  <div class="row mx-0 my-1 px-0" [ngClass]="{'no-access': user_role_name === 'Accountant' || jobFormGroup?.get('unassigned')?.value}">
     <div class="col-12 col-sm-12 col-md-12 col-lg-12 no-padding pl-2 pr-0 table-responsive table-responsive-sm table-responsive-md" *ngIf="employeeFormArray.controls.length >= 1">
       <table class="table table-hover table-list employee-details-table">
         <thead>

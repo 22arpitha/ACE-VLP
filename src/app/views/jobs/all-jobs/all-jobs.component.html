@@ -21,11 +21,13 @@
           </div>
         </mat-menu>
       </div>
-      <div class="col-12 mt-2 col-sm-12 col-md-4 col-lg-6 text-end px-0">
+      <div class="col-12 mt-2 col-sm-12 col-md-12 col-lg-6 text-end px-0">
         <button mat-raised-button class="mat-btn-s tab-button-content" [ngClass]="{'isActive': isCurrent}" type="button"
           (click)="getCurrentJobs();">Current</button>
         <button mat-raised-button class="mat-btn-s tab-button-content" [ngClass]="{'isActive': isHistory}" type="button"
           (click)="getJobsHistory();">History</button>
+        <button mat-raised-button class="mat-btn-s tab-button-content" [ngClass]="{'isActive': isUnassigned}" type="button"
+          (click)="getUnassignedJobs();">Unassigned Jobs</button>
         <button mat-raised-button class="proceedbtn mat-btn-s download-btn" [disabled]="filteredList?.length === 0"
           type="button" [matMenuTriggerFor]="downloadMenu"><i class="fa fa-download"></i></button>
         <button mat-raised-button class="proceedbtn mat-btn-s" type="button" (click)="openCreateClientPage()"
