@@ -12,6 +12,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { SharedModule } from '../../shared/shared.module';
 import { TabsOfEmployeeComponent } from './tabs-of-employee/tabs-of-employee.component';
 import { EmployeeClientsComponent } from './employee-clients/employee-clients.component';
+import { JobsOfAccountantComponent } from './jobs-of-accountant/jobs-of-accountant.component';
 
 
 
@@ -20,7 +21,8 @@ import { EmployeeClientsComponent } from './employee-clients/employee-clients.co
     AllEmployeeComponent,
     CreateUpdateEmployeeComponent,
     TabsOfEmployeeComponent,
-    EmployeeClientsComponent
+    EmployeeClientsComponent,
+    JobsOfAccountantComponent
   ],
   imports: [
     CommonModule,

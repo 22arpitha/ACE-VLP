@@ -12,7 +12,8 @@ import { ApiserviceService } from '../../../service/apiservice.service';
 import { environment } from '../../../../environments/environment';
 import { GenericDeleteComponent } from '../../../generic-components/generic-delete/generic-delete.component';
 import { DatePipe } from '@angular/common';
-
+import { MatDialog } from '@angular/material/dialog';
+import{JobsOfAccountantComponent} from '../jobs-of-accountant/jobs-of-accountant.component'
 @Component({
   selector: 'app-create-update-employee',
   templateUrl: './create-update-employee.component.html',
@@ -35,10 +36,11 @@ export class CreateUpdateEmployeeComponent implements CanComponentDeactivate, On
   user_id: any;
   userRole: any;
   initialFormValue: any;
+  managerOfAccountant:any
   constructor(private fb: FormBuilder, private activeRoute: ActivatedRoute,
     private common_service: CommonServiceService, private router: Router,
     private apiService: ApiserviceService, private modalService: NgbModal,
-    private accessControlService: SubModuleService, private datePipe: DatePipe,
+    private accessControlService: SubModuleService, private datePipe: DatePipe, private dialog: MatDialog,
     private formErrorScrollService: FormErrorScrollUtilityService) {
     this.user_id = sessionStorage.getItem('user_id');
     this.userRole = sessionStorage.getItem('user_role_name');
@@ -63,7 +65,7 @@ export class CreateUpdateEmployeeComponent implements CanComponentDeactivate, On
     this.employeeFormGroup?.valueChanges?.subscribe(() => {
       const currentFormValue = this.employeeFormGroup?.getRawValue();
       const isInvalid = this.employeeFormGroup?.touched && this.employeeFormGroup?.invalid;
-      console.log(this.initialFormValue, currentFormValue);
+      // console.log(this.initialFormValue, currentFormValue);
       const isFormChanged: boolean = JSON.stringify(currentFormValue) !== JSON.stringify(this.initialFormValue);
       let unSavedChanges = isFormChanged || isInvalid;
       this.formErrorScrollService.setUnsavedChanges(unSavedChanges);
@@ -153,7 +155,7 @@ export class CreateUpdateEmployeeComponent implements CanComponentDeactivate, On
       this.getDirectData()
     } else {
       this.reportingManagerId = this.reportingManagerId.filter((data: any) => data.user__full_name != 'Vinayak Hegde')
-      console.log(this.reportingManagerId)
+      // console.log(this.reportingManagerId)
     }
   }
 
@@ -161,9 +163,9 @@ export class CreateUpdateEmployeeComponent implements CanComponentDeactivate, On
     let query = `?page=1&page_size=10&search=Vinayak Hegde&employee=True`
     this.apiService.getData(`${environment.live_url}/${environment.employee}/${query}`).subscribe(
       (res: any) => {
-        console.log(res);
+        // console.log(res);
         this.reportingManagerId.push(res?.results[0])
-        console.log(this.reportingManagerId)
+        // console.log(this.reportingManagerId)
 
       }
     )
@@ -194,6 +196,7 @@ export class CreateUpdateEmployeeComponent implements CanComponentDeactivate, On
   public getEmployeeDetails(id: any) {
     this.apiService.getData(`${environment.live_url}/${environment.employee}/${id}/`).subscribe((respData: any) => {
       this.getDesignationList(respData?.designation_id);
+      this.managerOfAccountant = respData?.reporting_manager_id
       this.employeeFormGroup.patchValue({
         employee_number: respData?.employee_number,
         first_name: respData?.user__first_name,
@@ -211,7 +214,7 @@ export class CreateUpdateEmployeeComponent implements CanComponentDeactivate, On
         this.getDirectData()
       } else {
         this.reportingManagerId = this.reportingManagerId.filter((data: any) => data.user__full_name != 'Vinayak Hegde')
-        console.log(this.reportingManagerId)
+        // console.log(this.reportingManagerId)
       }
 
       this.initialFormValue = this.employeeFormGroup?.getRawValue();
@@ -362,20 +365,27 @@ export class CreateUpdateEmployeeComponent implements CanComponentDeactivate, On
       this.employeeFormGroup.markAllAsTouched();
       this.formErrorScrollService.setUnsavedChanges(true);
       this.formErrorScrollService.scrollToFirstError(this.employeeFormGroup);
+      // console.log(this.employeeFormGroup.value)
     } else {
       this.employeeFormGroup.patchValue({ date_joined: this.datePipe.transform(this.employeeFormGroup?.get('date_joined')?.value, 'YYYY-MM-dd') })
       if (this.isEditItem) {
-        this.apiService.updateData(`${environment.live_url}/${environment.employee}/${this.employee_id}/`, this.employeeFormGroup.value).subscribe((respData: any) => {
-          if (respData) {
-            this.common_service.setEmployeeStatusState(this.employeeFormGroup.get('is_active')?.value);
-            this.apiService.showSuccess(respData['message']);
-            this.resetFormState();
-            sessionStorage.removeItem("access-name")
-            this.router.navigate(['/settings/all-employee']);
-          }
-        }, (error: any) => {
-          this.apiService.showError(error?.error?.detail);
-        });
+        if(this.selectedJobsIds){
+          this.transferJobsApi()
+        }
+        else{
+          this.updateEmployee()
+        }
+        // this.apiService.updateData(`${environment.live_url}/${environment.employee}/${this.employee_id}/`, this.employeeFormGroup.value).subscribe((respData: any) => {
+        //   if (respData) {
+        //     this.common_service.setEmployeeStatusState(this.employeeFormGroup.get('is_active')?.value);
+        //     this.apiService.showSuccess(respData['message']);
+        //     this.resetFormState();
+        //     sessionStorage.removeItem("access-name")
+        //     this.router.navigate(['/settings/all-employee']);
+        //   }
+        // }, (error: any) => {
+        //   this.apiService.showError(error?.error?.detail);
+        // });
       } else {
         this.apiService.postData(`${environment.live_url}/${environment.employee}/`, this.employeeFormGroup.value).subscribe((respData: any) => {
           if (respData) {
@@ -420,4 +430,60 @@ export class CreateUpdateEmployeeComponent implements CanComponentDeactivate, On
   dateClass = (date: Date) => {
     return date.getDay() === 0 ? 'sunday-highlight' : '';
   };
+
+  selectedJobsIds:any = []
+  changeReportingManager(event:any){
+    // console.log(event.value,this.managerOfAccountant);
+  let role_name = this.allUserRoleList.find((item:any)=>item.id===this.employeeFormGroup.get('designation')?.value)
+    if(this.isEditItem && role_name.designation_name==='Accountant' && this.managerOfAccountant!=event.value){
+       const dialogRef =this.dialog.open(JobsOfAccountantComponent, {
+        data: { employeeId:this.employee_id},
+       panelClass: 'custom-details-dialog',
+       disableClose: true,
+      });
+      dialogRef.afterClosed().subscribe((result:any)=>{
+      if(result){
+        this.selectedJobsIds = result;
+        // console.log('Jobs received from dialog:', this.selectedJobsIds);
+        // this.transferJobsApi()
+      }
+    });
+    }
+  }
+
+  transferJobsApi(){
+    const data ={
+    "employee-id": this.employee_id,
+    "manager-id": this.employeeFormGroup.get('reporting_manager_id')?.value,
+    "job-ids": this.selectedJobsIds
+    }
+    // console.log(data)
+    this.apiService.updateData(`${environment.live_url}/${environment.change_manager}/`,data).subscribe(
+      (res:any)=>{
+        // console.log(res)
+        this.apiService.showSuccess(res.detail);
+        setTimeout(() => {
+          this.updateEmployee()
+        }, 2000);
+        
+      },
+      (error:any)=>{
+        console.log(error)
+      }
+    )
+  }
+
+  updateEmployee(){
+    this.apiService.updateData(`${environment.live_url}/${environment.employee}/${this.employee_id}/`, this.employeeFormGroup.value).subscribe((respData: any) => {
+          if (respData) {
+            this.common_service.setEmployeeStatusState(this.employeeFormGroup.get('is_active')?.value);
+            this.apiService.showSuccess(respData['message']);
+            this.resetFormState();
+            sessionStorage.removeItem("access-name")
+            this.router.navigate(['/settings/all-employee']);
+          }
+        }, (error: any) => {
+          this.apiService.showError(error?.error?.detail);
+        });
+  }
 }
