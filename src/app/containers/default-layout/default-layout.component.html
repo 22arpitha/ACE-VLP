@@ -14,7 +14,7 @@
       [ngStyle]="{width:isSidebarCollapsed ? '45px':'90px',height:isSidebarCollapsed ? '45px':'90px' }"
       class="sidebar-logo-sidebar"
     />
-    <button mat-icon-button class="sidebar-toggle-fab" (click)="toggleSidebar()">
+    <button *ngIf="isDesktop" mat-icon-button class="sidebar-toggle-fab" (click)="toggleSidebar()">
       <mat-icon>{{ isSidebarCollapsed ? 'chevron_right' : 'chevron_left' }}</mat-icon>
     </button>
   </c-sidebar-brand>

@@ -104,6 +104,11 @@
     left: 70%;
     top: 15%;
   }
+  @media (max-width: 1023px) {
+  .sidebar-toggle-fab {
+    display: none !important;
+  }
+}
   .sidebar-logo-sidebar{
     left: 0;
     position: relative;
