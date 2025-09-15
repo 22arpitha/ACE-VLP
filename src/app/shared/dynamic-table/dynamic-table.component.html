@@ -22,6 +22,21 @@
 
         <app-week-picker (weekSelected)="weekDatePicker($event)" [resetWeek]="resetWeekDate"></app-week-picker>
       </div>
+      <!-- date range filter (common) -->
+      <div class="col-12 mt-2 col-sm-12 col-md-4 col-lg-3" *ngIf="config.startAndEndDateFilter">
+        <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+          <mat-date-range-input [rangePicker]="gobalPicker1">
+            <input matStartDate placeholder="Start date" [(ngModel)]="mainStartDate" (dateChange)="mainDateChange($event)">
+            <input matEndDate placeholder="End date" [(ngModel)]="mainEndDate" (dateChange)="mainEndDateChange($event)">
+          </mat-date-range-input>
+          <mat-datepicker-toggle matSuffix [for]="gobalPicker1"></mat-datepicker-toggle>
+          <mat-date-range-picker #gobalPicker1 [dateClass]="dateClass"></mat-date-range-picker>
+          <!-- <button matSuffix mat-icon-button *ngIf="mainStartDate || mainEndDate" >
+            <mat-icon>close</mat-icon>
+          </button> -->
+      </mat-form-field>
+      </div>
+
 
       <!-- Spacer -->
       <div class="col"></div>
@@ -56,10 +71,10 @@
       </div>
       </div>
       <!-- reset button -->
-      <!-- <div class="col-auto col-sm-auto col-md-auto col-lg-auto px-0 mx-0 my-1" *ngIf="config.reset">
-          <button mat-raised-button class="cancel-button mat-btn-s" type="button" (click)="reset()">
+      <div class="col-auto col-sm-auto col-md-auto col-lg-auto px-0 mx-0 my-1" *ngIf="config.reset">
+          <button mat-raised-button class="cancel-button mat-btn-s" type="button" (click)="requestReset()">
           Reset</button>
-      </div> -->
+      </div>
       <div class="col-auto mt-2 col-sm-auto col-md-auto col-lg-auto text-end" *ngIf="config?.sendWorkCulture && userRole!='Accountant'">
         <button mat-raised-button class="mat-btn-s proceedbtn" type="button"  (click)="isEditBtn ? submitWorkCultureDetails() : enableFormFields()"><span *ngIf="!isEditBtn">Edit</span><span *ngIf="isEditBtn">Submit</span></button>
       </div>
@@ -337,11 +352,11 @@
         </tr>
         <tr *ngIf="!config.formContent">
           <td *ngFor="let col of config.columns">
-            <div *ngIf="!col.navigation" [ngStyle]="{ color:col.key === 'job_status_date' && item?.status_date_color ? item?.status_date_color : col.key === 'short_fall' ? item?.color : 'black' }" [ngClass]="col.key === 'remaining_time' ? isPositiveOrNegative(item?.remaining_time):''">
+            <div *ngIf="!col.navigation && col.key != 'diff_days'" [ngStyle]="{ color:col.key === 'job_status_date' && item?.status_date_color ? item?.status_date_color : col.key === 'short_fall' ? item?.color : 'black' }" [ngClass]="col.key === 'remaining_time' ? isPositiveOrNegative(item?.remaining_time):''">
               {{ col.type === 'date' ? (item[col.key] | date: 'dd/MM/yyyy') : item[col.key] !== null && item[col.key] !== undefined && item[col.key] !== '' ? item[col.key] : 'NA' }}
             </div>
 
-            <ng-container *ngIf="col.navigation">
+            <ng-container *ngIf="col.navigation && col.key != 'diff_days'">
               <a
                 (click)="navigateToEmployee(item,col)"
                 class="text-primary text-decoration-underline"
@@ -349,6 +364,12 @@
               >
               {{ item[col.key] !== null && item[col.key] !== undefined && item[col.key] !== '' ? item[col.key] : 'NA' }}
               </a>
+            </ng-container>
+            <!-- the below code is to show the tat day with background color identification -->
+            <ng-container *ngIf="col.key === 'diff_days'">
+              <span class="circle" [ngStyle]="{ color: item?.tat_days?.color }">
+                {{ item?.tat_days?.diff_days }}
+              </span>
             </ng-container>
           </td>
         </tr>

@@ -126,7 +126,7 @@
   <div class="col-12 col-sm-12 col-md-6 col-lg-3 my-1 no-padding pl-0 pr-5" *ngIf="serviceName==='other services'">
     <mat-form-field appearance="outline" [ngClass]="{ 'highlight-background': !shouldDisableFields}" class="w-100 custom-mat-form-field">
         <mat-label>Customer Service <b class="r-star">*</b></mat-label>
-        <textarea matInput placeholder="Enter Customer Service" formControlName="customer_service" autocomplete="off" maxlength="25"></textarea>
+        <textarea matInput placeholder="Enter Customer Service" formControlName="customer_service" autocomplete="off" maxlength="25" (input)="onCustomerServiceEntered()"></textarea>
         <mat-error *ngIf="f['customer_service']?.invalid && f['customer_service']?.touched || f['customer_service']?.dirty">
             <span  *ngIf="f['customer_service']?.errors?.['required']">Customer Service is required
             </span>
@@ -399,7 +399,7 @@
       </div>
       <div class="col-sm-12 col-md-6 col-lg-4 no-padding py-1 pl-0 pr-2 d-flex justify-content-end" >
          <mat-checkbox color="primary" class="example-margin pe-4" formControlName="unassigned" 
-          [disabled]="isUnassignedDisabled()" (change)="onUnassigned($event)" [matTooltip]="getUnassignedTooltip()"><h5 class="c-header">Unassigned Jobs</h5></mat-checkbox>
+          [disabled]="isUnassignedDisabled()" (change)="onUnassigned($event)" [matTooltip]="getUnassignedTooltip()"><h5 class="c-header">Leave Unassigned</h5></mat-checkbox>
         <mat-checkbox color="primary" *ngIf="user_role_name === 'Admin'" class="example-margin" formControlName="all_employees" [disabled]="!shouldDisableFields" (change)="onSelectionAllEmployee($event)" ><h5 class="c-header">All Employees</h5></mat-checkbox>
       </div>
       <div class="col-12 no-padding py-1 pl-0 pr-2 text-end" *ngIf="user_role_name === 'Admin' && jobFormGroup?.get('all_employees')?.value==true">

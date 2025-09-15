@@ -100,10 +100,10 @@
   .mat-list-item i{
     font-size: 18px;
   }
-  .sidebar-toggle-fab{
-    left: 70%;
-    top: 15%;
-  }
+  // .sidebar-toggle-fab{
+  //   left: 70%;
+  //   top: 15%;
+  // }
   @media (max-width: 1023px) {
   .sidebar-toggle-fab {
     display: none !important;
@@ -130,4 +130,40 @@
   }
   }
 
+}
+c-sidebar-brand {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative; /* allows button to stick out */
+  padding: 0 8px;
+}
+.sidebar-toggle-fab {
+  color: #126EB4 !important;
+  box-shadow: none !important;
+  background: #fff !important;
+  border: 1px solid #ddd !important;
+  border-radius: 50% !important;
+  width: 22px !important;
+  height: 22px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transition: all 0.3s ease !important;
+  left: 80% !important;
+  top: 35% !important;
+}
+
+/* when sidebar is collapsed → stick out */
+.sidebar-collapsed .sidebar-toggle-fab {
+  position: absolute;
+  right: -16px; /* half of button width so it sticks out */
+  top: 50%;
+  transform: translateY(-50%);
+}
+.sidebar-toggle-fab mat-icon{
+  margin: 0px !important;
+  text-align: center!important;
+  height: 26px !important;
+  width: 24px !important;
 }

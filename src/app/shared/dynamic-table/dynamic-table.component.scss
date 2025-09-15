@@ -113,3 +113,12 @@ button.filterdColumn {
   max-height: 250px; /* or whatever fits */
   overflow-y: auto;
 }
+
+.circle {
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  padding: 3px;
+  background-color: rgb(223, 224, 225) !important;
+  display: inline-block;
+}

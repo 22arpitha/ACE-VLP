@@ -499,17 +499,21 @@ onManagerSelectOpened(opened: boolean, index: number): void {
   }
   serviceName:string;
   public onServiceChange(event: any) {
-    this.getCombinationJobName();
-     let service_name = this.getSelectedService(this.jobFormGroup?.get('service')?.value);
-     this.serviceName = service_name.toLowerCase()
-     const value = this.serviceName === 'other services';
-     this.simpleToggleRequired(value, [
+    let service_name = this.getSelectedService(this.jobFormGroup?.get('service')?.value);
+    this.serviceName = service_name.toLowerCase()
+    const value = this.serviceName === 'other services';
+    this.simpleToggleRequired(value, [
       'customer_service'
     ]);
+    this.getCombinationJobName();
     // if (this.isEditItem) {
     //   this.getCombinationJobName();
     // }
   }
+
+  onCustomerServiceEntered() {
+  this.getCombinationJobName();
+}
   public onPeroidChange() {
     this.getCombinationJobName();
   }
@@ -688,6 +692,11 @@ onManagerSelectOpened(opened: boolean, index: number): void {
           customer_service: this.serviceName === 'other services' ? respData?.customer_service :'',
           unassigned:  respData?.unassigned,
         });
+          if (this.user_role_name === 'Admin') {
+            this.jobFormGroup.get('job_status_date')?.enable();
+          } else {
+            this.jobFormGroup.get('job_status_date')?.disable();
+          }
         this.tempSelectedJobStatus = respData?.job_status_name.toLowerCase();
         if (respData?.budget_time) {
           const [hours, minutes] = respData?.budget_time?.split(":");
@@ -1256,7 +1265,18 @@ getUnassignedTooltip(): string {
 
   public getCombinationJobName() {
     let endClientName = this.getSelectedEndClient(this.jobFormGroup?.get('end_client')?.value);
-    let service_name = this.getSelectedService(this.jobFormGroup?.get('service')?.value);
+    // let service_name = this.getSelectedService(this.jobFormGroup?.get('service')?.value);
+    let serviceControl = this.getSelectedService(this.jobFormGroup?.get('service')?.value);
+    let customerServiceControl = this.jobFormGroup?.get('customer_service')?.value;
+
+    let service_name = '';
+    if (customerServiceControl) {
+      service_name = customerServiceControl
+    } else if (serviceControl.toLowerCase() === 'other services') {
+      service_name = '';
+    } else {
+      service_name = serviceControl;
+    }
     let period_name = this.jobFormGroup?.get('period')?.value;
     let amdment_number = this.jobFormGroup?.get('amdment_number')?.value;
     if(this.modeName!='One off'){
@@ -1290,7 +1310,7 @@ getUnassignedTooltip(): string {
   public formDataToJson(formData) {
     let obj = {};
 
-    formData.forEach((value, key) => {
+    formData.forEach((value:any, key:any) => {
       // Check if the key is 'employees' and the value is a string that looks like a JSON
       if (key === 'employees' && typeof value === 'string') {
         try {

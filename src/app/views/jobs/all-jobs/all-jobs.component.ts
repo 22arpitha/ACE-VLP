@@ -629,6 +629,9 @@ private searchSubject = new Subject<string>();
     }
   }
   getEmployeeName(employees: any): string {
+    if (!employees || employees.length === 0) {
+    return 'Unassigned';
+    }
     const employee = employees.find((emp: any) => emp?.is_primary === true);
     return employee ? employee?.employee_name : '';
   }

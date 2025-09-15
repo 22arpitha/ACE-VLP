@@ -68,16 +68,12 @@ width: 0px !important;
 .isFiltered {
   background-color: green;
 }
-.tat-days {
-  display: flex;
-  align-items: center;
-  gap: 6px; 
-}
 
 .circle {
   width: 25px;
   height: 25px;
   border-radius: 50%;
+  padding: 3px;
   background-color: rgb(223, 224, 225) !important;
   display: inline-block;
 }

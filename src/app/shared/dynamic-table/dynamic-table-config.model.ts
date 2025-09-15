@@ -24,6 +24,7 @@ export interface DynamicTableConfig {
   navigation?: boolean;
   formContent?:boolean;
   dateRangeFilter?:boolean;
+  startAndEndDateFilter?:boolean
   searchable?:boolean;
   currentPage?:number,
   totalRecords?:number,

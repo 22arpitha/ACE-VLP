@@ -627,8 +627,11 @@ async getTableData(params?: { page?: number; pageSize?: number; searchTerm?: str
       this.formattedData = res?.results?.map((item: any, i: number) => ({
         sl: (page - 1) * pageSize + i + 1,
         ...item,
-         is_primary:item?.employees?.find((emp: any) => emp?.is_primary === true)?.employee_name || '',
-         diff_days:item.tat_days.diff_days
+         is_primary:item?.unassigned === true && item?.employees?.length === 0
+            ? 'Unassigned'
+            : item?.employees?.find((emp: any) => emp?.is_primary === true)?.employee_name || '',
+        //  is_primary:item?.employees?.find((emp: any) => emp?.is_primary === true)?.employee_name || '',
+         diff_days:item.tat_days
       }));
       this.tableConfig = {
           columns: tableColumns.map(col => {

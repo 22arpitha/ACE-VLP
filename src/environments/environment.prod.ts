@@ -79,6 +79,7 @@ download_excel :'download-excel',
 //  leave related API end points
 work_calendar:`work_calender`,
 holiday_calendar:`holiday_calendar`,
+apply_leaves: `apply_leave`,
 employees_leave:`employee_leaves`,
 
 

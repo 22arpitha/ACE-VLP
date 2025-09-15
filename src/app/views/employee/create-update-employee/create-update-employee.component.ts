@@ -369,7 +369,7 @@ export class CreateUpdateEmployeeComponent implements CanComponentDeactivate, On
     } else {
       this.employeeFormGroup.patchValue({ date_joined: this.datePipe.transform(this.employeeFormGroup?.get('date_joined')?.value, 'YYYY-MM-dd') })
       if (this.isEditItem) {
-        if(this.selectedJobsIds){
+        if(this.selectedJobsIds.length>0){
           this.transferJobsApi()
         }
         else{

@@ -72,7 +72,11 @@ export class TimesheetsSummaryReportComponent implements OnInit {
        this.common_service.setTitle(this.BreadCrumbsTitle)
        this.tableConfig = tableColumns;
        setTimeout(() => {
-        this.getJobStatusList();
+        this.getTableData({
+              page: this.page,
+              pageSize: this.tableSize,
+              searchTerm: this.term
+            });
        }, 500);
      }
   
@@ -103,7 +107,6 @@ export class TimesheetsSummaryReportComponent implements OnInit {
        page: page,
        pageSize: this.tableSize,
        searchTerm: this.term,
-       fromdate: this.fromDate,
        employee_ids: this.selectedEmployeeIds,
      });
    }
@@ -120,7 +123,6 @@ export class TimesheetsSummaryReportComponent implements OnInit {
          searchTerm: this.term,
          client_ids: this.selectedClientIds,
          job_ids: this.selectedJobIds,
-         fromdate: this.fromDate,
          employee_ids: this.selectedEmployeeIds,
        });
      }
@@ -157,6 +159,18 @@ export class TimesheetsSummaryReportComponent implements OnInit {
          case 'filter':
           this.onApplyFilter(event.detail,event.key);
          break;
+         case 'mainDateRangeFilter':
+          this.time.start_date = event.detail?.startDate;
+          this.time.end_date = event.detail?.endDate
+          this.getTableData({ 
+          page: 1,
+          pageSize: this.tableSize,
+          searchTerm: this.term,
+          client_ids: this.selectedClientIds,
+          job_ids: this.selectedJobIds, 
+            
+        })
+         break;
          case 'weekDate':
         this.fromDate = event.detail;
         this.getTableData({ 
@@ -165,7 +179,6 @@ export class TimesheetsSummaryReportComponent implements OnInit {
           searchTerm: this.term,
           client_ids: this.selectedClientIds,
           job_ids: this.selectedJobIds, 
-          fromdate: this.fromDate 
         })
         break;
        default:
@@ -188,12 +201,11 @@ export class TimesheetsSummaryReportComponent implements OnInit {
       searchTerm: this.term,
       client_ids: this.selectedClientIds,
       job_ids: this.selectedJobIds,
-      fromdate: this.fromDate,
       employee_ids: this.selectedEmployeeIds,
     });
    }
 
-   resetData(data){
+   resetData(data:any){
     console.log(data);
     this.formattedData =[];
     this.term = ''
@@ -214,7 +226,7 @@ export class TimesheetsSummaryReportComponent implements OnInit {
        tableSize: 50,
        pagination: true,
        searchable: true,
-       dateRangeFilter: true,
+       startAndEndDateFilter: true,
        showDownload:true,
        reset:true,
        searchPlaceholder:'Search by Client/Job/Employee',
@@ -277,9 +289,13 @@ export class TimesheetsSummaryReportComponent implements OnInit {
         if (this.selectedEmployeeIds?.length) {
          query += `&timesheet-employee-ids=[${this.selectedEmployeeIds.join(',')}]`;
        }
-        const startDate = this.fromDate?.start_date ?? this.time.start_date;
-        const formattedStartDate = this.datePipe.transform(startDate, 'yyyy-MM-dd');
-        query += `&from-date=${formattedStartDate}`;
+        if(this.time?.start_date && this.time?.end_date){
+         query += `&start-date=${this.time?.start_date}&end-date=${this.time?.end_date}`;
+       }
+
+        // const startDate = this.fromDate?.start_date ?? this.time.start_date;
+        // const formattedStartDate = this.datePipe.transform(startDate, 'yyyy-MM-dd');
+        // query += `&from-date=${formattedStartDate}`;
 // &job-status=[${this.statusList}]
      const url = `${environment.live_url}/${environment.job_reports}/${query}&report-type=timesheet-summary-report-new&file-type=${fileType}`;
      downloadFileFromUrl({
@@ -347,7 +363,6 @@ export class TimesheetsSummaryReportComponent implements OnInit {
          searchTerm: term,
          client_ids: this.selectedClientIds,
          job_ids: this.selectedJobIds,
-         fromdate: this.fromDate,
          employee_ids: this.selectedEmployeeIds,
        });
      }
@@ -409,17 +424,14 @@ export class TimesheetsSummaryReportComponent implements OnInit {
      const page = params?.page ?? this.page;
      const pageSize = params?.pageSize ?? this.tableSize;
      const searchTerm = params?.searchTerm ?? this.term;
-     const today = new Date();
-        const dayOfWeek = today.getDay(); // Sunday = 0, Saturday = 6
-
-        const startOfWeek = new Date(today);
-        startOfWeek.setDate(today.getDate() - dayOfWeek);
-        const endOfWeek = new Date(today);
-        endOfWeek.setDate(today.getDate() + (6 - dayOfWeek));
-        // Save the week range in 'time'
-        this.time.start_date = startOfWeek.toISOString();
-        this.time.end_date = endOfWeek.toISOString();
-        // console.log(startOfWeek,endOfWeek,params?.fromdate)
+    //  const today = new Date();
+    //   const dayOfWeek = today.getDay(); 
+    //   const startOfWeek = new Date(today);
+    //   startOfWeek.setDate(today.getDate() - dayOfWeek);
+    //   const endOfWeek = new Date(today);
+    //   endOfWeek.setDate(today.getDate() + (6 - dayOfWeek));
+    //   this.time.start_date = startOfWeek.toISOString();
+    //   this.time.end_date = endOfWeek.toISOString();
      const query = buildPaginationQuery({ page, pageSize, searchTerm });
      this.jobStatusList(this.tabStatus);
       finalQuery = query 
@@ -438,18 +450,12 @@ export class TimesheetsSummaryReportComponent implements OnInit {
         if(this.directionValue && this.sortValue){
           finalQuery += `&sort-by=${this.sortValue}&sort-type=${this.directionValue}`;
         }
-        // const startDate = params?.fromdate?.start_date ?? this.time.start_date;
-      // const formattedStartDate = this.datePipe.transform(startDate, 'yyyy-MM-dd');
-       const selected_startDate = this.datePipe.transform(params?.fromdate?.start_date, 'yyyy-MM-dd') ;
-       const selected_endtDate = this.datePipe.transform(params?.fromdate?.end_date, 'yyyy-MM-dd') ;
-       const current_startDate = this.datePipe.transform(startOfWeek, 'yyyy-MM-dd')
-       const current_endtDate = this.datePipe.transform(endOfWeek, 'yyyy-MM-dd')
-      //  console.log(selected_startDate,selected_endtDate)
-       if(params?.fromdate){
-         finalQuery += `&start-date=${selected_startDate}&end-date=${selected_endtDate}`;
-        console.log('selected')
-       } else{
-        finalQuery += `&start-date=${current_startDate}&end-date=${current_endtDate}`;
+      //  const selected_startDate = this.datePipe.transform(params?.fromdate?.start_date, 'yyyy-MM-dd') ;
+      //  const selected_endtDate = this.datePipe.transform(params?.fromdate?.end_date, 'yyyy-MM-dd') ;
+      //  const current_startDate = this.datePipe.transform(startOfWeek, 'yyyy-MM-dd')
+      //  const current_endtDate = this.datePipe.transform(endOfWeek, 'yyyy-MM-dd')
+       if(this.time?.start_date && this.time?.end_date){
+         finalQuery += `&start-date=${this.time?.start_date}&end-date=${this.time?.end_date}`;
        }
       await this.api.getData(`${environment.live_url}/${environment.jobs}/${finalQuery}`).subscribe((res: any) => {
         if(res.results){
@@ -496,7 +502,7 @@ export class TimesheetsSummaryReportComponent implements OnInit {
          tableSize: pageSize,
          pagination: true,
          searchable: true,
-         dateRangeFilter: true,
+         startAndEndDateFilter: true,
          reset:true,
         //  headerTabs:true,
         //  showIncludeAllJobs:true,

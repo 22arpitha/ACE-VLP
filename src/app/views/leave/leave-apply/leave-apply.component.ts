@@ -212,7 +212,7 @@ export class LeaveApplyComponent implements OnInit {
   working_day_data: any;
   getWorkingDays(date: Date) {
     this.apiService
-      .getData(`${environment.live_url}/${environment.work_calender}/`)
+      .getData(`${environment.live_url}/${environment.work_calendar}/`)
       .subscribe((res: any) => {
         this.working_day_data = res[0]['working_days'];
         // console.log('api response ==>', this.working_day_data);

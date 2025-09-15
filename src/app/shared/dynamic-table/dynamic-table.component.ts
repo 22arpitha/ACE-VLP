@@ -38,6 +38,8 @@ selectedItemsMap: { [key: string]: any[] } = {};  //new
   paginatedData: any[] = [];
   startDate;
   endDate;
+  mainStartDate:any;
+  mainEndDate:any;
   currentPage = 1;
   tableSizes = [50,75,100,150,200];
   columnFilters: { [key: string]: any } = {};
@@ -61,6 +63,7 @@ selectedItemsMap: { [key: string]: any[] } = {};  //new
   allow_sending_status:boolean=false;
   previousFilters: { [key: string]: any[] } = {};
   selectedDateRange;
+  mainDateRange:any
   tableFormGroup:FormGroup;
   isEditBtn:boolean=false;
   resetWeekDate:boolean=false;
@@ -115,6 +118,8 @@ this.tempFilters = JSON.parse(JSON.stringify(this.columnFilters));
       itemsPerPage: this.config.tableSize ?? 50
     };
   }
+
+  
   private initializeTable(): void {
     // console.log('initial data ',this.config)
     if(this.config.data && this.config.data?.length > 0){
@@ -257,13 +262,16 @@ onFilterChange(selectedValue: any, columnConfig: any, fromCheckbox: boolean = fa
     this.actionEvent.emit({ actionType:'export_csv' , detail:'csv' });
   }
 
-  reset(){
+  requestReset(){
     this.config.searchTerm = '';
     this.currentPage = 1;
+    this.tableSize = 50;
     this.dateRangeStartDate = '';
-    this.selectedDate = ''
+    this.selectedDate = '';
     this.resetWeekDate = true;
-    this.actionEvent.emit({ actionType:'reset' , detail:'' });
+    this.mainStartDate = '',
+    this.mainEndDate = ''
+    this.actionEvent.emit({ actionType: 'reset', detail: '' });
   }
   downloadPDF(): void {
     this.actionEvent.emit({ actionType:'export_pdf' , detail:'pdf' });
@@ -636,6 +644,23 @@ if(event.value){
 }
 }
 
+
+mainDateChange(event: any) {
+  const selectedDate = event.value;
+  const formattedDate = this.datePipe.transform(selectedDate, 'yyyy-MM-dd');
+  this.dateRangeStartDate = formattedDate;
+}
+mainEndDateChange(event: any) {
+if(event.value){
+  const selectedDate = event.value;
+  const formattedDate = this.datePipe.transform(selectedDate, 'yyyy-MM-dd');
+  // this.columnFilters[key]=formattedDate;
+  this.mainDateRange = formattedDate;
+  this.actionEvent.emit({ actionType: 'mainDateRangeFilter', detail: {startDate:this.dateRangeStartDate,endDate:formattedDate}});
+  this.resetWeekDate = true;
+}
+}
+
 dateClass = (date: Date) => {
   return date.getDay() === 0 ? 'sunday-highlight' : '';
 };
@@ -644,85 +669,10 @@ dateClass = (date: Date) => {
 
 @Output() filterEvent = new EventEmitter<{ detail: any, key: string }>();
 
-// onFilterOpen(col: any, isOpen: boolean) {
-//   if (isOpen) {
-//     console.log('onFilterOpen triggered for', col.key);
-//     this.filterEvent.emit({
-//       detail: { page: 1, pageSize: 10, search: '', reset: true },
-//       key: col.paramskeyId
-//     });
-//   }
-// }
-
 
 filterDataCache: {
   [key: string]: { data: any[], total: number, page: number, searchTerm: string }
 } = {};
-
-
-// onFilterScroll(event: Event, col: any) {
-//   console.log('onFilterScroll triggered for', col.key);
-//   const target = event.target as HTMLElement;
-//   const cache = this.filterDataCache[col.paramskeyId];
-
-//   // check if user scrolled to the bottom
-//   if (target.scrollHeight - target.scrollTop <= target.clientHeight + 20) {
-//     if (!cache || cache.data.length < cache.total) {
-//       this.filterEvent.emit({
-//         detail: { 
-//           page: cache ? cache.page + 1 : 1, 
-//           pageSize: 20, 
-//           search: this.filterSearchText[col.key] || '', 
-//           reset: false 
-//         },
-//         key: col.paramskeyId
-//       });
-//     }
-//   }
-// }
-
-// Clear search input + reload
-// clearFilterSearch(col: any) {
-//   this.filterSearchText[col.key] = '';
-//   this.filterEvent.emit({
-//     detail: { page: 1, pageSize: 20, search: '', reset: true },
-//     key: col.paramskeyId
-//   });
-// }
-
-
-// onFilterSearch(col: any) {
-//   console.log('onFilterSearch triggere',this.filterSearchText[col.key])
-//   this.filterEvent.emit({
-//     detail: { page: 1, pageSize: 20, search: this.filterSearchText[col.key] || '', reset: true },
-//     key: col.paramskeyId
-//   });
-// }
-
-
-
-
-
-
-// new code 5-08-2025
-
-// getFilteredOptions(columnKey: string): any[] {
-//   const allOptions = this.config.columns.find(col => col.key === columnKey)?.filterOptions || [];
-//   const searchText = (this.filterSearchText[columnKey] || '').toLowerCase();
-//   const selectedIds = this.columnFilters[columnKey] || [];
-
-//   // Always keep selected first
-//   const selected = allOptions.filter((opt:any) => selectedIds.includes(opt.id));
-
-//   // Apply search to only the rest
-//   const others = allOptions
-//     .filter((opt:any) => !selectedIds.includes(opt.id))
-//     .filter((opt:any) => opt.name?.toLowerCase().includes(searchText));
-
-//   return [...selected, ...others];
-// }
-
-
 
 getFilteredOptions(columnKey: string): any[] {
   const apiOptions = this.config.columns.find(col => col.key === columnKey)?.filterOptions || [];
