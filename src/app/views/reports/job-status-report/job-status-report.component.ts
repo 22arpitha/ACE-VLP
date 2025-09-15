@@ -631,7 +631,7 @@ async getTableData(params?: { page?: number; pageSize?: number; searchTerm?: str
             ? 'Unassigned'
             : item?.employees?.find((emp: any) => emp?.is_primary === true)?.employee_name || '',
         //  is_primary:item?.employees?.find((emp: any) => emp?.is_primary === true)?.employee_name || '',
-         diff_days:item.tat_days
+        //  diff_days:item.tat_days
       }));
       this.tableConfig = {
           columns: tableColumns.map(col => {

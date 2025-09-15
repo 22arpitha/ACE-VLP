@@ -463,7 +463,7 @@ public sendEamils(){
 public viewtimesheetDetails(item:any){
       this.dialog.open(JobTimeSheetDetailsPopupComponent, {
       panelClass: 'custom-details-dialog',
-      data: { 'job_id': item?.id,'job_name':item?.job_name}
+      data: { 'job_id': item?.id,'job_name':item?.job_name,'report_type':'job-time-report'}
     });
     }
 
