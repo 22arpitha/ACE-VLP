@@ -271,6 +271,11 @@ onFilterChange(selectedValue: any, columnConfig: any, fromCheckbox: boolean = fa
     this.resetWeekDate = true;
     this.mainStartDate = '',
     this.mainEndDate = ''
+    this.tempFilters = {};
+    this.columnFilters = {};
+    this.arrowState = {};
+    this.sortValue = '';
+    this.directionValue = '';
     this.actionEvent.emit({ actionType: 'reset', detail: '' });
   }
   downloadPDF(): void {

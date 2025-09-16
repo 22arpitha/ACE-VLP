@@ -217,6 +217,8 @@ export class TimesheetsSummaryReportComponent implements OnInit {
     this.selectedEmployeeIds = [];
     this.time.start_date= '';
     this.time.end_date= '';
+    this.directionValue ='';
+    this.sortValue = '';
      this.tableConfig = {
        columns: [],
        data: this.formattedData,

@@ -1705,17 +1705,44 @@ onAmdmentChange(event){
   this.getCombinationJobName();
 }
 
+// simpleToggleRequired(enable: boolean, controlNames: string[]) {
+//     controlNames.forEach(name => {
+//       const control = this.jobFormGroup.get(name);
+//       if (enable) {
+//         control?.setValidators(Validators.required);
+//       } else {
+//         control?.clearValidators();
+//         control?.reset();
+//       }
+//       control?.updateValueAndValidity();
+//     });
+//   }
+
+// Put this near the top of the file for clarity
+private customerServicePattern = /^(?! )[A-Za-z0-9 !@#$%^&*()_+{}\[\]:;"'<>,.?/\\|`~\-]+(?<! )$/
 simpleToggleRequired(enable: boolean, controlNames: string[]) {
-    controlNames.forEach(name => {
-      const control = this.jobFormGroup.get(name);
-      if (enable) {
-        control?.setValidators(Validators.required);
+  const customerServiceValidators = [
+    Validators.required,
+    Validators.pattern(this.customerServicePattern),
+    Validators.maxLength(25)
+  ];
+
+  controlNames.forEach(name => {
+    const control = this.jobFormGroup.get(name);
+    if (enable) {
+      if (name === 'customer_service') {
+        control.setValidators(customerServiceValidators);
       } else {
-        control?.clearValidators();
-        control?.reset();
+        control.setValidators([Validators.required]);
       }
-      control?.updateValueAndValidity();
-    });
-  }
+    } else {
+      control.clearValidators();
+      control.reset();
+    }
+
+    control.updateValueAndValidity();
+ });
+}
+
 
 }
