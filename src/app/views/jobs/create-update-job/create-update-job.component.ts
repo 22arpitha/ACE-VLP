@@ -884,7 +884,7 @@ onManagerSelectOpened(opened: boolean, index: number): void {
     // check the status
     const selectedIndex = this.allJobStatusList.findIndex(status => status.status_name.toLowerCase() === this.tempSelectedJobStatus.toLowerCase());
     const querySentIndex = this.allJobStatusList.findIndex(status => status.status_name.toLowerCase() === 'internal review 1');
-    if (this.job_id && this.estimatedTime === '00:00' && selectedIndex >= querySentIndex) {
+    if (this.job_id && (this.estimatedTime === '00:00' || this.estimatedTime === '0:00') && selectedIndex >= querySentIndex) {
       this.apiService.showError('Please upadte the estimated time to change the status.');
       this.tempSelectedJobStatus = '';
       this.jobFormGroup.patchValue({ job_status: this.jobDetails?.job_status })
@@ -955,7 +955,15 @@ onManagerSelectOpened(opened: boolean, index: number): void {
     this.formData.set('periodicity', this.jobFormGroup?.get('periodicity')?.value);
     this.formData.set('period', this.jobFormGroup?.get('period')?.value);
     this.formData.set('job_type', this.jobFormGroup?.get('job_type')?.value);
-    this.formData.set('job_allocation_date', this.datepipe.transform(this.jobFormGroup?.get('job_allocation_date')?.value, 'YYYY-MM-dd'));
+    let job_allocation_date;
+    if(this.jobDetails?.unassigned===true && this.jobDetails?.employees.length===0 &&  this.jobFormGroup.get('unassigned')?.value===false && this.employeeFormArray.length>0){
+      job_allocation_date = new Date();
+      // console.log(job_allocation_date,'manual')
+    } else{
+      job_allocation_date =  this.jobFormGroup?.get('job_allocation_date')?.value;
+      // console.log(job_allocation_date,'user input')
+    }
+    this.formData.set('job_allocation_date', this.datepipe.transform(job_allocation_date, 'YYYY-MM-dd'));
     this.formData.set('budget_time', this.jobFormGroup?.get('budget_time')?.value);
     this.formData.set('job_status', this.jobFormGroup?.get('job_status')?.value);
     this.formData.set('percentage_of_completion', this.jobFormGroup?.get('percentage_of_completion')?.value);

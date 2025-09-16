@@ -743,7 +743,7 @@ private searchSubject = new Subject<string>();
   }
 
   jobStatusValidation(data: any, index: any): boolean {
-     if (data.estimated_time === '00:00' && index >= this.internalReviewOneIndex) {
+     if ((data.estimated_time === '00:00' || data.estimated_time === '0:00') && index >= this.internalReviewOneIndex) {
       return true;
     }
     if (this.userRole !== 'Admin') {
