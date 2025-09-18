@@ -108,6 +108,8 @@ export class TimesheetsSummaryReportComponent implements OnInit {
        pageSize: this.tableSize,
        searchTerm: this.term,
        employee_ids: this.selectedEmployeeIds,
+       client_ids: this.selectedClientIds,
+         job_ids: this.selectedJobIds,
      });
    }
   
@@ -168,7 +170,7 @@ export class TimesheetsSummaryReportComponent implements OnInit {
           searchTerm: this.term,
           client_ids: this.selectedClientIds,
           job_ids: this.selectedJobIds, 
-            
+          employee_ids: this.selectedEmployeeIds,
         })
          break;
          case 'weekDate':
@@ -457,7 +459,7 @@ export class TimesheetsSummaryReportComponent implements OnInit {
       //  const current_startDate = this.datePipe.transform(startOfWeek, 'yyyy-MM-dd')
       //  const current_endtDate = this.datePipe.transform(endOfWeek, 'yyyy-MM-dd')
        if(this.time?.start_date && this.time?.end_date){
-         finalQuery += `&start-date=${this.time?.start_date}&end-date=${this.time?.end_date}`;
+         finalQuery += `&timesheet-start-date=${this.time?.start_date}&timesheet-end-date=${this.time?.end_date}`;
        }
       await this.api.getData(`${environment.live_url}/${environment.jobs}/${finalQuery}`).subscribe((res: any) => {
         if(res.results){

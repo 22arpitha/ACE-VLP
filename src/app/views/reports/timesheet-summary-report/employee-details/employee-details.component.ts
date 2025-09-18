@@ -142,7 +142,7 @@ export class EmployeeDetailsComponent implements OnInit {
     if(this.directionValue && this.sortValue){
         query += `&sort-by=${this.sortValue}&sort-type=${this.directionValue}`;
       }
-   this.api.getData(`${environment.live_url}/${environment.timesheet}/${query}`).subscribe(async (res: any) => {
+   this.api.getData(`${environment.live_url}/${environment.vlp_timesheets}/${query}`).subscribe(async (res: any) => {
      const formattedData = res.results.map((item: any, i: number) => ({
        sl: (page - 1) * pageSize + i + 1,
        ...item

@@ -262,7 +262,7 @@ getClienList(){
     return this.jobName;
   }
     getTaskList(){
-      this.api.getData(`${environment.live_url}/${environment.timesheet}/?get-tasks=True`).subscribe((res: any) => {
+      this.api.getData(`${environment.live_url}/${environment.vlp_timesheets}/?get-tasks=True`).subscribe((res: any) => {
         if(res){
           this.taskName = res?.map((item: any) => ({
             id: item.id,
@@ -419,7 +419,7 @@ async getTableData(params?: { page?: number; pageSize?: number; searchTerm?: str
       if(this.directionValue && this.sortValue){
         query += `&sort-by=${this.sortValue}&sort-type=${this.directionValue}`;
       }
-      await this.api.getData(`${environment.live_url}/${environment.timesheet}/${query}`).subscribe((res: any) => {
+      await this.api.getData(`${environment.live_url}/${environment.vlp_timesheets}/${query}`).subscribe((res: any) => {
      if(res){
       const formattedData = res?.results?.map((item: any, i: number) => ({
         sl: (page - 1) * pageSize + i + 1,

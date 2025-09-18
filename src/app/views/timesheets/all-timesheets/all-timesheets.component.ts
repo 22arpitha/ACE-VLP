@@ -189,7 +189,7 @@ export class AllTimesheetsComponent implements OnInit {
   }
 
   getTaskList() {
-    this.apiService.getData(`${environment.live_url}/${environment.timesheet}/?get-tasks=True`).subscribe((res: any) => {
+    this.apiService.getData(`${environment.live_url}/${environment.vlp_timesheets}/?get-tasks=True`).subscribe((res: any) => {
       if (res) {
         this.allTaskNames = res?.map((item: any) => ({
           id: item.id,

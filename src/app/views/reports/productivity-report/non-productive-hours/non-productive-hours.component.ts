@@ -152,7 +152,7 @@ export class NonProductiveHoursComponent implements OnInit,OnChanges {
         query += this.user_role_name ==='Admin' ? '':`&timesheet-employee=${this.user_id}`;
        }
      }
-     const url = `${environment.live_url}/${environment.timesheet}/${query}&file-type=${fileType}`;
+     const url = `${environment.live_url}/${environment.vlp_timesheets}/${query}&file-type=${fileType}`;
      downloadFileFromUrl({
        url,
        fileName: 'VLP - Non-Productive Hours Report',
@@ -178,7 +178,7 @@ export class NonProductiveHoursComponent implements OnInit,OnChanges {
        if(this.directionValue && this.sortValue){
             finalQuery += `&sort-by=${this.sortValue}&sort-type=${this.directionValue}`;
         }
-     this.api.getData(`${environment.live_url}/${environment.timesheet}/${finalQuery}&client-name=Vedalekha professionals`).subscribe((res: any) => {
+     this.api.getData(`${environment.live_url}/${environment.vlp_timesheets}/${finalQuery}&client-name=Vedalekha professionals`).subscribe((res: any) => {
        const formattedData = res.results.map((item: any, i: number) => ({
          sl: (page - 1) * pageSize + i + 1,
          ...item
