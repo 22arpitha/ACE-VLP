@@ -80,6 +80,7 @@ download_excel :'download-excel',
 work_calendar:`work_calender`,
 holiday_calendar:`holiday_calendar`,
 apply_leaves: `apply_leave`,
+comp_off_grant: `new-comp-off`,
 employees_leave:`employee_leaves`,
 
 

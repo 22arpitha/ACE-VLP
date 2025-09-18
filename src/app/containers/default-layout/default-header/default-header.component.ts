@@ -96,7 +96,7 @@ export class DefaultHeaderComponent extends HeaderComponent implements OnInit {
     this.common_service.subTitle$.subscribe(subtitle =>{
       this.previousPage = subtitle
     })
-    // this.getaccessDetails()
+    this.getaccessDetails()
     // this.common_service.subsctiptionState$.subscribe(status =>{
     //   if(status){
     //     // debugger;
@@ -322,7 +322,7 @@ export class DefaultHeaderComponent extends HeaderComponent implements OnInit {
     this.isModalOpen = true;
     let data = {
       title: 'Hello',
-      message1: `Welcome to Project Ace!. We’re thrilled to have you here. Let us guide you through the main features of our website.`,
+      message1: `Welcome to VLP!. We’re thrilled to have you here. Let us guide you through the main features of our website.`,
       message2: `Click 'Next' to begin the tour or 'Skip' to explore on your own.`,
       isModalOpen: this.isModalOpen
     }

@@ -39,106 +39,6 @@ export class DefaultLayoutComponent {
   admin: any;
   permission: any;
   sidebarNavItems: any;
-  sidebarNavItemsStatic: any = [
-    {
-      name: 'Templates',
-      icon: 'bi bi-check-circle',
-      is_show: true,
-      url: '/templates',
-      access: [
-        {
-          name: 'Templates',
-          operations: [
-            {
-              view: false,
-              create: false,
-              delete: false,
-              update: false,
-            },
-          ],
-        },
-      ],
-    },
-    {
-      name: 'Company Policy',
-      icon: 'bi bi-check-circle',
-      is_show: true,
-      url: '/company-policy',
-      access: [
-        {
-          name: 'Company Policy',
-          operations: [
-            {
-              view: false,
-              create: false,
-              delete: false,
-              update: false,
-            },
-          ],
-        },
-      ],
-    },
-    {
-      name: 'Settings',
-      icon: 'bi bi-sliders2',
-      is_show: true,
-      children: [
-        {
-          name: 'Empolyee',
-          url: '/settings/all-employee',
-        },
-        {
-          name: 'Services',
-          url: '/settings/services',
-        },
-        {
-          name: 'Country',
-          url: '/settings/country',
-        },
-        {
-          name: 'Job Type',
-          url: '/settings/job-type',
-        },
-        {
-          name: 'Source',
-          url: '/settings/source',
-        },
-        {
-          name: 'Status Group',
-          url: '/settings/status-group',
-        },
-        {
-          name: 'Job Status',
-          url: '/settings/job-status',
-        },
-        {
-          name: 'leave Type',
-          url: '/settings/leave-type',
-        },
-        {
-          name: 'Designation',
-          url: '/settings/designation',
-        },
-        {
-          name: 'Roles',
-          url: '/settings/roles',
-        },
-      ],
-      access: [
-        {
-          name: 'Settings',
-          operations: [
-            {
-              view: false,
-              create: false,
-              delete: false,
-              update: false,
-            },
-          ],
-        },
-      ],
-    },
-  ];
   config: string;
   access: any = [];
   user_id: any;
@@ -391,7 +291,7 @@ export class DefaultLayoutComponent {
     if (headNavdata.page === 'Logout') {
       this.openDialogue();
     } else {
-      //console.log('headNavdata', headNavdata);
+      console.log('headNavdata', headNavdata);
       this.router.navigate([`${headNavdata.link}`]);
     }
   }
