@@ -20,6 +20,9 @@ import { ViewLeaveRequestComponent } from './view-leave-request/view-leave-reque
 import { UserDashboardComponent } from './user-dashboard/user-dashboard.component';
 import { NgMultiSelectDropDownModule } from 'ng-multiselect-dropdown';
 import { MyLeavesComponent } from './my-leaves/my-leaves.component';
+import { CompOffGrantComponent } from './comp-off-grant/comp-off-grant.component';
+import { LeaveApplyAdminComponent } from './leave-apply-admin/leave-apply-admin.component';
+import { ResourceAvailabilityComponent } from './resource-availability/resource-availability.component';
 
 @NgModule({
   declarations: [
@@ -37,6 +40,9 @@ import { MyLeavesComponent } from './my-leaves/my-leaves.component';
     ViewLeaveRequestComponent,
     UserDashboardComponent,
     MyLeavesComponent,
+    CompOffGrantComponent,
+    LeaveApplyAdminComponent,
+    ResourceAvailabilityComponent,
   ],
   imports: [
     CommonModule,
@@ -46,7 +52,7 @@ import { MyLeavesComponent } from './my-leaves/my-leaves.component';
     SharedModule,
     HttpClientModule,
     RouterModule,
-    NgMultiSelectDropDownModule
+    NgMultiSelectDropDownModule,
   ]
 })
 export class LeaveModule { }

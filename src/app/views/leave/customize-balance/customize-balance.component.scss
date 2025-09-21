@@ -14,10 +14,12 @@
 // .holidays th:first-child, td:first-child{
 //     width: auto !important;
 // }
-.custom-details-dialog{
-    // width: 80% !important;
-    justify-content: center !important;
+
+::ng-deep .custom-details-dialog .mat-dialog-container {
+    width: 70% !important;
 }
-::ng-deep .customize-balance .mat-dialog-container {
-    // width: 70% !important;
+.custom-btn{
+    background-color: #126EB4 !important;
+    color: white !important;
+    font-size: 13px !important;
 }

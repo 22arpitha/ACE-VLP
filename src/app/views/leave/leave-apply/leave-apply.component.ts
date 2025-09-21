@@ -4,6 +4,7 @@ import {
   FormBuilder,
   FormControl,
   FormGroup,
+  FormGroupDirective,
   Validators,
 } from '@angular/forms';
 import { MatChipInputEvent } from '@angular/material/chips';
@@ -12,15 +13,17 @@ import { environment } from '../../../../environments/environment';
 import { ApiserviceService } from '../../../service/apiservice.service';
 import { CommonServiceService } from '../../../service/common-service.service';
 import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
-
+import { MatDialog } from '@angular/material/dialog';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { CompOffGrantComponent } from '../comp-off-grant/comp-off-grant.component';
 @Component({
   selector: 'app-leave-apply',
   templateUrl: './leave-apply.component.html',
   styleUrls: ['./leave-apply.component.scss'],
 })
 export class LeaveApplyComponent implements OnInit {
+  @ViewChild(FormGroupDirective) formGroupDirective!: FormGroupDirective;
   leave_balance: any = 'NA';
-
   user_id: any;
   allleavetypeList: any = [];
   BreadCrumbsTitle: any = 'Leave Request';
@@ -56,6 +59,7 @@ export class LeaveApplyComponent implements OnInit {
   constructor(
     private apiService: ApiserviceService,
     private common_service: CommonServiceService,
+    private dialog: MatDialog,
     private fb: FormBuilder
   ) {
     this.filteredEmails = this.emailCtrl.valueChanges.pipe(
@@ -87,7 +91,7 @@ export class LeaveApplyComponent implements OnInit {
 
   getAllEmployeeList2() {
     this.apiService.getAllEmployees2().subscribe((res: any) => {
-      this.ccEmailsList = res;
+      this.ccEmailsList = res.results;
     });
 
     this.apiService.getUserById(this.user_id).subscribe((res) => {
@@ -106,8 +110,11 @@ export class LeaveApplyComponent implements OnInit {
   onLeaveTypeChange(event: any) {
     this.apiService.getEmployeeLeaves(this.user_id, event.value).subscribe(
       (res: any) => {
-        this.leave_balance = res.results[0].remaining_leaves;
-
+        if(res?.results.length>0){
+          this.leave_balance = res?.results[0].remaining_leaves;
+        } else{
+          this.leave_balance = 0;
+        }
         // if (res.results.length != 0) {
         //   this.apiService
         //     .getLeaveTypeById(event.value)
@@ -135,6 +142,10 @@ export class LeaveApplyComponent implements OnInit {
       attachment: [''],
       employee: [this.user_id],
     });
+  }
+
+  public get f() {
+    return this.leaveApplyForm.controls;
   }
 
   public getAllLeaveTypes() {
@@ -324,7 +335,7 @@ export class LeaveApplyComponent implements OnInit {
   startDateFun(event: any) {
     let new_date: any = this.convertDateTime(event.value);
     this.startDate = event.value;
-
+    this.minDate = event.value;
     this.calculateDays();
 
     this.getWorkingDays(event.value);
@@ -539,6 +550,7 @@ export class LeaveApplyComponent implements OnInit {
         .subscribe(
           (res: any) => {
             this.apiService.showSuccess(res.message);
+            this.resetFormState();
           },
           (err) => {
             console.log('err', err);
@@ -546,5 +558,24 @@ export class LeaveApplyComponent implements OnInit {
           }
         );
     }
+  }
+  public resetFormState() {
+    this.totalDays = 0;
+    this.selectedEmails = []
+    this.leave_balance = 0
+    this.formGroupDirective?.resetForm();
+  }
+
+  openGrantCompOff(){
+      this.dialog.open(CompOffGrantComponent, {
+             data: { employee: false},
+             panelClass: 'custom-details-dialog',
+             disableClose: true
+           });
+           this.dialog.afterAllClosed.subscribe((resp: any) => {
+             // console.log('resp',resp);
+            //  this.initalCall();
+           });
+       
   }
 }

@@ -8,14 +8,31 @@
           <span class="fw-bold"><u>All Leaves</u></span>
         </div> -->
 
-        <div class="row mb-2" *ngIf="userRole == 'Manager'">
-          <div class="col-2">
-            <ng-multiselect-dropdown [placeholder]="'Select Employee'" [settings]="dropdownSettings"
-              [data]="all_employees_under_manager" [(ngModel)]="selectedItems" (onSelect)="onItemSelect($event)"
-              (onSelectAll)="onSelectAll($event)">
-            </ng-multiselect-dropdown>
+        <div class="row mx-0" *ngIf="userRole==='Manager'">
+          <div class="col-sm-12 col-md-6 col-lg-3 px-0">
+            <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+              <mat-label>Employee <b class="r-star">*</b></mat-label>
+              <mat-select autocomplete="off" placeholder="select" panelClass="custom-select-panel"
+                (selectionChange)="onEmployeeChange($event)" (openedChange)="onDropdownOpened($event, 'employee')">
+                <div class="mat-select-search-wrapper d-flex">
+                  <input matInput [(ngModel)]="dropdownState.employee.search"
+                    (ngModelChange)="onSearch('employee', $event)" autofocus [ngModelOptions]="{standalone: true}"
+                    placeholder="Search employee" class="mat-select-search">
+                  <mat-icon class="search-icon" *ngIf="!dropdownState.employee.search">search</mat-icon>
+                  <mat-icon class="search-icon" *ngIf="dropdownState.employee.search" type="button"
+                    (click)="clearSearchDropD('employee')">close</mat-icon>
+                </div>
+                <mat-option hidden disabled></mat-option>
+                <mat-option *ngFor="let item of getOptionsWithSelectedOnTop('employee')" [value]="item?.user_id">
+                  {{item?.user__full_name}}
+                </mat-option>
+              </mat-select>
+              <!-- <button *ngIf="selectedItemsMap['employee'].length" mat-icon-button matSuffix
+                    aria-label="Clear" (click)="clearEmployeeSelection()">
+              <mat-icon>close</mat-icon>
+            </button> -->
+            </mat-form-field>
           </div>
-
         </div>
 
 
@@ -45,13 +62,10 @@
     <div class="col-12" *ngIf="all_leaves?.length === 0">
       <app-generic-norecards></app-generic-norecards>
     </div>
-  </section>
-
-  <div class="row mt-3">
-    <div class="col-md-4">
-      <section class="settings-table-bg">
-        <div class="row mx-0 my-2 px-0 table-wrapper" style="overflow-x: hidden;">
-          <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0 ">
+    <div class="row mx-0 mt-3">
+      <div class="col-md-4">
+        <div class="row mx-0 my-2 px-0 table-wrapper bg-white" style="overflow-x: hidden;">
+          <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0">
             <div class="py-2">
               <span class="fw-bold ps-3"><u>Upcoming Holidays</u></span>
             </div>
@@ -65,11 +79,9 @@
               <app-generic-norecards></app-generic-norecards>
             </div> -->
 
-      </section>
-    </div>
+      </div>
 
-    <div class="col-md-8">
-      <section class="settings-table-bg">
+      <div class="col-md-8 bg-white">
         <div class="row mx-0 my-2 px-0 table-wrapper" style="overflow-x: hidden;">
           <div class="col-12 px-0">
             <div class="py-2">
@@ -78,65 +90,27 @@
 
             <!-- Header Row -->
             <div class="row fw-bold border-bottom py-2">
-              <div class="col-3">Date</div>
-              <div class="col-5">Reason</div>
+              <div class="col-sm-12 col-md-6 col-lg-5">Date</div>
+              <div class="col-sm-12 col-md-6 col-lg-5">Reason</div>
             </div>
 
             <!-- Data Rows -->
-            <div class="row py-2 my-1">
-              <div class="col-3">14/08/2025</div>
-              <div class="col-5">Lorem ipsum dolor sit amet consectetur adipisicing elit. Optio, dolorem?</div>
+            <div class="row py-2 my-1" *ngFor="let i of upcomingPendingLeaves">
+              <div class="col-sm-12 col-md-6 col-lg-5">{{i.from_date}} - {{i.to_date}}</div>
+              <div class="col-sm-12 col-md-6 col-lg-5">{{i.message}}</div>
             </div>
-            <div class="row py-2 my-1">
-              <div class="col-3">20/08/2025</div>
-              <div class="col-5">Lorem ipsum dolor sit amet consectetur adipisicing elit. Adipisci eligendi alias illum
-                voluptatum!</div>
+            <div class="row mx-0" *ngIf="upcomingPendingLeaves?.length === 0">
+              <app-generic-norecards></app-generic-norecards>
             </div>
-            <div class="row py-2 my-1">
-              <div class="col-3">15/08/2025</div>
-              <div class="col-5">Lorem ipsum dolor sit amet consectetur adipisicing elit. Fugiat incidunt repellendus
-                eum fuga?</div>
-            </div>
-            <div class="row py-2 my-1">
-              <div class="col-3">05/08/2025</div>
-              <div class="col-5">Lorem ipsum dolor sit amet consectetur adipisicing elit. Quaerat, odit?</div>
-            </div>
-            <div class="row py-2 my-1">
-              <div class="col-3">10/08/2025</div>
-              <div class="col-5">Lorem ipsum dolor sit.</div>
-            </div>
-
           </div>
         </div>
-      </section>
+
+      </div>
+
 
     </div>
 
+  </section>
 
-  </div>
-
-
-  <!-- <div class="row">
-      <div class="col-6 w-100">
-          <div class="pt-4 ps-2">
-              <span class="fw-bold fs-5">Upcoming Leaves</span>
-      
-              <table>
-                  <thead>
-                      <tr>
-                          <th>Date</th>
-                          <th>Reason</th>
-                          <th>Is Approved</th>
-                      </tr>
-                  </thead>
-                  <tbody>
-                      <tr>
-                          <td></td>
-                      </tr>
-                  </tbody>
-              </table>
-            </div>
-      </div>
-    </div> -->
 
 </div>

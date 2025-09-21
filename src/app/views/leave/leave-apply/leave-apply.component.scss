@@ -19,3 +19,6 @@
 .text-clr{
     color: darkblue;
 }
+::ng-deep .custom-details-dialog .mat-dialog-container {
+    width: 70% !important;
+}

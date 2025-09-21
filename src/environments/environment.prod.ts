@@ -82,7 +82,11 @@ holiday_calendar:`holiday_calendar`,
 apply_leaves: `apply_leave`,
 comp_off_grant: `new-comp-off`,
 employees_leave:`employee_leaves`,
-
+revoke_my_leave:`revoke-my-leave`,
+approve_compoff:`revoke-my-comp-of`,
+leave_status:`get-leave-status`,
+period_values: `get-period-values`,
+all_emp_custom_balance:`customize-balance`,
 
 
 // project ace

@@ -1,8 +1,4 @@
-::ng-deep .custom-details-dialog{
-    justify-content: center !important;
-}
 ::ng-deep .mat-dialog-container {
-    width: 40% !important;
     padding: 10px !important;
 }
 ::ng-deep .mat-form-field-infix{
@@ -12,13 +8,21 @@
 ::ng-deep .mat-form-field-wrapper{
     padding: 15px 0 !important;
 }
+.mat-select-search-wrapper {
+    padding: 8px;
+    background-color: #fff;
+  }
+  
+  .mat-select-search {
+    width: 100%;
+  }
 .add-compoff .label-name{
     font-size: 18px !important;
     margin-bottom: 5px !important;
 }
-@media screen and (max-width: 991px) {
-  ::ng-deep .mat-dialog-container {
-    width: 90% !important;
-    height: 80vh !important
-  }
-}
+// @media screen and (max-width: 991px) {
+//   ::ng-deep .mat-dialog-container {
+//     width: 90% !important;
+//     height: 80vh !important
+//   }
+// }

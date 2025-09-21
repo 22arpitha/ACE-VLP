@@ -1,0 +1,30 @@
+<div class="p-3 resource">
+    <table mat-table [dataSource]="employees" class="leave-table">
+        <!-- Employee Column -->
+        <ng-container matColumnDef="employee">
+            <th mat-header-cell *matHeaderCellDef>Employee</th>
+            <td mat-cell *matCellDef="let emp">{{ emp.id }} {{ emp.name }}</td>
+        </ng-container>
+
+        <!-- Dynamic Date Columns -->
+        <ng-container *ngFor="let date of weekDates" [matColumnDef]="getDateKey(date)">
+            <th mat-header-cell *matHeaderCellDef>{{ date | date: 'dd MMM' }}</th>
+            <td mat-cell *matCellDef="let emp">
+                <span *ngIf="getLeave(emp.id, date)"  class="leave-text" [style.textDecorationColor]="getLeaveColor(getLeave(emp.id, date)?.type)">
+                    {{ getLeave(emp.id, date)?.type }}
+                </span>
+            </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+
+    <!-- Legend -->
+    <div class="legend">
+        <div *ngFor="let item of legendItems" class="legend-item">
+            <span class="color-box" [style.backgroundColor]="item.color"></span>
+            {{ item.code }} - {{ item.label }}
+        </div>
+    </div>
+</div>

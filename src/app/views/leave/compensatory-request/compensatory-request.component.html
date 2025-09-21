@@ -1,60 +1,26 @@
-<div class="container-wrapper settings-main-content jobs px-0">
+<div class="container-wrapper settings-main-content px-0">
     <section class="settings-table-bg px-3 comp-off">
 
         <!-- Filters Row -->
         <div class="row mx-0 px-0">
             <div class="col-sm-12 col-md-6 col-lg-9">
                 <div class="row mx-0 gx-0 align-content-center">
+
                     <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-1 pe-2">
-                    <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
-                        <mat-label>Leave<b class="r-star">*</b></mat-label>
-                        <mat-select autocomplete="off" placeholder="Select leave type"
-                            panelClass="custom-select-panel" [(ngModel)]="filters.leave"
-                            (selectionChange)="filterData()">
-                            <div class="mat-select-search-wrapper d-flex">
-                                <input matInput [(ngModel)]="searchLeave" autofocus
-                                    [ngModelOptions]="{standalone: true}" placeholder="Search Job Status"
-                                    class="mat-select-search">
-                                <mat-icon class="search-icon" *ngIf="!searchLeave">search</mat-icon>
-                                <mat-icon class="search-icon" *ngIf="searchLeave" type="button"
-                                    (click)="clearSearch('leave_type')">close</mat-icon>
-                            </div>
-                            <mat-option *ngFor="let leave of filteredLeaveTypes();let i = index"
-                                [value]="leave.value">{{
-                                leave.label }}</mat-option>
-                        </mat-select>
-                    </mat-form-field>
-
-                </div>
-
-                <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-1 pe-2">
-                    <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
-                        <mat-label>All Data<b class="r-star">*</b></mat-label>
-                        <mat-select autocomplete="off" placeholder="Select leave type"
-                            panelClass="custom-select-panel" [(ngModel)]="filters.data"
-                            (selectionChange)="filterData()">
-                            <mat-option *ngFor="let data of dataOptions" [value]="data.value">{{
-                                data.label }}</mat-option>
-                        </mat-select>
-                    </mat-form-field>
-                </div>
-
-                <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-1 pe-2">
-                    <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
-                        <mat-label>All Requests<b class="r-star">*</b></mat-label>
-                        <mat-select autocomplete="off" placeholder="Select leave type"
-                            panelClass="custom-select-panel" [(ngModel)]="filters.request"
-                            (selectionChange)="filterData()">
-                            <mat-option *ngFor="let request of requestOptions" [value]="request.value">{{
-                                request.label }}</mat-option>
-                        </mat-select>
-                    </mat-form-field>
-                </div>
+                        <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+                            <mat-label>All Data<b class="r-star">*</b></mat-label>
+                            <mat-select autocomplete="off" placeholder="Select leave type"
+                                panelClass="custom-select-panel" (selectionChange)="selectedData()">
+                                <mat-option *ngFor="let data of dataOptions" [value]="data.value">{{
+                                    data.label }}</mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
                 </div>
             </div>
 
             <div class="col-sm-12 col-md-6 col-lg-3 text-end align-content-center">
-                <button mat-raised-button class="proceedbtn mat-btn-s" (click)="addOrViewRequest(false,'')">Add Request</button>
+                <button mat-raised-button class="proceedbtn mat-btn-s" (click)="openGrantCompOff()">Add Request</button>
             </div>
         </div>
 
@@ -64,9 +30,9 @@
                 <table class="table table-hover table-list">
                     <thead>
                         <tr>
-                            <th>
+                            <!-- <th>
                                 <mat-checkbox [(ngModel)]="selectAll" (change)="toggleAllSelection()"></mat-checkbox>
-                            </th>
+                            </th> -->
                             <th>S.NO</th>
                             <th>
                                 Employee Name
@@ -74,6 +40,19 @@
                                     (click)="sort('asc', 'employee_name')"></i>
                                 <i *ngIf="arrowState['employee_name']" class="bi bi-arrow-up"
                                     (click)="sort('desc', 'employee_name')"></i>
+                                <button mat-icon-button [matMenuTriggerFor]="employeesFilterMenu"
+                                    (menuOpened)="openFilter(employeeFilter)"
+                                    [ngClass]="filters.employees.length>=1 ? 'filterdColumn':''">
+                                    <span
+                                        *ngIf="filters.employees.length>=1">{{filters.employees.length.toString().padStart(2,'0')}}</span>
+                                    <i class="bi-funnel" *ngIf="filters.employees.length===0"></i>
+                                </button>
+
+                                <mat-menu #employeesFilterMenu="matMenu">
+                                    <app-generic-table-filter #employeeFilter [fetchOptions]="fetchEmployees"
+                                        [(selectedOptions)]="filters.employees"
+                                        (selectedOptionsChange)="onFilterChange($event, 'employees')"></app-generic-table-filter>
+                                </mat-menu>
                             </th>
                             <th>
                                 Reporting To
@@ -96,7 +75,20 @@
                                 <i *ngIf="arrowState['expiry_date']" class="bi bi-arrow-up"
                                     (click)="sort('desc', 'expiry_date')"></i>
                             </th>
-                            <th>Status</th>
+                            <th>Status
+                                <button mat-icon-button [matMenuTriggerFor]="statusFilterMenu"
+                                    [ngClass]="filters.status_name.length>=1 ? 'filterdColumn':''">
+                                    <span *ngIf="filters.status_name.length>=1">{{filters.status_name.length}}</span>
+                                    <i class="bi-funnel" *ngIf="filters.status_name.length===0"></i>
+                                </button>
+
+                                <mat-menu #statusFilterMenu="matMenu">
+                                    <app-generic-table-filter [options]="leaveStatus"
+                                        [(selectedOptions)]="filters.status_name"
+                                        (selectedOptionsChange)="onFilterChange($event, 'status_name')">
+                                    </app-generic-table-filter>
+                                </mat-menu>
+                            </th>
                             <th>
                                 Credited
                                 <i *ngIf="!arrowState['credited']" class="bi bi-arrow-down"
@@ -111,34 +103,40 @@
                                 <i *ngIf="arrowState['taken']" class="bi bi-arrow-up"
                                     (click)="sort('desc', 'taken')"></i>
                             </th>
-                            <th>
-                                Balance
-                                <i *ngIf="!arrowState['balance']" class="bi bi-arrow-down"
-                                    (click)="sort('asc', 'balance')"></i>
-                                <i *ngIf="arrowState['balance']" class="bi bi-arrow-up"
-                                    (click)="sort('desc', 'balance')"></i>
-                            </th>
                             <th>Reason</th>
+                            <th>Action</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <ng-container *ngIf="filteredList?.length > 0">
+                        <ng-container *ngIf="compOffLists?.length > 0">
                             <tr
-                                *ngFor="let item of filteredList | customSort:directionValue:sortValue | paginate: { itemsPerPage: tableSize, currentPage: page }; let i=index">
-                                <td>
+                                *ngFor="let item of compOffLists | customSort:directionValue:sortValue | paginate: { itemsPerPage: tableSize, currentPage: page,totalItems: count }; let i=index">
+                                <!-- <td>
                                     <input type="checkbox" [(ngModel)]="item.selected">
-                                    <!-- <mat-checkbox ></mat-checkbox> -->
-                                </td>
+                                </td> -->
                                 <td>{{getContinuousIndex(i)}}</td>
                                 <td>{{ item.employee_name }}</td>
-                                <td>{{ item.reporting_to }}</td>
-                                <td>{{ item.worked_date | date: 'dd/MM/yyyy' }}</td>
-                                <td>{{ item.expiry_date | date: 'dd/MM/yyyy' }}</td>
-                                <td class="bg-success" (click)="addOrViewRequest(true,item)">Book Comp Off</td>
-                                <td>{{ item.credited }}</td>
-                                <td>{{ item.taken }}</td>
-                                <td>{{ item.balance }}</td>
-                                <td>{{ item.reason }}</td>
+                                <td>{{ item.reporting_manager_name }}</td>
+                                <td>{{ item.from_date | date: 'dd/MM/yyyy' }}</td>
+                                <td>{{ item.to_date | date: 'dd/MM/yyyy' }}</td>
+                                <td *ngIf="item.status === 'Pending'"><span style="background: #ffface; color: #978419;"
+                                        class="p-2 rounded">PENDING</span></td>
+                                <td *ngIf="item.status === 'approved'"><span
+                                        style="background: #dcfce7; color: #15803d;" class="p-2 rounded">APPROVED</span>
+                                </td>
+                                <td *ngIf="item.status === 'rejected'"><span style="background:#fee2e2; color: #b91c1c;"
+                                        class="p-2 rounded">REJECTED</span></td>
+                                <!-- <td (click)="addOrViewRequest(true,item)"><span>{{item.status}}</span></td> -->
+                                <td>{{ item.credited || 0 }}</td>
+                                <td>{{ item.number_of_leaves_applying_for }}</td>
+                                <td>{{ item.message }}</td>
+                                <td>
+                                    <span>
+                                        <img src="../../../../assets/images/view.svg" class="icon-image"
+                                            container="body" ngbTooltip="View" (click)="addOrViewRequest(true,item)" />
+                                    </span>
+                                    <!-- <span *ngIf="item.status!='Pending'">-</span> -->
+                                </td>
                             </tr>
                         </ng-container>
                     </tbody>
@@ -147,12 +145,12 @@
         </div>
 
         <!-- No Records -->
-        <div class="row mx-1 my-2 px-0" *ngIf="filteredList?.length === 0">
+        <div class="row mx-1 my-2 px-0" *ngIf="compOffLists?.length === 0">
             <app-generic-norecards></app-generic-norecards>
         </div>
 
         <!-- Pagination -->
-        <div class="row mx-0 px-3" *ngIf="filteredList?.length > 0">
+        <div class="row mx-0 px-3" *ngIf="compOffLists?.length > 0">
             <div class="col-12 px-0">
                 <div class="pagination-container p-0">
                     <pagination-controls previousLabel="Prev" nextLabel="Next" (pageChange)="onTableDataChange($event)">

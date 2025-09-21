@@ -122,3 +122,8 @@ button.filterdColumn {
   background-color: rgb(223, 224, 225) !important;
   display: inline-block;
 }
+
+::ng-deep .leave-type .mat-form-field-appearance-outline .mat-form-field-infix{
+  height: 40px !important;
+  padding: 0 !important;
+}

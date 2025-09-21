@@ -43,4 +43,5 @@ export interface DynamicTableConfig {
   average_productive_hour?:boolean;
   searchPlaceholder?:string;
   reset?:boolean;
+  leaveTypes?:boolean;
 }

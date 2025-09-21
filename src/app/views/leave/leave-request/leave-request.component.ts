@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ApiserviceService } from 'src/app/service/apiservice.service';
@@ -7,6 +7,10 @@ import { ViewLeaveRequestComponent } from '../view-leave-request/view-leave-requ
 // import { ViewLeaveRequestComponent } from '../leave-request/view-leave-request/view-leave-request.component';
 import { environment } from 'src/environments/environment';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { LeaveApplyAdminComponent } from '../leave-apply-admin/leave-apply-admin.component';
+import { DropDownPaginationService } from 'src/app/service/drop-down-pagination.service';
+import { GenericTableFilterComponent } from 'src/app/shared/generic-table-filter/generic-table-filter.component';
+import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-leave-request',
@@ -14,6 +18,7 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
   styleUrls: ['./leave-request.component.scss'],
 })
 export class LeaveRequestComponent implements OnInit {
+  @ViewChild('employeeFilter') employeeFilter!: GenericTableFilterComponent;
   page = 1;
   count = 0;
   tableSize = 50;
@@ -22,6 +27,14 @@ export class LeaveRequestComponent implements OnInit {
   sortValue: string = '';
   directionValue: string = '';
   selectedItemId: any;
+  leaveOptions: any = []
+  selectedPeriod: any
+  mainStartDate: any;
+  mainEndDate: any;
+  leave_request: any = [];
+  leaveStatus: any = [];
+  periodValues:any = [];
+  filterQuery: any
   arrowState: { [key: string]: boolean } = {
     employee_name: false,
     leave_type: false,
@@ -31,43 +44,68 @@ export class LeaveRequestComponent implements OnInit {
     days_or_hours_taken: false,
   };
   searchLeave: any;
-  leave_request: any = [];
+
+  // periodValues = [
+  //   { value: 'Yesterday', key: 'yesterday' },
+  //   { value: 'Today', key: 'today' },
+  //   { value: 'Last Month', key: 'last_month' },
+  //   { value: 'This Month', key: 'this_month' },
+  //   { value: 'Last Year', key: 'last_year' },
+  //   { value: 'This Year', key: 'this_year' },
+  //   { value: 'Custom', key: 'custom' },
+  // ]
   user_id: any;
   userRole: any;
   constructor(
     private accessControlService: SubModuleService,
     modalService: NgbModal,
     private dialog: MatDialog,
-    private apiService: ApiserviceService
+    private apiService: ApiserviceService,
+    private cdr: ChangeDetectorRef,
+    private datePipe: DatePipe,
+    private dropdownService: DropDownPaginationService,
   ) {
     this.userRole = sessionStorage.getItem('user_role_name');
     this.user_id = sessionStorage.getItem('user_id');
   }
 
   ngOnInit(): void {
+    this.getLeaveStatus();
+    this.getPeriodData();
+    this.getallLeaveTypes();
     this.getleaverequest();
   }
 
-  getleaverequest() {
-    if (this.userRole === 'Manager') {
-      this.apiService
-        .getData(
-          `${environment.live_url}/${environment.apply_leaves}/?manager_id=${this.user_id}&page=1&page_size=10`
-        )
-        .subscribe((res: any) => {
-          this.leave_request = res.results;
-        });
-    }
-    if (this.userRole === 'Admin') {
-      this.apiService
-        .getData(
-          `${environment.live_url}/${environment.apply_leaves}/?page=1&page_size=10`
-        )
-        .subscribe((res: any) => {
-          this.leave_request = res.results;
-        });
-    }
+  filters: { leave_type: string[], employees: string[], status_name: string[] } = {
+    leave_type: [],
+    employees: [],
+    status_name: [],
   }
+  getLeaveStatus() {
+    this.apiService.getData(`${environment.live_url}/${environment.leave_status}/`).subscribe(
+      (res: any) => {
+        this.leaveStatus = res?.data?.map((item: any) => ({
+          id: item.key,
+          name: item.value
+        }));
+      },
+      (error) => {
+        console.log(error)
+      }
+    )
+  }
+  getPeriodData(){
+     this.apiService.getData(`${environment.live_url}/${environment.period_values}/`).subscribe(
+      (res: any) => {
+        this.periodValues = res?.data;
+        console.log(res)
+      },
+      (error) => {
+        console.log(error)
+      }
+    )
+  }
+
 
   viewDetails(data: any) {
     let emails = [];
@@ -89,29 +127,23 @@ export class LeaveRequestComponent implements OnInit {
     });
   }
 
-  filters = {
-    leave: '',
-    data: '',
-    request: '',
-  };
+  ;
 
-  leaveOptions = [
-    { value: 'sick', label: 'Sick Leave' },
-    { value: 'casual', label: 'Casual Leave' },
-    { value: 'comp_off', label: 'Comp Off' },
-  ];
-
-  dataOptions = [
-    { value: 'all', label: 'All' },
-    { value: 'current', label: 'Current' },
-    { value: 'expired', label: 'Expired' },
-  ];
-
-  requestOptions = [
-    { value: 'pending', label: 'Pending' },
-    { value: 'approved', label: 'Approved' },
-    { value: 'rejected', label: 'Rejected' },
-  ];
+  getallLeaveTypes() {
+    this.apiService.getData(`${environment.live_url}/${environment.settings_leave_type}/`).subscribe((respData: any) => {
+      this.leaveOptions = respData?.map((item: any) => ({
+        id: item.id,
+        name: item.leave_type_name
+      }));
+    }, (error: any) => {
+      this.apiService.showError(error?.error?.detail);
+    })
+  }
+  // leaveOptions = [
+  //   { value: 'sick', label: 'Sick Leave' },
+  //   { value: 'casual', label: 'Casual Leave' },
+  //   { value: 'comp_off', label: 'Comp Off' },
+  // ];
 
   filteredList = [
     {
@@ -194,17 +226,47 @@ export class LeaveRequestComponent implements OnInit {
   }
 
   selectAll = false;
-
+  onFilterChange(event: any, filterType: string) {
+    const selectedOptions = event;
+    this.filters[filterType] = selectedOptions;
+    console.log(event)
+    if (event.value === 'custom') {
+      console.log('period is selected')
+    }
+    this.getleaverequest();
+  }
+  onTableSizeChange(event: any): void {
+    if (event) {
+      this.page = 1;
+      this.tableSize = Number(event.value);
+      this.getleaverequest()
+    }
+  }
   onTableDataChange(event: any) {
-    // update page here
+    this.page = event;
+    this.getleaverequest();
   }
 
-  onTableSizeChange(event: any) {
-    // update table size here
+  selectedPeriodFunc(event) {
+    console.log(this.selectedPeriod)
+    this.mainStartDate = '';
+    this.mainEndDate = '';
+    if(this.selectedPeriod!='custom'){
+      this.getleaverequest();
+    }
   }
+  dateClass = (date: Date) => {
+    return date.getDay() === 0 ? 'sunday-highlight' : '';
+  };
 
-  filterData() {
-    // apply filters to your data
+  mainDateChange(event: any) {
+    // const selectedDate = event.value;
+    // const formattedDate = this.datePipe.transform(selectedDate, 'yyyy-MM-dd');
+  }
+  mainEndDateChange(event: any) {
+    if (event.value) {
+      this.getleaverequest();
+    }
   }
 
   addRequest() {
@@ -226,4 +288,86 @@ export class LeaveRequestComponent implements OnInit {
       //  this.initalCall();
     });
   }
+
+  openleaveForm() {
+    const dialogRef = this.dialog.open(LeaveApplyAdminComponent, {
+      // data: { item_id: item?.id },
+      panelClass: 'custom-details-dialog',
+      disableClose: true,
+    });
+    dialogRef.afterClosed().subscribe((resp: any) => {
+      console.log('resp', resp);
+      if (resp.data === 'refresh') {
+        this.getleaverequest();
+      }
+    });
+    this.cdr.detectChanges();
+  }
+
+
+
+  getleaverequest() {
+     this.count = 0;
+    this.filterQuery = this.getFilterBaseUrl()
+    if (this.userRole === 'Manager') {
+      this.filterQuery += `&manager_id=${this.user_id}`
+    }
+    if (this.filters.leave_type.length) {
+      this.filterQuery += `&leave_type_ids=[${this.filters.leave_type.join(',')}]`
+    }
+    if (this.filters.employees.length) {
+      this.filterQuery += `&leave_employee_ids=[${this.filters.employees.join(',')}]`;
+    }
+    if (this.filters.status_name.length) {
+      this.filterQuery += `&status_values=[${this.filters.status_name.join(',')}]`;
+    }
+    if (this.selectedPeriod) {
+      this.filterQuery += `&leave_period=${this.selectedPeriod}`;
+    }
+    if(this.mainStartDate && this.mainEndDate){
+      let start_date = this.datePipe.transform(this.mainStartDate, 'yyyy-MM-dd');
+      let end_date = this.datePipe.transform(this.mainEndDate, 'yyyy-MM-dd');
+      this.filterQuery +=`&leave-start-date=${start_date}&leave-end-date=${end_date}`;
+    }
+    this.apiService.getData(`${environment.live_url}/${environment.apply_leaves}/${this.filterQuery}`)
+      .subscribe((res: any) => {
+        if(res.results){
+          this.leave_request = res.results;
+          const noOfPages: number = res?.['total_pages']
+          this.count = noOfPages * this.tableSize;
+          this.page = res?.['current_page'];
+        }
+      });
+  }
+  getFilterBaseUrl(): string {
+    const base = `?page=${this.page}&page_size=${this.tableSize}`;
+    // const searchParam = this.term?.trim().length >= 2 ? `&search=${encodeURIComponent(this.term.trim())}` : '';
+    // const employeeParam = this.userRole !== 'Admin' ? `&employee-id=${this.user_id}` : '';
+
+    return `${base}`;
+  }
+
+  openFilter(filter: any): void {
+    if (filter) {
+      filter.onMenuOpened();
+    }
+  }
+  fetchEmployees = (page: number, search: string) => {
+    const extraParams = {
+      is_active: 'True',
+      employee: 'True',
+      // ...(this.userRole !== 'Admin' && { 'employee-id': this.user_id })
+    };
+    if (this.userRole === 'Manager') {
+      extraParams['reporting_manager_id'] = this.user_id; // 145 in your example
+    }
+    return this.dropdownService.fetchDropdownData$(
+      environment.employee,
+      page,
+      search,
+      (item) => ({ id: item.user_id, name: item.user__full_name }),
+      extraParams
+    );
+  };
+
 }

@@ -155,7 +155,7 @@
               <!-- <mat-checkbox color="primary" class="example-margin" formControlName="is_accrual"
                 (change)="isAccuralEnabled($event)" [disabled]="!editLeaveType"> -->
               <mat-checkbox color="primary" class="example-margin" formControlName="is_accrual"
-                (change)="isAccuralEnabled($event)" [disabled]="true">
+                (change)="isAccuralEnabled($event)" >
                 <h5 class="c-header">Accrual <span class="r-star">*</span></h5>
               </mat-checkbox>
             </div>
@@ -167,7 +167,7 @@
           <div class="row mx-3 my-0 p-0">
                 <div class="col-sm-12 col-md-3 col-lg-2 my-1 no-padding pl-0 pr-5">
                   <mat-form-field appearance="outline"
-                    [ngClass]="{ 'highlight-background': !editLeaveType}"
+                    [ngClass]="{'highlight-background':!leaveTypeForm.get('is_accrual')?.value}"
                     class="w-100 custom-mat-form-field">
                     <mat-label>Credit Days<b class="r-star">*</b></mat-label>
                     <input matInput placeholder="Enter Credit Days" autocomplete="off"
@@ -182,7 +182,7 @@
                 </div>
                 <div class="col-sm-12 col-md-3 col-lg-3 my-1 no-padding pl-5 pr-0">
                   <mat-form-field appearance="outline"
-                    [ngClass]="{ 'highlight-background': !editLeaveType}"
+                    [ngClass]="{'highlight-background':!leaveTypeForm.get('is_accrual')?.value}"
                     class="w-100 custom-mat-form-field">
                     <mat-label>Leave Accrual Cycles<b class="r-star">*</b></mat-label>
                     <mat-select placeholder="Leave Accrual Cycle" formControlName="accrual_cycle" autocomplete="off"
@@ -202,7 +202,7 @@
                 </div>
                  <div class="col-sm-12 col-md-3 col-lg-3 my-1 no-padding pl-0 pr-5">
                   <mat-form-field appearance="outline"
-                    [ngClass]="{ 'highlight-background': !editLeaveType}"
+                    [ngClass]="{'highlight-background':!leaveTypeForm.get('is_accrual')?.value}"
                     class="w-100 custom-mat-form-field">
                     <mat-label>Prorate Accrual<b class="r-star">*</b></mat-label>
                     <mat-select placeholder="Prorate Accrual" formControlName="prorate_accrual" autocomplete="off"

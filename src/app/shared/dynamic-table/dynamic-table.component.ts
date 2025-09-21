@@ -64,6 +64,8 @@ selectedItemsMap: { [key: string]: any[] } = {};  //new
   previousFilters: { [key: string]: any[] } = {};
   selectedDateRange;
   mainDateRange:any
+  selectedLeaveType:any;
+  leaveTypes:any =[];
   tableFormGroup:FormGroup;
   isEditBtn:boolean=false;
   resetWeekDate:boolean=false;
@@ -91,6 +93,16 @@ selectedFile:(File | null)[] = [];
   tempFilters: { [key: string]: any[] } = {};
   ngOnInit(): void {
 this.tempFilters = JSON.parse(JSON.stringify(this.columnFilters));
+this.getAllLeaveTypes();
+   }
+
+   getAllLeaveTypes(){
+     this.api.getData(`${environment.live_url}/${environment.settings_leave_type}/`).subscribe((respData: any) => {
+      this.leaveTypes = respData;
+      console.log(respData)
+    }, (error: any) => {
+      this.api.showError(error?.error?.detail);
+    })
    }
 // onSelectionChange(newSelected: any[], col: any): void {
 //   const key = col.key;
@@ -111,6 +123,7 @@ this.tempFilters = JSON.parse(JSON.stringify(this.columnFilters));
   }
 
   ngOnChanges(changes: SimpleChanges): void {
+    console.log('sdsd',this.config)
     this.initializeTable();
     this.paginationConfig = {
       totalItems: this.config.totalRecords ?? 0,
@@ -263,6 +276,7 @@ onFilterChange(selectedValue: any, columnConfig: any, fromCheckbox: boolean = fa
   }
 
   requestReset(){
+    this.selectedLeaveType = '';
     this.config.searchTerm = '';
     this.currentPage = 1;
     this.tableSize = 50;
@@ -665,6 +679,10 @@ if(event.value){
   this.resetWeekDate = true;
 }
 }
+
+ selectLeaveTypesFunc(event) {
+    this.actionEvent.emit({ actionType: 'leaveType', detail: {leave_type:this.selectedLeaveType}});
+  }
 
 dateClass = (date: Date) => {
   return date.getDay() === 0 ? 'sunday-highlight' : '';

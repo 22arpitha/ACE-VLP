@@ -18,68 +18,44 @@ export class UserGuideModalComponent implements OnInit {
     this.carouselImages();
   }
   carouselImages() {
-    if (sessionStorage.getItem('user_role_name') === 'Admin') {
+    
       this.imageSlides = [
-        { image: '../../../assets/images/Screenshots/step 1.png' },
-        { image: '../../../assets/images/Screenshots/step 2.png' },
-        { image: '../../../assets/images/Screenshots/step 3.png' },
-        { image: '../../../assets/images/Screenshots/step 4.png' },
-        { image: '../../../assets/images/Screenshots/step 5.png' },
-        { image: '../../../assets/images/Screenshots/step 6.png' },
-        { image: '../../../assets/images/Screenshots/step 7.png' },
-        { image: '../../../assets/images/Screenshots/step 8.png' },
-        { image: '../../../assets/images/Screenshots/step 9.png' },
-        { image: '../../../assets/images/Screenshots/step 10.png' },
-        { image: '../../../assets/images/Screenshots/step 12.png' },
-        { image: '../../../assets/images/Screenshots/step 13.png' },
-        { image: '../../../assets/images/Screenshots/step 14.png' },
-        { image: '../../../assets/images/Screenshots/step 15.png' },
-        { image: '../../../assets/images/Screenshots/step 16.png' },
-        { image: '../../../assets/images/Screenshots/step 17.png' },
-        { image: '../../../assets/images/Screenshots/step 18-1.png' },
-        { image: '../../../assets/images/Screenshots/step 18.png' },
-        { image: '../../../assets/images/Screenshots/step 19.png' },
-        { image: '../../../assets/images/Screenshots/step 20.png' },
-        { image: '../../../assets/images/Screenshots/step 21.png' },
-        { image: '../../../assets/images/Screenshots/step 22.png' }
+          { image: '../../../assets/images/screens/1_Step.jpg' },
+          { image: '../../../assets/images/screens/2_Step.jpg' },
+          { image: '../../../assets/images/screens/3_Step.jpg' },
+          { image: '../../../assets/images/screens/4_Step.jpg' },
+          { image: '../../../assets/images/screens/5_Step.jpg' },
+          { image: '../../../assets/images/screens/6_Step.jpg' },
+          { image: '../../../assets/images/screens/7_Step.jpg' },
+          { image: '../../../assets/images/screens/8_Step.jpg' },
+          { image: '../../../assets/images/screens/9_Step.jpg' },
+          { image: '../../../assets/images/screens/10_Step.jpg' },
+          { image: '../../../assets/images/screens/11_Step.jpg' },
+          { image: '../../../assets/images/screens/12_Step.jpg' },
+          { image: '../../../assets/images/screens/13_Step.jpg' },
+          { image: '../../../assets/images/screens/14_Step.jpg' },
+          { image: '../../../assets/images/screens/15_Step.jpg' },
+          { image: '../../../assets/images/screens/16_Step.jpg' },
+          { image: '../../../assets/images/screens/17_Step.jpg' },
+          { image: '../../../assets/images/screens/18_Step.jpg' },
+          { image: '../../../assets/images/screens/19_Step.jpg' },
+          { image: '../../../assets/images/screens/20_Step.jpg' },
+          { image: '../../../assets/images/screens/21_Step.jpg' },
+          { image: '../../../assets/images/screens/22_Step.jpg' },
+          { image: '../../../assets/images/screens/23_Step.jpg' },
+          { image: '../../../assets/images/screens/24_Step.jpg' },
+          { image: '../../../assets/images/screens/25_Step.jpg' },
+          { image: '../../../assets/images/screens/26_Step.jpg' },
+          { image: '../../../assets/images/screens/27_Step.jpg' },
+          { image: '../../../assets/images/screens/28_Step.jpg' },
+          { image: '../../../assets/images/screens/29_Step.jpg' },
+          { image: '../../../assets/images/screens/30_Step.jpg' },
+          { image: '../../../assets/images/screens/31_Step.jpg' },
+          { image: '../../../assets/images/screens/32_Step.jpg' },
+          { image: '../../../assets/images/screens/33_Step.jpg' },
+          { image: '../../../assets/images/screens/34_Step.jpg' }
       ];
-    } else if (sessionStorage.getItem('user_role_name') === 'SuperAdmin') {
-      this.imageSlides = [];
-    }
-    else if (sessionStorage.getItem('user_role_name') === 'Employee') {
-      let designation:any = sessionStorage.getItem('designation');
-      if (designation.toLowerCase().includes('manager')) {
-        // console.log('The string contains "manager".');
-        this.imageSlides = [
-          { image: '../../../assets/images/Screenshots/projectslist.png' },
-          { image: '../../../assets/images/Screenshots/CreateProjects.png' },
-          { image: '../../../assets/images/Screenshots/step 12.png' },
-          { image: '../../../assets/images/Screenshots/step 13.png' },
-          { image: '../../../assets/images/Screenshots/step 14.png' },
-          { image: '../../../assets/images/Screenshots/step 15.png' },
-          { image: '../../../assets/images/Screenshots/step 16.png' },
-          { image: '../../../assets/images/Screenshots/step 17.png' },
-          { image: '../../../assets/images/Screenshots/step 18-1.png' },
-          { image: '../../../assets/images/Screenshots/step 18.png' },
-          { image: '../../../assets/images/Screenshots/step 19.png' },
-          { image: '../../../assets/images/Screenshots/step 20.png' },
-        ]
-      } else {
-        // console.log('The string does not contain "manager".');
-        this.imageSlides = [
-          { image: '../../../assets/images/Screenshots/projectslist.png' },
-          { image: '../../../assets/images/Screenshots/CreateProjects.png' },
-          { image: '../../../assets/images/Screenshots/step 12.png' },
-          { image: '../../../assets/images/Screenshots/step 13.png' },
-          { image: '../../../assets/images/Screenshots/step 14.png' },
-          { image: '../../../assets/images/Screenshots/step 15.png' },
-          { image: '../../../assets/images/Screenshots/step 16.png' },
-          { image: '../../../assets/images/Screenshots/step 17.png' },
-          { image: '../../../assets/images/Screenshots/step 18-1.png' },
-        ]
-      }
-     
-    }
+    
   }
 
   close(): void {

@@ -1,5 +1,5 @@
 import { Component, OnInit, Inject } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { ApiserviceService } from '../../../service/apiservice.service';
 import { environment } from '../../../../environments/environment';
@@ -14,13 +14,15 @@ import { SubModuleService } from 'src/app/service/sub-module.service';
   styleUrls: ['./add-compoff-request.component.scss']
 })
 export class AddCompoffRequestComponent implements OnInit {
-  compOffForm: FormGroup;
+  rejectCompOffForm: FormGroup;
   headingText: string;
   buttonName: string;
   minDate: string;
   accessPermissions = [];
+  allEmp
   user_id: any;
   userRole: any;
+  comOffGrantData: any
   constructor(
     private fb: FormBuilder,
     private apiService: ApiserviceService,
@@ -29,14 +31,17 @@ export class AddCompoffRequestComponent implements OnInit {
     private accessControlService: SubModuleService,
     public dialogRef: MatDialogRef<AddCompoffRequestComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any
-  ) { }
+  ) {
+    this.userRole = sessionStorage.getItem('user_role_name');
+    this.user_id = Number(sessionStorage.getItem('user_id'));
+  }
 
   ngOnInit(): void {
     this.initialForm();
     if (this.data.edit) {
       this.headingText = 'Compensatory Request';
       this.buttonName = 'Approve';
-      // this.getHolidayDataById();
+      this.getCompoffDataById();
     } else {
       this.headingText = 'Add Request'
       this.buttonName = 'Add'
@@ -69,27 +74,27 @@ export class AddCompoffRequestComponent implements OnInit {
   }
 
   initialForm() {
-    this.compOffForm = this.fb.group({
-      worked_date: ['', Validators.required],
-      duration: ['', Validators.required],
-      expiry_date: ['', Validators.required],
-      reason: ['', Validators.required, [Validators.pattern(/^[a-zA-Z]+( [a-zA-Z]+)*$/), Validators.maxLength(100)]]
+    this.rejectCompOffForm = this.fb.group({
+      status: "rejected",
+      leave_type_id:[''],
+      rejected_by: [Number(sessionStorage.getItem('user_id'))],
+       rejected_reason: ['', 
+        [
+          Validators.pattern(/^[a-zA-Z]+( [a-zA-Z]+)*$/),
+          Validators.maxLength(200)
+        ]
+  ]
     })
   }
 
   get f() {
-    return this.compOffForm.controls;
+    return this.rejectCompOffForm.controls;
   }
 
-  getHolidayDataById() {
-    this.apiService.getData(`${environment.live_url}/${environment.holiday_calendar}/${this.data.item_id}/`).subscribe(
+  getCompoffDataById() {
+    this.apiService.getData(`${environment.live_url}/${environment.comp_off_grant}/${this.data.item_id}/`).subscribe(
       (res: any) => {
-        this.compOffForm.patchValue({
-          name: res.name,
-          date: res.date,
-          // classification: res.classification,
-          description: res.description,
-        })
+        this.comOffGrantData = res
       },
       (error: any) => {
         console.log('error', error)
@@ -97,41 +102,41 @@ export class AddCompoffRequestComponent implements OnInit {
     )
   }
 
-  addOrUpdateHoliday() {
-    if (this.compOffForm.invalid) {
-      this.compOffForm.markAllAsTouched();
-    } else {
-      this.compOffForm.patchValue({ date: this.datepipe.transform(this.compOffForm?.get('date')?.value, 'YYYY-MM-dd') })
-      if (this.data.edit) {
-        this.apiService.updateData(`${environment.live_url}/${environment.holiday_calendar}/${this.data.item_id}/`, this.compOffForm.value).subscribe(
-          (res: any) => {
-            console.log(res);
-            this.apiService.showSuccess(res['message']);
-            this.dialogRef.close();
-          },
-          (error: any) => {
-            console.log('error', error)
-          }
-        )
-      } else {
-        this.apiService.postData(`${environment.live_url}/${environment.holiday_calendar}/`, this.compOffForm.value).subscribe(
-          (res: any) => {
-            console.log(res);
-            this.apiService.showSuccess(res['message']);
-            this.dialogRef.close();
-          },
-          (error: any) => {
-            console.log('error', error)
-          }
-        )
-      }
-    }
-  }
+  //  public onEmployeeChange(event: any) {
+  //   this.updateSelectedItems('employee', event.value);
+  //   // this.getClientBasedEndClient(client_id);
+  // }
+
+  
   workedDateFun(event) {
     this.minDate = event.value
   }
   public closeEditDetails() {
     this.dialogRef.close();
+  }
+
+  reject(data) {
+     this.simpleToggleRequired(true, [
+      'rejected_reason'
+    ]);
+    this.rejectCompOffForm.patchValue({leave_type_id:data.leave_type})
+    if (this.rejectCompOffForm.invalid) {
+      this.rejectCompOffForm.markAllAsTouched();
+    } else {
+      console.log(this.rejectCompOffForm.value)
+      this.apiService.updateData(
+         `${environment.live_url}/${environment.comp_off_grant}/${data.id}/`,
+         this.rejectCompOffForm.value
+       )
+       .subscribe((res: any) => {
+         this.apiService.showSuccess(res?.detail);
+          this.dialogRef.close({data:'refresh'});
+       },
+       (error:any)=>{
+        console.log(error)
+       }
+      );
+    }
   }
 
   delete() {
@@ -161,7 +166,64 @@ export class AddCompoffRequestComponent implements OnInit {
 
   }
 
-  approve(){
-
+  approve(data) {
+     this.simpleToggleRequired(false, [
+      'rejected_reason'
+    ]);
+    let data_to_send = {
+      status: 'approved',
+      approved_by: Number(sessionStorage.getItem('user_id')),
+      leave_type_id:data.leave_type
+    };
+    console.log(data_to_send)
+    this.apiService
+      .updateData(
+        `${environment.live_url}/${environment.comp_off_grant}/${data.id}/`,
+        data_to_send
+      )
+      .subscribe((res: any) => {
+        this.apiService.showSuccess(res?.detail);
+         this.dialogRef.close({data:'refresh'});
+      },
+       (error:any)=>{
+        console.log(error)
+       }
+    );
   }
+
+  simpleToggleRequired(enable: boolean, controlNames: string[]) {
+  controlNames.forEach(name => {
+    const control: any = this.rejectCompOffForm.get(name);
+    if (enable) {
+      control?.setValidators([
+        Validators.required,
+        Validators.pattern(/^[a-zA-Z]+( [a-zA-Z]+)*$/),
+        Validators.maxLength(200)
+      ]);
+    } else {
+      control?.clearValidators();
+      control?.setValidators([
+        Validators.pattern(/^[a-zA-Z]+( [a-zA-Z]+)*$/),
+        Validators.maxLength(200)
+      ]);
+      control?.reset();
+    }
+    control?.updateValueAndValidity();
+  });
+}
+
+
+// simpleToggleRequired(enable: boolean, controlNames: string[]) {
+//     controlNames.forEach(name => {
+//       const control :any= this.rejectCompOffForm.get(name);
+//       if (enable) {
+//         control?.setValidators(Validators.required);
+//       } else {
+//           control?.clearValidators();
+//           control?.reset();
+//       }
+//       control?.updateValueAndValidity();
+//     });
+//   }
+ 
 }

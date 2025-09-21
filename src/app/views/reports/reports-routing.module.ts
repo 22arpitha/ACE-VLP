@@ -9,6 +9,9 @@ import { JobStatusReportComponent } from './job-status-report/job-status-report.
 import {JobTimeReportsComponent} from './job-time-reports/job-time-reports.component'
 import { NonProductiveHoursComponent } from './non-productive-hours/non-productive-hours.component';
 import { TimesheetsSummaryReportComponent } from './timesheets-summary-report/timesheets-summary-report.component';
+import {LeaveSummaryReportComponent} from './leave-summary-report/leave-summary-report.component';
+import {LeaveTransactionReportComponent} from './leave-transaction-report/leave-transaction-report.component'
+
 const routes: Routes = [
   {
      path:'',component:ReportsComponent, children:[
@@ -19,7 +22,9 @@ const routes: Routes = [
       {path:'job-productivity-report', component:ProductivityReportComponent },
       {path:'job-time-report', component: JobTimeReportsComponent},
       {path:'job-status-report', component:JobStatusReportComponent},
-       {path:'non-productive-hours', component:NonProductiveHoursComponent}
+       {path:'non-productive-hours', component:NonProductiveHoursComponent},
+       {path:'leave-summary-report',component: LeaveSummaryReportComponent},
+       {path:'leave-transaction-report',component: LeaveTransactionReportComponent},
      ]
   }
 ];

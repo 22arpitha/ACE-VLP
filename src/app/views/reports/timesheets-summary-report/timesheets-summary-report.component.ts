@@ -291,10 +291,10 @@ export class TimesheetsSummaryReportComponent implements OnInit {
         //   query += `&job-status-ids=[${this.selectedStatusIds.join(',')}]`;
         // }
         if (this.selectedEmployeeIds?.length) {
-         query += `&timesheet-employee-ids=[${this.selectedEmployeeIds.join(',')}]`;
+         query += `&employee-ids=[${this.selectedEmployeeIds.join(',')}]`;
        }
         if(this.time?.start_date && this.time?.end_date){
-         query += `&start-date=${this.time?.start_date}&end-date=${this.time?.end_date}`;
+         query += `&timesheet-start-date=${this.time?.start_date}&timesheet-end-date=${this.time?.end_date}`;
        }
 
         // const startDate = this.fromDate?.start_date ?? this.time.start_date;

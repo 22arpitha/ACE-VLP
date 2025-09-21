@@ -6,6 +6,7 @@ import { LeaveApplyComponent } from './leave-apply/leave-apply.component';
 import { HolidayListComponent } from './holiday-list/holiday-list.component';
 import { CanDeactivateGuard } from '../../auth-guard/can-deactivate.guard';
 import { DashboardComponent } from './dashboard/dashboard.component';
+import { CompOffGrantComponent } from './comp-off-grant/comp-off-grant.component';
 
 const routes: Routes = [
   {
@@ -28,6 +29,11 @@ const routes: Routes = [
       {
         path:'dashboard',
         component: DashboardComponent,
+        canDeactivate:[CanDeactivateGuard]
+      },
+       {
+        path:'comp-off-grant',
+        component: CompOffGrantComponent,
         canDeactivate:[CanDeactivateGuard]
       }
     ]

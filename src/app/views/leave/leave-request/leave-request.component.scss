@@ -2,7 +2,7 @@
   margin: 0px 5px;
 }
 .settings-table-bg {
-  max-height: 75vh !important;
+  max-height: 80vh !important;
 }
 .table-wrapper {
   max-height: 55vh !important;
@@ -13,12 +13,12 @@
   width: 27px !important;
   height: 40px !important;
 }
-.jobs mat-select.mat-select-table {
+.leave-requests mat-select.mat-select-table {
   border: 1px solid #929292 !important;
   border-radius: 8px !important;
   padding: 4px 0px !important;
 }
-::ng-deep .jobs .input-css input.mat-input-element {
+::ng-deep .leave-requests .input-css input.mat-input-element {
   margin-top: 0 !important;
   border-radius: 8px !important;
   border: 1px solid #929292 !important;
@@ -69,18 +69,3 @@
 }
 
 
-.table-list {
-    table-layout: fixed; /* Ensures fixed-width columns */
-    width: 100%;         /* Make table occupy full width */
-    border-radius: 10px;
-    overflow: hidden; 
-    border: 3px solid #ddd;     
-    
-  }
-  
-  .table-list th,
-  .table-list td {
-    width: 20%;          /* 5 columns → 100% / 5 = 20% each */
-    text-align: center;  /* Optional: center text */
-    word-wrap: break-word;
-  }

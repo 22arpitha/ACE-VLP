@@ -4,13 +4,40 @@
             <div class="col-12 my-3 d-flex justify-content-between align-items-center">
                 <h4>{{headingText}}</h4>
                 <div *ngIf="data.edit">
-                    <i class="bi bi-clock-history fs-4 text-warning"></i>
-                    <span class="fs-6 text-dark ms-2 align-items-center">Pending</span>
+                     <span style="background: #ffface; color: #978419; font-size: 14px" *ngIf="comOffGrantData?.status === 'Pending'"
+                    class="rounded p-2">{{ comOffGrantData?.status | uppercase }}</span>
+                    <span *ngIf="comOffGrantData?.status === 'rejected'" style="font-size: 14px;background:#fee2e2; color: #b91c1c;"
+                    class="rounded p-2">{{ comOffGrantData?.status | uppercase }}</span>
+                    <span *ngIf="comOffGrantData?.status === 'approved'" style="font-size: 14px ;background: #dcfce7; color: #15803d;"
+                    class="rounded p-2">{{ comOffGrantData?.status | uppercase }}</span>
                 </div>
             </div>
-            <div class="col-12 mx-0" *ngIf="!data.edit">
+            <!-- <div class="col-12 mx-0" *ngIf="!data.edit">
                 <form [formGroup]="compOffForm" class="p-0">
                     <div class="row mx-0">
+                        <div class="col-12">
+                            <mat-form-field appearance="outline"  class="w-100 custom-mat-form-field">
+                                <mat-label>Employee <b class="r-star">*</b></mat-label>
+                                <mat-select  formControlName="employee_id" autocomplete="off" 
+                                        placeholder="select" panelClass="custom-select-panel"
+                                        (selectionChange)="onEmployeeChange($event)" (openedChange)="onDropdownOpened($event, 'employee')" >
+                                        
+                                        <div class="mat-select-search-wrapper d-flex">
+                                        <input matInput  [(ngModel)]="dropdownState.employee.search" (ngModelChange)="onSearch('employee', $event)"  autofocus [ngModelOptions]="{standalone: true}" placeholder="Search employee" class="mat-select-search">
+                                        <mat-icon class="search-icon" *ngIf="!dropdownState.employee.search">search</mat-icon>
+                                        <mat-icon class="search-icon"  *ngIf="dropdownState.employee.search" type="button" (click)="clearSearchDropD('employee')">close</mat-icon>
+                                        </div>
+                                         <mat-option hidden disabled></mat-option>
+                                        <mat-option *ngFor="let item of getOptionsWithSelectedOnTop('employee')" [value]="item?.user_id">
+                                            {{item?.user__full_name}}
+                                        </mat-option>
+                                </mat-select>
+                                <mat-error *ngIf="f['employee_id']?.invalid && f['employee_id']?.touched || f['employee_id']?.dirty">
+                                    <span  *ngIf="f['employee_id']?.errors?.['required']">Employee is required</span>
+                            </mat-error>
+                            </mat-form-field>
+                        
+                        </div>
                         <div class="col-12">
                             <mat-form-field appearance="outline" class="w-100 p-0 custom-mat-form-field">
                                 <mat-label>Worked Date <b class="r-star">*</b></mat-label>
@@ -57,7 +84,7 @@
                         <div class="col-12">
                             <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
                                 <mat-label>Reason <b class="r-star">*</b></mat-label>
-                                <textarea matInput placeholder="Enter Reason" appAlphabetOnly formControlName="reason"
+                                <textarea matInput placeholder="Enter Reason" formControlName="reason"
                                     autocomplete="off" pattern="^(?!\s)(.*\S)?$"></textarea>
                                 <mat-error *ngIf="f['reason']?.invalid && f['reason']?.touched || f['reason']?.dirty">
                                     <span *ngIf="f['reason'].errors?.['required']">Reason is required</span>
@@ -82,41 +109,60 @@
                         </div>
                     </div>
                 </form>
-            </div>
+            </div> -->
             <div class="col-12 mx-0 my-3" *ngIf="data.edit">
                 <div class="row mx-0">
                     <div class="col-sm-12 col-md-6 col-lg-6 my-2">
                         <h4 class="label-name">Employee Name</h4>
-                        <p>Arpitha</p>
+                        <p>{{comOffGrantData?.employee_name}}</p>
                     </div>
                     <div class="col-sm-12 col-md-6 col-lg-6 my-2">
                         <h4 class="label-name">Worked Date</h4>
-                        <p>22/05/2022</p>
-                    </div>
-                    <div class="col-sm-12 col-md-6 col-lg-6 my-2">
-                        <h4 class="label-name">Duration</h4>
-                        <p>Half Day</p>
-                    </div>
-                    <div class="col-sm-12 col-md-6 col-lg-6 my-2">
-                        <h4 class="label-name">Credited</h4>
-                        <p>0.5</p>
+                        <p>{{comOffGrantData?.from_date}}</p>
                     </div>
                     <div class="col-sm-12 col-md-6 col-lg-6 my-2">
                         <h4 class="label-name">Expiry Date</h4>
-                        <p>25/05/2022</p>
+                        <p>{{comOffGrantData?.to_date}}</p>
+                    </div>
+                    <div class="col-sm-12 col-md-6 col-lg-6 my-2">
+                        <h4 class="label-name">Taken</h4>
+                        <p>{{comOffGrantData?.number_of_leaves_applying_for}}</p>
+                    </div>
+                    <div class="col-sm-12 col-md-6 col-lg-6 my-2">
+                        <h4 class="label-name">Credited</h4>
+                        <p>{{comOffGrantData?.credited || 0}}</p>
                     </div>
                     <div class="col-sm-12 col-md-6 col-lg-6 my-2">
                         <h4 class="label-name">Reason</h4>
-                        <p>Working on a priority task which was pending</p>
+                        <p>{{comOffGrantData?.message}}</p>
                     </div>
-                    <div class="col-12 my-4 px-2 d-flex justify-content-around">
-                            <div>
-                                <button mat-button class="cancel-button mat-btn-s me-2" type="button" mat-dialog-close>
-                                    Close</button>
-                                <button mat-raised-button class="proceedbtn mat-btn-s " type="button"
-                                    (click)="approve()">Approve</button>
-                            </div>
+                    <form [formGroup]="rejectCompOffForm">
+                        <div class="col-12" *ngIf="comOffGrantData?.status==='Pending'">
+                            <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+                                <mat-label>Reason for Rejecting<b class="r-star">*</b></mat-label>
+
+                                <textarea matInput placeholder="Enter reason" autocomplete="off"
+                                    style="height: 50px !important" formControlName="rejected_reason" maxlength="200"
+                                    rows="3"></textarea>
+                                <mat-error *ngIf="f['rejected_reason']?.invalid && f['rejected_reason']?.touched || f['rejected_reason']?.dirty">
+                                    <span *ngIf="f['rejected_reason']?.errors?.['required']">Reason is required</span>
+                                </mat-error>
+                                <!-- <mat-hint align="end" class="mt-2">
+                                    {{ f['rejected_reason']?.value?.length || 0 }}/200 ({{ 200 - (f['rejected_reason']?.value?.length || 0) }} left)
+                                </mat-hint> -->
+                            </mat-form-field>
                         </div>
+                    </form>
+                    <div class="col-12 my-4 px-2 d-flex justify-content-around">
+                        <div>
+                            <button mat-button class="cancel-button mat-btn-s me-2" type="button" mat-dialog-close>
+                                Close</button>
+                            <button *ngIf="comOffGrantData?.status==='Pending'" mat-raised-button class="proceedbtn mat-btn-s me-2" type="button"
+                                (click)="approve(comOffGrantData)">Approve</button>
+                            <button *ngIf="comOffGrantData?.status==='Pending'" mat-raised-button class="delete-item-button mat-btn-s " type="submit"
+                                (click)="reject(comOffGrantData)">Reject</button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

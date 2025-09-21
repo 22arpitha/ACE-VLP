@@ -8,34 +8,28 @@
               <p><b>Leave Type</b></p>
             </div>
             <div class="col-5 col-sm-5 col-md-3 col-lg-3 px-0">
-              <mat-form-field
-                appearance="outline"
-                class="w-100 custom-mat-form-field"
-              >
+              <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
                 <mat-label>Leave Type<b class="r-star">*</b></mat-label>
-                <mat-select
-                  placeholder="Leave Type"
-                  autocomplete="off"
-                  panelClass="custom-select-panel"
-                  [disableOptionCentering]="true"
-                  (selectionChange)="onLeaveTypeChange($event)"
-                  formControlName="leave_type"
-                >
-                  <mat-option
-                    *ngFor="let leave of allleavetypeList"
-                    [value]="leave.id"
-                    >{{ leave.leave_type_name }}</mat-option
-                  >
+                <mat-select placeholder="Leave Type" autocomplete="off" panelClass="custom-select-panel"
+                  [disableOptionCentering]="true" (selectionChange)="onLeaveTypeChange($event)"
+                  formControlName="leave_type">
+                  <mat-option *ngFor="let leave of allleavetypeList" [value]="leave.id">{{ leave.leave_type_name
+                    }}</mat-option>
                 </mat-select>
+                <mat-error *ngIf="f['leave_type']?.invalid && f['leave_type']?.touched || f['leave_type']?.dirty">
+                  <span *ngIf="f['leave_type']?.errors?.['required']">Leave type is required</span>
+                </mat-error>
               </mat-form-field>
             </div>
-            <div
-              class="col-5 col-sm-5 col-md-3 col-lg-3 no-padding pl-5 pr-0 align-self-center"
-            >
+            <div class="col-5 col-sm-5 col-md-3 col-lg-3 no-padding pl-5 pr-0 align-self-center">
               <div class="balance-info-content">
                 <mat-label>Leave Balance</mat-label>
                 <div class="text-clr">{{ leave_balance }}</div>
               </div>
+            </div>
+            <div class="col-lg-3">
+              <button mat-raised-button class="proceedbtn mat-btn-s" type="button" (click)="openGrantCompOff()">Comp Off
+                Grant</button>
             </div>
           </div>
         </div>
@@ -49,103 +43,63 @@
           </div>
           <div class="row mx-0 my-0 p-0">
             <div class="col-5 col-sm-5 col-md-3 col-lg-3 px-0">
-              <mat-form-field
-                appearance="outline"
-                class="w-100 p-0 custom-mat-form-field"
-              >
+              <mat-form-field appearance="outline" class="w-100 p-0 custom-mat-form-field">
                 <mat-label>From</mat-label>
-                <input
-                  matInput
-                  [matDatepicker]="picker1"
-                  (dateInput)="startDateFun($event)"
-                  placeholder="Enter From"
-                  autocomplete="off"
-                  formControlName="from_date"
-                />
+                <input matInput [matDatepicker]="picker1" (dateInput)="startDateFun($event)" placeholder="Enter From"
+                  autocomplete="off" formControlName="from_date" />
                 <!-- <button ngbTooltip="Clear" matSuffix mat-icon-button aria-label="Clear" type="button">
               <mat-icon>close</mat-icon>
             </button> -->
-                <mat-datepicker-toggle
-                  matSuffix
-                  [for]="picker1"
-                ></mat-datepicker-toggle>
+                <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
                 <mat-datepicker #picker1></mat-datepicker>
+                <mat-error *ngIf="f['from_date']?.invalid && f['from_date']?.touched || f['from_date']?.dirty">
+                  <span *ngIf="f['from_date']?.errors?.['required']">From Date is required</span>
+                </mat-error>
               </mat-form-field>
             </div>
             <div class="col-5 col-sm-5 col-md-3 col-lg-3 no-padding pl-5 pr-0">
-              <mat-form-field
-                appearance="outline"
-                class="w-100 custom-mat-form-field"
-              >
+              <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
                 <mat-label>Session<b class="r-star">*</b></mat-label>
-                <mat-select
-                  placeholder="Session"
-                  autocomplete="off"
-                  panelClass="custom-select-panel"
-                  [disableOptionCentering]="true"
-                  (selectionChange)="sessionFun1($event)"
-                  formControlName="from_session"
-                >
-                  <mat-option
-                    *ngFor="let session of sessions"
-                    [value]="session.value"
-                    >{{ session.label }}</mat-option
-                  >
+                <mat-select placeholder="Session" autocomplete="off" panelClass="custom-select-panel"
+                  [disableOptionCentering]="true" (selectionChange)="sessionFun1($event)"
+                  formControlName="from_session">
+                  <mat-option *ngFor="let session of sessions" [value]="session.value">{{ session.label }}</mat-option>
                 </mat-select>
+                <mat-error *ngIf="f['from_session']?.invalid && f['from_session']?.touched || f['from_session']?.dirty">
+                  <span *ngIf="f['from_session']?.errors?.['required']">Session is required is required</span>
+                </mat-error>
               </mat-form-field>
             </div>
           </div>
           <div class="row mx-0 my-0 p-0">
             <div class="col-6 col-sm-6 col-md-3 col-lg-3 px-0">
-              <mat-form-field
-                appearance="outline"
-                class="w-100 p-0 custom-mat-form-field"
-              >
+              <mat-form-field appearance="outline" class="w-100 p-0 custom-mat-form-field">
                 <mat-label>To</mat-label>
-                <input
-                  matInput
-                  [matDatepicker]="picker2"
-                  [min]="minDate"
-                  (dateInput)="endDateFun($event)"
-                  placeholder="Enter To"
-                  autocomplete="off"
-                  formControlName="to_date"
-                />
+                <input matInput [matDatepicker]="picker2" [min]="minDate" (dateInput)="endDateFun($event)"
+                  placeholder="Enter To" autocomplete="off" formControlName="to_date" />
                 <!-- <button ngbTooltip="Clear" matSuffix mat-icon-button aria-label="Clear" type="button">
               <mat-icon>close</mat-icon>
             </button> -->
-                <mat-datepicker-toggle
-                  matSuffix
-                  [for]="picker2"
-                ></mat-datepicker-toggle>
+                <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
                 <mat-datepicker #picker2></mat-datepicker>
+                <mat-error *ngIf="f['to_date']?.invalid && f['to_date']?.touched || f['to_date']?.dirty">
+                  <span *ngIf="f['to_date']?.errors?.['required']">To Date is required is required</span>
+                </mat-error>
               </mat-form-field>
             </div>
             <div class="col-6 col-sm-6 col-md-3 col-lg-3 no-padding pl-5 pr-0">
-              <mat-form-field
-                appearance="outline"
-                class="w-100 custom-mat-form-field"
-              >
+              <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
                 <mat-label>Session<b class="r-star">*</b></mat-label>
-                <mat-select
-                  placeholder="Session"
-                  autocomplete="off"
-                  panelClass="custom-select-panel"
-                  [disableOptionCentering]="true"
-                  (selectionChange)="sessionFun2($event)"
-                  formControlName="to_session"
-                >
-                  <mat-option
-                    *ngFor="let session of sessions"
-                    [value]="session.value"
-                    >{{ session.label }}</mat-option
-                  >
+                <mat-select placeholder="Session" autocomplete="off" panelClass="custom-select-panel"
+                  [disableOptionCentering]="true" (selectionChange)="sessionFun2($event)" formControlName="to_session">
+                  <mat-option *ngFor="let session of sessions" [value]="session.value">{{ session.label }}</mat-option>
                 </mat-select>
+                <mat-error *ngIf="f['to_session']?.invalid && f['to_session']?.touched || f['to_session']?.dirty">
+                  <span *ngIf="f['to_session']?.errors?.['required']">Session is required is required</span>
+                </mat-error>
               </mat-form-field>
             </div>
-            <div
-              class="col-6 col-sm-6 col-md-3 col-lg-3 px-0 align-self-center"
-            >
+            <div class="col-6 col-sm-6 col-md-3 col-lg-3 px-0 align-self-center">
               <div class="balance-info-content">
                 <mat-label>Applying For</mat-label>
                 <div class="text-clr">{{ totalDays }} days</div>
@@ -159,24 +113,16 @@
           </div>
           <div class="row mx-0 my-0 p-0">
             <div class="col-12 col-sm-12 col-md-6 col-lg-3 px-0">
-              <mat-form-field
-                appearance="outline"
-                class="w-100 custom-mat-form-field"
-              >
+              <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
                 <mat-label>Applying To<b class="r-star">*</b></mat-label>
-                <mat-select
-                  placeholder="Applying To"
-                  autocomplete="off"
-                  panelClass="custom-select-panel"
-                  [disableOptionCentering]="true"
-                  formControlName="reporting_to"
-                >
-                  <mat-option
-                    *ngFor="let manager of reportinManagerDetails"
-                    [value]="manager.id"
-                    >{{ manager?.full_name }}</mat-option
-                  >
+                <mat-select placeholder="Applying To" autocomplete="off" panelClass="custom-select-panel"
+                  [disableOptionCentering]="true" formControlName="reporting_to">
+                  <mat-option *ngFor="let manager of reportinManagerDetails" [value]="manager.id">{{ manager?.full_name
+                    }}</mat-option>
                 </mat-select>
+                <mat-error *ngIf="f['reporting_to']?.invalid && f['reporting_to']?.touched || f['reporting_to']?.dirty">
+                  <span *ngIf="f['reporting_to']?.errors?.['required']">Applying to is required</span>
+                </mat-error>
               </mat-form-field>
             </div>
           </div>
@@ -184,35 +130,18 @@
             <div class="col-12 col-sm-12 col-md-6 col-lg-6 px-0">
               <mat-form-field class="w-100" appearance="outline">
                 <mat-chip-list #chipList>
-                  <mat-chip
-                    *ngFor="let email of selectedEmails"
-                    [selectable]="true"
-                    [removable]="true"
-                    (removed)="remove(email)"
-                  >
+                  <mat-chip *ngFor="let email of selectedEmails" [selectable]="true" [removable]="true"
+                    (removed)="remove(email)">
                     {{ email }}
                     <mat-icon matChipRemove>cancel</mat-icon>
                   </mat-chip>
-                  <input
-                    placeholder="CC"
-                    #emailInput
-                    [formControl]="emailCtrl"
-                    [matAutocomplete]="auto"
-                    [matChipInputFor]="chipList"
-                    [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-                    [matChipInputAddOnBlur]="false"
-                    (matChipInputTokenEnd)="add($event)"
-                  />
+                  <input placeholder="CC" #emailInput [formControl]="emailCtrl" [matAutocomplete]="auto"
+                    [matChipInputFor]="chipList" [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                    [matChipInputAddOnBlur]="false" (matChipInputTokenEnd)="add($event)" />
                 </mat-chip-list>
 
-                <mat-autocomplete
-                  #auto="matAutocomplete"
-                  (optionSelected)="selected($event)"
-                >
-                  <mat-option
-                    *ngFor="let email of filteredEmails | async"
-                    [value]="email"
-                  >
+                <mat-autocomplete #auto="matAutocomplete" (optionSelected)="selected($event)">
+                  <mat-option *ngFor="let email of filteredEmails | async" [value]="email">
                     {{ email }}
                   </mat-option>
                 </mat-autocomplete>
@@ -221,24 +150,16 @@
           </div>
           <div class="row mx-0 my-0 p-0">
             <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0">
-              <mat-form-field
-                appearance="outline"
-                class="w-100 custom-mat-form-field"
-              >
+              <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
                 <mat-label>Reason:<b class="r-star">*</b></mat-label>
-                <textarea
-                  matInput
-                  placeholder="Enter reason"
-                  autocomplete="off"
-                  style="height: 50px !important"
-                  formControlName="message"
-                  maxlength="200"
-                  rows="3"
-                ></textarea>
-
+                <textarea matInput placeholder="Enter reason" autocomplete="off" style="height: 50px !important"
+                  formControlName="message" maxlength="200" rows="3"></textarea>
+                <mat-error *ngIf="f['message']?.invalid && f['message']?.touched || f['message']?.dirty">
+                  <span *ngIf="f['message']?.errors?.['required']">Reason to is required</span>
+                </mat-error>
                 <mat-hint align="end" class="mt-2">
                   {{ leaveApplyForm.get("message")?.value?.length || 0 }}/200 ({{
-                    200 - (leaveApplyForm.get("message")?.value?.length || 0)
+                  200 - (leaveApplyForm.get("message")?.value?.length || 0)
                   }}
                   left)
                 </mat-hint>
@@ -252,34 +173,15 @@
           </div>
           <div class="row mx-0 my-0 p-0">
             <div class="col-12 col-sm-12 col-md-4 col-lg-4 px-0">
-              <input
-                type="file"
-                accept="image/*"
-                #fileInput
-                hidden
-                (change)="onFileChange($event)"
-              />
-              <div
-                class="image-container w-100 d-flex justify-content-between align-items-center"
-                style="padding: 3px 15px"
-              >
-                <img
-                  id="imagePreview"
-                  *ngIf="fileDataUrl"
-                  [src]="fileDataUrl ? fileDataUrl : ''"
-                  alt="profile"
-                />
+              <input type="file" accept="image/*" #fileInput hidden (change)="onFileChange($event)" />
+              <div class="image-container w-100 d-flex justify-content-between align-items-center"
+                style="padding: 3px 15px">
+                <img id="imagePreview" *ngIf="fileDataUrl" [src]="fileDataUrl ? fileDataUrl : ''" alt="profile" />
                 <span *ngIf="fileName" class="ms-2">{{ fileName }}</span>
                 <mat-label *ngIf="!fileDataUrl">File Attachment</mat-label>
-                <button
-                  type="button"
-                  (click)="openFileDialog()"
-                  mat-icon-button
-                >
-                  <mat-icon
-                    matTooltip="{{ fileDataUrl ? 'Edit' : 'Upload' }}"
-                    class="edit-or-upload-icon"
-                    >{{ fileDataUrl ? "edit" : "attach_file" }}
+                <button type="button" (click)="openFileDialog()" mat-icon-button>
+                  <mat-icon matTooltip="{{ fileDataUrl ? 'Edit' : 'Upload' }}" class="edit-or-upload-icon">{{
+                    fileDataUrl ? "edit" : "attach_file" }}
                   </mat-icon>
                 </button>
               </div>
@@ -289,20 +191,11 @@
       </div>
       <div class="row mx-0 my-2 p-0">
         <div class="action-btn d-flex gap-1 my-1 px-0">
-          <button
-            mat-raised-button
-            class="cancel-button mat-btn-s"
-            type="button"
-          >
+          <button mat-raised-button class="cancel-button mat-btn-s" type="button">
             Cancel
           </button>
-          <button
-            mat-raised-button
-            class="proceedbtn mat-btn-s"
-            (click)="onSubmit()"
-            type="submit"
-          >
-            Save
+          <button mat-raised-button class="proceedbtn mat-btn-s" (click)="onSubmit()" type="submit">
+            Apply
           </button>
         </div>
       </div>

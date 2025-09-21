@@ -1,31 +1,111 @@
-<div class="container-wrapper settings-main-content px-0">
-  <section class="settings-table-bg">
+<div class="container-wrapper settings-main-content px-0 my-leaves">
+  <section class="settings-table-bg px-3">
+    <div class="row mx-0">
+      <div class="col-sm-12 col-md-6 col-lg-3">
+            <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+              <mat-date-range-input [rangePicker]="gobalPicker1">
+                <input matStartDate placeholder="Start date" [(ngModel)]="mainStartDate" (dateChange)="mainDateChange($event)">
+                <input matEndDate placeholder="End date" [(ngModel)]="mainEndDate" (dateChange)="mainEndDateChange($event)">
+              </mat-date-range-input>
+              <mat-datepicker-toggle matSuffix [for]="gobalPicker1"></mat-datepicker-toggle>
+              <mat-date-range-picker #gobalPicker1 [dateClass]="dateClass"></mat-date-range-picker>
+              <!-- <button matSuffix mat-icon-button *ngIf="mainStartDate || mainEndDate" >
+                <mat-icon>close</mat-icon>
+              </button> -->
+            </mat-form-field>
+          </div>
+    </div>
     <div class="row mx-0 my-2 px-0 table-wrapper">
-      <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0">
+      <div class="col-12 px-0">
         <table class="table table table-hover table-list">
           <thead>
             <tr>
-            <th scope="col">SL NO</th>
-              <th scope="col">LEAVE TYPE</th>
+              <th scope="col">SL NO</th>
+              <th scope="col">LEAVE TYPE
+                <button mat-icon-button [matMenuTriggerFor]="leaveTypeFilterMenu"
+                    [ngClass]="filters.leave_type.length>=1 ? 'filterdColumn':''">
+                    <span *ngIf="filters.leave_type.length>=1">{{filters.leave_type.length}}</span>
+                    <i class="bi-funnel" *ngIf="filters.leave_type.length===0"></i>
+                </button>
+
+                <mat-menu #leaveTypeFilterMenu="matMenu">
+                    <app-generic-table-filter [options]="leaveOptions"
+                        [(selectedOptions)]="filters.leave_type"
+                        (selectedOptionsChange)="onFilterChange($event, 'leave_type')">
+                    </app-generic-table-filter>
+                </mat-menu>
+              </th>
               <th scope="col">LEAVE PERIOD</th>
               <th scope="col">DAYS/HOURS TAKEN</th>
               <th scope="col">DATE OF REQUEST</th>
-              <th scope="col">STATUS</th>
+              <th scope="col">STATUS
+                <button mat-icon-button [matMenuTriggerFor]="statusFilterMenu"
+                  [ngClass]="filters.status_name.length>=1 ? 'filterdColumn':''">
+                  <span *ngIf="filters.status_name.length>=1">{{filters.status_name.length}}</span>
+                  <i class="bi-funnel" *ngIf="filters.status_name.length===0"></i>
+                </button>
+
+                <mat-menu #statusFilterMenu="matMenu">
+                    <app-generic-table-filter [options]="leaveStatus"
+                        [(selectedOptions)]="filters.status_name"
+                        (selectedOptionsChange)="onFilterChange($event, 'status_name')">
+                    </app-generic-table-filter>
+              </mat-menu>
+              </th>
+              <th scope="col">MESSAGE</th>
+              <th scope="col">Rejected REASON</th>
+              <th scope="col">ACTION</th>
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let i of my_leaves; let index = index">
-                <td>{{index + 1}}</td>
-              <td>{{i.leave_type_name}}</td>
-              <td>{{i.from_date}} - {{i.to_date}}</td>
-              <td>{{i.number_of_leaves_applying_for}}</td>
-              <td>{{i.created_datetime | date:'dd-MM-yyyy'}}</td>
-              <td *ngIf="i.status === 'Pending'"><span style="background: #ffface; color: #978419;" class="p-2 rounded">PENDING</span></td>
-              <td *ngIf="i.status === 'approved'"><span style="background: #dcfce7; color: #15803d;"  class="p-2 rounded">APPROVED</span></td>
-              <td *ngIf="i.status === 'rejected'"><span style="background:#fee2e2; color: #b91c1c;" class="p-2 rounded">REJECTED</span></td>
-            </tr>
+            <ng-container *ngIf="(myLeavesList) as result">
+              <tr *ngFor="let item of result | customSort:directionValue:sortValue | paginate: { itemsPerPage: tableSize, currentPage: page,totalItems: count }; let i=index">
+                 <td>{{getContinuousIndex(i)}}</td>
+                <td>{{item.leave_type_name}}</td>
+                <td>{{item.from_date}} - {{item.to_date}}</td>
+                <td>{{item.number_of_leaves_applying_for}}</td>
+                <td>{{item.created_datetime | date:'dd-MM-yyyy'}}</td>
+                <td *ngIf="item.status === 'Pending'"><span style="background: #ffface; color: #978419;"
+                    class="p-2 rounded">PENDING</span></td>
+                <td *ngIf="item.status === 'approved'"><span style="background: #dcfce7; color: #15803d;"
+                    class="p-2 rounded">APPROVED</span></td>
+                <td *ngIf="item.status === 'rejected'"><span style="background:#fee2e2; color: #b91c1c;"
+                    class="p-2 rounded">REJECTED</span></td>
+                <td>{{item?.message}}</td>
+                <td></td>
+                <td>
+                  <div *ngIf="item.status === 'Pending'">
+                    <button  class="btn btn-sm custom-btn" type="button"
+                      (click)="revoke(item)">Revoke</button>
+                  </div>
+                  <div *ngIf="item.status != 'Pending'">
+                    <span>-</span>
+                  </div>
+                </td>
+              </tr>
+            </ng-container>
           </tbody>
         </table>
+      </div>
+    </div>
+    <div class="row mx-1 my-2 px-0" *ngIf="myLeavesList?.length === 0">
+      <app-generic-norecards></app-generic-norecards>
+    </div>
+
+    <!-- Pagination -->
+    <div class="row mx-0 px-3" *ngIf="myLeavesList?.length > 0">
+      <div class="col-12 px-0">
+        <div class="pagination-container p-0">
+          <pagination-controls previousLabel="Prev" nextLabel="Next" (pageChange)="onTableDataChange($event)">
+          </pagination-controls>
+          <div class="items-per-page-container">
+            <div>Items per page</div>
+            <mat-select [(ngModel)]="tableSize" (selectionChange)="onTableSizeChange($event)"
+              panelClass="paginationPanelClass" class="page-size">
+              <mat-option *ngFor="let size of tableSizes" [value]="size">{{ size }}</mat-option>
+            </mat-select>
+          </div>
+        </div>
       </div>
     </div>
   </section>

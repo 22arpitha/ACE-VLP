@@ -1,15 +1,26 @@
-.table-list {
-    table-layout: fixed; /* Ensures fixed-width columns */
-    width: 100%;         /* Make table occupy full width */
-    border-radius: 10px;
-    overflow: hidden; 
-    border: 3px solid #ddd;     
-    
+
+.settings-table-bg {
+  // max-height: 90vh !important;
+}
+.mat-select-search-wrapper {
+    padding: 8px;
+    background-color: #fff;
   }
   
-  .table-list th,
-  .table-list td {
-    width: 20%;          /* 5 columns → 100% / 5 = 20% each */
-    text-align: center;  /* Optional: center text */
-    word-wrap: break-word;
+  .mat-select-search {
+    width: 100%;
   }
+  th:first-child, td:first-child {
+    width: auto !important; 
+}
+::ng-deep .mat-form-field-infix{
+    padding: 0.5em 0 !important;
+    padding-bottom: 1em !important;
+}
+::ng-deep .mat-form-field-wrapper{
+    padding: 15px 0 !important;
+}
+::ng-deep .mat-form-field-appearance-outline .mat-form-field-prefix,
+::ng-deep .mat-form-field-appearance-outline .mat-form-field-suffix {
+    top: .25em !important;
+}

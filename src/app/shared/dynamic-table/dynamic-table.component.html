@@ -36,6 +36,16 @@
           </button> -->
       </mat-form-field>
       </div>
+      <div class="col-sm-12 col-md-6 col-lg-3 leave-type" *ngIf="config.leaveTypes">
+        <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+              <mat-label>Leave Type<b class="r-star"></b></mat-label>
+              <mat-select autocomplete="off" placeholder="Select leave" panelClass="custom-select-panel"
+                [(ngModel)]="selectedLeaveType" (selectionChange)="selectLeaveTypesFunc($event)">
+                <mat-option *ngFor="let item of leaveTypes; let i = index" [value]="item.id">{{
+                  item.leave_type_name }}</mat-option>
+              </mat-select>
+          </mat-form-field>
+      </div>
 
 
       <!-- Spacer -->

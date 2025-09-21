@@ -85,14 +85,16 @@ export class HolidayListComponent implements OnInit {
   public openCreateHolidayPage() {
     sessionStorage.setItem('access-name', this.access_name?.name)
     //  this.router.navigate(['/invoice/create-invoice']);
-    this.dialog.open(CreateUpdateHolidayComponent, {
+    const dialogRef =this.dialog.open(CreateUpdateHolidayComponent, {
       data: { edit: false },
       panelClass: 'custom-details-dialog',
       disableClose: true
     });
-    this.dialog.afterAllClosed.subscribe((resp: any) => {
-      // console.log('resp',resp);
-      this.initalCall();
+    dialogRef.afterClosed().subscribe((resp: any) => {
+      if(resp.data==='refresh'){
+         this.initalCall();
+         this.getAllHolidayList();
+      }
     });
 
   }
@@ -179,16 +181,22 @@ export class HolidayListComponent implements OnInit {
   }
 
   public openEditInvoicePopup(item: any) {
-    this.dialog.open(CreateUpdateHolidayComponent, {
+    const dialogRef =this.dialog.open(CreateUpdateHolidayComponent, {
       data: { edit: true, item_id: item.id },
       panelClass: 'custom-details-dialog',
       disableClose: true
     });
-    this.dialog.afterAllClosed.subscribe((resp: any) => {
-      //  console.log('resp',resp);
-      this.initalCall();
-      this.getAllHolidayList();
+    dialogRef.afterClosed().subscribe((resp: any) => {
+      if(resp.data==='refresh'){
+         this.initalCall();
+         this.getAllHolidayList();
+      }
     });
+    // this.dialog.afterAllClosed.subscribe((resp: any) => {
+    //   //  console.log('resp',resp);
+    //   this.initalCall();
+    //   this.getAllHolidayList();
+    // });
   }
 
   setDateFilterColumn(event) {

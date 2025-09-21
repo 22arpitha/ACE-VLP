@@ -74,6 +74,9 @@ export class LeaveConfigurationComponent implements OnInit {
   getLeaveTypeDetails(){
     this.apiService.getData(`${environment.live_url}/${environment.settings_leave_type}/${this.item_id}/`).subscribe(
       (res:any)=>{
+      //   if(res.is_accrual && res.accrual_credits && res.accrual_month){
+      //   this.leaveTypeForm.patchValue({accrual_credits:0,accrual_month:0})
+      // }
         this.leaveTypeForm.patchValue({
           leave_type_name: res.leave_type_name,
           leave_description: res.leave_description,
@@ -97,6 +100,10 @@ export class LeaveConfigurationComponent implements OnInit {
           carry_forward_days: res.carry_forward_days,
           encash_leaves_above_limit: res.encash_leaves_above_limit,
         })
+      if(res.is_accrual===false && res.accrual_credits===0 && res.accrual_month===0){
+            this.leaveTypeForm.patchValue({accrual_credits:'',accrual_month:''})
+          }
+        
       }
     )
   }
@@ -126,14 +133,14 @@ export class LeaveConfigurationComponent implements OnInit {
       effective_value: ['', [Validators.required, Validators.pattern(/^\d{1,2}$/), Validators.maxLength(2), Validators.min(0)]],
       effective_cycle: ['', Validators.required],
       leave_effective_from: ['', Validators.required],
-      is_accrual: [true],
-      accrual_cycle: ['', Validators.required],
-      accrual_day: ['', Validators.required],
-      accrual_month: ['', Validators.required],
-      accrual_credits: ['', Validators.required],
+      is_accrual: [false],
+      accrual_cycle: [''],
+      accrual_day: [''],
+      accrual_month: [''],
+      accrual_credits: [''],
       // policy_date: [''],
       // policy_month: [''],
-      prorate_accrual: ['', Validators.required],
+      prorate_accrual: [''],
       is_reset: [true],
       reset_cycle: ['', Validators.required],
       reset_day: ['', Validators.required],
@@ -239,7 +246,6 @@ export class LeaveConfigurationComponent implements OnInit {
 
   }
   addOrUpdate() {
-
     if (this.leaveTypeForm.value.encash_leaves_above_limit === true){
         this.leaveTypeForm.value.encash_leaves_with_expiry = false
     }
@@ -247,11 +253,13 @@ export class LeaveConfigurationComponent implements OnInit {
         this.leaveTypeForm.value.encash_leaves_with_expiry = true
     }
 
-
     if (this.leaveTypeForm.invalid) {
       this.leaveTypeForm.markAllAsTouched();
       console.log('error', this.leaveTypeForm.controls)
     } else {
+      if(this.leaveTypeForm.get('is_accrual')?.value==false){
+        this.leaveTypeForm.patchValue({accrual_credits:0,accrual_month:0})
+      }
       if(this.item_id){
         this.apiService.updateData(`${environment.live_url}/${environment.settings_leave_type}/${this.item_id}/`,this.leaveTypeForm.value).subscribe(
           (res:any)=>{

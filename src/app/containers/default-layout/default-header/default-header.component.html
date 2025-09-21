@@ -20,12 +20,12 @@
                 <strong>{{items?.remaining_number_of_days  || 0 }} {{items?.remaining_number_of_days > 1 ? 'days left' : 'day left'}}</strong>
           </button>
         </div>
-        <!-- <div *ngIf="hideHeaderButton">
+        <div *ngIf="hideHeaderButton">
             <button  mat-icon-button aria-label="Get Started" class="icon-button user-guide-btn"
                   matTooltip="Get started" (click)="openWelcomeDialog()">
                   <img src="../../../assets/images/bulb.svg" width="25" height="25">
             </button>
-        </div> -->
+        </div>
 
       <div *ngIf="user_role_Name === 'SuperAdmin'">
         <button  mat-icon-button aria-label="Notifications" class="icon-button"

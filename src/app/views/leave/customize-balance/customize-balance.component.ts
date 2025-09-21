@@ -3,6 +3,8 @@ import { AddCustomizeBalanceComponent } from '../add-customize-balance/add-custo
 import { SubModuleService } from 'src/app/service/sub-module.service';
 import { MatDialog } from '@angular/material/dialog';
 import { ApiserviceService } from 'src/app/service/apiservice.service';
+import { DropDownPaginationService } from 'src/app/service/drop-down-pagination.service';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-customize-balance',
@@ -31,89 +33,19 @@ export class CustomizeBalanceComponent implements OnInit {
   accessPermissions = [];
   user_id: any;
   userRole: any;
+  filterQuery: any
+  AllEmployeeBalanceList:any =[];
+  leaveTypes:any = [];
+  filters: { employees: string[] } = {
+    employees: [],
+  };
   constructor(private accessControlService: SubModuleService,
-    private dialog: MatDialog,
+    private dialog: MatDialog, private dropdownService: DropDownPaginationService,
     private apiService: ApiserviceService,) { }
 
   ngOnInit(): void {
+    this.getEmployeesBalance();
   }
-  filters = {
-    leave: '',
-    data: '',
-    request: ''
-  };
-
-  leaveOptions = [
-    { value: 'sick', label: 'Sick Leave' },
-    { value: 'casual', label: 'Casual Leave' },
-    { value: 'comp_off', label: 'Comp Off' }
-  ];
-
-  dataOptions = [
-    { value: 'all', label: 'All' },
-    { value: 'current', label: 'Current' },
-    { value: 'expired', label: 'Expired' }
-  ];
-
-  requestOptions = [
-    { value: 'pending', label: 'Pending' },
-    { value: 'approved', label: 'Approved' },
-    { value: 'rejected', label: 'Rejected' }
-  ];
-
-  filteredList = [
-    {
-      status: 'Pending',
-      employee_name: 'Livia Mango',
-      casual_leave: '0.5',
-      earned_leave: 3,
-      maternity_leave: 0,
-      paternity_leave: 0,
-      sick_leave: 4,
-      loss_of_pay: 8
-    },
-    {
-      status: 'Pending',
-      employee_name: 'Zain Rhiel Madsen',
-      casual_leave: '0.5',
-      earned_leave: 3,
-      maternity_leave: 0,
-      paternity_leave: 0,
-      sick_leave: 4,
-      loss_of_pay: 8
-    },
-    {
-      status: 'Pending',
-      employee_name: 'Corey Stanton',
-      casual_leave: '0.5',
-      earned_leave: 3,
-      maternity_leave: 0,
-      paternity_leave: 0,
-      sick_leave: 4,
-      loss_of_pay: 8
-    },
-    {
-      status: 'Pending',
-      employee_name: 'Jaylen Torff',
-      casual_leave: '0.5',
-      earned_leave: 3,
-      maternity_leave: 0,
-      paternity_leave: 0,
-      sick_leave: 4,
-      loss_of_pay: 8
-    },
-    {
-      status: 'Pending',
-      employee_name: 'Corey Herwitz',
-      leave_type: 'Charlie Geidt',
-      casual_leave: '0.5',
-      earned_leave: 3,
-      maternity_leave: 0,
-      paternity_leave: 0,
-      sick_leave: 4,
-      loss_of_pay: 8
-    }
-  ];
 
   access_name: any;
   getModuleAccess() {
@@ -140,14 +72,6 @@ export class CustomizeBalanceComponent implements OnInit {
     this.sortValue = column;
   }
 
-  public filteredLeaveTypes() {
-    if (!this.searchLeave) {
-      return this.leaveOptions;
-    }
-    return this.leaveOptions.filter((leave: any) =>
-      leave?.label?.toLowerCase()?.includes(this.searchLeave?.toLowerCase())
-    );
-  }
 
   public clearSearch(key: any, i?: any) {
     if (key === 'leave_type') {
@@ -157,33 +81,83 @@ export class CustomizeBalanceComponent implements OnInit {
 
   selectAll = false;
 
+  onTableSizeChange(event: any): void {
+    if (event) {
+      this.page = 1;
+      this.tableSize = Number(event.value);
+      this.getEmployeesBalance()
+    }
+  }
   onTableDataChange(event: any) {
-    // update page here
+    this.page = event;
+    this.getEmployeesBalance();
   }
 
-  onTableSizeChange(event: any) {
-    // update table size here
+  getEmployeesBalance() {
+     this.count = 0;
+    this.filterQuery = this.getFilterBaseUrl()
+    if (this.filters.employees.length) {
+      this.filterQuery += `&employee-ids=[${this.filters.employees.join(',')}]`;
+    }
+    this.apiService.getData(`${environment.live_url}/${environment.all_emp_custom_balance}/${this.filterQuery}`)
+      .subscribe((res: any) => {
+        this.AllEmployeeBalanceList = res.results;
+        this.leaveTypes = Array.from(
+        new Set(
+          this.AllEmployeeBalanceList.flatMap(emp =>
+            emp.leave.map(l => l.name)
+          )
+        )
+      );
+        this.count = res?.['total_no_of_record'];
+        this.page = res?.['current_page'];
+      },
+      (error:any)=>{
+        console.log(error)
+      }
+    );
+  }
+  getFilterBaseUrl(): string {
+    const base = `?page=${this.page}&page_size=${this.tableSize}`;
+    return `${base}`;
   }
 
-  filterData() {
-    // apply filters to your data
-  }
+  getLeaveBalance(emp: any, leaveName: string): number {
+  const leave = emp.leave.find((l: any) => l.name === leaveName);
+  return leave ? leave.available : 0;
+}
 
-  customize() {
+  customize(data) {
     sessionStorage.setItem('access-name', this.access_name?.name)
-    //  this.router.navigate(['/invoice/create-invoice']);
-    this.dialog.open(AddCustomizeBalanceComponent, {
-      data: { edit: false },
+   const dialogRef = this.dialog.open(AddCustomizeBalanceComponent, {
+      data: { edit: true, item:data },
       panelClass: 'custom-details-dialog',
       disableClose: true
     });
-    this.dialog.afterAllClosed.subscribe((resp: any) => {
-      // console.log('resp',resp);
-      // this.initalCall();
+    dialogRef.afterClosed().subscribe((resp: any) => {
+      if(resp.data==='refresh'){
+        this.getEmployeesBalance();
+      }
     });
   }
 
-  toggleAllSelection() {
-    this.filteredList.forEach((item: any) => item.selected = this.selectAll);
+  openFilter(filter: any): void {
+    if (filter) {
+      filter.onMenuOpened();
+    }
   }
+  fetchEmployees = (page: number, search: string) => {
+    const extraParams = {
+      is_active: 'True',
+      employee: 'True',
+    };
+    return this.dropdownService.fetchDropdownData$(
+      environment.employee,
+      page,
+      search,
+      (item) => ({ id: item.user_id, name: item.user__full_name }),
+      extraParams
+    );
+  };
+
 }

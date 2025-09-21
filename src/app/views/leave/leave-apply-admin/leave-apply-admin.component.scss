@@ -1,0 +1,53 @@
+.settings-table-bg{
+    max-height: 75vh !important;
+}
+.table-wrapper{
+    max-height: 55vh !important;
+    overflow-x: auto;
+    margin-bottom: 20px;
+}
+::ng-deep .mat-form-field-infix {
+  padding: 0.5em 0 !important;
+  padding-bottom: 1em !important;
+}
+::ng-deep .mat-form-field-wrapper{
+    padding: 15px 0 !important;
+  }
+::ng-deep .mat-form-field-appearance-outline .mat-form-field-prefix,
+::ng-deep .mat-form-field-appearance-outline .mat-form-field-suffix {
+  top: 0.25em !important;
+}
+.balance-info-content {
+  border-left: 1px solid lightgray;
+  padding: 4px 15px;
+}
+.bg-leave-details {
+  border-radius: 8px;
+  // min-height: 100px;
+  max-height: max-content;
+}
+.text-clr {
+  color: darkblue;
+}
+::ng-deep .mat-option {
+  height: 30px !important;
+  font-size: 14px !important;
+}
+:ng-deep .mat-autocomplete-panel {
+  max-height: 200px !important;
+}
+.mat-select-search-wrapper {
+    padding: 8px;
+    background-color: #fff;
+  }
+  
+  .mat-select-search {
+    width: 100%;
+  }
+  ::ng-deep .custom-details-dialog {
+  justify-content: center !important;
+}
+::ng-deep .custom-details-dialog .mat-dialog-container {
+  width: 70%;
+  padding: 10px !important;
+}

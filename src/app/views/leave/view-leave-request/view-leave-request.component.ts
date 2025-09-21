@@ -40,6 +40,8 @@ export class ViewLeaveRequestComponent implements OnInit {
   }
 
   approve(data: any) {
+    this.reasonControl.clearValidators();
+    this.reasonControl.updateValueAndValidity();
     console.log('data=>', data);
     let data_to_send = {
       status: 'approved',
@@ -47,13 +49,17 @@ export class ViewLeaveRequestComponent implements OnInit {
     };
     this.apiService
       .updateData(
-        `${environment.live_url}/apply_leave/${data.id}/`,
+        `${environment.live_url}/${environment.apply_leaves}/${data.id}/`,
         data_to_send
       )
       .subscribe((res: any) => {
-        this.apiService.showSuccess('Leave Approved Successfully');
+        this.apiService.showSuccess(res?.message);
         this.dialogRef.close(res);
-      });
+      },
+            (error: any) => {
+              console.log('error', error);
+            }
+    );
   }
 
   delete() {
@@ -86,33 +92,31 @@ export class ViewLeaveRequestComponent implements OnInit {
   }
 
   onRejectClick(data:any) {
-    let data_to_send ={
-      "status": "rejected",
-      "rejected_by": Number(sessionStorage.getItem('user_id')),
-      "rejected_reason": this.reasonControl.value
-    }
-    console.log("data_to_send==>", data_to_send);
     this.isRejectClicked = true;
-    this.reasonControl.enable();
+
+    // Add required validator dynamically
+    this.reasonControl.setValidators([Validators.required]);
+    this.reasonControl.updateValueAndValidity();
 
     if (this.reasonControl.invalid) {
       this.reasonControl.markAsTouched();
       return;
-    }else{
-      this.apiService
-       .updateData(
-         `${environment.live_url}/apply_leave/${data.id}/`,
-         data_to_send
-       )
-       .subscribe((res: any) => {
-         this.apiService.showSuccess('Leave Approved Successfully');
-         this.dialogRef.close(res);
-       });
     }
-    
+    const data_to_send = {
+      status: 'rejected',
+      rejected_by: Number(sessionStorage.getItem('user_id')),
+      rejected_reason: this.reasonControl.value
+    };
 
-    // const reason = this.reasonControl.value;
-    // this.rejectRequest(reason);
+    this.apiService
+      .updateData(
+        `${environment.live_url}/${environment.apply_leaves}/${data.id}/`,
+        data_to_send
+      )
+      .subscribe((res: any) => {
+        this.apiService.showSuccess(res?.message);
+        this.dialogRef.close(res);
+      });
   }
 
   rejectRequest(reason: string): void {

@@ -13,6 +13,8 @@ import { JobTimeReportsComponent } from './job-time-reports/job-time-reports.com
 import { JobTimeSheetDetailsPopupComponent } from './common/job-time-sheet-details-popup/job-time-sheet-details-popup.component';
 import { NonProductiveHoursComponent } from './non-productive-hours/non-productive-hours.component';
 import { TimesheetsSummaryReportComponent } from './timesheets-summary-report/timesheets-summary-report.component';
+import { LeaveSummaryReportComponent } from './leave-summary-report/leave-summary-report.component';
+import { LeaveTransactionReportComponent } from './leave-transaction-report/leave-transaction-report.component';
 
 
 @NgModule({
@@ -26,7 +28,9 @@ import { TimesheetsSummaryReportComponent } from './timesheets-summary-report/ti
     JobTimeReportsComponent,
     JobTimeSheetDetailsPopupComponent,
     NonProductiveHoursComponent,
-    TimesheetsSummaryReportComponent
+    TimesheetsSummaryReportComponent,
+    LeaveSummaryReportComponent,
+    LeaveTransactionReportComponent
   ],
   imports: [
     CommonModule,

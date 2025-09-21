@@ -1,14 +1,30 @@
-::ng-deep .custom-details-dialog{
-    justify-content: center !important;
+::ng-deep .custom-details-dialog {
+  justify-content: center !important;
 }
-::ng-deep  .mat-dialog-container {
-    width: 70% !important;
-    padding: 10px !important;
+::ng-deep .custom-details-dialog .mat-dialog-container {
+  width: 70%;
+  padding: 10px !important;
 }
-::ng-deep .mat-form-field-infix{
-    padding: 0.5em 0 !important;
-    padding-bottom: 1em !important;
+::ng-deep .mat-form-field-infix {
+  padding: 0.5em 0 !important;
+  padding-bottom: 1em !important;
 }
-::ng-deep .mat-form-field-wrapper{
-    padding: 15px 0 !important;
+::ng-deep .mat-form-field-wrapper {
+  padding: 15px 0 !important;
 }
+.mat-select-search-wrapper {
+  padding: 8px;
+  background-color: #fff;
+}
+
+.mat-select-search {
+  width: 100%;
+}
+
+ table .contact-form-content ::ng-deep .mat-form-field-appearance-outline .mat-form-field-wrapper,
+  table .contact-form-content ::ng-deep .mat-form-field-wrapper {
+  margin: 0 !important;
+  padding: 0 !important;
+  }
+
+

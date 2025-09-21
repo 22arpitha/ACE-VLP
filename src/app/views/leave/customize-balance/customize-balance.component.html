@@ -2,11 +2,11 @@
     <section class="settings-table-bg px-3 customize-balance">
 
         <!-- Filters Row -->
-        <div class="row mx-0 my-1 px-0 py-2">
+        <!-- <div class="row mx-0 my-1 px-0 py-2">
             <div class="col-12  text-end align-content-center">
                 <button mat-raised-button class="proceedbtn mat-btn-s" (click)="customize()">Customize</button>
             </div>
-        </div>
+        </div> -->
 
         <!-- Table -->
         <div class="row mx-1 my-2 px-0 table-wrapper">
@@ -15,66 +15,37 @@
                     <thead>
                         <tr>
                             <th>S.NO</th>
-                            <th>Status</th>
                             <th>Employee Name
                                 <i *ngIf="!arrowState['employee_name']" class="bi bi-arrow-down"
                                     (click)="sort('asc', 'employee_name')"></i>
                                 <i *ngIf="arrowState['employee_name']" class="bi bi-arrow-up"
                                     (click)="sort('desc', 'employee_name')"></i>
+                                <button mat-icon-button [matMenuTriggerFor]="employeesFilterMenu" (menuOpened)="openFilter(employeeFilter)"
+                                [ngClass]="filters.employees.length>=1 ? 'filterdColumn':''">
+                                <span *ngIf="filters.employees.length>=1">{{filters.employees.length.toString().padStart(2,
+                                    '0')}}</span>
+                                <i class="bi-funnel" *ngIf="filters.employees.length===0"></i>
+                                </button>
+
+                                <mat-menu #employeesFilterMenu="matMenu">
+                                <app-generic-table-filter #employeeFilter [fetchOptions]="fetchEmployees" [(selectedOptions)]="filters.employees"
+                                    (selectedOptionsChange)="getEmployeesBalance()"></app-generic-table-filter>
+                                </mat-menu>
                             </th>
-                            <th>Casual Leave
-                                <i *ngIf="!arrowState['casual_leave']" class="bi bi-arrow-down"
-                                    (click)="sort('asc', 'casual_leave')"></i>
-                                <i *ngIf="arrowState['casual_leave']" class="bi bi-arrow-up"
-                                    (click)="sort('desc', 'casual_leave')"></i>
-                            </th>
-                            <th>Earned Leave
-                                <i *ngIf="!arrowState['earned_leave']" class="bi bi-arrow-down"
-                                    (click)="sort('asc', 'earned_leave')"></i>
-                                <i *ngIf="arrowState['earned_leave']" class="bi bi-arrow-up"
-                                    (click)="sort('desc', 'earned_leave')"></i>
-                            </th>
-                            <th>Maternity Leave
-                                <i *ngIf="!arrowState['maternity leave']" class="bi bi-arrow-down"
-                                    (click)="sort('asc', 'maternity leave')"></i>
-                                <i *ngIf="arrowState['maternity leave']" class="bi bi-arrow-up"
-                                    (click)="sort('desc', 'maternity leave')"></i>
-                            </th>
-                            <th>Paternity Leave
-                                <i *ngIf="!arrowState['paternity_leave']" class="bi bi-arrow-down"
-                                    (click)="sort('asc', 'paternity_leave')"></i>
-                                <i *ngIf="arrowState['paternity_leave']" class="bi bi-arrow-up"
-                                    (click)="sort('desc', 'paternity_leave')"></i>
-                            </th>
-                            <th>
-                                Sick Leave
-                                <i *ngIf="!arrowState['sick_leave']" class="bi bi-arrow-down"
-                                    (click)="sort('asc', 'sick_leave')"></i>
-                                <i *ngIf="arrowState['sick_leave']" class="bi bi-arrow-up"
-                                    (click)="sort('desc', 'sick_leave')"></i>
-                            </th>
-                            <th>
-                                Loss of pay
-                                <i *ngIf="!arrowState['loss_of_pay']" class="bi bi-arrow-down"
-                                    (click)="sort('asc', 'loss_of_pay')"></i>
-                                <i *ngIf="arrowState['loss_of_pay']" class="bi bi-arrow-up"
-                                    (click)="sort('desc', 'loss_of_pay')"></i>
-                            </th>
+                            <th *ngFor="let leaveType of leaveTypes">{{ leaveType }}</th>
+                            <th>ACTION</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <ng-container *ngIf="filteredList?.length > 0">
+                        <ng-container *ngIf="AllEmployeeBalanceList?.length > 0">
                             <tr
-                                *ngFor="let item of filteredList | customSort:directionValue:sortValue | paginate: { itemsPerPage: tableSize, currentPage: page }; let i=index">
+                                *ngFor="let item of AllEmployeeBalanceList | customSort:directionValue:sortValue | paginate: { itemsPerPage: tableSize, currentPage: page,totalItems: count }; let i=index">
                                 <td>{{getContinuousIndex(i)}}</td>
-                                <td>{{item.status}}</td>
                                 <td>{{ item.employee_name }}</td>
-                                <td>{{ item.casual_leave }}</td>
-                                <td>{{ item.earned_leave }}</td>
-                                <td>{{ item.maternity_leave }}</td>
-                                <td>{{ item.paternity_leave }}</td>
-                                <td>{{ item.sick_leave }}</td>
-                                <td>{{item.loss_of_pay }}</td>
+                                <td *ngFor="let leaveType of leaveTypes">
+                                    {{ getLeaveBalance(item, leaveType) }}
+                                </td>
+                                <td><button class="btn btn-sm custom-btn" (click)="customize(item)">Customize</button></td>
                             </tr>
                         </ng-container>
                     </tbody>
@@ -83,12 +54,12 @@
         </div>
 
         <!-- No Records -->
-        <div class="row mx-1 my-2 px-0" *ngIf="filteredList?.length === 0">
+        <div class="row mx-1 my-2 px-0" *ngIf="AllEmployeeBalanceList?.length === 0">
             <app-generic-norecards></app-generic-norecards>
         </div>
 
         <!-- Pagination -->
-        <div class="row mx-0 px-3" *ngIf="filteredList?.length > 0">
+        <div class="row mx-0 px-3" *ngIf="AllEmployeeBalanceList?.length > 0">
             <div class="col-12 px-0">
                 <div class="pagination-container p-0">
                     <pagination-controls previousLabel="Prev" nextLabel="Next" (pageChange)="onTableDataChange($event)">

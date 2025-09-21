@@ -2,45 +2,91 @@
     <section class="p-0 create-update-custom-balance">
         <div class="row mx-0">
             <div class="col-12 mx-0">
-                <form [formGroup]="holidayForm" class="p-0">
+                <form [formGroup]="customizeBalanceForm" class="p-0">
                     <div class="row mx-0">
                         <div class="col-12 my-2">
                             <h4>{{headingText}}</h4>
                         </div>
-                        <div class="col-12 col-lg-6">
-                            <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
-                                <mat-label>Employees<b class="r-star">*</b></mat-label>
-                                <mat-select formControlName="classification" autocomplete="off"
-                                    placeholder="Select Empployees" panelClass="custom-select-panel" [disableOptionCentering]="true">
-                                    <mat-option value="Veena">Veena</mat-option>
-                                    <mat-option value="Meena">Meena</mat-option>
-                                    <mat-option value="teena">Teena</mat-option>
-                                    <mat-option value="Reema">Reema</mat-option>
-                                </mat-select>
-                                <mat-error
-                                    *ngIf="f['classification']?.invalid && f['classification']?.touched || f['classification']?.dirty">
-                                    <span *ngIf="f['classification']?.errors?.['required']">Employee
-                                        required</span>
-                                </mat-error>
-                            </mat-form-field>
+                        <div class="col-12">
+                            <h5>Employee Name: {{data.item.employee_name}}</h5>
                         </div>
-                        
-                        <div class="col-12 my-4 px-2 d-flex justify-content-around">
-                            <div>
-                                <button mat-raised-button class="proceedbtn mat-btn-s me-2" type="button"
-                                    (click)="addOrUpdateHoliday()">{{buttonName}}</button>
-                                <button mat-button class="cancel-button mat-btn-s" type="button" mat-dialog-close>
-                                    Close</button>
-                            </div>
-                            <div *ngIf="data?.item_id">
-                                <button mat-button class="delete-item-button mat-btn-s" type="button"
-                                    (click)="delete()">
-                                    delete</button>
-                            </div>
-                        </div>
+                        <div class="my-3">
+                         <table class="table table-hover table-list leave-balance-table">
+                            <thead>
+                                <tr>
+                                <th>S No</th>
+                                <th>Leave Type</th>
+                                <th>Existing Balance</th>
+                                <th>New Balance</th>
+                                <th>Reason</th>
+                                </tr>
+                            </thead>
+
+                            <tbody formArrayName="leaves" class="contact-form-content">
+                                <tr *ngFor="let leave of leavesFormArray.controls; let i = index" [formGroupName]="i">
+                                    <td>{{ i + 1 }}</td>
+                                    <td>{{ leave.get('leave_type')?.value }}</td>
+                                    <td>{{ leave.get('existing_balance')?.value }}</td>
+                                    <td>
+                                        <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+                                        <input matInput type="number" formControlName="new_balance" placeholder="New Balance">
+                                        </mat-form-field>
+                                        <div *ngIf="leave.get('new_balance')?.invalid && leave.get('new_balance')?.touched">
+                                        <span class="text-errors">New Balance is required</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+                                        <input matInput formControlName="reason" placeholder="Reason">
+                                        </mat-form-field>
+                                        <div *ngIf="leave.get('reason')?.invalid && leave.get('reason')?.touched">
+                                        <span class="text-errors">Reason is required</span>
+                                        </div>
+                                    </td>
+                                    </tr>
+
+                                <!-- <tr *ngFor="let leave of leavesFormArray.controls; let i = index" [formGroupName]="i">
+                                <td>{{ i + 1 }}</td>
+                                <td>{{ leave.get('leave_type')?.value }}</td>
+                                <td>{{ leave.get('existing_balance')?.value }}</td>
+                                <td>
+                                    <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+                                    <input matInput type="number" formControlName="new_balance" placeholder="New Balance">
+                                    </mat-form-field>
+                                    <div *ngIf="leave.get('new_balance')?.invalid && leave.get('new_balance')?.touched">
+                                        <span  class="text-errors">New Balance is required</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+                                    <input matInput formControlName="reason" placeholder="Reason">
+                                    </mat-form-field>
+                                    <div *ngIf="leave.get('reason')?.invalid && leave.get('reason')?.touched">
+                                        <span  class="text-errors">Reason is required</span>
+                                    </div>
+                                </td>
+                                </tr> -->
+                            </tbody>
+                         </table>
+                       </div>
+
+
+
+
                     </div>
                 </form>
             </div>
         </div>
     </section>
+    <mat-dialog-actions>
+
+        <div class="col-12 my-4 px-2 d-flex justify-content-around">
+            <div>
+                <button mat-raised-button class="proceedbtn mat-btn-s me-2" type="button"
+                    (click)="addOrUpdateBalance()">{{buttonName}}</button>
+                <button mat-button class="cancel-button mat-btn-s" type="button" mat-dialog-close>
+                    Close</button>
+            </div>
+        </div>
+    </mat-dialog-actions>
 </div>
