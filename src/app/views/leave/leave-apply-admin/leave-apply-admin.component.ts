@@ -533,40 +533,124 @@ export class LeaveApplyAdminComponent implements OnInit {
     return EMAIL_REGEX.test(email);
   }
 
-  onSubmit(): void {
-    this.leaveApplyForm.patchValue({ cc: JSON.stringify(this.selectedEmails) });
-    if (this.selectedFile) {
-      this.leaveApplyForm.patchValue({ attachment: this.selectedFile });
-    }
-    console.log('form value -->>>', this.leaveApplyForm.value);
-    if (this.leaveApplyForm.invalid) {
-      this.leaveApplyForm.markAllAsTouched();
-    }
-    else {
-      const formData = new FormData();
-      Object.keys(this.leaveApplyForm.value).forEach((key) => {
-        const value = this.leaveApplyForm.value[key];
-        formData.append(key, value);
-      });
+    onSubmit(): void {
+  // prepare cc and file
+  this.leaveApplyForm.patchValue({ cc: JSON.stringify(this.selectedEmails) });
+  if (this.selectedFile) {
+    this.leaveApplyForm.patchValue({ attachment: this.selectedFile });
+  }
 
-      this.apiService
-        .postData(
-          `${environment.live_url}/${environment.apply_leaves}/`,
-          formData
-        )
-        .subscribe(
-          (res: any) => {
-            this.apiService.showSuccess(res.message);
-            this.resetFormState();
-            this.dialogRef.close({data:'refresh'});
-          },
-          (err) => {
-            console.log('err', err);
-            this.apiService.showError(err?.error?.detail);
-          }
-        );
+  // basic form validation
+  if (this.leaveApplyForm.invalid) {
+    this.leaveApplyForm.markAllAsTouched();
+    return;
+  }
+
+  // get leave type config
+  const leaveTypeId = this.leaveApplyForm.get('leave_type')?.value;
+  const leaveTypeData = this.allleavetypeList?.find((l: any) => l.id === leaveTypeId);
+
+  const fromDateRaw = this.leaveApplyForm.get('from_date')?.value;
+  const toDateRaw = this.leaveApplyForm.get('to_date')?.value;
+
+  if (!fromDateRaw || !toDateRaw) {
+    this.apiService.showError('Please select both From and To dates');
+    return;
+  }
+
+  // normalize dates to midnight
+  const msPerDay = 24 * 60 * 60 * 1000;
+  const current = new Date();
+  current.setHours(0, 0, 0, 0);
+
+  const fromDate = new Date(fromDateRaw);
+  fromDate.setHours(0, 0, 0, 0);
+
+  const toDate = new Date(toDateRaw);
+  toDate.setHours(0, 0, 0, 0);
+
+    if (fromDate < current) {
+    if (leaveTypeData?.utilization_after && Number(leaveTypeData.utilization_after) > 0) {
+      if (toDate < current) {
+        // Count days from current date to TO date, excluding TO date
+        const daysDiff = Math.floor((current.getTime() - toDate.getTime()) / msPerDay);
+        if (daysDiff > Number(leaveTypeData.utilization_after)) {
+          this.apiService.showError(
+            `${leaveTypeData.leave_type_name} leave cannot be applied. It must be within ${leaveTypeData.utilization_after} day(s) from today.`
+          );
+          return;
+        }
+      }
     }
   }
+
+  if (fromDate >= current) {
+    if (leaveTypeData?.utilization_before && Number(leaveTypeData.utilization_before) > 0) {
+      const daysDiff = Math.floor((fromDate.getTime() - current.getTime()) / msPerDay);
+      if (daysDiff < Number(leaveTypeData.utilization_before)) {
+        this.apiService.showError(
+          `You cannot apply this leave. You must apply at least ${leaveTypeData.utilization_before} day(s) in advance.`
+        );
+        return;
+      }
+    }
+  }
+
+  // passed all checks → submit
+  const formData = new FormData();
+  Object.keys(this.leaveApplyForm.value).forEach((key) => {
+    const value = this.leaveApplyForm.value[key];
+    formData.append(key, value);
+  });
+
+  this.apiService
+    .postData(`${environment.live_url}/${environment.apply_leaves}/`, formData)
+    .subscribe(
+      (res: any) => {
+        this.apiService.showSuccess(res.message);
+        this.resetFormState();
+      },
+      (err) => {
+        this.apiService.showError(err?.error?.detail);
+      }
+    );
+}
+
+
+  // onSubmit(): void {
+  //   this.leaveApplyForm.patchValue({ cc: JSON.stringify(this.selectedEmails) });
+  //   if (this.selectedFile) {
+  //     this.leaveApplyForm.patchValue({ attachment: this.selectedFile });
+  //   }
+  //   console.log('form value -->>>', this.leaveApplyForm.value);
+  //   if (this.leaveApplyForm.invalid) {
+  //     this.leaveApplyForm.markAllAsTouched();
+  //   }
+  //   else {
+  //     const formData = new FormData();
+  //     Object.keys(this.leaveApplyForm.value).forEach((key) => {
+  //       const value = this.leaveApplyForm.value[key];
+  //       formData.append(key, value);
+  //     });
+
+  //     this.apiService
+  //       .postData(
+  //         `${environment.live_url}/${environment.apply_leaves}/`,
+  //         formData
+  //       )
+  //       .subscribe(
+  //         (res: any) => {
+  //           this.apiService.showSuccess(res.message);
+  //           this.resetFormState();
+  //           this.dialogRef.close({data:'refresh'});
+  //         },
+  //         (err) => {
+  //           console.log('err', err);
+  //           this.apiService.showError(err?.error?.detail);
+  //         }
+  //       );
+  //   }
+  // }
 
   public resetFormState() {
     this.totalDays = 0;
