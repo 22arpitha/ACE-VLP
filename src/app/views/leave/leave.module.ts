@@ -23,7 +23,7 @@ import { MyLeavesComponent } from './my-leaves/my-leaves.component';
 import { CompOffGrantComponent } from './comp-off-grant/comp-off-grant.component';
 import { LeaveApplyAdminComponent } from './leave-apply-admin/leave-apply-admin.component';
 import { ResourceAvailabilityComponent } from './resource-availability/resource-availability.component';
-
+import { FullCalendarModule } from '@fullcalendar/angular';
 @NgModule({
   declarations: [
     WorkCalendarComponent,
@@ -53,6 +53,7 @@ import { ResourceAvailabilityComponent } from './resource-availability/resource-
     HttpClientModule,
     RouterModule,
     NgMultiSelectDropDownModule,
+    FullCalendarModule,
   ]
 })
 export class LeaveModule { }

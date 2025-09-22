@@ -3,7 +3,7 @@
     padding-bottom: 1em !important;
 }
 ::ng-deep .mat-form-field-wrapper{
-    padding: 8px 0px!important;
+    padding: 15px 0px!important;
 }
 .balance-info-content{
     border-left: 1px solid lightgray;
@@ -21,4 +21,7 @@
 }
 ::ng-deep .custom-details-dialog .mat-dialog-container {
     width: 70% !important;
+}
+.bg-leave-details .mat-raised-button.mat-button-disabled.mat-button-disabled{
+    background-color: rgba(0, 0, 0, .12) !important;
 }

@@ -793,7 +793,7 @@ export class ApiserviceService {
   }
 
   getAllEmployees2() {
-    return this.http.get(`${this.baseurl}/all-employees/?page=1&page_size=10`);
+    return this.http.get(`${this.baseurl}/all-employees/`);
   }
 
   getUserById(id: any) {

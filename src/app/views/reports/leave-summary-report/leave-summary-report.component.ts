@@ -75,14 +75,11 @@ export class LeaveSummaryReportComponent implements OnInit {
   ngOnInit(): void {
     this.common_service.setTitle(this.BreadCrumbsTitle)
     this.tableConfig = tableColumns;
-    // this.getLeaveTypes();
-    setTimeout(() => {
-      this.getTableData({
-        page: this.page,
-        pageSize: this.tableSize,
-        searchTerm: this.term
-      });
-    }, 500);
+    // this.getTableData({
+    //   page: this.page,
+    //   pageSize: this.tableSize,
+    //   searchTerm: this.term
+    // });
   }
 
   getLeaveTypes() {
@@ -193,10 +190,37 @@ export class LeaveSummaryReportComponent implements OnInit {
     }
   }
 
-  onLeaveType(detail) {
-    console.log(detail)
+  onLeaveType(detail:any) {
+    // console.log(detail)
+    if(detail.reset===true){
+      this.formattedData = [];
+    this.term = ''
+    this.page = 1;
+    this.tableSize = 50;
+    this.selectedEmployeeIds = [];
+    this.time.start_date = '';
+    this.time.end_date = '';
+    this.directionValue = '';
+    this.sortValue = '';
+    this.tableConfig = {
+      columns: [],
+      data: this.formattedData,
+      searchTerm: '',
+      actions: [],
+      accessConfig: [],
+      tableSize: 50,
+      pagination: true,
+      searchable: false,
+      startAndEndDateFilter: true,
+      leaveTypes: true,
+      showDownload: false,
+      reset: true,
+      searchPlaceholder: 'Search',
+    };
+    } else{
+      this.page = 1
+    }
     this.selectedLeaveType = detail?.leave_type;
-    this.page = 1
     this.getTableData({
       page: this.page,
       pageSize: this.tableSize,
@@ -223,9 +247,6 @@ export class LeaveSummaryReportComponent implements OnInit {
     this.term = ''
     this.page = 1;
     this.tableSize = 50;
-    this.selectedClientIds = [];
-    this.selectedJobIds = [];
-    this.selectedStatusIds = [];
     this.selectedEmployeeIds = [];
     this.time.start_date = '';
     this.time.end_date = '';
@@ -244,7 +265,7 @@ export class LeaveSummaryReportComponent implements OnInit {
       leaveTypes: true,
       showDownload: false,
       reset: true,
-      searchPlaceholder: 'Search by Client/Job/Employee',
+      searchPlaceholder: 'Search',
     };
     this.getTableData({
       page: this.page,
@@ -444,19 +465,24 @@ export class LeaveSummaryReportComponent implements OnInit {
       finalQuery += `&employee-ids=[${params.employee_ids.join(',')}]`;
     }
     if (params?.leave_type) {
-      finalQuery += `&leave_type=${params.leave_type}`;
+      finalQuery += `&leave-type-id=${params.leave_type}`;
     }
     if (this.directionValue && this.sortValue) {
       finalQuery += `&sort-by=${this.sortValue}&sort-type=${this.directionValue}`;
     }
     if (this.time?.start_date && this.time?.end_date) {
-      finalQuery += `&timesheet-start-date=${this.time?.start_date}&timesheet-end-date=${this.time?.end_date}`;
+      finalQuery += `&start-date=${this.time?.start_date}&end-date=${this.time?.end_date}`;
     }
     await this.api.getData(`${environment.live_url}/${environment.all_emp_custom_balance}/${finalQuery}`).subscribe((res: any) => {
       if (res.results) {
         this.formattedData = res.results?.map((item: any, i: number) => ({
           sl: (page - 1) * pageSize + i + 1,
           ...item,
+          consumed: item?.leave[0]?.consumed ?? 0,
+          accrued_leaves: item?.leave[0]?.accrued_leaves ?? 0,
+          closing_balance_leaves: item?.leave[0]?.closing_balance_leaves ?? 0,
+          available: item?.leave[0]?.available ?? 0,
+          opening_balance: item?.leave[0]?.opening_balance ?? 0,
         }));
         this.tableConfig = {
           columns: tableColumns?.map(col => {

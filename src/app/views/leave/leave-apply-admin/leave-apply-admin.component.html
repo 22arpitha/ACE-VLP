@@ -227,7 +227,8 @@
                 <div class="action-btn d-flex gap-1 my-1 px-0">
                      <button mat-button class="cancel-button mat-btn-s" type="button" mat-dialog-close>
                         Close</button>
-                    <button mat-raised-button class="proceedbtn mat-btn-s" (click)="onSubmit()" type="submit">
+                    <button mat-raised-button class="proceedbtn mat-btn-s" (click)="onSubmit()" 
+                        [disabled]="selectedLeaveTypeName!=='loss of pay' && leave_balance === 0 && !employeeActive" type="submit">
                         Apply
                     </button>
                 </div>

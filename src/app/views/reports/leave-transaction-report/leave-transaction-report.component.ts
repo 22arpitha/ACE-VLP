@@ -76,14 +76,13 @@ export class LeaveTransactionReportComponent implements OnInit {
   ngOnInit(): void {
     this.common_service.setTitle(this.BreadCrumbsTitle)
     this.tableConfig = tableColumns;
-    // this.getLeaveTypes();
-    setTimeout(() => {
-      this.getTableData({
-        page: this.page,
-        pageSize: this.tableSize,
-        searchTerm: this.term
-      });
-    }, 500);
+    // setTimeout(() => {
+    //   this.getTableData({
+    //     page: this.page,
+    //     pageSize: this.tableSize,
+    //     searchTerm: this.term
+    //   });
+    // }, 500);
   }
 
   getLeaveTypes() {
@@ -195,9 +194,35 @@ export class LeaveTransactionReportComponent implements OnInit {
   }
 
   onLeaveType(detail) {
-    console.log(detail)
-    this.selectedLeaveType = detail?.leave_type;
+    if(detail.reset===true){
+      this.formattedData = [];
+    this.term = ''
+    this.page = 1;
+    this.tableSize = 50;
+    this.selectedEmployeeIds = [];
+    this.time.start_date = '';
+    this.time.end_date = '';
+    this.directionValue = '';
+    this.sortValue = '';
+    this.tableConfig = {
+      columns: [],
+      data: this.formattedData,
+      searchTerm: '',
+      actions: [],
+      accessConfig: [],
+      tableSize: 50,
+      pagination: true,
+      searchable: false,
+      startAndEndDateFilter: true,
+      leaveTypes: true,
+      showDownload: false,
+      reset: true,
+      searchPlaceholder: 'Search',
+    };
+  } else{
     this.page = 1
+  }
+    this.selectedLeaveType = detail?.leave_type;
     this.getTableData({
       page: this.page,
       pageSize: this.tableSize,
@@ -407,18 +432,18 @@ async getTableData(params?: { page?: number; pageSize?: number; searchTerm?: str
     const query = buildPaginationQuery({ page, pageSize, searchTerm });
     finalQuery = query
     if (params?.employee_ids?.length) {
-      finalQuery += `&employee-ids=[${params.employee_ids.join(',')}]`;
+      finalQuery += `&employee_id=[${params.employee_ids.join(',')}]`;
     }
     if (params?.leave_type) {
-      finalQuery += `&leave_type=${params.leave_type}`;
+      finalQuery += `&leave_type_id=${params.leave_type}`;
     }
     if (this.directionValue && this.sortValue) {
       finalQuery += `&sort-by=${this.sortValue}&sort-type=${this.directionValue}`;
     }
     if (this.time?.start_date && this.time?.end_date) {
-      finalQuery += `&timesheet-start-date=${this.time?.start_date}&timesheet-end-date=${this.time?.end_date}`;
+      finalQuery += `&start-date=${this.time?.start_date}&end-date=${this.time?.end_date}`;
     }
-    await this.api.getData(`${environment.live_url}/${environment.all_emp_custom_balance}/${finalQuery}`).subscribe((res: any) => {
+    await this.api.getData(`${environment.live_url}/${environment.leave_transaction_report}/${finalQuery}`).subscribe((res: any) => {
       if (res.results) {
         this.formattedData = res.results?.map((item: any, i: number) => ({
           sl: (page - 1) * pageSize + i + 1,

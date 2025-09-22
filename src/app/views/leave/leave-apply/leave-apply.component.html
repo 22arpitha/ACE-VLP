@@ -194,7 +194,8 @@
           <button mat-raised-button class="cancel-button mat-btn-s" type="button">
             Cancel
           </button>
-          <button mat-raised-button class="proceedbtn mat-btn-s" (click)="onSubmit()" type="submit">
+          <button mat-raised-button class="proceedbtn mat-btn-s" (click)="onSubmit()"
+            [disabled]="selectedLeaveTypeName!=='loss of pay' && leave_balance === 0 && !employeeActive" type="submit">
             Apply
           </button>
         </div>

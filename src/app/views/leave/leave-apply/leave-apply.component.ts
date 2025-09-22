@@ -24,6 +24,9 @@ import { CompOffGrantComponent } from '../comp-off-grant/comp-off-grant.componen
 export class LeaveApplyComponent implements OnInit {
   @ViewChild(FormGroupDirective) formGroupDirective!: FormGroupDirective;
   leave_balance: any = 'NA';
+  selectedLeaveTypeName:any;
+  employeeActive:boolean;
+  emppoyeeActive:any
   user_id: any;
   allleavetypeList: any = [];
   BreadCrumbsTitle: any = 'Leave Request';
@@ -91,11 +94,10 @@ export class LeaveApplyComponent implements OnInit {
 
   getAllEmployeeList2() {
     this.apiService.getAllEmployees2().subscribe((res: any) => {
-      this.ccEmailsList = res.results;
+      this.ccEmailsList = res;
     });
 
     this.apiService.getUserById(this.user_id).subscribe((res) => {
-      console.log(res);
 
       this.reportinManagerDetails.push({
         id: res['reporting_manager_id'],
@@ -108,10 +110,12 @@ export class LeaveApplyComponent implements OnInit {
   }
 
   onLeaveTypeChange(event: any) {
+    this.selectedLeaveTypeName = this.allleavetypeList.find((item: any) => item.id === event.value)?.leave_type_name.toLowerCase() || '';
     this.apiService.getEmployeeLeaves(this.user_id, event.value).subscribe(
       (res: any) => {
         if(res?.results.length>0){
-          this.leave_balance = res?.results[0].remaining_leaves;
+          this.leave_balance = res?.results[0].closing_balance_leave;
+          this.employeeActive = res?.results[0].is_active;
         } else{
           this.leave_balance = 0;
         }
@@ -171,7 +175,6 @@ export class LeaveApplyComponent implements OnInit {
 
   calculateDays() {
     if (!this.startDate || !this.endDate) {
-      console.log('Please select both start and end date');
       return;
     }
 
@@ -205,7 +208,6 @@ export class LeaveApplyComponent implements OnInit {
     }
 
     this.totalDays = total;
-    console.log('Total Days:', this.totalDays);
   }
 
   convertDateTime(dateVal: Date) {
@@ -314,7 +316,6 @@ export class LeaveApplyComponent implements OnInit {
     const dayData = this.working_day_data.find((d: any) => d.day === dayName);
 
     if (!dayData) {
-      console.log('Day not found in calendar');
       return;
     }
 
@@ -351,7 +352,6 @@ export class LeaveApplyComponent implements OnInit {
       this.startDate,
       this.endDate,
       (fixedHolidayCount) => {
-        console.log('Fixed holidays between range:', fixedHolidayCount);
         this.totalDays =
           this.totalDays - (recurringHolidayCount + fixedHolidayCount);
       }
@@ -372,7 +372,6 @@ export class LeaveApplyComponent implements OnInit {
       this.startDate,
       this.endDate,
       (fixedHolidayCount) => {
-        console.log('Fixed holidays between range:', fixedHolidayCount);
         this.totalDays =
           this.totalDays - (recurringHolidayCount + fixedHolidayCount);
       }
@@ -380,7 +379,6 @@ export class LeaveApplyComponent implements OnInit {
   }
 
   sessionFun1(event: any) {
-    console.log('Session 1:', event.value);
     this.session1 = event.value; // "first" or "second"
     let recurringHolidayCount = this.countHolidays(
       this.startDate,
@@ -390,7 +388,6 @@ export class LeaveApplyComponent implements OnInit {
       this.startDate,
       this.endDate,
       (fixedHolidayCount) => {
-        console.log('Fixed holidays between range:', fixedHolidayCount);
         this.totalDays =
           this.totalDays - (recurringHolidayCount + fixedHolidayCount);
       }
@@ -399,7 +396,6 @@ export class LeaveApplyComponent implements OnInit {
   }
 
   sessionFun2(event: any) {
-    console.log('Session 2:', event.value);
     this.session2 = event.value;
     let recurringHolidayCount = this.countHolidays(
       this.startDate,
@@ -409,7 +405,6 @@ export class LeaveApplyComponent implements OnInit {
       this.startDate,
       this.endDate,
       (fixedHolidayCount) => {
-        console.log('Fixed holidays between range:', fixedHolidayCount);
         this.totalDays =
           this.totalDays - (recurringHolidayCount + fixedHolidayCount);
       }
@@ -426,7 +421,6 @@ export class LeaveApplyComponent implements OnInit {
       .subscribe(
         (respData: any) => {
           this.allEmployeeEmailsList = respData;
-          console.log('------>>', respData);
           this.reportinManagerDetails = this.allEmployeeEmailsList.find(
             (emp: any) => emp.user_id === Number(this.user_id)
           );
@@ -525,40 +519,220 @@ export class LeaveApplyComponent implements OnInit {
   }
 
   onSubmit(): void {
-    this.leaveApplyForm.patchValue({ cc: JSON.stringify(this.selectedEmails) });
-    if (this.selectedFile) {
-      this.leaveApplyForm.patchValue({ attachment: this.selectedFile });
-    }
-    // console.log('is valid -->>>', this.leaveApplyForm.valid);
-    console.log('form value -->>>', this.leaveApplyForm.value);
+  // prepare cc and file
+  this.leaveApplyForm.patchValue({ cc: JSON.stringify(this.selectedEmails) });
+  if (this.selectedFile) {
+    this.leaveApplyForm.patchValue({ attachment: this.selectedFile });
+  }
 
-    if (this.leaveApplyForm.valid) {
-      const formData = new FormData();
+  // basic form validation
+  if (this.leaveApplyForm.invalid) {
+    this.leaveApplyForm.markAllAsTouched();
+    return;
+  }
 
-      Object.keys(this.leaveApplyForm.value).forEach((key) => {
-        const value = this.leaveApplyForm.value[key];
-        formData.append(key, value);
-      });
+  // get leave type config
+  const leaveTypeId = this.leaveApplyForm.get('leave_type')?.value;
+  const leaveTypeData = this.allleavetypeList?.find((l: any) => l.id === leaveTypeId);
 
-      console.log('form value 2 after valid -->>>', this.leaveApplyForm.value);
+  const fromDateRaw = this.leaveApplyForm.get('from_date')?.value;
+  const toDateRaw = this.leaveApplyForm.get('to_date')?.value;
 
-      this.apiService
-        .postData(
-          `${environment.live_url}/${environment.apply_leaves}/`,
-          formData
-        )
-        .subscribe(
-          (res: any) => {
-            this.apiService.showSuccess(res.message);
-            this.resetFormState();
-          },
-          (err) => {
-            console.log('err', err);
-            this.apiService.showError(err?.error?.detail);
-          }
-        );
+  if (!fromDateRaw || !toDateRaw) {
+    this.apiService.showError('Please select both From and To dates');
+    return;
+  }
+
+  // normalize dates to midnight
+  const msPerDay = 24 * 60 * 60 * 1000;
+  const current = new Date();
+  current.setHours(0, 0, 0, 0);
+
+  const fromDate = new Date(fromDateRaw);
+  fromDate.setHours(0, 0, 0, 0);
+
+  const toDate = new Date(toDateRaw);
+  toDate.setHours(0, 0, 0, 0);
+
+    if (fromDate < current) {
+    if (leaveTypeData?.utilization_after && Number(leaveTypeData.utilization_after) > 0) {
+      if (toDate < current) {
+        // Count days from current date to TO date, excluding TO date
+        const daysDiff = Math.floor((current.getTime() - toDate.getTime()) / msPerDay);
+        if (daysDiff > Number(leaveTypeData.utilization_after)) {
+          this.apiService.showError(
+            `${leaveTypeData.leave_type_name} leave cannot be applied. It must be within ${leaveTypeData.utilization_after} day(s) from today.`
+          );
+          return;
+        }
+      }
     }
   }
+
+  if (fromDate >= current) {
+    if (leaveTypeData?.utilization_before && Number(leaveTypeData.utilization_before) > 0) {
+      const daysDiff = Math.floor((fromDate.getTime() - current.getTime()) / msPerDay);
+      if (daysDiff < Number(leaveTypeData.utilization_before)) {
+        this.apiService.showError(
+          `You cannot apply this leave. You must apply at least ${leaveTypeData.utilization_before} day(s) in advance.`
+        );
+        return;
+      }
+    }
+  }
+
+  // passed all checks → submit
+  const formData = new FormData();
+  Object.keys(this.leaveApplyForm.value).forEach((key) => {
+    const value = this.leaveApplyForm.value[key];
+    formData.append(key, value);
+  });
+
+  this.apiService
+    .postData(`${environment.live_url}/${environment.apply_leaves}/`, formData)
+    .subscribe(
+      (res: any) => {
+        this.apiService.showSuccess(res.message);
+        this.resetFormState();
+      },
+      (err) => {
+        this.apiService.showError(err?.error?.detail);
+      }
+    );
+}
+
+
+
+
+//  onSubmit(): void {
+//   // prepare cc and file
+//   this.leaveApplyForm.patchValue({ cc: JSON.stringify(this.selectedEmails) });
+//   if (this.selectedFile) {
+//     this.leaveApplyForm.patchValue({ attachment: this.selectedFile });
+//   }
+
+//   // basic form validation
+//   if (this.leaveApplyForm.invalid) {
+//     this.leaveApplyForm.markAllAsTouched();
+//     return;
+//   }
+
+//   // get leave type config
+//   const leaveTypeId = this.leaveApplyForm.get('leave_type')?.value;
+//   const leaveTypeData = this.allleavetypeList?.find((l: any) => l.id === leaveTypeId);
+
+//   const fromDateRaw = this.leaveApplyForm.get('from_date')?.value;
+//   const toDateRaw = this.leaveApplyForm.get('to_date')?.value;
+
+//   if (!fromDateRaw || !toDateRaw) {
+//     this.apiService.showError('Please select both From and To dates');
+//     return;
+//   }
+
+//   // normalize to midnight
+//   const msPerDay = 24 * 60 * 60 * 1000;
+//   const current = new Date();
+//   current.setHours(0, 0, 0, 0);
+
+//   const fromDate = new Date(fromDateRaw);
+//   fromDate.setHours(0, 0, 0, 0);
+
+//   const toDate = new Date(toDateRaw);
+//   toDate.setHours(0, 0, 0, 0);
+
+//   // CASE 1: from_date is in the past → utilization_after check
+//   if (fromDate < current) {
+//     if (leaveTypeData?.utilization_after && Number(leaveTypeData.utilization_after) > 0) {
+//       if (toDate < current) {
+//         // include today in the count
+//         const daysDiff = Math.floor((current.getTime() - toDate.getTime()) / msPerDay) + 1;
+//         console.log(daysDiff,'after')
+//         if (daysDiff > Number(leaveTypeData.utilization_after)) {
+//           this.apiService.showError(
+//             `You cannot apply this leave. Maximum allowed backdated leave is ${leaveTypeData.utilization_after} day(s).`
+//           );
+//           return;
+//         }
+//       }
+//     }
+//   }
+
+//   // CASE 2: from_date is today or in the future → utilization_before check
+//   if (fromDate >= current) {
+//     if (leaveTypeData?.utilization_before && Number(leaveTypeData.utilization_before) > 0) {
+//       // include today in the count
+//       const daysDiff = Math.floor((fromDate.getTime() - current.getTime()) / msPerDay) + 1;
+//       console.log(daysDiff,'before')
+//       if (daysDiff < Number(leaveTypeData.utilization_before)) {
+//         this.apiService.showError(
+//           `You cannot apply this leave. You must apply at least ${leaveTypeData.utilization_before} day(s) in advance.`
+//         );
+//         return;
+//       }
+//     }
+//   }
+
+//   // passed all checks → submit
+//   const formData = new FormData();
+//   Object.keys(this.leaveApplyForm.value).forEach((key) => {
+//     const value = this.leaveApplyForm.value[key];
+//     formData.append(key, value);
+//   });
+
+//   // this.apiService
+//   //   .postData(`${environment.live_url}/${environment.apply_leaves}/`, formData)
+//   //   .subscribe(
+//   //     (res: any) => {
+//   //       this.apiService.showSuccess(res.message);
+//   //       this.resetFormState();
+//   //     },
+//   //     (err) => {
+//   //       this.apiService.showError(err?.error?.detail);
+//   //     }
+//   //   );
+// }
+
+
+
+
+
+  // onSubmit(): void {
+  //   this.leaveApplyForm.patchValue({ cc: JSON.stringify(this.selectedEmails) });
+  //   if (this.selectedFile) {
+  //     this.leaveApplyForm.patchValue({ attachment: this.selectedFile });
+  //   }
+  //   // console.log('is valid -->>>', this.leaveApplyForm.valid);
+  //   console.log('form value -->>>', this.leaveApplyForm.value);
+  // if (this.leaveApplyForm.invalid) {
+  //       this.leaveApplyForm.markAllAsTouched();
+  //     }
+  //  else {
+  //     const formData = new FormData();
+
+  //     Object.keys(this.leaveApplyForm.value).forEach((key) => {
+  //       const value = this.leaveApplyForm.value[key];
+  //       formData.append(key, value);
+  //     });
+
+  //     console.log('form value 2 after valid -->>>', this.leaveApplyForm.value);
+
+  //     this.apiService
+  //       .postData(
+  //         `${environment.live_url}/${environment.apply_leaves}/`,
+  //         formData
+  //       )
+  //       .subscribe(
+  //         (res: any) => {
+  //           this.apiService.showSuccess(res.message);
+  //           this.resetFormState();
+  //         },
+  //         (err) => {
+  //           console.log('err', err);
+  //           this.apiService.showError(err?.error?.detail);
+  //         }
+  //       );
+  //   }
+  // }
   public resetFormState() {
     this.totalDays = 0;
     this.selectedEmails = []

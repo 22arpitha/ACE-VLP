@@ -19,27 +19,27 @@ export const tableColumns  = [
    
   {
     label: 'Opening Balance',
-    key: 'open_balance',
-    sortKey:'open_balance',
-    sortable: true
+    key: 'opening_balance',
+    sortKey:'opening_balance',
+    sortable: false
   },
   {
     label: 'Accrued Balance',
-    key: 'accrued',
-    sortKey:'accrued',
-    sortable: true
+    key: 'accrued_leaves',
+    sortKey:'accrued_leaves',
+    sortable: false
   },
   {
     label: 'Utilized',
-    key: 'utilized',
+    key: 'consumed',
     sortKey:'utilized',
-    sortable: true
+    sortable: false
   },
   {
     label: 'Closing Balance',
-    key: 'closing_balance',
-    sortKey:'closing_balance',
-    sortable: true
+    key: 'closing_balance_leaves',
+    sortKey:'closing_balance_leaves',
+    sortable: false
   },
   
 ]

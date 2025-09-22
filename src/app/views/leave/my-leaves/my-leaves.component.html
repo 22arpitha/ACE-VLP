@@ -72,7 +72,7 @@
                 <td *ngIf="item.status === 'rejected'"><span style="background:#fee2e2; color: #b91c1c;"
                     class="p-2 rounded">REJECTED</span></td>
                 <td>{{item?.message}}</td>
-                <td></td>
+                <td>{{item.rejected_reason}}</td>
                 <td>
                   <div *ngIf="item.status === 'Pending'">
                     <button  class="btn btn-sm custom-btn" type="button"

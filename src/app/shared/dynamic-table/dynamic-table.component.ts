@@ -99,11 +99,21 @@ this.getAllLeaveTypes();
    getAllLeaveTypes(){
      this.api.getData(`${environment.live_url}/${environment.settings_leave_type}/`).subscribe((respData: any) => {
       this.leaveTypes = respData;
-      console.log(respData)
+      if (this.leaveTypes?.length > 0) {
+        this.selectedLeaveType = this.leaveTypes[0].id;
+        this.actionEvent.emit({ actionType: 'leaveType', detail: {leave_type:this.selectedLeaveType,reset:false}});
+     }
     }, (error: any) => {
       this.api.showError(error?.error?.detail);
     })
    }
+
+   shouldShowLeaveType(config:any): boolean {
+    if(config.defaultLeaveTypes && !this.selectedLeaveType){
+       this.selectedLeaveType = this.leaveTypes[0].id;
+    }
+    return !!this.config?.leaveTypes; 
+  }
 // onSelectionChange(newSelected: any[], col: any): void {
 //   const key = col.key;
 //   this.tempFilters[key] = newSelected;
@@ -123,7 +133,6 @@ this.getAllLeaveTypes();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    console.log('sdsd',this.config)
     this.initializeTable();
     this.paginationConfig = {
       totalItems: this.config.totalRecords ?? 0,
@@ -290,7 +299,14 @@ onFilterChange(selectedValue: any, columnConfig: any, fromCheckbox: boolean = fa
     this.arrowState = {};
     this.sortValue = '';
     this.directionValue = '';
-    this.actionEvent.emit({ actionType: 'reset', detail: '' });
+    console.log(this.config)
+    if(this.config.leaveTypes){
+       this.selectedLeaveType = this.leaveTypes[0].id;
+       this.actionEvent.emit({ actionType: 'leaveType', detail: {leave_type:this.selectedLeaveType,reset:true}});
+    } else{
+
+      this.actionEvent.emit({ actionType: 'reset', detail: '' });
+    }
   }
   downloadPDF(): void {
     this.actionEvent.emit({ actionType:'export_pdf' , detail:'pdf' });
@@ -681,7 +697,7 @@ if(event.value){
 }
 
  selectLeaveTypesFunc(event) {
-    this.actionEvent.emit({ actionType: 'leaveType', detail: {leave_type:this.selectedLeaveType}});
+    this.actionEvent.emit({ actionType: 'leaveType', detail: {leave_type:this.selectedLeaveType,reset:false}});
   }
 
 dateClass = (date: Date) => {

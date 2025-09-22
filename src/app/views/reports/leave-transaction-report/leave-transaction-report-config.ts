@@ -20,31 +20,31 @@ export const tableColumns  = [
     label: 'Description',
     key: 'description',
     sortKey:'description',
-    sortable: true
+    sortable: false
   },
   {
-    label: 'Opening Balance',
-    key: 'open_balance',
-    sortKey:'open_balance',
-    sortable: true
+    label: 'Date',
+    key: 'date',
+    sortKey:'date',
+    sortable: false
   },
   {
     label: 'Accrued Balance',
     key: 'accrued',
     sortKey:'accrued',
-    sortable: true
+    sortable: false
   },
   {
     label: 'Utilized',
     key: 'utilized',
     sortKey:'utilized',
-    sortable: true
+    sortable: false
   },
   {
     label: 'Balance',
     key: 'balance',
     sortKey:'balance',
-    sortable: true
+    sortable: false
   },
   
 ]

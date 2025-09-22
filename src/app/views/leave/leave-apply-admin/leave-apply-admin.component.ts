@@ -25,6 +25,8 @@ import { CompOffGrantComponent } from '../comp-off-grant/comp-off-grant.componen
 export class LeaveApplyAdminComponent implements OnInit {
   @ViewChild(FormGroupDirective) formGroupDirective!: FormGroupDirective;
   leave_balance: any = 'NA';
+  selectedLeaveTypeName:any;
+  employeeActive:boolean;
   user_id: any;
   userRole: any;
   allleavetypeList: any = [];
@@ -113,10 +115,12 @@ export class LeaveApplyAdminComponent implements OnInit {
   }
 
   onLeaveTypeChange(event: any) {
+    this.selectedLeaveTypeName = this.allleavetypeList.find((item: any) => item.id === event.value)?.leave_type_name.toLowerCase() || '';
     this.apiService.getEmployeeLeaves(this.selectedItemsMap['employee'][0].user_id, event.value).subscribe(
       (res: any) => {
         if(res?.results.length>0){
-          this.leave_balance = res?.results[0].remaining_leaves;
+          this.leave_balance = res?.results[0].closing_balance_leave;
+          this.employeeActive = res?.results[0].is_active;
         } else{
           this.leave_balance = 0;
         }
