@@ -58,7 +58,7 @@
                 <tbody>
       
                   <ng-container *ngIf="(allClientBasedJobsLists) as result">
-                    <tr *ngFor='let item of result | customSort:directionValue:sortValue; let i=index'>
+                    <tr *ngFor='let item of result | customSort:directionValue:sortValue | paginate: { itemsPerPage: tableSize, currentPage: page,totalItems: count }; let i=index'>
                       <td>
                         <mat-checkbox
                         (change)="toggleJobSelection(item)"
@@ -80,6 +80,21 @@
           <div class="row mx-1 my-2 px-0" *ngIf="allClientBasedJobsLists?.length === 0" >
             <app-generic-norecards></app-generic-norecards>
           </div>
+           <div class="row mx-0 my-2 px-2">
+            <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0" *ngIf="allClientBasedJobsLists.length > 0">
+                <div class="pagination-container p-0 pt-2">
+                    <pagination-controls previousLabel="Prev" nextLabel="Next" (pageChange)="onTableDataChange($event)">
+                    </pagination-controls>
+                    <div class="items-per-page-container">
+                        <div>Items per page</div>
+                        <mat-select [(ngModel)]="tableSize" (selectionChange)="onTableSizeChange($event)" placeholder="10"
+                            class="page-size">
+                            <mat-option *ngFor="let size of tableSizes" [value]="size">{{size}}</mat-option>
+                        </mat-select>
+                    </div>
+                </div>
+            </div>
+         </div>
         
     </section>
       <div class="row mx-0 my-2 px-0 justify-content-end">

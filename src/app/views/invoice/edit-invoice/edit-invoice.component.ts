@@ -20,8 +20,8 @@ export class EditInvoiceComponent implements OnInit {
      term:any='';
      page = 1;
     count = 0;
-    tableSize = 50;
-    tableSizes = [50,75,100];
+    tableSize = 10;
+    tableSizes = [10,50,75,100];
      sortValue: string = '';
      directionValue: string = '';
      selectedItemId:any;
@@ -38,6 +38,7 @@ total_amount:false,
      user_id: any;
      userRole: any;
      jobSelection: any[] = [];
+     manualUnselectedJobs: any[] = [];
      client_id:any;
      client_name:any;
      invoice_id:any;
@@ -73,14 +74,20 @@ total_amount:false,
        this.router.navigate(['/invoice/create-invoice']);
    
      }
+     getFilterBaseUrl(): string {
+    const base = `?page=${this.page}&page_size=${this.tableSize}`;
+    const searchParam = this.term?.trim().length >= 2 ? `&search=${this.term.trim()}` : '';
+    return `${base}${searchParam}`;
+  }
 
     public getClientBasedJobsList(){
+      let query = this.getFilterBaseUrl()
       this.allClientBasedJobsLists=[];
       this.jobSelection=[];
-      let query  = `?page=${this.page}&page_size=${this.tableSize}`;
-       query += this.term?.trim().length >= 2 ? `&search=${this.term.trim()}` : '';
+      // let query  = `?page=${this.page}&page_size=${this.tableSize}`;
+      //  query += this.term?.trim().length >= 2 ? `&search=${this.term.trim()}` : '';
       forkJoin([
-        this.apiService.getData(`${environment.live_url}/${environment.jobs}/?search=${this.term}&job-status=Completed&client=${this.client_id}`),  // First API call for Client related completed jobs list
+        this.apiService.getData(`${environment.live_url}/${environment.jobs}/${query}&job-status=Completed&client=${this.client_id}`),  // First API call for Client related completed jobs list
         this.apiService.getData(`${environment.live_url}/${environment.client_invoice}/?invoice-id=${this.invoice_id}`),  // Second API call for Client Generated invoiced jobs details
         this.apiService.getData(`${environment.live_url}/${environment.client_invoice}/?client=${this.client_id}`)  // Second API call for Client Generated invoiced jobs details
       ]).pipe(
@@ -93,7 +100,8 @@ total_amount:false,
         };
         return combinedResponse;
     })).subscribe((responseData:any)=>{
-      this.allClientBasedJobsLists = responseData.clientAllJobs;
+      console.log(responseData)
+      this.allClientBasedJobsLists = responseData.clientAllJobs.results;
 
   const selectedInvoiceDetails = responseData.selectedinvoiceDetails[0];
   this.client_name = selectedInvoiceDetails?.client_name;
@@ -112,9 +120,11 @@ total_amount:false,
     otherInvoiceJoblist?.map((invoiceJobItem: any) => invoiceJobItem?.job_id)
   );
 
-  this.allClientBasedJobsLists = responseData.clientAllJobs
-    ?.filter((jobItem: any) => !clientInvoiceJobsSet.has(jobItem?.id));
-
+  this.allClientBasedJobsLists = responseData.clientAllJobs?.results?.filter((jobItem: any) => !clientInvoiceJobsSet.has(jobItem?.id));
+  const noOfPages: number = responseData.clientAllJobs?.['total_pages']
+  this.count = noOfPages * this.tableSize;
+  this.count = responseData.clientAllJobs?.['total_no_of_record'];
+  this.page = responseData.clientAllJobs?.['current_page'];
   this.allClientBasedJobsLists?.forEach((jobItem: any) => {
     selectedInvoiceDetails?.client_invoice?.forEach((invoiceJobItem: any) => {
       if (jobItem?.id === invoiceJobItem?.job_id) {
@@ -156,15 +166,35 @@ const jobsMappedData =  this.jobSelection?.map(({id,
       this.apiService.showError(error?.error?.detail);
     });
     }
-
     toggleJobSelection(item: any) {
-      const index = this.jobSelection?.indexOf(item);
+      const index = this.jobSelection.indexOf(item);
       if (index === -1) {
-        this.jobSelection?.push(item);
+        // Add to selection
+        this.jobSelection.push(item);
+
+        // If it was manually unselected earlier, remove from unselected
+        const unselectedIndex = this.manualUnselectedJobs.indexOf(item.id);
+        if (unselectedIndex > -1) this.manualUnselectedJobs.splice(unselectedIndex, 1);
       } else {
-        this.jobSelection?.splice(index, 1);
+        // Remove from selection
+        this.jobSelection.splice(index, 1);
+
+        // If it was from API initially, mark it as manually unselected
+        if (item.fromApi) {
+          this.manualUnselectedJobs.push(item.id);
+        }
       }
     }
+
+
+    // toggleJobSelection(item: any) {
+    //   const index = this.jobSelection?.indexOf(item);
+    //   if (index === -1) {
+    //     this.jobSelection?.push(item);
+    //   } else {
+    //     this.jobSelection?.splice(index, 1);
+    //   }
+    // }
     isAllJobsSelected() {
       return this.jobSelection?.length > 0 ? this.jobSelection?.length === this.allClientBasedJobsLists?.length : false;
     }
@@ -203,4 +233,17 @@ const jobsMappedData =  this.jobSelection?.map(({id,
      public closeEditDetails(){
       this.dialogRef.close();
      }
+
+     onTableSizeChange(event: any): void {
+    if (event) {
+      this.page = 1;
+      this.tableSize = Number(event.value);
+      this.getClientBasedJobsList();
+    }
+  }
+
+  onTableDataChange(event: any) {
+    this.page = event;
+    this.getClientBasedJobsList();
+  }
 }
