@@ -1,30 +1,76 @@
-<div class="p-3 resource">
-    <table mat-table [dataSource]="employees" class="leave-table">
-        <!-- Employee Column -->
-        <ng-container matColumnDef="employee">
-            <th mat-header-cell *matHeaderCellDef>Employee</th>
-            <td mat-cell *matCellDef="let emp">{{ emp.id }} {{ emp.name }}</td>
-        </ng-container>
+<div class="row mx-0 resource">
+    <div class="col-12">
+        <div class="row mx-0 mt-2">
+            <div class="col-sm-12 col-md-6 col-lg-3 pe-2">
+                <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+                    <mat-label>Period<b class="r-star">*</b></mat-label>
+                    <mat-select autocomplete="off" placeholder="Select Period" panelClass="custom-select-panel"
+                        [(ngModel)]="selectedPeriod" (selectionChange)="selectedPeriodFunc($event)">
+                        <mat-option *ngFor="let item of periodValues; let i = index" [value]="item.key">{{
+                            item.value }}</mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            <!-- date range picker -->
+            <div class="col-sm-12 col-md-6 col-lg-3" *ngIf="selectedPeriod==='custom'">
+                <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+                    <mat-date-range-input [rangePicker]="gobalPicker1">
+                        <input matStartDate placeholder="Start date" [(ngModel)]="mainStartDate"
+                            (dateChange)="mainDateChange($event)">
+                        <input matEndDate placeholder="End date" [(ngModel)]="mainEndDate"
+                            (dateChange)="mainEndDateChange($event)">
+                    </mat-date-range-input>
+                    <mat-datepicker-toggle matSuffix [for]="gobalPicker1"></mat-datepicker-toggle>
+                    <mat-date-range-picker #gobalPicker1 [dateClass]="dateClass"></mat-date-range-picker>
+                    <!-- <button matSuffix mat-icon-button *ngIf="mainStartDate || mainEndDate" >
+                <mat-icon>close</mat-icon>
+              </button> -->
+                </mat-form-field>
+            </div>
+        </div>
+        <div class="row">
+            <div (scroll)="onScroll($event)" class="col-12 mx-3 my-2 table-container">
+                <table class="leave-table">
+                    <thead>
+                        <tr>
+                        <th>Employee
+                             <button mat-icon-button [matMenuTriggerFor]="employeesFilterMenu" (menuOpened)="openFilter(employeeFilter)"
+                                [ngClass]="filters.employees.length>=1 ? 'filterdColumn':''">
+                                <span *ngIf="filters.employees.length>=1">{{filters.employees.length.toString().padStart(2,
+                                    '0')}}</span>
+                                <i class="bi-funnel" *ngIf="filters.employees.length===0"></i>
+                             </button>
 
-        <!-- Dynamic Date Columns -->
-        <ng-container *ngFor="let date of weekDates" [matColumnDef]="getDateKey(date)">
-            <th mat-header-cell *matHeaderCellDef>{{ date | date: 'dd MMM' }}</th>
-            <td mat-cell *matCellDef="let emp">
-                <span *ngIf="getLeave(emp.id, date)"  class="leave-text" [style.textDecorationColor]="getLeaveColor(getLeave(emp.id, date)?.type)">
-                    {{ getLeave(emp.id, date)?.type }}
-                </span>
-            </td>
-        </ng-container>
+                                <mat-menu #employeesFilterMenu="matMenu">
+                                <app-generic-table-filter #employeeFilter [fetchOptions]="fetchEmployees" [(selectedOptions)]="filters.employees"
+                                    (selectedOptionsChange)="onFilterChange($event, 'employee')"></app-generic-table-filter>
+                                </mat-menu>
+                        </th>
+                        <th *ngFor="let date of weekDates">{{ date.date }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let emp of employeeCalendarData">
+                        <td>{{ emp.user__full_name }}</td>
+                        <td *ngFor="let leave of emp.leave">
+                            <span class="leave-text" [style.textDecorationColor]="leave.color">{{leave.leave_type}} {{leave.number_of_leaves_applying_for}}</span>
+                        </td>
+                        </tr>
+                    </tbody>
+                    </table>
+                     <!-- <div class="loader" *ngIf="isLoading && !allDataLoaded">
+                        <mat-spinner diameter="30"></mat-spinner>
+                    </div> -->
+                    
+                    <!-- Legend -->
+                    <div class="legend">
+                    <div *ngFor="let item of leaveOptions" class="legend-item">
+                        <span class="color-box" [style.backgroundColor]="item.color"></span>
+                            {{ item.name}}
+                    </div>
+                    </div>
 
-        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-    </table>
-
-    <!-- Legend -->
-    <div class="legend">
-        <div *ngFor="let item of legendItems" class="legend-item">
-            <span class="color-box" [style.backgroundColor]="item.color"></span>
-            {{ item.code }} - {{ item.label }}
+            </div>
         </div>
     </div>
 </div>

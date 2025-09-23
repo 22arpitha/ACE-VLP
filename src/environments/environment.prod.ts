@@ -88,6 +88,7 @@ leave_status:`get-leave-status`,
 period_values: `get-period-values`,
 all_emp_custom_balance:`customize-balance`,
 leave_transaction_report: `leave-transaction-report`,
+resource_availability:`resource-availability`,
 
 // project ace
   leave_application: 'leave-application',
