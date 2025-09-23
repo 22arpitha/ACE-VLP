@@ -93,7 +93,7 @@ export class TemplatesComponent
       (access) => {
         if (access) {
           this.accessPermissions = access[0].operations;
-          this.getAllTemplates('?page=1&page_size=5');
+          this.getAllTemplates(`?page=${this.page}&page_size=${this.tableSize}`);
         }
       },
       (error: any) => {

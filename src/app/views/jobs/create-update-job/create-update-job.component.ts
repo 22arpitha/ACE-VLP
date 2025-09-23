@@ -881,6 +881,10 @@ onManagerSelectOpened(opened: boolean, index: number): void {
     let data = this.allJobStatusList.find((x: any) => x.id === event.value)
     this.tempSelectedJobStatus = data.status_name.toLowerCase();
     this.jobFormGroup.patchValue({ percentage_of_completion: Number(data.percentage_of_completion) })
+    if (this.job_id) {
+    const currentDate = new Date();
+    this.jobFormGroup.patchValue({ job_status_date: currentDate });
+    }
     // check the status
     const selectedIndex = this.allJobStatusList.findIndex(status => status.status_name.toLowerCase() === this.tempSelectedJobStatus.toLowerCase());
     const querySentIndex = this.allJobStatusList.findIndex(status => status.status_name.toLowerCase() === 'internal review 1');
