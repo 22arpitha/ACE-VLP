@@ -154,7 +154,7 @@ export class ResourceAvailabilityComponent implements OnInit {
     if (this.mainStartDate && this.mainEndDate) {
       let start_date = this.datePipe.transform(this.mainStartDate, 'yyyy-MM-dd');
       let end_date = this.datePipe.transform(this.mainEndDate, 'yyyy-MM-dd');
-      this.filterQuery += `&start-date=${start_date}&leave-end-date=${end_date}`;
+      this.filterQuery += `&start_date=${start_date}&end_date=${end_date}`;
     }
     this.apiService.getData(`${environment.live_url}/${environment.resource_availability}/${this.filterQuery}`)
       .subscribe((res: any) => {
