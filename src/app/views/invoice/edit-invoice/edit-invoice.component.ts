@@ -20,8 +20,8 @@ export class EditInvoiceComponent implements OnInit {
      term:any='';
      page = 1;
     count = 0;
-    tableSize = 10;
-    tableSizes = [10,50,75,100];
+    tableSize = 50;
+    tableSizes = [50,75,100,150];
      sortValue: string = '';
      directionValue: string = '';
      selectedItemId:any;
@@ -47,13 +47,15 @@ total_amount:false,
               @Inject(MAT_DIALOG_DATA) public data: any){
                 this.invoice_id=data?.invoice_id;
                 this.client_id = data?.client_id;
+                this.client_name = data?.client_name;
       }
    
      ngOnInit(): void {
        this.user_id = sessionStorage.getItem('user_id');
        this.userRole = sessionStorage.getItem('user_role_name');
        this.getModuleAccess();
-       this.getClientBasedJobsList();
+      //  this.getClientBasedJobsList();
+       this.getClientInvoiceees();
      }
 
      access_name:any ;
@@ -79,6 +81,76 @@ total_amount:false,
     const searchParam = this.term?.trim().length >= 2 ? `&search=${this.term.trim()}` : '';
     return `${base}${searchParam}`;
   }
+
+  getClientInvoiceees(){
+    let query = this.getFilterBaseUrl()
+    query +=`&client=${this.client_id}&job-status=Completed&all-client-invoice=True&client-invoice-id=${this.invoice_id}`
+    this.apiService.getData(`${environment.live_url}/${environment.jobs}/${query}`).subscribe(
+      (res:any)=>{
+        console.log(res)
+        this.allClientBasedJobsLists = res?.results;
+         const noOfPages: number = res?.['total_pages']
+        this.count = noOfPages * this.tableSize;
+        this.page = res?.['current_page'];
+        this.initializeSelection(res?.results);
+      },
+      (error:any)=>{
+        this.apiService.showError(error?.detail)
+      }
+    )
+  }
+
+  initializeSelection(results: any[]) {
+  results.forEach(job => {
+    if (job.is_approved && !this.jobSelection.some(sel => sel.id === job.id)) {
+      this.jobSelection.push(job);
+    }
+  });
+}
+
+
+isJobSelected(item: any): boolean {
+  return this.jobSelection.some(sel => sel.id === item.id);
+}
+
+// Toggle single job selection
+selectJobs(item: any) {
+  const index = this.jobSelection.findIndex(sel => sel.id === item.id);
+  if (index > -1) {
+    this.jobSelection.splice(index, 1); // remove
+  } else {
+    this.jobSelection.push(item); // add
+  }
+}
+
+// Toggle all jobs on the current page
+selectAllJobs(event: any) {
+  if (event.checked) {
+    this.allClientBasedJobsLists.forEach(job => {
+      if (!this.jobSelection.some(sel => sel.id === job.id)) {
+        this.jobSelection.push(job);
+      }
+    });
+  } else {
+    this.allClientBasedJobsLists.forEach(job => {
+      const index = this.jobSelection.findIndex(sel => sel.id === job.id);
+      if (index > -1) this.jobSelection.splice(index, 1);
+    });
+  }
+}
+
+// Master checkbox state
+allJobsSelected(): boolean {
+  return this.allClientBasedJobsLists.every(job => this.isJobSelected(job));
+}
+
+// Indeterminate state
+someJobsSelected(): boolean {
+  const selectedCount = this.allClientBasedJobsLists.filter(job =>
+    this.isJobSelected(job)
+  ).length;
+  return selectedCount > 0 && selectedCount < this.allClientBasedJobsLists.length;
+}
 
     public getClientBasedJobsList(){
       let query = this.getFilterBaseUrl()
@@ -152,6 +224,7 @@ const jobsMappedData =  this.jobSelection?.map(({id,
     job_price,
     total_amount}));
     apiPayload['job_details'] =jobsMappedData;
+    console.log(apiPayload)
     this.apiService.updateData(`${environment.live_url}/${environment.client_invoice}/${this.invoice_id}/`, apiPayload).subscribe((respData: any) => {
       if (respData) {
         this.apiService.showSuccess(respData['message']);
@@ -214,10 +287,12 @@ const jobsMappedData =  this.jobSelection?.map(({id,
      public filterSearch(event: any) {
        this.term = event.target.value?.trim();
        if (this.term && this.term.length >= 2) {
-           this.getClientBasedJobsList()
+          //  this.getClientBasedJobsList()
+          this.getClientInvoiceees();
        }
        else if (!this.term) {
-           this.getClientBasedJobsList()
+          //  this.getClientBasedJobsList()
+          this.getClientInvoiceees();
        }
      }
    
@@ -238,12 +313,14 @@ const jobsMappedData =  this.jobSelection?.map(({id,
     if (event) {
       this.page = 1;
       this.tableSize = Number(event.value);
-      this.getClientBasedJobsList();
+      // this.getClientBasedJobsList();
+      this.getClientInvoiceees();
     }
   }
 
   onTableDataChange(event: any) {
     this.page = event;
-    this.getClientBasedJobsList();
+    // this.getClientBasedJobsList();
+    this.getClientInvoiceees();
   }
 }

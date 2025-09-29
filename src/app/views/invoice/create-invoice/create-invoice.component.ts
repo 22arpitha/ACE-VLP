@@ -46,7 +46,7 @@ export class CreateInvoiceComponent
   page = 1;
   count = 0;
   tableSize = 50;
-  tableSizes = [50, 100, 150];
+  tableSizes = [50,75, 100, 150];
   currentIndex: any;
 
   allClientBasedJobsLists: any = [];
@@ -130,45 +130,54 @@ export class CreateInvoiceComponent
     }
 
     this.allClientBasedJobsLists = [];
-    forkJoin([
-      this.apiService.getData(
-        `${environment.live_url}/${environment.jobs}/${query}`
-      ),
-      this.apiService.getData(
-        `${environment.live_url}/${environment.client_invoice}/?client=${this.selectedClientId}`
-      ),
-    ])
-      .pipe(
-        map(([clientAllJobsDetailsResponse, clientInvoiceListDetailsResponse]: any[]) => {
-          return {
-            clientAllJobsList: clientAllJobsDetailsResponse || [],
-            clientInvoiceList: clientInvoiceListDetailsResponse || [],
-          };
-        })
-      )
-      .subscribe((responseData: any) => {
-        const jobsList = responseData.clientAllJobsList?.results || [];
-        const invoices = responseData.clientInvoiceList || [];
-        if (jobsList.length >= 1 && invoices.length >= 1) {
-          const flatInvoiceJobs = invoices.flatMap(
-            (item: any) => item?.client_invoice || []
-          );
-          const invoiceJobIds = new Set(
-            flatInvoiceJobs.map((inv: any) => inv?.job_id)
-          );
-          this.allClientBasedJobsLists = jobsList.filter(
-            (job: any) => !invoiceJobIds.has(job?.id)
-          );
-          this.count =
-            (responseData.clientAllJobsList?.total_no_of_record || 0) -
-            flatInvoiceJobs.length;
-          this.page = responseData.clientAllJobsList?.current_page;
-        } else {
-          this.allClientBasedJobsLists = jobsList;
-          this.count =
-            responseData.clientAllJobsList?.total_no_of_record || 0;
-        }
-      });
+    this.apiService.getData(`${environment.live_url}/${environment.jobs}/${query}`).subscribe(
+      (res:any)=>{
+        this.allClientBasedJobsLists = res?.results;
+        this.count = res?.total_no_of_record;
+      },
+      (error:any)=>{
+        console.log(error)
+      }
+    )
+    // forkJoin([
+    //   this.apiService.getData(
+    //     `${environment.live_url}/${environment.jobs}/${query}`
+    //   ),
+    //   this.apiService.getData(
+    //     `${environment.live_url}/${environment.client_invoice}/?client=${this.selectedClientId}`
+    //   ),
+    // ])
+    //   .pipe(
+    //     map(([clientAllJobsDetailsResponse, clientInvoiceListDetailsResponse]: any[]) => {
+    //       return {
+    //         clientAllJobsList: clientAllJobsDetailsResponse || [],
+    //         clientInvoiceList: clientInvoiceListDetailsResponse || [],
+    //       };
+    //     })
+    //   )
+    //   .subscribe((responseData: any) => {
+    //     const jobsList = responseData.clientAllJobsList?.results || [];
+    //     const invoices = responseData.clientInvoiceList || [];
+    //     if (jobsList.length >= 1 && invoices.length >= 1) {
+    //       const flatInvoiceJobs = invoices.flatMap(
+    //         (item: any) => item?.client_invoice || []
+    //       );
+    //       const invoiceJobIds = new Set(
+    //         flatInvoiceJobs.map((inv: any) => inv?.job_id)
+    //       );
+    //       this.allClientBasedJobsLists = jobsList.filter(
+    //         (job: any) => !invoiceJobIds.has(job?.id)
+    //       );
+    //       this.count =
+    //         (responseData.clientAllJobsList?.total_no_of_record || 0) -
+    //         flatInvoiceJobs.length;
+    //       this.page = responseData.clientAllJobsList?.current_page;
+    //     } else {
+    //       this.allClientBasedJobsLists = jobsList;
+    //       this.count =
+    //         responseData.clientAllJobsList?.total_no_of_record || 0;
+    //     }
+    //   });
   }
 
   public createInvoice() {
@@ -197,6 +206,7 @@ export class CreateInvoiceComponent
       })
     );
     apiPayload['job_details'] = jobsMappedData;
+    console.log(apiPayload)
     this.apiService
       .postData(
         `${environment.live_url}/${environment.client_invoice}/`,
@@ -222,38 +232,87 @@ export class CreateInvoiceComponent
       );
   }
 
+  // toggleJobSelection(item: any) {
+  //   const index = this.jobSelection?.indexOf(item);
+  //   if (index === -1) {
+  //     this.jobSelection?.push(item);
+  //   } else {
+  //     this.jobSelection?.splice(index, 1);
+  //   }
+  //   const isdirty =
+  //     this.selectedClientId || this.jobSelection.length >= 1 ? true : false;
+  //   this.formErrorScrollService.setUnsavedChanges(isdirty);
+  // }
   toggleJobSelection(item: any) {
-    const index = this.jobSelection?.indexOf(item);
-    if (index === -1) {
-      this.jobSelection?.push(item);
-    } else {
-      this.jobSelection?.splice(index, 1);
-    }
-    const isdirty =
-      this.selectedClientId || this.jobSelection.length >= 1 ? true : false;
-    this.formErrorScrollService.setUnsavedChanges(isdirty);
+  const index = this.jobSelection.findIndex((job) => job.id === item.id);
+  if (index === -1) {
+    this.jobSelection.push(item);
+  } else {
+    this.jobSelection.splice(index, 1);
   }
+  const isdirty = this.selectedClientId || this.jobSelection.length >= 1 ? true : false;
+  this.formErrorScrollService.setUnsavedChanges(isdirty);
+}
+isJobSelected(item: any): boolean {
+  return this.jobSelection.some(sel => sel.id === item.id);
+}
+
+
+  // isAllJobsSelected() {
+  //   return this.jobSelection?.length > 0
+  //     ? this.jobSelection?.length === this.allClientBasedJobsLists?.length
+  //     : false;
+  // }
+
+  // isSomeJobsSelected() {
+  //   return this.jobSelection?.length > 0 && !this.isAllJobsSelected();
+  // }
 
   isAllJobsSelected() {
-    return this.jobSelection?.length > 0
-      ? this.jobSelection?.length === this.allClientBasedJobsLists?.length
-      : false;
-  }
+  return (
+    this.allClientBasedJobsLists.length > 0 &&
+    this.allClientBasedJobsLists.every((job: any) =>
+      this.jobSelection.some((sel) => sel.id === job.id)
+    )
+  );
+}
 
-  isSomeJobsSelected() {
-    return this.jobSelection?.length > 0 && !this.isAllJobsSelected();
-  }
+isSomeJobsSelected() {
+  return (
+    this.jobSelection.length > 0 &&
+    !this.isAllJobsSelected()
+  );
+}
+
+  // toggleAllJobs(event: any) {
+  //   if (event.checked) {
+  //     this.jobSelection = [...this.allClientBasedJobsLists];
+  //   } else {
+  //     this.jobSelection = [];
+  //   }
+  //   const isdirty =
+  //     this.selectedClientId || this.jobSelection.length >= 1 ? true : false;
+  //   this.formErrorScrollService.setUnsavedChanges(isdirty);
+  // }
 
   toggleAllJobs(event: any) {
-    if (event.checked) {
-      this.jobSelection = [...this.allClientBasedJobsLists];
-    } else {
-      this.jobSelection = [];
-    }
-    const isdirty =
-      this.selectedClientId || this.jobSelection.length >= 1 ? true : false;
-    this.formErrorScrollService.setUnsavedChanges(isdirty);
+  if (event.checked) {
+    // Add only jobs that aren’t already in selection
+    const newSelections = this.allClientBasedJobsLists.filter(
+      (job: any) => !this.jobSelection.some((sel) => sel.id === job.id)
+    );
+    this.jobSelection = [...this.jobSelection, ...newSelections];
+  } else {
+    // Remove only current page jobs
+    this.jobSelection = this.jobSelection.filter(
+      (sel: any) =>
+        !this.allClientBasedJobsLists.some((job: any) => job.id === sel.id)
+    );
   }
+  const isdirty = this.selectedClientId || this.jobSelection.length >= 1 ? true : false;
+  this.formErrorScrollService.setUnsavedChanges(isdirty);
+}
+
 
   public onTableSizeChange(event: any): void {
     if (event) {
@@ -279,9 +338,9 @@ export class CreateInvoiceComponent
 
   public getFilterBaseUrl(): string {
     if (this.selectedClientId && this.selectedClientId != null) {
-      return `?page=${this.page}&page_size=${this.tableSize}&search=${this.term}&job-status=Completed&client=${this.selectedClientId}`;
+      return `?page=${this.page}&page_size=${this.tableSize}&search=${this.term}&job-status=Completed&approved-invoice=True&client=${this.selectedClientId}`;
     } else {
-      return `?page=${this.page}&page_size=${this.tableSize}&search=${this.term}&job-status=Completed&client=0`;
+      return `?page=${this.page}&page_size=${this.tableSize}&search=${this.term}&job-status=Completed&approved-invoice=True&client=0`;
     }
   }
 

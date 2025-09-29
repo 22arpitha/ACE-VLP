@@ -32,8 +32,8 @@ export class ViewInvoiceComponent implements OnInit {
   };
   page = 1;
   count = 0;
-  tableSize = 5;
-  tableSizes = [5, 10, 25, 50, 100];
+  tableSize = 50;
+  tableSizes = [50,75,100,150];
   currentIndex: any;
   allClientBasedJobsLists: any = [];
   accessPermissions = [];
@@ -88,7 +88,7 @@ export class ViewInvoiceComponent implements OnInit {
   }
   public openEditInvoicePopup(item: any) {
     this.dialog.open(EditInvoiceComponent, {
-      data: { invoice_id: this.invoice_id, client_id: this.client_id },
+      data: { invoice_id: this.invoice_id, client_id: this.client_id,client_name:this.allClientBasedJobsLists?.client_name },
       panelClass: 'custom-details-dialog',
       disableClose: true,
     });
@@ -125,15 +125,15 @@ export class ViewInvoiceComponent implements OnInit {
   public getInvoiceDetailsList() {
     let query = this.getFilterBaseUrl();
     this.apiService
-      .getData(`${environment.live_url}/${environment.client_invoice}/${query}`)
+      .getData(`${environment.live_url}/${environment.view_invoice}/${query}`)
       .subscribe((res: any) => {
         console.log(res);
         this.allClientBasedJobsLists = res;
-        this.client_id = res[0]?.client_id;
-        // const noOfPages: number = res?.['total_pages']
-        // this.count = noOfPages * this.tableSize;
-        // this.count = res?.['total_no_of_record']
-        // this.page = res?.['current_page'];
+        this.client_id = res?.client_id;
+        const noOfPages: number = res?.['total_pages']
+        this.count = noOfPages * this.tableSize;
+        this.count = res?.['total_no_of_record']
+        this.page = res?.['current_page'];
       });
   }
 
@@ -184,9 +184,9 @@ export class ViewInvoiceComponent implements OnInit {
 
   public getFilterBaseUrl(): string {
     if (this.userRole === 'Admin') {
-      return `?invoice-id=${this.invoice_id}`;
+      return `?invoice-id=${this.invoice_id}&page=${this.page}&page_size=${this.tableSize}`;
     } else {
-      return `?invoice-id=${this.invoice_id}`;
+      return `?invoice-id=${this.invoice_id}&page=${this.page}&page_size=${this.tableSize}`;
     }
   }
 

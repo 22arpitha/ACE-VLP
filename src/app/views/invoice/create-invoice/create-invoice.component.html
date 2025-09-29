@@ -90,10 +90,15 @@
                              totalItems: count
                            }; let i=index'>
                       <td>
-                        <mat-checkbox
+                        <!-- <mat-checkbox
                         (change)="toggleJobSelection(item)"
                         [checked]="jobSelection.includes(item)"
-                      ></mat-checkbox>
+                      ></mat-checkbox> -->
+                      <mat-checkbox
+                        (change)="toggleJobSelection(item)"
+                        [checked]="isJobSelected(item)">
+                      </mat-checkbox>
+
                     </td>
                       <td>{{item?.job_number || '-'}}</td>
                       <td>{{item?.job_name || '-'}}</td>
