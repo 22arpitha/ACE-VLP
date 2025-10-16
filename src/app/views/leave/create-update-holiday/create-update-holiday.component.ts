@@ -144,7 +144,7 @@ export class CreateUpdateHolidayComponent implements OnInit {
           (res: any) => {
             console.log(res);
             this.apiService.showSuccess(res['message']);
-            this.dialogRef.close();
+            this.dialogRef.close({data:'refresh'});
           },
           (error: any) => {
             console.log('error', error)

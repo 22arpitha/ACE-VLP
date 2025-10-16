@@ -96,7 +96,7 @@ export class LeaveApplyAdminComponent implements OnInit {
 
   getAllEmployeeList2() {
     this.apiService.getAllEmployees2().subscribe((res: any) => {
-      this.ccEmailsList = res.results;
+      this.ccEmailsList = res;
     });
 
   }
@@ -146,11 +146,12 @@ export class LeaveApplyAdminComponent implements OnInit {
       to_date: ['', Validators.required],
       from_session: ['', Validators.required],
       to_session: ['', Validators.required],
-      cc: ['', Validators.required],
+      cc: [''],
       reporting_to: ['', Validators.required],
       message: ['', Validators.required],
       attachment: [''],
       employee: ['', Validators.required],
+      number_of_leaves_applying_for:[]
     });
   }
   public get f() {
@@ -535,7 +536,7 @@ export class LeaveApplyAdminComponent implements OnInit {
 
     onSubmit(): void {
   // prepare cc and file
-  this.leaveApplyForm.patchValue({ cc: JSON.stringify(this.selectedEmails) });
+  this.leaveApplyForm.patchValue({ cc: JSON.stringify(this.selectedEmails),number_of_leaves_applying_for:this.totalDays });
   if (this.selectedFile) {
     this.leaveApplyForm.patchValue({ attachment: this.selectedFile });
   }
@@ -576,7 +577,7 @@ export class LeaveApplyAdminComponent implements OnInit {
         const daysDiff = Math.floor((current.getTime() - toDate.getTime()) / msPerDay);
         if (daysDiff > Number(leaveTypeData.utilization_after)) {
           this.apiService.showError(
-            `${leaveTypeData.leave_type_name} leave cannot be applied. It must be within ${leaveTypeData.utilization_after} day(s) from today.`
+            `${leaveTypeData.leave_type_name} must be applied within ${leaveTypeData.utilization_after} days from leave date.`
           );
           return;
         }
@@ -589,7 +590,8 @@ export class LeaveApplyAdminComponent implements OnInit {
       const daysDiff = Math.floor((fromDate.getTime() - current.getTime()) / msPerDay);
       if (daysDiff < Number(leaveTypeData.utilization_before)) {
         this.apiService.showError(
-          `You cannot apply this leave. You must apply at least ${leaveTypeData.utilization_before} day(s) in advance.`
+          `${this.selectedLeaveTypeName} must be applied at least ${leaveTypeData.utilization_before} days before the leave date`
+          // `You cannot apply this leave. You must apply at least ${leaveTypeData.utilization_before} day(s) in advance.`
         );
         return;
       }
@@ -654,8 +656,11 @@ export class LeaveApplyAdminComponent implements OnInit {
 
   public resetFormState() {
     this.totalDays = 0;
-    this.selectedEmails = []
-    this.leave_balance = 0
+    this.selectedEmails = [];
+    this.leave_balance = 0;
+    this.fileDataUrl = '';
+    this.selectedFile = null;
+    this.fileName = '';
     this.formGroupDirective?.resetForm();
   }
 

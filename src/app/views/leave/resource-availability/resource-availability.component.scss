@@ -12,13 +12,14 @@ td {
 th {
   text-align: center;
   border: 1px solid #ddd;
-  padding: 15px;
+  padding: 10px;
 }
 
 .legend {
   display: flex;
   flex-wrap: wrap;
   margin-top: 10px;
+  padding-left: 30px;
 }
 
 .legend-item {

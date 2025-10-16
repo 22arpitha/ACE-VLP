@@ -20,7 +20,7 @@
                 <strong>{{items?.remaining_number_of_days  || 0 }} {{items?.remaining_number_of_days > 1 ? 'days left' : 'day left'}}</strong>
           </button>
         </div>
-        <div *ngIf="hideHeaderButton">
+        <div *ngIf="user_role_Name==='Admin'">
             <button  mat-icon-button aria-label="Get Started" class="icon-button user-guide-btn"
                   matTooltip="Get started" (click)="openWelcomeDialog()">
                   <img src="../../../assets/images/bulb.svg" width="25" height="25">
@@ -41,6 +41,17 @@
     </button>
 
       </div>
+      <button  mat-icon-button aria-label="Notifications" class="icon-button"
+        matTooltip="Notifications"
+        (click)="openNotification()" style="position: relative;">
+      <img src="../../../../assets/images/Notification.svg" class="notification-icon" />
+
+      <!-- Custom Badge -->
+      <span class="custom-badge" *ngIf="notification_count > 0" [ngClass]="notification_count > 99 ? 'cs-notification-pad' : ''">
+        {{ notification_count > 99 ? '99+' : notification_count }}
+      </span>
+
+    </button>
       <div *ngFor="let items of mySubscription">
         <button *ngIf="items?.is_active" mat-icon-button aria-label="Notifications" class="icon-button"
         matTooltip="Notifications"

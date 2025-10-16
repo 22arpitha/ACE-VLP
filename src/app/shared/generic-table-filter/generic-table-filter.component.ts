@@ -250,7 +250,7 @@ export class GenericTableFilterComponent implements OnInit, OnChanges {
       this.currentPage = 1;
       this.hasMore = true;
       this.loading = false;
-
+      console.log(search)
       this.fetchMoreOptions(search);
     });
   }
@@ -306,8 +306,9 @@ export class GenericTableFilterComponent implements OnInit, OnChanges {
     if (this.loading || !this.hasMore) return;
 
     const fetchFn = this.fetchOptions || this.stableFetchOptions;
+    console.log(fetchFn)
     if (!fetchFn) {
-      // console.error('fetchOptions is not available!');
+      console.error('fetchOptions is not available!',this.options);
        const lower = search.toLowerCase();
     this.filteredOptions = this.options.filter(opt =>
       opt.name?.toLowerCase().includes(lower)

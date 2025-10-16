@@ -14,6 +14,11 @@
               </button> -->
             </mat-form-field>
           </div>
+      <div class="col-sm-12 col-md-6 col-lg-9 text-end align-content-center">
+        <button mat-raised-button class="cancel-button mat-btn-s" type="button" (click)="reset()">
+          Reset
+        </button>
+      </div>
     </div>
     <div class="row mx-0 my-2 px-0 table-wrapper">
       <div class="col-12 px-0">
@@ -36,7 +41,7 @@
                 </mat-menu>
               </th>
               <th scope="col">LEAVE PERIOD</th>
-              <th scope="col">DAYS/HOURS TAKEN</th>
+              <th scope="col">DAYS</th>
               <th scope="col">DATE OF REQUEST</th>
               <th scope="col">STATUS
                 <button mat-icon-button [matMenuTriggerFor]="statusFilterMenu"

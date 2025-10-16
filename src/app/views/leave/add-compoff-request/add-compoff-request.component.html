@@ -136,7 +136,7 @@
                         <h4 class="label-name">Reason</h4>
                         <p>{{comOffGrantData?.message}}</p>
                     </div>
-                    <div class="col-sm-12 col-md-6 col-lg-6 my-2">
+                    <div class="col-sm-12 col-md-6 col-lg-6 my-2" *ngIf="comOffGrantData?.rejected_reason">
                         <h4 class="label-name">Rejected Reason</h4>
                         <p>{{comOffGrantData?.rejected_reason}}</p>
                     </div>

@@ -267,13 +267,13 @@ export class WorkCalendarComponent implements OnInit {
     this.getWorkCalendarData();
     this.getModuleAccess();
     // this.buildWeekendFromData();
-    this.workCalendarForm?.valueChanges?.subscribe(() => {
-      const currentFormValue = this.workCalendarForm?.getRawValue();
-      const isInvalid = this.workCalendarForm?.touched && this.workCalendarForm?.invalid;
-      const isFormChanged: boolean = JSON.stringify(currentFormValue) !== JSON.stringify(this.initialFormValue);
-      let unSavedChanges = isFormChanged || isInvalid;
-      this.formErrorScrollService.setUnsavedChanges(unSavedChanges);
-    });
+    // this.workCalendarForm?.valueChanges?.subscribe(() => {
+    //   const currentFormValue = this.workCalendarForm?.getRawValue();
+    //   const isInvalid = this.workCalendarForm?.touched && this.workCalendarForm?.invalid;
+    //   const isFormChanged: boolean = JSON.stringify(currentFormValue) !== JSON.stringify(this.initialFormValue);
+    //   let unSavedChanges = isFormChanged || isInvalid;
+    //   this.formErrorScrollService.setUnsavedChanges(unSavedChanges);
+    // });
   }
 
   initialform() {
@@ -287,7 +287,7 @@ export class WorkCalendarComponent implements OnInit {
       custom_year_end_date: [''],
       working_days: [this.filteredWeekendDays]
     })
-    this.initialFormValue = this.workCalendarForm?.getRawValue();
+    // this.initialFormValue = this.workCalendarForm?.getRawValue();
   }
 
   get f() {
@@ -454,11 +454,11 @@ export class WorkCalendarComponent implements OnInit {
     this.shouldDisableFields = false;
     this.resetFormState();
   }
-  canDeactivate(): Observable<boolean> {
-    const currentFormValue = this.workCalendarForm?.getRawValue();
-    const isFormChanged: boolean = JSON.stringify(currentFormValue) !== JSON.stringify(this.initialFormValue);
-    return this.formErrorScrollService.isFormDirtyOrInvalidCheck(isFormChanged, this.workCalendarForm);
-  }
+  // canDeactivate(): Observable<boolean> {
+  //   const currentFormValue = this.workCalendarForm?.getRawValue();
+  //   const isFormChanged: boolean = JSON.stringify(currentFormValue) !== JSON.stringify(this.initialFormValue);
+  //   return this.formErrorScrollService.isFormDirtyOrInvalidCheck(isFormChanged, this.workCalendarForm);
+  // }
 
   buildWeekendFromData() {
     if (this.data.length > 0) {

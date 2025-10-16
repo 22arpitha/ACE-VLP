@@ -29,6 +29,13 @@
             </div>
         </div>
         <div class="row">
+             <!-- Legend -->
+                    <div class="legend">
+                    <div *ngFor="let item of leaveOptions" class="legend-item">
+                        <span class="color-box" [style.backgroundColor]="item.color"></span>
+                            {{ item.name}}
+                    </div>
+                    </div>
             <div (scroll)="onScroll($event)" class="col-12 mx-3 my-2 table-container">
                 <table class="leave-table">
                     <thead>
@@ -63,12 +70,12 @@
                     </div> -->
                     
                     <!-- Legend -->
-                    <div class="legend">
+                    <!-- <div class="legend">
                     <div *ngFor="let item of leaveOptions" class="legend-item">
                         <span class="color-box" [style.backgroundColor]="item.color"></span>
                             {{ item.name}}
                     </div>
-                    </div>
+                    </div> -->
 
             </div>
         </div>

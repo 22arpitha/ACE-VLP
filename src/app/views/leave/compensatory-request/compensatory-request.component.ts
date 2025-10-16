@@ -18,6 +18,7 @@ import { GenericTableFilterComponent } from 'src/app/shared/generic-table-filter
 })
 export class CompensatoryRequestComponent implements OnInit {
   @ViewChild('employeeFilter') employeeFilter!: GenericTableFilterComponent;
+  @ViewChild('employeeFilter') leaveStatusFilter!: GenericTableFilterComponent;
   page = 1;
   count = 0;
   tableSize = 50;
@@ -98,6 +99,7 @@ export class CompensatoryRequestComponent implements OnInit {
     this.arrowState[column] = direction === 'asc' ? true : false;
     this.directionValue = direction;
     this.sortValue = column;
+    this.getAllCompOffData();
   }
 
   onFilterChange(event: any, filterType: string) {
@@ -246,5 +248,18 @@ export class CompensatoryRequestComponent implements OnInit {
 
   toggleAllSelection() {
     this.compOffLists.forEach((item: any) => item.selected = this.selectAll);
+  }
+
+
+  reset(){
+    this.page = 1;
+    this.tableSize = 50;
+    this.filters.status_name = [];
+    this.leaveStatus = []
+    this.filters = {status_name: [],employees: []};
+    this.employeeFilter.clearSelection();
+    this.leaveStatusFilter.clearSelection();
+    this.getLeaveStatus();
+    // this.getAllCompOffData();
   }
 }

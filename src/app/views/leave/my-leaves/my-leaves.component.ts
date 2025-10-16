@@ -118,7 +118,7 @@ export class MyLeavesComponent implements OnInit {
       let end_date = this.datePipe.transform(this.mainEndDate, 'yyyy-MM-dd');
       this.filterQuery +=`&leave-start-date=${start_date}&leave-end-date=${end_date}`;
     }
-    this.apiService.getData(`${environment.live_url}/${environment.apply_leaves}/${this.filterQuery}`).subscribe(
+    this.apiService.getData(`${environment.live_url}/${environment.my_leaves}/${this.filterQuery}`).subscribe(
       (res: any) => {
         console.log(res.results);
         this.myLeavesList = res.results
@@ -171,5 +171,14 @@ export class MyLeavesComponent implements OnInit {
 
       }
     )
+  }
+
+  reset(){
+    this.page = 1;
+    this.tableSize = 50;
+    this.mainStartDate = '';
+    this.mainEndDate = '';
+    this.filters = {leave_type: [],employees: [],status_name: []};
+    this.getMyLeaves();
   }
 }

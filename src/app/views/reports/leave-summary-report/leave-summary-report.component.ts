@@ -74,7 +74,7 @@ export class LeaveSummaryReportComponent implements OnInit {
 
   ngOnInit(): void {
     this.common_service.setTitle(this.BreadCrumbsTitle)
-    this.tableConfig = tableColumns;
+    // this.tableConfig = tableColumns;
     // this.getTableData({
     //   page: this.page,
     //   pageSize: this.tableSize,
@@ -191,7 +191,6 @@ export class LeaveSummaryReportComponent implements OnInit {
   }
 
   onLeaveType(detail:any) {
-    // console.log(detail)
     if(detail.reset===true){
       this.formattedData = [];
     this.term = ''
@@ -242,7 +241,6 @@ export class LeaveSummaryReportComponent implements OnInit {
   }
 
   resetData(data: any) {
-    console.log(data);
     this.formattedData = [];
     this.term = ''
     this.page = 1;
@@ -275,24 +273,6 @@ export class LeaveSummaryReportComponent implements OnInit {
   }
 
   onApplyFilter(filteredData: any[], filteredKey: string): void {
-
-    if (filteredKey === 'client-ids') {
-      this.selectedClientIds = filteredData;
-      // if(filteredData && filteredData.length===0 || filteredData.length>1){
-      //   this.isIncludeAllJobEnable=true;
-      //   this.isIncludeAllJobValue=false;
-      //   this.client_id=null;
-      // }else{
-      //   this.isIncludeAllJobEnable=false;
-      // }
-
-    }
-    if (filteredKey === 'job-ids') {
-      this.selectedJobIds = filteredData;
-    }
-    if (filteredKey === 'job-status-ids') {
-      this.selectedStatusIds = filteredData;
-    }
     if (filteredKey === 'timesheet-employee-ids') {
       this.selectedEmployeeIds = filteredData;
     }
@@ -339,56 +319,6 @@ export class LeaveSummaryReportComponent implements OnInit {
       fileType
     });
   }
-  getClientList() {
-    let query = `?status=True`;
-    query += this.userRole === 'Admin' ? '' : `&employee-id=${this.user_id}`;
-    this.api.getData(`${environment.live_url}/${environment.clients}/${query}`).subscribe((res: any) => {
-      if (res) {
-        this.clientName = res?.map((item: any) => ({
-          id: item.id,
-          name: item.client_name
-        }));
-      }
-    })
-    return this.clientName;
-  }
-  getJobList() {
-    let query = `?status=${this.tabStatus}`;
-    query += this.userRole === 'Admin' ? '' : `&employee-id=${this.user_id}`;
-    this.api.getData(`${environment.live_url}/${environment.jobs}/${query}`).subscribe((res: any) => {
-      if (res) {
-        this.jobName = res?.map((item: any) => ({
-          id: item.id,
-          name: item.job_name
-        }));
-      }
-    })
-    return this.jobName;
-  }
-  getStatusList() {
-    this.api.getData(`${environment.live_url}/${environment.settings_job_status}/`).subscribe((res: any) => {
-      if (res) {
-        this.statusName = res?.map((item: any) => ({
-          id: item.id,
-          name: item.status_name
-        }));
-      }
-    })
-    // console.log('statusName',this.statusName);
-    return this.statusName;
-  }
-  getJobTypeList() {
-    this.api.getData(`${environment.live_url}/${environment.settings_job_status}/`).subscribe((res: any) => {
-      if (res) {
-        this.statusName = res?.map((item: any) => ({
-          id: item.id,
-          name: item.status_name
-        }));
-      }
-    })
-    // console.log('statusName',this.statusName);
-    return this.statusName;
-  }
 
   onSearch(term: string): void {
     this.term = term;
@@ -402,34 +332,7 @@ export class LeaveSummaryReportComponent implements OnInit {
   }
 
 
-  jobStatusList(status: any) {
-    const isActive = status === 'True';
-    this.statusList = this.allJobStatus
-      ?.filter((jobstatus: any) => isActive
-        ? jobstatus?.status_name !== "Cancelled" && jobstatus?.status_name !== "Completed"
-        : jobstatus?.status_name === "Cancelled" || jobstatus?.status_name === "Completed")
-      .map((status: any) => status?.status_name);
-  }
-  // Send Email Action Button event
-  public sendEamils() {
-    let finalQuery = `?send_mail=True&file-type=pdf&report-type=job-time-report`;
-    finalQuery += this.client_id ? `&client=${this.client_id}` : '';
-    this.jobStatusList(this.tabStatus);
-    //  finalQuery += `&job-status=[${this.statusList}]`;
-    // Yet to integrate
-    if (this.client_id) {
-      this.api.getData(`${environment.live_url}/${environment.jobs}/${finalQuery}`).subscribe((respData: any) => {
-        if (respData) {
-          this.api.showSuccess(respData['message']);
-        }
-      },
-        (error: any) => {
-          this.api.showError(error?.error?.detail);
-
-        }
-      )
-    }
-  }
+ 
   public viewtimesheetDetails(item: any) {
     this.dialog.open(JobTimeSheetDetailsPopupComponent, {
       panelClass: 'custom-details-dialog',
@@ -459,7 +362,6 @@ export class LeaveSummaryReportComponent implements OnInit {
     const pageSize = params?.pageSize ?? this.tableSize;
     const searchTerm = params?.searchTerm ?? this.term;
     const query = buildPaginationQuery({ page, pageSize, searchTerm });
-    this.jobStatusList(this.tabStatus);
     finalQuery = query
     if (params?.employee_ids?.length) {
       finalQuery += `&employee-ids=[${params.employee_ids.join(',')}]`;
@@ -566,7 +468,6 @@ export class LeaveSummaryReportComponent implements OnInit {
 
   getFilterOptions(event: { detail: any; key: string }) {
     const { detail, key } = event;
-    console.log(this.selectedClientIds, 'id')
     let cache = this.filterDataCache[key];
     const searchTerm = detail.search || '';
 

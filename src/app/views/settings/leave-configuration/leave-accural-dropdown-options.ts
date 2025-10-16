@@ -20,21 +20,21 @@ export const ACCURAL_DAYS_OPTIONS:any=[
 ];
 
 export const ACCURAL_MONTH_OPTIONS:any=[
-  { label: 'January', value: 1 },
-  { label: 'February', value: 2 },
-  { label: 'March', value: 3 },
-  { label: 'April', value: 4 },
-  { label: 'May', value: 5 },
-  { label: 'June', value: 6 },
-  { label: 'July', value: 7 },
-  { label: 'August', value: 8 },
-  { label: 'September', value: 9 },
-  { label: 'October', value: 10 },
-  { label: 'November', value: 11 },
-  { label: 'December', value: 12 },
-  // { label: 'Last Month', value: 'last_month' },
-  // { label: 'Policy Month', value: 'policy_month' },
-  // { label: 'Joining Month', value: 'joining_month' }
+  { label: 'January', value: '1'},
+  { label: 'February', value: '2'},
+  { label: 'March', value: '3'},
+  { label: 'April', value: '4'},
+  { label: 'May', value: '5'},
+  { label: 'June', value: '6'},
+  { label: 'July', value: '7'},
+  { label: 'August', value: '8'},
+  { label: 'September', value: '9'},
+  { label: 'October', value: '10' },
+  { label: 'November', value: '11' },
+  { label: 'December', value: '12' },
+  { label: 'Last Month', value: 'last_month' },
+  { label: 'Policy Month', value: 'policy_month' },
+  { label: 'Joining Month', value: 'joining_month' }
 ];
 
 

@@ -1,0 +1,127 @@
+.notification-modal {
+  --padding-space: 1.2rem;
+  padding: 0;
+  margin: 0;
+
+  li:last-child {
+    border-bottom: none;
+  }
+
+  .n-header {
+    margin: 0;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.8rem var(--padding-space);
+
+    background-color: #0867b0 !important ;
+    color: #fff;
+
+    .title {
+      margin: 0;
+      padding: 0;
+    }
+
+    .close-btn {
+      margin: 0;
+      padding: 0;
+    }
+  }
+  .bi-x-lg {
+    cursor: pointer;
+  }
+  .notification-content {
+    padding: 1rem var(--padding-space);
+    max-height: 54vh;
+    overflow: auto;
+    overflow-x: hidden;
+  }
+}
+
+.h-70{
+    min-height: 35vh;
+    max-height: 60vh;
+  }
+  .h-30{
+    min-height: 10vh;
+  }
+.notification-main-content {
+  padding: 16px;
+  zoom: 97%;
+  // min-height: 50vh;
+  // max-height: 70vh;
+  overflow-y: auto;
+}
+.notification-item {
+  display: flex;
+  align-items: flex-start;
+  border-bottom: 1px solid #dadada;
+  padding: 10px 0px 10px 14px;
+
+  .tree-line {
+    position: relative;
+    padding-right: 7px;
+
+    i {
+      color: #000;
+      position: relative;
+      z-index: 1;
+    }
+  }
+
+  .notification-content {
+    flex-grow: 1;
+
+    .notification-header {
+      strong {
+        font-weight: bold;
+        margin-right: 8px;
+      }
+
+      .plan-tag {
+        background-color: #126eb4;
+        color: white;
+        padding: 2px 8px;
+        border-radius: 4px;
+        font-size: 11px;
+        margin: 0 5px;
+      }
+    }
+
+    .notification-message {
+      margin: 8px 15px 0 0px;
+      font-size: 12px;
+      color: #333;
+      border: 1px solid #dfdfdf;
+      padding: 5px;
+      border-radius: 5px;
+    }
+  }
+}
+
+.view-more {
+  text-align: center;
+  padding: 10px;
+  a {
+    color: #126eb4;
+    font-weight: 600;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+      cursor: pointer;
+    }
+  }
+}
+
+.btn-more{
+    background-color: #0867b0;
+    color: #FFF;
+    cursor: pointer;
+    &:disabled{
+      background-color: #d3d3d3;
+      color: black;
+      cursor: not-allowed;
+    }
+  }

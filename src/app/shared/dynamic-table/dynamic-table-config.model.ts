@@ -44,4 +44,5 @@ export interface DynamicTableConfig {
   searchPlaceholder?:string;
   reset?:boolean;
   leaveTypes?:boolean;
+  employeeDropdown?:boolean
 }

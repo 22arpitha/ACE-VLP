@@ -140,11 +140,12 @@ export class LeaveApplyComponent implements OnInit {
       to_date: ['', Validators.required],
       from_session: ['', Validators.required],
       to_session: ['', Validators.required],
-      cc: ['', Validators.required],
+      cc: [''],
       reporting_to: ['', Validators.required],
       message: ['', Validators.required],
       attachment: [''],
       employee: [this.user_id],
+      number_of_leaves_applying_for:[]
     });
   }
 
@@ -520,13 +521,14 @@ export class LeaveApplyComponent implements OnInit {
 
   onSubmit(): void {
   // prepare cc and file
-  this.leaveApplyForm.patchValue({ cc: JSON.stringify(this.selectedEmails) });
+  this.leaveApplyForm.patchValue({ cc: JSON.stringify(this.selectedEmails),number_of_leaves_applying_for:this.totalDays });
   if (this.selectedFile) {
     this.leaveApplyForm.patchValue({ attachment: this.selectedFile });
   }
 
   // basic form validation
   if (this.leaveApplyForm.invalid) {
+    console.log(this.leaveApplyForm.value)
     this.leaveApplyForm.markAllAsTouched();
     return;
   }
@@ -561,7 +563,7 @@ export class LeaveApplyComponent implements OnInit {
         const daysDiff = Math.floor((current.getTime() - toDate.getTime()) / msPerDay);
         if (daysDiff > Number(leaveTypeData.utilization_after)) {
           this.apiService.showError(
-            `${leaveTypeData.leave_type_name} leave cannot be applied. It must be within ${leaveTypeData.utilization_after} day(s) from today.`
+            `${leaveTypeData.leave_type_name} leave cannot be applied. It must be within ${leaveTypeData.utilization_after} day(s) from leave date.`
           );
           return;
         }
@@ -574,7 +576,8 @@ export class LeaveApplyComponent implements OnInit {
       const daysDiff = Math.floor((fromDate.getTime() - current.getTime()) / msPerDay);
       if (daysDiff < Number(leaveTypeData.utilization_before)) {
         this.apiService.showError(
-          `You cannot apply this leave. You must apply at least ${leaveTypeData.utilization_before} day(s) in advance.`
+          `${this.selectedLeaveTypeName} must be applied at least ${leaveTypeData.utilization_before} days before the leave date`
+          // `You cannot apply this leave. You must apply at least ${leaveTypeData.utilization_before} day(s) in advance.`
         );
         return;
       }
@@ -587,7 +590,6 @@ export class LeaveApplyComponent implements OnInit {
     const value = this.leaveApplyForm.value[key];
     formData.append(key, value);
   });
-
   this.apiService
     .postData(`${environment.live_url}/${environment.apply_leaves}/`, formData)
     .subscribe(
@@ -735,9 +737,13 @@ export class LeaveApplyComponent implements OnInit {
   // }
   public resetFormState() {
     this.totalDays = 0;
+    this.fileDataUrl = '';
+    this.selectedFile = null;
+    this.fileName = '';
     this.selectedEmails = []
     this.leave_balance = 0
     this.formGroupDirective?.resetForm();
+    this.initialForm()
   }
 
   openGrantCompOff(){
@@ -752,4 +758,18 @@ export class LeaveApplyComponent implements OnInit {
            });
        
   }
+
+  isApplyDisabled(): boolean {
+    if (!this.employeeActive) {
+      return true;
+    }
+    if (this.selectedLeaveTypeName === 'loss of pay') {
+      return false; 
+    }
+    if (this.leave_balance === 0) {
+      return true;
+    }
+    return false;
+  }
+
 }

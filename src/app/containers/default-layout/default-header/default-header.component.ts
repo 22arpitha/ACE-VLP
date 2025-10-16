@@ -8,7 +8,7 @@ import { BsModalRef, BsModalService, ModalOptions } from 'ngx-bootstrap/modal';
 import { GenericDeleteComponent } from '../../../generic-components/generic-delete/generic-delete.component';
 import { ApiserviceService } from '../../../service/apiservice.service';
 import { CommonServiceService } from '../../../service/common-service.service';
-import { NotificationComponent } from '../../../views/pages/notification/notification.component';
+// import { NotificationComponent } from '../../../views/pages/notification/notification.component';
 import { environment } from '../../../../environments/environment';
 import { UserGuideModalComponent } from '../../../views/user-guide-modal/user-guide-modal.component';
 import { UserWelcomeMsgComponent } from '../../../views/user-welcome-msg/user-welcome-msg.component';
@@ -18,6 +18,7 @@ import { NotificationService } from '../../../views/pages/notification/notificat
 // import { UserAccessWebsocketService } from '../../../service/user-access-websocket.service';
 import { FormErrorScrollUtilityService } from '../../../service/form-error-scroll-utility-service.service';
 import { LogoutConfirmationService } from '../../../service/logout-confirmation.service';
+import { NotificationsComponent } from 'src/app/views/notifications/notifications.component';
 
 @Component({
   selector: 'app-default-header',
@@ -85,7 +86,7 @@ export class DefaultHeaderComponent extends HeaderComponent implements OnInit {
     this.user_id = sessionStorage.getItem('user_id') || '';
     this.orgId = sessionStorage.getItem('organization_id')
     this.user_role_Name = sessionStorage.getItem('user_role_name');
-    // this.getNotification()
+    this.getNotification()
     this.permissionArr = JSON.parse(sessionStorage.getItem('permissionArr')|| '[]');
     // this.welcomeMsg();
     // this.getProfiledata()
@@ -218,7 +219,7 @@ export class DefaultHeaderComponent extends HeaderComponent implements OnInit {
   }
   openNotification() {
     // if (this.notes?.length > 0) {
-      const modelRef = this.modalService.open(NotificationComponent, {
+      const modelRef = this.modalService.open(NotificationsComponent, {
         size: <any>'md',
         backdrop: true,
         centered: this.screenWidth < 1023 ? true : false,
@@ -284,10 +285,11 @@ export class DefaultHeaderComponent extends HeaderComponent implements OnInit {
       if(data){
         this.notification_count = data;
       }else{
-        let params = `${environment.live_url}/${environment.notification}/?user-id=${this.user_id}&page=1&page_size=6`
+        let params = `${environment.live_url}/${environment.vlp_notifications}/?user-id=${this.user_id}&page=1&page_size=10`
         this.api.getData(params).subscribe((res: any) => {
           if (res) {
-            this.notification_count = res?.total_is_not_seen
+          // console.log(res)
+            this.notification_count = res?.total_no_of_record
             // this.storedNotification = JSON.parse(localStorage.getItem('seenNotifications') || '0');
             // this.notification_count = this.storedNotification?.length ? res.results.length - this.storedNotification?.length : res.results.length
           }

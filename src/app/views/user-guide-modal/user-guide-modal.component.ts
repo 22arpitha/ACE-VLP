@@ -53,7 +53,15 @@ export class UserGuideModalComponent implements OnInit {
           { image: '../../../assets/images/screens/31_Step.jpg' },
           { image: '../../../assets/images/screens/32_Step.jpg' },
           { image: '../../../assets/images/screens/33_Step.jpg' },
-          { image: '../../../assets/images/screens/34_Step.jpg' }
+          { image: '../../../assets/images/screens/34_Step.jpg' },
+          { image: '../../../assets/images/screens/35_Step.jpg' },
+          { image: '../../../assets/images/screens/36_Step.jpg' },
+          { image: '../../../assets/images/screens/37_Step.jpg' },
+          { image: '../../../assets/images/screens/38_Step.jpg' },
+          { image: '../../../assets/images/screens/39_Step.jpg' },
+          { image: '../../../assets/images/screens/40_Step.jpg' },
+          { image: '../../../assets/images/screens/41_Step.jpg' },
+          { image: '../../../assets/images/screens/42_Step.jpg' }
       ];
     
   }

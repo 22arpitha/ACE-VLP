@@ -27,6 +27,7 @@ export class CreateUpdateJobComponent implements CanComponentDeactivate, OnInit,
   @ViewChild(FormGroupDirective) formGroupDirective!: FormGroupDirective;
   @ViewChild(MatPaginator) paginator: MatPaginator | undefined;
   @Output() isEmployeeAdded:EventEmitter<boolean> = new EventEmitter<boolean>();
+  @ViewChild('jobTypeSelect') jobTypeSelect: any;
   jobFormGroup: FormGroup;
   allClientslist: any = [];
   endClientslists: any = [];
@@ -1645,6 +1646,11 @@ getOptionsWithSelectedOnTop(key: string) {
     !selectedItems.some(sel => sel.id === item.id)
   );
   return [...selectedItems, ...unselectedItems];
+}
+openDropdown(type: string): void {
+  if (type === 'job_type' && this.jobTypeSelect) {
+    this.jobTypeSelect.open();
+  }
 }
 
 

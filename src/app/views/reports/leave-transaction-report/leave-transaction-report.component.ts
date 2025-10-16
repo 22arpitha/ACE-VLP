@@ -18,6 +18,8 @@ export class LeaveTransactionReportComponent implements OnInit {
 
   BreadCrumbsTitle: any = 'Leave Transaction Report';
   term: string = '';
+  user_id: any;
+  userRole: any;
   tableSize: number = 50;
   page: any = 1;
   tableSizes = [50, 75, 100];
@@ -32,6 +34,7 @@ export class LeaveTransactionReportComponent implements OnInit {
     showDownload: false,
     leaveTypes: true,
     reset: true,
+    employeeDropdown: sessionStorage.getItem('user_role_name') === 'Admin'
   };
   tabStatus: any = 'True';
   allJobStatus: any = [];
@@ -42,8 +45,6 @@ export class LeaveTransactionReportComponent implements OnInit {
     start_date: '',
     end_date: ''
   };
-  user_id: any;
-  userRole: any;
   client_id: any;
   isIncludeAllJobEnable: boolean = true;
   isIncludeAllJobValue: boolean = false;
@@ -54,7 +55,7 @@ export class LeaveTransactionReportComponent implements OnInit {
   leaveTypes: { id: any; name: string; }[];
   selectedClientIds: any = [];
   selectedJobIds: any = [];
-  selectedEmployeeIds: any = [];
+  selectedEmployeeIds: any ;
   selectedLeaveType: any
   selectedStatusIds: any = [];
   formattedData: any = [];
@@ -75,7 +76,8 @@ export class LeaveTransactionReportComponent implements OnInit {
 
   ngOnInit(): void {
     this.common_service.setTitle(this.BreadCrumbsTitle)
-    this.tableConfig = tableColumns;
+    // this.tableConfig = tableColumns;
+    this.selectedEmployeeIds =  this.userRole === 'Accountant' ? this.user_id : '';
     // setTimeout(() => {
     //   this.getTableData({
     //     page: this.page,
@@ -199,7 +201,6 @@ export class LeaveTransactionReportComponent implements OnInit {
     this.term = ''
     this.page = 1;
     this.tableSize = 50;
-    this.selectedEmployeeIds = [];
     this.time.start_date = '';
     this.time.end_date = '';
     this.directionValue = '';
@@ -218,10 +219,12 @@ export class LeaveTransactionReportComponent implements OnInit {
       showDownload: false,
       reset: true,
       searchPlaceholder: 'Search',
+      employeeDropdown: this.userRole === 'Admin'
     };
   } else{
     this.page = 1
   }
+    this.selectedEmployeeIds = detail?.user_id;
     this.selectedLeaveType = detail?.leave_type;
     this.getTableData({
       page: this.page,
@@ -244,7 +247,6 @@ export class LeaveTransactionReportComponent implements OnInit {
   }
 
   resetData(data: any) {
-    console.log(data);
     this.formattedData = [];
     this.term = ''
     this.page = 1;
@@ -252,7 +254,7 @@ export class LeaveTransactionReportComponent implements OnInit {
     this.selectedClientIds = [];
     this.selectedJobIds = [];
     this.selectedStatusIds = [];
-    this.selectedEmployeeIds = [];
+    this.selectedEmployeeIds =  this.userRole === 'Accountant' ? this.user_id : '';
     this.time.start_date = '';
     this.time.end_date = '';
     this.directionValue = '';
@@ -270,35 +272,19 @@ export class LeaveTransactionReportComponent implements OnInit {
       leaveTypes: true,
       showDownload: false,
       reset: true,
+      employeeDropdown: this.userRole === 'Admin',
       searchPlaceholder: 'Search by Client/Job/Employee',
     };
     this.getTableData({
       page: this.page,
       pageSize: this.tableSize,
-      searchTerm: this.term
+      searchTerm: this.term,
+      employee_ids: this.selectedEmployeeIds,
     });
   }
 
   onApplyFilter(filteredData: any[], filteredKey: string): void {
-
-    if (filteredKey === 'client-ids') {
-      this.selectedClientIds = filteredData;
-      // if(filteredData && filteredData.length===0 || filteredData.length>1){
-      //   this.isIncludeAllJobEnable=true;
-      //   this.isIncludeAllJobValue=false;
-      //   this.client_id=null;
-      // }else{
-      //   this.isIncludeAllJobEnable=false;
-      // }
-
-    }
-    if (filteredKey === 'job-ids') {
-      this.selectedJobIds = filteredData;
-    }
-    if (filteredKey === 'job-status-ids') {
-      this.selectedStatusIds = filteredData;
-    }
-    if (filteredKey === 'timesheet-employee-ids') {
+    if (filteredKey === 'employee_id') {
       this.selectedEmployeeIds = filteredData;
     }
     this.formattedData = [];
@@ -343,32 +329,6 @@ export class LeaveTransactionReportComponent implements OnInit {
       fileName: 'VLP - Timesheet-summary-report',
       fileType
     });
-  }
-  getClientList() {
-    let query = `?status=True`;
-    query += this.userRole === 'Admin' ? '' : `&employee-id=${this.user_id}`;
-    this.api.getData(`${environment.live_url}/${environment.clients}/${query}`).subscribe((res: any) => {
-      if (res) {
-        this.clientName = res?.map((item: any) => ({
-          id: item.id,
-          name: item.client_name
-        }));
-      }
-    })
-    return this.clientName;
-  }
-  
-  getStatusList() {
-    this.api.getData(`${environment.live_url}/${environment.settings_job_status}/`).subscribe((res: any) => {
-      if (res) {
-        this.statusName = res?.map((item: any) => ({
-          id: item.id,
-          name: item.status_name
-        }));
-      }
-    })
-    // console.log('statusName',this.statusName);
-    return this.statusName;
   }
 
   onSearch(term: string): void {
@@ -431,8 +391,8 @@ async getTableData(params?: { page?: number; pageSize?: number; searchTerm?: str
     const searchTerm = params?.searchTerm ?? this.term;
     const query = buildPaginationQuery({ page, pageSize, searchTerm });
     finalQuery = query
-    if (params?.employee_ids?.length) {
-      finalQuery += `&employee_id=[${params.employee_ids.join(',')}]`;
+    if (params?.employee_ids) {
+      finalQuery += `&employee_id=${params.employee_ids}`;
     }
     if (params?.leave_type) {
       finalQuery += `&leave_type_id=${params.leave_type}`;
@@ -484,6 +444,7 @@ async getTableData(params?: { page?: number; pageSize?: number; searchTerm?: str
           totalRecords: res.total_no_of_record,
           showDownload: false,
           searchPlaceholder: 'Search by Client/Job/Employee',
+          employeeDropdown: this.userRole === 'Admin',
         };
       }
       else {
@@ -531,7 +492,6 @@ async getTableData(params?: { page?: number; pageSize?: number; searchTerm?: str
 
   getFilterOptions(event: { detail: any; key: string }) {
     const { detail, key } = event;
-    console.log(this.selectedClientIds, 'id')
     let cache = this.filterDataCache[key];
     const searchTerm = detail.search || '';
 

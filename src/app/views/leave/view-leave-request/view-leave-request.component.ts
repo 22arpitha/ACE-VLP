@@ -22,7 +22,7 @@ export class ViewLeaveRequestComponent implements OnInit {
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {
     this.leave_data = data.data;
-
+    this.leave_data.cc = JSON.parse(this.leave_data.cc);
     if (this.leave_data.status != 'Pending') {
       this.displayButton = false;
     } else {

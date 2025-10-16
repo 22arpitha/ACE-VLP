@@ -76,10 +76,11 @@ selectedFile:(File | null)[] = [];
   selectedValue: any;
   selectedKey: string;
   selectedDate: any;
-
+  selectedEmployeeId:any;
   private lastEmittedFilters: { [key: string]: string } = {}; // To store JSON string of last emitted filter value per key
   dateRangeStartDate: string | null;
-
+  is_leaveTypes:boolean;
+  is_employeeDropdown:boolean = false;
   constructor(
     private fb:FormBuilder,
     private datePipe: DatePipe,
@@ -92,17 +93,44 @@ selectedFile:(File | null)[] = [];
   }
   tempFilters: { [key: string]: any[] } = {};
   ngOnInit(): void {
-this.tempFilters = JSON.parse(JSON.stringify(this.columnFilters));
-this.getAllLeaveTypes();
+    this.tempFilters = JSON.parse(JSON.stringify(this.columnFilters));
+    if(this.is_leaveTypes){
+      this.getAllLeaveTypes();
+    } 
+    
+   }
+
+   getEmployeesList(reset:boolean){
+    let query = `?page=1&page_size=50&is_active=True&employee=True`;
+    if (this.userRole === 'Manager') {
+      query += `&reporting_manager_id=${this.user_id}`;
+    }
+    this.api.getData(`${environment.live_url}/${environment.user}/${query}`).subscribe((respData: any) => {
+      this.dropdownState['employee']['list'] = respData.results;
+      this.dropdownState['employee']['initialized'] = true;
+      this.dropdownState['employee']['loading'] = false;
+      this.dropdownState['employee']['totalPages'] = Math.ceil(respData.total_no_of_record / 50);
+      this.updateSelectedItems('employee', respData?.results[0].user_id);
+      this.selectedEmployeeId = respData?.results[0].user_id;
+      this.actionEvent.emit({ actionType: 'leaveType', detail: {leave_type:this.selectedLeaveType,reset:reset,user_id:this.selectedEmployeeId}});
+    }, (error: any) => {
+      this.api.showError(error?.error?.detail);
+    })
    }
 
    getAllLeaveTypes(){
      this.api.getData(`${environment.live_url}/${environment.settings_leave_type}/`).subscribe((respData: any) => {
       this.leaveTypes = respData;
-      if (this.leaveTypes?.length > 0) {
+      if (this.leaveTypes?.length > 0 ) {
+        // this.selectedLeaveType = this.leaveTypes[0].id;
+        // this.actionEvent.emit({ actionType: 'leaveType', detail: {leave_type:this.selectedLeaveType,reset:false,user_id:this.user_id}});
         this.selectedLeaveType = this.leaveTypes[0].id;
-        this.actionEvent.emit({ actionType: 'leaveType', detail: {leave_type:this.selectedLeaveType,reset:false}});
-     }
+        if(this.is_employeeDropdown && this.is_leaveTypes){
+          this.getEmployeesList(false);
+        } else{
+            this.actionEvent.emit({ actionType: 'leaveType', detail: {leave_type:this.selectedLeaveType,reset:false,user_id:this.user_id}});
+        }
+    }
     }, (error: any) => {
       this.api.showError(error?.error?.detail);
     })
@@ -139,11 +167,13 @@ this.getAllLeaveTypes();
       currentPage: this.config.currentPage ?? 1,
       itemsPerPage: this.config.tableSize ?? 50
     };
+    this.is_leaveTypes = this.config?.leaveTypes ?? false;
+    this.is_employeeDropdown = this.config?.employeeDropdown ?? false;
+
   }
 
   
   private initializeTable(): void {
-    // console.log('initial data ',this.config)
     if(this.config.data && this.config.data?.length > 0){
      this.filteredData = this.config.data;
     }else{
@@ -299,10 +329,13 @@ onFilterChange(selectedValue: any, columnConfig: any, fromCheckbox: boolean = fa
     this.arrowState = {};
     this.sortValue = '';
     this.directionValue = '';
-    console.log(this.config)
-    if(this.config.leaveTypes){
+    if(this.is_employeeDropdown && this.is_leaveTypes){
+      this.selectedLeaveType = this.leaveTypes[0].id;
+        this.getEmployeesList(true);
+    } 
+    else if(!this.is_employeeDropdown && this.is_leaveTypes){
        this.selectedLeaveType = this.leaveTypes[0].id;
-       this.actionEvent.emit({ actionType: 'leaveType', detail: {leave_type:this.selectedLeaveType,reset:true}});
+       this.actionEvent.emit({ actionType: 'leaveType', detail: {leave_type:this.selectedLeaveType,reset:true,user_id:this.user_id}});
     } else{
 
       this.actionEvent.emit({ actionType: 'reset', detail: '' });
@@ -697,7 +730,12 @@ if(event.value){
 }
 
  selectLeaveTypesFunc(event) {
-    this.actionEvent.emit({ actionType: 'leaveType', detail: {leave_type:this.selectedLeaveType,reset:false}});
+  if(this.is_employeeDropdown && this.is_leaveTypes){
+     this.actionEvent.emit({ actionType: 'leaveType', detail: {leave_type:this.selectedLeaveType,reset:false,user_id:this.selectedEmployeeId}});
+  } else{
+      this.actionEvent.emit({ actionType: 'leaveType', detail: {leave_type:this.selectedLeaveType,reset:false,user_id:this.user_id}});
+  }
+    // this.actionEvent.emit({ actionType: 'leaveType', detail: {leave_type:this.selectedLeaveType,reset:false}});
   }
 
 dateClass = (date: Date) => {
@@ -891,28 +929,168 @@ clearFilterSearch(col: any) {
     search: '',
     reset: true
   });
+}
+
+  // employee dropdown functions
+  public onEmployeeChange(event: any){
+    this.updateSelectedItems('employee', event.value);
+     this.actionEvent.emit({ actionType: 'leaveType', detail: {leave_type:this.selectedLeaveType,reset:false,user_id:this.selectedEmployeeId}});
+  }
+
+pageSizeDropdown = 50;
+
+  dropdownState = {
+    employee: {
+      page: 1,
+      list: [],
+      search: '',
+      totalPages: 1,
+      loading: false,
+      initialized: false
+    }
+  };
+
+  dropdownEndpoints = {
+    employee: environment.user,
+  };
+
+  private scrollListeners: { [key: string]: (event: Event) => void } = {};
+
+  // Selected items for pagination dropdowns
+  selectedDropdownItems: { [key: string]: any[] } = {
+    employee: [],
+  };
 
 
+  removeScrollListener(key: string) {
+    const panel = document.querySelector('.cdk-overlay-container .mat-select-panel');
+    if (panel && this.scrollListeners[key]) {
+      panel.removeEventListener('scroll', this.scrollListeners[key]);
+      delete this.scrollListeners[key];
+    }
+  }
+
+  onScroll(key: string, event: Event) {
+    const target = event.target as HTMLElement;
+    const state = this.dropdownState[key];
+    const scrollTop = target.scrollTop;
+    const scrollHeight = target.scrollHeight;
+    const clientHeight = target.clientHeight;
+    const atBottom = scrollHeight - scrollTop <= clientHeight + 5;
+    if (atBottom && !state.loading && state.page < state.totalPages) {
+      state.page++;
+      this.fetchData(key, true);
+    }
+  }
+
+  // Search input for pagination
+  onSearchDropdown(key: string, text: string) {
+    const state = this.dropdownState[key];
+    state.search = text.trim();
+    state.page = 1;
+    state.list = [];
+    this.fetchData(key, false);
+  }
+
+  // Clear search input
+  clearSearchDropD(key: string) {
+    this.dropdownState[key].search = '';
+    this.dropdownState[key].page = 1;
+    this.dropdownState[key].list = [];
+    this.fetchData(key, false);
+  }
+
+  // Fetch data from API with pagination and search
+  fetchData(key: string, append = false) {
+    const state = this.dropdownState[key];
+    state.loading = true;
+
+    let query = `page=${state.page}&page_size=${this.pageSizeDropdown}`;
+    if (state.search) {
+      query += `&search=${encodeURIComponent(state.search)}`;
+    }
+    if (key === 'employee') {
+      query += `&is_active=True&employee=True`;
+      if (this.userRole === 'Manager') {
+        query += `&reporting_manager_id=${this.user_id}`;
+      }
+    }
 
 
-  // checkbox selection new code 
+    this.api.getData(`${environment.live_url}/${this.dropdownEndpoints[key]}/?${query}`)
+      .subscribe((res: any) => {
+        state.totalPages = Math.ceil(res.total_no_of_record / this.pageSizeDropdown);
+        const selectedItems = this.selectedDropdownItems[key] || [];
+        const selectedIds = selectedItems.map(item => item.user_id);
+        const filteredResults = res.results.filter(
+          (item: any) => !selectedIds.includes(item.user_id)
+        );
+        if (append) {
+          state.list = [...state.list, ...filteredResults];
+        } else {
+          state.list = [...selectedItems, ...filteredResults];
+        }
+        state.loading = false;
+      }, () => {
+        state.loading = false;
+      });
+  }
+
+  // Update selectedItemsMap with full objects to keep selected at top & no duplicates
+  updateSelectedItems(key: string, selectedIds: any[]) {
+    if (!Array.isArray(selectedIds)) {
+      selectedIds = selectedIds != null ? [selectedIds] : [];
+    }
+    const state = this.dropdownState[key];
+    let selectedItems = this.selectedDropdownItems[key] || [];
+    // removing the unselected datas
+    selectedItems = selectedItems.filter(item => selectedIds.includes(item.user_id));
+    selectedIds.forEach(id => {
+      if (!selectedItems.some(item => item.user_id === id)) {
+        const found = state.list.find(item => item.user_id === id);
+        if (found) {
+          selectedItems.push(found);
+        } else {
+          // if we want then fetch item from API if not found 
+        }
+      }
+    });
+
+    this.selectedDropdownItems[key] = selectedItems;
+  }
+
+  // Return options with selected items on top, no duplicates
+  getOptionsWithSelectedOnTop(key: string) {
+    const state = this.dropdownState[key];
+    const selectedItems = this.selectedDropdownItems[key] || [];
+    const unselectedItems = state.list.filter(item =>
+      !selectedItems.some(sel => sel.user_id === item.user_id)
+    );
+    return [...selectedItems, ...unselectedItems];
+  }
+
+
+  // Called when the dropdown opens or closes
+  onDropdownOpened(isOpen, key: string) {
+    if (isOpen) {
+      if (!this.dropdownState[key].initialized || this.dropdownState[key].list.length === 0) {
+        this.dropdownState[key].page = 1;
+        this.fetchData(key, false);
+        this.dropdownState[key].initialized = true;
+      }
+      setTimeout(() => {
+        this.removeScrollListener(key);
+
+        const panel = document.querySelector('.cdk-overlay-container .mat-select-panel');
+        if (panel) {
+          this.scrollListeners[key] = (event: Event) => this.onScroll(key, event);
+          panel.addEventListener('scroll', this.scrollListeners[key]);
+        }
+      }, 0);
+    } else {
+      this.removeScrollListener(key);
+    }
+  }
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-}

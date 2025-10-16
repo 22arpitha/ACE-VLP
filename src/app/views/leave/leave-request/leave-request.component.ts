@@ -98,7 +98,6 @@ export class LeaveRequestComponent implements OnInit {
      this.apiService.getData(`${environment.live_url}/${environment.period_values}/`).subscribe(
       (res: any) => {
         this.periodValues = res?.data;
-        console.log(res)
       },
       (error) => {
         console.log(error)
@@ -353,13 +352,12 @@ export class LeaveRequestComponent implements OnInit {
     }
   }
   fetchEmployees = (page: number, search: string) => {
-    const extraParams = {
+    const extraParams:any = {
       is_active: 'True',
       employee: 'True',
-      // ...(this.userRole !== 'Admin' && { 'employee-id': this.user_id })
     };
     if (this.userRole === 'Manager') {
-      extraParams['reporting_manager_id'] = this.user_id; // 145 in your example
+      extraParams['reporting_manager_id'] = this.user_id; 
     }
     return this.dropdownService.fetchDropdownData$(
       environment.employee,
@@ -369,5 +367,16 @@ export class LeaveRequestComponent implements OnInit {
       extraParams
     );
   };
+
+
+  reset(){
+    this.page = 1;
+    this.tableSize = 50;
+    this.selectedPeriod = '';
+    this.mainStartDate = '';
+    this.mainEndDate = '';
+    this.filters = {leave_type: [],employees: [],status_name: []};
+    this.getleaverequest()
+  }
 
 }

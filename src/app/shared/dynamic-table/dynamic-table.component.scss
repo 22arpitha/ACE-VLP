@@ -127,3 +127,14 @@ button.filterdColumn {
   height: 40px !important;
   padding: 0 !important;
 }
+::ng-deep .leave-type .mat-select {
+    padding: 5px 0px !important;
+}
+.mat-select-search-wrapper {
+    padding: 8px;
+    background-color: #fff;
+  }
+  
+  .mat-select-search {
+    width: 100%;
+  }

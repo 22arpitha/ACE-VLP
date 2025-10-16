@@ -305,7 +305,55 @@
     </mat-form-field>
  
 </div>
- <!-- Allocation Date -->
+ 
+<!-- <div class="col-12 col-sm-12 col-md-6 col-lg-3 no-padding pl-0 pr-5">
+  <mat-form-field appearance="outline" [ngClass]="{ 'highlight-background': !shouldDisableFields}" class="w-100 custom-mat-form-field">
+
+    <mat-label>Job Type <b class="r-star">*</b></mat-label>
+
+    <div class="mat-select-search-wrapper d-flex align-items-center">
+      <input
+        matInput
+        [(ngModel)]="dropdownState.job_type.search"
+        (focus)="openDropdown('job_type')"
+        (ngModelChange)="onSearch('job_type', $event)"
+        [ngModelOptions]="{standalone: true}"
+        placeholder="Search Job Type"
+        class="mat-select-search w-100"
+      />
+      <mat-icon
+        class="search-icon"
+        *ngIf="dropdownState.job_type.search"
+        type="button"
+        (click)="clearSearchDropD('job_type')"
+        style="cursor: pointer;"
+      >close</mat-icon>
+      <mat-icon class="search-icon" *ngIf="!dropdownState.job_type.search">search</mat-icon>
+    </div>
+
+    <mat-select
+      #jobTypeSelect
+      formControlName="job_type"
+      placeholder=""
+      panelClass="custom-select-panel"
+      (selectionChange)="commonOnchangeFun($event, 'job_type')"
+      [disableOptionCentering]="true"
+      (openedChange)="onDropdownOpened($event, 'job_type')"
+      class="hidden-select"
+    >
+      <mat-option *ngIf="allJobtypeList.length === 0" hidden disabled></mat-option>
+      <mat-option *ngFor="let item of getOptionsWithSelectedOnTop('job_type')" [value]="item?.id">
+        {{ item?.job_type_name }}
+      </mat-option>
+    </mat-select>
+
+    <mat-error *ngIf="f['job_type']?.invalid && (f['job_type']?.touched || f['job_type']?.dirty)">
+      <span *ngIf="f['job_type']?.errors?.['required']">Job Type is required</span>
+    </mat-error>
+  </mat-form-field>
+</div> -->
+
+<!-- Allocation Date -->
  <div class="col-12 col-sm-12 col-md-6 col-lg-3 my-1 no-padding pl-0 pr-5">
     <mat-form-field appearance="outline"  [ngClass]="{ 'highlight-background': !shouldDisableFields}" class="w-100 p-0 custom-mat-form-field">
         <mat-label>Job Allocation Date <b class="r-star">*</b></mat-label>

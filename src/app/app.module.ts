@@ -73,6 +73,7 @@ import { CompanyPolicyComponent } from './views/company-policy/company-policy.co
 import { PdfViewComponent } from './views/pdf-view/pdf-view.component';
 import { GenericTimesheetConfirmationComponent } from './generic-components/generic-timesheet-confirmation/generic-timesheet-confirmation.component';
 import { CUSTOM_DATE_FORMATS, CustomDateAdapter } from './shared/custom-date-adapter';
+import { NotificationsComponent } from './views/notifications/notifications.component';
 
 const APP_CONTAINERS = [
   DefaultFooterComponent,
@@ -95,6 +96,7 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
     CompanyPolicyComponent,
     PdfViewComponent,
     GenericTimesheetConfirmationComponent,
+    NotificationsComponent,
   ],
   imports: [
     // ChartsModule,

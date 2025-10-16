@@ -1,43 +1,43 @@
 <div class="row mx-0 px-0 dashboard-tabs">
     <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0">
-        <mat-tab-group mat-stretch-tabs="false" mat-align-tabs="start" (selectedTabChange)="onTabChange($event)"
-            >
-                <mat-tab label="Resource" *ngIf="userRole==='Admin'">
-                    <ng-template matTabContent>
-                        <app-resource-availability></app-resource-availability>
-                    </ng-template>
-                </mat-tab>
-                <mat-tab label="Dashboard" *ngIf="userRole!='Admin'">
-                    <ng-template matTabContent>
-                        <app-user-dashboard></app-user-dashboard>
-                    </ng-template>
-                </mat-tab>
-                <mat-tab label="Leave Requests" *ngIf="userRole!='Accountant'">
-                    <ng-template matTabContent>
-                        <app-leave-request></app-leave-request>
-                    </ng-template>
-                </mat-tab>
-                <mat-tab label="My Leaves" *ngIf="userRole!='Admin'">
-                    <ng-template matTabContent>
-                        <app-my-leaves></app-my-leaves>
-                    </ng-template>
-                </mat-tab>
-                 <mat-tab label="Compensatory Request" *ngIf="userRole!='Accountant'">
-                    <ng-template matTabContent>
-                        <app-compensatory-request ></app-compensatory-request>
-                    </ng-template>
-                </mat-tab>
-                 <mat-tab label="Customize Balance" *ngIf="userRole==='Admin'">
-                    <ng-template matTabContent>
-                        <app-customize-balance ></app-customize-balance>
-                    </ng-template>
-                </mat-tab>
-                
-                <mat-tab label="Holidays" *ngIf="userRole==='Admin'">
-                    <ng-template matTabContent>
-                        <app-holiday-list></app-holiday-list>
-                    </ng-template>
-                </mat-tab>
+        <mat-tab-group mat-stretch-tabs="false" mat-align-tabs="start" (selectedTabChange)="onTabChange($event)">
+            <mat-tab label="Leave Requests" *ngIf="userRole!='Accountant'">
+                <ng-template matTabContent>
+                    <app-leave-request></app-leave-request>
+                </ng-template>
+            </mat-tab>
+            <mat-tab label="Compensatory Request" *ngIf="userRole!='Accountant'">
+                <ng-template matTabContent>
+                    <app-compensatory-request></app-compensatory-request>
+                </ng-template>
+            </mat-tab>
+            <mat-tab label="Customize Balance" *ngIf="userRole==='Admin'">
+                <ng-template matTabContent>
+                    <app-customize-balance></app-customize-balance>
+                </ng-template>
+            </mat-tab>
+            <mat-tab label="Resource" *ngIf="userRole==='Admin'">
+                <ng-template matTabContent>
+                    <app-resource-availability></app-resource-availability>
+                </ng-template>
+            </mat-tab>
+            <mat-tab label="Dashboard" *ngIf="userRole!='Admin'">
+                <ng-template matTabContent>
+                    <app-user-dashboard></app-user-dashboard>
+                </ng-template>
+            </mat-tab>
+            <mat-tab label="My Leaves" *ngIf="userRole!='Admin'">
+                <ng-template matTabContent>
+                    <app-my-leaves></app-my-leaves>
+                </ng-template>
+            </mat-tab>
+
+
+            <mat-tab label="Holidays" *ngIf="userRole==='Admin'">
+                <ng-template matTabContent>
+                    <app-holiday-list></app-holiday-list>
+                </ng-template>
+            </mat-tab>
         </mat-tab-group>
     </div>
 </div>

@@ -219,7 +219,10 @@ export class DefaultLayoutComponent {
       }
       if (this.user_role_Name === 'Admin' && item.name === 'Leave' && Array.isArray(item.children)) {
       item.children = item.children.filter((child:any) => child.name !== 'Apply Leave');
-    }
+      }
+      // if(this.user_role_Name!='Admin' && item.name ==='Reports' && Array.isArray(item.children)){
+      //   item.children = item.children.filter((child:any)=> child.name!='Leave Summary Report');
+      // }
     });
     
     return navigationData;

@@ -482,14 +482,18 @@ export class CompOffGrantComponent implements OnInit {
           },
           (err) => {
             console.log('err', err);
-            this.apiService.showError(err?.error?.detail);
+            this.apiService.showError(err?.error?.message);
           }
         );
     }
   }
   public resetFormState() {
     this.totalDays = 0;
-    this.selectedEmployees = []
+    this.fileDataUrl = '';
+    this.selectedFile = null;
+    this.fileName = '';
+    this.selectedEmails = []
+    this.leave_balance = 0
     this.formGroupDirective?.resetForm();
     // this.formErrorScrollService.resetHasUnsavedValue();
     // this.isEditItem = false;

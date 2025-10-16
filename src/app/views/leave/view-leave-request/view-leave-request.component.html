@@ -37,11 +37,11 @@
           </div>
           <div class="col-sm-12 col-md-6 col-lg-6 my-2">
             <h4 class="label-name">Applying To</h4>
-            <p>{{ leave_data.reporting_manager_name }}</p>
+            <p>{{ leave_data.reporting_to_name }}</p>
           </div>
           <div class="col-sm-12 col-md-6 col-lg-6 my-2">
             <h4 class="label-name">CC To</h4>
-            <p>{{ leave_data.emailString }}</p>
+            <p *ngIf="leave_data?.cc.length>0">{{ leave_data?.cc }}</p>
           </div>
           <div class="col-sm-12 col-md-6 col-lg-6 my-2">
             <h4 class="label-name">Date of request</h4>
@@ -50,6 +50,10 @@
           <div class="col-sm-12 col-md-6 col-lg-6 my-2">
             <h4 class="label-name">Reason</h4>
             <p>{{ leave_data.message }}</p>
+          </div>
+          <div class="col-sm-12 col-md-6 col-lg-6 my-2">
+           <h4 class="label-name">Attachment</h4>
+            attachment
           </div>
 
           <div class="col-sm-12 col-md-6 col-lg-6 my-2" *ngIf="leave_data?.rejected_reason">

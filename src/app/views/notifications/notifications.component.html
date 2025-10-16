@@ -1,0 +1,72 @@
+<div class="notification-container">
+        <div class="notification-modal">
+        <div class="n-header">
+          <h2 class="title">Notifications </h2>
+          <div class="close-btn"><i class="bi bi-x-lg" (click)="closeBtn()"></i> </div>
+        </div>
+      </div>
+        <div class="notification-main-content" [ngClass]="listOfNotification?.length? 'h-70':'h-30'">
+       <ng-container *ngIf="listOfNotification?.length">    
+        <div *ngFor="let notification of listOfNotification" class="notification-item py-3">
+        <!-- <a [routerLink]="notification?.text?.redirect_url || null" class="w-100" (click)="handleNotificationClick(notification);"  >
+          <div class="notification-content">
+            <div class="notification-header p-r">
+             
+              <mat-label class="date">{{ notification.created_datetime | date : 'dd-MM-yyyy' }}</mat-label>
+              <div class="row">
+                <div class="col">
+                  <strong>{{ notification.text.name }}</strong>
+                  <span  class="flex-container" *ngIf="notification?.text?.leave_type || notification?.text?.project_status || notification?.text?.timesheet_status || notification?.text?.subscription_type">
+                    <div>
+                      <i [class]="notification.text.icon" ></i>
+                    </div>
+                    <span class="h-leave-message" *ngIf="notification.text.leave_type">{{"Leave"}}</span>
+                    <span class="h-leave-message" *ngIf="notification.text.timesheet_status">{{"Timesheet"}}</span>
+                    <span class="h-leave-message" *ngIf="!notification.text.subscription_type && !notification.text.leave_type && !notification.text.timesheet_status && !notification.text.project_status">{{notification.text.message}}</span>
+                    <span class="h-leave-message" *ngIf="notification.text.subscription_type">{{'Subscription'}}</span>
+                    <span class="h-leave-message" *ngIf="notification.text.project_status">{{'Project'}}</span>
+               
+                    <mat-chip-list>
+                      <mat-chip [ngClass]="notification?.text?.leave_type ? 'leave-type' : 'project-name'" selected >
+                        <i class="pe-1" [class]="notification.text.icon"></i>
+                        {{ notification?.text?.leave_type || notification?.text?.project_name || notification.text.subscription_type}}
+                      </mat-chip>
+                    </mat-chip-list>
+                    
+                   
+                  </span>
+                </div>
+                
+              </div>
+              
+
+              
+            </div>
+
+           
+            <div class="row">
+              <div class="col">
+                 <div class="notification-message" *ngIf="notification?.text?.message">
+                  {{ notification?.text?.message || 'NA'}}
+                </div>
+              </div>
+            </div>
+            
+          
+          </div>
+        </a> -->
+        <!-- <div *ngFor="let item of notification"> -->
+          <p>{{notification?.text?.message}}</p>
+        <!-- </div> -->
+        </div>
+     
+      </ng-container>
+      <div *ngIf="listOfNotification?.length === 0" class="text-center">No notifications found!</div>
+      </div>
+      <!-- View More -->
+      <div class="p-r">
+        <div class="view-more" *ngIf="listOfNotification.length > 4">
+          <button mat-button class="btn-more" [disabled]="listOfNotification.length === totalCount" (click)="getNotification(10,'viewmore')">View More</button>
+        </div>
+       </div>
+      </div>

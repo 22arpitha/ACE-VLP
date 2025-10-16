@@ -87,7 +87,7 @@
                                         session.label }}</mat-option>
                                 </mat-select>
                                  <mat-error *ngIf="f['from_session']?.invalid && f['from_session']?.touched || f['from_session']?.dirty">
-                                        <span  *ngIf="f['from_session']?.errors?.['required']">Session is required is required</span>
+                                        <span  *ngIf="f['from_session']?.errors?.['required']">Session is required</span>
                                 </mat-error>
                             </mat-form-field>
                         </div>
@@ -105,7 +105,10 @@
                                 <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
                                 <mat-datepicker #picker2></mat-datepicker>
                                 <mat-error *ngIf="f['to_date']?.invalid && f['to_date']?.touched || f['to_date']?.dirty">
-                                        <span  *ngIf="f['to_date']?.errors?.['required']">To Date is required is required</span>
+                                        <span  *ngIf="f['to_date']?.errors?.['required']">To Date is required</span>
+                                        <span class="mb-2" *ngIf="f['to_date']?.errors?.['matDatepickerMin']">
+                                            To Date cannot be greater than the from date.
+                                        </span>
                                 </mat-error>
                             </mat-form-field>
                         </div>
@@ -119,7 +122,7 @@
                                         session.label }}</mat-option>
                                 </mat-select>
                                 <mat-error *ngIf="f['to_session']?.invalid && f['to_session']?.touched || f['to_session']?.dirty">
-                                        <span  *ngIf="f['to_session']?.errors?.['required']">Session is required is required</span>
+                                        <span  *ngIf="f['to_session']?.errors?.['required']">Session is required</span>
                                 </mat-error>
                             </mat-form-field>
                         </div>
@@ -146,7 +149,7 @@
                                         manager?.full_name }}</mat-option>
                                 </mat-select>
                                 <mat-error *ngIf="f['reporting_to']?.invalid && f['reporting_to']?.touched || f['reporting_to']?.dirty">
-                                        <span  *ngIf="f['reporting_to']?.errors?.['required']">Applying to is required</span>
+                                        <span  *ngIf="f['reporting_to']?.errors?.['required']">Applying To is required</span>
                                 </mat-error>
                             </mat-form-field>
                         </div>
@@ -192,7 +195,7 @@
                                     style="height: 50px !important" formControlName="message" maxlength="200"
                                     rows="3"></textarea>
                                 <mat-error *ngIf="f['message']?.invalid && f['message']?.touched || f['message']?.dirty">
-                                        <span  *ngIf="f['message']?.errors?.['required']">Reason to is required</span>
+                                        <span  *ngIf="f['message']?.errors?.['required']">Reason is required</span>
                                 </mat-error>
                                 <mat-hint align="end" class="mt-2">
                                     {{ leaveApplyForm.get("message")?.value?.length || 0 }}/200 ({{

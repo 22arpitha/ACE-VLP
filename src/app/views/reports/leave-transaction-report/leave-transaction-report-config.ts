@@ -6,6 +6,12 @@ export const tableColumns  = [
     key: 'sl',
     sortable: false
   },
+  {
+    label: 'Date',
+    key: 'date',
+    sortKey:'date',
+    sortable: false
+  },
 //   {
 //     label: 'Employee',
 //     key: 'employee_name',
@@ -22,12 +28,7 @@ export const tableColumns  = [
     sortKey:'description',
     sortable: false
   },
-  {
-    label: 'Date',
-    key: 'date',
-    sortKey:'date',
-    sortable: false
-  },
+  
   {
     label: 'Accrued Balance',
     key: 'accrued',
