@@ -18,6 +18,30 @@
                   </span>
                 </div>
               </div>
+              <!-- <div class="col-12 col-sm-12 col-md-6 col-lg-3 px-2 mt-3">
+                <input type="file"  accept=".doc,.docx,.pdf" formControlName="policy_file" #fileInput (change)="onFileSelected($event)" hidden>
+                <div
+                    class="image-container w-100 d-flex justify-content-between align-items-center"
+                    style="padding: 1px 15px; border: 2px dashed #ccc; border-radius: 8px;"
+                    [ngClass]="{
+                      'is-invalid': f['policy_file']?.touched && f['policy_file']?.invalid,
+                      'dragover': isDragOver
+                    }"
+                    (dragover)="onDragOver($event)"
+                    (dragleave)="onDragLeave($event)"
+                    (drop)="onFileDropped($event)"
+                  >
+                    <mat-label>{{selectedFile ? selectedFile.name : 'Policy File'}}<b class="r-star">{{selectedFile ? '' : '*'}}</b></mat-label>
+                    <button type="button" mat-icon-button (click)="triggerFileInput()">
+                      <i
+                        matTooltip="{{selectedFile ? 'Edit' : 'Upload File'}}"
+                        class="{{selectedFile ? 'bi bi-pencil-fill' : 'bi bi-file-earmark-spreadsheet'}}"
+                        id="edit-or-upload-icon"
+                      ></i>
+                    </button>
+                </div>
+              </div> -->
+
               <div class="col-12 col-sm-12 col-md-6 col-lg-3 px-2 mt-3">
                 <input type="file"  accept=".doc,.docx,.pdf" formControlName="policy_file" #fileInput (change)="onFileSelected($event)" hidden>
           <div class="image-container w-100 d-flex justify-content-between align-items-center" style="padding: 1px 15px;" [ngClass]="{'is-invalid': f['policy_file']?.touched && f['policy_file']?.invalid}">

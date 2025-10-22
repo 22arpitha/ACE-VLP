@@ -59,11 +59,6 @@ const routes: Routes = [
             (m) => m.GenericRemoveModule
           ),
       },
-      {
-        path: 'people',
-        loadChildren: () =>
-          import('./views/people/people.module').then((m) => m.PeopleModule),
-      },
 {
         path: 'leave',
         loadChildren: () =>

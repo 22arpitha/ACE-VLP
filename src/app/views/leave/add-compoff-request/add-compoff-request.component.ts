@@ -225,5 +225,8 @@ export class AddCompoffRequestComponent implements OnInit {
 //       control?.updateValueAndValidity();
 //     });
 //   }
+ openInNewTab(url: string): void {
+    window.open(url, '_blank');
+  }
  
 }

@@ -51,9 +51,11 @@
             <h4 class="label-name">Reason</h4>
             <p>{{ leave_data.message }}</p>
           </div>
-          <div class="col-sm-12 col-md-6 col-lg-6 my-2">
+          <div class="col-sm-12 col-md-6 col-lg-6 my-2" *ngIf="leave_data?.attachment">
            <h4 class="label-name">Attachment</h4>
-            attachment
+           <img src="../../../assets/images/eye icon.svg" class="icon-image" container="body"
+                    ngbTooltip="View" type="button" (click)="openInNewTab(leave_data.attachment)" /> 
+            <!-- <button class="btn"  (click)="openInNewTab(leave_data.attachment)">View</button> -->
           </div>
 
           <div class="col-sm-12 col-md-6 col-lg-6 my-2" *ngIf="leave_data?.rejected_reason">
