@@ -35,7 +35,7 @@ export class LeaveApplyComponent implements OnInit {
     { value: 'session 2', label: 'Session 2' },
   ];
   separatorKeysCodes: number[] = [ENTER, COMMA];
-  leaveApplyForm: FormGroup;
+  leaveApplyForm!: FormGroup;
   allEmployeeEmailsList: any = [];
   // filteredEmails: any = [];
   reportinManagerDetails: any = [];
@@ -57,6 +57,11 @@ export class LeaveApplyComponent implements OnInit {
 
   openFileDialog(): void {
     this.fileInput.nativeElement.click();
+  }
+  removeImage(){
+    this.selectedFile = null;
+    this.fileName = '';
+    this.fileDataUrl = '';
   }
 
   constructor(
@@ -110,27 +115,31 @@ export class LeaveApplyComponent implements OnInit {
   }
 
   onLeaveTypeChange(event: any) {
-    this.selectedLeaveTypeName = this.allleavetypeList.find((item: any) => item.id === event.value)?.leave_type_name.toLowerCase() || '';
-    this.apiService.getEmployeeLeaves(this.user_id, event.value).subscribe(
-      (res: any) => {
-        if(res?.results.length>0){
-          this.leave_balance = res?.results[0].closing_balance_leave;
-          this.employeeActive = res?.results[0].is_active;
-        } else{
-          this.leave_balance = 0;
+    let temp = this.allleavetypeList.find((item: any) => item.leave_type_id === event.value)
+    console.log(temp)
+    this.selectedLeaveTypeName = temp.leave_type.toLowerCase() || ''
+    this.leave_balance = temp.closing_balance_leave;
+          this.employeeActive = temp.is_active;
+         if (this.selectedLeaveTypeName.includes('paternity') || 
+          this.selectedLeaveTypeName.includes('maternity')) {
+          this.leaveApplyForm.controls['attachment'].setValidators([Validators.required]);
+        } else {
+          this.leaveApplyForm.controls['attachment'].setValidators(null); 
+          this.leaveApplyForm.controls['attachment'].setErrors(null);
         }
-        // if (res.results.length != 0) {
-        //   this.apiService
-        //     .getLeaveTypeById(event.value)
-        //     .subscribe((res: any) => {
-        //       console.log(res);
-        //       this.leave_balance = res.accrual_credits;
-        //     });
-        // } else {
-        // }
-      },
-      (err) => {}
-    );
+        this.leaveApplyForm.controls['attachment'].updateValueAndValidity();
+    // this.selectedLeaveTypeName = this.allleavetypeList.find((item: any) => item.leave_type_id === event.value)?.leave_type.toLowerCase() || '';
+    // this.apiService.getEmployeeLeaves(this.user_id, event.value).subscribe(
+    //   (res: any) => {
+    //     if(res?.results.length>0){
+    //       this.leave_balance = res?.results[0].closing_balance_leave;
+    //       this.employeeActive = res?.results[0].is_active;
+    //     } else{
+    //       this.leave_balance = 0;
+    //     }
+    //   },
+    //   (err) => {}
+    // );
   }
 
   initialForm() {
@@ -156,16 +165,24 @@ export class LeaveApplyComponent implements OnInit {
   public getAllLeaveTypes() {
     this.allleavetypeList = [];
     this.apiService
-      .getData(`${environment.live_url}/${environment.settings_leave_type}/`)
+      .getData(`${environment.live_url}/${environment.employees_leave}/?employee=${this.user_id}`)
       .subscribe(
         (respData: any) => {
-          this.allleavetypeList = respData;
+          this.allleavetypeList = respData?.results?.filter((item:any)=>item.is_active===true);
         },
         (error: any) => {
           this.apiService.showError(error?.error?.detail);
         }
       );
   }
+  isLeaveTypeDisabled(leave: any): boolean {
+  if (!leave || !leave.leave_type) return false;
+  const type = leave.leave_type.toLowerCase();
+  return (
+    (type.includes('maternity') || type.includes('paternity')) &&
+    !leave.is_maternity_and_paternity_enabled
+  );
+}
 
   startDate: Date | null = null;
   endDate: Date | null = null;
@@ -481,7 +498,7 @@ export class LeaveApplyComponent implements OnInit {
 
   private _filter(value: string): string[] {
     const filterValue = value.toLowerCase();
-    return this.ccEmailsList.filter((email) =>
+    return this.ccEmailsList.filter((email:any) =>
       email.toLowerCase().includes(filterValue)
     );
   }
@@ -535,7 +552,7 @@ export class LeaveApplyComponent implements OnInit {
 
   // get leave type config
   const leaveTypeId = this.leaveApplyForm.get('leave_type')?.value;
-  const leaveTypeData = this.allleavetypeList?.find((l: any) => l.id === leaveTypeId);
+  const leaveTypeData = this.allleavetypeList?.find((l: any) => l.leave_type_id === leaveTypeId);
 
   const fromDateRaw = this.leaveApplyForm.get('from_date')?.value;
   const toDateRaw = this.leaveApplyForm.get('to_date')?.value;

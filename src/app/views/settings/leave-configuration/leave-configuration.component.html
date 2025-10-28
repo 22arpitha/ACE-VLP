@@ -9,7 +9,7 @@
           <p><b>Leave Provisioning</b></p>
           <span>Configure leave allocation settings for this policy.</span>
         </div>
-        <div class="col-12 col-sm-12 col-md-3 col-lg-3 my-1 no-padding pl-0 pr-5">
+        <div class="col-sm-12 col-md-3 col-lg-3 my-1 no-padding pl-0 pr-5">
           <mat-form-field appearance="outline" [ngClass]="{ 'highlight-background':!editLeaveType}" class="w-100 custom-mat-form-field">
             <mat-label>Leave Type<b class="r-star">*</b></mat-label>
             <input matInput placeholder="Enter Leave Type" appAlphabetOnly formControlName="leave_type_name"
@@ -27,7 +27,7 @@
             </mat-error>
           </mat-form-field>
         </div>
-        <div class="col-12 col-sm-12 col-md-6 col-lg-4 my-1 no-padding pl-0 pr-5">
+        <div class="col-sm-12 col-md-6 col-lg-4 my-1 no-padding pl-0 pr-5">
           <mat-form-field appearance="outline" [ngClass]="{ 'highlight-background':!editLeaveType}" class="w-100 custom-mat-form-field">
             <mat-label>Description</mat-label>
             <textarea matInput placeholder="Enter Description" formControlName="leave_description"
@@ -82,6 +82,22 @@
               <span *ngIf="!f['utilization_after'].errors?.['required'] && f['utilization_after'].errors?.['min']">
                 Utilization cannot be negative.
               </span>
+            </mat-error>
+          </mat-form-field>
+        </div>
+        <div class="col-sm-12 col-md-3 col-lg-2 my-1 no-padding pl-0 pr-5">
+          <mat-form-field appearance="outline" [ngClass]="{ 'highlight-background':!editLeaveType}" class="w-100 custom-mat-form-field">
+              <mat-label>Gender <b class="r-star">*</b></mat-label>
+              <mat-select formControlName="leave_for" autocomplete="off"
+                      placeholder="leave_for" panelClass="custom-select-panel"
+                      [disableOptionCentering]="true">
+                      <mat-option  value="male">Male</mat-option>
+                      <mat-option  value="female">Female</mat-option>
+                      <mat-option  value="others">Others</mat-option>
+                      <mat-option  value="all employees">All employees</mat-option>
+              </mat-select>
+              <mat-error *ngIf="f['leave_for']?.invalid && f['leave_for']?.touched || f['leave_for']?.dirty">
+                  <span  *ngIf="f['leave_for']?.errors?.['required']">Gender is required</span>
             </mat-error>
           </mat-form-field>
         </div>

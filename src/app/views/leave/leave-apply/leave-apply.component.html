@@ -13,7 +13,7 @@
                 <mat-select placeholder="Leave Type" autocomplete="off" panelClass="custom-select-panel"
                   [disableOptionCentering]="true" (selectionChange)="onLeaveTypeChange($event)"
                   formControlName="leave_type">
-                  <mat-option *ngFor="let leave of allleavetypeList" [value]="leave.id">{{ leave.leave_type_name
+                  <mat-option *ngFor="let leave of allleavetypeList" [value]="leave.leave_type_id" [disabled]="isLeaveTypeDisabled(leave)">{{ leave.leave_type
                     }}</mat-option>
                 </mat-select>
                 <mat-error *ngIf="f['leave_type']?.invalid && f['leave_type']?.touched || f['leave_type']?.dirty">
@@ -187,7 +187,13 @@
                     fileDataUrl ? "edit" : "attach_file" }}
                   </mat-icon>
                 </button>
+                <button type="button" mat-icon-button *ngIf="fileDataUrl" (click)="removeImage()">
+                  <mat-icon>close</mat-icon>
+                </button>
               </div>
+               <mat-error *ngIf="f['attachment']?.invalid && f['attachment']?.touched || f['attachment']?.dirty">
+                  <span *ngIf="f['attachment']?.errors?.['required']">Attachment is required</span>
+                </mat-error>
             </div>
           </div>
         </div>

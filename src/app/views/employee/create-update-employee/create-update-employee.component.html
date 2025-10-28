@@ -1,5 +1,5 @@
 <div class="container-wrapper settings-main-content px-0">
-    <section class="settings-form-bg">
+    <section class="settings-form-bg p-sm-0">
         <div class="row mx-0 px-0">
         <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0 text-end mr-2" *ngIf="isEditItem && ((userRole !='Admin' &&  accessPermissions[0]?.update) || userRole === 'Admin')">
              <button mat-raised-button class="proceedbtn mat-btn-s" type="button" [disabled]="isEnabledEdit" (click)="enbleFields()">Edit</button>
@@ -8,7 +8,7 @@
         <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0">
             <form [formGroup]="employeeFormGroup">
                 <div class="row mx-0 my-0 px-2">
-                    <div class="col-12 col-sm-12 col-md-6 col-lg-4 my-1 px-0">
+                    <div class="col-12 col-sm-12 col-md-6 col-lg-4 my-1 px-1">
                     <mat-form-field appearance="outline"  [ngClass]="{ 'highlight-background': shouldDisableFields && !isEnabledEdit}" class="w-100 custom-mat-form-field">
                         <mat-label>Employee Number <b class="r-star">*</b></mat-label>
                         <input matInput type="text" placeholder="Enter Employee Number" formControlName="employee_number" autocomplete="off" readonly>
@@ -18,7 +18,7 @@
                       </mat-form-field>  
                     </div>
 <!-- First name -->
-<div class="col-12 col-sm-12 col-md-6 col-lg-4 my-1 no-padding pl-5 pr-0">
+<div class="col-12 col-sm-12 col-md-6 col-lg-4 my-1 px-1">
 
 <mat-form-field appearance="outline"  [ngClass]="{ 'highlight-background': shouldDisableFields && !isEnabledEdit}" class="w-100 custom-mat-form-field">
     <mat-label>First Name <b class="r-star">*</b></mat-label>
@@ -46,7 +46,7 @@
 
 </div>
 <!-- Last name -->
-<div class="col-12 col-sm-12 col-md-6 col-lg-4 my-1 px-0">
+<div class="col-12 col-sm-12 col-md-6 col-lg-4 my-1 px-1">
 
 <mat-form-field appearance="outline" [ngClass]="{ 'highlight-background': shouldDisableFields && !isEnabledEdit}" class="w-100 custom-mat-form-field">
     <mat-label>Last Name <b class="r-star">*</b></mat-label>
@@ -67,7 +67,7 @@
 </div>
 
 <!-- Email Address -->
-<div class="col-12 col-sm-12 col-md-6 col-lg-4 my-1 px-0">
+<div class="col-12 col-sm-12 col-md-6 col-lg-4 my-1 px-1">
 <mat-form-field appearance="outline" [ngClass]="{ 'highlight-background': shouldDisableFields && !isEnabledEdit}" class="w-100 custom-mat-form-field">
     <mat-label>Email Id <b class="r-star">*</b></mat-label>
     <input matInput type="email" placeholder="Enter email" formControlName="email"
@@ -79,7 +79,7 @@
 </mat-form-field>
 
 </div>
-<div class="col-12 col-sm-12 col-md-6 col-lg-4 my-1 no-padding pl-5 pr-0">
+<div class="col-12 col-sm-12 col-md-6 col-lg-4 my-1 px-1">
     <mat-form-field appearance="outline" [ngClass]="{ 'highlight-background': shouldDisableFields && !isEnabledEdit}" class="w-100 p-0 custom-mat-form-field">
         <mat-label>Start Date <b class="r-star">*</b></mat-label>
         <input matInput [matDatepicker]="picker1" placeholder="Enter start date"
@@ -92,7 +92,7 @@
     </mat-form-field>
   
 </div>
-<div class="col-12 col-sm-12 col-md-6 col-lg-4 my-1 no-padding pl-5 pr-0">
+<div class="col-12 col-sm-12 col-md-6 col-lg-4 my-1 px-1">
     <mat-form-field appearance="outline" [ngClass]="{ 'highlight-background': shouldDisableFields && !isEnabledEdit}" class="w-100 p-0 custom-mat-form-field">
         <mat-label>Exit Date</mat-label>
         <input matInput [matDatepicker]="picker2" placeholder="Enter start date"
@@ -105,7 +105,7 @@
     </mat-form-field>
   
 </div>
-<div class="col-12 col-sm-12 col-md-6 col-lg-4 my-1 px-0">
+<div class="col-12 col-sm-12 col-md-6 col-lg-4 my-1 px-1">
     <mat-form-field appearance="outline" [ngClass]="{ 'highlight-background': shouldDisableFields && !isEnabledEdit}" class="w-100 custom-mat-form-field">
         <mat-label>Role <b class="r-star">*</b></mat-label>
         <mat-select formControlName="designation" autocomplete="off"
@@ -126,7 +126,7 @@
     </mat-form-field>
 
 </div>
-<div class="col-12 col-sm-12 col-md-6 col-lg-4 my-1 no-padding pl-5 pr-0 ">
+<div class="col-12 col-sm-12 col-md-6 col-lg-4 my-1 px-1">
     <mat-form-field appearance="outline" [ngClass]="{ 'highlight-background': shouldDisableFields && !isEnabledEdit}" class="w-100 custom-mat-form-field">
         <mat-label>Designation <b class="r-star">*</b></mat-label>
         <mat-select formControlName="sub_designation" autocomplete="off"
@@ -148,7 +148,7 @@
  
 </div>
 
-<div class="col-12 col-sm-12 col-md-6 col-lg-4 my-1 px-0">
+<div class="col-12 col-sm-12 col-md-6 col-lg-4 my-1 px-1">
     <mat-form-field appearance="outline" [ngClass]="{ 'highlight-background': shouldDisableFields && !isEnabledEdit}" class="w-100 custom-mat-form-field">
         <mat-label>Reporting Manager</mat-label>
         <mat-select formControlName="reporting_manager_id" autocomplete="off"
@@ -169,6 +169,26 @@
     </mat-form-field>
 
 </div>
+<div class="col-12 col-sm-12 col-md-6 col-lg-4 my-1 px-1">
+    <mat-form-field appearance="outline" [ngClass]="{ 'highlight-background': shouldDisableFields && !isEnabledEdit}" class="w-100 custom-mat-form-field">
+        <mat-label>Gender <b class="r-star">*</b></mat-label>
+        <mat-select formControlName="gender" autocomplete="off"
+                placeholder="select gender" panelClass="custom-select-panel"
+                [disableOptionCentering]="true">
+                <mat-option *ngFor="let i of genders" [value]="i.value">{{i.name}}</mat-option>
+                <!-- <mat-option  value="1">Male</mat-option>
+                <mat-option  value="2">Female</mat-option>
+                <mat-option  value="3">Others</mat-option> -->
+        </mat-select>
+        <mat-error *ngIf="f['gender']?.invalid && f['gender']?.touched || f['gender']?.dirty">
+            <span  *ngIf="f['gender']?.errors?.['required']">Gender is required</span>
+      </mat-error>
+    </mat-form-field>
+ 
+</div>
+    <div class="col-12 col-sm-12 col-md-6 col-lg-4 my-1 px-2 align-content-center" *ngIf="filteredLeaves.length>0">
+         <mat-checkbox [(ngModel)]="leaveTypeEnabled" [disabled]="shouldDisableFields && !isEnabledEdit" [ngModelOptions]="{standalone: true}" class="example-margin">{{filteredLeaves[0]?.leave_type }}</mat-checkbox>
+    </div>
 <!-- <div class="col-12 col-sm-12 col-md-6 col-lg-4 my-1 px-0">
     <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
         <mat-label>Employee Status <b class="r-star">*</b></mat-label>

@@ -22,7 +22,7 @@ import{JobsOfAccountantComponent} from '../jobs-of-accountant/jobs-of-accountant
 export class CreateUpdateEmployeeComponent implements CanComponentDeactivate, OnInit {
   @ViewChild(FormGroupDirective) formGroupDirective!: FormGroupDirective;
   BreadCrumbsTitle: any = 'Employee';
-  employeeFormGroup: FormGroup;
+  employeeFormGroup!: FormGroup;
   allDesignation: any = [];
   allUserRoleList: any = [];
   reportingManagerId: any = [];
@@ -37,6 +37,9 @@ export class CreateUpdateEmployeeComponent implements CanComponentDeactivate, On
   userRole: any;
   initialFormValue: any;
   managerOfAccountant:any
+  genders =[{name:'Male',value:'1',value_check:'male'},{name:'Female',value:'2',value_check:'female'},{name:'Others',value:'3',value_check:'others'}]
+  getGenderValue:any;
+  leaveTypeEnabled:boolean =false
   constructor(private fb: FormBuilder, private activeRoute: ActivatedRoute,
     private common_service: CommonServiceService, private router: Router,
     private apiService: ApiserviceService, private modalService: NgbModal,
@@ -75,7 +78,7 @@ export class CreateUpdateEmployeeComponent implements CanComponentDeactivate, On
     this.formErrorScrollService.resetHasUnsavedValue();
   }
 
-  shouldDisableFields: boolean;
+  shouldDisableFields!: boolean;
   isEnabledEdit: boolean;
   getModuleAccess() {
     this.accessControlService.getAccessForActiveUrl(this.user_id).subscribe(
@@ -117,8 +120,14 @@ export class CreateUpdateEmployeeComponent implements CanComponentDeactivate, On
       reporting_manager_id: [''],
       designation: ['', Validators.required],
       sub_designation: ['', Validators.required],
+      gender: ['',Validators.required],
       role: 2,
       is_active: [true, Validators.required],
+      enable_leave: this.fb.group({
+        leave_type_id: [''],
+        enabled_by: [''],
+        is_enable: ['']
+      }),
     });
   }
   // To Get Unique Employee Number
@@ -151,7 +160,7 @@ export class CreateUpdateEmployeeComponent implements CanComponentDeactivate, On
     this.employeeFormGroup?.get('sub_designation')?.reset();
     this.getDesignationList(role_id);
     const temp = this.allUserRoleList.find((data: any) => data.id === event.value);
-    if (temp.designation_name === 'Manager') {
+    if (temp?.designation_name === 'Manager') {
       this.getDirectData()
     } else {
       this.reportingManagerId = this.reportingManagerId.filter((data: any) => data.user__full_name != 'Vinayak Hegde')
@@ -197,6 +206,8 @@ export class CreateUpdateEmployeeComponent implements CanComponentDeactivate, On
     this.apiService.getData(`${environment.live_url}/${environment.employee}/${id}/`).subscribe((respData: any) => {
       this.getDesignationList(respData?.designation_id);
       this.managerOfAccountant = respData?.reporting_manager_id
+      this.getGenderValue = respData?.user__gender,
+      this.getLeaveTypes()
       this.employeeFormGroup.patchValue({
         employee_number: respData?.employee_number,
         first_name: respData?.user__first_name,
@@ -207,8 +218,10 @@ export class CreateUpdateEmployeeComponent implements CanComponentDeactivate, On
         reporting_manager_id: respData?.reporting_manager_id,
         designation: respData?.designation_id,
         sub_designation: respData?.sub_designation_id,
+        gender: respData?.user__gender,
         is_active: respData?.is_active,
       });
+      this.leaveTypeEnabled = respData?.maternity_and_paternity_details[0]?.is_enabled;
       const temp = this.allUserRoleList.find((data: any) => data.id ===respData?.designation_id);
       if (temp.designation_name === 'Manager') {
         this.getDirectData()
@@ -227,6 +240,32 @@ export class CreateUpdateEmployeeComponent implements CanComponentDeactivate, On
     return this.employeeFormGroup.controls;
   }
 
+  filteredLeaves = []
+  getLeaveTypes(){
+     this.apiService
+      .getData(`${environment.live_url}/${environment.employees_leave}/?employee=${this.employee_id}`)
+      .subscribe(
+        (respData: any) => {
+          let data = this.genders.find((x:any)=>x.value == this.getGenderValue)
+          if(data?.value_check==='female'){
+             this.filteredLeaves = respData.results?.filter((item: any) => 
+             item.leave_for?.toLowerCase() === 'female' &&
+             item.leave_type?.toLowerCase().includes('maternity') && item.is_active
+           );
+          } else if(data?.value_check==='male'){
+             this.filteredLeaves = respData.results?.filter((item: any) => 
+             item.leave_for?.toLowerCase() === 'male' &&
+             item.leave_type?.toLowerCase().includes('paternity') && item.is_active
+           );
+          }
+
+          console.log('Filtered Leave Types:', this.filteredLeaves);
+        },
+        (error: any) => {
+          this.apiService.showError(error?.error?.detail);
+        }
+      );
+  }
   public joiningDateFun(event: any) {
 
   }
@@ -336,7 +375,7 @@ export class CreateUpdateEmployeeComponent implements CanComponentDeactivate, On
         backdrop: true,
         centered: true
       });
-      modelRef.componentInstance.status.subscribe(resp => {
+      modelRef.componentInstance.status.subscribe((resp:any) => {
         if (resp == "ok") {
           this.deleteContent(this.employee_id);
           modelRef.close();
@@ -365,9 +404,18 @@ export class CreateUpdateEmployeeComponent implements CanComponentDeactivate, On
       this.employeeFormGroup.markAllAsTouched();
       this.formErrorScrollService.setUnsavedChanges(true);
       this.formErrorScrollService.scrollToFirstError(this.employeeFormGroup);
-      // console.log(this.employeeFormGroup.value)
     } else {
       this.employeeFormGroup.patchValue({ date_joined: this.datePipe.transform(this.employeeFormGroup?.get('date_joined')?.value, 'YYYY-MM-dd') })
+      if(this.filteredLeaves.length>0) {
+      this.employeeFormGroup.get('enable_leave')?.patchValue({
+      leave_type_id: this.filteredLeaves[0]['id'] || '',
+      enabled_by: this.user_id,
+      is_enable: this.leaveTypeEnabled
+       });
+     } else {
+      this.employeeFormGroup.removeControl('enable_leave');
+    }
+      console.log(this.employeeFormGroup.value)
       if (this.isEditItem) {
         if(this.selectedJobsIds.length>0){
           this.transferJobsApi()
@@ -375,17 +423,6 @@ export class CreateUpdateEmployeeComponent implements CanComponentDeactivate, On
         else{
           this.updateEmployee()
         }
-        // this.apiService.updateData(`${environment.live_url}/${environment.employee}/${this.employee_id}/`, this.employeeFormGroup.value).subscribe((respData: any) => {
-        //   if (respData) {
-        //     this.common_service.setEmployeeStatusState(this.employeeFormGroup.get('is_active')?.value);
-        //     this.apiService.showSuccess(respData['message']);
-        //     this.resetFormState();
-        //     sessionStorage.removeItem("access-name")
-        //     this.router.navigate(['/settings/all-employee']);
-        //   }
-        // }, (error: any) => {
-        //   this.apiService.showError(error?.error?.detail);
-        // });
       } else {
         this.apiService.postData(`${environment.live_url}/${environment.employee}/`, this.employeeFormGroup.value).subscribe((respData: any) => {
           if (respData) {

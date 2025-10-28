@@ -23,7 +23,7 @@ export class LeaveConfigurationComponent implements OnInit {
   user_id: any;
   userRole: any;
   initialFormValue: any;
-  leaveTypeForm: FormGroup;
+  leaveTypeForm!: FormGroup;
   item_id:any;
   editLeaveType:boolean = false;
   accrualDaysList = ACCURAL_DAYS_OPTIONS;
@@ -99,6 +99,7 @@ export class LeaveConfigurationComponent implements OnInit {
           carry_forward_cycle: 'carry_forward',
           carry_forward_days: res.carry_forward_days,
           encash_leaves_above_limit: res.encash_leaves_above_limit,
+          leave_for: res?.leave_for
         })
       if(res.is_accrual===false && res.accrual_credits===0 && res.accrual_month===0){
             this.leaveTypeForm.patchValue({accrual_credits:'',accrual_month:''})
@@ -149,7 +150,8 @@ export class LeaveConfigurationComponent implements OnInit {
       carry_forward_cycle: ['carry_forward'],
       carry_forward_days: [0],
       encash_leaves_above_limit: [false],
-      encash_leaves_with_expiry: [false]
+      encash_leaves_with_expiry: [false],
+      leave_for:['',Validators.required]
     });
     this.initialFormValue = this.leaveTypeForm?.getRawValue();
   }
