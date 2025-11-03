@@ -100,32 +100,33 @@ export class HolidayListComponent implements OnInit {
   }
   async edit(item: any) {
     this.selectedItemId = item?.id;
-    try {
-      const modalRef = await this.modalService.open(GenericEditComponent, {
-        size: 'sm',
-        backdrop: 'static',
-        centered: true
-      });
+     sessionStorage.setItem('access-name', this.access_name?.name)
+    this.openEditInvoicePopup(item);
+    // try {
+    //   const modalRef = await this.modalService.open(GenericEditComponent, {
+    //     size: 'sm',
+    //     backdrop: 'static',
+    //     centered: true
+    //   });
 
-      modalRef.componentInstance.status.subscribe(resp => {
-        if (resp === 'ok') {
-          modalRef.dismiss();
-          sessionStorage.setItem('access-name', this.access_name?.name);
-          this.openEditInvoicePopup(item);
-        } else {
-          modalRef.dismiss();
-        }
-      });
-    } catch (error) {
-      console.error('Error opening modal:', error);
-    }
+    //   modalRef.componentInstance.status.subscribe(resp => {
+    //     if (resp === 'ok') {
+    //       modalRef.dismiss();
+    //       sessionStorage.setItem('access-name', this.access_name?.name);
+    //       this.openEditInvoicePopup(item);
+    //     } else {
+    //       modalRef.dismiss();
+    //     }
+    //   });
+    // } catch (error) {
+    //   console.error('Error opening modal:', error);
+    // }
   }
 
   public getAllHolidayList() {
     let query = this.getFilterBaseUrl();
     this.apiService.getData(`${environment.live_url}/${environment.holiday_calendar}/${query}`).subscribe(
       (res: any) => {
-        console.log(res, 'holiday list')
         this.allHolidayList = res?.results;
         const noOfPages: number = res?.['total_pages']
         this.count = noOfPages * this.tableSize;
@@ -223,7 +224,7 @@ export class HolidayListComponent implements OnInit {
     //  if(this.startDate && this.endDate){
     //    this.filterQuery += `&start-date=${this.startDate}&end-date=${this.endDate}`;
     //  }
-    this.apiService.getData(`${environment.live_url}/${environment.client_invoice}/${this.filterQuery}`).subscribe((res: any) => {
+    this.apiService.getData(`${environment.live_url}/${environment.holiday_calendar}/${this.filterQuery}`).subscribe((res: any) => {
       this.allHolidayList = res?.results;
       const noOfPages: number = res?.['total_pages']
       this.count = noOfPages * this.tableSize;

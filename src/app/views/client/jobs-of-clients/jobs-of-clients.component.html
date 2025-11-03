@@ -39,13 +39,13 @@
                       <mat-label>Choose a date range</mat-label>
                       <mat-date-range-input [rangePicker]="picker1">
                         <input
-                          matStartDate
+                          matStartDate id="clientJobsStartDate"
                           placeholder="Start date"
                           [(ngModel)]="dateRange.start"
                           (dateChange)="allocationStartDate($event)"
                         />
                         <input
-                          matEndDate
+                          matEndDate id="clientJobsEndDate"
                           placeholder="End date"
                           [(ngModel)]="dateRange.end"
                           (dateChange)="allocationEndDate($event)"

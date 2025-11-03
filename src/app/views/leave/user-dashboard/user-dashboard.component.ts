@@ -35,10 +35,11 @@ export class UserDashboardComponent implements OnInit {
   ngOnInit(): void {
     this.user_id = sessionStorage.getItem('user_id');
     this.userRole = sessionStorage.getItem('user_role_name');
+    this.common_service.setTitle(this.BreadCrumbsTitle);
     this.getModuleAccess();
     this.getEmployeeLeaves();
     this.getUpcomingHoliday();
-    this.getPendingLeaves();
+    this.getPendingLeaves(this.user_id);
   }
 
   all_leaves: any;
@@ -64,6 +65,7 @@ export class UserDashboardComponent implements OnInit {
    public onEmployeeChange(event: any) {
     this.updateSelectedItems('employee', event.value);
     this.getEmployeeLeaves();
+    this.getPendingLeaves(event.value)
   }
 
   // clearEmployeeSelection(){
@@ -81,9 +83,9 @@ export class UserDashboardComponent implements OnInit {
     )
   }
 
-  getPendingLeaves(){
+  getPendingLeaves(user_id){
     this.filterQuery = this.getFilterBaseUrl()
-    this.filterQuery += `&status_values=[pending]`
+    this.filterQuery += `&leave_employee_id=${user_id}&status_values=[pending]`
     this.apiService.getData(`${environment.live_url}/${environment.apply_leaves}/${this.filterQuery}`).subscribe(
       (res: any) => {
         console.log(res.results);
@@ -96,10 +98,9 @@ export class UserDashboardComponent implements OnInit {
   }
   getFilterBaseUrl(): string {
     const base = `?page=${this.page}&page_size=${this.tableSize}`;
-    const employeeParam = `&leave_employee_id=${this.user_id}`;
     // const searchParam = this.term?.trim().length >= 2 ? `&search=${encodeURIComponent(this.term.trim())}` : '';
 
-    return `${base}${employeeParam}`;
+    return `${base}`;
   }
 
   getModuleAccess() {

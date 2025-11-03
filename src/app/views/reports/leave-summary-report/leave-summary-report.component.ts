@@ -375,12 +375,12 @@ export class LeaveSummaryReportComponent implements OnInit {
     if (this.time?.start_date && this.time?.end_date) {
       finalQuery += `&start-date=${this.time?.start_date}&end-date=${this.time?.end_date}`;
     }
-    await this.api.getData(`${environment.live_url}/${environment.all_emp_custom_balance}/${finalQuery}`).subscribe((res: any) => {
+    await this.api.getData(`${environment.live_url}/${environment.leave_summary_report}/${finalQuery}`).subscribe((res: any) => {
       if (res.results) {
         this.formattedData = res.results?.map((item: any, i: number) => ({
           sl: (page - 1) * pageSize + i + 1,
           ...item,
-          consumed: item?.leave[0]?.consumed ?? 0,
+          daily_consumed_leaves: item?.leave[0]?.daily_consumed_leaves ?? 0,
           accrued_leaves: item?.leave[0]?.accrued_leaves ?? 0,
           closing_balance_leaves: item?.leave[0]?.closing_balance_leaves ?? 0,
           available: item?.leave[0]?.available ?? 0,

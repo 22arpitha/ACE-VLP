@@ -31,8 +31,8 @@ export const tableColumns  = [
   },
   {
     label: 'Utilized',
-    key: 'consumed',
-    sortKey:'utilized',
+    key: 'daily_consumed_leaves',
+    sortKey:'daily_consumed_leaves',
     sortable: false
   },
   {

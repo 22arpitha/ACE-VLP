@@ -7,14 +7,14 @@
                 <div class="row mx-0 gx-0 align-content-center">
 
                     <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-1 pe-2">
-                        <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+                        <!-- <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
                             <mat-label>All Data<b class="r-star">*</b></mat-label>
                             <mat-select autocomplete="off" placeholder="Select leave type"
                                 panelClass="custom-select-panel" (selectionChange)="selectedData()">
                                 <mat-option *ngFor="let data of dataOptions" [value]="data.value">{{
                                     data.label }}</mat-option>
                             </mat-select>
-                        </mat-form-field>
+                        </mat-form-field> -->
                     </div>
                 </div>
             </div>
@@ -65,14 +65,14 @@
                                     (click)="sort('desc', 'reporting_to')"></i>
                             </th>
                             <th>
-                                Worked Date
+                                From Date
                                 <i *ngIf="!arrowState['worked_date']" class="bi bi-arrow-down"
                                     (click)="sort('asc', 'worked_date')"></i>
                                 <i *ngIf="arrowState['worked_date']" class="bi bi-arrow-up"
                                     (click)="sort('desc', 'worked_date')"></i>
                             </th>
                             <th>
-                                Expiry Date
+                                To Date
                                 <i *ngIf="!arrowState['expiry_date']" class="bi bi-arrow-down"
                                     (click)="sort('asc', 'expiry_date')"></i>
                                 <i *ngIf="arrowState['expiry_date']" class="bi bi-arrow-up"
@@ -92,13 +92,13 @@
                                     </app-generic-table-filter>
                                 </mat-menu>
                             </th>
-                            <th>
+                            <!-- <th>
                                 Credited
                                 <i *ngIf="!arrowState['credited']" class="bi bi-arrow-down"
                                     (click)="sort('asc', 'credited')"></i>
                                 <i *ngIf="arrowState['credited']" class="bi bi-arrow-up"
                                     (click)="sort('desc', 'credited')"></i>
-                            </th>
+                            </th> -->
                             <th>
                                 Taken
                                 <i *ngIf="!arrowState['taken']" class="bi bi-arrow-down"
@@ -130,7 +130,7 @@
                                 <td *ngIf="item.status === 'rejected'"><span style="background:#fee2e2; color: #b91c1c;"
                                         class="p-2 rounded">REJECTED</span></td>
                                 <!-- <td (click)="addOrViewRequest(true,item)"><span>{{item.status}}</span></td> -->
-                                <td>{{ item.credited || 0 }}</td>
+                                <!-- <td>{{ item.credited || 0 }}</td> -->
                                 <td>{{ item.number_of_leaves_applying_for }}</td>
                                 <td>{{ item.message }}</td>
                                 <td>

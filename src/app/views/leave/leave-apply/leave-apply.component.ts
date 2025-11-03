@@ -50,7 +50,9 @@ export class LeaveApplyComponent implements OnInit {
   filteredEmails!: Observable<{ email: string }[]>;
   selectedEmails: string[] = [];
   ccEmailsList: any = [];
-
+  holidayList:any
+  workCalendar:any
+  genders =[{name:'Male',value:'1',value_check:'male'},{name:'Female',value:'2',value_check:'female'},{name:'Others',value:'3',value_check:'others'}]
   @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
 
   @ViewChild('emailInput') emailInput!: ElementRef<HTMLInputElement>;
@@ -92,18 +94,44 @@ export class LeaveApplyComponent implements OnInit {
 
   ngOnInit(): void {
     this.initialForm();
-    this.getAllLeaveTypes();
     this.getAllEmployeeList2();
-    // this.getAllEmployeeList();
+    this.getUserData();
+    this.getAllLeaveTypes();
+    this.workCalendarlist();
+    this.holidaylistsss();
+    this.leaveApplyForm.get('from_date')?.valueChanges.subscribe(() => this.computeTotalDays());
+    this.leaveApplyForm.get('to_date')?.valueChanges.subscribe(() => this.computeTotalDays());
+    this.leaveApplyForm.get('from_session')?.valueChanges.subscribe(() => this.computeTotalDays());
+    this.leaveApplyForm.get('to_session')?.valueChanges.subscribe(() => this.computeTotalDays());
   }
 
-  getAllEmployeeList2() {
-    this.apiService.getAllEmployees2().subscribe((res: any) => {
-      this.ccEmailsList = res;
-    });
 
-    this.apiService.getUserById(this.user_id).subscribe((res) => {
-
+  holidaylistsss(){
+    this.apiService
+      .getData(`${environment.live_url}/${environment.holiday_calendar}/`)
+      .subscribe((res: any) => {
+        this.holidayList = res;
+      },
+      (error:any)=>{
+        console.log(error)
+      }
+    )
+  }
+  workCalendarlist(){
+    this.apiService
+      .getData(`${environment.live_url}/${environment.work_calendar}/`)
+      .subscribe((res: any) => {
+        this.workCalendar = res[0];
+      },
+      (error:any)=>{
+        console.log(error)
+      }
+    )
+  }
+employeeGender:any;
+  getUserData(){
+     this.apiService.getUserById(this.user_id).subscribe((res:any) => {
+     this.employeeGender  = this.genders.find((x:any)=>x.value == res?.user__gender)
       this.reportinManagerDetails.push({
         id: res['reporting_manager_id'],
         full_name:
@@ -111,12 +139,18 @@ export class LeaveApplyComponent implements OnInit {
           ' ' +
           res['reporting_manager_id__last_name'],
       });
+      this.leaveApplyForm.patchValue({reporting_to:this.reportinManagerDetails[0]?.id})
+    });
+  }
+
+  getAllEmployeeList2() {
+    this.apiService.getAllEmployees2().subscribe((res: any) => {
+      this.ccEmailsList = res;
     });
   }
 
   onLeaveTypeChange(event: any) {
     let temp = this.allleavetypeList.find((item: any) => item.leave_type_id === event.value)
-    console.log(temp)
     this.selectedLeaveTypeName = temp.leave_type.toLowerCase() || ''
     this.leave_balance = temp.closing_balance_leave;
           this.employeeActive = temp.is_active;
@@ -168,7 +202,7 @@ export class LeaveApplyComponent implements OnInit {
       .getData(`${environment.live_url}/${environment.employees_leave}/?employee=${this.user_id}`)
       .subscribe(
         (respData: any) => {
-          this.allleavetypeList = respData?.results?.filter((item:any)=>item.is_active===true);
+          this.allleavetypeList = respData?.results?.filter((item:any)=>item.is_active===true && (item.leave_for===this.employeeGender?.value_check || item.leave_for==='all employees'));
         },
         (error: any) => {
           this.apiService.showError(error?.error?.detail);
@@ -206,7 +240,6 @@ export class LeaveApplyComponent implements OnInit {
     let diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24)) + 1;
 
     let total = diffDays;
-
     // Adjust for sessions
     if (this.startDate.getTime() === this.endDate.getTime()) {
       // Same day case
@@ -225,6 +258,7 @@ export class LeaveApplyComponent implements OnInit {
       }
     }
 
+    console.log(total)
     this.totalDays = total;
   }
 
@@ -241,11 +275,31 @@ export class LeaveApplyComponent implements OnInit {
   }
 
   working_day_data: any;
+  my_calendar:any;
+  allowDaysCounting:boolean = false
   getWorkingDays(date: Date) {
     this.apiService
       .getData(`${environment.live_url}/${environment.work_calendar}/`)
       .subscribe((res: any) => {
         this.working_day_data = res[0]['working_days'];
+        this.my_calendar = res[0]
+        // if(this.my_calendar.custom_year){
+        //   console.log('custom year')
+        // } else{
+        //   console.log('not a custom year')
+        //   const yearOfStartDate = this.startDate?.getFullYear();
+        //   const yearOfEndDate = this.endDate?.getFullYear();
+        //   console.log(yearOfStartDate, yearOfEndDate)
+        //   if(yearOfStartDate ===yearOfEndDate){
+        //    if(yearOfStartDate===this.my_calendar.year){
+        //     this.allowDaysCounting = true;
+        //    } else{
+        //     this.allowDaysCounting = false;
+        //    }
+        //   } else{
+        //     console.log('year not matching')
+        //   }
+        // }
         // console.log('api response ==>', this.working_day_data);
 
         this.checkHoliday(date);
@@ -352,82 +406,83 @@ export class LeaveApplyComponent implements OnInit {
   }
 
   startDateFun(event: any) {
-    let new_date: any = this.convertDateTime(event.value);
-    this.startDate = event.value;
-    this.minDate = event.value;
-    this.calculateDays();
+    // let new_date: any = this.convertDateTime(event.value);
+    // this.startDate = event.value;
+    // this.minDate = event.value;
+    // this.calculateDays();
 
-    this.getWorkingDays(event.value);
+    // this.getWorkingDays(event.value);
 
-    this.leaveApplyForm.patchValue({ from_date: new_date });
+    // this.leaveApplyForm.patchValue({ from_date: new_date });
 
-    let recurringHolidayCount = this.countHolidays(
-      this.startDate,
-      this.endDate
-    );
+    // let recurringHolidayCount = this.countHolidays(
+    //   this.startDate,
+    //   this.endDate
+    // );
 
-    this.getHolidayCalender(
-      this.startDate,
-      this.endDate,
-      (fixedHolidayCount) => {
-        this.totalDays =
-          this.totalDays - (recurringHolidayCount + fixedHolidayCount);
-      }
-    );
+    // this.getHolidayCalender(
+    //   this.startDate,
+    //   this.endDate,
+    //   (fixedHolidayCount) => {
+    //     this.totalDays =
+    //       this.totalDays - (recurringHolidayCount + fixedHolidayCount);
+    //   }
+    // );
   }
 
   endDateFun(event: any) {
-    let new_date: any = this.convertDateTime(event.value);
-    this.endDate = event.value;
-    this.calculateDays();
-    this.leaveApplyForm.patchValue({ to_date: new_date });
+    // let new_date: any = this.convertDateTime(event.value);
+    // this.endDate = event.value;
+    // this.getWorkingDays(event.value);
+    // this.calculateDays();
+    // this.leaveApplyForm.patchValue({ to_date: new_date });
 
-    let recurringHolidayCount = this.countHolidays(
-      this.startDate,
-      this.endDate
-    );
-    this.getHolidayCalender(
-      this.startDate,
-      this.endDate,
-      (fixedHolidayCount) => {
-        this.totalDays =
-          this.totalDays - (recurringHolidayCount + fixedHolidayCount);
-      }
-    );
+    // let recurringHolidayCount = this.countHolidays(
+    //   this.startDate,
+    //   this.endDate
+    // );
+    // this.getHolidayCalender(
+    //   this.startDate,
+    //   this.endDate,
+    //   (fixedHolidayCount) => {
+    //     this.totalDays =
+    //       this.totalDays - (recurringHolidayCount + fixedHolidayCount);
+    //   }
+    // );
   }
 
   sessionFun1(event: any) {
-    this.session1 = event.value; // "first" or "second"
-    let recurringHolidayCount = this.countHolidays(
-      this.startDate,
-      this.endDate
-    );
-    this.getHolidayCalender(
-      this.startDate,
-      this.endDate,
-      (fixedHolidayCount) => {
-        this.totalDays =
-          this.totalDays - (recurringHolidayCount + fixedHolidayCount);
-      }
-    );
-    this.calculateDays();
+    // this.session1 = event.value; // "first" or "second"
+    // let recurringHolidayCount = this.countHolidays(
+    //   this.startDate,
+    //   this.endDate
+    // );
+    // this.getHolidayCalender(
+    //   this.startDate,
+    //   this.endDate,
+    //   (fixedHolidayCount) => {
+    //     this.totalDays =
+    //       this.totalDays - (recurringHolidayCount + fixedHolidayCount);
+    //   }
+    // );
+    // this.calculateDays();
   }
 
   sessionFun2(event: any) {
-    this.session2 = event.value;
-    let recurringHolidayCount = this.countHolidays(
-      this.startDate,
-      this.endDate
-    );
-    this.getHolidayCalender(
-      this.startDate,
-      this.endDate,
-      (fixedHolidayCount) => {
-        this.totalDays =
-          this.totalDays - (recurringHolidayCount + fixedHolidayCount);
-      }
-    );
-    this.calculateDays();
+    // this.session2 = event.value;
+    // let recurringHolidayCount = this.countHolidays(
+    //   this.startDate,
+    //   this.endDate
+    // );
+    // this.getHolidayCalender(
+    //   this.startDate,
+    //   this.endDate,
+    //   (fixedHolidayCount) => {
+    //     this.totalDays =
+    //       this.totalDays - (recurringHolidayCount + fixedHolidayCount);
+    //   }
+    // );
+    // this.calculateDays();
   }
 
   public getAllEmployeeList() {
@@ -537,8 +592,13 @@ export class LeaveApplyComponent implements OnInit {
   }
 
   onSubmit(): void {
+    let new_start_date: any = this.convertDateTime(this.getDateFromControl('from_date'));
+    let new_end_date: any = this.convertDateTime(this.getDateFromControl('to_date'));
   // prepare cc and file
-  this.leaveApplyForm.patchValue({ cc: JSON.stringify(this.selectedEmails),number_of_leaves_applying_for:this.totalDays });
+  this.leaveApplyForm.patchValue({ 
+    cc: JSON.stringify(this.selectedEmails),
+    number_of_leaves_applying_for:this.totalDays,
+    from_date:new_start_date,to_date: new_end_date});
   if (this.selectedFile) {
     this.leaveApplyForm.patchValue({ attachment: this.selectedFile });
   }
@@ -580,7 +640,7 @@ export class LeaveApplyComponent implements OnInit {
         const daysDiff = Math.floor((current.getTime() - toDate.getTime()) / msPerDay);
         if (daysDiff > Number(leaveTypeData.utilization_after)) {
           this.apiService.showError(
-            `${leaveTypeData.leave_type_name} leave cannot be applied. It must be within ${leaveTypeData.utilization_after} day(s) from leave date.`
+            `${leaveTypeData.leave_type} leave cannot be applied. It must be within ${leaveTypeData.utilization_after} day(s) from leave date.`
           );
           return;
         }
@@ -620,138 +680,6 @@ export class LeaveApplyComponent implements OnInit {
     );
 }
 
-
-
-
-//  onSubmit(): void {
-//   // prepare cc and file
-//   this.leaveApplyForm.patchValue({ cc: JSON.stringify(this.selectedEmails) });
-//   if (this.selectedFile) {
-//     this.leaveApplyForm.patchValue({ attachment: this.selectedFile });
-//   }
-
-//   // basic form validation
-//   if (this.leaveApplyForm.invalid) {
-//     this.leaveApplyForm.markAllAsTouched();
-//     return;
-//   }
-
-//   // get leave type config
-//   const leaveTypeId = this.leaveApplyForm.get('leave_type')?.value;
-//   const leaveTypeData = this.allleavetypeList?.find((l: any) => l.id === leaveTypeId);
-
-//   const fromDateRaw = this.leaveApplyForm.get('from_date')?.value;
-//   const toDateRaw = this.leaveApplyForm.get('to_date')?.value;
-
-//   if (!fromDateRaw || !toDateRaw) {
-//     this.apiService.showError('Please select both From and To dates');
-//     return;
-//   }
-
-//   // normalize to midnight
-//   const msPerDay = 24 * 60 * 60 * 1000;
-//   const current = new Date();
-//   current.setHours(0, 0, 0, 0);
-
-//   const fromDate = new Date(fromDateRaw);
-//   fromDate.setHours(0, 0, 0, 0);
-
-//   const toDate = new Date(toDateRaw);
-//   toDate.setHours(0, 0, 0, 0);
-
-//   // CASE 1: from_date is in the past → utilization_after check
-//   if (fromDate < current) {
-//     if (leaveTypeData?.utilization_after && Number(leaveTypeData.utilization_after) > 0) {
-//       if (toDate < current) {
-//         // include today in the count
-//         const daysDiff = Math.floor((current.getTime() - toDate.getTime()) / msPerDay) + 1;
-//         console.log(daysDiff,'after')
-//         if (daysDiff > Number(leaveTypeData.utilization_after)) {
-//           this.apiService.showError(
-//             `You cannot apply this leave. Maximum allowed backdated leave is ${leaveTypeData.utilization_after} day(s).`
-//           );
-//           return;
-//         }
-//       }
-//     }
-//   }
-
-//   // CASE 2: from_date is today or in the future → utilization_before check
-//   if (fromDate >= current) {
-//     if (leaveTypeData?.utilization_before && Number(leaveTypeData.utilization_before) > 0) {
-//       // include today in the count
-//       const daysDiff = Math.floor((fromDate.getTime() - current.getTime()) / msPerDay) + 1;
-//       console.log(daysDiff,'before')
-//       if (daysDiff < Number(leaveTypeData.utilization_before)) {
-//         this.apiService.showError(
-//           `You cannot apply this leave. You must apply at least ${leaveTypeData.utilization_before} day(s) in advance.`
-//         );
-//         return;
-//       }
-//     }
-//   }
-
-//   // passed all checks → submit
-//   const formData = new FormData();
-//   Object.keys(this.leaveApplyForm.value).forEach((key) => {
-//     const value = this.leaveApplyForm.value[key];
-//     formData.append(key, value);
-//   });
-
-//   // this.apiService
-//   //   .postData(`${environment.live_url}/${environment.apply_leaves}/`, formData)
-//   //   .subscribe(
-//   //     (res: any) => {
-//   //       this.apiService.showSuccess(res.message);
-//   //       this.resetFormState();
-//   //     },
-//   //     (err) => {
-//   //       this.apiService.showError(err?.error?.detail);
-//   //     }
-//   //   );
-// }
-
-
-
-
-
-  // onSubmit(): void {
-  //   this.leaveApplyForm.patchValue({ cc: JSON.stringify(this.selectedEmails) });
-  //   if (this.selectedFile) {
-  //     this.leaveApplyForm.patchValue({ attachment: this.selectedFile });
-  //   }
-  //   // console.log('is valid -->>>', this.leaveApplyForm.valid);
-  //   console.log('form value -->>>', this.leaveApplyForm.value);
-  // if (this.leaveApplyForm.invalid) {
-  //       this.leaveApplyForm.markAllAsTouched();
-  //     }
-  //  else {
-  //     const formData = new FormData();
-
-  //     Object.keys(this.leaveApplyForm.value).forEach((key) => {
-  //       const value = this.leaveApplyForm.value[key];
-  //       formData.append(key, value);
-  //     });
-
-  //     console.log('form value 2 after valid -->>>', this.leaveApplyForm.value);
-
-  //     this.apiService
-  //       .postData(
-  //         `${environment.live_url}/${environment.apply_leaves}/`,
-  //         formData
-  //       )
-  //       .subscribe(
-  //         (res: any) => {
-  //           this.apiService.showSuccess(res.message);
-  //           this.resetFormState();
-  //         },
-  //         (err) => {
-  //           console.log('err', err);
-  //           this.apiService.showError(err?.error?.detail);
-  //         }
-  //       );
-  //   }
-  // }
   public resetFormState() {
     this.totalDays = 0;
     this.fileDataUrl = '';
@@ -788,5 +716,210 @@ export class LeaveApplyComponent implements OnInit {
     }
     return false;
   }
+  
+// day calculations
+computeTotalDays(): void {
+  const from: Date | null = this.getDateFromControl('from_date');
+  this.minDate = from;
+  const to: Date | null = this.getDateFromControl('to_date');
+  const fromSession = this.leaveApplyForm.get('from_session')?.value;
+  const toSession = this.leaveApplyForm.get('to_session')?.value;
+
+  if (!from || !to || !fromSession || !toSession) {
+    this.totalDays = 0;
+    return;
+  }
+
+  const start = this.startOfDay(from);
+  const end = this.startOfDay(to);
+  if (end < start) {
+    this.totalDays = 0;
+    return;
+  }
+
+  const dates = this.enumerateDates(start, end);
+  const wc = this.workCalendar;
+  const holidayDatesSet = new Set(this.holidayList.map(h => h.date)); // 'YYYY-MM-DD'
+
+  const shouldSkipDate = (d: Date): boolean => {
+    const iso = this.toISODate(d);
+    if (holidayDatesSet.has(iso)) return true;
+
+    if (!wc) return false;
+
+    // CASE 1 — custom_year = false
+    if (wc.custom_year === false) {
+      if (wc.year === d.getFullYear()) {
+        return this.isWorkCalendarHoliday(wc, d);
+      } else {
+        // Year mismatch → ignore work calendar
+        return false;
+      }
+    }
+
+    // CASE 2 — custom_year = true
+    if (wc.custom_year === true) {
+      if (wc.custom_year_start_date && wc.custom_year_end_date) {
+        const startRange = this.startOfDay(new Date(wc.custom_year_start_date));
+        const endRange = this.startOfDay(new Date(wc.custom_year_end_date));
+        if (d >= startRange && d <= endRange) {
+          return this.isWorkCalendarHoliday(wc, d);
+        } else {
+          // Outside custom-year range → ignore
+          return false;
+        }
+      } else {
+        // If dates not defined → ignore
+        return false;
+      }
+    }
+
+    return false;
+  };
+
+  // ==== Day Count Logic ====
+  let total = 0;
+
+  if (dates.length === 1) {
+    const d = dates[0];
+    if (shouldSkipDate(d)) {
+      this.totalDays = 0;
+      return;
+    }
+
+    total = (fromSession === toSession) ? 0.5 : 1;
+    this.totalDays = total;
+    return;
+  }
+
+  const firstDate = dates[0];
+  if (!shouldSkipDate(firstDate)) {
+    total += this.isSessionMorning(fromSession) ? 1 : 0.5;
+  }
+
+  const lastDate = dates[dates.length - 1];
+  if (!shouldSkipDate(lastDate)) {
+    total += this.isSessionAfternoon(toSession) ? 1 : 0.5;
+  }
+
+  for (let i = 1; i < dates.length - 1; i++) {
+    const d = dates[i];
+    if (!shouldSkipDate(d)) total += 1;
+  }
+
+  this.totalDays = total;
+}
+
+private isWorkCalendarHoliday(wc: any, d: Date): boolean {
+  if (!wc || !Array.isArray(wc.working_days)) return false;
+
+  const dayName = this.weekdayNameFromCalendar(wc, d);
+  const weekKey = this.getWeekNumberOfMonthKey(d);
+
+  const weekdayEntry = wc.working_days.find(
+    (entry: any) => entry.day.toLowerCase() === dayName.toLowerCase()
+  );
+
+  if (!weekdayEntry || !Array.isArray(weekdayEntry.data)) return false;
+
+  const allHoliday = weekdayEntry.data.find(
+    (x: any) => x.key.toLowerCase() === 'all' && x.is_holiday
+  );
+  if (allHoliday) return true;
+
+  const specificHoliday = weekdayEntry.data.find(
+    (x: any) => x.key.toLowerCase() === weekKey && x.is_holiday
+  );
+  return !!specificHoliday;
+}
+
+private weekdayNameFromCalendar(wc: any, date: Date): string {
+  const daysFromCalendar = wc.working_days.map((d: any) => d.day);
+
+  if (!daysFromCalendar || daysFromCalendar.length < 7) {
+    const fallback = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    return fallback[date.getDay()];
+  }
+
+  const actualIndex = date.getDay();
+  const startDay = wc.work_week_starts_on;
+  const startIndex = daysFromCalendar.findIndex(
+    (d: string) => d.toLowerCase() === startDay.toLowerCase()
+  );
+
+  if (startIndex === -1) return daysFromCalendar[actualIndex] || daysFromCalendar[0];
+
+  const rotatedDays = [
+    ...daysFromCalendar.slice(startIndex),
+    ...daysFromCalendar.slice(0, startIndex),
+  ];
+
+  return rotatedDays[actualIndex] || rotatedDays[0];
+}
+
+private getWeekNumberOfMonthKey(d: Date): string {
+  const date = d.getDate();
+  const firstOfMonth = new Date(d.getFullYear(), d.getMonth(), 1);
+  const firstDayOfWeek = firstOfMonth.getDay();
+  const adjustedDate = date + firstDayOfWeek;
+  const weekNumber = Math.ceil(adjustedDate / 7);
+  return ['1st', '2nd', '3rd', '4th', '5th'][Math.min(weekNumber - 1, 4)];
+}
+
+  
+private getDateFromControl(controlName: string): Date | null {
+    const val = this.leaveApplyForm.get(controlName)?.value;
+    if (!val) return null;
+    // if it's already a Date
+    if (val instanceof Date) return val;
+    // if it's ISO string
+    const parsed = new Date(val);
+    if (!isNaN(parsed.getTime())) return parsed;
+    return null;
+  }
+
+  // return yyyy-mm-dd
+  private toISODate(d: Date): string {
+    const y = d.getFullYear();
+    const m = d.getMonth() + 1;
+    const dd = d.getDate();
+    // digit-by-digit formatting to be safe
+    const mmS = m < 10 ? '0' + m : String(m);
+    const ddS = dd < 10 ? '0' + dd : String(dd);
+    return `${y}-${mmS}-${ddS}`;
+  }
+
+  // strip time part
+  private startOfDay(d: Date): Date {
+    return new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  }
+
+  // enumerate inclusive dates between start and end (both Date objects)
+  private enumerateDates(start: Date, end: Date): Date[] {
+    const list: Date[] = [];
+    let cur = this.startOfDay(start);
+    const last = this.startOfDay(end);
+    while (cur <= last) {
+      list.push(new Date(cur));
+      cur.setDate(cur.getDate() + 1);
+    }
+    return list;
+  }
+
+  // Determine if session is morning (session1)
+  private isSessionMorning(sessionValue: any): boolean {
+    // adapt mapping if your session labels differ
+    if (!sessionValue) return true;
+    const s = String(sessionValue).toLowerCase();
+    return s.includes('1') || s.includes('am') || s.includes('morning') || s.includes('session1');
+  }
+
+  // Determine if session is afternoon (session2)
+  private isSessionAfternoon(sessionValue: any): boolean {
+    if (!sessionValue) return false;
+    const s = String(sessionValue).toLowerCase();
+    return s.includes('2') || s.includes('pm') || s.includes('afternoon') || s.includes('session2');
+  }
+
 
 }

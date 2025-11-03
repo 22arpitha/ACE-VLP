@@ -29,11 +29,15 @@
           </div>
           <div class="col-sm-12 col-md-6 col-lg-6 my-2">
             <h4 class="label-name">From</h4>
-            <p>{{ leave_data.from_date | date : "dd-MM-yyyy" }}</p>
+            <p>{{ leave_data.from_date | date : "dd-MM-yyyy" }} ({{leave_data?.from_session}})</p>
           </div>
           <div class="col-sm-12 col-md-6 col-lg-6 my-2">
             <h4 class="label-name">To</h4>
-            <p>{{ leave_data.to_date | date : "dd-MM-yyyy" }}</p>
+            <p>{{ leave_data.to_date | date : "dd-MM-yyyy" }} ({{leave_data?.to_session}})</p>
+          </div>
+          <div class="col-sm-12 col-md-6 col-lg-6 my-2">
+            <h4 class="label-name">Days</h4>
+            <p>{{ leave_data.number_of_leaves_applying_for}}</p>
           </div>
           <div class="col-sm-12 col-md-6 col-lg-6 my-2">
             <h4 class="label-name">Applying To</h4>

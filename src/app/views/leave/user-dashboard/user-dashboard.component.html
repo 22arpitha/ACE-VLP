@@ -11,7 +11,7 @@
         <div class="row mx-0" *ngIf="userRole==='Manager'">
           <div class="col-sm-12 col-md-6 col-lg-3 px-0">
             <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
-              <mat-label>Employee <b class="r-star">*</b></mat-label>
+              <mat-label>Employee</mat-label>
               <mat-select autocomplete="off" placeholder="select" panelClass="custom-select-panel"
                 (selectionChange)="onEmployeeChange($event)" (openedChange)="onDropdownOpened($event, 'employee')">
                 <div class="mat-select-search-wrapper d-flex">
@@ -90,16 +90,16 @@
 
             <!-- Header Row -->
             <div class="row fw-bold border-bottom py-2">
-              <div class="col-sm-12 col-md-6 col-lg-5">Date</div>
-              <div class="col-sm-12 col-md-6 col-lg-5">Reason</div>
-              <div class="col-sm-12 col-md-6 col-lg-5">Leave Type</div>
+              <div class="col-sm-12 col-md-6 col-lg-4">Date</div>
+              <div class="col-sm-12 col-md-6 col-lg-4">Reason</div>
+              <div class="col-sm-12 col-md-6 col-lg-4">Leave Type</div>
             </div>
 
             <!-- Data Rows -->
             <div class="row py-2 my-1" *ngFor="let i of upcomingPendingLeaves">
-              <div class="col-sm-12 col-md-6 col-lg-5">{{i.from_date}} - {{i.to_date}}</div>
-              <div class="col-sm-12 col-md-6 col-lg-5">{{i.message}}</div>
-              <div class="col-sm-12 col-md-6 col-lg-5">{{i.leave_type_name}}</div>
+              <div class="col-sm-12 col-md-6 col-lg-4">{{i.from_date}} - {{i.to_date}}</div>
+              <div class="col-sm-12 col-md-6 col-lg-4">{{i.message}}</div>
+              <div class="col-sm-12 col-md-6 col-lg-4">{{i.leave_type_name}}</div>
             </div>
             <div class="row mx-0" *ngIf="upcomingPendingLeaves?.length === 0">
               <app-generic-norecards></app-generic-norecards>

@@ -247,6 +247,7 @@ export class CreateUpdateEmployeeComponent implements CanComponentDeactivate, On
       .subscribe(
         (respData: any) => {
           let data = this.genders.find((x:any)=>x.value == this.getGenderValue)
+          console.log(data)
           if(data?.value_check==='female'){
              this.filteredLeaves = respData.results?.filter((item: any) => 
              item.leave_for?.toLowerCase() === 'female' &&

@@ -107,10 +107,11 @@ export class ResourceAvailabilityComponent implements OnInit {
     this.mainEndDate = '';
     this.page = 1;
     this.allDataLoaded = false;
-    this.employeeCalendarData = [];
     this.isLoading = false;
     if (this.selectedPeriod != 'custom') {
+      this.employeeCalendarData = [];
       this.getEmployeeCalendar();
+    } else{
     }
   }
   dateClass = (date: Date) => {
@@ -158,7 +159,6 @@ export class ResourceAvailabilityComponent implements OnInit {
     }
     this.apiService.getData(`${environment.live_url}/${environment.resource_availability}/${this.filterQuery}`)
       .subscribe((res: any) => {
-        console.log(res)
         if (res.results) {
           // this.employeeCalendarData = res.results;
           // this.weekDates = res?.results[0]?.leave;
@@ -203,6 +203,18 @@ export class ResourceAvailabilityComponent implements OnInit {
       this.page++;
       this.getEmployeeCalendar(); // just call the same method
     }
+  }
+
+  reset(){
+    this.mainStartDate = '';
+    this.mainEndDate = '';
+    this.selectedPeriod = '';
+    this.filters.employees = [];
+    this.page = 1
+    this.tableSize = 50;
+    this.isLoading = false;
+    this.allDataLoaded = false;
+    this.getEmployeeCalendar()
   }
 
 }

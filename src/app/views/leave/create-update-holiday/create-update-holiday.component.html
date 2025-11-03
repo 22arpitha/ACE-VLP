@@ -71,12 +71,12 @@
                         </div>
                         <div class="col-12 my-4 px-2 d-flex justify-content-around">
                             <div>
-                                <button mat-raised-button class="proceedbtn mat-btn-s me-2" type="button"
+                                <button *ngIf="showAddOrUpdate" mat-raised-button class="proceedbtn mat-btn-s me-2" type="button"
                                     (click)="addOrUpdateHoliday()">{{buttonName}}</button>
                                 <button mat-button class="cancel-button mat-btn-s" type="button" mat-dialog-close>
                                     Close</button>
                             </div>
-                            <div *ngIf="data?.item_id">
+                            <div *ngIf="data?.item_id && user_role_name !='Admin' && accessPermissions[0]?.delete || user_role_name === 'Admin'">
                                 <button mat-button class="delete-item-button mat-btn-s" type="button" (click)="delete()">
                                     delete</button>
                             </div>

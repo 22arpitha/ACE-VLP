@@ -37,13 +37,13 @@
                     <mat-form-field class="opacity-0 position-absolute">
                     <mat-date-range-input [rangePicker]="picker1">
                         <input
-                          matStartDate
+                          matStartDate id="invoiceStartDate"
                           placeholder="Start date"
                           [(ngModel)]="startDate"
                           (dateChange)="onStartDateChange($event)"
                         />
                         <input
-                          matEndDate
+                          matEndDate id="invoiceEndDate"
                           placeholder="End date"
                           [(ngModel)]="endDate"
                           (dateChange)="onEndDateChange($event)"

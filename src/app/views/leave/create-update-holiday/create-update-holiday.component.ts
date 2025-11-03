@@ -6,6 +6,7 @@ import { environment } from '../../../../environments/environment';
 import { DatePipe } from '@angular/common';
 import { GenericDeleteComponent } from '../../../generic-components/generic-delete/generic-delete.component';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { SubModuleService } from '../../../service/sub-module.service';
 
 @Component({
   selector: 'app-create-update-holiday',
@@ -16,26 +17,35 @@ export class CreateUpdateHolidayComponent implements OnInit {
   holidayForm: FormGroup;
   headingText: string;
   buttonName: string;
+  accessPermissions = [];
+   access_name: any;
+   user_id:any
+   user_role_name:string;
+   showAddOrUpdate:boolean = false;
   constructor(
     private fb: FormBuilder,
     private apiService: ApiserviceService,
     private datepipe: DatePipe,
     private modalService: NgbModal,
+    private accessControlService: SubModuleService,
     public dialogRef: MatDialogRef<CreateUpdateHolidayComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any
-  ) { }
+  ) { 
+    this.user_id = Number(sessionStorage.getItem('user_id'));
+    this.user_role_name = sessionStorage.getItem('user_role_name');
+  }
 
   ngOnInit(): void {
     this.initialForm();
-    if (this.data.edit) {
-      this.headingText = 'Update Holiday Details';
-      this.buttonName = 'Update';
-      this.getHolidayDataById();
-    } else {
-      this.headingText = 'Add Holidays'
-      this.buttonName = 'Add'
-    }
-    console.log(this.data)
+    this.getModuleAccess()
+    // if (this.data.edit) {
+    //   this.headingText = 'Update Holiday Details';
+    //   this.buttonName = 'Update';
+    //   this.getHolidayDataById();
+    // } else {
+    //   this.headingText = 'Add Holidays'
+    //   this.buttonName = 'Add'
+    // }
   }
   //   ngAfterViewInit() {
   //   setTimeout(() => {
@@ -58,6 +68,23 @@ export class CreateUpdateHolidayComponent implements OnInit {
     })
   }
 
+  getModuleAccess() {
+    this.accessControlService.getAccessForActiveUrl(this.user_id).subscribe((res) => {
+      let temp = res.find((item: any) => item.name === sessionStorage.getItem('access-name'));
+      this.accessPermissions = temp.operations;
+      if (this.data.edit) {
+      this.headingText = 'Update Holiday Details';
+      this.buttonName = 'Update';
+      this.showAddOrUpdate = this.user_role_name === 'Admin'? true: this.accessPermissions[0].update;
+      this.getHolidayDataById();
+      
+      } else {
+        this.headingText = 'Add Holidays'
+        this.showAddOrUpdate = this.user_role_name === 'Admin'? true: this.accessPermissions[0].create;
+        this.buttonName = 'Add'
+      }
+    });
+  }
   get f() {
     return this.holidayForm.controls;
   }
@@ -88,6 +115,7 @@ export class CreateUpdateHolidayComponent implements OnInit {
           (res: any) => {
             console.log(res);
             this.apiService.showSuccess(res['message']);
+            sessionStorage.removeItem('access-name');
              this.dialogRef.close({data:'refresh'});
           },
           (error: any) => {
@@ -100,6 +128,7 @@ export class CreateUpdateHolidayComponent implements OnInit {
           (res: any) => {
             console.log(res);
             this.apiService.showSuccess(res['message']);
+            sessionStorage.removeItem('access-name');
              this.dialogRef.close({data:'refresh'});
           },
           (error: any) => {
@@ -129,6 +158,7 @@ export class CreateUpdateHolidayComponent implements OnInit {
   // };
 
   public closeEditDetails() {
+    sessionStorage.removeItem('access-name');
     this.dialogRef.close();
   }
 
@@ -144,6 +174,7 @@ export class CreateUpdateHolidayComponent implements OnInit {
           (res: any) => {
             console.log(res);
             this.apiService.showSuccess(res['message']);
+            sessionStorage.removeItem('access-name');
             this.dialogRef.close({data:'refresh'});
           },
           (error: any) => {

@@ -181,13 +181,13 @@
                 <mat-form-field class="opacity-0 position-absolute">
                       <mat-date-range-input [rangePicker]="picker1">
                         <input
-                          matStartDate
+                          matStartDate id="timesheetStartdate"
                           placeholder="Start date"
                           [(ngModel)]="startDate"
                           (dateChange)="onDateChange($event)"
                         />
                         <input
-                          matEndDate
+                          matEndDate id="timesheetEndDate"
                           placeholder="End date"
                           [(ngModel)]="endDate"
                           (dateChange)="onEndDateChange($event)"

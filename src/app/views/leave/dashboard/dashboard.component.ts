@@ -12,7 +12,7 @@ import { ApiserviceService } from '../../../service/apiservice.service';
   styleUrls: ['./dashboard.component.scss']
 })
 export class DashboardComponent implements OnInit {
-BreadCrumbsTitle: any = 'Client Name'
+BreadCrumbsTitle: any = 'All Leaves'
   client_id: any;
   selectedIndex: any = 0;
   accessPermissions = []

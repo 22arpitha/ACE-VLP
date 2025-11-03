@@ -196,7 +196,7 @@ export class CreateUpdateJobComponent implements CanComponentDeactivate, OnInit,
   getModuleAccess() {
     this.accessControlService.getAccessForActiveUrl(this.user_id).subscribe(
       (res: any) => {
-        // console.log(res);
+        console.log(res);
         this.accessPermissions = res[0].operations;
         // console.log('this.accessPermissions', this.accessPermissions)
         if (this.user_role_name != 'Admin') {

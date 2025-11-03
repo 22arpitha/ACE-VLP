@@ -1,34 +1,43 @@
-<div class="row mx-0 resource">
-    <div class="col-12">
-        <div class="row mx-0 mt-2">
-            <div class="col-sm-12 col-md-6 col-lg-3 pe-2">
-                <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
-                    <mat-label>Period</mat-label>
-                    <mat-select autocomplete="off" placeholder="Select Period" panelClass="custom-select-panel"
-                        [(ngModel)]="selectedPeriod" (selectionChange)="selectedPeriodFunc($event)">
-                        <mat-option *ngFor="let item of periodValues; let i = index" [value]="item.key">{{
-                            item.value }}</mat-option>
-                    </mat-select>
-                </mat-form-field>
+<div class="row  px-3 gx-0 mx-0 resource">
+    <div class="col-12 p-0">
+        <div class="row  px-3 gx-0 mx-0 mt-2">
+            <div class="col-sm-12 col-md-12 col-lg-6 order-2 order-sm-2 order-lg-1">
+                <div class="row mx-0 gx-0">
+                    <div class="col-sm-12 col-md-12 col-lg-4 pe-2">
+                    <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+                        <mat-label>Period</mat-label>
+                        <mat-select autocomplete="off" placeholder="Select Period" panelClass="custom-select-panel"
+                            [(ngModel)]="selectedPeriod" (selectionChange)="selectedPeriodFunc($event)">
+                            <mat-option *ngFor="let item of periodValues; let i = index" [value]="item.key">{{
+                                item.value }}</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                    </div>
+                    <!-- date range picker -->
+                    <div class="col-sm-12 col-md-12 col-lg-4" *ngIf="selectedPeriod==='custom'">
+                        <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+                            <mat-date-range-input [rangePicker]="gobalPicker1">
+                                <input matStartDate id="resourceStartdate" placeholder="Start date" [(ngModel)]="mainStartDate"
+                                    (dateChange)="mainDateChange($event)">
+                                <input matEndDate id="resourceEnddate" placeholder="End date" [(ngModel)]="mainEndDate"
+                                    (dateChange)="mainEndDateChange($event)">
+                            </mat-date-range-input>
+                            <mat-datepicker-toggle matSuffix [for]="gobalPicker1"></mat-datepicker-toggle>
+                            <mat-date-range-picker #gobalPicker1 [dateClass]="dateClass"></mat-date-range-picker>
+                            <!-- <button matSuffix mat-icon-button *ngIf="mainStartDate || mainEndDate" >
+                        <mat-icon>close</mat-icon>
+                    </button> -->
+                        </mat-form-field>
+                    </div>
+                </div>
             </div>
-            <!-- date range picker -->
-            <div class="col-sm-12 col-md-6 col-lg-3" *ngIf="selectedPeriod==='custom'">
-                <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
-                    <mat-date-range-input [rangePicker]="gobalPicker1">
-                        <input matStartDate placeholder="Start date" [(ngModel)]="mainStartDate"
-                            (dateChange)="mainDateChange($event)">
-                        <input matEndDate placeholder="End date" [(ngModel)]="mainEndDate"
-                            (dateChange)="mainEndDateChange($event)">
-                    </mat-date-range-input>
-                    <mat-datepicker-toggle matSuffix [for]="gobalPicker1"></mat-datepicker-toggle>
-                    <mat-date-range-picker #gobalPicker1 [dateClass]="dateClass"></mat-date-range-picker>
-                    <!-- <button matSuffix mat-icon-button *ngIf="mainStartDate || mainEndDate" >
-                <mat-icon>close</mat-icon>
-              </button> -->
-                </mat-form-field>
+            <div class="col-sm-12 col-md-12 col-lg-6 text-end align-content-center order-1 order-sm-1 order-lg-2">
+                 <button mat-raised-button class="cancel-button mat-btn-s" type="button" (click)="reset()">Reset
+                </button>
             </div>
+            
         </div>
-        <div class="row">
+        <div class="row mx-0 gx-0">
              <!-- Legend -->
                     <div class="legend">
                     <div *ngFor="let item of leaveOptions" class="legend-item">
@@ -60,7 +69,7 @@
                         <tr *ngFor="let emp of employeeCalendarData">
                         <td>{{ emp.user__full_name }}</td>
                         <td *ngFor="let leave of emp.leave">
-                            <span class="leave-text" [style.textDecorationColor]="leave.color">{{leave.leave_type}} {{leave.number_of_leaves_applying_for}}</span>
+                            <span class="leave-text" [style.textDecorationColor]="leave.color">{{leave.leave_type}} <span *ngIf="leave.number_of_leaves_applying_for < 1">{{leave.number_of_leaves_applying_for}}</span></span>
                         </td>
                         </tr>
                     </tbody>

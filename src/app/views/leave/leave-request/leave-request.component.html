@@ -5,7 +5,7 @@
       <div class="col-sm-12 col-md-6 col-lg-6">
         <div class="row mx-0 gx-0 align-content-center">
           <!-- period -->
-          <div class="col-sm-12 col-md-6 col-lg-3 mb-1 pe-2">
+          <div class="col-sm-12 col-md-6 col-lg-4 mb-1 pe-2">
             <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
               <mat-label>Period</mat-label>
               <mat-select autocomplete="off" placeholder="Select Period" panelClass="custom-select-panel"
@@ -16,11 +16,11 @@
             </mat-form-field>
           </div>
           <!-- date range picker -->
-          <div class="col-sm-12 col-md-6 col-lg-3" *ngIf="selectedPeriod==='custom'">
+          <div class="col-sm-12 col-md-6 col-lg-4" *ngIf="selectedPeriod==='custom'">
             <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
               <mat-date-range-input [rangePicker]="gobalPicker1">
-                <input matStartDate placeholder="Start date" [(ngModel)]="mainStartDate" (dateChange)="mainDateChange($event)">
-                <input matEndDate placeholder="End date" [(ngModel)]="mainEndDate" (dateChange)="mainEndDateChange($event)">
+                <input matStartDate id="leaveRequestStartDate" placeholder="Start date" [(ngModel)]="mainStartDate" (dateChange)="mainDateChange($event)">
+                <input matEndDate id="leaveRequestEndDate" placeholder="End date" [(ngModel)]="mainEndDate" (dateChange)="mainEndDateChange($event)">
               </mat-date-range-input>
               <mat-datepicker-toggle matSuffix [for]="gobalPicker1"></mat-datepicker-toggle>
               <mat-date-range-picker #gobalPicker1 [dateClass]="dateClass"></mat-date-range-picker>

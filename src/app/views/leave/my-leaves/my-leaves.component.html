@@ -4,8 +4,8 @@
       <div class="col-sm-12 col-md-6 col-lg-3">
             <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
               <mat-date-range-input [rangePicker]="gobalPicker1">
-                <input matStartDate placeholder="Start date" [(ngModel)]="mainStartDate" (dateChange)="mainDateChange($event)">
-                <input matEndDate placeholder="End date" [(ngModel)]="mainEndDate" (dateChange)="mainEndDateChange($event)">
+                <input matStartDate id="myleavesStartdate" placeholder="Start date" [(ngModel)]="mainStartDate" (dateChange)="mainDateChange($event)">
+                <input matEndDate id="myleavesEnddate" placeholder="End date" [(ngModel)]="mainEndDate" (dateChange)="mainEndDateChange($event)">
               </mat-date-range-input>
               <mat-datepicker-toggle matSuffix [for]="gobalPicker1"></mat-datepicker-toggle>
               <mat-date-range-picker #gobalPicker1 [dateClass]="dateClass"></mat-date-range-picker>

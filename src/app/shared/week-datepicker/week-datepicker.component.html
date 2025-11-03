@@ -4,8 +4,8 @@
     </button>
     <mat-form-field appearence="outline" class="example-full-width mb-0">
       <mat-date-range-input [rangePicker]="picker1">
-        <input matStartDate placeholder="Start date" [(ngModel)]="startDate" (dateChange)="onDateChange($event)">
-        <input matEndDate placeholder="End date" [(ngModel)]="endDate" (dateChange)="onEndDateChange($event)">
+        <input matStartDate id="commonStartDate" placeholder="Start date" [(ngModel)]="startDate" (dateChange)="onDateChange($event)">
+        <input matEndDate id="commonEndDate" placeholder="End date" [(ngModel)]="endDate" (dateChange)="onEndDateChange($event)">
       </mat-date-range-input>
       <mat-datepicker-toggle matIconSuffix [for]="picker1"></mat-datepicker-toggle>
       <mat-date-range-picker #picker1 [dateClass]="dateClass"></mat-date-range-picker>
