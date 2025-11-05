@@ -12,3 +12,11 @@
 ::ng-deep .mat-form-field-wrapper{
     padding: 15px 0 !important;
 }
+::ng-deep .create-update-holiday .highlight-background .mat-form-field-flex {
+  background-color: rgb(235 235 235) !important;
+  pointer-events: none !important;
+}
+.proceedbtn:disabled {
+    background-color: #cccccc !important;
+    color: #666666;
+}

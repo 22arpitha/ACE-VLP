@@ -18,10 +18,11 @@ export class CreateUpdateHolidayComponent implements OnInit {
   headingText: string;
   buttonName: string;
   accessPermissions = [];
+  editButton:boolean = false;
    access_name: any;
    user_id:any
    user_role_name:string;
-   showAddOrUpdate:boolean = false;
+   shouldDisableFields:boolean = false;
   constructor(
     private fb: FormBuilder,
     private apiService: ApiserviceService,
@@ -68,6 +69,17 @@ export class CreateUpdateHolidayComponent implements OnInit {
     })
   }
 
+  editBtnFun(){
+     if (this.user_role_name === 'Admin') {
+      this.editButton = true;
+      this.shouldDisableFields = true;
+    }
+    else {
+      this.editButton = true;
+         this.shouldDisableFields = this.accessPermissions[0]?.['update'];
+    }
+  }
+
   getModuleAccess() {
     this.accessControlService.getAccessForActiveUrl(this.user_id).subscribe((res) => {
       let temp = res.find((item: any) => item.name === sessionStorage.getItem('access-name'));
@@ -75,12 +87,17 @@ export class CreateUpdateHolidayComponent implements OnInit {
       if (this.data.edit) {
       this.headingText = 'Update Holiday Details';
       this.buttonName = 'Update';
-      this.showAddOrUpdate = this.user_role_name === 'Admin'? true: this.accessPermissions[0].update;
+      if(this.user_role_name!='Admin'){
+        this.editButton =!this.accessPermissions[0].update;
+      } else{
+        this.editButton = false;
+      }
+      // this.editButton = this.user_role_name === 'Admin'? true: this.accessPermissions[0].update;
       this.getHolidayDataById();
       
       } else {
         this.headingText = 'Add Holidays'
-        this.showAddOrUpdate = this.user_role_name === 'Admin'? true: this.accessPermissions[0].create;
+        this.shouldDisableFields = this.user_role_name === 'Admin'? true: this.accessPermissions[0].create;
         this.buttonName = 'Add'
       }
     });

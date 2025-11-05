@@ -4,11 +4,16 @@
             <div class="col-12 mx-0">
                 <form [formGroup]="holidayForm" class="p-0">
                     <div class="row mx-0">
-                        <div class="col-12 my-2">
+                        <div class="col-sm-12 col-md-6 col-lg-6 my-2">
                             <h4>{{headingText}}</h4>
                         </div>
+                        <div class="col-sm-12 col-md-6 col-lg-6 text-end my-2">
+                             <button *ngIf="data.edit" [disabled]="editButton" mat-raised-button class="proceedbtn mat-btn-s me-2" type="button"
+                                    (click)="editBtnFun()">Edit</button>
+                        </div>
                         <div class="col-12 col-lg-6">
-                            <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+                            <mat-form-field appearance="outline" class="w-100 custom-mat-form-field"
+                                [ngClass]="{ 'highlight-background':!shouldDisableFields}">
                                 <mat-label>Name <b class="r-star">*</b></mat-label>
                                 <input matInput placeholder="Enter Holiday Name" appAlphabetOnly formControlName="name"
                                     autocomplete="off" pattern="^(?!\s)(.*\S)?$">
@@ -25,7 +30,8 @@
                             </mat-form-field>
                         </div>
                         <div class="col-12 col-lg-6">
-                            <mat-form-field appearance="outline" class="w-100 p-0 custom-mat-form-field">
+                            <mat-form-field appearance="outline" class="w-100 p-0 custom-mat-form-field"
+                                [ngClass]="{ 'highlight-background':!shouldDisableFields}">
                                 <mat-label>Date <b class="r-star">*</b></mat-label>
                                 <input matInput [matDatepicker]="picker1" formControlName="date" autocomplete="off">
                                 <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
@@ -51,7 +57,8 @@
                             </mat-form-field>
                         </div> -->
                         <div class="col-12 col-lg-6">
-                            <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+                            <mat-form-field appearance="outline" class="w-100 custom-mat-form-field"
+                                [ngClass]="{ 'highlight-background':!shouldDisableFields}">
                                 <mat-label>Description <b class="r-star"></b></mat-label>
                                 <input matInput placeholder="Enter description" appAlphabetOnly
                                     formControlName="description" autocomplete="off" pattern="^(?!\s)(.*\S)?$">
@@ -71,7 +78,7 @@
                         </div>
                         <div class="col-12 my-4 px-2 d-flex justify-content-around">
                             <div>
-                                <button *ngIf="showAddOrUpdate" mat-raised-button class="proceedbtn mat-btn-s me-2" type="button"
+                                <button [disabled]="!shouldDisableFields" mat-raised-button class="proceedbtn mat-btn-s me-2" type="button"
                                     (click)="addOrUpdateHoliday()">{{buttonName}}</button>
                                 <button mat-button class="cancel-button mat-btn-s" type="button" mat-dialog-close>
                                     Close</button>

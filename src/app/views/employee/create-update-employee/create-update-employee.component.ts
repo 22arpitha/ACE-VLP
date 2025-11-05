@@ -223,7 +223,7 @@ export class CreateUpdateEmployeeComponent implements CanComponentDeactivate, On
       });
       this.leaveTypeEnabled = respData?.maternity_and_paternity_details[0]?.is_enabled;
       const temp = this.allUserRoleList.find((data: any) => data.id ===respData?.designation_id);
-      if (temp.designation_name === 'Manager') {
+      if (temp?.designation_name === 'Manager') {
         this.getDirectData()
       } else {
         this.reportingManagerId = this.reportingManagerId.filter((data: any) => data.user__full_name != 'Vinayak Hegde')
@@ -409,7 +409,7 @@ export class CreateUpdateEmployeeComponent implements CanComponentDeactivate, On
       this.employeeFormGroup.patchValue({ date_joined: this.datePipe.transform(this.employeeFormGroup?.get('date_joined')?.value, 'YYYY-MM-dd') })
       if(this.filteredLeaves.length>0) {
       this.employeeFormGroup.get('enable_leave')?.patchValue({
-      leave_type_id: this.filteredLeaves[0]['id'] || '',
+      leave_type_id: this.filteredLeaves[0]['leave_type_id'] || '',
       enabled_by: this.user_id,
       is_enable: this.leaveTypeEnabled
        });
