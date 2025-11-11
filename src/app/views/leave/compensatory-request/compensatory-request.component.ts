@@ -215,10 +215,12 @@ export class CompensatoryRequestComponent implements OnInit {
 
   addOrViewRequest(edit, item) {
     sessionStorage.setItem('access-name', this.access_name?.name)
+    const isMobile = window.innerWidth <= 425;
     const dialogRef =this.dialog.open(AddCompoffRequestComponent, {
       data: { edit: edit, item_id: item?.id },
       // panelClass: 'comp-offs',
-      width: '40%',
+      // width: '40%',
+      width: isMobile ? '100%' : '40%',
       disableClose: true
     });
     dialogRef.afterClosed().subscribe((resp: any) => {

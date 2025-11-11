@@ -51,6 +51,11 @@
   width: 70%;
   padding: 10px !important;
 }
+@media (max-width: 425px) {
+  ::ng-deep .custom-details-dialog .mat-dialog-container {
+    width: 100% !important;
+  }
+}
 .bg-leave-details .mat-raised-button.mat-button-disabled.mat-button-disabled{
     background-color: rgba(0, 0, 0, .12) !important;
 }
