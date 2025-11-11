@@ -794,7 +794,7 @@ private searchSubject = new Subject<string>();
       ...(this.userRole !== 'Admin' && { 'employee-id': this.user_id })
     }
     return this.dropdownService.fetchDropdownData$(
-      environment.clients,
+      environment.all_clients,
       page,
       search,
       (item) => ({ id: item.id, name: item.client_name }),

@@ -276,7 +276,7 @@ BreadCrumbsTitle: any = 'Invoices';
     }
     console.log(search, extraParams, 'client funcion')
     return this.dropdownService.fetchDropdownData$(
-      environment.clients,
+      environment.all_clients,
       page,
       search,
       (item) => ({ id: item.id, name: item.client_name }),

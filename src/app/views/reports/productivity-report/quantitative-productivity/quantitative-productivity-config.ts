@@ -22,7 +22,7 @@ export const tableColumns = [
     },
     {
       label: 'Job Status',
-      key: 'job_status_name',
+      key: 'job_status__status_name',
       sortKey: 'job_status__status_name',
       sortable: true
     },

@@ -376,7 +376,7 @@ isSomeJobsSelected() {
   // ========================
   // DROPDOWN PAGINATION LOGIC
   // ========================
-  pageSizeDropdown = 10;
+  pageSizeDropdown = 50;
 
   dropdownState = {
     client: {
@@ -390,7 +390,7 @@ isSomeJobsSelected() {
   };
 
   dropdownEndpoints = {
-    client: environment.clients,
+    client: environment.all_clients,
   };
 
   private scrollListeners: { [key: string]: (event: Event) => void } = {};

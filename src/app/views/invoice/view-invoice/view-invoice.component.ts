@@ -87,16 +87,22 @@ export class ViewInvoiceComponent implements OnInit {
       });
   }
   public openEditInvoicePopup(item: any) {
-    this.dialog.open(EditInvoiceComponent, {
+    const dialogRef =this.dialog.open(EditInvoiceComponent, {
       data: { invoice_id: this.invoice_id, client_id: this.client_id,client_name:this.allClientBasedJobsLists?.client_name },
       panelClass: 'custom-details-dialog',
       disableClose: true,
     });
-    this.dialog.afterAllClosed.subscribe((resp: any) => {
-      // console.log('resp',resp);
-      this.initalCall();
-      this.getInvoiceDetailsList();
+    dialogRef.afterClosed().subscribe((resp: any) => {
+      if(resp.data==='refresh'){
+         this.initalCall();
+        this.getInvoiceDetailsList();
+      }
     });
+    // this.dialog.afterAllClosed.subscribe((resp: any) => {
+    //   // console.log('resp',resp);
+    //   this.initalCall();
+    //   this.getInvoiceDetailsList();
+    // });
   }
 
   async edit(item: any = this.invoice) {

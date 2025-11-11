@@ -20,7 +20,7 @@ export class UpdatedJobKpiComponent implements CanComponentDeactivate, OnInit,On
     @ViewChildren('fileInput') fileInputs: QueryList<ElementRef>;
       @ViewChildren('crpfileInput') crpfileInputs: QueryList<ElementRef>;;
         @ViewChildren('mrpfileInput') mrpfileInputs: QueryList<ElementRef>;
-  BreadCrumbsTitle: any = 'KPI';
+  // BreadCrumbsTitle: any = 'KPI';
   job_id:any;
   isEditItem:boolean=false;
   allEmployeeList:any=[];
@@ -49,7 +49,7 @@ initialFormValue:any;
           private formErrorScrollService:FormErrorScrollUtilityService) {
             this.user_role_name = sessionStorage.getItem('user_role_name');
             if(this.activeRoute.snapshot.paramMap.get('id')){
-              this.common_service.setTitle('Update ' + 'KPI')
+              // this.common_service.setTitle('Update ' + 'KPI')
               this.job_id= this.activeRoute.snapshot.paramMap.get('id')
               this.getAllEmployeeList();
               this.getModuleAccess();

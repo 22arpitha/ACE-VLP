@@ -461,7 +461,7 @@ export class TimesheetsSummaryReportComponent implements OnInit {
        if(this.time?.start_date && this.time?.end_date){
          finalQuery += `&timesheet-start-date=${this.time?.start_date}&timesheet-end-date=${this.time?.end_date}`;
        }
-      await this.api.getData(`${environment.live_url}/${environment.jobs}/${finalQuery}`).subscribe((res: any) => {
+      await this.api.getData(`${environment.live_url}/${environment.all_jobs}/${finalQuery}`).subscribe((res: any) => {
         if(res.results){
         this.formattedData = res.results?.map((item: any, i: number) => ({
           sl: (page - 1) * pageSize + i + 1,
@@ -589,12 +589,12 @@ export class TimesheetsSummaryReportComponent implements OnInit {
       
         let endpoint = '';
         if (key === 'client-ids') {
-          endpoint = environment.clients;
+          endpoint = environment.all_clients;
           query += `&status=True`;
           query += this.userRole === 'Admin' ? '' : `&employee-id=${this.user_id}`;
         }
         if (key === 'job-ids'){
-          endpoint = environment.jobs
+          endpoint = environment.only_jobs
           query +=  this.userRole ==='Admin' ? '': `&employee-id=${this.user_id}`;
         } ;
         if (key === 'job-status-ids'){

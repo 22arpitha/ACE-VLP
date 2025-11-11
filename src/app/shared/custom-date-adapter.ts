@@ -1,4 +1,6 @@
+import { Injectable } from '@angular/core';
 import { NativeDateAdapter, MatDateFormats } from '@angular/material/core';
+@Injectable()
 export class CustomDateAdapter extends NativeDateAdapter {
   override parse(value: any): Date | null {
     if (typeof value === 'string') {

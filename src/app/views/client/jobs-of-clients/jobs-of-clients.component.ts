@@ -26,7 +26,7 @@ export class JobsOfClientsComponent implements OnInit {
       job_number: false,
       job_name: false,
       employee_name: false,
-      status: false,
+      job_status__status_name: false,
     };
     page = 1;
     count = 0;
@@ -61,7 +61,8 @@ export class JobsOfClientsComponent implements OnInit {
       this.user_id = sessionStorage.getItem('user_id');
       this.userRole = sessionStorage.getItem('user_role_name');
        this.client_id = this.activateRoute.snapshot.paramMap.get('id');
-       this.getJobsOfClient(`?page=${1}&page_size=${5}&client=${this.client_id}`);
+       this.filterData();
+      //  this.getJobsOfClient(`?page=${1}&page_size=${5}&client=${this.client_id}`);
     }
   
     ngOnInit(){
@@ -173,7 +174,7 @@ export class JobsOfClientsComponent implements OnInit {
         if (this.statusDate) {
           this.filterQuery += `&job-status-date=[${this.statusDate}]`;
         }
-        this.api.getData(`${environment.live_url}/${environment.jobs}/${this.filterQuery}`).subscribe(
+        this.api.getData(`${environment.live_url}/${environment.only_jobs}/${this.filterQuery}`).subscribe(
           (res: any) => {
             this.allJobs = res.results;
             this.filteredList = res?.results;

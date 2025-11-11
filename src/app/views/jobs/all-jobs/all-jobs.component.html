@@ -227,8 +227,7 @@
                 <td (click)="edit(item)" *ngIf="isColumnVisible('job_type_name')">{{item?.job_type_name || '-'}}</td>
                 <td (click)="edit(item)" *ngIf="isColumnVisible('client_name')">{{item?.client_name || '-'}}</td>
                 <td (click)="edit(item)" *ngIf="isColumnVisible('group_name')">{{item?.group_name || '-'}}</td>
-                <td (click)="edit(item)" *ngIf="isColumnVisible('job_allocation_date')">{{item?.job_allocation_date |
-                  date: 'dd/MM/yyyy'}}</td>
+                <td (click)="edit(item)" *ngIf="isColumnVisible('job_allocation_date')">{{item?.job_allocation_date | dateFormater}}</td>
                 <td (click)="edit(item)" *ngIf="isColumnVisible('employees')">{{getEmployeeName(item?.employees) ||
                   '-'}}</td>
                 <td (click)="edit(item)" *ngIf="isColumnVisible('manager')">{{getManagerName(item?.employees) || '-'}}
@@ -264,7 +263,7 @@
                 </td>
                 <td (click)="edit(item)" *ngIf="isColumnVisible('job_status_date')"
                   [ngStyle]="{ color: item?.status_date_color ? item?.status_date_color : 'black' }">
-                  {{item?.job_status_date | date: 'dd/MM/yyyy'}}</td>
+                  {{item?.job_status_date | dateFormater}}</td>
 
                 <th (click)="edit(item)" *ngIf="isColumnVisible('tat_days')">
                     <span class="circle"  [ngStyle]="{ 'color': item?.tat_days?.color}">

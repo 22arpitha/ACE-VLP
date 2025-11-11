@@ -54,8 +54,8 @@
                   </mat-menu> -->
                     </th>
                   <th scope="col">Country
-                    <i *ngIf="!arrowState['country__country_name']" (click)="sort('ascending','country__country_name')" class="bi bi-arrow-down"></i>
-                    <i (click)="sort('descending','country__country_name')" *ngIf="arrowState['country__country_name']"
+                    <i *ngIf="!arrowState['country_name']" (click)="sort('ascending','country_name')" class="bi bi-arrow-down"></i>
+                    <i (click)="sort('descending','country_name')" *ngIf="arrowState['country_name']"
                       class="bi bi-arrow-up"></i>
                       <button mat-icon-button [matMenuTriggerFor]="countryFilterMenu" (menuOpened)="openFilter(countryFilter)"
                       [ngClass]="filters.country.length>=1 ? 'filterdColumn':''">
@@ -74,8 +74,8 @@
                       </mat-menu>
                   </th>
                   <th scope="col">Source
-                    <i *ngIf="!arrowState['source__source_name']" (click)="sort('ascending','source__source_name')" class="bi bi-arrow-down"></i>
-                    <i (click)="sort('descending','source__source_name')" *ngIf="arrowState['source__source_name']"
+                    <i *ngIf="!arrowState['source_name']" (click)="sort('ascending','source_name')" class="bi bi-arrow-down"></i>
+                    <i (click)="sort('descending','source_name')" *ngIf="arrowState['source_name']"
                       class="bi bi-arrow-up"></i>
                       <button mat-icon-button [matMenuTriggerFor]="sourceFilterMenu" (menuOpened)="openFilter(sourceFilter)"                                       
                        [ngClass]="filters.source.length>=1 ? 'filterdColumn':''">
@@ -108,8 +108,8 @@
                          }; let i=index'>
                     <td (click)="edit(item)">{{item?.client_number || '-'}}</td>
                     <td (click)="edit(item)">{{item?.client_name || '-'}}</td>
-                    <td (click)="edit(item)">{{item?.country  || '-'}}</td>
-                    <td (click)="edit(item)">{{item?.source  || '-'}}</td>
+                    <td (click)="edit(item)">{{item?.country_name  || '-'}}</td>
+                    <td (click)="edit(item)">{{item?.source_name  || '-'}}</td>
                     <td (click)="edit(item)" class="text-center">
                       <div style="display: block;"><span [ngStyle]="{ 'color': item?.status === true ? 'green' : 'red' }">{{ item?.status === true ? 'Active' : 'Inactive'   || 'NA' }}</span></div>
                     </td>

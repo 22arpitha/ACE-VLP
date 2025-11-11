@@ -55,7 +55,9 @@ change_manager:`change-manager`,
 company_policy:`company-policy`,
 // vlp clients
 clients:'clients',
+all_clients:`all-clients`,
 clients_details:'clients-details',
+
 job_details:'job-details',
 jobs_percetage:'jobs-percetage',
 clients_group:'group',
@@ -64,10 +66,12 @@ end_client_jobs:`end-client-jobs`,
 // jobs
 jobs:`jobs`,
 only_jobs:`only-jobs`,
+all_jobs:`all-jobs`,
 jobs_search:`jobs-search`,
 jobs_kpi:'kpi',
 // timesheet
 vlp_timesheets:`timesheet`,
+timesheet_non_productivity: `timesheet-non-productivity`,
 submit_weekly_timesheet:`submit-weekly-timesheet`,
 client_invoice:'client-invoice',
 invoice_details:'invoice-details',

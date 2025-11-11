@@ -120,8 +120,8 @@
                                 <td>{{getContinuousIndex(i)}}</td>
                                 <td>{{ item.employee_name }}</td>
                                 <td>{{ item.reporting_manager_name }}</td>
-                                <td>{{ item.from_date | date: 'dd/MM/yyyy' }}</td>
-                                <td>{{ item.to_date | date: 'dd/MM/yyyy' }}</td>
+                                <td>{{ item.from_date | dateFormater }}</td>
+                                <td>{{ item.to_date | dateFormater }}</td>
                                 <td *ngIf="item.status === 'Pending'"><span style="background: #ffface; color: #978419;"
                                         class="p-2 rounded">PENDING</span></td>
                                 <td *ngIf="item.status === 'approved'"><span

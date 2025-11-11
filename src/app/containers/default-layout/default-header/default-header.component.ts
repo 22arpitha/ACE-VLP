@@ -73,7 +73,7 @@ export class DefaultHeaderComponent extends HeaderComponent implements OnInit {
     private router: Router,
     private api: ApiserviceService, private cdref: ChangeDetectorRef,
     private common_service: CommonServiceService, private userGuideModel: BsModalService,
-   private location:Location, public dialog: MatDialog,
+   private location:Location, 
    private notificationServive:NotificationService,
   //  private webSocket:WebsocketService, private employeeSocket:EmployeeStatusWebsocketService,
   //  private useraccessSocket:UserAccessWebsocketService,

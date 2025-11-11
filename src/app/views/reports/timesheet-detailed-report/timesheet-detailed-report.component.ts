@@ -500,12 +500,12 @@ getFilterOptions(event: { detail: any; key: string }) {
 
   let endpoint = '';
   if (key === 'client-ids') {
-    endpoint = environment.clients;
+    endpoint = environment.all_clients;
     query += `&status=True`;
     query += this.user_role_name === 'Admin' ? '' : `&employee-id=${this.user_id}`;
   }
   if (key === 'job-ids'){
-    endpoint = environment.jobs
+    endpoint = environment.only_jobs
     query +=  this.user_role_name ==='Admin' ? '': `&employee-id=${this.user_id}`;
   } ;
   if (key === 'timesheet-employee-ids'){

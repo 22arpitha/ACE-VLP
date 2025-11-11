@@ -466,6 +466,10 @@ public getHistoryDatasetList(){
 }
 // Include All Jobs Checkbox event
 public onIncludeJobsChange(event:any){
+  // this.selectedItemsMap['job_name']=[];
+  // this.columnFilters['job_name']=[];
+  // this.tempFilters['job_name']=[]
+  // console.log(this.columnFilters)
   this.actionEvent.emit({ actionType: 'includeAllJobs', action:event.checked,client_id:this.selected_client_id});
 }
 
@@ -873,7 +877,6 @@ onSelectionChange(newSelected: any[], col: any) {
  if (this.config.showIncludeAllJobs) {
     this.isIncludeFlagEnableLogic();
   }
-
 }
 
 

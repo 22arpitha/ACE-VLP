@@ -16,7 +16,7 @@
           <div class="notification-content">
             <div class="notification-header p-r">
              
-              <mat-label class="date">{{ notification.created_datetime | date : 'dd-MM-yyyy' }}</mat-label>
+              <mat-label class="date">{{ notification.created_datetime | dateFormater }}</mat-label>
               <div class="row">
                 <div class="col">
                   <strong>{{ notification.text.name }}</strong>
@@ -100,7 +100,7 @@
           <div class="notification-content">
             <div class="notification-header p-r">
               <strong style="cursor: pointer;">{{ notification.text.name || notification.text.subscription_type}}</strong>
-              <span class="date">{{ notification.created_datetime | date : 'dd-MM-yyyy' }}</span>
+              <span class="date">{{ notification.created_datetime | dateFormater }}</span>
             </div>
             <div class="row">
               
@@ -151,7 +151,7 @@
            <div class="notification-content">
              <div class="notification-header p-r">
                
-               <mat-label class="date" style="top:-15px;">{{ notification.created_datetime | date : 'dd-MM-yyyy' }}</mat-label>
+               <mat-label class="date" style="top:-15px;">{{ notification.created_datetime | dateFormater }}</mat-label>
                <div class="row">
                  <div class="col">
                   

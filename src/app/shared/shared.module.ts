@@ -43,6 +43,7 @@ import { WeekPickerComponent } from './week-picker/week-picker.component';
 import { NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
 import { QuarterMonthYearPickerComponent } from './quarter-month-year-picker/quarter-month-year-picker.component';
 import { MatOptionModule } from '@angular/material/core';
+import { DateFormaterPipe } from './date-formater.pipe';
 
 @NgModule({
   declarations: [
@@ -58,6 +59,7 @@ import { MatOptionModule } from '@angular/material/core';
     GenericTableFilterComponent,
     WeekPickerComponent,
     QuarterMonthYearPickerComponent,
+    DateFormaterPipe,
   ],
   imports: [
     CommonModule,
@@ -136,7 +138,8 @@ import { MatOptionModule } from '@angular/material/core';
     PeriodComponent,
     GenericTableFilterComponent,
     WeekPickerComponent,
-    NgbDropdownModule
+    NgbDropdownModule,
+    DateFormaterPipe
    ],
 
 })

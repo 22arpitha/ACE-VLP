@@ -232,7 +232,7 @@ export class AllTimesheetsComponent implements OnInit {
       status: 'True'
      }
     return this.dropdownService.fetchDropdownData$(
-      environment.jobs,
+      environment.only_jobs,
       page,
       search,
       (item) => ({ id: item.id, name: item.job_name }),
@@ -246,7 +246,7 @@ export class AllTimesheetsComponent implements OnInit {
       }
       console.log(search, extraParams,'client funcion')
       return this.dropdownService.fetchDropdownData$(
-        environment.clients,
+        environment.all_clients,
         page,
         search,
         (item) => ({ id: item.id, name: item.client_name }),

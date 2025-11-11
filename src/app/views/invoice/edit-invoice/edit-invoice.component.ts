@@ -85,7 +85,7 @@ total_amount:false,
   getClientInvoiceees(){
     let query = this.getFilterBaseUrl()
     query +=`&client=${this.client_id}&job-status=Completed&all-client-invoice=True&client-invoice-id=${this.invoice_id}`
-    this.apiService.getData(`${environment.live_url}/${environment.jobs}/${query}`).subscribe(
+    this.apiService.getData(`${environment.live_url}/${environment.all_jobs}/${query}`).subscribe(
       (res:any)=>{
         console.log(res)
         this.allClientBasedJobsLists = res?.results;
@@ -232,7 +232,8 @@ const jobsMappedData =  this.jobSelection?.map(({id,
         this.client_id = null;
         this.client_name='';
         sessionStorage.removeItem("access-name");
-        this.dialogRef.close();
+        // this.dialogRef.close();
+         this.dialogRef.close({data:'refresh'});
         this.router.navigate(['/invoice/view-invoice',respData?.result?.id]);
       }
     }, (error: any) => {

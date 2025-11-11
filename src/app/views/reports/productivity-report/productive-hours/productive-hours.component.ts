@@ -158,7 +158,7 @@ exportCsvOrPdf(fileType) {
            const pageSize = params?.pageSize ?? this.tableSize;
            const searchTerm = params?.searchTerm ?? this.term;
            const query = buildPaginationQuery({ page, pageSize, searchTerm });
-           finalQuery=query+ `&productivity-type=productive-hour`;
+           finalQuery=query+ `&report-type=productive-hour`;
            if(this.dropdwonFilterData){
             finalQuery+= this.dropdwonFilterData.employee_id ? `&employee-id=${this.dropdwonFilterData.employee_id}`:this.userRole ==='Admin' ? '':`&employee-id=${this.user_id}`;
             finalQuery+= this.dropdwonFilterData.periodicity ? `&periodicity=${this.dropdwonFilterData.periodicity}`:'';
@@ -170,7 +170,7 @@ exportCsvOrPdf(fileType) {
             if(this.directionValue && this.sortValue){
             finalQuery += `&sort-by=${this.sortValue}&sort-type=${this.directionValue}`;
            }
-           this.api.getData(`${environment.live_url}/${environment.jobs}/${finalQuery}`).subscribe((res: any) => {
+           this.api.getData(`${environment.live_url}/${environment.all_jobs}/${finalQuery}`).subscribe((res: any) => {
             const formattedData = res.results.map((item: any, i: number) => ({
               sl: (page - 1) * pageSize + i + 1,
               ...item,

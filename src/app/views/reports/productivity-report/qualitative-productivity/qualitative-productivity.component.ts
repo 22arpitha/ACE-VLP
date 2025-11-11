@@ -166,7 +166,7 @@ BreadCrumbsTitle: any = 'Qualitative Productivity';
           const searchTerm = params?.searchTerm ?? this.term;
 
           let query = buildPaginationQuery({ page, pageSize, searchTerm });
-          query+=`&productivity-type=qualitative`;
+          query+=`&report-type=qualitative`;
           if(this.dropdwonFilterData){
             query+= this.dropdwonFilterData.employee_id ? `&employee-id=${this.dropdwonFilterData.employee_id}`:this.user_role_name ==='Admin' ? '':`&employee-id=${this.user_id}`;
             query+= this.dropdwonFilterData.periodicity ? `&periodicity=${this.dropdwonFilterData.periodicity}`:'';
@@ -178,7 +178,7 @@ BreadCrumbsTitle: any = 'Qualitative Productivity';
            if(this.directionValue && this.sortValue){
             query += `&sort-by=${this.sortValue}&sort-type=${this.directionValue}`;
            }
-          this.api.getData(`${environment.live_url}/${environment.jobs}/${query}`).subscribe((res: any) => {
+          this.api.getData(`${environment.live_url}/${environment.all_jobs}/${query}`).subscribe((res: any) => {
             const formattedData = res.results.map((item: any, i: number) => ({
               sl: (page - 1) * pageSize + i + 1,
               ...item

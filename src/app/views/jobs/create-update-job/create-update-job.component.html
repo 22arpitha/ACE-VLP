@@ -80,7 +80,7 @@
 
 </div> 
 <!-- Group -->
-<div class="col-12 col-sm-12 col-md-6 col-lg-3 my-1 no-padding pl-0 pr-5">
+<div class="col-12 col-sm-12 col-md-6 col-lg-3 my-1 no-padding pl-0 pr-5 group-field">
     <mat-form-field appearance="outline"  [ngClass]="{ 'highlight-background': !shouldDisableFields}" class="w-100 custom-mat-form-field">
         <mat-label>Group</mat-label>
         <mat-select formControlName="group" autocomplete="off"
@@ -125,14 +125,14 @@
 
   <div class="col-12 col-sm-12 col-md-6 col-lg-3 my-1 no-padding pl-0 pr-5" *ngIf="serviceName==='other services'">
     <mat-form-field appearance="outline" [ngClass]="{ 'highlight-background': !shouldDisableFields}" class="w-100 custom-mat-form-field">
-        <mat-label>Customer Service <b class="r-star">*</b></mat-label>
-        <textarea matInput placeholder="Enter Customer Service" formControlName="customer_service" autocomplete="off" maxlength="25" (input)="onCustomerServiceEntered()"></textarea>
+        <mat-label>Custom Service <b class="r-star">*</b></mat-label>
+        <textarea matInput placeholder="Enter Custom Service" formControlName="customer_service" autocomplete="off" maxlength="25" (input)="onCustomerServiceEntered()"></textarea>
         <mat-error *ngIf="f['customer_service']?.invalid && f['customer_service']?.touched || f['customer_service']?.dirty">
-            <span  *ngIf="f['customer_service']?.errors?.['required']">Customer Service is required
+            <span  *ngIf="f['customer_service']?.errors?.['required']">Custom Service is required
             </span>
             <span 
             *ngIf="f['customer_service']?.errors?.['maxlength']">
-            Customer Service cannot exceed more than 25 characters.
+            Custom Service cannot exceed more than 25 characters.
         </span>
         <span 
             *ngIf="f['customer_service']?.errors?.['pattern']">

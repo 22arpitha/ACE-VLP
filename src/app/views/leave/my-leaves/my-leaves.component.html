@@ -69,7 +69,7 @@
                 <td>{{item.leave_type_name}}</td>
                 <td>{{item.from_date}} - {{item.to_date}}</td>
                 <td>{{item.number_of_leaves_applying_for}}</td>
-                <td>{{item.created_datetime | date:'dd-MM-yyyy'}}</td>
+                <td>{{item.created_datetime | dateFormater}}</td>
                 <td *ngIf="item.status === 'Pending'"><span style="background: #ffface; color: #978419;"
                     class="p-2 rounded">PENDING</span></td>
                 <td *ngIf="item.status === 'approved'"><span style="background: #dcfce7; color: #15803d;"

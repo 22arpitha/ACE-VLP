@@ -622,7 +622,7 @@ async getTableData(params?: { page?: number; pageSize?: number; searchTerm?: str
           if(this.directionValue && this.sortValue){
             finalQuery += `&sort-by=${this.sortValue}&sort-type=${this.directionValue}`;
           }
-      await this.api.getData(`${environment.live_url}/${environment.jobs}/${finalQuery}`).subscribe((res: any) => {
+      await this.api.getData(`${environment.live_url}/${environment.all_jobs}/${finalQuery}`).subscribe((res: any) => {
      if(res?.results){
       this.formattedData = res?.results?.map((item: any, i: number) => ({
         sl: (page - 1) * pageSize + i + 1,
@@ -752,12 +752,12 @@ getFilterOptions(event: { detail: any; key: string }) {
 
   let endpoint = '';
   if (key === 'client-ids') {
-    endpoint = environment.clients;
+    endpoint = environment.all_clients;
     query += `&status=True`;
     query += this.userRole === 'Admin' ? '' : `&employee-id=${this.user_id}`;
   }
   if (key === 'job-ids'){
-    endpoint = environment.jobs
+    endpoint = environment.only_jobs
     query +=  this.userRole ==='Admin' ? '': `&employee-id=${this.user_id}`;
   } ;
   if (key === 'job-status-ids'){

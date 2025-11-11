@@ -59,7 +59,7 @@ export const tableColumns  = [
   },
   {
    label: 'Status',
-    key: 'job_status_name',
+    key: 'job_status__status_name',
     sortKey:'job_status__status_name',
     keyId: 'job_status',
     paramskeyId: 'job-status-ids',

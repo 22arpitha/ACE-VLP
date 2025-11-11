@@ -109,7 +109,7 @@ export class CreateUpdateJobComponent implements CanComponentDeactivate, OnInit,
     this.user_role_name = sessionStorage.getItem('user_role_name');
     this.user_id = Number(sessionStorage.getItem('user_id'));
     if (this.activeRoute.snapshot.paramMap.get('id')) {
-      this.common_service.setTitle('Update ' + this.BreadCrumbsTitle)
+      // this.common_service.setTitle('Update ' + this.BreadCrumbsTitle)
       this.job_id = this.activeRoute.snapshot.paramMap.get('id')
       this.isEditItem = true;
       this.getAllDropdownData();
@@ -650,7 +650,7 @@ onManagerSelectOpened(opened: boolean, index: number): void {
     this.apiService.getData(`${environment.live_url}/${environment.jobs}/${id}/`).subscribe((respData: any) => {
         // console.log(respData)
       if (respData) {
-        this.BreadCrumbsTitle = this.BreadCrumbsTitle + ` (${respData.job_number})`
+        this.BreadCrumbsTitle = this.BreadCrumbsTitle + ` (${respData.job_name})`
         this.common_service.setTitle(this.BreadCrumbsTitle);
         this.jobDetails = respData;
         this.estimatedTime = respData?.estimated_time
@@ -1523,7 +1523,7 @@ dropdownState = {
 };
 
 dropdownEndpoints = {
-  client: environment.clients,
+  client: environment.all_clients,
   job_type: environment.settings_job_type,
   end_client: environment.end_clients
 };

@@ -357,7 +357,7 @@
                 "
               >
                 <td>{{ getContinuousIndex(i) }}</td>
-                <td>{{ (item?.date | date: 'dd/MM/yyyy') || "-" }}</td>
+                <td>{{ (item?.date | dateFormater) || "-" }}</td>
                 <td *ngIf="userRole === 'Admin'">{{ item?.employee_name || "-" }}</td>
                 <td>{{ item?.client_name || "-" }}</td>
                 <td>{{ item?.job_name || "-" }}</td>

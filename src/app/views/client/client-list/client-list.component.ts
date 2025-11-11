@@ -40,8 +40,8 @@ export class ClientListComponent implements OnInit {
   arrowState: { [key: string]: boolean } = {
     client_number: false,
     client_name: false,
-    country__country_name: false,
-    source__source_name: false,
+    country_name: false,
+    source_name: false,
     designation__designation_name: false,
     is_active: false,
   };
@@ -158,7 +158,7 @@ export class ClientListComponent implements OnInit {
     this.isHistory = false;
     this.isCurrent = true;
     let query = `${this.getFilterBaseUrl()}&status=True`;
-    this.apiService.getData(`${environment.live_url}/${environment.clients}/${query}`).subscribe(
+    this.apiService.getData(`${environment.live_url}/${environment.all_clients}/${query}`).subscribe(
       (res: any) => {
         this.allClientList = res?.results;
         this.filteredList = res?.results;
@@ -177,7 +177,7 @@ export class ClientListComponent implements OnInit {
     this.isCurrent = false;
     this.isHistory = true;
     let query = `${this.getFilterBaseUrl()}&status=False`;
-    this.apiService.getData(`${environment.live_url}/${environment.clients}/${query}`).subscribe(
+    this.apiService.getData(`${environment.live_url}/${environment.all_clients}/${query}`).subscribe(
       (res: any) => {
         this.allClientList = res?.results;
         this.filteredList = res?.results;
@@ -224,11 +224,16 @@ export class ClientListComponent implements OnInit {
   }
 
   public getFilterBaseUrl(): string {
-    if (this.userRole === 'Admin') {
-      return `?page=${this.page}&page_size=${this.tableSize}&search=${this.term}`;
-    } else {
-      return `?page=${this.page}&page_size=${this.tableSize}&search=${this.term}&employee-id=${this.user_id}`;
-    }
+    // if (this.userRole === 'Admin') {
+    //   return `?page=${this.page}&page_size=${this.tableSize}&search=${this.term}`;
+    // } else {
+    //   return `?page=${this.page}&page_size=${this.tableSize}&search=${this.term}&employee-id=${this.user_id}`;
+    // }
+    const base = `?page=${this.page}&page_size=${this.tableSize}`;
+    const searchParam = this.term?.trim().length >= 2 ? `&search=${encodeURIComponent(this.term.trim())}` : '';
+    const employeeParam = this.userRole !== 'Admin' ? `&employee-id=${this.user_id}` : '';
+
+    return `${base}${searchParam}${employeeParam}`;
   }
 
   public sort(direction: string, column: string) {
@@ -299,7 +304,7 @@ export class ClientListComponent implements OnInit {
     else {
       this.filterQuery += `&status=False`;
     }
-    this.apiService.getData(`${environment.live_url}/${environment.clients}/${this.filterQuery}`).subscribe((res: any) => {
+    this.apiService.getData(`${environment.live_url}/${environment.all_clients}/${this.filterQuery}`).subscribe((res: any) => {
       this.allClientList = res?.results;
       this.filteredList = res?.results;
       this.count = res?.['total_no_of_record'];
@@ -310,6 +315,7 @@ export class ClientListComponent implements OnInit {
   onFilterChange(event: any, filterType: string) {
     const selectedOptions = event;
     this.filters[filterType] = selectedOptions;
+    this.page = 1,
     this.filterData();
   }
 

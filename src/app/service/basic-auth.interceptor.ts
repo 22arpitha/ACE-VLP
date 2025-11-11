@@ -60,7 +60,7 @@ authToken:any;
       if (authToken) {
           request = request.clone({
               setHeaders: {
-                  Authorization: `ProjectAce ${authToken}`
+                  Authorization: `VLP ${authToken}`
               }
           });
       } else {

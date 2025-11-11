@@ -178,7 +178,7 @@ export class NonProductiveHoursComponent implements OnInit,OnChanges {
        if(this.directionValue && this.sortValue){
             finalQuery += `&sort-by=${this.sortValue}&sort-type=${this.directionValue}`;
         }
-     this.api.getData(`${environment.live_url}/${environment.vlp_timesheets}/${finalQuery}&client-name=Vedalekha professionals`).subscribe((res: any) => {
+     this.api.getData(`${environment.live_url}/${environment.timesheet_non_productivity}/${finalQuery}&client-name=Vedalekha professionals`).subscribe((res: any) => {
        const formattedData = res.results.map((item: any, i: number) => ({
          sl: (page - 1) * pageSize + i + 1,
          ...item

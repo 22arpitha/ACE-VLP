@@ -112,6 +112,9 @@ export class JobTimeSheetDetailsPopupComponent implements OnInit {
     let query = buildPaginationQuery({ page, pageSize });
     if(this.data.report_type==='timesheet-summary-report'){
       query += `&only-processing=${true}`
+    } 
+    if(this.data.report_type==='job-time-report'){
+       query += `&timesheet-report-type=job-time-report`
     }
     query += `&job-ids=[${this.jobId}]`;
     query += this.employee_id ? `&timesheet-employee=${this.employee_id}` : ``;

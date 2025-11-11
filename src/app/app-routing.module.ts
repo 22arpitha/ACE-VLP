@@ -105,13 +105,6 @@ const routes: Routes = [
       //   loadChildren: () =>
       //     import('./views/review/review.module').then((m) => m.ReviewModule),
       // },
-      {
-        path: 'approvalTimesheet',
-        loadChildren: () =>
-          import('./views/approval-timesheet/approval-timesheet.module').then(
-            (m) => m.ApprovalTimesheetModule
-          ),
-      },
       // {
       //   path: 'myTimesheet',
       //   loadChildren: () =>
