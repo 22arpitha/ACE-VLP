@@ -1,7 +1,12 @@
 
 export function getTableColumns(role: string) {
     const tableColumns = [
-      { label: 'Date', key: 'date', sortKey: 'date', sortable: true },
+       {
+        label: 'Sl No',
+        key: 'sl',
+        sortable: false
+      },
+      { label: 'Date', key: 'date', sortKey: 'date', sortable: false },
       {
         label: 'Client',
         key: 'client_name',

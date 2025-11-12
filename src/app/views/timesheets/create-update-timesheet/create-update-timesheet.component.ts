@@ -389,6 +389,7 @@ this.timesheetFormGroup.controls['time_spent']?.reset();
   }
   saveTimesheets() {
     this.timesheetFormGroup.patchValue({ date: this.datePipe.transform(this.timesheetFormGroup?.get('date')?.value, 'YYYY-MM-dd') })
+    this.isEndTimeBeforeStartTime(); 
     if (this.timesheetFormGroup.invalid) {
       this.timesheetFormGroup.markAllAsTouched();
       this.formErrorScrollService.setUnsavedChanges(true);

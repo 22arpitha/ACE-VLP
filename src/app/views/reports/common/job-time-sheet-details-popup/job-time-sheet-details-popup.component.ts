@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, Inject, OnInit } from '@angular/core';
 import { CommonServiceService } from '../../../../service/common-service.service';
 import { ApiserviceService } from '../../../../service/apiservice.service';
 import { getTableColumns } from './job-time-sheet-details-popup-config';
@@ -6,6 +6,7 @@ import { environment } from '../../../../../environments/environment';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { buildPaginationQuery } from 'src/app/shared/pagination.util';
 import { getUniqueValues } from 'src/app/shared/unique-values.utils';
+import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-job-time-sheet-details-popup',
@@ -34,21 +35,29 @@ export class JobTimeSheetDetailsPopupComponent implements OnInit {
   directionValue: string = '';
   constructor(
     private common_service: CommonServiceService,
+    private cdr: ChangeDetectorRef,
     private api: ApiserviceService,
+    private datePipe:DatePipe,
     public dialogRef: MatDialogRef<JobTimeSheetDetailsPopupComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {
     this.user_role_name = sessionStorage.getItem('user_role_name') || '';
-    this.jobId = data.job_id;
-    this.jobName = data.job_name;
-    this.employee_id = data.employee_id;
+    // this.jobId = data.job_id;
+    // this.jobName = data.job_name;
+    // this.employee_id = data.employee_id;
   }
 
   ngOnInit(): void {
+    this.jobId = this.data.job_id;
+    this.jobName = this.data.job_name;
+    this.employee_id = this.data.employee_id;
+    this.cdr.detectChanges();
     this.tableData = getTableColumns(this.user_role_name);
+    setTimeout(() => {
     if (this.jobId) {
       this.getTableData();
     }
+  }, 0);
   }
 
 
@@ -124,7 +133,8 @@ export class JobTimeSheetDetailsPopupComponent implements OnInit {
     this.api.getData(`${environment.live_url}/${environment.vlp_timesheets}/${query}`).subscribe((res: any) => {
       const formattedData = res.results.map((item: any, i: number) => ({
         sl: (page - 1) * pageSize + i + 1,
-        ...item
+        ...item,
+       date: this.datePipe.transform(item.date, 'dd/MM/yyyy'),
       }));
       this.tableConfig = {
         columns: this.tableData?.map(col => ({
@@ -136,7 +146,7 @@ export class JobTimeSheetDetailsPopupComponent implements OnInit {
         actions: [],
         accessConfig: [],
         tableSize: pageSize,
-        pagination: false,
+        pagination: true,
         currentPage: page,
         totalRecords: res.total_no_of_record,
       };
