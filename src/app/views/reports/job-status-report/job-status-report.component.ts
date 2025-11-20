@@ -58,6 +58,7 @@ export class JobStatusReportComponent implements OnInit {
   formattedData: any = [];
   sortValue: string = '';
   directionValue: string = '';
+  primaryEmployees:any= [];
  constructor(
      private common_service:CommonServiceService,
      private api:ApiserviceService
@@ -122,6 +123,7 @@ export class JobStatusReportComponent implements OnInit {
      job_allocation_date: this.selectedDate,
      job_status_date:this.selectedStatusDate,
      job_status: this.selectedStatusIds,
+     prime_emp: this.primaryEmployees
    });
  }
 
@@ -141,6 +143,7 @@ export class JobStatusReportComponent implements OnInit {
        job_allocation_date: this.selectedDate,
        job_status_date:this.selectedStatusDate,
        job_status: this.selectedStatusIds,
+       prime_emp: this.primaryEmployees
      });
    }
 
@@ -166,6 +169,16 @@ export class JobStatusReportComponent implements OnInit {
        break;
        case 'headerTabs':
         this.tabStatus = event['action'];
+        this.page= 1;
+        this.tableSize = 50;  
+        this.selectedClientIds = [];
+        this.selectedJobIds= [];
+        this.selectedGroupIds = [];
+        this.selectedDate = '';
+        this.selectedStatusDate= '';
+        this.selectedStatusIds= [];
+        this.primaryEmployees = [];
+        this.filterDataCache={};
         // this.getClienList();
         // this.getJobList();
         this.page=1;
@@ -268,6 +281,9 @@ export class JobStatusReportComponent implements OnInit {
   if (filteredKey === 'job-status-ids') {
     this.selectedStatusIds = filteredData;
   }
+  if(filteredKey==='is-primary-ids'){
+    this.primaryEmployees = filteredData;
+  }
   this.getTableData({
     page: 1,
     pageSize: this.tableSize,
@@ -278,6 +294,7 @@ export class JobStatusReportComponent implements OnInit {
     job_allocation_date: this.selectedDate,
     job_status_date:this.selectedStatusDate,
     job_status: this.selectedStatusIds,
+    prime_emp: this.primaryEmployees
   });
 }
 onApplyDateFilter(filteredDate:string, filteredKey: string): void {
@@ -296,7 +313,8 @@ onApplyDateFilter(filteredDate:string, filteredKey: string): void {
     job_ids: this.selectedJobIds,
     group_ids: this.selectedGroupIds,
     job_allocation_date: this.selectedDate,
-    job_status_date:this.selectedStatusDate
+    job_status_date:this.selectedStatusDate,
+    prime_emp: this.primaryEmployees
   });
 }
  exportCsvOrPdf(fileType) {
@@ -509,6 +527,7 @@ getClienList(){
        job_allocation_date: this.selectedDate,
        job_status_date:this.selectedStatusDate,
        job_status: this.selectedStatusIds,
+       prime_emp: this.primaryEmployees
      });
    }
 
@@ -593,16 +612,21 @@ private updateFilterColumn(key: string, cache: any) {
     );
   }
 
-async getTableData(params?: { page?: number; pageSize?: number; searchTerm?: string;client_ids?:any;job_ids?:any;group_ids?:any;job_allocation_date?:any;job_status_date?:any,job_status?: any[]; }) {
+async getTableData(params?: { page?: number; pageSize?: number; searchTerm?: string;client_ids?:any;job_ids?:any;group_ids?:any;job_allocation_date?:any;job_status_date?:any,job_status?: any[]; prime_emp?:any}) {
     let finalQuery;
    const page = params?.page ?? this.page;
     const pageSize = params?.pageSize ?? this.tableSize;
     const searchTerm = params?.searchTerm ?? this.term;
-
     let query = buildPaginationQuery({ page, pageSize, searchTerm });
     this.jobStatusList(this.tabStatus);
        finalQuery = query + `&job-status=[${this.statusList}]`;
-       finalQuery += (this.userRole ==='Admin' || (this.userRole !='Admin' && this.client_id)) ? '':`&employee-id=${this.user_id}`;
+       let emp_ids:any= [];
+       if(this.userRole!='Admin' && params?.prime_emp?.length){
+        emp_ids = [...params.prime_emp, Number(this.user_id)];
+       } else{
+         emp_ids = [Number(this.user_id)];
+       }
+       finalQuery += (this.userRole ==='Admin' || (this.userRole !='Admin' && this.client_id)) ? '':`&employee-ids=[${emp_ids}]`;
        finalQuery += this.client_id ? `&client=${this.client_id}` : '';
        finalQuery += `&report-type=job-status-report`;
         if (params?.client_ids?.length) {
@@ -622,6 +646,9 @@ async getTableData(params?: { page?: number; pageSize?: number; searchTerm?: str
           if(this.directionValue && this.sortValue){
             finalQuery += `&sort-by=${this.sortValue}&sort-type=${this.directionValue}`;
           }
+          // if(params?.prime_emp?.length){
+          //   finalQuery += `&employee-ids=${params?.prime_emp}`;
+          // }
       await this.api.getData(`${environment.live_url}/${environment.all_jobs}/${finalQuery}`).subscribe((res: any) => {
      if(res?.results){
       this.formattedData = res?.results?.map((item: any, i: number) => ({
@@ -727,7 +754,6 @@ async getTableData(params?: { page?: number; pageSize?: number; searchTerm?: str
 
 getFilterOptions(event: { detail: any; key: string }) {
   const { detail, key } = event;
-  // console.log(this.selectedClientIds,'id')
   let cache = this.filterDataCache[key];
   const searchTerm = detail.search || '';
 
@@ -767,6 +793,11 @@ getFilterOptions(event: { detail: any; key: string }) {
     endpoint = environment.clients_group;
     query += this.userRole === 'Admin' ? '' : `?employee_id=${this.user_id}`
   }
+   if (key === 'is-primary-ids') {
+    endpoint = environment.get_primary_employees;
+    query += `&job-status=[${this.statusList}]`;
+    query += this.userRole === 'Admin' ? '' : `&manager-id=${this.user_id}`
+   }
  
   // if (key === 'timesheet-task-ids') {
   //   // Task filter static
@@ -782,7 +813,8 @@ getFilterOptions(event: { detail: any; key: string }) {
         'client-ids': { id: 'id', name: 'client_name' },
         'job-ids': { id: 'id', name: 'job_name' },
         'job-status-ids': { id: 'id', name: 'group_name' },
-        'group-ids':{ id: 'id', name: 'group_name' }
+        'group-ids':{ id: 'id', name: 'group_name' },
+        'is-primary-ids':{id:'employee_id',name:'employee__full_name'}
       };
 
       const newData = res.results?.map((item: any) => ({

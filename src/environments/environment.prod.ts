@@ -80,6 +80,7 @@ productivity_reports:'productivity-reports',
 upload_assessment:'upload-assessment',
 over_all_productivity_reports:'over-all-productivity-reports',
 download_excel :'download-excel',
+get_primary_employees: `get-primary-employees`,
 //  leave related API end points
 work_calendar:`work_calender`,
 holiday_calendar:`holiday_calendar`,

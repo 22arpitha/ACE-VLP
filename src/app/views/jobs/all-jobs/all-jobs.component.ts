@@ -45,6 +45,8 @@ export class AllJobsComponent implements OnInit {
     job_type__job_type_name: false,
     client__client_name: false,
     is_active: false,
+    primary_employee_name:false,
+    job_status__status_name:false
   };
   page = 1;
   count = 0;
@@ -72,7 +74,7 @@ export class AllJobsComponent implements OnInit {
     employees: [],
     manager: [],
     status_name: [],
-    status_group_name: []
+    status_group_name: [],
   };
 private searchSubject = new Subject<string>();
 
@@ -105,7 +107,7 @@ private searchSubject = new Subject<string>();
     { key: 'status_name', label: 'Status', visible: true },
     { key: 'percentage_of_completion', label: 'Percentage Of Completion', visible: true },
     { key: 'job_status_date', label: 'Status Date', visible: true },
-    { key: 'tat_days', label: 'Status Date', visible: true },
+    { key: 'tat_days', label: 'Tat Days', visible: true },
   ];
   constructor(
     private common_service: CommonServiceService,

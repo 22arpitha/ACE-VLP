@@ -1475,14 +1475,29 @@ getUnassignedTooltip(): string {
   }
 
   prevDecade() {
-    this.yearRangeStart -= 10;
-    this.showSelection = false;
+    // this.yearRangeStart -= 10;
+    // this.showSelection = false;
+    // this.cdr.detectChanges();
+    if (this.modeName === 'Monthly' || this.modeName === 'Quarterly') {
+      this.year = this.year - 1;
+    } else {
+      this.yearRangeStart -= 10;
+    }
+    this.showSelection = true;
     this.cdr.detectChanges();
+
   }
 
   nextDecade() {
-    this.yearRangeStart += 10;
-    this.showSelection = false;
+    // this.yearRangeStart += 10;
+    // this.showSelection = false;
+    // this.cdr.detectChanges();
+     if (this.modeName === 'Monthly' || this.modeName === 'Quarterly') {
+      this.year = this.year + 1;
+    } else {
+      this.yearRangeStart += 10;
+    }
+    this.showSelection = true;
     this.cdr.detectChanges();
   }
 

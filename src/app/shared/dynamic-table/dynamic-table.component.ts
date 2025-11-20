@@ -248,7 +248,6 @@ onFilterChange(selectedValue: any, columnConfig: any, fromCheckbox: boolean = fa
         const matchSearch = !this.config.searchTerm || this.config.columns?.some(col =>
           row[col.key]?.toString()?.toLowerCase()?.includes(this.config.searchTerm!?.toLowerCase())
         );
-
         const matchColumns = Object.keys(this.columnFilters)?.every(key => {
           const filterVal = this.columnFilters[key];
           const cellVal = row[key];
@@ -452,8 +451,17 @@ navigateToEmployee(event,col:any){
 public getCurrentDatasetList(){
   this.isHistory = false;
   this.isCurrent = true;
-   this.tempFilters = {};
-   this.columnFilters = {};
+  this.tempFilters = {}
+  this.columnFilters = {};
+  this.loadingFilters = {};
+  this.startDate = '';
+  this.endDate= '';
+  this.config.columns.forEach(col => {
+    col.filterOptions = [];
+  });
+  this.nextPage = {};
+  this.filterSearchText = {};
+  this.selectedItemsMap = {};
   this.actionEvent.emit({ actionType: 'headerTabs', action:'True' });
 }
 
@@ -462,6 +470,15 @@ public getHistoryDatasetList(){
   this.isHistory = true;
   this.tempFilters = {}
   this.columnFilters = {};
+  this.loadingFilters = {};
+  this.startDate = '';
+  this.endDate= '';
+  this.config.columns.forEach(col => {
+    col.filterOptions = [];
+  });
+  this.nextPage = {};
+  this.filterSearchText = {};
+  this.selectedItemsMap = {};
   this.actionEvent.emit({ actionType: 'headerTabs', action:'False'});
 }
 // Include All Jobs Checkbox event
@@ -516,9 +533,10 @@ private isIncludeFlagEnableLogic(): void {
   }
   // Case 3: Exactly one client selected
   const matchedClient = this.filteredData?.find(
-    (obj: any) => obj['client'] === clientNameFilter[0]
+    (obj: any) => obj['client'] == clientNameFilter[0]
   );
-  this.selected_client_id = matchedClient?.client ?? null;
+  // this.selected_client_id = matchedClient?.client_id ?? null; // commented this line because anyway will get the client id in this clientNameFilter[0]
+   this.selected_client_id = clientNameFilter[0] ?? null;
   this.config.includeAllJobsEnable = false;
   if(this.selected_client_id){
     this.allow_sending_status=false;
@@ -856,7 +874,14 @@ onSelectionChange(newSelected: any[], col: any) {
   //   });
   // }
 
-   this.columnFilters[col.key] = [...newSelected];
+  const prevSelected = this.selectedFilterOptions[col.paramskeyId] || [];
+  const hasChanged =
+    newSelected.length !== prevSelected.length ||
+    newSelected.some(x => !prevSelected.includes(x));
+  if (!hasChanged) {
+    return;
+  }
+  this.columnFilters[col.key] = [...newSelected];
   this.tempFilters[col.key] = [...newSelected];
   this.selectedFilterOptions[col.paramskeyId] = [...newSelected];
   const existing = this.selectedItemsMap[col.key] || [];

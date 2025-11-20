@@ -207,7 +207,7 @@
                         </div>
                     </div>
                     <div class="row mx-0 my-0 p-0">
-                        <div class="col-12 col-sm-12 col-md-4 col-lg-4 px-0">
+                        <!-- <div class="col-12 col-sm-12 col-md-4 col-lg-4 px-0">
                             <input type="file" accept="image/*" #fileInput hidden (change)="onFileChange($event)" />
                             <div class="image-container w-100 d-flex justify-content-between align-items-center"
                                 style="padding: 3px 15px">
@@ -227,6 +227,39 @@
                             <mat-error *ngIf="f['attachment']?.invalid && f['attachment']?.touched || f['attachment']?.dirty">
                                 <span *ngIf="f['attachment']?.errors?.['required']">Attachment is required</span>
                             </mat-error>
+                        </div> -->
+                        <div class="col-12 col-sm-12 col-md-4 col-lg-4 px-0">
+
+                            <input type="file" accept="image/*" #fileInput hidden (change)="onFileChange($event)" />
+
+                            <div class="image-container-leave w-100 d-flex justify-content-between align-items-center"
+                                style="padding: 3px 15px"
+                                (dragover)="onDragOver($event)"
+                                (dragleave)="onDragLeave($event)"
+                                (drop)="onDrop($event)"
+                                [class.drag-active]="isDragOver">
+
+                                <img id="imagePreview" *ngIf="fileDataUrl" [src]="fileDataUrl" alt="profile" />
+                                <span *ngIf="fileName" class="ms-2">{{ fileName }}</span>
+                                <mat-label *ngIf="!fileDataUrl">File Attachment</mat-label>
+
+                                <button type="button" (click)="openFileDialog()" mat-icon-button>
+                                <mat-icon matTooltip="{{ fileDataUrl ? 'Edit' : 'Upload' }}"
+                                            class="edit-or-upload-icon">
+                                    {{ fileDataUrl ? "edit" : "attach_file" }}
+                                </mat-icon>
+                                </button>
+
+                                <button type="button" mat-icon-button *ngIf="fileDataUrl" (click)="removeImage()">
+                                <mat-icon>close</mat-icon>
+                                </button>
+
+                            </div>
+
+                            <mat-error *ngIf="f['attachment']?.invalid && (f['attachment']?.touched || f['attachment']?.dirty)">
+                                <span *ngIf="f['attachment']?.errors?.['required']">Attachment is required</span>
+                            </mat-error>
+
                         </div>
                     </div>
                 </div>

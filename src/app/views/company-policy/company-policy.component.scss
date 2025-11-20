@@ -35,3 +35,20 @@
     height: 36px !important;
     align-self: center !important;
   }
+
+  .policy-drop-zone {
+    border: 2px dashed #ccc;
+    border-radius: 6px;
+    // padding: 6px;
+    transition: border-color .25s, background-color .25s;
+    }
+
+    .policy-drop-zone.drag-active {
+    border-color: #3f51b5;
+    background-color: #eef2ff;
+    }
+
+    .policy-drop-zone.disabled {
+    pointer-events: none;
+    opacity: 0.6;
+    }

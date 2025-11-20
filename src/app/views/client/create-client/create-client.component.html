@@ -149,12 +149,18 @@
   
 </div>
   <!-- Upload File -->
-<div class="ccol-12 col-sm-12 col-md-6 col-lg-3 my-1 px-0 align-content-center" *ngIf="userRole === 'Admin'">
-
-  <input type="file" accept=".xlsx,.xls,.doc,.docx,.pdf" formControlName="client_file" #fileInput
+<div class="col-12 col-sm-12 col-md-6 col-lg-3 my-1 px-0 align-content-center" *ngIf="userRole === 'Admin'">
+  <div class="client-drop-zone"
+       data-type="client"
+       [class.disabled]="!shouldDisableFileds"
+       (drop)="onClientFileDropped($event)"
+       (dragover)="onDragOver($event)"
+       (dragleave)="onDragLeave($event)"
+       [class.drag-active]="isDragActive">
+       <input type="file" accept=".xlsx,.xls,.doc,.docx,.pdf" formControlName="client_file" #fileInput
                 (change)="onFileSelected($event)" hidden>
               <div class="image-container w-100 d-flex justify-content-between align-items-center"
-                style="padding: 1px 15px;"
+                style="padding: 1px 15px;border:none"
                 [ngClass]="{'is-invalid': f['client_file']?.touched && f['client_file']?.invalid}">
                 <mat-label *ngIf="selectedFile && selectedFile?.name"><a type="button" (click)="openFileInNewTab()">{{selectedFile?.name}}</a></mat-label>
                 <mat-label *ngIf="!selectedFile && !selectedFile?.name">Upload File</mat-label>
@@ -165,6 +171,7 @@
                     id="edit-or-upload-icon"></i>
                 </button>
               </div>
+  </div>
               <div *ngIf="f['client_file']?.touched && f['client_file']?.invalid"
                 style="font-size: 11px;padding-left: 10px;color:#f44336">
                 <span *ngIf="f['client_file']?.errors?.['accept']">Invalid file type. Please upload .xlsx, .xls, .doc, .docx, .pdf file.</span>

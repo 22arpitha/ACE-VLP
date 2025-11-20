@@ -53,7 +53,11 @@ export const tableColumns  = [
     label: 'PRIM EMP',
     key: 'is_primary',
     sortKey:'not_done',
-    sortable: true
+    sortable: false,
+    keyId: 'is_primary',
+    paramskeyId: 'is-primary-ids',
+    filterable: true,
+    filterType: 'multi-select',
   },
   { label: 'Est. Hrs', key: 'estimated_time', sortKey:'estimated_time', sortable: true },
   { label: 'Act. Hrs', key: 'actual_time', sortKey:'actual_time', sortable: true ,navigation:true},

@@ -278,6 +278,20 @@ export class CreateClientComponent implements CanComponentDeactivate, OnInit, On
   // Get Employee Detials
   public getClientDetails(id: any) {
     this.apiService.getData(`${environment.live_url}/${environment.clients}/${id}/`).subscribe((respData: any) => {
+      this.clientFormGroup?.get('client_file')?.setErrors(null);
+      if (respData?.client_file) {
+        urlToFile(respData?.client_file, this.getFileName(respData?.client_file))
+          .then(file => {
+            this.file = file;
+            this.selectedFile = this.file;
+            this.selectedFileLink = `${environment.media_url + respData?.client_file}`;
+            this.cdr.detectChanges();
+          }
+          )
+          .catch(error => console.error('Error:', error));
+      } else {
+        this.clientFormGroup?.patchValue({ 'client_file': null });
+      }
       this.clientFormGroup.patchValue({
         client_number: respData?.client_number,
         client_name: respData?.client_name,
@@ -290,19 +304,7 @@ export class CreateClientComponent implements CanComponentDeactivate, OnInit, On
         allow_sending_status_report_to_client: respData?.allow_sending_status_report_to_client,
         practice_notes: respData?.practice_notes,
       });
-      this.clientFormGroup?.get('client_file')?.setErrors(null);
-      if (respData?.client_file) {
-        urlToFile(respData?.client_file, this.getFileName(respData?.client_file))
-          .then(file => {
-            this.file = file;
-            this.selectedFile = this.file;
-            this.selectedFileLink = `${environment.media_url + respData?.client_file}`;
-          }
-          )
-          .catch(error => console.error('Error:', error));
-      } else {
-        this.clientFormGroup?.patchValue({ 'client_file': null });
-      }
+      
       if (respData?.employee_details && Array.isArray(respData?.employee_details) && respData.employee_details?.length >= 1) {
         this.employeeDetails = respData?.employee_details;
         const empDetailsArray = this.clientFormGroup.get('employee_details') as FormArray;
@@ -466,6 +468,34 @@ export class CreateClientComponent implements CanComponentDeactivate, OnInit, On
 
     return of(null);
   }
+
+  isDragActive: boolean = false;
+
+// Highlight on drag
+onDragOver(event: DragEvent) {
+  if (!this.shouldDisableFileds) return;
+  event.preventDefault();
+  this.isDragActive = true;
+}
+
+onDragLeave(event: DragEvent) {
+  this.isDragActive = false;
+}
+
+onClientFileDropped(event: DragEvent) {
+  if (!this.shouldDisableFileds) return;
+
+  event.preventDefault();
+  this.isDragActive = false;
+
+  const files = event.dataTransfer?.files;
+  if (!files || files.length === 0) return;
+
+  const fakeEvent: any = { target: { files } };
+
+  this.onFileSelected(fakeEvent);
+}
+
 
   public onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;

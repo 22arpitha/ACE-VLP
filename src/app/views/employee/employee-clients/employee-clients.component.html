@@ -7,12 +7,18 @@
             <i *ngIf="!term" class="bi bi-search" id="search-icon-tab"></i>
           </div>
           <div class="col-12 mt-2 col-sm-12 col-md-4 col-lg-3"></div>
-          <div class="col-12 mt-2 col-sm-12 col-md-4 col-lg-6 text-end px-0">
+          <div class="col-12 mt-2 col-sm-12 col-md-4 col-lg-6 text-end px-0 downloads">
               <button mat-raised-button class="mat-btn-s tab-button-content" [ngClass]="{'isActive': isCurrent}" type="button" (click)="getCurrentClients();">Current</button>
               <button mat-raised-button class="mat-btn-s tab-button-content" [ngClass]="{'isActive': isHistory}" type="button" (click)="getClientsHistory();">History</button>
-              <button mat-raised-button class="proceedbtn mat-btn-s download-btn" type="button" [disabled]="filteredList?.length === 0" [matMenuTriggerFor]="downloadMenu"><i class="fa fa-download"></i></button>
+              <button mat-mini-fab  class="download-icons" (click)="downloadOption('csv')" ngbTooltip="CSV" placement="top" [disabled]="filteredList?.length === 0">
+                <mat-icon style="color: green">table_view</mat-icon>
+              </button>
+              <button mat-mini-fab  class="download-icons" (click)="downloadOption('pdf')" ngbTooltip="PDF" placement="top" [disabled]="filteredList?.length === 0">
+                <mat-icon style="color: red">picture_as_pdf</mat-icon>
+              </button>
+              <!-- <button mat-raised-button class="proceedbtn mat-btn-s download-btn" type="button" [disabled]="filteredList?.length === 0" [matMenuTriggerFor]="downloadMenu"><i class="fa fa-download"></i></button> -->
             </div>
-            <mat-menu #downloadMenu="matMenu">
+            <!-- <mat-menu #downloadMenu="matMenu">
               <button mat-menu-item (click)="downloadOption('csv')">
                        <mat-icon style="color: green">table_view</mat-icon>
                         <span>CSV</span>
@@ -21,7 +27,7 @@
                         <mat-icon style="color: red">picture_as_pdf</mat-icon>
                         <span>PDF</span>
                     </button>
-            </mat-menu>
+            </mat-menu> -->
         </div>
         <div class="row mx-1 my-2 px-0 table-wrapper">
           <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0 ">

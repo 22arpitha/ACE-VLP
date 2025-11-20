@@ -35,10 +35,18 @@
             </div> -->
 
             <div class="col-12 mt-2 col-sm-12 col-md-8 col-lg-9"></div>
-            <div class="col-12 mt-2 col-sm-12 col-md-4 col-lg-3 text-end px-0">
-                <button *ngIf="userRole !='Admin' && accessPermissions[0]?.update || userRole === 'Admin'" mat-raised-button class="proceedbtn mat-btn-s download-btn" type="button" [matMenuTriggerFor]="downloadMenu"><i class="fa fa-download"></i></button>
+            <div class="col-12 mt-2 col-sm-12 col-md-4 col-lg-3 text-end px-0 downloads">
+               <button mat-mini-fab *ngIf="userRole !='Admin' && accessPermissions[0]?.update || userRole === 'Admin'" 
+                class="download-icons" (click)="downloadOption('csv')" ngbTooltip="CSV" placement="top">
+                <mat-icon style="color: green">table_view</mat-icon>
+              </button>
+              <button mat-mini-fab *ngIf="userRole !='Admin' && accessPermissions[0]?.update || userRole === 'Admin'" 
+                class="download-icons" (click)="downloadOption('pdf')" ngbTooltip="PDF" placement="top">
+                <mat-icon style="color: red">picture_as_pdf</mat-icon>
+              </button>
+                <!-- <button *ngIf="userRole !='Admin' && accessPermissions[0]?.update || userRole === 'Admin'" mat-raised-button class="proceedbtn mat-btn-s download-btn" type="button" [matMenuTriggerFor]="downloadMenu"><i class="fa fa-download"></i></button> -->
 
-                <mat-menu #downloadMenu="matMenu">
+                <!-- <mat-menu #downloadMenu="matMenu">
                    <button mat-menu-item (click)="downloadOption('csv')">
                        <mat-icon style="color: green">table_view</mat-icon>
                         <span>CSV</span>
@@ -47,7 +55,7 @@
                         <mat-icon style="color: red">picture_as_pdf</mat-icon>
                         <span>PDF</span>
                     </button>
-                </mat-menu>
+                </mat-menu> -->
                  <button mat-raised-button class="proceedbtn mat-btn-s mx-2" type="button" (click)="edit()"
                  *ngIf="userRole !='Admin' && (accessPermissions[0]?.view || accessPermissions[0]?.update) || userRole === 'Admin'">Edit</button>
               </div>

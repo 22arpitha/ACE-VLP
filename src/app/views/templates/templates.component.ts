@@ -113,7 +113,7 @@ export class TemplatesComponent
           ),
         ],
       ],
-      template_file: ['', Validators.required, this.fileFormatValidator],
+      template_file: ['', Validators.required, ], //this.fileFormatValidator
       password: [
         '',
         [
@@ -158,6 +158,7 @@ export class TemplatesComponent
       );
   }
   public saveTemplateDetails() {
+    console.log(this.templateForm.value)
     if (this.templateForm.invalid) {
       this.templateForm.markAllAsTouched();
       this.formUtilityService.setUnsavedChanges(true);
@@ -389,10 +390,160 @@ export class TemplatesComponent
       this.getAllTemplates(query);
     }
   }
-  public onFileSelected(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    if (input.files && input.files?.length > 0) {
-      const selectedFile = input.files[0];
+ 
+  // drag drop function 
+  isDragActive = false;
+
+  // onDragOver(event: DragEvent) {
+  //   event.preventDefault();
+  //   this.isDragActive = true;
+  // }
+
+  // onDragLeave(event: DragEvent) {
+  //   this.isDragActive = false;
+  // }
+
+  // onTemplateFileDropped(event) {
+  //   // event.preventDefault();
+  //   // this.isDragActive = false;
+  //   const files = event.dataTransfer?.files;
+  //   const input = event.target as HTMLInputElement;
+  //   console.log(input,files)
+  //   this.commonfileupload(input)
+  //   // if (!files || files.length === 0) return;
+
+  //   // const file = files[0];
+
+  //   // // VALID FILE TYPES
+  //   // const allowedTypes = [
+  //   //   'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', // .xlsx
+  //   //   'application/vnd.ms-excel', // .xls
+  //   //   'application/vnd.openxmlformats-officedocument.wordprocessingml.document', // .docx
+  //   //   'application/msword' // .doc
+  //   // ];
+
+  //   // if (!allowedTypes.includes(file.type)) {
+  //   //   this.apiService.showError("Invalid file type. Only Excel or Word files are allowed.");
+  //   //   return;
+  //   // }
+
+  //   // this.handleDroppedTemplateFile(file);
+  // }
+
+  // handleDroppedTemplateFile(file: File) {
+  //   this.file = file;
+  //   this.selectedFile = file;
+  //   this.templateForm.value.template_file = `C:\\fakepath\\${file.name}`;
+  //   console.log(`C:\\fakepath\\ + ${file.name}`)
+  // }
+
+
+  // public onFileSelected(event: Event): void {
+  //   const input = event.target as HTMLInputElement;
+  //   console.log(input.value)
+  //   if (input.files && input.files?.length > 0) {
+  //     const selectedFile = input.files[0];
+  //     if (
+  //       selectedFile.type ===
+  //         'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' || // Excel
+  //       selectedFile.type === 'application/vnd.ms-excel' || // Excel (older format)
+  //       selectedFile.type ===
+  //         'application/vnd.openxmlformats-officedocument.wordprocessingml.document' || // Word
+  //       selectedFile.type === 'application/msword' // Word (older format)
+  //     ) {
+  //       this.file = selectedFile;
+  //       this.selectedFile = this.file;
+  //       setTimeout(() => {
+  //         input.value = '';
+  //       }, 100);
+  //     } else {
+  //       this.apiService.showError(
+  //         'Invalid file type. Only Excel files are allowed.'
+  //       );
+  //       this.selectedFile = null;
+  //     }
+  //   }
+  // }
+
+  private applyFile(file: File) {
+  this.file = file;
+  this.selectedFile = file;
+
+  // Update ONLY Reactive Form, NOT the <input>
+  this.templateForm.get('template_file')?.setValue(file.name);
+  this.templateForm.get('template_file')?.markAsDirty();
+  this.templateForm.get('template_file')?.updateValueAndValidity();
+
+  // Reset file input
+  this.fileInput.nativeElement.value = '';
+}
+
+// ===== Manual file selection =====
+onFileSelected(event: Event) {
+  const input = event.target as HTMLInputElement;
+
+  if (!input.files || input.files.length === 0) return;
+
+  const file = input.files[0];
+
+  if (!this.isValidFileType(file)) {
+    this.apiService.showError("Invalid file type.");
+    return;
+  }
+
+  this.applyFile(file);
+}
+
+// ===== Drag & Drop handlers =====
+onDragOver(event: DragEvent) {
+  event.preventDefault();
+  this.isDragActive = true;
+}
+
+onDragLeave(event: DragEvent) {
+  this.isDragActive = false;
+}
+
+onFileDropped(event: DragEvent) {
+  event.preventDefault();
+  this.isDragActive = false;
+
+  const files = event.dataTransfer?.files;
+  if (!files || files.length === 0) return;
+
+  const file = files[0];
+
+  if (!this.isValidFileType(file)) {
+    this.apiService.showError("Invalid file type.");
+    return;
+  }
+
+  this.applyFile(file);
+}
+
+// ===== File validation =====
+private isValidFileType(file: File): boolean {
+  const allowed = [
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    'application/vnd.ms-excel',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    'application/msword'
+  ];
+  return allowed.includes(file.type);
+}
+
+
+
+
+
+
+
+
+
+
+
+  commonfileupload(data){
+    const selectedFile = data?.files[0];
       if (
         selectedFile.type ===
           'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' || // Excel
@@ -404,7 +555,7 @@ export class TemplatesComponent
         this.file = selectedFile;
         this.selectedFile = this.file;
         setTimeout(() => {
-          input.value = '';
+          data.value = '';
         }, 100);
       } else {
         this.apiService.showError(
@@ -412,7 +563,6 @@ export class TemplatesComponent
         );
         this.selectedFile = null;
       }
-    }
   }
 
   public triggerFileInput() {

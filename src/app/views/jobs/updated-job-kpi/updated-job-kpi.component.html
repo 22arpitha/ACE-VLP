@@ -61,7 +61,7 @@
                                 <input matInput type="text" placeholder="000:00"  maxlength="6" formControlName="review_time" autocomplete="off" (input)="formatReviewingTime($event,i)" (focusout)="defaultReviewTime($event,i)" >
                               </mat-form-field> 
             </div>
-                <input  type="file" accept=".xlsx,.xls,.doc,.docx,.pdf" formControlName="budget_file" #fileInput
+                <!-- <input  type="file" accept=".xlsx,.xls,.doc,.docx,.pdf" formControlName="budget_file" #fileInput
                             (change)="onBudgetFileSelected($event,i)" hidden>
                           <div class="image-container d-flex justify-content-between align-items-center"
                             style="padding: 1px 15px;"
@@ -78,7 +78,63 @@
                             style="font-size: 11px;padding-left: 10px;color:#f44336">
                             <span *ngIf="emp?.get('budget_file')?.errors?.['accept']">Invalid file type. Please upload .xlsx, .xls, .doc, .docx, .pdf file.</span>
                             <span *ngIf="emp?.get('budget_file')?.errors?.['maxSize']">File size exceeds 10MB.</span>
-                          </div>                
+                          </div>                 -->
+
+                 <!-- DROP ZONE WRAPPER -->
+                  <!-- <div class="drop-zone"
+                       [attr.data-index]="i"
+                       [class.disabled]="!isEditItem"
+                      (drop)="onBudgetFileDropped($event, i)"
+                      (dragover)="onDragOver($event)"
+                      (dragleave)="onDragLeave($event)"
+                      [class.drag-active]="isDragActive[i]"> -->
+                    <!-- <div class="drop-zone"
+                      [attr.data-type]="'budget'"
+                      [attr.data-row]="((currentPage - 1) * pageSize + i)"
+                      [attr.data-col]="0"
+                      [class.disabled]="!isEditItem"
+                      (dragenter)="handleDragEnter($event, ((currentPage - 1) * pageSize + i), 0)"
+                      (dragover)="handleDragOver($event)"
+                      (dragleave)="handleDragLeave($event, ((currentPage - 1) * pageSize + i), 0)"
+                      (drop)="handleFileDrop($event, ((currentPage - 1) * pageSize + i), 0)"
+                      [class.drag-active]="isDragActive[((currentPage - 1) * pageSize + i)]?.[0]"> -->
+                      <div class="drop-zone"
+     data-type="budget"
+     [attr.data-row]="((currentPage - 1) * pageSize + i)"
+     [class.disabled]="!isEditItem"
+     (drop)="onFileDropped($event)"
+     (dragover)="onDragOver($event)"
+     (dragleave)="onDragLeave($event)"
+     [class.drag-active]="isDragActive['budget']?.[((currentPage - 1) * pageSize + i)]">
+
+
+                      <input  type="file" accept=".xlsx,.xls,.doc,.docx,.pdf"
+                              formControlName="budget_file" #fileInput
+                              (change)="onBudgetFileSelected($event,i)" hidden>
+
+                      <div class="image-container d-flex justify-content-between align-items-center"
+                          style="padding: 1px 15px;"
+                          [ngClass]="{'is-invalid': emp?.get('budget_file')?.touched && emp?.get('budget_file')?.invalid}">
+                          
+                          <mat-label *ngIf="selectedBudgetFile[(currentPage - 1) * pageSize + i]?.name"
+                                    [ngbTooltip]="selectedBudgetFile[(currentPage - 1) * pageSize + i]?.name">
+                              <a type="button" (click)="openFileInNewTab('budget',i)">
+                                  {{ selectedBudgetFile[(currentPage - 1) * pageSize + i]?.name }}
+                              </a>
+                          </mat-label>
+
+                          <mat-label *ngIf="!selectedBudgetFile[(currentPage - 1) * pageSize + i]?.name">
+                              Upload Budget File
+                          </mat-label>
+
+                          <button type="button" mat-icon-button (click)="triggerFileInput(i)">
+                              <i matTooltip="{{selectedBudgetFile[(currentPage - 1) * pageSize + i]?.name ? 'Edit' : 'Upload Budget File'}}"
+                                class="{{selectedBudgetFile[(currentPage - 1) * pageSize + i]?.name ? 'bi bi-pencil-fill' : 'bi bi-file-earmark-spreadsheet'}}">
+                              </i>
+                          </button>
+                      </div>
+                  </div>
+         
             </td>
                     <td>
               <ng-container formArrayName="details">
@@ -89,7 +145,35 @@
                         <input matInput type="text" pattern="[0-9]*"  placeholder="MRP {{ j + 1 }}" formControlName="mrp" [maxlength]="3" [minlength]="1" autocomplete="off" (focusout)="setDefaultValueIfEmpty($event, ((currentPage - 1) * pageSize + i), j, 'mrp')" (keypress)="validateKeyPress($event)">
                        
                       </mat-form-field> 
-                      <div class="row mx-0 my-1 px-0 justify-content-center">
+                      <div class="mx-0 my-1 px-0 justify-content-center">
+                      <!-- <div class="drop-zone"
+  [attr.data-type]="'mrp'"
+  [attr.data-row]="((currentPage - 1) * pageSize + i)"
+  [attr.data-col]="j"
+  [class.disabled]="!isEditItem"
+  (dragenter)="handleDragEnter($event, ((currentPage - 1) * pageSize + i), j)"
+  (dragover)="handleDragOver($event)"
+  (dragleave)="handleDragLeave($event, ((currentPage - 1) * pageSize + i), j)"
+  (drop)="handleFileDrop($event, ((currentPage - 1) * pageSize + i), j)"
+  [class.drag-active]="isDragActive[((currentPage - 1) * pageSize + i)]?.[j]"> -->
+<!-- <div class="mrp-drop-zone"
+     [attr.data-row]="((currentPage - 1) * pageSize + i)"
+     [attr.data-mrp]="j"
+     [class.disabled]="!isEditItem"
+     (drop)="onMrpFileDropped($event, ((currentPage - 1) * pageSize + i), j)"
+     (dragover)="onMrpDragOver($event)"
+     (dragleave)="onMrpDragLeave($event)"
+     [class.drag-active]="isMrpDragActive[((currentPage - 1) * pageSize + i)]?.[j]"> -->
+     <div class="drop-zone"
+     data-type="mrp"
+     [attr.data-row]="((currentPage - 1) * pageSize + i)"
+     [attr.data-col]="j"
+     [class.disabled]="!isEditItem"
+     (drop)="onFileDropped($event)"
+     (dragover)="onDragOver($event)"
+     (dragleave)="onDragLeave($event)"
+     [class.drag-active]="isDragActive['mrp']?.[((currentPage - 1) * pageSize + i)]?.[j]">
+
                         <input type="file" accept=".xlsx,.xls,.doc,.docx,.pdf" formControlName="mrpFile" #mrpfileInput
                         (change)="onMrpFileSelected($event,((currentPage - 1) * pageSize + i),j)" hidden [attr.data-row]="((currentPage - 1) * pageSize + i)" [attr.data-mrp]="j" [required]="mrpCrpitem?.get('mrp')?.value > 0 && !selectedMrpFile?.[((currentPage - 1) * pageSize + i)]?.[j]">
                       <div class="image-container d-flex justify-content-between align-items-center"
@@ -103,6 +187,7 @@
                             id="edit-or-upload-icon"></i>
                         </button>
                       </div>
+                       </div>
                       <div *ngIf="mrpCrpitem?.get('mrpFile')?.touched && mrpCrpitem?.get('mrpFile')?.invalid"
                         style="font-size: 11px;padding-left: 10px;color:#f44336">
                         <span *ngIf="mrpCrpitem?.get('mrpFile')?.errors?.['accept']">Invalid file type. Please upload .xlsx, .xls, .doc, .docx, .pdf file.</span>
@@ -128,19 +213,48 @@
                       <input matInput type="text" pattern="[0-9]*" placeholder="CRP {{ j + 1 }}" [min]="0" formControlName="crp" autocomplete="off" [maxlength]="3" [minlength]="1" (focusout)="setDefaultValueIfEmpty($event, ((currentPage - 1) * pageSize + i), j, 'crp')" (keypress)="validateKeyPress($event)">
                     </mat-form-field> 
                     <div class="mx-0 my-1 px-0 justify-content-center">
-                      <input type="file" accept=".xlsx,.xls,.doc,.docx,.pdf" formControlName="crpFile" #crpfileInput
-                      (change)="onCrpFileSelected($event,((currentPage - 1) * pageSize + i),j)" hidden [attr.data-row]="((currentPage - 1) * pageSize + i)" [attr.data-mrp]="j" [required]="mrpCrpitem?.get('crp')?.value > 0 && !selectedCrpFile?.[((currentPage - 1) * pageSize + i)]?.[j]">
-                    <div class="image-container d-flex justify-content-between align-items-center"
-                      style="padding: 1px 15px;"
-                      [ngClass]="{'is-invalid': mrpCrpitem?.get('crpFile')?.touched && mrpCrpitem?.get('crpFile')?.invalid}">
-                      <mat-label *ngIf="selectedCrpFile?.[((currentPage - 1) * pageSize + i)]?.[j] && selectedCrpFile?.[((currentPage - 1) * pageSize + i)]?.[j]?.name" [ngbTooltip]="selectedCrpFile?.[((currentPage - 1) * pageSize + i)]?.[j]?.name"><a type="button" (click)="openFileInNewTab('crp',((currentPage - 1) * pageSize + i),j)">{{selectedCrpFile?.[((currentPage - 1) * pageSize + i)]?.[j]?.name}}</a></mat-label>
-                      <mat-label *ngIf="!selectedCrpFile?.[((currentPage - 1) * pageSize + i)]?.[j] && !selectedCrpFile?.[((currentPage - 1) * pageSize + i)]?.[j]?.name">Upload File</mat-label>
-                      <button type="button" mat-icon-button (click)="triggerCrpFileInput(((currentPage - 1) * pageSize + i),j)">
-                        <i matTooltip="{{selectedCrpFile?.[((currentPage - 1) * pageSize + i)]?.[j] && selectedCrpFile?.[((currentPage - 1) * pageSize + i)]?.[j]?.name ? 'Edit' : 'Upload CRP File'}}"
-                          class="{{selectedCrpFile?.[((currentPage - 1) * pageSize + i)]?.[j] && selectedCrpFile?.[((currentPage - 1) * pageSize + i)]?.[j]?.name ? 'bi bi-pencil-fill' : 'bi bi-file-earmark-spreadsheet'}}"
-                          id="edit-or-upload-icon"></i>
-                      </button>
-                    </div>
+                      <!-- <div class="drop-zone"
+  [attr.data-type]="'crp'"
+  [attr.data-row]="((currentPage - 1) * pageSize + i)"
+  [attr.data-col]="j"
+  [class.disabled]="!isEditItem"
+  (dragenter)="handleDragEnter($event, ((currentPage - 1) * pageSize + i), j)"
+  (dragover)="handleDragOver($event)"
+  (dragleave)="handleDragLeave($event, ((currentPage - 1) * pageSize + i), j)"
+  (drop)="handleFileDrop($event, ((currentPage - 1) * pageSize + i), j)"
+  [class.drag-active]="isDragActive[((currentPage - 1) * pageSize + i)]?.[j]"> -->
+  <!-- <div class="crp-drop-zone"
+     [attr.data-row]="((currentPage - 1) * pageSize + i)"
+     [attr.data-crp]="j"
+     [class.disabled]="!isEditItem"
+     (drop)="onCrpFileDropped($event, ((currentPage - 1) * pageSize + i), j)"
+     (dragover)="onCrpDragOver($event)"
+     (dragleave)="onCrpDragLeave($event)"
+     [class.drag-active]="isCrpDragActive[((currentPage - 1) * pageSize + i)]?.[j]"> -->
+     <div class="drop-zone"
+     data-type="crp"
+     [attr.data-row]="((currentPage - 1) * pageSize + i)"
+     [attr.data-col]="j"
+     [class.disabled]="!isEditItem"
+     (drop)="onFileDropped($event)"
+     (dragover)="onDragOver($event)"
+     (dragleave)="onDragLeave($event)"
+     [class.drag-active]="isDragActive['crp']?.[((currentPage - 1) * pageSize + i)]?.[j]">
+
+                        <input type="file" accept=".xlsx,.xls,.doc,.docx,.pdf" formControlName="crpFile" #crpfileInput
+                        (change)="onCrpFileSelected($event,((currentPage - 1) * pageSize + i),j)" hidden [attr.data-row]="((currentPage - 1) * pageSize + i)" [attr.data-mrp]="j" [required]="mrpCrpitem?.get('crp')?.value > 0 && !selectedCrpFile?.[((currentPage - 1) * pageSize + i)]?.[j]">
+                        <div class="image-container d-flex justify-content-between align-items-center"
+                          style="padding: 1px 15px;"
+                          [ngClass]="{'is-invalid': mrpCrpitem?.get('crpFile')?.touched && mrpCrpitem?.get('crpFile')?.invalid}">
+                          <mat-label *ngIf="selectedCrpFile?.[((currentPage - 1) * pageSize + i)]?.[j] && selectedCrpFile?.[((currentPage - 1) * pageSize + i)]?.[j]?.name" [ngbTooltip]="selectedCrpFile?.[((currentPage - 1) * pageSize + i)]?.[j]?.name"><a type="button" (click)="openFileInNewTab('crp',((currentPage - 1) * pageSize + i),j)">{{selectedCrpFile?.[((currentPage - 1) * pageSize + i)]?.[j]?.name}}</a></mat-label>
+                          <mat-label *ngIf="!selectedCrpFile?.[((currentPage - 1) * pageSize + i)]?.[j] && !selectedCrpFile?.[((currentPage - 1) * pageSize + i)]?.[j]?.name">Upload File</mat-label>
+                          <button type="button" mat-icon-button (click)="triggerCrpFileInput(((currentPage - 1) * pageSize + i),j)">
+                            <i matTooltip="{{selectedCrpFile?.[((currentPage - 1) * pageSize + i)]?.[j] && selectedCrpFile?.[((currentPage - 1) * pageSize + i)]?.[j]?.name ? 'Edit' : 'Upload CRP File'}}"
+                              class="{{selectedCrpFile?.[((currentPage - 1) * pageSize + i)]?.[j] && selectedCrpFile?.[((currentPage - 1) * pageSize + i)]?.[j]?.name ? 'bi bi-pencil-fill' : 'bi bi-file-earmark-spreadsheet'}}"
+                              id="edit-or-upload-icon"></i>
+                          </button>
+                        </div>
+                      </div>
                     <div *ngIf="mrpCrpitem?.get('crpFile')?.touched && mrpCrpitem?.get('crpFile')?.invalid"
                       style="font-size: 11px;padding-left: 10px;color:#f44336">
                       <span *ngIf="mrpCrpitem?.get('crpFile')?.errors?.['accept']">Invalid file type. Please upload .xlsx, .xls, .doc, .docx, .pdf file.</span>

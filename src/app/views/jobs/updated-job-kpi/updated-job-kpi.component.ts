@@ -469,6 +469,273 @@ public onPageChanged(event: any) {
                     }
                   }
   }
+
+//   isDragActive: any = {};
+// dragEnterCounter: any = {};
+
+// handleDragEnter(event: DragEvent, row: number, col: number) {
+//   if (!this.isEditItem) return;
+//   event.preventDefault();
+
+//   const zone = event.currentTarget as HTMLElement;   // ← FIXED
+//   if (!zone) return;
+
+//   if (!this.dragEnterCounter[row]) this.dragEnterCounter[row] = {};
+//   this.dragEnterCounter[row][col] = (this.dragEnterCounter[row][col] || 0) + 1;
+
+//   if (!this.isDragActive[row]) this.isDragActive[row] = {};
+//   this.isDragActive[row][col] = true;
+// }
+
+// handleDragOver(event: DragEvent) {
+//   if (!this.isEditItem) return;
+//   event.preventDefault();
+// }
+
+// handleDragLeave(event: DragEvent, row: number, col: number) {
+//   const zone = event.currentTarget as HTMLElement;   // ← FIXED
+//   if (!zone) return;
+
+//   this.dragEnterCounter[row][col] = Math.max(0, (this.dragEnterCounter[row][col] || 0) - 1);
+
+//   if (this.dragEnterCounter[row][col] === 0) {
+//     this.isDragActive[row][col] = false;
+//   }
+// }
+
+// handleFileDrop(event: DragEvent, row: number, col: number) {
+//   if (!this.isEditItem) return;
+//   event.preventDefault();
+
+//   const zone = event.currentTarget as HTMLElement;   // ← FIXED
+//   if (!zone) return;
+
+//   const type = zone.getAttribute('data-type');
+
+//   this.dragEnterCounter[row][col] = 0;
+//   this.isDragActive[row][col] = false;
+
+//   const files = event.dataTransfer?.files;
+//   if (!files || !files.length) return;
+
+//   const fakeEvent: any = { target: { files } };
+
+//   if (type === 'mrp') {
+//     this.onMrpFileSelected(fakeEvent, row, col);
+//   } else if (type === 'crp') {
+//     this.onCrpFileSelected(fakeEvent, row, col);
+//   } else if (type === 'budget') {
+//     this.onBudgetFileSelected(fakeEvent, row);
+//   }
+// }
+
+
+
+
+
+
+
+
+  // isDragActive: boolean[] = [];
+
+
+//   onDragOver(event: DragEvent) {
+//     if (!this.isEditItem) return; 
+//     event.preventDefault();
+
+//     const dropZone = (event.target as HTMLElement).closest('.drop-zone');
+//     if (!dropZone) return;
+    
+//     const index = Number(dropZone.getAttribute("data-index"));
+//     this.isDragActive[index] = true;
+//   }
+
+// onDragLeave(event: DragEvent) {
+//    if (!this.isEditItem) return; 
+//   const dropZone = (event.target as HTMLElement).closest('.drop-zone');
+//   if (!dropZone) return;
+
+//   const index = Number(dropZone.getAttribute("data-index"));
+//   this.isDragActive[index] = false;
+// }
+
+
+
+// onBudgetFileDropped(event: DragEvent, index: number) {
+//    if (!this.isEditItem) return; 
+//   event.preventDefault();
+//   this.isDragActive[index] = false;
+
+//   const files = event.dataTransfer?.files;
+//   if (!files || files.length === 0) return;
+
+//   const fakeEvent: any = {
+//     target: { files }
+//   };
+
+//   // Reuse existing VALIDATION + STORAGE logic
+//   this.onBudgetFileSelected(fakeEvent, index);
+// }
+
+
+
+// // mrppppppppppp
+// isMrpDragActive: any = {};
+
+// onMrpDragOver(event: DragEvent) {
+//   if (!this.isEditItem) return;
+
+//   event.preventDefault();
+//   const zone = (event.target as HTMLElement).closest('.mrp-drop-zone');
+//   if (!zone) return;
+
+//   const row = Number(zone.getAttribute("data-row"));
+//   const col = Number(zone.getAttribute("data-mrp"));
+
+//   if (!this.isMrpDragActive[row]) this.isMrpDragActive[row] = {};
+//   this.isMrpDragActive[row][col] = true;
+// }
+
+// onMrpDragLeave(event: DragEvent) {
+//   const zone = (event.target as HTMLElement).closest('.mrp-drop-zone');
+//   if (!zone) return;
+
+//   const row = Number(zone.getAttribute("data-row"));
+//   const col = Number(zone.getAttribute("data-mrp"));
+
+//   this.isMrpDragActive[row][col] = false;
+// }
+
+// onMrpFileDropped(event: DragEvent, row: number, col: number) {
+//   if (!this.isEditItem) return;
+
+//   event.preventDefault();
+//   this.isMrpDragActive[row][col] = false;
+
+//   const files = event.dataTransfer?.files;
+//   if (!files?.length) return;
+
+//   const fakeEvent: any = { target: { files } };
+
+//   // Reuse your existing logic
+//   this.onMrpFileSelected(fakeEvent, row, col);
+// }
+
+
+// // crpppppppppp
+// isCrpDragActive: any = {};
+
+// onCrpDragOver(event: DragEvent) {
+//   if (!this.isEditItem) return;
+
+//   event.preventDefault();
+//   const zone = (event.target as HTMLElement).closest('.crp-drop-zone');
+//   if (!zone) return;
+
+//   const row = Number(zone.getAttribute("data-row"));
+//   const col = Number(zone.getAttribute("data-crp"));
+
+//   if (!this.isCrpDragActive[row]) this.isCrpDragActive[row] = {};
+//   this.isCrpDragActive[row][col] = true;
+// }
+
+// onCrpDragLeave(event: DragEvent) {
+//   const zone = (event.target as HTMLElement).closest('.crp-drop-zone');
+//   if (!zone) return;
+
+//   const row = Number(zone.getAttribute("data-row"));
+//   const col = Number(zone.getAttribute("data-crp"));
+
+//   this.isCrpDragActive[row][col] = false;
+// }
+
+// onCrpFileDropped(event: DragEvent, row: number, col: number) {
+//   if (!this.isEditItem) return;
+
+//   event.preventDefault();
+//   this.isCrpDragActive[row][col] = false;
+
+//   const files = event.dataTransfer?.files;
+//   if (!files?.length) return;
+
+//   const fakeEvent: any = { target: { files } };
+
+//   // Reuse your existing logic
+//   this.onCrpFileSelected(fakeEvent, row, col);
+// }
+
+isDragActive: any = {
+  budget: {},
+  mrp: {},
+  crp: {}
+};
+onDragOver(event: DragEvent) {
+  if (!this.isEditItem) return;
+  event.preventDefault();
+
+  const zone = (event.target as HTMLElement).closest('.drop-zone');
+  if (!zone) return;
+
+  const type = zone.getAttribute("data-type");   // "budget" | "mrp" | "crp"
+  const row = Number(zone.getAttribute("data-row"));
+  const col = Number(zone.getAttribute("data-col") ?? -1);
+
+  if (!this.isDragActive[type][row]) this.isDragActive[type][row] = {};
+
+  this.isDragActive[type][row][col] = true;
+}
+
+onDragLeave(event: DragEvent) {
+  const zone = (event.target as HTMLElement).closest('.drop-zone');
+  if (!zone) return;
+
+  const type = zone.getAttribute("data-type");
+  const row = Number(zone.getAttribute("data-row"));
+  const col = Number(zone.getAttribute("data-col") ?? -1);
+
+  if (this.isDragActive[type][row])
+      this.isDragActive[type][row][col] = false;
+}
+
+
+onFileDropped(event: DragEvent) {
+  if (!this.isEditItem) return;
+
+  event.preventDefault();
+
+  const zone = (event.target as HTMLElement).closest('.drop-zone');
+  if (!zone) return;
+
+  const type = zone.getAttribute("data-type");  // budget / mrp / crp
+  const row = Number(zone.getAttribute("data-row"));
+  const col = Number(zone.getAttribute("data-col") ?? -1);
+
+  // Stop highlight
+  this.isDragActive[type][row][col] = false;
+
+  const files = event.dataTransfer?.files;
+  if (!files || files.length === 0) return;
+
+  // Convert drop event to input event
+  const fakeEvent: any = { target: { files } };
+
+  // 🔥 Route to correct function
+  if (type === 'budget') {
+    this.onBudgetFileSelected(fakeEvent, row);
+  }
+  else if (type === 'mrp') {
+    this.onMrpFileSelected(fakeEvent, row, col);
+  }
+  else if (type === 'crp') {
+    this.onCrpFileSelected(fakeEvent, row, col);
+  }
+}
+
+
+
+
+
+
  public onMrpFileSelected(event: Event,rowIndex: number, mrpIndex: number): void {
                   const input = event.target as HTMLInputElement;
 

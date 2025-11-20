@@ -59,3 +59,13 @@
 .bg-leave-details .mat-raised-button.mat-button-disabled.mat-button-disabled{
     background-color: rgba(0, 0, 0, .12) !important;
 }
+.image-container-leave {
+  border: 2px dashed #ccc;
+  transition: 0.3s ease;
+  border-radius: 5px;
+}
+
+.image-container-leave.drag-active {
+  border-color: #3f51b5;
+  background-color: #f0f4ff;
+}

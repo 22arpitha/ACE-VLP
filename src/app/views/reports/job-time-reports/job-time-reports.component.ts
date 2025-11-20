@@ -50,6 +50,7 @@ tableSize: number = 50;
   selectedClientIds: any = [];
   selectedJobIds: any = [] ;
   selectedStatusIds: any = [];
+  primaryEmployees:any = [];
   formattedData: any = [];
   sortValue: string = '';
   directionValue: string = '';
@@ -116,6 +117,7 @@ tableSize: number = 50;
        client_ids: this.selectedClientIds,
        job_ids: this.selectedJobIds,
        job_status: this.selectedStatusIds,
+       prime_emp: this.primaryEmployees
      });
    }
 
@@ -148,7 +150,14 @@ tableSize: number = 50;
        case 'headerTabs':
         this.tabStatus = event['action'];
         // this.getJobList();
-        this.page=1;
+        this.tabStatus = event['action'];
+        this.page= 1;
+        this.tableSize = 50;  
+        this.selectedClientIds = [];
+        this.selectedJobIds= [];
+        this.selectedStatusIds= [];
+        this.primaryEmployees = [];
+        this.filterDataCache={};
         this.getTableData({
           page: this.page,
           pageSize: this.tableSize,
@@ -156,6 +165,7 @@ tableSize: number = 50;
           client_ids: this.selectedClientIds,
           job_ids: this.selectedJobIds,
           job_status: this.selectedStatusIds,
+          prime_emp: this.primaryEmployees
         });
        break;
        case 'filter':
@@ -175,6 +185,7 @@ tableSize: number = 50;
           client_ids: this.selectedClientIds,
           job_ids: this.selectedJobIds,
           job_status: this.selectedStatusIds,
+          prime_emp: this.primaryEmployees
         });
       break;
       case 'sendEmail':
@@ -189,6 +200,7 @@ tableSize: number = 50;
         client_ids: this.selectedClientIds,
         job_ids: this.selectedJobIds,
         job_status: this.selectedStatusIds,
+        prime_emp: this.primaryEmployees
       });
    }
  }
@@ -203,6 +215,7 @@ tableSize: number = 50;
     client_ids: this.selectedClientIds,
     job_ids: this.selectedJobIds,
     job_status: this.selectedStatusIds,
+    prime_emp: this.primaryEmployees
   });
  }
 onApplyFilter(filteredData: any[], filteredKey: string): void {
@@ -234,6 +247,9 @@ onApplyFilter(filteredData: any[], filteredKey: string): void {
   if (filteredKey === 'job-status-ids') {
     this.selectedStatusIds = filteredData;
   }
+  if(filteredKey==='is-primary-ids'){
+    this.primaryEmployees = filteredData;
+  }
 
 this.formattedData = [];
   this.getTableData({
@@ -243,6 +259,7 @@ this.formattedData = [];
     client_ids: this.selectedClientIds,
     job_ids: this.selectedJobIds,
     job_status: this.selectedStatusIds,
+    prime_emp: this.primaryEmployees
   });
 }
  exportCsvOrPdf(fileType) {
@@ -429,6 +446,7 @@ getJobTypeList(){
        client_ids: this.selectedClientIds,
        job_ids: this.selectedJobIds,
        job_status: this.selectedStatusIds,
+       prime_emp: this.primaryEmployees
      });
    }
 
@@ -483,7 +501,7 @@ public viewtimesheetDetails(item:any){
         );
       }
     
-    async getTableData(params?: { page?: number; pageSize?: number; searchTerm?: string;client_ids?: any[]; job_ids?: any[]; job_status?: any[]; }) {
+    async getTableData(params?: { page?: number; pageSize?: number; searchTerm?: string;client_ids?: any[]; job_ids?: any[]; job_status?: any[]; prime_emp?:any}) {
   let finalQuery;
    this.formattedData = [];
    const page = params?.page ?? this.page;
@@ -492,7 +510,14 @@ public viewtimesheetDetails(item:any){
    const query = buildPaginationQuery({ page, pageSize, searchTerm });
    this.jobStatusList(this.tabStatus);
     finalQuery = query + `&job-status=[${this.statusList}]`;
-    finalQuery += (this.userRole ==='Admin' || (this.userRole !='Admin' && this.client_id)) ? '':`&employee-id=${this.user_id}`;
+     let emp_ids:any= [];
+       if(this.userRole!='Admin' && params?.prime_emp?.length){
+        emp_ids = [...params.prime_emp, Number(this.user_id)];
+       } else{
+         emp_ids = [Number(this.user_id)];
+       }
+       finalQuery += (this.userRole ==='Admin' || (this.userRole !='Admin' && this.client_id)) ? '':`&employee-ids=[${emp_ids}]`;
+    // finalQuery += (this.userRole ==='Admin' || (this.userRole !='Admin' && this.client_id)) ? '':`&employee-id=${this.user_id}`;
     finalQuery += this.client_id ? `&client=${this.client_id}` : '';
     finalQuery += `&report-type=job-time-report`;
       if (params?.client_ids?.length) {
@@ -645,6 +670,12 @@ public viewtimesheetDetails(item:any){
       if (key === 'job-status-ids'){
         endpoint = environment.settings_job_status;
       } 
+      if (key === 'is-primary-ids') {
+          endpoint = environment.get_primary_employees;
+          query += `&job-status=[${this.statusList}]`;
+          query += this.userRole === 'Admin' ? '' : `&manager-id=${this.user_id}`
+         }
+       
       // if (key === 'timesheet-task-ids') {
       //   // Task filter static
       //   this.updateFilterColumn(key, { data: this.taskName, page: 1, total: this.taskName.length, searchTerm: '' });
@@ -659,6 +690,7 @@ public viewtimesheetDetails(item:any){
             'client-ids': { id: 'id', name: 'client_name' },
             'job-ids': { id: 'id', name: 'job_name' },
             'job-status-ids': { id: 'id', name: 'status_name' },
+            'is-primary-ids':{id:'employee_id',name:'employee__full_name'}
           };
     
           const newData = res.results?.map((item: any) => ({

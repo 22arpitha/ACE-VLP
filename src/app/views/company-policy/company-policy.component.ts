@@ -86,7 +86,7 @@ this.formUtilityService.resetHasUnsavedValue();
   public initializeForm() {
     this.companyPolicyForm = this.fb.group({
       policy_name: ['', [Validators.required, Validators.pattern(/^[a-zA-Z0-9!@#$%^&*()_+{}\[\]:;"'<>,.?/\\|`~\-]+( [a-zA-Z0-9!@#$%^&*()_+{}\[\]:;"'<>,.?/\\|`~\-]+)*$/)]],
-      policy_file: ['', Validators.required, this.fileFormatValidator],
+      policy_file: ['', Validators.required], //this.fileFormatValidator
       password: ['', [Validators.pattern(/^[a-zA-Z0-9!@#$%^&*()_+{}\[\]:;"'<>,.?/\\|`~\-]+( [a-zA-Z0-9!@#$%^&*()_+{}\[\]:;"'<>,.?/\\|`~\-]+)*$/), Validators.maxLength(20)]],
       when_to_use: ['', [ Validators.pattern(/^[a-zA-Z0-9!@#$%^&*()_+{}\[\]:;"'<>,.?/\\|`~\-]+( [a-zA-Z0-9!@#$%^&*()_+{}\[\]:;"'<>,.?/\\|`~\-]+)*$/), Validators.maxLength(100)]],
     });
@@ -291,6 +291,60 @@ this.formUtilityService.resetHasUnsavedValue();
     }
   }
 
+  isDragActive = false;
+  onDragOver(event: DragEvent) {
+  event.preventDefault();
+  this.isDragActive = true;
+  }
+
+  onDragLeave(event: DragEvent) {
+    this.isDragActive = false;
+  }
+  onPolicyFileSelected(event: Event) {
+  const input = event.target as HTMLInputElement;
+  if (!input.files || input.files.length === 0) return;
+  const file = input.files[0];
+  if (!this.validatePolicyFile(file)) return;
+  this.applyPolicyFile(file);
+  input.value = ""; // MUST CLEAR FILE INPUT
+}
+onPolicyFileDropped(event: DragEvent) {
+  event.preventDefault();
+  this.isDragActive = false;
+  const files = event.dataTransfer?.files;
+  if (!files || files.length === 0) return;
+  const file = files[0];
+  if (!this.validatePolicyFile(file)) return;
+  this.applyPolicyFile(file);
+}
+
+validatePolicyFile(file: File): boolean {
+  const allowed = [
+    "application/pdf",
+    "application/msword",
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+  ];
+  if (!allowed.includes(file.type)) {
+    this.apiService.showError("Invalid file type. Upload .doc, .docx, or .pdf");
+    return false;
+  }
+  if (file.size > 10 * 1024 * 1024) {
+    this.apiService.showError("File exceeds 10MB");
+    return false;
+  }
+  return true;
+}
+ applyPolicyFile(file: File) {
+  this.file = file;
+  this.selectedFile = file;
+
+  // Set a FAKE value into the form control (string only)
+  this.companyPolicyForm.get('policy_file')?.setValue(file.name);
+  this.companyPolicyForm.get('policy_file')?.updateValueAndValidity();
+}
+
+
+
   public onFileSelected(event: any): void {
     const file = event.target.files[0];
     if (file) {
@@ -333,6 +387,8 @@ this.formUtilityService.resetHasUnsavedValue();
 
     return of(null);
   }
+ 
+
 
   public getFileName(url: any) {
     if (url) {
@@ -376,49 +432,6 @@ this.formUtilityService.resetHasUnsavedValue();
     return this.formUtilityService.isFormDirtyOrInvalidCheck(isFormChanged,this.companyPolicyForm);
   }
 
-  // drag drop feature
-
-  isDragOver = false; // for UI feedback
-
-onDragOver(event: DragEvent): void {
-  event.preventDefault();
-  event.stopPropagation();
-  this.isDragOver = true;
-}
-
-onDragLeave(event: DragEvent): void {
-  event.preventDefault();
-  event.stopPropagation();
-  this.isDragOver = false;
-}
-
-onFileDropped(event: DragEvent): void {
-  event.preventDefault();
-  event.stopPropagation();
-  this.isDragOver = false;
-
-  const file = event.dataTransfer?.files[0];
-  if (file) {
-    const allowedExtensions = ['doc', 'docx', 'pdf'];
-    const fileExtension = file.name.split('.').pop()?.toLowerCase();
-
-    if (!allowedExtensions.includes(fileExtension)) {
-      this.companyPolicyForm.controls['policy_file']?.setErrors({ accept: true });
-      return;
-    }
-
-    if (file.size > 10 * 1024 * 1024) {
-      this.companyPolicyForm.controls['policy_file']?.setErrors({ maxSize: true });
-      return;
-    }
-
-    this.file = file;
-    this.selectedFile = file;
-    const fakePath = `C:\\fakepath\\${file.name}`;
-    this.companyPolicyForm.controls['policy_file']?.setValue(fakePath);
-    // this.companyPolicyForm.controls['policy_file']?.setValue(file);
-  }
-}
-
+ 
 }
 

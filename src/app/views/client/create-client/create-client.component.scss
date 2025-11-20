@@ -84,3 +84,19 @@ textarea[matInput] {
   text-align: center !important;
 }
   
+.client-drop-zone {
+  border: 2px dashed #ccc;
+  border-radius: 6px;
+  padding: 6px;
+  transition: border-color .25s, background-color .25s;
+}
+
+.client-drop-zone.drag-active {
+  border-color: #3f51b5;
+  background-color: #eef2ff;
+}
+
+.client-drop-zone.disabled {
+  pointer-events: none;
+  opacity: 0.6;
+}

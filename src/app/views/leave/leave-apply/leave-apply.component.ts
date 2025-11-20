@@ -565,6 +565,49 @@ employeeGender:any;
     this.emailInput.nativeElement.value = '';
     this.emailCtrl.setValue(null);
   }
+// drag drop function
+  isDragOver = false;
+
+  onDragOver(event: DragEvent) {
+    event.preventDefault();    // required for drop to work
+    this.isDragOver = true;
+  }
+
+  onDragLeave(event: DragEvent) {
+    this.isDragOver = false;
+  }
+
+  onDrop(event: DragEvent) {
+    event.preventDefault();
+    this.isDragOver = false;
+
+    const file = event.dataTransfer?.files?.[0];
+    if (!file) return;
+
+    // Accept images only
+    if (!file.type.startsWith('image/')) {
+      this.apiService.showError("Only image files are allowed.");
+      return;
+    }
+
+    this.handleDroppedImage(file);
+  }
+
+  handleDroppedImage(file: File) {
+    this.selectedFile = file;
+    this.fileName = file.name;
+    this.leaveApplyForm.get('file')?.updateValueAndValidity();
+
+    const reader = new FileReader();
+    reader.onload = () => (this.fileDataUrl = reader.result);
+    reader.readAsDataURL(file);
+  }
+
+
+
+
+
+
 
   selectedFile!: File | null;
   fileName: string = '';

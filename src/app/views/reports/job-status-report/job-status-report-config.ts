@@ -1,6 +1,6 @@
 export const tableColumns  = [
   {
-    label: 'Sl No',
+    label: 'No',
     key: 'sl',
     sortable: false
   },
@@ -40,15 +40,15 @@ export const tableColumns  = [
     filterType: 'multi-select',
     sortable: true
   },
-  // {
-  //   label: 'Allocated On',
-  //   key: 'job_allocation_date',
-  //   filterable: true,
-  //   filterType: 'date',
-  //   type:'date',
-  // },
   {
-    label: 'Allocated On',
+    label: 'Job Type',
+    key: 'job_type_name',
+    filterable: false,
+    sortable:'true',
+    sortKey:'job_type_name'
+  },
+  {
+    label: 'Alloc On',
     key: 'job_allocation_date',
     sortKey:'job_allocation_date',
     filterable: true,
@@ -68,13 +68,13 @@ export const tableColumns  = [
     sortable: true
   },
   {
-    label: 'POC (%)',
+    label: 'POC',
     key: 'percentage_of_completion',
     sortKey:'percentage_of_completion',
     sortable: true
   },
   {
-    label: 'Status Date',
+    label: 'Stat Date',
     key: 'job_status_date',
     sortKey:'job_status_date',
     filterable: true,
@@ -82,7 +82,7 @@ export const tableColumns  = [
     type:'date',
   },
   {
-    label: 'TAT (Days',
+    label: 'TAT',
     key: 'diff_days',
     sortable: false
   },
@@ -90,7 +90,11 @@ export const tableColumns  = [
     label: 'PRIM EMP',
     key: 'is_primary',
     sortKey:'not_done',
-    sortable: false
+    sortable: false,
+    keyId: 'is_primary',
+    paramskeyId: 'is-primary-ids',
+    filterable: true,
+    filterType: 'multi-select',
   }
 
 ]

@@ -75,18 +75,24 @@
         </div>
   <!-- Download Menu -->
 
-      <div class="col-auto col-sm-auto col-md-auto col-lg-auto px-0 mx-0 my-1" [ngClass]="config?.hideDownload ? 'p-r' : 'mt-2'"
+      <div class="col-auto col-sm-auto col-md-auto col-lg-auto px-0 mx-0 my-1 downloads"
       *ngIf="config?.showDownload && paginatedData?.length > 0">
-       <div [ngClass]="config?.hideDownload ? 'set-position' : 'my-1'">
-        <button
+       <!-- <div [ngClass]="config?.hideDownload ? 'set-position' : 'my-1'"> -->
+        <button mat-mini-fab  class="download-icons" (click)="downloadCSV()" ngbTooltip="CSV" placement="top">
+            <mat-icon style="color: green">table_view</mat-icon>
+          </button>
+          <button mat-mini-fab  class="download-icons" (click)="downloadPDF()" ngbTooltip="PDF" placement="top">
+            <mat-icon style="color: red">picture_as_pdf</mat-icon>
+          </button>
+        <!-- <button
           mat-icon-button
           [matMenuTriggerFor]="downloadMenu"
           aria-label="Download"
           class="border rounded menu-trigger"
         >
           <i class="bi bi-download"></i>
-        </button>
-        <mat-menu #downloadMenu="matMenu" xPosition="after" yPosition="below">
+        </button> -->
+        <!-- <mat-menu #downloadMenu="matMenu" xPosition="after" yPosition="below">
           <button mat-menu-item (click)="downloadCSV()">
             <mat-icon style="color: green">table_view</mat-icon>
             <span>CSV</span>
@@ -95,8 +101,8 @@
             <mat-icon style="color: red">picture_as_pdf</mat-icon>
             <span>PDF</span>
           </button>
-        </mat-menu>
-      </div>
+        </mat-menu> -->
+      <!-- </div> -->
       </div>
       <!-- reset button -->
       <div class="col-auto col-sm-auto col-md-auto col-lg-auto px-0 mx-0 my-1" *ngIf="config.reset">
@@ -209,7 +215,7 @@
                   </mat-form-field>
                 </ng-container>
                 <ng-container *ngSwitchCase="'multi-select'">
-                  <div ngbDropdown class="d-inline-block"  container="body"  (openChange)="onFilterOpen(col, $event)">
+                  <div  *ngIf="!(userRole==='Accountant' && col.key==='is_primary')" ngbDropdown class="d-inline-block"  container="body"  (openChange)="onFilterOpen(col, $event)">
                     <button id="dropdownBasic1" mat-icon-button ngbDropdownToggle [ngClass]="tempFilters[col.key]?.length>=1 ? 'filterdColumn':''">
                           <span *ngIf="tempFilters[col.key]?.length>=1">{{tempFilters[col.key]?.length.toString().padStart(2, '0')}}</span> 
                       <i class="bi-funnel" *ngIf="!tempFilters[col.key] || tempFilters[col.key]?.length===0"></i>
