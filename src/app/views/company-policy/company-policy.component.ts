@@ -1,7 +1,7 @@
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormGroupDirective, FormGroup, FormBuilder, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { Observable, of } from 'rxjs';
+import { debounceTime, distinctUntilChanged, filter, Observable, of, Subject } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 import { CanComponentDeactivate } from '../../auth-guard/can-deactivate.guard';
 import { FormErrorScrollUtilityService } from '../../service/form-error-scroll-utility-service.service';
@@ -40,6 +40,8 @@ export class CompanyPolicyComponent implements CanComponentDeactivate, OnInit,On
   };
   arrow: boolean = false;
   term: any;
+  private searchSubject = new Subject<string>();
+    filterQuery: string;
   file: any;
   selectedFile: File | null = null;
   formData: any;
@@ -68,6 +70,14 @@ export class CompanyPolicyComponent implements CanComponentDeactivate, OnInit,On
      let unSavedChanges = isFormChanged || isInvalid;
      this.formUtilityService.setUnsavedChanges(unSavedChanges);
     });
+    this.searchSubject.pipe(
+              debounceTime(500),
+              distinctUntilChanged(),
+              filter((term: string) => term === '' || term.length >= 2)
+            ).subscribe((search: string) => {
+              this.term = search
+              this.getAllCompanyPolicy();
+            });
   }
   ngOnDestroy(): void {
 this.formUtilityService.resetHasUnsavedValue();
@@ -76,7 +86,7 @@ this.formUtilityService.resetHasUnsavedValue();
     this.accessControlService.getAccessForActiveUrl(this.user_id).subscribe((access) => {
       if (access) {
         this.accessPermissions = access[0].operations;
-        this.getAllCompanyPolicy('?page=1&page_size=50');
+        this.getAllCompanyPolicy();
       }
     },(error:any)=>{
       this.apiService.showError(error?.error?.detail);
@@ -98,9 +108,13 @@ this.formUtilityService.resetHasUnsavedValue();
     return this.companyPolicyForm.controls;
   }
 
-  public getAllCompanyPolicy(pramas: any) {
+  public getAllCompanyPolicy() {
+    this.filterQuery = this.getFilterBaseUrl();
+     if(this.directionValue && this.sortValue){
+      this.filterQuery += `&sort-by=${this.sortValue}&sort-type=${this.directionValue}`;
+    }
     this.allCompanyPolicyList = [];
-    this.apiService.getData(`${environment.live_url}/${environment.company_policy}/${pramas}`).subscribe((respData: any) => {
+    this.apiService.getData(`${environment.live_url}/${environment.company_policy}/${this.filterQuery}`).subscribe((respData: any) => {
       this.allCompanyPolicyList = respData?.results;
       const noOfPages: number = respData?.total_pages
       this.count = noOfPages * this.tableSize;
@@ -108,6 +122,12 @@ this.formUtilityService.resetHasUnsavedValue();
     }, (error: any) => {
       this.apiService.showError(error?.error?.detail);
     })
+  }
+
+  getFilterBaseUrl(): string {
+    const base = `?page=${this.page}&page_size=${this.tableSize}`;
+    const searchParam = this.term?.trim().length >= 2 ? `&search=${encodeURIComponent(this.term.trim())}` : '';
+    return `${base}${searchParam}`;
   }
   public savePolicyDetails() {
     if (this.companyPolicyForm.invalid) {
@@ -121,7 +141,8 @@ this.formUtilityService.resetHasUnsavedValue();
           if (respData) {
             this.apiService.showSuccess(respData['message']);
             this.resetFormState();
-            this.getAllCompanyPolicy(`?page=1&page_size=${this.tableSize}`);
+            this.page= 1;
+            this.getAllCompanyPolicy();
           }
         }, (error: any) => {
           this.apiService.showError(error?.error?.detail);
@@ -132,7 +153,8 @@ this.formUtilityService.resetHasUnsavedValue();
           if (respData) {
             this.apiService.showSuccess(respData['message']);
             this.resetFormState();
-            this.getAllCompanyPolicy(`?page=1&page_size=${this.tableSize}`);
+            this.page = 1;
+            this.getAllCompanyPolicy();
           }
 
         }, (error: any) => {
@@ -171,11 +193,7 @@ this.formUtilityService.resetHasUnsavedValue();
     this.arrowState[column] = direction === 'ascending' ? true : false;
     this.directionValue = direction;
     this.sortValue = column;
-     let query = `?page=${this.page}&page_size=${this.tableSize}&sort-by=${this.sortValue}&sort-type=${this.directionValue}`;
-    if (this.term) {
-      query += `&search=${this.term}`
-    }
-    this.getAllCompanyPolicy(query);
+    this.getAllCompanyPolicy();
   }
 
   public getContinuousIndex(index: number): number {
@@ -184,21 +202,13 @@ this.formUtilityService.resetHasUnsavedValue();
   }
   public onTableDataChange(event: any) {
     this.page = event;
-    let query = `?page=${this.page}&page_size=${this.tableSize}`
-    if (this.term) {
-      query += `&search=${this.term}`
-    }
-    this.getAllCompanyPolicy(query);
+    this.getAllCompanyPolicy();
   }
   public onTableSizeChange(event: any): void {
     if (event) {
 
       this.tableSize = Number(event.value);
-      let query = `?page=${1}&page_size=${this.tableSize}`
-      if (this.term) {
-        query += `&search=${this.term}`
-      }
-      this.getAllCompanyPolicy(query);
+      this.getAllCompanyPolicy();
     }
   }
   public confirmDelete(content: any) {
@@ -224,11 +234,8 @@ this.formUtilityService.resetHasUnsavedValue();
       if (data) {
         this.allCompanyPolicyList = []
         this.apiService.showSuccess(data.message);
-        let query = `?page=${1}&page_size=${this.tableSize}`
-        if (this.term) {
-          query += `&search=${this.term}`
-        }
-        this.getAllCompanyPolicy(query);
+        this.page =1;
+        this.getAllCompanyPolicy();
       }
     }, (error => {
       this.apiService.showError(error?.error?.detail)
@@ -279,16 +286,11 @@ this.formUtilityService.resetHasUnsavedValue();
     })
   }
   public filterSearch(event) {
-    const input = event?.target?.value?.trim() || '';
-    if (input && input.length >= 2) {
-      this.term = input;
-      this.page = 1;
-      const query = `?page=1&page_size=${this.tableSize}&search=${this.term}`;
-      this.getAllCompanyPolicy(query);
-    } if (!input) {
-      const query = `?page=${this.page}&page_size=${this.tableSize}`;
-      this.getAllCompanyPolicy(query);
+    const value = event?.target?.value || '';
+    if (value && value.length >= 2) {
+      this.page = 1
     }
+    this.searchSubject.next(value);
   }
 
   isDragActive = false;

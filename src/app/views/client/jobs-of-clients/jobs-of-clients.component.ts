@@ -6,6 +6,7 @@ import { CommonServiceService } from '../../../service/common-service.service';
 import { environment } from '../../../../environments/environment';
 import { GenericTableFilterComponent } from '../../../shared/generic-table-filter/generic-table-filter.component';
 import { DropDownPaginationService } from '../../../service/drop-down-pagination.service';
+import { debounceTime, distinctUntilChanged, filter, Subject } from 'rxjs';
 export interface IdNamePair {
   id: any;
   name: string;
@@ -20,6 +21,7 @@ export class JobsOfClientsComponent implements OnInit {
       @ViewChild('employeeFilter') employeeFilter!: GenericTableFilterComponent;
       BreadCrumbsTitle: any
     allJobs = []
+    private searchSubject = new Subject<string>();
     sortValue: string = '';
     directionValue: string = '';
     arrowState: { [key: string]: boolean } = {
@@ -66,6 +68,14 @@ export class JobsOfClientsComponent implements OnInit {
     }
   
     ngOnInit(){
+       this.searchSubject.pipe(
+          debounceTime(500),
+          distinctUntilChanged(),
+          filter((term: string) => term === '' || term.length >= 2)
+        ).subscribe((search: string) => {
+          this.term = search
+          this.filterData();
+        });
       // this.getEmployees();
       // this.getAllJobStatus();
     }
@@ -122,18 +132,23 @@ export class JobsOfClientsComponent implements OnInit {
           });
       }
       filterSearch(event: any) {
-        this.term = event.target.value?.trim();
-        if (this.term && this.term.length >= 2) {
-          this.page = 1;
-          this.filterData();
+         const value = event?.target?.value || '';
+        if (value && value.length >= 2) {
+          this.page = 1
         }
-        else if (!this.term) {
-          this.filterData();
-        }
+        this.searchSubject.next(value);
+        // this.term = event.target.value?.trim();
+        // if (this.term && this.term.length >= 2) {
+        //   this.page = 1;
+        //   this.filterData();
+        // }
+        // else if (!this.term) {
+        //   this.filterData();
+        // }
       }
       getFilterBaseUrl(): string {
         const base = `?page=${this.page}&page_size=${this.tableSize}`;
-        const searchParam = this.term?.trim().length >= 2 ? `&search=${this.term.trim()}` : '';
+        const searchParam = this.term?.trim().length >= 2 ? `&search=${encodeURIComponent(this.term.trim())}` : '';
         const clientParam = `&client=${this.client_id}`;
         const employeeParam = this.userRole !== 'Admin' ? `&employee-id=${this.user_id}` : '';
 

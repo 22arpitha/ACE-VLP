@@ -14,7 +14,7 @@ import {
   ValidationErrors,
 } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { Observable, of } from 'rxjs';
+import { debounceTime, distinctUntilChanged, filter, Observable, of, Subject } from 'rxjs';
 import { CanComponentDeactivate } from '../../auth-guard/can-deactivate.guard';
 import { FormErrorScrollUtilityService } from '../../service/form-error-scroll-utility-service.service';
 import { ApiserviceService } from '../../service/apiservice.service';
@@ -44,6 +44,8 @@ export class TemplatesComponent
   page = 1;
   count = 0;
   tableSize = 50;
+  private searchSubject = new Subject<string>();
+  filterQuery: string;
   tableSizes = [50, 75, 100];
   currentIndex: any;
   sortValue: string = '';
@@ -84,6 +86,14 @@ export class TemplatesComponent
       let unSavedChanges = isFormChanged || isInvalid;
       this.formUtilityService.setUnsavedChanges(unSavedChanges);
     });
+    this.searchSubject.pipe(
+              debounceTime(500),
+              distinctUntilChanged(),
+              filter((term: string) => term === '' || term.length >= 2)
+            ).subscribe((search: string) => {
+              this.term = search
+               this.getAllTemplates();
+            });
   }
   ngOnDestroy(): void {
     this.formUtilityService.resetHasUnsavedValue();
@@ -93,7 +103,7 @@ export class TemplatesComponent
       (access) => {
         if (access) {
           this.accessPermissions = access[0].operations;
-          this.getAllTemplates(`?page=${this.page}&page_size=${this.tableSize}`);
+          this.getAllTemplates();
         }
       },
       (error: any) => {
@@ -141,10 +151,14 @@ export class TemplatesComponent
   }
 
   
-  public getAllTemplates(pramas: any) {
+  public getAllTemplates() {
+     this.filterQuery = this.getFilterBaseUrl();
+     if(this.directionValue && this.sortValue){
+      this.filterQuery += `&sort-by=${this.sortValue}&sort-type=${this.directionValue}`;
+    }
     this.allTemplatesList = [];
     this.apiService
-      .getData(`${environment.live_url}/${environment.templates}/${pramas}`)
+      .getData(`${environment.live_url}/${environment.templates}/${this.filterQuery}`)
       .subscribe(
         (respData: any) => {
           this.allTemplatesList = respData?.results;
@@ -175,7 +189,8 @@ export class TemplatesComponent
               if (respData) {
                 this.apiService.showSuccess(respData['message']);
                 this.resetFormState();
-                this.getAllTemplates(`?page=1&page_size=${this.tableSize}`);
+                this.page = 1;
+                this.getAllTemplates();
               }
             },
             (error: any) => {
@@ -194,7 +209,8 @@ export class TemplatesComponent
               if (respData) {
                 this.apiService.showSuccess(respData['message']);
                 this.resetFormState();
-                this.getAllTemplates(`?page=1&page_size=${this.tableSize}`);
+                this.page = 1
+                this.getAllTemplates();
               }
             },
             (error: any) => {
@@ -248,11 +264,7 @@ export class TemplatesComponent
     this.arrowState[column] = direction === 'ascending' ? true : false;
     this.directionValue = direction;
     this.sortValue = column;
-    let query = `?page=${this.page}&page_size=${this.tableSize}&sort-by=${this.sortValue}&sort-type=${this.directionValue}`;
-    if (this.term) {
-      query += `&search=${this.term}`
-    }
-    this.getAllTemplates(query);
+    this.getAllTemplates();
   }
 
   public getContinuousIndex(index: number): number {
@@ -260,21 +272,19 @@ export class TemplatesComponent
   }
   public onTableDataChange(event: any) {
     this.page = event;
-    let query = `?page=${this.page}&page_size=${this.tableSize}`;
-    if (this.term) {
-      query += `&search=${this.term}`;
-    }
-    this.getAllTemplates(query);
+    this.getAllTemplates();
   }
   public onTableSizeChange(event: any): void {
     if (event) {
       this.tableSize = Number(event.value);
-      let query = `?page=${1}&page_size=${this.tableSize}`;
-      if (this.term) {
-        query += `&search=${this.term}`;
-      }
-      this.getAllTemplates(query);
+      this.getAllTemplates();
     }
+  }
+
+  getFilterBaseUrl(): string {
+    const base = `?page=${this.page}&page_size=${this.tableSize}`;
+    const searchParam = this.term?.trim().length >= 2 ? `&search=${encodeURIComponent(this.term.trim())}` : '';
+    return `${base}${searchParam}`;
   }
   public confirmDelete(content: any) {
     if (content) {
@@ -301,11 +311,8 @@ export class TemplatesComponent
           if (data) {
             this.allTemplatesList = [];
             this.apiService.showSuccess(data.message);
-            let query = `?page=${1}&page_size=${this.tableSize}`;
-            if (this.term) {
-              query += `&search=${this.term}`;
-            }
-            this.getAllTemplates(query);
+            this.page = 1;
+            this.getAllTemplates();
           }
         },
         (error) => {
@@ -378,17 +385,22 @@ export class TemplatesComponent
     }
   }
   public filterSearch(event) {
-    const input = event?.target?.value?.trim() || ''; // Fallback to empty string if undefined
-    if (input && input.length >= 2) {
-      this.term = input;
-      this.page = 1;
-      const query = `?page=1&page_size=${this.tableSize}&search=${this.term}`;
-      this.getAllTemplates(query);
+    const value = event?.target?.value || '';
+    if (value && value.length >= 2) {
+      this.page = 1
     }
-    if (!input) {
-      const query = `?page=${this.page}&page_size=${this.tableSize}`;
-      this.getAllTemplates(query);
-    }
+    this.searchSubject.next(value);
+    // const input = event?.target?.value?.trim() || ''; // Fallback to empty string if undefined
+    // if (input && input.length >= 2) {
+    //   this.term = input;
+    //   this.page = 1;
+    //   const query = `?page=1&page_size=${this.tableSize}&search=${this.term}`;
+    //   this.getAllTemplates(query);
+    // }
+    // if (!input) {
+    //   const query = `?page=${this.page}&page_size=${this.tableSize}`;
+    //   this.getAllTemplates(query);
+    // }
   }
  
   // drag drop function 

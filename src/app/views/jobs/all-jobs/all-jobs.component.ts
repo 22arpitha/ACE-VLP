@@ -146,7 +146,7 @@ private searchSubject = new Subject<string>();
     //  }, 500)
 
     this.searchSubject.pipe(
-          debounceTime(300),
+          debounceTime(500),
           distinctUntilChanged(),
           filter((term: string) => term === '' || term.length >= 2)
         ).subscribe((search: string) => {

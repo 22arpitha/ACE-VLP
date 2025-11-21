@@ -14,6 +14,8 @@ import { MAT_DATE_RANGE_SELECTION_STRATEGY } from '@angular/material/datepicker'
 import { WeeklySelectionStrategy } from '../../../shared/weekly-selection-strategy';
 import { DropDownPaginationService } from '../../../service/drop-down-pagination.service';
 import { GenericTableFilterComponent } from '../../../shared/generic-table-filter/generic-table-filter.component';
+import { debounceTime, distinctUntilChanged, filter } from 'rxjs/operators';
+import { Subject } from 'rxjs';
 
 
 @Component({
@@ -25,6 +27,7 @@ export class AllInvoiceComponent implements OnInit {
 @ViewChild('clientFilter') clientFilter!: GenericTableFilterComponent;
 BreadCrumbsTitle: any = 'Invoices';
     term:any='';
+    private searchSubject = new Subject<string>();
     sortValue: string = '';
     directionValue: string = '';
     selectedItemId:any;
@@ -62,6 +65,14 @@ BreadCrumbsTitle: any = 'Invoices';
 
     ngOnInit(): void {
       this.initalCall();
+      this.searchSubject.pipe(
+        debounceTime(500),
+        distinctUntilChanged(),
+        filter((term: string) => term === '' || term.length >= 2)
+      ).subscribe((search: string) => {
+        this.term = search
+        this.filterData();
+      });
     }
 
     public initalCall(){
@@ -157,19 +168,24 @@ BreadCrumbsTitle: any = 'Invoices';
       this.filterData()
     }
     public filterSearch(event: any) {
-      this.term = event.target.value?.trim();
-      if (this.term && this.term.length >= 2) {
-        this.page = 1;
-          this.filterData()
+      const value = event?.target?.value || '';
+      if (value && value.length >= 2) {
+        this.page = 1
       }
-      else if (!this.term) {
-        this.filterData()
-      }
+      this.searchSubject.next(value);
+      // this.term = event.target.value?.trim();
+      // if (this.term && this.term.length >= 2) {
+      //   this.page = 1;
+      //     this.filterData()
+      // }
+      // else if (!this.term) {
+      //   this.filterData()
+      // }
     }
 
     getFilterBaseUrl(): string {
       const base = `?page=${this.page}&page_size=${this.tableSize}`;
-      const searchParam = this.term?.trim().length >= 2 ? `&search=${this.term.trim()}` : '';
+      const searchParam = this.term?.trim().length >= 2 ? `&search=${encodeURIComponent(this.term.trim())}` : '';
 
       return `${base}${searchParam}`;
     }

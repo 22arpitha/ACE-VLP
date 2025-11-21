@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { ChangeDetectorRef, Component, Inject, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { Router } from '@angular/router';
-import { forkJoin, map, Observable } from 'rxjs';
+import { debounceTime, distinctUntilChanged, filter, forkJoin, map, Observable, Subject } from 'rxjs';
 import { ApiserviceService } from '../../../service/apiservice.service';
 import { CommonServiceService } from '../../../service/common-service.service';
 import { SubModuleService } from '../../../service/sub-module.service';
@@ -18,6 +18,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 })
 export class EditInvoiceComponent implements OnInit {
      term:any='';
+     private searchSubject = new Subject<string>();
      page = 1;
     count = 0;
     tableSize = 50;
@@ -55,6 +56,14 @@ total_amount:false,
        this.userRole = sessionStorage.getItem('user_role_name');
        this.getModuleAccess();
       //  this.getClientBasedJobsList();
+      this.searchSubject.pipe(
+        debounceTime(500),
+        distinctUntilChanged(),
+        filter((term: string) => term === '' || term.length >= 2)
+      ).subscribe((search: string) => {
+        this.term = search
+        this.getClientInvoiceees();
+      });
        this.getClientInvoiceees();
      }
 
@@ -78,7 +87,7 @@ total_amount:false,
      }
      getFilterBaseUrl(): string {
     const base = `?page=${this.page}&page_size=${this.tableSize}`;
-    const searchParam = this.term?.trim().length >= 2 ? `&search=${this.term.trim()}` : '';
+    const searchParam = this.term?.trim().length >= 2 ? `&search=${encodeURIComponent(this.term.trim())}` : '';
     return `${base}${searchParam}`;
   }
 
@@ -286,15 +295,20 @@ const jobsMappedData =  this.jobSelection?.map(({id,
       }
     }
      public filterSearch(event: any) {
-       this.term = event.target.value?.trim();
-       if (this.term && this.term.length >= 2) {
-          //  this.getClientBasedJobsList()
-          this.getClientInvoiceees();
-       }
-       else if (!this.term) {
-          //  this.getClientBasedJobsList()
-          this.getClientInvoiceees();
-       }
+       const value = event?.target?.value || '';
+      if (value && value.length >= 2) {
+        this.page = 1
+      }
+      this.searchSubject.next(value);
+      //  this.term = event.target.value?.trim();
+      //  if (this.term && this.term.length >= 2) {
+      //     //  this.getClientBasedJobsList()
+      //     this.getClientInvoiceees();
+      //  }
+      //  else if (!this.term) {
+      //     //  this.getClientBasedJobsList()
+      //     this.getClientInvoiceees();
+      //  }
      }
    
      public sort(direction: string, column: string) {

@@ -13,6 +13,7 @@ import { ClientContactDetailsPopupComponent } from '../client-contact-details-po
 import { DatePipe } from '@angular/common';
 import { GenericTableFilterComponent } from '../../../shared/generic-table-filter/generic-table-filter.component';
 import { DropDownPaginationService } from '../../../service/drop-down-pagination.service';
+import { debounceTime, distinctUntilChanged, filter, Subject } from 'rxjs';
 
 
 export interface IdNamePair {
@@ -30,6 +31,7 @@ export interface IdNamePair {
 export class ClientListComponent implements OnInit {
   @ViewChild('countryFilter') countryFilter!: GenericTableFilterComponent;
   @ViewChild('sourceFitrer') sourceFilter!: GenericTableFilterComponent;
+  private searchSubject = new Subject<string>();
   BreadCrumbsTitle: any = 'Client';
   term: any = '';
   isCurrent: boolean = true;
@@ -81,6 +83,14 @@ export class ClientListComponent implements OnInit {
 
   ngOnInit() {
     this.getModuleAccess();
+    this.searchSubject.pipe(
+      debounceTime(500),
+      distinctUntilChanged(),
+      filter((term: string) => term === '' || term.length >= 2)
+    ).subscribe((search: string) => {
+      this.term = search
+      this.filterData();
+    });
     // this.getAllCountryList();
     // this.getAllSourceList();
   }
@@ -213,14 +223,19 @@ export class ClientListComponent implements OnInit {
     this.filterData()
   }
   public filterSearch(event: any) {
-    this.term = event.target.value?.trim();
-    if (this.term && this.term.length >= 2) {
-      this.page = 1;
-      this.filterData();
+      const value = event?.target?.value || '';
+    if (value && value.length >= 2) {
+      this.page = 1
     }
-    else if (!this.term) {
-      this.filterData();
-    }
+    this.searchSubject.next(value);
+    // this.term = event.target.value?.trim();
+    // if (this.term && this.term.length >= 2) {
+    //   this.page = 1;
+    //   this.filterData();
+    // }
+    // else if (!this.term) {
+    //   this.filterData();
+    // }
   }
 
   public getFilterBaseUrl(): string {

@@ -9,7 +9,7 @@ import { environment } from '../../../../environments/environment';
 import { SubModuleService } from '../../../service/sub-module.service';
 import { GenericDeleteComponent } from '../../../generic-components/generic-delete/generic-delete.component';
 import { GenericTimesheetConfirmationComponent } from '../../../generic-components/generic-timesheet-confirmation/generic-timesheet-confirmation.component';
-import { firstValueFrom, Observable } from 'rxjs';
+import { debounceTime, distinctUntilChanged, filter, firstValueFrom, Observable, Subject } from 'rxjs';
 import { DropDownPaginationService } from '../../../service/drop-down-pagination.service';
 import { GenericTableFilterComponent } from '../../../shared/generic-table-filter/generic-table-filter.component';
 export interface IdNamePair {
@@ -32,6 +32,7 @@ export class AllTimesheetsComponent implements OnInit {
   selectedDate: any;
   BreadCrumbsTitle: any = 'Timesheets';
   term: any = '';
+  private searchSubject = new Subject<string>();
   isCurrent: boolean = true;
   isHistory: boolean = false;
   sortValue: string = '';
@@ -95,6 +96,14 @@ export class AllTimesheetsComponent implements OnInit {
 
    ngOnInit() {
     this.getModuleAccess();
+    this.searchSubject.pipe(
+        debounceTime(500),
+        distinctUntilChanged(),
+        filter((term: string) => term === '' || term.length >= 2)
+      ).subscribe((search: string) => {
+        this.term = search
+        this.filterData();
+      });
     // this.getEmployees();
     // this.getAllActiveClients();
     // this.getAllUserbasedActiveJobsList();
@@ -431,7 +440,8 @@ export class AllTimesheetsComponent implements OnInit {
 
   public getTimesheets() {
     let query = this.getFilterBaseUrl();
-    this.apiService.getData(`${environment.live_url}/${environment.vlp_timesheets}/${query}&start-date=${this.startDate}&end-date=${this.endDate}`).subscribe(
+    query += this.userRole === 'Admin' ? `&start-date=${this.startDate}&end-date=${this.endDate}` : ''; 
+    this.apiService.getData(`${environment.live_url}/${environment.vlp_timesheets}/${query}`).subscribe(
       (res: any) => {
         this.allTimesheetsList = res?.results;
         this.total_working_hours = res?.total_time_spent;
@@ -479,30 +489,39 @@ export class AllTimesheetsComponent implements OnInit {
 
   }
   public filterSearch(event: any) {
-    this.term = event.target.value?.trim();
-    if (this.term && this.term.length >= 2) {
-      this.page = 1;
-      this.filterData();
+    const value = event?.target?.value || '';
+    if (value && value.length >= 2) {
+      this.page = 1
     }
-    else if (!this.term) {
-      this.filterData();
-    }
+    this.searchSubject.next(value);
+    // this.term = event.target.value?.trim();
+    // if (this.term && this.term.length >= 2) {
+    //   this.page = 1;
+    //   this.filterData();
+    // }
+    // else if (!this.term) {
+    //   this.filterData();
+    // }
   }
 
   public getFilterBaseUrl(): string {
-    if (this.userRole === 'Admin') {
-      let query = `?page=${this.page}&page_size=${this.tableSize}`;
-      if (this.term) {
-        query += `&search=${this.term}`;
-      }
-      return query;
-    } else {
-      let query = `?page=${this.page}&page_size=${this.tableSize}`;
-      if (this.term) {
-        query += `&search=${this.term}`;
-      }
-      return `?timesheet-employee=${this.user_id}&page=${this.page}&page_size=${this.tableSize}&search=${this.term}`;
-    }
+     const base = `?page=${this.page}&page_size=${this.tableSize}`;
+     const searchParam = this.term?.trim().length >= 2 ? `&search=${encodeURIComponent(this.term.trim())}` : '';
+     const employeeParam = this.userRole !== 'Admin' ? `&timesheet-employee=${this.user_id}` : '';
+     return `${base}${searchParam}${employeeParam}`;
+    //  if (this.userRole === 'Admin') {
+    //   let query = `?page=${this.page}&page_size=${this.tableSize}`;
+    //   if (this.term) {
+    //     query += `&search=${this.term}`;
+    //   }
+    //   return query;
+    // } else {
+    //   let query = `?page=${this.page}&page_size=${this.tableSize}`;
+    //   if (this.term) {
+    //     query += `&search=${this.term}`;
+    //   }
+    //   return `?timesheet-employee=${this.user_id}&page=${this.page}&page_size=${this.tableSize}&search=${this.term}`;
+    // }
   }
 
   public sort(direction: string, column: string) {

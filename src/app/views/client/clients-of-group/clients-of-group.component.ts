@@ -3,6 +3,7 @@ import { CommonServiceService } from '../../../service/common-service.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ApiserviceService } from '../../../service/apiservice.service';
 import { environment } from '../../../../environments/environment';
+import { debounceTime, distinctUntilChanged, filter, Subject } from 'rxjs';
 
 @Component({
   selector: 'app-clients-of-group',
@@ -11,6 +12,7 @@ import { environment } from '../../../../environments/environment';
 })
 export class ClientsOfGroupComponent implements OnInit {
   endClientData: any;
+  private searchSubject = new Subject<string>();
   BreadCrumbsTitle: any
   allClients = []
   sortValue: string = '';
@@ -38,6 +40,20 @@ export class ClientsOfGroupComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.searchSubject.pipe(
+      debounceTime(500),
+      distinctUntilChanged(),
+      filter((term: string) => term === '' || term.length >= 2)
+    ).subscribe((search: string) => {
+      this.term = search
+      if (this.term && this.term.length > 2) {
+        this.page = 1;
+        this.getAllClientOfGroup(this.getFilterBaseUrl());
+      }
+      else if (!this.term) {
+        this.getAllClientOfGroup(this.getFilterBaseUrl());
+      }
+    });
     this.getAllClientOfGroup(`?page=${1}&page_size=${50}&client=${this.client_id}&group=${this.group_id}`);
    
   }
@@ -72,19 +88,23 @@ export class ClientsOfGroupComponent implements OnInit {
         });
     }
     filterSearch(event: any) {
-      this.term = event.target.value?.trim();
-      if (this.term && this.term.length >= 2) {
-        this.page = 1;
-        let query = this.getFilterBaseUrl()
-        query += `&search=${this.term}`
-        this.getAllClientOfGroup(query);
-      }
-      else if (!this.term) {
-        this.getAllClientOfGroup(this.getFilterBaseUrl());
-      }
+      const value = event?.target?.value || '';
+      this.searchSubject.next(value);
+      // this.term = event.target.value?.trim();
+      // if (this.term && this.term.length >= 2) {
+      //   this.page = 1;
+      //   let query = this.getFilterBaseUrl()
+      //   query += `&search=${this.term}`
+      //   this.getAllClientOfGroup(query);
+      // }
+      // else if (!this.term) {
+      //   this.getAllClientOfGroup(this.getFilterBaseUrl());
+      // }
     }
     getFilterBaseUrl(): string {
-      return `?page=${this.page}&page_size=${this.tableSize}client=${this.client_id}&group=${this.group_id}`
+      const base = `?page=${this.page}&page_size=${this.tableSize}client=${this.client_id}&group=${this.group_id}`;
+      const searchParam = this.term?.trim().length >= 2 ? `&search=${encodeURIComponent(this.term.trim())}`: '';
+      return `${base}${searchParam}`
     }
   
     onTableSizeChange(event: any): void {

@@ -9,7 +9,7 @@ import {
   ViewChild,
 } from '@angular/core';
 import { Router } from '@angular/router';
-import { forkJoin, map, Observable } from 'rxjs';
+import { debounceTime, distinctUntilChanged, filter, forkJoin, map, Observable, Subject } from 'rxjs';
 import { FormErrorScrollUtilityService } from '../../../service/form-error-scroll-utility-service.service';
 import { ApiserviceService } from '../../../service/apiservice.service';
 import { CommonServiceService } from '../../../service/common-service.service';
@@ -31,6 +31,7 @@ export class CreateInvoiceComponent
 
   BreadCrumbsTitle: any = 'Create Invoice';
   term: any = '';
+  private searchSubject = new Subject<string>();
   sortValue: string = '';
   directionValue: string = '';
   selectedItemId: any;
@@ -72,6 +73,14 @@ export class CreateInvoiceComponent
     this.user_id = sessionStorage.getItem('user_id');
     this.userRole = sessionStorage.getItem('user_role_name');
     this.getModuleAccess();
+    this.searchSubject.pipe(
+      debounceTime(500),
+      distinctUntilChanged(),
+      filter((term: string) => term === '' || term.length >= 2)
+    ).subscribe((search: string) => {
+      this.term = search
+      this.getClientBasedJobsList();
+    });
   }
 
   ngOnDestroy(): void {
@@ -326,14 +335,19 @@ isSomeJobsSelected() {
     this.getClientBasedJobsList();
   }
   public filterSearch(event: any) {
-    this.term = event.target.value?.trim();
-    if (this.term && this.term.length >= 2) {
-      this.page = 1;
-      this.getClientBasedJobsList();
-    } else if (!this.term) {
-      this.page = 1;
-      this.getClientBasedJobsList();
+      const value = event?.target?.value || '';
+    if (value && value.length >= 2) {
+      this.page = 1
     }
+    this.searchSubject.next(value);
+    // this.term = event.target.value?.trim();
+    // if (this.term && this.term.length >= 2) {
+    //   this.page = 1;
+    //   this.getClientBasedJobsList();
+    // } else if (!this.term) {
+    //   this.page = 1;
+    //   this.getClientBasedJobsList();
+    // }
   }
 
   public getFilterBaseUrl(): string {

@@ -8,7 +8,7 @@ import { GenericEditComponent } from '../../../generic-components/generic-edit/g
 import { environment } from '../../../../environments/environment';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CanComponentDeactivate } from '../../../auth-guard/can-deactivate.guard';
-import { Observable } from 'rxjs';
+import { debounceTime, distinctUntilChanged, filter, Observable, Subject } from 'rxjs';
 import { FormErrorScrollUtilityService } from '../../../service/form-error-scroll-utility-service.service';
 import { SubModuleService } from '../../../service/sub-module.service';
 
@@ -21,6 +21,7 @@ export class GroupComponent implements CanComponentDeactivate, OnInit {
   @ViewChild(FormGroupDirective) formGroupDirective!: FormGroupDirective;
   @ViewChild('formInputField') formInputField: ElementRef;
   groupForm: FormGroup;
+  private searchSubject = new Subject<string>();
   isEditItem: boolean = false;
   selectedItemId: any
   allGroups = []
@@ -63,6 +64,20 @@ export class GroupComponent implements CanComponentDeactivate, OnInit {
   ngOnInit(): void {
     this.getModuleAccess()
     this.intialForm();
+    this.searchSubject.pipe(
+      debounceTime(500),
+      distinctUntilChanged(),
+      filter((term: string) => term === '' || term.length >= 2)
+    ).subscribe((search: string) => {
+      this.term = search
+      if (this.term && this.term.length > 2) {
+        this.page = 1;
+        this.getAllGroupList(this.getFilterBaseUrl());
+      }
+      else if (!this.term) {
+        this.getAllGroupList(this.getFilterBaseUrl());
+      }
+    });
     this.getAllGroupList(`?page=${1}&page_size=${50}&client=${this.client_id}`);
   }
 
@@ -124,19 +139,26 @@ export class GroupComponent implements CanComponentDeactivate, OnInit {
       });
   }
   filterSearch(event: any) {
-    this.term = event.target.value?.trim();
-    if (this.term && this.term.length >= 2) {
-      this.page = 1;
-      let query = this.getFilterBaseUrl()
-      query += `&search=${this.term}`
-      this.getAllGroupList(query);
+     const value = event?.target?.value || '';
+    if (value && value.length >= 2) {
+      this.page = 1
     }
-    else if (!this.term) {
-      this.getAllGroupList(this.getFilterBaseUrl());
-    }
+    this.searchSubject.next(value);
+    // this.term = event.target.value?.trim();
+    // if (this.term && this.term.length >= 2) {
+    //   this.page = 1;
+    //   let query = this.getFilterBaseUrl()
+    //   query += `&search=${this.term}`
+    //   this.getAllGroupList(query);
+    // }
+    // else if (!this.term) {
+    //   this.getAllGroupList(this.getFilterBaseUrl());
+    // }
   }
   getFilterBaseUrl(): string {
-    return `?page=${this.page}&page_size=${this.tableSize}&client=${this.client_id}`;
+    const base= `?page=${this.page}&page_size=${this.tableSize}&client=${this.client_id}`;
+    const searchParam = this.term?.trim().length >= 2 ? `&search=${encodeURIComponent(this.term.trim())}`: '';
+    return `${base}${searchParam}`
   }
 
   onTableSizeChange(event: any): void {

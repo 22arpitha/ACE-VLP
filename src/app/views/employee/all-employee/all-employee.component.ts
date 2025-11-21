@@ -7,6 +7,7 @@ import { environment } from '../../../../environments/environment';
 import { SubModuleService } from '../../../service/sub-module.service';
 import { GenericTableFilterComponent } from '../../../shared/generic-table-filter/generic-table-filter.component';
 import { DropDownPaginationService } from '../../../service/drop-down-pagination.service';
+import { debounceTime, distinctUntilChanged, filter, Subject } from 'rxjs';
 export interface IdNamePair {
   id: any;
   name: string;
@@ -20,6 +21,7 @@ export class AllEmployeeComponent implements OnInit {
    @ViewChild('roleFilter') roleFilter!: GenericTableFilterComponent;
   BreadCrumbsTitle: any = 'Employee';
   term:any='';
+  private searchSubject = new Subject<string>();
   isCurrent:boolean=true;
   isHistory:boolean=false;
   sortValue: string = '';
@@ -63,6 +65,14 @@ designation__designation_name:false,
     this.user_id = sessionStorage.getItem('user_id');
     this.userRole = sessionStorage.getItem('user_role_name');
     this.getModuleAccess();
+    this.searchSubject.pipe(
+      debounceTime(500),
+      distinctUntilChanged(),
+      filter((term: string) => term === '' || term.length >= 2)
+    ).subscribe((search: string) => {
+      this.term = search
+      this.filterData();
+    });
     // this.getAllRoleList();
   }
 
@@ -166,18 +176,17 @@ this.apiService.getData(`${environment.live_url}/${environment.employee}/${query
     this.filterData();
   }
   public filterSearch(event: any) {
-    this.term = event.target.value?.trim();
-    if (this.term && this.term.length >= 2) {
-      this.page = 1;
-      this.filterData();
+      const value = event?.target?.value || '';
+    if (value && value.length >= 2) {
+      this.page = 1
     }
-    else if (!this.term) {
-      this.filterData();
-    }
+    this.searchSubject.next(value);
   }
 
   public getFilterBaseUrl(): string {
-    return `?page=${this.page}&page_size=${this.tableSize}&search=${this.term}&employee=True`;
+     const base = `?page=${this.page}&page_size=${this.tableSize}&employee=True`;
+    const searchParam = this.term?.trim().length >= 2 ? `&search=${encodeURIComponent(this.term.trim())}` : '';
+    return `${base}${searchParam}`;
   }
 
   public sort(direction: string, column: string) {

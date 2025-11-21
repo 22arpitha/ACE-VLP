@@ -9,7 +9,7 @@ import { environment } from '../../../../environments/environment';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CanComponentDeactivate } from '../../../auth-guard/can-deactivate.guard';
 import { FormErrorScrollUtilityService } from '../../../service/form-error-scroll-utility-service.service';
-import { Observable } from 'rxjs';
+import { debounceTime, distinctUntilChanged, filter, Observable, Subject } from 'rxjs';
 import { SubModuleService } from '../../../service/sub-module.service';
 import { GenericTableFilterComponent } from '../../../shared/generic-table-filter/generic-table-filter.component';
 import { DropDownPaginationService } from '../../../service/drop-down-pagination.service';
@@ -26,6 +26,7 @@ export class EditClientComponent implements CanComponentDeactivate, OnInit {
   @ViewChild(FormGroupDirective) formGroupDirective!: FormGroupDirective;
   @ViewChild('formInputField') formInputField: ElementRef;
   @ViewChild('groupFilter') groupFilter!: GenericTableFilterComponent;
+  private searchSubject = new Subject<string>();
   isEditItem: boolean = false;
   endClientForm: FormGroup;
   selectedJobStatus: any;
@@ -81,6 +82,14 @@ export class EditClientComponent implements CanComponentDeactivate, OnInit {
 
   async ngOnInit(): Promise<void> {
     this.initializeForm();
+    this.searchSubject.pipe(
+      debounceTime(500),
+      distinctUntilChanged(),
+      filter((term: string) => term === '' || term.length >= 2)
+    ).subscribe((search: string) => {
+      this.term = search
+      this.filterData();
+    });
     this.getModuleAccess();
     this.getAllEndClients(`?page=1&page_size=50&client=${this.client_id}`);
     this.getGroupList();
@@ -314,12 +323,17 @@ getUniqueValues(
     })
   }
   public filterSearch(event) {
-    const input = event?.target?.value?.trim() || ''; // Fallback to empty string if undefined
-    this.term = event.target.value?.trim();
-      if (this.term && this.term.length >= 2) {
-        this.page = 1;
-        this.filterData();
-      }
+     const value = event?.target?.value || '';
+    if (value && value.length >= 2) {
+      this.page = 1
+    }
+    this.searchSubject.next(value);
+    // const input = event?.target?.value?.trim() || ''; // Fallback to empty string if undefined
+    // this.term = event.target.value?.trim();
+    //   if (this.term && this.term.length >= 2) {
+    //     this.page = 1;
+    //     this.filterData();
+    //   }
   }
   public getGroupList() {
     this.allGroupList = [];
@@ -344,7 +358,9 @@ getUniqueValues(
   }
 
   getFilterBaseUrl(): string {
-    return `?page=${this.page}&page_size=${this.tableSize}&client=${this.client_id}&search=${this.term}`;
+    const base =`?page=${this.page}&page_size=${this.tableSize}&client=${this.client_id}`;
+    const searchParam = this.term?.trim().length >= 2 ? `&search=${encodeURIComponent(this.term.trim())}`: '';
+    return `${base}${searchParam}`
   }
   canDeactivate(): Observable<boolean> {
       const currentFormValue = this.endClientForm?.getRawValue();
