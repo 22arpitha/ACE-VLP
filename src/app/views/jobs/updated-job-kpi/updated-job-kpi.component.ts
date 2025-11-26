@@ -117,11 +117,11 @@ private createMrpCrpGroup(): FormGroup {
   public getModuleAccess(){
     this.apiService.getData(`${environment.live_url}/${environment.user_access}/${sessionStorage.getItem('user_id')}/`).subscribe(
       (res:any)=>{
-        console.log(res)
+        // console.log(res)
        res.access_list.forEach((access:any)=>{
           access.access.forEach((access_name:any)=>{
               if(access_name.name===sessionStorage.getItem('access-name')){
-                console.log(access_name)
+                // console.log(access_name)
                 this.accessPermissions = access_name.operations;
                 // console.log('this.accessPermissions', this.accessPermissions);
               }
@@ -160,7 +160,7 @@ private createMrpCrpGroup(): FormGroup {
     return jobDetailsResponse;
   })
 ).subscribe((combinedResult:any) => {
-  console.log('combinedResult',combinedResult);
+  // console.log('combinedResult',combinedResult);
   let hours: string = '000';
   let minutes: string = '00';
   if (combinedResult.budget_time) {
@@ -194,7 +194,8 @@ employeesDetailsArray.push(employeeForm);
               this.budgetFile[index] = file;
               this.selectedBudgetFile[index] = file;
               this.budgetFileLink[index] =
-                `${environment.media_url}${emp.kpi.budget_file}`;
+              //  `${environment.media_url}${emp.kpi.budget_file}`;
+                `${emp.kpi.budget_file}`;
             } else {
               this.budgetFile[index] = null;
               this.selectedBudgetFile[index] = null;
@@ -242,7 +243,7 @@ if (detail && detail?.mrpFile) {
       this.mrpFile[index][detailIndex] = fileToSet;
       this.selectedMrpFile[index][detailIndex] = fileToSet;
       this.mrpFileLink[index][detailIndex] = file
-        ? `${environment.media_url}${detail.mrpFile}`
+        ? `${detail.mrpFile}`
         : null;
       }else{
         detailGroup?.patchValue({
@@ -272,7 +273,7 @@ if (detail && detail?.crpFile) {
       this.crpFile[index][detailIndex] = fileToSet;
       this.selectedCrpFile[index][detailIndex] = fileToSet;
       this.crpFileLink[index][detailIndex] = file
-        ? `${environment.media_url}${detail.crpFile}`
+        ? `${detail.crpFile}`
         : null;
       }else{
         detailGroup?.patchValue({

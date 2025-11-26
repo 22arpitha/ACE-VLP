@@ -304,7 +304,20 @@ export class CreateClientComponent implements CanComponentDeactivate, OnInit, On
         allow_sending_status_report_to_client: respData?.allow_sending_status_report_to_client,
         practice_notes: respData?.practice_notes,
       });
-      
+      this.clientFormGroup?.get('client_file')?.setErrors(null);
+      if (respData?.client_file) {
+        urlToFile(respData?.client_file, this.getFileName(respData?.client_file))
+          .then(file => {
+            this.file = file;
+            this.selectedFile = this.file;
+            // this.selectedFileLink = `${environment.media_url + respData?.client_file}`;
+            this.selectedFileLink = `${respData?.client_file}`;
+          }
+          )
+          .catch(error => console.error('Error:', error));
+      } else {
+        this.clientFormGroup?.patchValue({ 'client_file': null });
+      }
       if (respData?.employee_details && Array.isArray(respData?.employee_details) && respData.employee_details?.length >= 1) {
         this.employeeDetails = respData?.employee_details;
         const empDetailsArray = this.clientFormGroup.get('employee_details') as FormArray;

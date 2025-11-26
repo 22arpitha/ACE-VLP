@@ -4,7 +4,8 @@ export const environment = {
   Razorpay_live_key:'rzp_test_Z6PoT6HRL71TiC',
 
   // Testing url
-  media_url: 'https://vlp.thestorywallcafe.com',
+  // media_url: 'https://vlp.thestorywallcafe.com',
+  media_url: 'https://vlp-prod.s3.amazonaws.com',
   live_url:'https://vlp.thestorywallcafe.com/api-vlp',
   socket_url:'projectacedevelop.thestorywallcafe.com',
 
@@ -19,7 +20,7 @@ export const environment = {
 
 
   // Staging URL
-  // media_url: 'https://staging.vlpworkflow.com',
+  // media_url: 'https://vlp-prod.s3.amazonaws.com',
   // live_url:'https://staging.vlpworkflow.com/api-vlp',
   // socket_url:'projectacedevelop.thestorywallcafe.com',
 

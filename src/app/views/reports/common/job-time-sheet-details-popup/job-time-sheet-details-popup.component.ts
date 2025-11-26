@@ -26,7 +26,7 @@ export class JobTimeSheetDetailsPopupComponent implements OnInit {
     data: [],
     showDownload: false,
     tableSize: 50,
-    pagination: true,
+    pagination: false,
     actions: [],
     accessConfig: [],
   };
@@ -51,7 +51,7 @@ export class JobTimeSheetDetailsPopupComponent implements OnInit {
     this.jobId = this.data.job_id;
     this.jobName = this.data.job_name;
     this.employee_id = this.data.employee_id;
-    this.cdr.detectChanges();
+    // this.cdr.detectChanges();
     this.tableData = getTableColumns(this.user_role_name);
     setTimeout(() => {
     if (this.jobId) {
@@ -146,7 +146,7 @@ export class JobTimeSheetDetailsPopupComponent implements OnInit {
         actions: [],
         accessConfig: [],
         tableSize: pageSize,
-        pagination: true,
+        pagination: false,
         currentPage: page,
         totalRecords: res.total_no_of_record,
       };
