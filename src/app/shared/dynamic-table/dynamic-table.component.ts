@@ -518,7 +518,8 @@ private isIncludeFlagEnableLogic(): void {
   const matchedClient = this.filteredData?.find(
     (obj: any) => obj['client'] === clientNameFilter[0]
   );
-  this.selected_client_id = matchedClient?.client ?? null;
+  // this.selected_client_id = matchedClient?.client ?? null;/
+  this.selected_client_id = clientNameFilter[0] ?? null;
   this.config.includeAllJobsEnable = false;
   if(this.selected_client_id){
     this.allow_sending_status=false;
@@ -597,7 +598,8 @@ buildDynamicTableForm(tableData){
         if(file){
           this.file[index] = file;
           this.selectedFile[index] = this.file[index];
-          this.fileLink[index]=`${environment.media_url+item?.work_ethics_file}`
+          this.fileLink[index]=`${item?.work_ethics_file}`
+          // this.fileLink[index]=`${environment.media_url+item?.work_ethics_file}`
         }else{
         this.file[index] = null;
         this.selectedFile[index] = null;

@@ -296,7 +296,8 @@ export class CreateClientComponent implements CanComponentDeactivate, OnInit, On
           .then(file => {
             this.file = file;
             this.selectedFile = this.file;
-            this.selectedFileLink = `${environment.media_url + respData?.client_file}`;
+            // this.selectedFileLink = `${environment.media_url + respData?.client_file}`;
+            this.selectedFileLink = `${respData?.client_file}`;
           }
           )
           .catch(error => console.error('Error:', error));

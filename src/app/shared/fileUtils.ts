@@ -22,7 +22,8 @@ const mimeTypesMap: { [key: string]: string } = {
 };
 
 export async function urlToFile(url: string, fileName: string): Promise<File> {
-    const fullUrl = `${environment.media_url}${url}`; // Use the base URL from environment variable
+    // const fullUrl = `${environment.media_url}${url}`; // Use the base URL from environment variable
+    const fullUrl = `${url}`;
     const response = await fetch(fullUrl);
     const blob = await response.blob();
     const mimeType = getMimeTypeByExtension(fileName); // Default mime type if not available

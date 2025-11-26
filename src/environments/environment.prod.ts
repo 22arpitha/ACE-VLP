@@ -20,7 +20,7 @@ export const environment = {
 
   
   // Staging URL
-  // media_url: 'https://staging.vlpworkflow.com',
+  // media_url: 'https://vlp-prod.s3.amazonaws.com',
   // live_url:'https://staging.vlpworkflow.com/api-vlp',
   // socket_url:'projectacedevelop.thestorywallcafe.com',
 
