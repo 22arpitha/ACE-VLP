@@ -113,7 +113,8 @@ export class AllTimesheetsComponent implements OnInit {
     } else {
       this.startDate = '';
       this.endDate = '';
-      this.getTimesheets();
+      // this.getTimesheets();
+      this.filterData();
     }
   //   this.fetchEmployees = this._fetchEmployees.bind(this);
   // this.fetchClients = this._fetchClients.bind(this);
@@ -381,7 +382,8 @@ export class AllTimesheetsComponent implements OnInit {
           this.startDate = res.data[0].date;
           this.endDate = res.data[res.data.length - 1].date;
         }
-        this.getTimesheets();
+        // this.getTimesheets();
+        this.filterData();
         this.checkTimesheetSubmission();
       }
     )
@@ -440,7 +442,7 @@ export class AllTimesheetsComponent implements OnInit {
 
   public getTimesheets() {
     let query = this.getFilterBaseUrl();
-    query += this.userRole === 'Admin' ? `&start-date=${this.startDate}&end-date=${this.endDate}` : ''; 
+    query += `&start-date=${this.startDate}&end-date=${this.endDate}`; 
     this.apiService.getData(`${environment.live_url}/${environment.vlp_timesheets}/${query}`).subscribe(
       (res: any) => {
         this.allTimesheetsList = res?.results;
@@ -657,7 +659,8 @@ export class AllTimesheetsComponent implements OnInit {
           (res: any) => {
             // console.log(res)
             this.apiService.showSuccess(res.detail);
-            this.getTimesheets()
+            // this.getTimesheets()
+            this.filterData();
           },
           (error) => {
             this.apiService.showError(error.error)
@@ -679,8 +682,8 @@ export class AllTimesheetsComponent implements OnInit {
     this.timesheetDate = null;
     this.dateFilterValue = null;
     this.datepicker = null;
-    this.startDate = '';
-    this.endDate = '';
+    // this.startDate = '';
+    // this.endDate = '';
     this.filterData();
   }
   onDateSelected(event: any): void {
@@ -728,12 +731,24 @@ export class AllTimesheetsComponent implements OnInit {
       if (this.timesheetDate) {
         filterQuery += `&timesheet-dates=[${this.timesheetDate}]`;
       }
+      if(this.startDate && this.endDate){
+         filterQuery += `&start-date=${this.startDate}&end-date=${this.endDate}`; 
+      }
     }
     console.log('client filter query=====>',filterQuery)
     this.apiService.getData(`${environment.live_url}/${environment.vlp_timesheets}/${filterQuery}`).subscribe(
       (res: any) => {
+        // this.allTimesheetsList = res?.results;
+        // this.count = res?.['total_no_of_record'];
+        // this.page = res?.['current_page'];
+
         this.allTimesheetsList = res?.results;
-        this.count = res?.['total_no_of_record'];
+        this.total_working_hours = res?.total_time_spent;
+        this.total_excepted_hours = res?.total_working_hours;
+        this.shortfall = res?.shortfall;
+        const noOfPages: number = res?.['total_pages']
+        this.count = noOfPages * this.tableSize;
+        this.count = res?.['total_no_of_record']
         this.page = res?.['current_page'];
           // this.fetchEmployees = this._fetchEmployees.bind(this);
           // this.fetchClients = this._fetchClients.bind(this);
