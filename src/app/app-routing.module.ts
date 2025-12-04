@@ -5,7 +5,6 @@ import { DefaultLayoutComponent } from './containers';
 import { Page404Component } from './views/pages/page404/page404.component';
 import { Page500Component } from './views/pages/page500/page500.component';
 import { LoginComponent } from './views/login/login.component';
-import { RegisterComponent } from './views/pages/register/register.component';
 import { ForgotPasswordComponent } from './views/pages/forgot-password/forgot-password.component';
 import { OtpComponent } from './views/pages/otp/otp.component';
 import { ForgotChangeComponent } from './views/pages/forgot-change/forgot-change.component';
@@ -92,13 +91,6 @@ const routes: Routes = [
         path: 'invoice',
         loadChildren: () =>
           import('./views/invoice/invoice.module').then((m) => m.InvoiceModule),
-      },
-      {
-        path: 'status',
-        loadChildren: () =>
-          import('./views/project-status/project-status.module').then(
-            (m) => m.ProjectStatusModule
-          ),
       },
       // {
       //   path: 'review',
@@ -198,13 +190,6 @@ const routes: Routes = [
     },
   },
 
-  {
-    path: 'register',
-    component: RegisterComponent,
-    data: {
-      title: 'Register Page',
-    },
-  },
   {
     path: 'forgotPassword',
     component: ForgotPasswordComponent,

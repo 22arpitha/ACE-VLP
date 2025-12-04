@@ -147,6 +147,7 @@ export class EmployeeDetailsComponent implements OnInit {
        sl: (page - 1) * pageSize + i + 1,
        ...item
      }));
+     const noOfPages: number = res?.total_pages
      this.tableConfig = {
        columns:  this.tableData?.map(col => ({
          ...col,
@@ -158,10 +159,12 @@ export class EmployeeDetailsComponent implements OnInit {
        actions: [],
        accessConfig: [],
        tableSize: pageSize,
-       pagination: false,
+       pagination: true,
        searchable: true,
        currentPage:page,
-       totalRecords: res.total_no_of_record,
+       showDownload:true,
+       totalRecords : noOfPages * this.tableSize,
+      //  totalRecords: res.total_no_of_record,
        searchPlaceholder:'Search by Employee',
      };
    });

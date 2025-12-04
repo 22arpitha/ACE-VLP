@@ -692,7 +692,7 @@ onClientFileDropped(event: DragEvent) {
     this.formData.set("service_end_date", updatedEndDateValue || null);
     this.formData.set("source", this.clientFormGroup?.get('source')?.value);
     this.formData.set("practice_notes", this.clientFormGroup?.get('practice_notes')?.value || '');
-    this.formData.set("allow_sending_status_report_to_client", this.clientFormGroup?.get('allow_sending_status_report_to_client')?.value || false);
+    this.formData.set("allow_sending_status_report_to_client", this.clientFormGroup?.get('allow_sending_status_report_to_client')?.value ? 'true' : 'false');
     const result = this.clientFormGroup?.get('contact_details')?.getRawValue().map((item: any) => {
       return {
         ...item,

@@ -109,13 +109,7 @@ export class DefaultHeaderComponent extends HeaderComponent implements OnInit {
     // }
 
   }
-  getMySubscription(){
-    this.api.getData(`${environment.live_url}/${environment.my_subscription}/?organization=${this.orgId}`).subscribe((res:any)=>{
-      if(res){
-        this.mySubscription = res.data || res
-      }
-    })
-  }
+ 
   getaccessDetails(){
     this.api.userAccess(this.user_id).subscribe(
       (data: any) => {

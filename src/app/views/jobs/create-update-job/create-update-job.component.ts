@@ -86,6 +86,7 @@ export class CreateUpdateJobComponent implements CanComponentDeactivate, OnInit,
   showSelection = true;
   year: number = new Date()?.getFullYear();
   yearDefault = new Date()?.getFullYear();
+  yearList: number[] = [];
   yearRangeStart: number;
   selectedMonth: string | null = null;
   selectedQuarter: string | null = null;
@@ -180,10 +181,10 @@ export class CreateUpdateJobComponent implements CanComponentDeactivate, OnInit,
     this.getJobBillingOptions();
     // this.getAllActiveClients(); // added paginations
     this.getAllServices();
-    this.getallRoleList();
     this.getAllPeriodicity();
     // this.getAllJobType(); // added paginations
     this.getAllJobStatus();
+    this.generateYearList();
     // this.getEmployees(`?is_active=True&employee=True`);
     if (!this.isEditItem) {
       this.getAllEmployeeList();
@@ -331,28 +332,7 @@ export class CreateUpdateJobComponent implements CanComponentDeactivate, OnInit,
     }));
   }
 
-  getallRoleList(){
-    this.apiService.getData(`${environment.live_url}/${environment.settings_roles}/`).subscribe(
-      (res:any)=>{
-        let directorData = res.find((item:any)=>item.designation_name.toLowerCase()==='director')
-        this.getAllDirectorsData(directorData.id)
-      },
-      (error: any) => {
-          this.apiService.showError(error?.error?.detail);
-      }
-    )
-  }
-
-  getAllDirectorsData(id){
-     this.apiService.getData(`${environment.live_url}/${environment.director_data}/?created_by=${id}`).subscribe(
-      (res:any)=>{
-        // console.log('====>', res)
-      },
-      (error: any) => {
-          this.apiService.showError(error?.error?.detail);
-      }
-     )
-  }
+  
   // search Employee
  filterEmployeeList(index: number): void {
   const search = this.searchEmployeeTextList[index]?.trim().toLowerCase() || '';
@@ -473,6 +453,15 @@ onManagerSelectOpened(opened: boolean, index: number): void {
       }, (error: any) => {
         this.apiService.showError(error?.error?.detail);
       });
+  }
+
+  generateYearList() {
+    const start = 2018;
+    const end = new Date().getFullYear();
+    this.yearList = [];
+    for (let y = start; y <= end; y++) {
+      this.yearList.push(y);
+    }
   }
 
 

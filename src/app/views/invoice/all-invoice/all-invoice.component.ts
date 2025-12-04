@@ -16,7 +16,12 @@ import { DropDownPaginationService } from '../../../service/drop-down-pagination
 import { GenericTableFilterComponent } from '../../../shared/generic-table-filter/generic-table-filter.component';
 import { debounceTime, distinctUntilChanged, filter } from 'rxjs/operators';
 import { Subject } from 'rxjs';
+import { FilterStateService } from '../../../shared/filter-state.service';
 
+export interface IdNamePair {
+  id: any;
+  name: string;
+}
 
 @Component({
   selector: 'app-all-invoice',
@@ -50,17 +55,27 @@ BreadCrumbsTitle: any = 'Invoices';
     invoiceDate: string | null;
     dateFilterValue: string | null = null;
     filterQuery: string;
-    filters: {client_name: string[]} = {
+    filters: {client_name: IdNamePair[]} = {
       client_name: []
     };
     allClientNames: any[] = [];
     datepicker: null;
+    state:any = {
+    filters: {},
+    pageIndex: 0,
+    pageSize: 0,
+    directionValue: '',
+    sortValue: '',
+    search: '',
+    startDate:'',
+    endDate: '',
+  };
     constructor(private common_service: CommonServiceService,private accessControlService:SubModuleService,
       private router:Router,private modalService: NgbModal,private dialog:MatDialog,
       private datePipe:DatePipe,private dropdownService: DropDownPaginationService,
-      private apiService: ApiserviceService,private http: HttpClient) {
+      private apiService: ApiserviceService,private http: HttpClient,private filterState: FilterStateService,) {
       this.common_service.setTitle(this.BreadCrumbsTitle)
-      this.getAllInvoiceList();
+      
     }
 
     ngOnInit(): void {
@@ -73,6 +88,23 @@ BreadCrumbsTitle: any = 'Invoices';
         this.term = search
         this.filterData();
       });
+      const saved = this.filterState.loadState();
+      if (saved) {
+        this.state = saved;
+        this.page= this.state.pageIndex;
+        this.tableSize= this.state.pageSize;
+        this.term= this.state.search;
+        this.directionValue= this.state.directionValue;
+        this.sortValue= this.state.sortValue;
+        this.startDate = this.state.startDate;
+        this.endDate = this.state.endDate;
+        Object.keys(this.arrowState).forEach(key => {
+        this.arrowState[key] = false;
+        });
+        this.arrowState[this.state.sortValue] = this.state.directionValue === 'ascending' ? true : false;
+         this.filters = this.state.filters;
+      } 
+      this.filterData();
     }
 
     public initalCall(){
@@ -236,11 +268,28 @@ BreadCrumbsTitle: any = 'Invoices';
       this.filterData()
     }
 
-
+    saveState() {
+    this.state = {
+      pageIndex : this.page,
+      pageSize : this.tableSize,
+      search : this.term,
+      directionValue : this.directionValue,
+      sortValue : this.sortValue,
+      startDate: this.startDate,
+      endDate: this.endDate,
+      filters: this.filters,
+    }
+    this.filterState.saveState(this.state);
+  }
+    private ids(filterArray: any[]): string {
+      if (!Array.isArray(filterArray)) return '';
+      return filterArray.map(x => x.id).join(',');
+    }
     filterData() {
+      this.saveState();
       this.filterQuery = this.getFilterBaseUrl()
-      if (this.filters.client_name.length) {
-        this.filterQuery += `&client-ids=[${this.filters.client_name.join(',')}]`;
+      if (this.filters?.client_name?.length) {
+        this.filterQuery += `&client-ids=[${this.ids(this.filters.client_name)}]`;
       }
       if(this.directionValue && this.sortValue){
       this.filterQuery += `&sort-by=${this.sortValue}&sort-type=${this.directionValue}`
@@ -290,7 +339,6 @@ BreadCrumbsTitle: any = 'Invoices';
       status: 'True',
       ...(this.userRole !== 'Admin' && { 'employee-id': this.user_id })
     }
-    console.log(search, extraParams, 'client funcion')
     return this.dropdownService.fetchDropdownData$(
       environment.all_clients,
       page,

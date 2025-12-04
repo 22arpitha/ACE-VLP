@@ -223,7 +223,7 @@
     <ng-container>
       <div *ngIf="jobFormGroup?.get('periodicity')?.value; else emptyContent">
   <!-- Year Navigation -->
-    <div class="picker-header">
+    <div class="picker-header" *ngIf="modeName!= 'Yearly'">
       <button mat-icon-button (click)="prevDecade();$event.stopPropagation()" aria-label="Previous Decade">
         <mat-icon>chevron_left</mat-icon>
       </button>
@@ -241,8 +241,11 @@
     <div class="picker-body">
       <!-- Year Mode -->
       <ng-container *ngIf="modeName === 'Yearly' && showSelection">
-        <button mat-button *ngFor="let y of [0,1,2,3,4,5,6,7,8,9]" (click)="changeYear(yearRangeStart + y);$event.stopPropagation()">
+        <!-- <button mat-button *ngFor="let y of [0,1,2,3,4,5,6,7,8,9]" (click)="changeYear(yearRangeStart + y);$event.stopPropagation()">
           {{ yearRangeStart + y }}
+        </button> -->
+        <!-- client asked us to display from 2018 to current year -->
+         <button mat-button *ngFor="let y of yearList" (click)="changeYear(y); $event.stopPropagation()">{{ y }}
         </button>
       </ng-container>
 

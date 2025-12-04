@@ -204,13 +204,6 @@
 
 
 
-
-
-
-
-
-
-
 import { Component, Input, Output, EventEmitter, OnInit, OnChanges, SimpleChanges } from '@angular/core';
 import { Subject, Observable } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter } from 'rxjs/operators';
@@ -236,7 +229,7 @@ export class GenericTableFilterComponent implements OnInit, OnChanges {
   private currentPage: number = 1;
   private hasMore: boolean = true;
   private loading: boolean = false;
-
+private menuOpened = false;
   // ✅ Cache to prevent undefined issue after checkbox selection
   private stableFetchOptions?: (page: number, search: string) => Observable<{ results: any[], hasMore: boolean, totalCount?: number }>;
 
@@ -244,13 +237,14 @@ export class GenericTableFilterComponent implements OnInit, OnChanges {
     this.searchSubject.pipe(
       debounceTime(300),
       distinctUntilChanged(),
+      filter(() => this.menuOpened), 
       filter((term: string) => term === '' || term.length >= 2)
     ).subscribe((search: string) => {
       this.latestSearchTerm = search;
       this.currentPage = 1;
       this.hasMore = true;
       this.loading = false;
-      console.log(search)
+      // console.log(search)
       this.fetchMoreOptions(search);
     });
   }
@@ -266,7 +260,7 @@ export class GenericTableFilterComponent implements OnInit, OnChanges {
 
     if (changes['selectedOptions']) {
       this.selectedOptions = changes['selectedOptions'].currentValue || [];
-      if (this.fetchOptions || this.stableFetchOptions) {
+      if (this.menuOpened &&(this.fetchOptions || this.stableFetchOptions)) {
         this.filterOptions();
       }
     }
@@ -284,6 +278,7 @@ export class GenericTableFilterComponent implements OnInit, OnChanges {
   }
 
   onMenuOpened(): void {
+    this.menuOpened = true;
     if ((this.fetchOptions || this.stableFetchOptions) && this.infiniteScrollOptions.length === 0) {
       this.searchSubject.next('');
     }
@@ -306,7 +301,6 @@ export class GenericTableFilterComponent implements OnInit, OnChanges {
     if (this.loading || !this.hasMore) return;
 
     const fetchFn = this.fetchOptions || this.stableFetchOptions;
-    console.log(fetchFn)
     if (!fetchFn) {
       console.error('fetchOptions is not available!',this.options);
        const lower = search.toLowerCase();
@@ -352,27 +346,54 @@ export class GenericTableFilterComponent implements OnInit, OnChanges {
   }
 
   isSelected(id: any): boolean {
-    return Array.isArray(this.selectedOptions) && this.selectedOptions.includes(id);
+    return Array.isArray(this.selectedOptions) && 
+         this.selectedOptions.some(x => x.id === id);
+    // return Array.isArray(this.selectedOptions) && this.selectedOptions.includes(id);
   }
 
-  toggleSelection(id: any): void {
-    if (!Array.isArray(this.selectedOptions)) {
-      this.selectedOptions = [];
+  // TOGGLE FUNCTION IS CHANGED BECAUSE WILL GET ID AND NAME INSTEAD OF ID
+
+  // toggleSelection(id: any): void {
+  //   if (!Array.isArray(this.selectedOptions)) {
+  //     this.selectedOptions = [];
+  //   }
+  //   const isAlreadySelected = this.selectedOptions.includes(id);
+  //   const updated = isAlreadySelected
+  //     ? this.selectedOptions.filter(optId => optId !== id)
+  //     : [...this.selectedOptions, id];
+
+  //   this.selectedOptions = updated;
+  //   this.selectedOptionsChange.emit(this.selectedOptions);
+
+  //   setTimeout(() => {
+  //     if (this.fetchOptions || this.stableFetchOptions) {
+  //       this.searchSubject.next(this.filterSearchText || '');
+  //     }
+  //   }, 0);
+  // }
+
+  toggleSelection(option: { id: any; name: string }): void {
+  if (!Array.isArray(this.selectedOptions)) {
+    this.selectedOptions = [];
+  }
+
+  const exists = this.selectedOptions.some(x => x.id === option.id);
+
+  if (exists) {
+    this.selectedOptions = this.selectedOptions.filter(x => x.id !== option.id);
+  } else {
+    this.selectedOptions = [...this.selectedOptions, option];
+  }
+
+  this.selectedOptionsChange.emit(this.selectedOptions);
+
+  setTimeout(() => {
+    if (this.fetchOptions || this.stableFetchOptions) {
+      this.searchSubject.next(this.filterSearchText || '');
     }
-    const isAlreadySelected = this.selectedOptions.includes(id);
-    const updated = isAlreadySelected
-      ? this.selectedOptions.filter(optId => optId !== id)
-      : [...this.selectedOptions, id];
+  }, 0);
+}
 
-    this.selectedOptions = updated;
-    this.selectedOptionsChange.emit(this.selectedOptions);
-
-    setTimeout(() => {
-      if (this.fetchOptions || this.stableFetchOptions) {
-        this.searchSubject.next(this.filterSearchText || '');
-      }
-    }, 0);
-  }
 
   clearSearch(): void {
     this.filterSearchText = '';
@@ -392,12 +413,17 @@ export class GenericTableFilterComponent implements OnInit, OnChanges {
     const baseList = (this.fetchOptions || this.stableFetchOptions)
       ? this.infiniteScrollOptions
       : this.filteredOptions;
+      const selectedItems = this.selectedOptions.map(sel => {
+  return baseList.find(opt => opt.id === sel.id) ||
+         this.options.find(opt => opt.id === sel.id) ||
+         sel; // use stored {id, name}
+});
 
-    const selectedItems = this.selectedOptions.map(id => {
-      return baseList.find(opt => opt.id === id) ||
-        this.options.find(opt => opt.id === id) ||
-        { id, name: '(Selected)' };
-    });
+    // const selectedItems = this.selectedOptions.map(id => {
+    //   return baseList.find(opt => opt.id === id) ||
+    //     this.options.find(opt => opt.id === id) ||
+    //     { id, name: '(Selected)' };
+    // });
 
     const combined = [...selectedItems, ...baseList.filter(opt =>
       !this.selectedOptions.includes(opt.id)

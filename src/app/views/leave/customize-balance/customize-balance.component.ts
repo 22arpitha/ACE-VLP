@@ -5,7 +5,10 @@ import { MatDialog } from '@angular/material/dialog';
 import { ApiserviceService } from 'src/app/service/apiservice.service';
 import { DropDownPaginationService } from 'src/app/service/drop-down-pagination.service';
 import { environment } from 'src/environments/environment';
-
+export interface IdNamePair {
+  id: any;
+  name: string;
+}
 @Component({
   selector: 'app-customize-balance',
   templateUrl: './customize-balance.component.html',
@@ -36,7 +39,7 @@ export class CustomizeBalanceComponent implements OnInit {
   filterQuery: any
   AllEmployeeBalanceList:any =[];
   leaveTypes:any = [];
-  filters: { employees: string[] } = {
+  filters: { employees: IdNamePair[] } = {
     employees: [],
   };
   constructor(private accessControlService: SubModuleService,
@@ -93,11 +96,15 @@ export class CustomizeBalanceComponent implements OnInit {
     this.getEmployeesBalance();
   }
 
+   private ids(filterArray: any[]): string {
+    if (!Array.isArray(filterArray)) return '';
+    return filterArray.map(x => x.id).join(',');
+  }
   getEmployeesBalance() {
      this.count = 0;
     this.filterQuery = this.getFilterBaseUrl()
     if (this.filters.employees.length) {
-      this.filterQuery += `&employee-ids=[${this.filters.employees.join(',')}]`;
+      this.filterQuery += `&employee-ids=[${this.ids(this.filters.employees)}]`;
     }
     this.apiService.getData(`${environment.live_url}/${environment.all_emp_custom_balance}/${this.filterQuery}`)
       .subscribe((res: any) => {

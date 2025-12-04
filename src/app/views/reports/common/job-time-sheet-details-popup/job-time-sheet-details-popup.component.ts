@@ -26,7 +26,7 @@ export class JobTimeSheetDetailsPopupComponent implements OnInit {
     data: [],
     showDownload: false,
     tableSize: 50,
-    pagination: false,
+    pagination: true,
     actions: [],
     accessConfig: [],
   };
@@ -41,6 +41,7 @@ export class JobTimeSheetDetailsPopupComponent implements OnInit {
     public dialogRef: MatDialogRef<JobTimeSheetDetailsPopupComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {
+    console.log(data)
     this.user_role_name = sessionStorage.getItem('user_role_name') || '';
     // this.jobId = data.job_id;
     // this.jobName = data.job_name;
@@ -136,6 +137,7 @@ export class JobTimeSheetDetailsPopupComponent implements OnInit {
         ...item,
        date: this.datePipe.transform(item.date, 'dd/MM/yyyy'),
       }));
+      const noOfPages: number = res?.total_pages
       this.tableConfig = {
         columns: this.tableData?.map(col => ({
           ...col,
@@ -146,9 +148,11 @@ export class JobTimeSheetDetailsPopupComponent implements OnInit {
         actions: [],
         accessConfig: [],
         tableSize: pageSize,
-        pagination: false,
+        pagination: true,
         currentPage: page,
-        totalRecords: res.total_no_of_record,
+        totalRecords : noOfPages * this.tableSize,
+        // totalRecords: res.total_no_of_record,
+        showDownload:this.data.download
       };
     });
   }

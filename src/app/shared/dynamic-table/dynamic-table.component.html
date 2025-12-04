@@ -78,11 +78,11 @@
       <div class="col-auto col-sm-auto col-md-auto col-lg-auto px-0 mx-0 my-1 downloads"
       *ngIf="config?.showDownload && paginatedData?.length > 0">
        <!-- <div [ngClass]="config?.hideDownload ? 'set-position' : 'my-1'"> -->
-        <button mat-mini-fab  class="download-icons" (click)="downloadCSV()" ngbTooltip="CSV" placement="top">
-            <mat-icon style="color: green">table_view</mat-icon>
+        <button mat-mini-fab  class="download-icons" (click)="downloadCSV()" >
+            <mat-icon style="color: green" ngbTooltip="CSV" placement="top">table_view</mat-icon>
           </button>
-          <button mat-mini-fab  class="download-icons" (click)="downloadPDF()" ngbTooltip="PDF" placement="top">
-            <mat-icon style="color: red">picture_as_pdf</mat-icon>
+          <button mat-mini-fab  class="download-icons" (click)="downloadPDF()">
+            <mat-icon style="color: red" ngbTooltip="PDF" placement="top">picture_as_pdf</mat-icon>
           </button>
         <!-- <button
           mat-icon-button
@@ -308,6 +308,33 @@
                <ng-container *ngIf="!col.inputField && !col.fileInputField">
                 {{ col.type === 'date' ? (item[col.key] | dateFormater) : item[col.key] !== null && item[col.key] !== undefined && item[col.key] !== '' ? item[col.key] : 'NA'}}
                </ng-container>
+               <ng-container *ngIf="col.fileInputField">
+                <div class="drop-zone"
+                  [attr.data-row]="i"
+                  [class.disabled]="!isEditBtn"
+                  (drop)="onDropWorkEthics($event)"
+                  (dragover)="onDragOverWorkEthics($event)"
+                  (dragleave)="onDragLeaveWorkEthics($event)"
+                  [class.drag-active]="isDragActive[i]">
+                  <input type="file" accept="*" formControlName="work_ethics_file" #fileInput
+                  (change)="onFileSelected($event,i)" hidden>
+                  <div class="image-container w-100 d-flex justify-content-between align-items-center"
+                    style="padding: 1px 15px;border:none;"
+                    [ngClass]="{'is-invalid': rows.at(i)?.get('work_ethics_file')?.['touched'] && rows.at(i)?.get('work_ethics_file')?.['invalid']}">
+                    <mat-label *ngIf="selectedFile[i] && selectedFile[i]?.name" [ngbTooltip]="selectedFile[i]?.name" ><a type="button" (click)="openFileInNewTab(i)">{{selectedFile[i]?.name}}</a></mat-label>
+                    <mat-label *ngIf="!selectedFile[i] && !selectedFile[i]?.name">Upload File</mat-label>
+                    <button type="button" mat-icon-button (click)="triggerFileInput(i)">
+                      <i matTooltip="{{selectedFile[i] && selectedFile[i]?.name ? 'Edit' : 'Upload File'}}"
+                        class="{{selectedFile[i] && selectedFile[i]?.name ? 'bi bi-pencil-fill' : 'bi bi-file-earmark-spreadsheet'}}"
+                        id="edit-or-upload-icon"></i>
+                    </button>
+                  </div>
+                  <div  *ngIf="rows.at(i)?.get('work_ethics_file')?.['touched'] && rows.at(i)?.get('work_ethics_file')?.['invalid']"
+                    style="font-size: 11px;padding-left: 10px;margin-top: 5px;color:#f44336">
+                    <span *ngIf="rows.at(i)?.get('work_ethics_file')?.errors?.['maxSize']">File size exceeds 10MB.</span>
+                  </div>
+                  </div>
+               </ng-container>
                <ng-container *ngIf="col.inputField">
                 <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
                   <mat-label>Points</mat-label>
@@ -327,25 +354,6 @@
                     Points must be at least 0.
                   </span>
                 </div>
-               </ng-container>
-               <ng-container *ngIf="col.fileInputField">
-                <input type="file" accept="*" formControlName="work_ethics_file" #fileInput
-                (change)="onFileSelected($event,i)" hidden>
-              <div class="image-container w-100 d-flex justify-content-between align-items-center"
-                style="padding: 1px 15px;"
-                [ngClass]="{'is-invalid': rows.at(i)?.get('work_ethics_file')?.['touched'] && rows.at(i)?.get('work_ethics_file')?.['invalid']}">
-                <mat-label *ngIf="selectedFile[i] && selectedFile[i]?.name" [ngbTooltip]="selectedFile[i]?.name" ><a type="button" (click)="openFileInNewTab(i)">{{selectedFile[i]?.name}}</a></mat-label>
-                <mat-label *ngIf="!selectedFile[i] && !selectedFile[i]?.name">Upload File</mat-label>
-                <button type="button" mat-icon-button (click)="triggerFileInput(i)">
-                  <i matTooltip="{{selectedFile[i] && selectedFile[i]?.name ? 'Edit' : 'Upload File'}}"
-                    class="{{selectedFile[i] && selectedFile[i]?.name ? 'bi bi-pencil-fill' : 'bi bi-file-earmark-spreadsheet'}}"
-                    id="edit-or-upload-icon"></i>
-                </button>
-              </div>
-              <div  *ngIf="rows.at(i)?.get('work_ethics_file')?.['touched'] && rows.at(i)?.get('work_ethics_file')?.['invalid']"
-                style="font-size: 11px;padding-left: 10px;margin-top: 5px;color:#f44336">
-                <span *ngIf="rows.at(i)?.get('work_ethics_file')?.errors?.['maxSize']">File size exceeds 10MB.</span>
-              </div>
                </ng-container>
             </div>
 

@@ -101,11 +101,12 @@
                       <div class="drop-zone"
      data-type="budget"
      [attr.data-row]="((currentPage - 1) * pageSize + i)"
+     data-col="0"
      [class.disabled]="!isEditItem"
      (drop)="onFileDropped($event)"
      (dragover)="onDragOver($event)"
      (dragleave)="onDragLeave($event)"
-     [class.drag-active]="isDragActive['budget']?.[((currentPage - 1) * pageSize + i)]">
+      [class.drag-active]="isDragActive['budget']?.[((currentPage - 1) * pageSize + i)]?.[0]">
 
 
                       <input  type="file" accept=".xlsx,.xls,.doc,.docx,.pdf"
@@ -132,6 +133,14 @@
                                 class="{{selectedBudgetFile[(currentPage - 1) * pageSize + i]?.name ? 'bi bi-pencil-fill' : 'bi bi-file-earmark-spreadsheet'}}">
                               </i>
                           </button>
+                          <button mat-icon-button
+                                *ngIf="selectedBudgetFile[(currentPage - 1) * pageSize + i]"
+                                (click)="removeFile('budget', (currentPage - 1) * pageSize + i)">
+                            <mat-icon>close</mat-icon>
+                          </button>
+                          <!-- <button type="button" mat-icon-button *ngIf="selectedBudgetFile[(currentPage - 1) * pageSize + i]?.name" (click)="removeImage(i)">
+                            <mat-icon>close</mat-icon>
+                          </button> -->
                       </div>
                   </div>
          
@@ -186,6 +195,11 @@
                             class="{{selectedMrpFile?.[((currentPage - 1) * pageSize + i)]?.[j] && selectedMrpFile?.[((currentPage - 1) * pageSize + i)]?.[j]?.name ? 'bi bi-pencil-fill' : 'bi bi-file-earmark-spreadsheet'}}"
                             id="edit-or-upload-icon"></i>
                         </button>
+                       <button mat-icon-button
+                              *ngIf="selectedMrpFile?.[((currentPage - 1) * pageSize + i)]?.[j] && selectedMrpFile?.[((currentPage - 1) * pageSize + i)]?.[j]?.name"
+                              (click)="removeFile('mrp', ((currentPage - 1) * pageSize + i), j)">
+                          <mat-icon>close</mat-icon>
+                      </button>
                       </div>
                        </div>
                       <div *ngIf="mrpCrpitem?.get('mrpFile')?.touched && mrpCrpitem?.get('mrpFile')?.invalid"
@@ -252,6 +266,10 @@
                             <i matTooltip="{{selectedCrpFile?.[((currentPage - 1) * pageSize + i)]?.[j] && selectedCrpFile?.[((currentPage - 1) * pageSize + i)]?.[j]?.name ? 'Edit' : 'Upload CRP File'}}"
                               class="{{selectedCrpFile?.[((currentPage - 1) * pageSize + i)]?.[j] && selectedCrpFile?.[((currentPage - 1) * pageSize + i)]?.[j]?.name ? 'bi bi-pencil-fill' : 'bi bi-file-earmark-spreadsheet'}}"
                               id="edit-or-upload-icon"></i>
+                          </button>
+                          <button mat-icon-button *ngIf="selectedCrpFile?.[((currentPage - 1) * pageSize + i)]?.[j] && selectedCrpFile?.[((currentPage - 1) * pageSize + i)]?.[j]?.name"
+                                  (click)="removeFile('crp', ((currentPage - 1) * pageSize + i), j)">
+                              <mat-icon>close</mat-icon>
                           </button>
                         </div>
                       </div>

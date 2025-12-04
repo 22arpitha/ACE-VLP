@@ -32,7 +32,7 @@
 }
 ::ng-deep .table-wrapper .mat-icon-button{
   width: 27px !important;
-  height: 40px !important;
+  // height: 40px !important;
 }
 .jobs mat-select.mat-select-table {
   border: 1px solid #929292 !important;
@@ -92,3 +92,12 @@ width: 0px !important;
   ::ng-deep .downloads .mat-mini-fab{
     line-height: 0px !important;
   }
+
+//   th:not(:first-child), td:not(:first-child):not(:last-child) {
+//     /* min-width: max-content !important; */
+//     /* max-width: 100% !important; */
+//     width: 20%;
+// }
+.job_name{
+  width: 80% !important;
+}

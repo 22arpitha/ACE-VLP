@@ -106,11 +106,11 @@ export class DefaultLayoutComponent {
     // }
 
     // Listen to subscription state changes
-    this.common_service.subsctiptionState$.subscribe((res) => {
-      if (res && this.user_role_Name !== 'SuperAdmin') {
-        this.getMySubscription();
-      }
-    });
+    // this.common_service.subsctiptionState$.subscribe((res) => {
+    //   if (res && this.user_role_Name !== 'SuperAdmin') {
+    //     this.getMySubscription();
+    //   }
+    // });
 
     this.breakpointObserver
       .observe([`(max-width: 1023px)`])
@@ -126,46 +126,7 @@ export class DefaultLayoutComponent {
       });
   }
 
-  getMySubscription() {
-    this.api
-      .getData(
-        `${environment.live_url}/${environment.my_subscription}/?organization=${this.orgId}`
-      )
-      .subscribe((res: any) => {
-        if (res) {
-          if (res?.data?.length === 0 || res?.length === 0) {
-            this.mySubscription = true;
-            if (this.user_role_Name === 'Admin') {
-              this.router.navigate(['/accounts/subscription']);
-            } else if (this.user_role_Name === 'Employee') {
-              this.router.navigate(['/login']);
-              this.api.showWarning('Please contact your admin');
-            }
-            // this.router.navigate(['/accounts/subscription']);
-          } else if (res?.data) {
-            let hasActiveSubscription = false;
-            this.subscriptionData = res?.data;
-            res?.data?.forEach((element) => {
-              if (element.is_active) {
-                hasActiveSubscription = false;
-              } else {
-                hasActiveSubscription = true;
-              }
-            });
-
-            this.mySubscription = hasActiveSubscription;
-            if (!hasActiveSubscription) {
-              this.router.onSameUrlNavigation;
-            } else {
-              this.router.navigate(['/accounts/subscription']);
-            }
-          } else {
-            this.mySubscription = false;
-            this.router.navigate(['/dashboards']);
-          }
-        }
-      });
-  }
+ 
 
   shouldDisableItem(item: any): boolean {
     // Don't disable anything for SuperAdmin

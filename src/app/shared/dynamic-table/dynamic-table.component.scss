@@ -153,3 +153,20 @@ button.filterdColumn {
   ::ng-deep .downloads .mat-mini-fab{
     line-height: 0px !important;
   }
+.drop-zone {
+  border: 2px dashed #ccc;
+  border-radius: 6px;
+  padding: 5px;
+  transition: border-color 0.2s, background-color 0.2s;
+  align-content: center;
+}
+
+.drop-zone.drag-active {
+  border-color: #3f51b5;
+  background-color: #f3f6ff;
+}
+.drop-zone.disabled {
+  pointer-events: none;
+  opacity: 0.6; /* optional style */
+  border-color: #ccc; /* optional style */
+}

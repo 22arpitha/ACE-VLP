@@ -160,25 +160,14 @@ export class CreateUpdateEmployeeComponent implements CanComponentDeactivate, On
     this.employeeFormGroup?.get('sub_designation')?.reset();
     this.getDesignationList(role_id);
     const temp = this.allUserRoleList.find((data: any) => data.id === event.value);
-    if (temp?.designation_name === 'Manager') {
-      this.getDirectData()
-    } else {
-      this.reportingManagerId = this.reportingManagerId.filter((data: any) => data.user__full_name != 'Vinayak Hegde')
-      // console.log(this.reportingManagerId)
-    }
+    // if (temp?.designation_name === 'Manager') {
+    //   this.getDirectData()
+    // } else {
+      //  this.reportingManagerId = this.reportingManagerId.filter((data: any) => data.user__full_name != 'Vinayak Hegde')
+    // }
+    this.reportingManagerId = this.reportingManagerId.filter((data: any) => data.user__full_name != 'Vinayak Hegde')
   }
 
-  getDirectData() {
-    let query = `?page=1&page_size=10&search=Vinayak Hegde&employee=True`
-    this.apiService.getData(`${environment.live_url}/${environment.employee}/${query}`).subscribe(
-      (res: any) => {
-        // console.log(res);
-        this.reportingManagerId.push(res?.results[0])
-        // console.log(this.reportingManagerId)
-
-      }
-    )
-  }
   private getDesignationList(role_id: any) {
     this.allDesignation = [];
     this.apiService.getData(`${environment.live_url}/${environment.settings_designation}/?designation_id=${role_id}`).subscribe((respData: any) => {
@@ -223,12 +212,13 @@ export class CreateUpdateEmployeeComponent implements CanComponentDeactivate, On
       });
       this.leaveTypeEnabled = respData?.maternity_and_paternity_details[0]?.is_enabled;
       const temp = this.allUserRoleList.find((data: any) => data.id ===respData?.designation_id);
-      if (temp?.designation_name === 'Manager') {
-        this.getDirectData()
-      } else {
+      // if (temp?.designation_name === 'Manager') {
+      //   this.getDirectData()
+      // } else {
+      //   this.reportingManagerId = this.reportingManagerId.filter((data: any) => data.user__full_name != 'Vinayak Hegde')
+      //   // console.log(this.reportingManagerId)
+      // }
         this.reportingManagerId = this.reportingManagerId.filter((data: any) => data.user__full_name != 'Vinayak Hegde')
-        // console.log(this.reportingManagerId)
-      }
 
       this.initialFormValue = this.employeeFormGroup?.getRawValue();
 

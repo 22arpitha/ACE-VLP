@@ -61,7 +61,7 @@
                 <i *ngIf="!arrowState['job_number']" (click)="sort('ascending','job_number')" class="bi bi-arrow-down"></i>
                 <i (click)="sort('descending','job_number')" *ngIf="arrowState['job_number']" class="bi bi-arrow-up"></i>
               </th>
-              <th scope="col" class="name-col" *ngIf="isColumnVisible('job_name')">Job
+              <th scope="col" class="name-col job_name" *ngIf="isColumnVisible('job_name')">Job
                 <i *ngIf="!arrowState['job_name']" (click)="sort('ascending','job_name')" class="bi bi-arrow-down"></i>
                 <i (click)="sort('descending','job_name')" *ngIf="arrowState['job_name']" class="bi bi-arrow-up"></i>
               </th>
@@ -184,7 +184,7 @@
                 </mat-menu>
               </th>
 
-              <th scope="col" class="status-col" *ngIf="isColumnVisible('status_name')">Status
+              <th scope="col" class="status-col job_name" *ngIf="isColumnVisible('status_name')">Status
                 <i *ngIf="!arrowState['job_status__status_name']" (click)="sort('ascending','job_status__status_name')" class="bi bi-arrow-down"></i>
                 <i (click)="sort('descending','job_status__status_name')" *ngIf="arrowState['job_status__status_name']" class="bi bi-arrow-up"></i>
                 <button mat-icon-button [matMenuTriggerFor]="statusFilterMenu" (menuOpened)="openFilter(satusGroupFilter)"
@@ -233,7 +233,7 @@
                            }; let i=index'>
                 <td (click)="edit(item)" *ngIf="isColumnVisible('sl_no')">{{getContinuousIndex(i)}}</td>
                 <td (click)="edit(item)" *ngIf="isColumnVisible('job_number')">{{item?.job_number || '-'}}</td>
-                <td (click)="edit(item)" *ngIf="isColumnVisible('job_name')">{{item?.job_name || '-'}}</td>
+                <td class="job_name" (click)="edit(item)" *ngIf="isColumnVisible('job_name')">{{item?.job_name || '-'}}</td>
                 <td (click)="edit(item)" *ngIf="isColumnVisible('job_type_name')">{{item?.job_type_name || '-'}}</td>
                 <td (click)="edit(item)" *ngIf="isColumnVisible('client_name')">{{item?.client_name || '-'}}</td>
                 <td (click)="edit(item)" *ngIf="isColumnVisible('group_name')">{{item?.group_name || '-'}}</td>
@@ -242,7 +242,7 @@
                   '-'}}</td>
                 <td (click)="edit(item)" *ngIf="isColumnVisible('manager')">{{getManagerName(item?.employees) || '-'}}
                 </td>
-                <td *ngIf="isColumnVisible('status_name')">
+                <td class="job_name" *ngIf="isColumnVisible('status_name')">
                   <mat-select panelClass="custom-select-dropdown" class="mat-select-table editable-cell"
                     [ngModel]="item?.job_status" (selectionChange)="onStatusChange(item, $event)">
                     <mat-option *ngFor="let status of allJobStatus; let i = index" [value]="status?.id"

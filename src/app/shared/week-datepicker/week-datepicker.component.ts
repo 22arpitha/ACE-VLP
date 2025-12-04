@@ -14,6 +14,7 @@ import { WeeklySelectionStrategy } from '../weekly-selection-strategy';
   ]
 })
 export class WeekDatepickerComponent implements OnInit,OnChanges {
+  @Input() selectedWeek: any = null;
   @Output() weekSelected = new EventEmitter<any>();
   @Input()resetWeek: boolean = false;
   startDate: Date | null = null;
@@ -27,6 +28,12 @@ export class WeekDatepickerComponent implements OnInit,OnChanges {
     if (this.resetWeek) {
       this.startDate = null;
       this.endDate = null;
+    }
+
+    // ⭐ If week restored from state, patch the UI
+    if (this.selectedWeek) {
+      this.startDate = new Date(this.selectedWeek.start_date);
+      this.endDate = new Date(this.selectedWeek.end_date);
     }
   }
 

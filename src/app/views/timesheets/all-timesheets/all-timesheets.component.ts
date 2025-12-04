@@ -12,6 +12,7 @@ import { GenericTimesheetConfirmationComponent } from '../../../generic-componen
 import { debounceTime, distinctUntilChanged, filter, firstValueFrom, Observable, Subject } from 'rxjs';
 import { DropDownPaginationService } from '../../../service/drop-down-pagination.service';
 import { GenericTableFilterComponent } from '../../../shared/generic-table-filter/generic-table-filter.component';
+import { FilterStateService } from '../../../shared/filter-state.service';
 export interface IdNamePair {
   id: any;
   name: string;
@@ -30,6 +31,7 @@ export class AllTimesheetsComponent implements OnInit {
 // fetchClients!: (page: number, search: string) => Observable<{ results: any[], hasMore: boolean, totalCount?: number }>;
 // fetchJobs!: (page: number, search: string) => Observable<{ results: any[], hasMore: boolean, totalCount?: number }>;
   selectedDate: any;
+  selectedWeek: any = null;
   BreadCrumbsTitle: any = 'Timesheets';
   term: any = '';
   private searchSubject = new Subject<string>();
@@ -57,7 +59,7 @@ export class AllTimesheetsComponent implements OnInit {
   accessPermissions = []
   user_id: any;
   userRole: any;
-  filters: { client_name: string[], job_name: string[], employee_name: string[], task_nmae: string[] } = {
+  filters: { client_name: IdNamePair[], job_name: IdNamePair[], employee_name: IdNamePair[], task_nmae: IdNamePair[] } = {
     client_name: [],
     job_name: [],
     employee_name: [],
@@ -76,6 +78,20 @@ export class AllTimesheetsComponent implements OnInit {
   total_working_hours: any;
   total_excepted_hours: any;
   shortfall: any;
+  state:any = {
+    filters: {},
+    pageIndex: 0,
+    pageSize: 0,
+    directionValue: '',
+    sortValue: '',
+    startDate:'',
+    endDate:'',
+    search: '',
+    globalWeekDate:'',
+    timesheetDate:'',
+    tableDateFilter:'',
+    selectedWeek:''
+  };
   constructor(
     private common_service: CommonServiceService,
     private router: Router,
@@ -83,7 +99,8 @@ export class AllTimesheetsComponent implements OnInit {
     private accessControlService: SubModuleService,
     private apiService: ApiserviceService,
     private datePipe: DatePipe,
-    private dropdownService:DropDownPaginationService) {
+    private dropdownService:DropDownPaginationService,
+   private filterState: FilterStateService,) {
     this.common_service.setTitle(this.BreadCrumbsTitle)
 
     this.user_id = sessionStorage.getItem('user_id');
@@ -108,6 +125,28 @@ export class AllTimesheetsComponent implements OnInit {
     // this.getAllActiveClients();
     // this.getAllUserbasedActiveJobsList();
     this.getTaskList();
+    const saved = this.filterState.loadState();
+    if (saved) {
+        this.state = saved;
+        this.page= this.state.pageIndex;
+        this.tableSize= this.state.pageSize;
+        this.term= this.state.search;
+        this.directionValue= this.state.directionValue;
+        this.sortValue= this.state.sortValue;
+        this.isCurrent= this.state.current;
+        this.isHistory= this.state.history;
+        this.startDate = this.state.allocStartDate;
+        this.endDate = this.state.allocEndDate;
+        this.selectedDate = this.state.globalWeekDate,
+        this.timesheetDate = this.state.timesheetDate,
+        this.dateFilterValue= this.state.tableDateFilter,
+        this.selectedWeek = saved.selectedWeek;
+        Object.keys(this.arrowState).forEach(key => {
+        this.arrowState[key] = false;
+        });
+        this.arrowState[this.state.sortValue] = this.state.directionValue === 'ascending' ? true : false;
+         this.filters = this.state.filters;
+      } 
     if (this.userRole != 'Admin') {
       this.getWeekData();
     } else {
@@ -116,12 +155,6 @@ export class AllTimesheetsComponent implements OnInit {
       // this.getTimesheets();
       this.filterData();
     }
-  //   this.fetchEmployees = this._fetchEmployees.bind(this);
-  // this.fetchClients = this._fetchClients.bind(this);
-  // this.fetchJobs = this._fetchJobs.bind(this);
-  // this.fetchEmployees = (page, search) => this._fetchEmployees(page, search);
-  // this.fetchClients = (page, search) => this._fetchClients(page, search);
-  // this.fetchJobs = (page, search) => this._fetchJobs(page, search);
   }
   
   isTodayFriday(): boolean {
@@ -281,7 +314,6 @@ export class AllTimesheetsComponent implements OnInit {
   
   
   onClientFilterOpened() {
-    console.log(this.clientFilter)
     if (this.clientFilter) {
       this.clientFilter.onMenuOpened();
     }
@@ -355,7 +387,6 @@ export class AllTimesheetsComponent implements OnInit {
       if (access) {
         this.access_name = access[0]
         this.accessPermissions = access[0].operations;
-        console.log('Access Permissions:', access);
       } else {
         console.log('No matching access found.');
       }
@@ -592,6 +623,7 @@ export class AllTimesheetsComponent implements OnInit {
   weekDatePicker(event: any) {
     // console.log('week:', event);
     this.selectedDate = event.start_date;
+    this.selectedWeek = event;
     // this.startDate = this.datePipe.transform(event.start_date, 'yyyy-MM-dd');
     // this.endDate = this.datePipe.transform(event.end_date, 'yyyy-MM-dd');
     // console.log('this.selectedDate',this.selectedDate)
@@ -695,29 +727,51 @@ export class AllTimesheetsComponent implements OnInit {
   }
 
   onFilterChange(event: any, filterType: string) {
-    console.log(event, filterType)
     const selectedOptions = event;
     this.filters[filterType] = selectedOptions;
     this.filterData();
   }
+  saveState() {
+    this.state = {
+      pageIndex : this.page,
+      pageSize : this.tableSize,
+      search : this.term,
+      directionValue : this.directionValue,
+      sortValue : this.sortValue,
+      startDate:this.startDate,
+      endDate: this.endDate,
+      globalWeekDate: this.selectedDate,
+      timesheetDate: this.timesheetDate,
+      tableDateFilter:this.dateFilterValue,
+      filters: this.filters,
+      selectedWeek: this.selectedWeek
+    }
+    this.filterState.saveState(this.state);
+  }
 
-
+  private ids(filterArray: any[]): string {
+    if (!Array.isArray(filterArray)) return '';
+    return filterArray.map(x => x.id).join(',');
+  }
   filterData() {
+    if(this.userRole!='Admin'){
+      this.saveState();
+    }
     let filterQuery = this.getFilterBaseUrl()
     // console.log(filterQuery)
     if (this.filters.client_name.length) {
-      filterQuery += `&client-ids=[${this.filters.client_name.join(',')}]`;
+      filterQuery += `&client-ids=[${this.ids(this.filters.client_name)}]`;
     }
 
     if (this.filters.job_name.length) {
-      filterQuery += `&job-ids=[${this.filters.job_name.join(',')}]`;
+      filterQuery += `&job-ids=[${this.ids(this.filters.job_name)}]`;
     }
     if (this.filters.employee_name.length) {
-      this.userRole === 'Accountant' ? filterQuery += `&timesheet-employee-ids=[${this.filters.employee_name.join(',')}]` :
-        filterQuery += `&timesheet-employee-ids=[${this.filters.employee_name.join(',')}]`;
+      // this.userRole === 'Accountant' ? filterQuery += `&timesheet-employee-ids=[${this.filters.employee_name.join(',')}]` :
+        filterQuery += `&timesheet-employee-ids=[${this.ids(this.filters.employee_name)}]`;
     }
     if (this.filters.task_nmae.length) {
-      filterQuery += `&timesheet-task-ids=[${this.filters.task_nmae.join(',')}]`;
+      filterQuery += `&timesheet-task-ids=[${this.ids(this.filters.task_nmae)}]`;
     }
      if(this.directionValue && this.sortValue){
       filterQuery += `&sort-by=${this.sortValue}&sort-type=${this.directionValue}`
@@ -735,7 +789,6 @@ export class AllTimesheetsComponent implements OnInit {
          filterQuery += `&start-date=${this.startDate}&end-date=${this.endDate}`; 
       }
     }
-    console.log('client filter query=====>',filterQuery)
     this.apiService.getData(`${environment.live_url}/${environment.vlp_timesheets}/${filterQuery}`).subscribe(
       (res: any) => {
         // this.allTimesheetsList = res?.results;

@@ -39,7 +39,7 @@ export class JobsOfEndclientComponent implements OnInit {
   term: any = '';
   client_id:any;
   end_client_id:any
-  filters: {employees:string[];status:string[] } = {
+  filters: {employees:IdNamePair[];status:IdNamePair[] } = {
     employees:[],
     status:[]
   };
@@ -185,14 +185,18 @@ export class JobsOfEndclientComponent implements OnInit {
       this.router.navigate([`/client/update-client/${this.client_id}`])
     }
 
+    private ids(filterArray: any[]): string {
+      if (!Array.isArray(filterArray)) return '';
+      return filterArray.map(x => x.id).join(',');
+    }
     filterData() {
       this.filterQuery = this.getFilterBaseUrl()
       if (this.filters.status.length) {
-        this.filterQuery += `&job-status-ids=[${this.filters.status.join(',')}]`;
+        this.filterQuery += `&job-status-ids=[${this.ids(this.filters.status)}]`;
       }
       if (this.filters.employees.length) {
-        this.userRole === 'accountant' ? this.filterQuery += `&employee-ids=[${this.filters.employees.join(',')}]` :
-        this.filterQuery += `&employee-ids=[${this.filters.employees.join(',')}]` ;
+        // this.userRole === 'accountant' ? this.filterQuery += `&employee-ids=[${this.filters.employees.join(',')}]` :
+        this.filterQuery += `&employee-ids=[${this.ids(this.filters.employees)}]` ;
       }
       if (this.dateRange.start && this.dateRange.end) {
       this.filterQuery += `&start-date=${this.dateRange.start}&end-date=${this.dateRange.end}`;

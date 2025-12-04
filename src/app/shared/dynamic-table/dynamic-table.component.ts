@@ -23,6 +23,7 @@ import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 export class DynamicTableComponent implements OnInit, OnChanges {
 @Output() filterOpened = new EventEmitter<any>(); // new
 @Output() filterScrolled = new EventEmitter<any>(); //new
+@Output() filterEvent = new EventEmitter<{ detail: any, key: string }>();
 nextPage: { [key: string]: number } = {}; //new
 @Output() filterSearched = new EventEmitter<any>(); //new
 searchSubjects: { [key: string]: Subject<string> } = {}; // new
@@ -483,10 +484,17 @@ public getHistoryDatasetList(){
 }
 // Include All Jobs Checkbox event
 public onIncludeJobsChange(event:any){
-  // this.selectedItemsMap['job_name']=[];
-  // this.columnFilters['job_name']=[];
-  // this.tempFilters['job_name']=[]
-  // console.log(this.columnFilters)
+  this.selectedItemsMap['job_name']=[];
+  this.columnFilters['job_name']=[];
+  this.tempFilters['job_name']=[];
+  this.loadingFilters['job_name'] = {};
+  this.filterSearchText['job_name'] = '';
+  this.nextPage['job_name'] = 1;
+  this.config.columns.forEach(col => {
+    if (col.key === 'job_name') {
+      col.filterOptions = [];
+    }
+  });
   this.actionEvent.emit({ actionType: 'includeAllJobs', action:event.checked,client_id:this.selected_client_id});
 }
 
@@ -649,6 +657,46 @@ public getFileName(url:any){
   return url?.split('/')?.pop();
 }
 
+isDragActive: { [row: number]: boolean } = {};
+onDragOverWorkEthics(event: DragEvent) {
+  if (!this.isEditBtn) return;
+
+  event.preventDefault();
+  const zone = (event.target as HTMLElement).closest('.drop-zone');
+  if (!zone) return;
+
+  const row = Number(zone.getAttribute("data-row"));
+  this.isDragActive[row] = true;
+}
+
+onDragLeaveWorkEthics(event: DragEvent) {
+  const zone = (event.target as HTMLElement).closest('.drop-zone');
+  if (!zone) return;
+
+  const row = Number(zone.getAttribute("data-row"));
+  this.isDragActive[row] = false;
+}
+onDropWorkEthics(event: DragEvent) {
+  if (!this.isEditBtn) return;
+
+  event.preventDefault();
+
+  const zone = (event.target as HTMLElement).closest('.drop-zone');
+  if (!zone) return;
+
+  const row = Number(zone.getAttribute("data-row"));
+  this.isDragActive[row] = false;
+
+  const files = event.dataTransfer?.files;
+  if (!files?.length) return;
+
+  // Fake event so we can reuse your existing function
+  const fakeEvent: any = { target: { files } };
+
+  this.onFileSelected(fakeEvent, row);
+}
+
+
 public onFileSelected(event: Event,index:any): void {
   const input = event.target as HTMLInputElement;
   if (input.files && input.files?.length > 0) {
@@ -767,12 +815,7 @@ dateClass = (date: Date) => {
 
 
 
-@Output() filterEvent = new EventEmitter<{ detail: any, key: string }>();
 
-
-filterDataCache: {
-  [key: string]: { data: any[], total: number, page: number, searchTerm: string }
-} = {};
 
 getFilteredOptions(columnKey: string): any[] {
   const apiOptions = this.config.columns.find(col => col.key === columnKey)?.filterOptions || [];

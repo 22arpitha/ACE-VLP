@@ -20,7 +20,7 @@
       *ngFor="let option of displayOptions"
       [value]="option.id"
       [selected]="isSelected(option.id)"
-      (click)="toggleSelection(option.id)">
+      (click)="toggleSelection(option)">
       {{ option.name }}
     </mat-list-option>
   </mat-selection-list>

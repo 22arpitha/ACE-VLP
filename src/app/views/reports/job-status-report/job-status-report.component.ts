@@ -197,6 +197,8 @@ export class JobStatusReportComponent implements OnInit {
         this.client_id = event['action'] && event['client_id'] ? event['client_id'] : null;
         this.isIncludeAllJobEnable = event['action']  || (!event['action'] && event['client_id'])  ? false : true;
         this.page=1;
+         this.filterDataCache={};
+        // this.filterDataCache['job_name']={data: [], page: 1, total: 0, searchTerm: ''};
         this.getTableData({
           page: this.page,
           pageSize: this.tableSize,
@@ -207,6 +209,7 @@ export class JobStatusReportComponent implements OnInit {
           job_allocation_date: this.selectedDate,
           job_status_date:this.selectedStatusDate,
           job_status: this.selectedStatusIds,
+          prime_emp: this.primaryEmployees
         });
       break;
       case 'sendEmail':
@@ -615,18 +618,38 @@ private updateFilterColumn(key: string, cache: any) {
 async getTableData(params?: { page?: number; pageSize?: number; searchTerm?: string;client_ids?:any;job_ids?:any;group_ids?:any;job_allocation_date?:any;job_status_date?:any,job_status?: any[]; prime_emp?:any}) {
     let finalQuery;
    const page = params?.page ?? this.page;
-    const pageSize = params?.pageSize ?? this.tableSize;
+    const pageSize = 10 //params?.pageSize ?? this.tableSize;
     const searchTerm = params?.searchTerm ?? this.term;
     let query = buildPaginationQuery({ page, pageSize, searchTerm });
     this.jobStatusList(this.tabStatus);
        finalQuery = query + `&job-status=[${this.statusList}]`;
        let emp_ids:any= [];
-       if(this.userRole!='Admin' && params?.prime_emp?.length){
-        emp_ids = [...params.prime_emp, Number(this.user_id)];
-       } else{
+       if(this.userRole!='Admin' && params?.prime_emp?.length>0){
+        emp_ids = [...params?.prime_emp, Number(this.user_id)];
+       } else  if(this.userRole!='Admin'){
          emp_ids = [Number(this.user_id)];
+       } else if(this.userRole==='Admin' && params?.prime_emp?.length>0){
+        emp_ids = [params?.prime_emp];
        }
-       finalQuery += (this.userRole ==='Admin' || (this.userRole !='Admin' && this.client_id)) ? '':`&employee-ids=[${emp_ids}]`;
+
+       let emp_query
+       if(this.client_id && this.userRole!='Admin' && !params?.prime_emp){
+        emp_query = ''
+       } else if(this.client_id && this.userRole!='Admin' && params?.prime_emp.length>0){
+        if(this.userRole==='Manager'){
+          emp_ids = [params?.prime_emp];
+          emp_query = `&employee-ids=[${emp_ids}]`;
+        } 
+       } else if(this.userRole==='Admin' && params?.prime_emp?.length>0){
+          emp_query = `&employee-ids=[${emp_ids}]`;
+       } else if(this.userRole!='Admin' && !this.client_id){
+          emp_query = `&employee-ids=[${emp_ids}]`
+       }
+       finalQuery += emp_query || '';
+      //  if(emp_query){
+      //    finalQuery += emp_query;
+      //  }
+      //  finalQuery += (this.userRole ==='Admin' || (this.userRole !='Admin' && this.client_id)) ? '':`&employee-ids=[${emp_ids}]`;
        finalQuery += this.client_id ? `&client=${this.client_id}` : '';
        finalQuery += `&report-type=job-status-report`;
         if (params?.client_ids?.length) {
@@ -784,14 +807,18 @@ getFilterOptions(event: { detail: any; key: string }) {
   }
   if (key === 'job-ids'){
     endpoint = environment.only_jobs
-    query +=  this.userRole ==='Admin' ? '': `&employee-id=${this.user_id}`;
+    if(this.isIncludeAllJobValue){
+      query += `&client-ids=[${this.selectedClientIds}]&job-status=[${this.statusList}]`
+    } else{
+      query +=  this.userRole ==='Admin' ? '': `&employee-id=${this.user_id}`;
+    }
   } ;
   if (key === 'job-status-ids'){
     endpoint = environment.settings_status_group;
   } 
   if (key === 'group-ids'){
     endpoint = environment.clients_group;
-    query += this.userRole === 'Admin' ? '' : `?employee_id=${this.user_id}`
+    query += this.userRole === 'Admin' ? '' : `&employee_id=${this.user_id}`
   }
    if (key === 'is-primary-ids') {
     endpoint = environment.get_primary_employees;

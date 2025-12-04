@@ -11,6 +11,10 @@ import { CompOffGrantComponent } from '../comp-off-grant/comp-off-grant.componen
 import { DropDownPaginationService } from 'src/app/service/drop-down-pagination.service';
 import { GenericTableFilterComponent } from 'src/app/shared/generic-table-filter/generic-table-filter.component';
 
+export interface IdNamePair {
+  id: any;
+  name: string;
+}
 @Component({
   selector: 'app-compensatory-request',
   templateUrl: './compensatory-request.component.html',
@@ -55,7 +59,7 @@ export class CompensatoryRequestComponent implements OnInit {
     this.getLeaveStatus();
     this.getAllCompOffData();
   }
-  filters: {status_name: string[],employees:string[] } = {
+  filters: {status_name: IdNamePair[],employees:IdNamePair[] } = {
     status_name: [],
     employees:[],
   }
@@ -155,6 +159,10 @@ export class CompensatoryRequestComponent implements OnInit {
     this.getAllCompOffData();
   }
 
+   private ids(filterArray: any[]): string {
+    if (!Array.isArray(filterArray)) return '';
+    return filterArray.map(x => x.id).join(',');
+  }
 
   getAllCompOffData() {
     this.count = 0;
@@ -163,10 +171,10 @@ export class CompensatoryRequestComponent implements OnInit {
       this.filterQuery += `&manager_id=${this.user_id}`
     }
     if (this.filters.status_name.length) {
-      this.filterQuery += `&status_values=[${this.filters.status_name.join(',')}]`;
+      this.filterQuery += `&status_values=[${this.ids(this.filters.status_name)}]`;
     }
     if (this.filters.employees.length) {
-      this.filterQuery += `&employee-ids=[${this.filters.employees.join(',')}]`;
+      this.filterQuery += `&employee-ids=[${this.ids(this.filters.employees)}]`;
     }
     this.apiService.getData(`${environment.live_url}/${environment.comp_off_grant}/${this.filterQuery}`).subscribe(
       (res: any) => {

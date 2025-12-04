@@ -44,7 +44,7 @@ export class EditClientComponent implements CanComponentDeactivate, OnInit {
     group__group_name:false,
 
   };
-  filters: { group_name: string[]} = {
+  filters: { group_name: IdNamePair[]} = {
     group_name: [],
   }
   allGroupsNames:IdNamePair[] = [];
@@ -368,10 +368,14 @@ getUniqueValues(
       return this.formErrorScrollService.isFormDirtyOrInvalidCheck(isFormChanged,this.endClientForm);
     }
 
+     private ids(filterArray: any[]): string {
+      if (!Array.isArray(filterArray)) return '';
+      return filterArray.map(x => x.id).join(',');
+    }
     filterData() {
       this.filterQuery = this.getFilterBaseUrl()
       if (this.filters.group_name.length) {
-        this.filterQuery += `&group-ids=[${this.filters.group_name.join(',')}]`;
+        this.filterQuery += `&group-ids=[${this.ids(this.filters.group_name)}]`;
       }
        if(this.directionValue && this.sortValue){
         this.filterQuery += `&sort-by=${this.sortValue}&sort-type=${this.directionValue}`

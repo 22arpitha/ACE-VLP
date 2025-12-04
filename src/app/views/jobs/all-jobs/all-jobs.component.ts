@@ -9,11 +9,13 @@ import { SubModuleService } from '../../../service/sub-module.service';
 import { environment } from '../../../../environments/environment';
 import { GenericTableFilterComponent } from '../../../shared/generic-table-filter/generic-table-filter.component';
 import { DropDownPaginationService } from '../../../service/drop-down-pagination.service';
+import { FilterStateService } from '../../../shared/filter-state.service';
 
 export interface IdNamePair {
   id: any;
   name: string;
 }
+
 @Component({
   selector: 'app-all-jobs',
   templateUrl: './all-jobs.component.html',
@@ -67,7 +69,7 @@ export class AllJobsComponent implements OnInit {
   dateFilterValue: any = null;
   statusDateFilterValue: any = null;
   statusList: String[] = [];
-  filters: { group_name: string[]; job_type_name: string[]; client_name: string[]; employees: string[]; manager: string[], status_name: string[],status_group_name:string[] } = {
+  filters: { group_name: IdNamePair[]; job_type_name: IdNamePair[]; client_name: IdNamePair[]; employees: IdNamePair[]; manager: IdNamePair[], status_name: IdNamePair[],status_group_name:IdNamePair[] } = {
     group_name: [],
     job_type_name: [],
     client_name: [],
@@ -109,6 +111,19 @@ private searchSubject = new Subject<string>();
     { key: 'job_status_date', label: 'Status Date', visible: true },
     { key: 'tat_days', label: 'Tat Days', visible: true },
   ];
+
+  state:any = {
+  filters: {},
+  pageIndex: 0,
+  pageSize: 0,
+  directionValue: '',
+  sortValue: '',
+  search: '',
+  current:false,
+  history:false,
+  unassigned:false,
+  jobStatusDate:''
+};
   constructor(
     private common_service: CommonServiceService,
     private accessControlService: SubModuleService,
@@ -116,6 +131,7 @@ private searchSubject = new Subject<string>();
     private apiService: ApiserviceService,
     private fb: FormBuilder,
     private dropdownService: DropDownPaginationService,
+    private filterState: FilterStateService,
     private datePipe: DatePipe) {
     this.common_service.setTitle(this.BreadCrumbsTitle);
     this.user_id = sessionStorage.getItem('user_id');
@@ -244,6 +260,28 @@ private searchSubject = new Subject<string>();
         }
       }
       // this.getCurrentJobs();
+      const saved = this.filterState.loadState();
+      if (saved) {
+        this.state = saved;
+        this.page= this.state.pageIndex;
+        this.tableSize= this.state.pageSize;
+        this.term= this.state.search;
+        this.directionValue= this.state.directionValue;
+        this.sortValue= this.state.sortValue;
+        this.isCurrent= this.state.current;
+        this.isHistory= this.state.history;
+        this.isUnassigned= this.state.unassigned;
+        this.columns = this.state.columns
+        this.dateRange.start = this.state.allocStartDate;
+        this.dateRange.end = this.state.allocEndDate;
+        this.statusDate = this.state.jobStatusDate;
+        this.statusDateFilterValue = this.state.jobStatusDate;
+        Object.keys(this.arrowState).forEach(key => {
+        this.arrowState[key] = false;
+        });
+        this.arrowState[this.state.sortValue] = this.state.directionValue === 'ascending' ? true : false;
+         this.filters = this.state.filters;
+      } 
       this.filterData();
     }, (error) => {
       this.apiService.showError(error?.error?.detail)
@@ -269,25 +307,30 @@ private searchSubject = new Subject<string>();
     this.filterData();
   }
 
+  private ids(filterArray: any[]): string {
+  if (!Array.isArray(filterArray)) return '';
+  return filterArray.map(x => x.id).join(',');
+}
   filterData() {
+     this.saveState();
     this.filterQuery = this.getFilterBaseUrl()
-    // console.log(this.filters)
     if (this.filters.client_name.length) {
-      this.filterQuery += `&client-ids=[${this.filters.client_name.join(',')}]`;
+      this.filterQuery += `&client-ids=[${this.ids(this.filters.client_name)}]`;
     }
     if (this.filters.job_type_name.length) {
-      this.filterQuery += `&job-type-ids=[${this.filters.job_type_name.join(',')}]`;
+      // this.filterQuery += `&job-type-ids=[${this.filters.job_type_name.join(',')}]`;
+      this.filterQuery += `&job-type-ids=[${this.ids(this.filters.job_type_name)}]`;
     }
     if (this.filters.group_name.length) {
-      this.filterQuery += `&group-ids=[${this.filters.group_name.join(',')}]`;
+      this.filterQuery += `&group-ids=[${this.ids(this.filters.group_name)}]`;
     }
     if (this.filters.employees.length) {
-      this.userRole === 'accountant' ? this.filterQuery += `&employee-ids=[${this.filters.employees.join(',')}]` :
-        this.filterQuery += `&employee-ids=[${this.filters.employees.join(',')}]`;
+      // this.userRole === 'accountant' ? this.filterQuery += `&employee-ids=[${this.filters.employees.join(',')}]` :
+        this.filterQuery += `&employee-ids=[${this.ids(this.filters.employees)}]`;
     }
     if (this.filters.manager.length) {
-      this.userRole === 'manager' ? this.filterQuery += `&manager-ids=[${this.filters.manager.join(',')}]` :
-        this.filterQuery += `&manager-ids=[${this.filters.manager.join(',')}]`;
+      this.userRole === 'manager' ? this.filterQuery += `&manager-ids=[${this.ids(this.filters.manager)}]` :
+        this.filterQuery += `&manager-ids=[${this.ids(this.filters.manager)}]`;
     }
 
     if (this.dateRange.start && this.dateRange.end) {
@@ -303,7 +346,7 @@ private searchSubject = new Subject<string>();
       this.filterQuery += `&job-status-date=[${this.statusDate}]`;
     }
     if(this.filters.status_group_name.length){
-      this.filterQuery += `&status-group-ids=[${this.filters.status_group_name}]`;
+      this.filterQuery += `&status-group-ids=[${this.ids(this.filters.status_group_name)}]`;
     }
     if(this.isUnassigned){
       this.filterQuery += `&unassigned=True`
@@ -409,11 +452,31 @@ private searchSubject = new Subject<string>();
     })
   }
   openCreateClientPage() {
+    this.saveState();
     sessionStorage.setItem('access-name', this.access_name?.name)
     this.router.navigate(['/jobs/create-job']);
 
   }
+  saveState() {
+    this.state = {
+      pageIndex : this.page,
+      pageSize : this.tableSize,
+      search : this.term,
+      directionValue : this.directionValue,
+      sortValue : this.sortValue,
+      current:this.isCurrent,
+      history:this.isHistory,
+      unassigned:this.isUnassigned,
+      jobStatusDate:this.statusDate,
+      allocStartDate: this.dateRange.start,
+      allocEndDate: this.dateRange.end,
+      filters: this.filters,
+      columns: this.columns
+    }
+    this.filterState.saveState(this.state);
+  }
   async edit(item: any) {
+    this.saveState();
     this.selectedItemId = item?.id;
     sessionStorage.setItem('access-name', this.access_name?.name)
     this.router.navigate(['/jobs/update-job', this.selectedItemId]);
@@ -522,11 +585,14 @@ private searchSubject = new Subject<string>();
     if (event) {
       this.page = 1;
       this.tableSize = Number(event.value);
+      this.state.pageIndex = event;
+      this.state.pageSize = Number(event.value);;
       this.filterData()
     }
   }
   onTableDataChange(event: any) {
     this.page = event;
+    this.state.pageIndex = event;
     this.filterData();
   }
   filterSearch(event: any) {
@@ -717,7 +783,6 @@ private searchSubject = new Subject<string>();
   }
 
   onStatusDateSelected(event: any): void {
-    // console.log(event)
     const selectedDate = event.value;
     if (selectedDate) {
       this.statusDate = this.datePipe.transform(selectedDate, 'yyyy-MM-dd');

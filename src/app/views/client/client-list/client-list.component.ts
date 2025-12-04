@@ -14,6 +14,7 @@ import { DatePipe } from '@angular/common';
 import { GenericTableFilterComponent } from '../../../shared/generic-table-filter/generic-table-filter.component';
 import { DropDownPaginationService } from '../../../service/drop-down-pagination.service';
 import { debounceTime, distinctUntilChanged, filter, Subject } from 'rxjs';
+import { FilterStateService } from '../../../shared/filter-state.service';
 
 
 export interface IdNamePair {
@@ -56,7 +57,7 @@ export class ClientListComponent implements OnInit {
   accessPermissions = []
   user_id: any;
   userRole: any;
-  filters: { country: string[], source: string[] } = {
+  filters: { country: IdNamePair[], source: IdNamePair[] } = {
     country: [],
     source: [],
   }
@@ -64,6 +65,16 @@ export class ClientListComponent implements OnInit {
   allSourceNames: IdNamePair[] = [];
   filteredList = [];
   filterQuery: string;
+   state:any = {
+    filters: {},
+    pageIndex: 0,
+    pageSize: 0,
+    directionValue: '',
+    sortValue: '',
+    search: '',
+    current:false,
+    history:false,
+  };
   constructor(
     private common_service: CommonServiceService,
     private accessControlService: SubModuleService,
@@ -72,13 +83,13 @@ export class ClientListComponent implements OnInit {
     private dialog: MatDialog,
     private apiService: ApiserviceService,
     private dropdownService: DropDownPaginationService,
-    private http: HttpClient,
+    private filterState: FilterStateService,
     private datePipe: DatePipe) {
     this.user_id = sessionStorage.getItem('user_id');
     this.userRole = sessionStorage.getItem('user_role_name');
 
     this.common_service.setTitle(this.BreadCrumbsTitle);
-    this.getCurrentClientList();
+    // this.getCurrentClientList();
   }
 
   ngOnInit() {
@@ -91,6 +102,23 @@ export class ClientListComponent implements OnInit {
       this.term = search
       this.filterData();
     });
+    const saved = this.filterState.loadState();
+      if (saved) {
+        this.state = saved;
+        this.page= this.state.pageIndex;
+        this.tableSize= this.state.pageSize;
+        this.term= this.state.search;
+        this.directionValue= this.state.directionValue;
+        this.sortValue= this.state.sortValue;
+        this.isCurrent= this.state.current;
+        this.isHistory= this.state.history;
+        Object.keys(this.arrowState).forEach(key => {
+        this.arrowState[key] = false;
+        });
+        this.arrowState[this.state.sortValue] = this.state.directionValue === 'ascending' ? true : false;
+         this.filters = this.state.filters;
+      } 
+      this.filterData();
     // this.getAllCountryList();
     // this.getAllSourceList();
   }
@@ -203,12 +231,18 @@ export class ClientListComponent implements OnInit {
   public getCurrentClients() {
     this.page = 1;
     this.tableSize = 50;
-    this.getCurrentClientList();
+    this.isHistory = false;
+    this.isCurrent = true;
+    this.filterData();
+    // this.getCurrentClientList();
   }
   public getClientsHistory() {
     this.page = 1;
     this.tableSize = 50;
-    this.getClientHistoryList();
+    this.isCurrent = false;
+    this.isHistory = true;
+    this.filterData();
+    // this.getClientHistoryList();
   }
 
   public onTableSizeChange(event: any): void {
@@ -300,23 +334,45 @@ export class ClientListComponent implements OnInit {
       });
   }
 
-  filterData() {
+   saveState() {
+    this.state = {
+      pageIndex : this.page,
+      pageSize : this.tableSize,
+      search : this.term,
+      directionValue : this.directionValue,
+      sortValue : this.sortValue,
+      current:this.isCurrent,
+      history:this.isHistory,
+      filters: this.filters,
+    }
+    this.filterState.saveState(this.state);
+   }
 
+  private ids(filterArray: any[]): string {
+  if (!Array.isArray(filterArray)) return '';
+  return filterArray.map(x => x.id).join(',');
+}
+  filterData() {
+    this.saveState();
     this.filterQuery = this.getFilterBaseUrl()
     if (this.filters.country.length) {
-      this.filterQuery += `&country-ids=[${this.filters.country.join(',')}]`;
+      this.filterQuery += `&country-ids=[${this.ids(this.filters.country)}]`;
     }
 
     if (this.filters.source.length) {
-      this.filterQuery += `&source-ids=[${this.filters.source.join(',')}]`;
+      this.filterQuery += `&source-ids=[${this.ids(this.filters.source)}]`;
     }
     if(this.directionValue && this.sortValue){
       this.filterQuery += `&sort-by=${this.sortValue}&sort-type=${this.directionValue}`
     }
     if (this.isCurrent) {
+      this.isCurrent = true;
+      this.isHistory = false;
       this.filterQuery += `&status=True`;
     }
     else {
+      this.isCurrent = false;
+      this.isHistory = true;
       this.filterQuery += `&status=False`;
     }
     this.apiService.getData(`${environment.live_url}/${environment.all_clients}/${this.filterQuery}`).subscribe((res: any) => {

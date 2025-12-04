@@ -12,6 +12,10 @@ import { DropDownPaginationService } from 'src/app/service/drop-down-pagination.
 import { GenericTableFilterComponent } from 'src/app/shared/generic-table-filter/generic-table-filter.component';
 import { DatePipe } from '@angular/common';
 
+export interface IdNamePair {
+  id: any;
+  name: string;
+}
 @Component({
   selector: 'app-leave-request',
   templateUrl: './leave-request.component.html',
@@ -76,7 +80,7 @@ export class LeaveRequestComponent implements OnInit {
     this.getleaverequest();
   }
 
-  filters: { leave_type: string[], employees: string[], status_name: string[] } = {
+  filters: { leave_type: IdNamePair[], employees: IdNamePair[], status_name: IdNamePair[] } = {
     leave_type: [],
     employees: [],
     status_name: [],
@@ -303,7 +307,10 @@ export class LeaveRequestComponent implements OnInit {
     this.cdr.detectChanges();
   }
 
-
+private ids(filterArray: any[]): string {
+  if (!Array.isArray(filterArray)) return '';
+  return filterArray.map(x => x.id).join(',');
+}
 
   getleaverequest() {
      this.count = 0;
@@ -312,13 +319,13 @@ export class LeaveRequestComponent implements OnInit {
       this.filterQuery += `&manager_id=${this.user_id}`
     }
     if (this.filters.leave_type.length) {
-      this.filterQuery += `&leave_type_ids=[${this.filters.leave_type.join(',')}]`
+      this.filterQuery += `&leave_type_ids=[${this.ids(this.filters.leave_type)}]`
     }
     if (this.filters.employees.length) {
-      this.filterQuery += `&leave_employee_ids=[${this.filters.employees.join(',')}]`;
+      this.filterQuery += `&leave_employee_ids=[${this.ids(this.filters.employees)}]`;
     }
     if (this.filters.status_name.length) {
-      this.filterQuery += `&status_values=[${this.filters.status_name.join(',')}]`;
+      this.filterQuery += `&status_values=[${this.ids(this.filters.status_name)}]`;
     }
     if (this.selectedPeriod) {
       this.filterQuery += `&leave_period=${this.selectedPeriod}`;

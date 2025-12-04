@@ -7,6 +7,11 @@ import { environment } from '../../../../environments/environment';
 import { DatePipe } from '@angular/common';
 import { DropDownPaginationService } from 'src/app/service/drop-down-pagination.service';
 
+export interface IdNamePair {
+  id: any;
+  name: string;
+}
+
 @Component({
   selector: 'app-resource-availability',
   templateUrl: './resource-availability.component.html',
@@ -29,7 +34,7 @@ export class ResourceAvailabilityComponent implements OnInit {
   allDataLoaded = false;
   user_id: any;
   userRole: any;
-  filters: { leave_type: string[], employees: string[], status_name: string[] } = {
+  filters: { leave_type: IdNamePair[], employees: IdNamePair[], status_name: IdNamePair[] } = {
     leave_type: [],
     employees: [],
     status_name: [],
@@ -142,6 +147,10 @@ export class ResourceAvailabilityComponent implements OnInit {
     this.getEmployeeCalendar();
   }
 
+  private ids(filterArray: any[]): string {
+  if (!Array.isArray(filterArray)) return '';
+  return filterArray.map(x => x.id).join(',');
+}
   getEmployeeCalendar() {
     if (this.isLoading) return;
     this.isLoading = true;
@@ -150,7 +159,7 @@ export class ResourceAvailabilityComponent implements OnInit {
       this.filterQuery += `&leave_period=${this.selectedPeriod}`;
     }
     if (this.filters.employees.length) {
-      this.filterQuery += `&employee-ids=[${this.filters.employees.join(',')}]`;
+      this.filterQuery += `&employee-ids=[${this.ids(this.filters.employees)}]`;
     }
     if (this.mainStartDate && this.mainEndDate) {
       let start_date = this.datePipe.transform(this.mainStartDate, 'yyyy-MM-dd');

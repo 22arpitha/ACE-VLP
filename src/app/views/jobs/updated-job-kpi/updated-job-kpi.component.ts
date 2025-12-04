@@ -443,6 +443,91 @@ public onPageChanged(event: any) {
   public getContinuousIndex(index: number): number {
                     return (this.currentPage - 1) * this.pageSize + index + 1;
   }
+
+  // removeImage(i: number) {
+  //   const index = (this.currentPage - 1) * this.pageSize + i;
+  //   this.selectedBudgetFile[index] = null;
+  //   this.budgetFile[index] = null;
+  //   const row = (this.jobKPIFormGroup.get('data') as FormArray).at(index);
+  //   if (row) {
+  //     row.get('budget_file')?.setValue(null);
+  //     row.get('budget_file_name')?.setValue(null);
+  //   }
+  //   if (this.isDragActive['budget'][index]) {
+  //     Object.keys(this.isDragActive['budget'][index]).forEach(key => {
+  //       this.isDragActive['budget'][index][key] = false;
+  //     });
+  //   }
+  //   const input: HTMLInputElement = document.querySelector(
+  //     `input[formcontrolname='budget_file'][data-row="${index}"]`
+  //   ) as HTMLInputElement;
+
+  //   if (input) input.value = '';
+  // }
+
+  removeFile(type: 'budget' | 'mrp' | 'crp', row: number, col: number = 0) {
+  const index = row;
+  if (type === 'budget') {
+    this.selectedBudgetFile[index] = null;
+    this.budgetFile[index] = null;
+    this.budgetFileLink[index] = null;
+  } 
+  else if (type === 'mrp') {
+    this.selectedMrpFile[index][col] = null;
+    this.mrpFile[index][col] = null;
+    this.mrpFileLink[index][col] = null;
+  }
+  else if (type === 'crp') {
+    this.selectedCrpFile[index][col] = null;
+    this.crpFile[index][col] = null;
+    this.crpFileLink[index][col] = null;
+  }
+  const formRow = (this.jobKPIFormGroup.get('data') as FormArray).at(index);
+  if (type === 'budget') {
+    formRow.get('budget_file')?.setValue(null);
+    formRow.get('budget_file_name')?.setValue(null);
+  } 
+  else {
+    const details = formRow.get('details') as FormArray;
+    const item = details.at(col);
+
+    if (type === 'mrp') {
+      item.get('mrpFile')?.setValue(null);
+      item.get('mrp_file_name')?.setValue(null);
+    }
+
+    if (type === 'crp') {
+      item.get('crpFile')?.setValue(null);
+      item.get('crp_file_name')?.setValue(null);
+    }
+  }
+  if (this.isDragActive[type][index]) {
+    if (this.isDragActive[type][index][col] !== undefined) {
+      this.isDragActive[type][index][col] = false;
+    }
+  }
+
+  // --- 4. Reset input element ---
+  let selector = '';
+
+  if (type === 'budget') {
+    selector = `input[formcontrolname='budget_file'][data-row="${index}"]`;
+  } 
+  else if (type === 'mrp') {
+    selector = `input[data-row="${index}"][data-mrp="${col}"]`;
+  } 
+  else if (type === 'crp') {
+    selector = `input[data-row="${index}"][data-crp="${col}"]`;
+  }
+
+  const input: HTMLInputElement = document.querySelector(selector) as HTMLInputElement;
+  if (input) input.value = '';
+
+  console.log(`Removed ${type.toUpperCase()} file for row ${index}, col ${col}`);
+}
+
+
+
   public onBudgetFileSelected(event: Event,index:any): void {
                   const input = event.target as HTMLInputElement;
 
@@ -679,7 +764,10 @@ onDragOver(event: DragEvent) {
 
   const type = zone.getAttribute("data-type");   // "budget" | "mrp" | "crp"
   const row = Number(zone.getAttribute("data-row"));
-  const col = Number(zone.getAttribute("data-col") ?? -1);
+  // const col = Number(zone.getAttribute("data-col") ?? -1);
+  let col = Number(zone.getAttribute("data-col") ?? 0);
+  // Budget does not have multiple columns → FORCE col = 0
+  if (type === 'budget') col = 0;
 
   if (!this.isDragActive[type][row]) this.isDragActive[type][row] = {};
 
@@ -692,7 +780,9 @@ onDragLeave(event: DragEvent) {
 
   const type = zone.getAttribute("data-type");
   const row = Number(zone.getAttribute("data-row"));
-  const col = Number(zone.getAttribute("data-col") ?? -1);
+  // const col = Number(zone.getAttribute("data-col") ?? -1);
+  let col = Number(zone.getAttribute("data-col") ?? 0);
+  if (type === 'budget') col = 0;
 
   if (this.isDragActive[type][row])
       this.isDragActive[type][row][col] = false;
@@ -709,7 +799,9 @@ onFileDropped(event: DragEvent) {
 
   const type = zone.getAttribute("data-type");  // budget / mrp / crp
   const row = Number(zone.getAttribute("data-row"));
-  const col = Number(zone.getAttribute("data-col") ?? -1);
+  // const col = Number(zone.getAttribute("data-col") ?? -1);
+  let col = Number(zone.getAttribute("data-col") ?? 0);
+  if (type === 'budget') col = 0;
 
   // Stop highlight
   this.isDragActive[type][row][col] = false;

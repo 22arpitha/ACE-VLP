@@ -2,7 +2,6 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { PagesRoutingModule } from './pages-routing.module';
-import { RegisterComponent } from './register/register.component';
 import { Page404Component } from './page404/page404.component';
 import { Page500Component } from './page500/page500.component';
 import { ButtonModule, CardModule, FormModule, GridModule } from '@coreui/angular';
@@ -22,7 +21,6 @@ import { Page504Component } from './page504/page504.component';
 import { Page503Component } from './page503/page503.component';
 @NgModule({
   declarations: [
-    RegisterComponent,
     Page404Component,
     Page500Component,
     ForgotPasswordComponent,

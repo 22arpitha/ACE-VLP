@@ -42,7 +42,7 @@ designation__designation_name:false,
   accessPermissions = []
   user_id: any;
   userRole: any;
-  filters: { designation__designation_name: string[]} = {
+  filters: { designation__designation_name: IdNamePair[]} = {
     designation__designation_name:[]
   }
   allRoleNames:IdNamePair[] = [];
@@ -211,12 +211,16 @@ this.apiService.getData(`${environment.live_url}/${environment.employee}/${query
     this.filterData();
   }
 
+  private ids(filterArray: any[]): string {
+    if (!Array.isArray(filterArray)) return '';
+    return filterArray.map(x => x.id).join(',');
+  }
   filterData() {
     this.filterQuery = this.getFilterBaseUrl();
     
     if (this.filters.designation__designation_name.length) {
       this.page = 1;
-      this.filterQuery += `&designation-ids=[${this.filters.designation__designation_name.join(',')}]`;
+      this.filterQuery += `&designation-ids=[${this.ids(this.filters.designation__designation_name)}]`;
     }
     if(this.directionValue && this.sortValue){
       this.filterQuery += `&sort-by=${this.sortValue}&sort-type=${this.directionValue}`

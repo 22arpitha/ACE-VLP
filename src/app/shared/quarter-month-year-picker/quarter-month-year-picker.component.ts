@@ -17,6 +17,7 @@ export class QuarterMonthYearPickerComponent implements OnInit {
   showSelection = true;
   year: number = new Date().getFullYear();
   yearDefault = new Date().getFullYear();
+  yearList: number[] = [];
   yearRangeStart: number;
   selectedMonth: string | null = null;
   selectedQuarter: string | null = null;
@@ -64,6 +65,7 @@ export class QuarterMonthYearPickerComponent implements OnInit {
     this.control.valueChanges.subscribe((val: any) => {
       this.parseInput(val);
     });
+    this.generateYearList();
   }
 
   parseInput(val: string) {
@@ -199,6 +201,15 @@ export class QuarterMonthYearPickerComponent implements OnInit {
     }
     this.showSelection = true;
     this.cdr.detectChanges();
+  }
+
+   generateYearList() {
+    const start = 2018;
+    const end = new Date().getFullYear();
+    this.yearList = [];
+    for (let y = start; y <= end; y++) {
+      this.yearList.push(y);
+    }
   }
 
 }

@@ -104,12 +104,12 @@ export class ProfileComponent implements OnInit {
   
 
   getCountry() {
-    this.api.getData(`${environment.live_url}/${environment.country}/`).subscribe((res: any) => {
-      // console.log(res,'country')
-      this.country = res
-    }, ((error) => {
-      this.api.showError(error.error.error.message)
-    }))
+    // this.api.getData(`${environment.live_url}/${environment.country}/`).subscribe((res: any) => {
+    //   // console.log(res,'country')
+    //   this.country = res
+    // }, ((error) => {
+    //   this.api.showError(error.error.error.message)
+    // }))
   }
 
   onFocusCountry() {
@@ -121,26 +121,26 @@ export class ProfileComponent implements OnInit {
   
   getState(event) {
     // console.log(event,'country id')
-    if(event){
-      this.api.getData(`${environment.live_url}/${environment.state}/?country_id=${event}`).subscribe((res: any) => {
-        if(res){
-        this.state = res
-        // this.getCity(event);
-        }
-      }, ((error) => {
-        this.api.showError(error.error.error.message)
-      }))
-    }
+    // if(event){
+    //   this.api.getData(`${environment.live_url}/${environment.state}/?country_id=${event}`).subscribe((res: any) => {
+    //     if(res){
+    //     this.state = res
+    //     // this.getCity(event);
+    //     }
+    //   }, ((error) => {
+    //     this.api.showError(error.error.error.message)
+    //   }))
+    // }
 
   }
 
   
   getCity(event) {
-    this.api.getData(`${environment.live_url}/${environment.city}/?state_id=${event}`).subscribe((res: any) => {
-      this.city = res
-    }, ((error) => {
-      this.api.showError(error.error.error.message)
-    }))
+    // this.api.getData(`${environment.live_url}/${environment.city}/?state_id=${event}`).subscribe((res: any) => {
+    //   this.city = res
+    // }, ((error) => {
+    //   this.api.showError(error.error.error.message)
+    // }))
   }
 
   profileDataForSidebar: any = {

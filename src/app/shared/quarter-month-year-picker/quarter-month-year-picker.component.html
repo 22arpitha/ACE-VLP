@@ -15,7 +15,7 @@
 <!-- Material menu that pops up on input click -->
 <mat-menu #pickerMenu="matMenu" class="picker-menu">
   <!-- Year Navigation -->
-  <div class="picker-header">
+  <div class="picker-header" *ngIf="mode!= 'Yearly'">
     <button mat-icon-button (click)="prevDecade();$event.stopPropagation()" aria-label="Previous Decade">
       <mat-icon>chevron_left</mat-icon>
     </button>
@@ -33,9 +33,12 @@
   <div class="picker-body">
     <!-- Year Mode -->
     <ng-container *ngIf="mode === 'Yearly' && showSelection">
-      <button mat-button *ngFor="let y of [0,1,2,3,4,5,6,7,8,9]" (click)="changeYear(yearRangeStart + y);$event.stopPropagation()">
+      <!-- <button mat-button *ngFor="let y of [0,1,2,3,4,5,6,7,8,9]" (click)="changeYear(yearRangeStart + y);$event.stopPropagation()">
         {{ yearRangeStart + y }}
-      </button>
+      </button> -->
+      <!-- client asked us to display from 2018 to current year -->
+         <button mat-button *ngFor="let y of yearList" (click)="changeYear(y); $event.stopPropagation()">{{ y }}
+        </button>
     </ng-container>
 
     <!-- Quarter Mode -->
