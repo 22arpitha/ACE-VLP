@@ -27,212 +27,6 @@ export class WorkCalendarComponent implements OnInit {
     { week: 'Saturday' }
   ]
   definedWeekend = [];
-  // data = [
-  //   {
-  //     "day": "Sunday",
-  //     "data": [
-  //       {
-  //         "key": "all",
-  //         "is_holiday": false
-  //       },
-  //       {
-  //         "key": "1st",
-  //         "is_holiday": false
-  //       },
-  //       {
-  //         "key": "2nd",
-  //         "is_holiday": false
-  //       },
-  //       {
-  //         "key": "3rd",
-  //         "is_holiday": false
-  //       },
-  //       {
-  //         "key": "4th",
-  //         "is_holiday": false
-  //       },
-  //       {
-  //         "key": "5th",
-  //         "is_holiday": false
-  //       }
-  //     ]
-  //   },
-  //   {
-  //     "day": "Monday",
-  //     "data": [
-  //       {
-  //         "key": "all",
-  //         "is_holiday": false
-  //       },
-  //       {
-  //         "key": "1st",
-  //         "is_holiday": false
-  //       },
-  //       {
-  //         "key": "2nd",
-  //         "is_holiday": false
-  //       },
-  //       {
-  //         "key": "3rd",
-  //         "is_holiday": false
-  //       },
-  //       {
-  //         "key": "4th",
-  //         "is_holiday": false
-  //       },
-  //       {
-  //         "key": "5th",
-  //         "is_holiday": false
-  //       }
-  //     ]
-  //   },
-  //   {
-  //     "day": "Tuesday",
-  //     "data": [
-  //       {
-  //         "key": "all",
-  //         "is_holiday": false
-  //       },
-  //       {
-  //         "key": "1st",
-  //         "is_holiday": false
-  //       },
-  //       {
-  //         "key": "2nd",
-  //         "is_holiday": false
-  //       },
-  //       {
-  //         "key": "3rd",
-  //         "is_holiday": false
-  //       },
-  //       {
-  //         "key": "4th",
-  //         "is_holiday": false
-  //       },
-  //       {
-  //         "key": "5th",
-  //         "is_holiday": false
-  //       }
-  //     ]
-  //   },
-  //   {
-  //     "day": "Wednesday",
-  //     "data": [
-  //       {
-  //         "key": "all",
-  //         "is_holiday": false
-  //       },
-  //       {
-  //         "key": "1st",
-  //         "is_holiday": false
-  //       },
-  //       {
-  //         "key": "2nd",
-  //         "is_holiday": false
-  //       },
-  //       {
-  //         "key": "3rd",
-  //         "is_holiday": false
-  //       },
-  //       {
-  //         "key": "4th",
-  //         "is_holiday": false
-  //       },
-  //       {
-  //         "key": "5th",
-  //         "is_holiday": false
-  //       }
-  //     ]
-  //   },
-  //   {
-  //     "day": "Thursday",
-  //     "data": [
-  //       {
-  //         "key": "all",
-  //         "is_holiday": false
-  //       },
-  //       {
-  //         "key": "1st",
-  //         "is_holiday": false
-  //       },
-  //       {
-  //         "key": "2nd",
-  //         "is_holiday": false
-  //       },
-  //       {
-  //         "key": "3rd",
-  //         "is_holiday": false
-  //       },
-  //       {
-  //         "key": "4th",
-  //         "is_holiday": false
-  //       },
-  //       {
-  //         "key": "5th",
-  //         "is_holiday": false
-  //       }
-  //     ]
-  //   },
-  //   {
-  //     "day": "Friday",
-  //     "data": [
-  //       {
-  //         "key": "all",
-  //         "is_holiday": false
-  //       },
-  //       {
-  //         "key": "1st",
-  //         "is_holiday": false
-  //       },
-  //       {
-  //         "key": "2nd",
-  //         "is_holiday": false
-  //       },
-  //       {
-  //         "key": "3rd",
-  //         "is_holiday": false
-  //       },
-  //       {
-  //         "key": "4th",
-  //         "is_holiday": false
-  //       },
-  //       {
-  //         "key": "5th",
-  //         "is_holiday": false
-  //       }
-  //     ]
-  //   },
-  //   {
-  //     "day": "Saturday",
-  //     "data": [
-  //       {
-  //         "key": "all",
-  //         "is_holiday": false
-  //       },
-  //       {
-  //         "key": "1st",
-  //         "is_holiday": false
-  //       },
-  //       {
-  //         "key": "2nd",
-  //         "is_holiday": false
-  //       },
-  //       {
-  //         "key": "3rd",
-  //         "is_holiday": false
-  //       },
-  //       {
-  //         "key": "4th",
-  //         "is_holiday": false
-  //       },
-  //       {
-  //         "key": "5th",
-  //         "is_holiday": false
-  //       }
-  //     ]
-  //   }
-
-  // ]
   data: any = [];
   itemId: any;
 
@@ -266,14 +60,6 @@ export class WorkCalendarComponent implements OnInit {
     this.initialform();
     this.getWorkCalendarData();
     this.getModuleAccess();
-    // this.buildWeekendFromData();
-    // this.workCalendarForm?.valueChanges?.subscribe(() => {
-    //   const currentFormValue = this.workCalendarForm?.getRawValue();
-    //   const isInvalid = this.workCalendarForm?.touched && this.workCalendarForm?.invalid;
-    //   const isFormChanged: boolean = JSON.stringify(currentFormValue) !== JSON.stringify(this.initialFormValue);
-    //   let unSavedChanges = isFormChanged || isInvalid;
-    //   this.formErrorScrollService.setUnsavedChanges(unSavedChanges);
-    // });
   }
 
   initialform() {
@@ -425,40 +211,12 @@ export class WorkCalendarComponent implements OnInit {
     this.minDate = event.value
   }
 
-  // onAllSelect(day: any) {
-  //   const val = day.all;
-  //   day.first = val;
-  //   day.second = val;
-  //   day.third = val;
-  //   day.fourth = val;
-  //   day.fifth = val;
-  // }
-  // OnSingleSelection(day: any) {
-  //   // if()
-  //   console.log(day)
-  //   if (day.first && day.second && day.third && day.fourth && day.fifth) {
-  //     day.all = true;
-  //   } else {
-  //     day.all = false;
-  //   }
-  //   day.first = day.first;
-  //   day.second = day.second;
-  //   day.third = day.third;
-  //   day.fourth = day.fourth;
-  //   day.fifth = day.fifth;
-  //   // console.log(this.definedWeekend)
-  // }
-
   cancelAndBack() {
     this.isEnabledEdit = false;
     this.shouldDisableFields = false;
     this.resetFormState();
   }
-  // canDeactivate(): Observable<boolean> {
-  //   const currentFormValue = this.workCalendarForm?.getRawValue();
-  //   const isFormChanged: boolean = JSON.stringify(currentFormValue) !== JSON.stringify(this.initialFormValue);
-  //   return this.formErrorScrollService.isFormDirtyOrInvalidCheck(isFormChanged, this.workCalendarForm);
-  // }
+  
 
   buildWeekendFromData() {
     if (this.data.length > 0) {

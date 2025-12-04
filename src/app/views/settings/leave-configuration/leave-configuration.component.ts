@@ -38,12 +38,6 @@ export class LeaveConfigurationComponent implements OnInit {
     private formUtilityService: FormErrorScrollUtilityService , private activeRouter: ActivatedRoute) {
       this.common_service.setTitle(this.BreadCrumbsTitle);
       this.item_id = this.activeRouter.snapshot.paramMap.get('id')
-      // if(this.item_id){
-      //   this.getLeaveTypeDetails();
-      //   this.editLeaveType = false;
-      // } else{
-      //   this.editLeaveType = true;
-      // }
   }
 
   ngOnInit(): void {
@@ -66,17 +60,10 @@ export class LeaveConfigurationComponent implements OnInit {
     });
   }
 
-  // ngOnDestroy(): void {
-  //   // Destroy the editor to prevent memory leaks
-  //   this.editor.destroy();
-  //   this.formUtilityService.resetHasUnsavedValue();
-  // }
+  
   getLeaveTypeDetails(){
     this.apiService.getData(`${environment.live_url}/${environment.settings_leave_type}/${this.item_id}/`).subscribe(
       (res:any)=>{
-      //   if(res.is_accrual && res.accrual_credits && res.accrual_month){
-      //   this.leaveTypeForm.patchValue({accrual_credits:0,accrual_month:0})
-      // }
         this.leaveTypeForm.patchValue({
           leave_type_name: res.leave_type_name,
           leave_description: res.leave_description,
@@ -184,20 +171,7 @@ export class LeaveConfigurationComponent implements OnInit {
     ]);
   }
 
-  // accrualLeaveCycle(event: any) {
-  //   console.log(event)
-  //   if (event.value === 'yearly') {
-  //     this.simpleToggleRequired(true, [
-  //       'accrual_month',
-  //     ]);
-  //   } 
-  //   else {
-  //     this.simpleToggleRequired(false, [
-  //       'accrual_month',
-  //     ]);
-  //   }
-  // }
-  accrualAndResetLeaveCycle(event: any,text:string) {
+   accrualAndResetLeaveCycle(event: any,text:string) {
   let control_name:any;
   const isYearly = event.value === 'yearly';
   if(text==='accrual'){
@@ -225,16 +199,7 @@ export class LeaveConfigurationComponent implements OnInit {
       controls.push('carry_forward_cycle', 'carry_forward_days');
     }
     this.simpleToggleRequired(event.checked, controls);
-    // this.simpleToggleRequired(event.checked, [
-    //   'reset_cycle',
-    //   'reset_day',
-    //   'reset_month',
-    //   'is_carry_forward',
-    //   'carry_forward_cycle',
-    //   'carry_forward_days',
-    //   'encash_above_limit',
-    //   'encash_over_limit',
-    // ]);
+    
   }
 
   public isCarryForwardEnabled(event: any) {

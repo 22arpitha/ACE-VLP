@@ -30,10 +30,6 @@
                         <h4 class="label-name">Taken</h4>
                         <p>{{comOffGrantData?.number_of_leaves_applying_for}}</p>
                     </div>
-                    <!-- <div class="col-sm-12 col-md-6 col-lg-6 my-2">
-                        <h4 class="label-name">Credited</h4>
-                        <p>{{comOffGrantData?.credited || 0}}</p>
-                    </div> -->
                     <div class="col-sm-12 col-md-6 col-lg-6 my-2">
                         <h4 class="label-name">Reason</h4>
                         <p>{{comOffGrantData?.message}}</p>
@@ -58,9 +54,6 @@
                                 <mat-error *ngIf="f['rejected_reason']?.invalid && f['rejected_reason']?.touched || f['rejected_reason']?.dirty">
                                     <span *ngIf="f['rejected_reason']?.errors?.['required']">Reason is required</span>
                                 </mat-error>
-                                <!-- <mat-hint align="end" class="mt-2">
-                                    {{ f['rejected_reason']?.value?.length || 0 }}/200 ({{ 200 - (f['rejected_reason']?.value?.length || 0) }} left)
-                                </mat-hint> -->
                             </mat-form-field>
                         </div>
                     </form>

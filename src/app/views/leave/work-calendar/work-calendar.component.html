@@ -10,25 +10,6 @@
             <div class="row mx-0">
                 <div class="col-sm-12 col-md-12 col-lg-5">
                     <div class="row mx-0">
-                        <!-- <div class="col-12 col-lg-6 no-padding pl-0 pr-5">
-                            <mat-form-field appearance="outline"
-                                [ngClass]="{ 'highlight-background':!shouldDisableFields}"
-                                class="w-100 custom-mat-form-field">
-                                <mat-label>Week starts on <b class="r-star">*</b></mat-label>
-                                <mat-select formControlName="week_starts_on" autocomplete="off"
-                                    placeholder="Select week" panelClass="custom-select-panel"
-                                    [disableOptionCentering]="true" (selectionChange)="onWeekStartChange($event.value)">
-                                    <mat-option *ngFor="let item of weeks" [value]="item?.week">
-                                        {{item?.week}}
-                                    </mat-option>
-                                </mat-select>
-                                <mat-error
-                                    *ngIf="f['week_starts_on']?.invalid && f['week_starts_on']?.touched || f['week_starts_on']?.dirty">
-                                    <span *ngIf="f['week_starts_on']?.errors?.['required']">Week Starts on is
-                                        required</span>
-                                </mat-error>
-                            </mat-form-field>
-                        </div> -->
                         <div class="col-12 col-lg-6 no-padding pl-0 pr-5">
                             <mat-form-field appearance="outline"
                                 [ngClass]="{ 'highlight-background':!shouldDisableFields}"
@@ -135,50 +116,13 @@
                                             (change)="onCheckboxChange(day, key)" />
                                     </td>
                                 </tr>
-                                <!-- <tr *ngFor="let day of filteredWeekendDays">
-                                    <td>{{ day.day }}</td>
-                                    <td *ngFor="let key of columnKeys">
-                                        <input type="checkbox" [ngModelOptions]="{ standalone: true }" [disabled]="!shouldDisableFields"
-                                            [(ngModel)]="day[key]" (change)="onCheckboxChange(day, key)" />
-                                    </td>
-                                </tr> -->
                             </tbody>
-                            <!-- <thead>
-                                <tr>
-                                    <th class="day-name">Days</th>
-                                    <th>All</th>
-                                    <th>1st</th>
-                                    <th>2nd</th>
-                                    <th>3rd</th>
-                                    <th>4th</th>
-                                    <th>5th</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                               
-                                <tr *ngFor="let day of filteredWeekendDays">
-                                    <td class="day-name">{{ day.week }}</td>
-                                    <td><input type="checkbox" [ngModelOptions]="{standalone: true}"
-                                            [(ngModel)]="day.all" [disabled]="!shouldDisableFields" (change)="onAllSelect(day)" /></td>
-                                    <td><input type="checkbox" [ngModelOptions]="{standalone: true}"
-                                            [(ngModel)]="day.first" [disabled]="!shouldDisableFields" (change)="OnSingleSelection(day)" /></td>
-                                    <td><input type="checkbox" [ngModelOptions]="{standalone: true}"
-                                            [(ngModel)]="day.second" [disabled]="!shouldDisableFields" (change)="OnSingleSelection(day)" /></td>
-                                    <td><input type="checkbox" [ngModelOptions]="{standalone: true}"
-                                            [(ngModel)]="day.third" [disabled]="!shouldDisableFields" (change)="OnSingleSelection(day)" /></td>
-                                    <td><input type="checkbox" [ngModelOptions]="{standalone: true}"
-                                            [(ngModel)]="day.fourth" [disabled]="!shouldDisableFields" (change)="OnSingleSelection(day)" /></td>
-                                    <td><input type="checkbox" [ngModelOptions]="{standalone: true}"
-                                            [(ngModel)]="day.fifth" [disabled]="!shouldDisableFields" (change)="OnSingleSelection(day)" /></td>
-                                </tr>
-                            </tbody> -->
                         </table>
                     </div>
                 </div>
             </div>
         </form>
         <div class="my-3 px-4">
-            <!-- *ngIf="((user_role_name !== 'Admin' && accessPermissions[0]?.update) || user_role_name === 'Admin') && isEditItem" -->
             <button mat-raised-button class="proceedbtn mat-btn-s me-3" type="submit" (click)="saveWorkCalendarData()"
                 [disabled]="!shouldDisableFields">
                 <span>{{buttonName}}</span></button>

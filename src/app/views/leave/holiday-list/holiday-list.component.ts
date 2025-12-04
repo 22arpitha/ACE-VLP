@@ -102,25 +102,6 @@ export class HolidayListComponent implements OnInit {
     this.selectedItemId = item?.id;
      sessionStorage.setItem('access-name', this.access_name?.name)
     this.openEditInvoicePopup(item);
-    // try {
-    //   const modalRef = await this.modalService.open(GenericEditComponent, {
-    //     size: 'sm',
-    //     backdrop: 'static',
-    //     centered: true
-    //   });
-
-    //   modalRef.componentInstance.status.subscribe(resp => {
-    //     if (resp === 'ok') {
-    //       modalRef.dismiss();
-    //       sessionStorage.setItem('access-name', this.access_name?.name);
-    //       this.openEditInvoicePopup(item);
-    //     } else {
-    //       modalRef.dismiss();
-    //     }
-    //   });
-    // } catch (error) {
-    //   console.error('Error opening modal:', error);
-    // }
   }
 
   public getAllHolidayList() {
@@ -193,11 +174,6 @@ export class HolidayListComponent implements OnInit {
          this.getAllHolidayList();
       }
     });
-    // this.dialog.afterAllClosed.subscribe((resp: any) => {
-    //   //  console.log('resp',resp);
-    //   this.initalCall();
-    //   this.getAllHolidayList();
-    // });
   }
 
   setDateFilterColumn(event) {
@@ -218,12 +194,6 @@ export class HolidayListComponent implements OnInit {
 
   filterData() {
     this.filterQuery = this.getFilterBaseUrl()
-    //  if (this.filters.client_name.length) {
-    //    this.filterQuery += `&client-ids=[${this.filters.client_name.join(',')}]`;
-    //  }
-    //  if(this.startDate && this.endDate){
-    //    this.filterQuery += `&start-date=${this.startDate}&end-date=${this.endDate}`;
-    //  }
     this.apiService.getData(`${environment.live_url}/${environment.holiday_calendar}/${this.filterQuery}`).subscribe((res: any) => {
       this.allHolidayList = res?.results;
       const noOfPages: number = res?.['total_pages']

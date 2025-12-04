@@ -42,20 +42,6 @@
                                 </mat-error>
                             </mat-form-field>
                         </div>
-                        <!-- <div class="col-12 col-lg-6">
-                            <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
-                                <mat-label>Classification<b class="r-star">*</b></mat-label>
-                                <mat-select formControlName="classification" autocomplete="off"
-                                    placeholder="Select week" panelClass="custom-select-panel" [disableOptionCentering]="true">
-                                    <mat-option value="holiday">Holiday</mat-option>
-                                </mat-select>
-                                <mat-error
-                                    *ngIf="f['classification']?.invalid && f['classification']?.touched || f['classification']?.dirty">
-                                    <span *ngIf="f['classification']?.errors?.['required']">Classificationis
-                                        required</span>
-                                </mat-error>
-                            </mat-form-field>
-                        </div> -->
                         <div class="col-12 col-lg-6">
                             <mat-form-field appearance="outline" class="w-100 custom-mat-form-field"
                                 [ngClass]="{ 'highlight-background':!shouldDisableFields}">

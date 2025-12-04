@@ -81,15 +81,6 @@ export class LeaveApplyComponent implements OnInit {
 
     this.common_service.setTitle(this.BreadCrumbsTitle);
     this.user_id = sessionStorage.getItem('user_id');
-    // this.filteredEmails = this.allEmployeeEmailsList?.slice();
-    // this.emailCtrl.valueChanges
-    //   ?.pipe(
-    //     startWith(''),
-    //     map((value: string | null) =>
-    //       value ? this._filter(value) : this.allEmployeeEmailsList?.slice()
-    //     )
-    //   )
-    //   .subscribe((data) => (this.filteredEmails = data));
   }
 
   ngOnInit(): void {
@@ -162,18 +153,6 @@ employeeGender:any;
           this.leaveApplyForm.controls['attachment'].setErrors(null);
         }
         this.leaveApplyForm.controls['attachment'].updateValueAndValidity();
-    // this.selectedLeaveTypeName = this.allleavetypeList.find((item: any) => item.leave_type_id === event.value)?.leave_type.toLowerCase() || '';
-    // this.apiService.getEmployeeLeaves(this.user_id, event.value).subscribe(
-    //   (res: any) => {
-    //     if(res?.results.length>0){
-    //       this.leave_balance = res?.results[0].closing_balance_leave;
-    //       this.employeeActive = res?.results[0].is_active;
-    //     } else{
-    //       this.leave_balance = 0;
-    //     }
-    //   },
-    //   (err) => {}
-    // );
   }
 
   initialForm() {
@@ -283,25 +262,6 @@ employeeGender:any;
       .subscribe((res: any) => {
         this.working_day_data = res[0]['working_days'];
         this.my_calendar = res[0]
-        // if(this.my_calendar.custom_year){
-        //   console.log('custom year')
-        // } else{
-        //   console.log('not a custom year')
-        //   const yearOfStartDate = this.startDate?.getFullYear();
-        //   const yearOfEndDate = this.endDate?.getFullYear();
-        //   console.log(yearOfStartDate, yearOfEndDate)
-        //   if(yearOfStartDate ===yearOfEndDate){
-        //    if(yearOfStartDate===this.my_calendar.year){
-        //     this.allowDaysCounting = true;
-        //    } else{
-        //     this.allowDaysCounting = false;
-        //    }
-        //   } else{
-        //     console.log('year not matching')
-        //   }
-        // }
-        // console.log('api response ==>', this.working_day_data);
-
         this.checkHoliday(date);
       });
   }
@@ -511,20 +471,7 @@ employeeGender:any;
   triggerFileInput() {
     this.fileInput?.nativeElement?.click();
   }
-  // uploadImageFile(event: any) {
-  //   this.uploadFile = event.target.files[0];
-  //   if (event.target.files && event.target.files[0]) {
-  //     const reader = new FileReader();
-  //     reader.readAsDataURL(event.target.files[0]);
-  //     reader.onload = (event: any) => {
-  //       this.url = event.target.result;
-  //       if (reader.result) {
-  //         this.fileUrl = reader.result;
-  //       }
-  //       this.fileDataUrl = reader.result;
-  //     };
-  //   }
-  // }
+  
 
   private _excludeSelected(): string[] {
     return this.ccEmailsList.filter(

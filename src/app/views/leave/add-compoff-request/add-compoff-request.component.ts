@@ -48,17 +48,7 @@ export class AddCompoffRequestComponent implements OnInit {
     }
     console.log(this.data)
   }
-  //   ngAfterViewInit() {
-  //   setTimeout(() => {
-  //     this.disabledDatesWithTooltip.forEach(disabled => {
-  //       const timestamp = disabled.date.setHours(0, 0, 0, 0);
-  //       const el = document.querySelector(`.tooltip-${timestamp}`) as HTMLElement;
-  //       if (el) {
-  //         el.setAttribute('data-tooltip', disabled.reason);
-  //       }
-  //     });
-  //   }, 100); // Delay needed to ensure datepicker DOM is rendered
-  // }
+  
 
   access_name: any;
   getModuleAccess() {
@@ -101,12 +91,6 @@ export class AddCompoffRequestComponent implements OnInit {
       }
     )
   }
-
-  //  public onEmployeeChange(event: any) {
-  //   this.updateSelectedItems('employee', event.value);
-  //   // this.getClientBasedEndClient(client_id);
-  // }
-
   
   workedDateFun(event) {
     this.minDate = event.value
@@ -212,19 +196,6 @@ export class AddCompoffRequestComponent implements OnInit {
   });
 }
 
-
-// simpleToggleRequired(enable: boolean, controlNames: string[]) {
-//     controlNames.forEach(name => {
-//       const control :any= this.rejectCompOffForm.get(name);
-//       if (enable) {
-//         control?.setValidators(Validators.required);
-//       } else {
-//           control?.clearValidators();
-//           control?.reset();
-//       }
-//       control?.updateValueAndValidity();
-//     });
-//   }
  openInNewTab(url: string): void {
     window.open(url, '_blank');
   }

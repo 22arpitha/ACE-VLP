@@ -123,17 +123,14 @@ export class ViewLeaveRequestComponent implements OnInit {
     const payload = {
       reason: reason,
       status: 'Rejected',
-      // Add other fields if needed like `id`, `user_id`, etc.
     };
 
     this.apiService.postData('your-endpoint/reject', payload).subscribe({
       next: (res) => {
         console.log('Reject successful', res);
-        // show success toast or update UI
       },
       error: (err) => {
         console.error('Reject failed', err);
-        // show error toast
       },
     });
   }

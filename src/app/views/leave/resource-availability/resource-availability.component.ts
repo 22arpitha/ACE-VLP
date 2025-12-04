@@ -169,11 +169,6 @@ export class ResourceAvailabilityComponent implements OnInit {
     this.apiService.getData(`${environment.live_url}/${environment.resource_availability}/${this.filterQuery}`)
       .subscribe((res: any) => {
         if (res.results) {
-          // this.employeeCalendarData = res.results;
-          // this.weekDates = res?.results[0]?.leave;
-          // const noOfPages: number = res?.['total_pages']
-          // this.count = noOfPages * this.tableSize;
-          // this.page = res?.['current_page'];
           if (this.page === 1) {
             this.employeeCalendarData = res.results;
           } else {

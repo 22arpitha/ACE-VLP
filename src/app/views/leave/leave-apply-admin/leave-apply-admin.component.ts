@@ -80,15 +80,6 @@ export class LeaveApplyAdminComponent implements OnInit {
     this.common_service.setTitle(this.BreadCrumbsTitle);
     this.user_id = sessionStorage.getItem('user_id');
     this.userRole = sessionStorage.getItem('user_role_name');
-    // this.filteredEmails = this.allEmployeeEmailsList?.slice();
-    // this.emailCtrl.valueChanges
-    //   ?.pipe(
-    //     startWith(''),
-    //     map((value: string | null) =>
-    //       value ? this._filter(value) : this.allEmployeeEmailsList?.slice()
-    //     )
-    //   )
-    //   .subscribe((data) => (this.filteredEmails = data));
   }
 
   ngOnInit(): void {
@@ -160,18 +151,6 @@ export class LeaveApplyAdminComponent implements OnInit {
           this.leaveApplyForm.controls['attachment'].setErrors(null);
         }
         this.leaveApplyForm.controls['attachment'].updateValueAndValidity();
-    // this.selectedLeaveTypeName = this.allleavetypeList.find((item: any) => item.id === event.value)?.leave_type_name.toLowerCase() || '';
-    // this.apiService.getEmployeeLeaves(this.selectedItemsMap['employee'][0].user_id, event.value).subscribe(
-    //   (res: any) => {
-    //     if(res?.results.length>0){
-    //       this.leave_balance = res?.results[0].closing_balance_leave;
-    //       this.employeeActive = res?.results[0].is_active;
-    //     } else{
-    //       this.leave_balance = 0;
-    //     }
-    //   },
-    //   (err) => { }
-    // );
   }
 
   initialForm() {
@@ -483,11 +462,6 @@ export class LeaveApplyAdminComponent implements OnInit {
           this.reportinManagerDetails = this.allEmployeeEmailsList.find(
             (emp: any) => emp.user_id === Number(this.user_id)
           );
-          // console.log(
-          //   'this.reportinManagerDetails',
-          //   this.user_id,
-          //   this.reportinManagerDetails
-          // );
         },
         (error) => {
           this.apiService.showError(error?.error?.detail);
@@ -504,20 +478,7 @@ export class LeaveApplyAdminComponent implements OnInit {
     this.fileDataUrl = '';
     this.leaveApplyForm.patchValue({attachment:''})
   }
-  // uploadImageFile(event: any) {
-  //   this.uploadFile = event.target.files[0];
-  //   if (event.target.files && event.target.files[0]) {
-  //     const reader = new FileReader();
-  //     reader.readAsDataURL(event.target.files[0]);
-  //     reader.onload = (event: any) => {
-  //       this.url = event.target.result;
-  //       if (reader.result) {
-  //         this.fileUrl = reader.result;
-  //       }
-  //       this.fileDataUrl = reader.result;
-  //     };
-  //   }
-  // }
+
 
   private _excludeSelected(): string[] {
     return this.ccEmailsList.filter(
@@ -583,7 +544,7 @@ export class LeaveApplyAdminComponent implements OnInit {
   isDragOver = false;
 
   onDragOver(event: DragEvent) {
-    event.preventDefault();    // required for drop to work
+    event.preventDefault();    
     this.isDragOver = true;
   }
 
@@ -598,7 +559,6 @@ export class LeaveApplyAdminComponent implements OnInit {
     const file = event.dataTransfer?.files?.[0];
     if (!file) return;
 
-    // Accept images only
     if (!file.type.startsWith('image/')) {
       this.apiService.showError("Only image files are allowed.");
       return;
@@ -769,7 +729,7 @@ export class LeaveApplyAdminComponent implements OnInit {
 
   private scrollListeners: { [key: string]: (event: Event) => void } = {};
 
-  // Selected items for pagination dropdowns
+  
   selectedItemsMap: { [key: string]: any[] } = {
     employee: [],
   };
@@ -940,7 +900,7 @@ export class LeaveApplyAdminComponent implements OnInit {
 
     if (!wc) return false;
 
-    // CASE 1 — custom_year = false
+    //if custom_year = false
     if (wc.custom_year === false) {
       if (wc.year === d.getFullYear()) {
         return this.isWorkCalendarHoliday(wc, d);
@@ -950,7 +910,7 @@ export class LeaveApplyAdminComponent implements OnInit {
       }
     }
 
-    // CASE 2 — custom_year = true
+    // if custom_year = true
     if (wc.custom_year === true) {
       if (wc.custom_year_start_date && wc.custom_year_end_date) {
         const startRange = this.startOfDay(new Date(wc.custom_year_start_date));
@@ -958,11 +918,9 @@ export class LeaveApplyAdminComponent implements OnInit {
         if (d >= startRange && d <= endRange) {
           return this.isWorkCalendarHoliday(wc, d);
         } else {
-          // Outside custom-year range → ignore
           return false;
         }
       } else {
-        // If dates not defined → ignore
         return false;
       }
     }
@@ -970,7 +928,6 @@ export class LeaveApplyAdminComponent implements OnInit {
     return false;
   };
 
-  // ==== Day Count Logic ====
   let total = 0;
 
   if (dates.length === 1) {
@@ -1063,31 +1020,25 @@ private getWeekNumberOfMonthKey(d: Date): string {
 private getDateFromControl(controlName: string): Date | null {
     const val = this.leaveApplyForm.get(controlName)?.value;
     if (!val) return null;
-    // if it's already a Date
     if (val instanceof Date) return val;
-    // if it's ISO string
     const parsed = new Date(val);
     if (!isNaN(parsed.getTime())) return parsed;
     return null;
   }
 
-  // return yyyy-mm-dd
   private toISODate(d: Date): string {
     const y = d.getFullYear();
     const m = d.getMonth() + 1;
     const dd = d.getDate();
-    // digit-by-digit formatting to be safe
     const mmS = m < 10 ? '0' + m : String(m);
     const ddS = dd < 10 ? '0' + dd : String(dd);
     return `${y}-${mmS}-${ddS}`;
   }
 
-  // strip time part
   private startOfDay(d: Date): Date {
     return new Date(d.getFullYear(), d.getMonth(), d.getDate());
   }
 
-  // enumerate inclusive dates between start and end (both Date objects)
   private enumerateDates(start: Date, end: Date): Date[] {
     const list: Date[] = [];
     let cur = this.startOfDay(start);
@@ -1098,16 +1049,12 @@ private getDateFromControl(controlName: string): Date | null {
     }
     return list;
   }
-
-  // Determine if session is morning (session1)
   private isSessionMorning(sessionValue: any): boolean {
-    // adapt mapping if your session labels differ
     if (!sessionValue) return true;
     const s = String(sessionValue).toLowerCase();
     return s.includes('1') || s.includes('am') || s.includes('morning') || s.includes('session1');
   }
 
-  // Determine if session is afternoon (session2)
   private isSessionAfternoon(sessionValue: any): boolean {
     if (!sessionValue) return false;
     const s = String(sessionValue).toLowerCase();

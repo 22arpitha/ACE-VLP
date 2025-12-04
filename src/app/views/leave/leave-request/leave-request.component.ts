@@ -4,7 +4,6 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ApiserviceService } from 'src/app/service/apiservice.service';
 import { SubModuleService } from 'src/app/service/sub-module.service';
 import { ViewLeaveRequestComponent } from '../view-leave-request/view-leave-request.component';
-// import { ViewLeaveRequestComponent } from '../leave-request/view-leave-request/view-leave-request.component';
 import { environment } from 'src/environments/environment';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { LeaveApplyAdminComponent } from '../leave-apply-admin/leave-apply-admin.component';
@@ -48,16 +47,6 @@ export class LeaveRequestComponent implements OnInit {
     days_or_hours_taken: false,
   };
   searchLeave: any;
-
-  // periodValues = [
-  //   { value: 'Yesterday', key: 'yesterday' },
-  //   { value: 'Today', key: 'today' },
-  //   { value: 'Last Month', key: 'last_month' },
-  //   { value: 'This Month', key: 'this_month' },
-  //   { value: 'Last Year', key: 'last_year' },
-  //   { value: 'This Year', key: 'this_year' },
-  //   { value: 'Custom', key: 'custom' },
-  // ]
   user_id: any;
   userRole: any;
   constructor(
@@ -130,8 +119,6 @@ export class LeaveRequestComponent implements OnInit {
     });
   }
 
-  ;
-
   getallLeaveTypes() {
     this.apiService.getData(`${environment.live_url}/${environment.settings_leave_type}/`).subscribe((respData: any) => {
       this.leaveOptions = respData?.map((item: any) => ({
@@ -142,64 +129,6 @@ export class LeaveRequestComponent implements OnInit {
       this.apiService.showError(error?.error?.detail);
     })
   }
-  // leaveOptions = [
-  //   { value: 'sick', label: 'Sick Leave' },
-  //   { value: 'casual', label: 'Casual Leave' },
-  //   { value: 'comp_off', label: 'Comp Off' },
-  // ];
-
-  filteredList = [
-    {
-      id: 1,
-      status: 'Pending',
-      employee_name: 'Livia Mango',
-      leave_type: 'Casual',
-      type: 'paid',
-      leave_period: '21-Apr-2025 - 21-Apr-2025',
-      date_of_request: new Date('2025-04-21'),
-      days_or_hours_taken: '1 Day(s)',
-    },
-    {
-      id: 2,
-      status: 'Pending',
-      employee_name: 'Zain Rhiel Madsen',
-      leave_type: 'Earned',
-      type: 'paid',
-      leave_period: '21-Apr-2025 - 21-Apr-2025',
-      date_of_request: new Date('2025-04-21'),
-      days_or_hours_taken: '1 Day(s)',
-    },
-    {
-      id: 3,
-      status: 'Pending',
-      employee_name: 'Corey Stanton',
-      leave_type: 'Sick Leave',
-      type: 'paid',
-      leave_period: '21-Apr-2025 - 21-Apr-2025',
-      date_of_request: new Date('2025-04-21'),
-      days_or_hours_taken: '1 Day(s)',
-    },
-    {
-      id: 4,
-      status: 'Pending',
-      employee_name: 'Jaylen Torff',
-      leave_type: 'Sick Leave',
-      type: 'paid',
-      leave_period: '21-Apr-2025 - 21-Apr-2025',
-      date_of_request: new Date('2025-04-21'),
-      days_or_hours_taken: '1 Day(s)',
-    },
-    {
-      id: 5,
-      status: 'Pending',
-      employee_name: 'Corey Herwitz',
-      leave_type: 'Charlie Geidt',
-      type: 'paid',
-      leave_period: '21-Apr-2025 - 21-Apr-2025',
-      date_of_request: new Date('2025-04-21'),
-      days_or_hours_taken: '1 Day(s)',
-    },
-  ];
 
   getContinuousIndex(index: number): number {
     return (this.page - 1) * this.tableSize + index + 1;
@@ -272,14 +201,6 @@ export class LeaveRequestComponent implements OnInit {
     }
   }
 
-  addRequest() {
-    // logic to open add request form
-  }
-
-  toggleAllSelection() {
-    this.filteredList.forEach((item: any) => (item.selected = this.selectAll));
-  }
-
   viewLeaveRequest(item) {
     this.dialog.open(ViewLeaveRequestComponent, {
       data: { item_id: item?.id },
@@ -349,7 +270,6 @@ private ids(filterArray: any[]): string {
     const base = `?page=${this.page}&page_size=${this.tableSize}`;
     // const searchParam = this.term?.trim().length >= 2 ? `&search=${encodeURIComponent(this.term.trim())}` : '';
     // const employeeParam = this.userRole !== 'Admin' ? `&employee-id=${this.user_id}` : '';
-
     return `${base}`;
   }
 

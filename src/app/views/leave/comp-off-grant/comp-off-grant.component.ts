@@ -114,24 +114,6 @@ export class CompOffGrantComponent implements OnInit {
     });
   }
 
-  // onLeaveTypeChange(event: any) {
-  //   this.apiService.getEmployeeLeaves(this.user_id, event.value).subscribe(
-  //     (res: any) => {
-  //       this.leave_balance = res.results[0].remaining_leaves;
-
-  //       // if (res.results.length != 0) {
-  //       //   this.apiService
-  //       //     .getLeaveTypeById(event.value)
-  //       //     .subscribe((res: any) => {
-  //       //       console.log(res);
-  //       //       this.leave_balance = res.accrual_credits;
-  //       //     });
-  //       // } else {
-  //       // }
-  //     },
-  //     (err) => {}
-  //   );
-  // }
 
   initialForm() {
     this.leaveApplyForm = this.fb.group({
@@ -342,24 +324,6 @@ export class CompOffGrantComponent implements OnInit {
     this.minDate = event.value;
     this.calculateDays();
     this.leaveApplyForm.patchValue({ from_date: new_date });
-
-    // this.getWorkingDays(event.value);
-
-
-    // let recurringHolidayCount = this.countHolidays(
-    //   this.startDate,
-    //   this.endDate
-    // );
-
-    // this.getHolidayCalender(
-    //   this.startDate,
-    //   this.endDate,
-    //   (fixedHolidayCount) => {
-    //     console.log('Fixed holidays between range:', fixedHolidayCount);
-    //     this.totalDays =
-    //       this.totalDays - (recurringHolidayCount + fixedHolidayCount);
-    //   }
-    // );
   }
 
   endDateFun(event: any) {
@@ -416,21 +380,6 @@ export class CompOffGrantComponent implements OnInit {
   triggerFileInput() {
     this.fileInput?.nativeElement?.click();
   }
-  // uploadImageFile(event: any) {
-  //   this.uploadFile = event.target.files[0];
-  //   if (event.target.files && event.target.files[0]) {
-  //     const reader = new FileReader();
-  //     reader.readAsDataURL(event.target.files[0]);
-  //     reader.onload = (event: any) => {
-  //       this.url = event.target.result;
-  //       if (reader.result) {
-  //         this.fileUrl = reader.result;
-  //       }
-  //       this.fileDataUrl = reader.result;
-  //     };
-  //   }
-  // }
-
 
   selectedFile!: File | null;
   fileName: string = '';
@@ -459,52 +408,6 @@ export class CompOffGrantComponent implements OnInit {
       this.leaveApplyForm.patchValue({employee: this.user_id });
     }
     this.leaveApplyForm.patchValue({ cc: ccIds,number_of_leaves_applying_for: this.totalDays });
-
-    // get leave type config
-  // const leaveTypeId = this.leaveApplyForm.get('leave_type')?.value;
-  // const leaveTypeData = this.allleavetypeList?.find((l: any) => l.leave_type_id === leaveTypeId);
-
-  // const fromDateRaw = this.leaveApplyForm.get('from_date')?.value;
-  // const toDateRaw = this.leaveApplyForm.get('to_date')?.value;
-
-  // // normalize dates to midnight
-  // const msPerDay = 24 * 60 * 60 * 1000;
-  // const current = new Date();
-  // current.setHours(0, 0, 0, 0);
-
-  // const fromDate = new Date(fromDateRaw);
-  // fromDate.setHours(0, 0, 0, 0);
-
-  // const toDate = new Date(toDateRaw);
-  // toDate.setHours(0, 0, 0, 0);
-
-  //   if (fromDate < current) {
-  //   if (leaveTypeData?.utilization_after && Number(leaveTypeData.utilization_after) > 0) {
-  //     if (toDate < current) {
-  //       // Count days from current date to TO date, excluding TO date
-  //       const daysDiff = Math.floor((current.getTime() - toDate.getTime()) / msPerDay);
-  //       if (daysDiff > Number(leaveTypeData.utilization_after)) {
-  //         this.apiService.showError(
-  //           `${leaveTypeData.leave_type} must be applied within ${leaveTypeData.utilization_after} days from leave date.`
-  //         );
-  //         return;
-  //       }
-  //     }
-  //   }
-  // }
-
-  // if (fromDate >= current) {
-  //   if (leaveTypeData?.utilization_before && Number(leaveTypeData.utilization_before) > 0) {
-  //     const daysDiff = Math.floor((fromDate.getTime() - current.getTime()) / msPerDay);
-  //     if (daysDiff < Number(leaveTypeData.utilization_before)) {
-  //       this.apiService.showError(
-  //         `${leaveTypeData.leave_type} must be applied at least ${leaveTypeData.utilization_before} days before the leave date`
-  //         // `You cannot apply this leave. You must apply at least ${leaveTypeData.utilization_before} day(s) in advance.`
-  //       );
-  //       return;
-  //     }
-  //   }
-  // }
 
     console.log(this.leaveApplyForm.value)
     if (this.leaveApplyForm.invalid) {

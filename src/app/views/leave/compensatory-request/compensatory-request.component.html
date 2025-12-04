@@ -92,13 +92,6 @@
                                     </app-generic-table-filter>
                                 </mat-menu>
                             </th>
-                            <!-- <th>
-                                Credited
-                                <i *ngIf="!arrowState['credited']" class="bi bi-arrow-down"
-                                    (click)="sort('asc', 'credited')"></i>
-                                <i *ngIf="arrowState['credited']" class="bi bi-arrow-up"
-                                    (click)="sort('desc', 'credited')"></i>
-                            </th> -->
                             <th>
                                 Taken
                                 <i *ngIf="!arrowState['taken']" class="bi bi-arrow-down"
@@ -114,9 +107,6 @@
                         <ng-container *ngIf="compOffLists?.length > 0">
                             <tr
                                 *ngFor="let item of compOffLists | customSort:directionValue:sortValue | paginate: { itemsPerPage: tableSize, currentPage: page,totalItems: count }; let i=index">
-                                <!-- <td>
-                                    <input type="checkbox" [(ngModel)]="item.selected">
-                                </td> -->
                                 <td>{{getContinuousIndex(i)}}</td>
                                 <td>{{ item.employee_name }}</td>
                                 <td>{{ item.reporting_manager_name }}</td>

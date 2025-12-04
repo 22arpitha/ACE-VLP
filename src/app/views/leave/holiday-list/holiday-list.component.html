@@ -27,61 +27,7 @@
                       <i *ngIf="!arrowState['date']" (click)="sort('asc','date')" class="bi bi-arrow-down"></i>
                         <i (click)="sort('desc','date')" *ngIf="arrowState['date']"
                           class="bi bi-arrow-up"></i>
-                          <!-- <button *ngIf="!startDate && !endDate"
-                          mat-icon-button
-                          (click)="setDateFilterColumn($event); picker1.open()"
-                          class="ms-1 btn-menu-trigger"
-                        >
-                        <i class="bi bi-calendar"></i>
-                      </button>
-                      <button mat-icon-button container="body"
-                      ngbTooltip="Clear Invoice Date" placement="top"  *ngIf="startDate && endDate" (click)="clearDateFilter()" class="ms-1 btn-menu-trigger">
-                        <i class="bi bi-x-circle"></i>
-                      </button> -->
-
-                    <!-- <mat-form-field class="opacity-0 position-absolute">
-                    <mat-date-range-input [rangePicker]="picker1">
-                        <input
-                          matStartDate
-                          placeholder="Start date"
-                          [(ngModel)]="startDate"
-                          (dateChange)="onStartDateChange($event)"
-                        />
-                        <input
-                          matEndDate
-                          placeholder="End date"
-                          [(ngModel)]="endDate"
-                          (dateChange)="onEndDateChange($event)"
-                        />
-                      </mat-date-range-input>
-                      <mat-datepicker-toggle
-                        matIconSuffix
-                        [for]="picker1"
-                      ></mat-datepicker-toggle>
-                      <mat-date-range-picker #picker1></mat-date-range-picker>
-                  </mat-form-field> -->
                     </th>
-                    
-                    
-                    <!-- <th scope="col" class="name-col">Holiday Classification
-                      <i *ngIf="!arrowState['classification']" (click)="sort('asc','classification')" class="bi bi-arrow-down"></i>
-                      <i (click)="sort('desc','classification')" *ngIf="arrowState['classification']"
-                        class="bi bi-arrow-up"></i> -->
-                        <!-- <button mat-icon-button [matMenuTriggerFor]="clientFilterMenu" [ngClass]="filters.classification.length>=1 ? 'filterdColumn':''">
-                        <span *ngIf="filters.client_name.length>=1">{{filters.client_name.length.toString().padStart(2, '0')}}</span>
-                          
-                          <i class="bi-funnel" *ngIf="filters.client_name.length===0"></i>
-                        </button>
-
-                        <mat-menu #clientFilterMenu="matMenu">
-                          <app-generic-table-filter
-                            [options]="allClientNames"
-                            [(selectedOptions)]="filters.client_name"
-                            (selectedOptionsChange)="filterData()"
-                          ></app-generic-table-filter>
-                        </mat-menu> -->
-                    <!-- </th> -->
-                    <!-- <th scope="col">Action </th> -->
                   </tr>
                 </thead>
                 <tbody>
@@ -95,14 +41,6 @@
                            <td (click)="edit(item)">{{getContinuousIndex(i)}}</td>
                            <td (click)="edit(item)" class="text-nowrap">{{item.name}}</td>
                            <td (click)="edit(item)">{{(item?.date || '-')}}</td>
-                           <!-- <td (click)="edit(item)">{{item?.classification || '-'}}</td> -->
-                      <!-- <td>
-                        <ng-container *ngIf="item">
-                        <img src="../../../../assets/images/Edit.svg" class="icon-image" type="button" container="body"
-                          ngbTooltip="Edit" (click)="edit(item)" *ngIf="userRole !='Admin' && (accessPermissions[0]?.view || accessPermissions[0]?.update) || userRole === 'Admin'"/>
-                        </ng-container>
-                      <ng-template #noContact>-</ng-template>
-                    </td> -->
                     </tr>
                   </ng-container>
                 </tbody>

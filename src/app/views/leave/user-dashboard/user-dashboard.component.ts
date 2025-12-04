@@ -68,11 +68,6 @@ export class UserDashboardComponent implements OnInit {
     this.getPendingLeaves(event.value)
   }
 
-  // clearEmployeeSelection(){
-  //   this.selectedItemsMap['employee'] = [];
-  //   this.getEmployeeLeaves();
-  //   console.log(this.selectedItemsMap)
-  // }
  
 
   getUpcomingHoliday() {

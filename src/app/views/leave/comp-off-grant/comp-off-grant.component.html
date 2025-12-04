@@ -206,35 +206,10 @@
                             </mat-form-field>
                         </div>
                     </div>
-                    <!-- <div class="row mx-0 my-0 p-0">
-                        <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0">
-                            <p><b>Attachments</b></p>
-                        </div>
-                    </div>
-                    <div class="row mx-0 my-0 p-0">
-                        <div class="col-12 col-sm-12 col-md-4 col-lg-4 px-0">
-                            <input type="file" accept="image/*" #fileInput hidden (change)="onFileChange($event)" />
-                            <div class="image-container w-100 d-flex justify-content-between align-items-center"
-                                style="padding: 3px 15px">
-                                <img id="imagePreview" *ngIf="fileDataUrl" [src]="fileDataUrl ? fileDataUrl : ''"
-                                    alt="profile" />
-                                <span *ngIf="fileName" class="ms-2">{{ fileName }}</span>
-                                <mat-label *ngIf="!fileDataUrl">File Attachment</mat-label>
-                                <button type="button" (click)="openFileDialog()" mat-icon-button>
-                                    <mat-icon matTooltip="{{ fileDataUrl ? 'Edit' : 'Upload' }}"
-                                        class="edit-or-upload-icon">{{ fileDataUrl ? "edit" : "attach_file" }}
-                                    </mat-icon>
-                                </button>
-                            </div>
-                        </div>
-                    </div> -->
                 </div>
             </div>
             <div class="row mx-0 my-2 p-2">
                 <div class="action-btn d-flex gap-1 my-1 px-0">
-                    <!-- <button mat-raised-button class="cancel-button mat-btn-s" type="button">
-                        Cancel
-                    </button> -->
                     <button mat-button class="cancel-button mat-btn-s" type="button" mat-dialog-close>
                     Close</button>
                     <button mat-raised-button class="proceedbtn mat-btn-s" (click)="onSubmit()" type="submit">
