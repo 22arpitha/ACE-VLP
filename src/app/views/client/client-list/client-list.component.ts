@@ -14,7 +14,7 @@ import { DatePipe } from '@angular/common';
 import { GenericTableFilterComponent } from '../../../shared/generic-table-filter/generic-table-filter.component';
 import { DropDownPaginationService } from '../../../service/drop-down-pagination.service';
 import { debounceTime, distinctUntilChanged, filter, Subject } from 'rxjs';
-import { FilterStateService } from '../../../shared/filter-state.service';
+import { FilterStateService } from '../../../service/filter-state.service';
 
 
 export interface IdNamePair {

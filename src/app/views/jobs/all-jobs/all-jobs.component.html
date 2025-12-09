@@ -28,11 +28,11 @@
           (click)="getCurrentJobs();">Current</button>
         <button mat-raised-button class="mat-btn-s tab-button-content" [ngClass]="{'isActive': isHistory}" type="button"
           (click)="getJobsHistory();">History</button>
-        <button mat-mini-fab  class="download-icons" (click)="downloadOption('csv')" ngbTooltip="CSV" placement="top" [disabled]="filteredList?.length === 0">
-          <mat-icon style="color: green">table_view</mat-icon>
+        <button mat-mini-fab  class="download-icons" (click)="downloadOption('csv')" [disabled]="filteredList?.length === 0 || isHistory">
+          <mat-icon style="color: green" ngbTooltip="CSV" placement="top">table_view</mat-icon>
         </button>
-        <button mat-mini-fab  class="download-icons" (click)="downloadOption('pdf')" ngbTooltip="PDF" placement="top" [disabled]="filteredList?.length === 0">
-          <mat-icon style="color: red">picture_as_pdf</mat-icon>
+        <button mat-mini-fab  class="download-icons" (click)="downloadOption('pdf')" [disabled]="filteredList?.length === 0 || isHistory">
+          <mat-icon style="color: red" ngbTooltip="PDF" placement="top">picture_as_pdf</mat-icon>
         </button>
         <!-- <button mat-raised-button class="proceedbtn mat-btn-s download-btn" [disabled]="filteredList?.length === 0"
           type="button" [matMenuTriggerFor]="downloadMenu"><i class="fa fa-download"></i></button> -->
@@ -252,8 +252,8 @@
                   </mat-select>
                 </td>
                 <td *ngIf="isColumnVisible('percentage_of_completion')">
-                  <div class="d-flex justify-content-around">
-                    <div class="input-css">
+                  <div class="d-flex justify-content-around align-items-center">
+                    <div class="input-css pe-2">
                       <input matInput type="number" class="editable-cell" [(ngModel)]="item.percentage_of_completion"
                         (ngModelChange)="validatePercentage(item)" (keypress)="validateKeyPress($event)"
                         [class.is-invalid]="item.isInvalid" maxlength="3">

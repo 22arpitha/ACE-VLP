@@ -9,7 +9,7 @@ import { SubModuleService } from '../../../service/sub-module.service';
 import { environment } from '../../../../environments/environment';
 import { GenericTableFilterComponent } from '../../../shared/generic-table-filter/generic-table-filter.component';
 import { DropDownPaginationService } from '../../../service/drop-down-pagination.service';
-import { FilterStateService } from '../../../shared/filter-state.service';
+import { FilterStateService } from '../../../service/filter-state.service';
 
 export interface IdNamePair {
   id: any;
@@ -681,10 +681,11 @@ private searchSubject = new Subject<string>();
       if (!this.changedStatusName) {
         this.changedStatusName = item.job_status_name
       }
-      let temp_status = this.changedStatusName.toLowerCase();
+      let temp_status = this.changedStatusName?.toLowerCase();
       let formData: any = {
         'job_status': item?.job_status, 'percentage_of_completion': item.percentage_of_completion,
-        status: (temp_status === 'cancelled' || temp_status === 'completed') ? false : true
+        status: (temp_status === 'cancelled' || temp_status === 'completed') ? false : true,
+        update_by: Number(this.user_id)
       }
       this.apiService.updateData(`${environment.live_url}/${environment.jobs_percetage}/${item.id}/`, formData).subscribe((respData: any) => {
         if (respData) {
@@ -698,7 +699,7 @@ private searchSubject = new Subject<string>();
   }
   getEmployeeName(employees: any): string {
     if (!employees || employees.length === 0) {
-    return 'Unassigned';
+    return '-';
     }
     const employee = employees.find((emp: any) => emp?.is_primary === true);
     return employee ? employee?.employee_name : '';

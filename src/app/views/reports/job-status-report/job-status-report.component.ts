@@ -618,7 +618,7 @@ private updateFilterColumn(key: string, cache: any) {
 async getTableData(params?: { page?: number; pageSize?: number; searchTerm?: string;client_ids?:any;job_ids?:any;group_ids?:any;job_allocation_date?:any;job_status_date?:any,job_status?: any[]; prime_emp?:any}) {
     let finalQuery;
    const page = params?.page ?? this.page;
-    const pageSize = 10 //params?.pageSize ?? this.tableSize;
+    const pageSize = params?.pageSize ?? this.tableSize;
     const searchTerm = params?.searchTerm ?? this.term;
     let query = buildPaginationQuery({ page, pageSize, searchTerm });
     this.jobStatusList(this.tabStatus);
@@ -664,7 +664,7 @@ async getTableData(params?: { page?: number; pageSize?: number; searchTerm?: str
           }if (params?.job_status_date) {
             finalQuery += `&job-status-date=[${params?.job_status_date}]`;
           }if (params?.job_status?.length) {
-            finalQuery += `&job-status-ids=[${params?.job_status.join(',')}]`;
+            finalQuery += `&status-group-ids=[${params?.job_status.join(',')}]`;
           }
           if(this.directionValue && this.sortValue){
             finalQuery += `&sort-by=${this.sortValue}&sort-type=${this.directionValue}`;
@@ -725,6 +725,7 @@ async getTableData(params?: { page?: number; pageSize?: number; searchTerm?: str
            currentPage:page,
            totalRecords: res.total_no_of_record, // Correctly use 'response' from inner call
            showDownload:true,
+           disableDownload: this.tabStatus === "True" ? false : true,
            searchPlaceholder:'Search by Client/Group/Job',
     }
   }else{
@@ -823,7 +824,11 @@ getFilterOptions(event: { detail: any; key: string }) {
    if (key === 'is-primary-ids') {
     endpoint = environment.get_primary_employees;
     query += `&job-status=[${this.statusList}]`;
-    query += this.userRole === 'Admin' ? '' : `&manager-id=${this.user_id}`
+    if(this.isIncludeAllJobValue){
+      query += `&client-id=${this.selectedClientIds}`
+    } else{
+      query += this.userRole === 'Admin' ? '' : `&manager-id=${this.user_id}`
+    }
    }
  
   // if (key === 'timesheet-task-ids') {

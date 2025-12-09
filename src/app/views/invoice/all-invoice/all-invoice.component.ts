@@ -16,7 +16,7 @@ import { DropDownPaginationService } from '../../../service/drop-down-pagination
 import { GenericTableFilterComponent } from '../../../shared/generic-table-filter/generic-table-filter.component';
 import { debounceTime, distinctUntilChanged, filter } from 'rxjs/operators';
 import { Subject } from 'rxjs';
-import { FilterStateService } from '../../../shared/filter-state.service';
+import { FilterStateService } from '../../../service/filter-state.service';
 
 export interface IdNamePair {
   id: any;

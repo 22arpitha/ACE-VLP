@@ -12,7 +12,7 @@ import { GenericTimesheetConfirmationComponent } from '../../../generic-componen
 import { debounceTime, distinctUntilChanged, filter, firstValueFrom, Observable, Subject } from 'rxjs';
 import { DropDownPaginationService } from '../../../service/drop-down-pagination.service';
 import { GenericTableFilterComponent } from '../../../shared/generic-table-filter/generic-table-filter.component';
-import { FilterStateService } from '../../../shared/filter-state.service';
+import { FilterStateService } from '../../../service/filter-state.service';
 export interface IdNamePair {
   id: any;
   name: string;

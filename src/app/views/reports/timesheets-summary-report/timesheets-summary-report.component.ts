@@ -27,7 +27,7 @@ export class TimesheetsSummaryReportComponent implements OnInit {
        accessConfig: [],
        tableSize: 50,
        pagination: true,
-       showDownload:true,
+       showDownload:false,
        reset:true,
      };
      tabStatus:any='True';
@@ -163,7 +163,9 @@ export class TimesheetsSummaryReportComponent implements OnInit {
          break;
          case 'mainDateRangeFilter':
           this.time.start_date = event.detail?.startDate;
-          this.time.end_date = event.detail?.endDate
+          this.time.end_date = event.detail?.endDate;
+          
+
           this.getTableData({ 
           page: 1,
           pageSize: this.tableSize,
@@ -437,6 +439,7 @@ export class TimesheetsSummaryReportComponent implements OnInit {
     //   this.time.start_date = startOfWeek.toISOString();
     //   this.time.end_date = endOfWeek.toISOString();
      const query = buildPaginationQuery({ page, pageSize, searchTerm });
+     let disableFlag = true;
      this.jobStatusList(this.tabStatus);
       finalQuery = query 
       finalQuery += (this.userRole ==='Admin' || (this.userRole !='Admin' && this.client_id)) ? '':`&employee-id=${this.user_id}`;
@@ -459,6 +462,7 @@ export class TimesheetsSummaryReportComponent implements OnInit {
       //  const current_startDate = this.datePipe.transform(startOfWeek, 'yyyy-MM-dd')
       //  const current_endtDate = this.datePipe.transform(endOfWeek, 'yyyy-MM-dd')
        if(this.time?.start_date && this.time?.end_date){
+         disableFlag=this.getDisableDownload(this.time?.start_date, this.time?.end_date);
          finalQuery += `&timesheet-start-date=${this.time?.start_date}&timesheet-end-date=${this.time?.end_date}`;
        }
       await this.api.getData(`${environment.live_url}/${environment.all_jobs}/${finalQuery}`).subscribe((res: any) => {
@@ -515,6 +519,7 @@ export class TimesheetsSummaryReportComponent implements OnInit {
         //  selectedClientId:this.client_id ? this.client_id:null,
         //  sendEmail:true,
          currentPage:page,
+         disableDownload: disableFlag,
          totalRecords: res.total_no_of_record,
          showDownload:true,
          searchPlaceholder:'Search by Client/Job/Employee',
@@ -555,6 +560,28 @@ export class TimesheetsSummaryReportComponent implements OnInit {
   
      },(error:any)=>{  this.api.showError(error?.error?.detail);
      });
+    }
+
+    containsLeapYear(start: Date, end: Date): boolean {
+      for (let y = start.getFullYear(); y <= end.getFullYear(); y++) {
+        if (this.isLeapYear(y)) return true;
+      }
+      return false;
+    }
+
+    isLeapYear(year: number): boolean {
+      return (year % 4 === 0 && year % 100 !== 0) || (year % 400 === 0);
+    }
+
+    getDisableDownload(startStr: string, endStr: string): boolean {
+      const start = new Date(startStr);
+      const end = new Date(endStr);
+
+      const diffDays = Math.floor((end.getTime() - start.getTime()) / 86400000);
+
+      const hasLeap = this.containsLeapYear(start, end);
+      const limit = hasLeap ? 366 : 365;
+      return diffDays > limit;
     }
   
       

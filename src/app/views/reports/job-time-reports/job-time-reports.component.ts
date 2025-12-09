@@ -515,7 +515,6 @@ public viewtimesheetDetails(item:any){
        if(this.userRole!='Admin' && params?.prime_emp?.length>0){
         emp_ids = [...params?.prime_emp, Number(this.user_id)];
        } else  if(this.userRole!='Admin'){
-        console.log('nooo')
          emp_ids = [Number(this.user_id)];
        } else if(this.userRole==='Admin' && params?.prime_emp?.length>0){
         emp_ids = [params?.prime_emp];
@@ -534,7 +533,7 @@ public viewtimesheetDetails(item:any){
           emp_query = `&employee-ids=[${emp_ids}]`
        }
 
-       finalQuery += emp_query;
+       finalQuery += emp_query || ''
     // finalQuery += (this.userRole ==='Admin' || (this.userRole !='Admin' && this.client_id)) ? '':`&employee-id=${this.user_id}`;
     finalQuery += this.client_id ? `&client=${this.client_id}` : '';
     finalQuery += `&report-type=job-time-report`;
@@ -604,6 +603,7 @@ public viewtimesheetDetails(item:any){
        currentPage:page,
        totalRecords: res.total_no_of_record,
        showDownload:true,
+       disableDownload: this.tabStatus === "True" ? false : true,
        searchPlaceholder:'Search by Client/Job/Status',
       };
     }
@@ -696,7 +696,12 @@ public viewtimesheetDetails(item:any){
       if (key === 'is-primary-ids') {
           endpoint = environment.get_primary_employees;
           query += `&job-status=[${this.statusList}]`;
-          query += this.userRole === 'Admin' ? '' : `&manager-id=${this.user_id}`
+          // query += this.userRole === 'Admin' ? '' : `&manager-id=${this.user_id}`
+          if(this.isIncludeAllJobValue){
+              query += `&client-id=${this.selectedClientIds}`
+            } else{
+              query += this.userRole === 'Admin' ? '' : `&manager-id=${this.user_id}`
+            }
          }
        
       // if (key === 'timesheet-task-ids') {

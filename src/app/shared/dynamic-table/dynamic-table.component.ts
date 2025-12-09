@@ -35,6 +35,7 @@ selectedItemsMap: { [key: string]: any[] } = {};  //new
   activeFilterColumn: string | null = null;
   @Output() actionEvent = new EventEmitter<any>();
   @ViewChildren('fileInput') fileInputs: QueryList<ElementRef>;
+  paginationId = 'pagination-' + Math.random();
   filteredData: any[] = [];
   paginatedData: any[] = [];
   startDate;
@@ -93,12 +94,21 @@ selectedFile:(File | null)[] = [];
     this.userRole = sessionStorage.getItem('user_role_name');
   }
   tempFilters: { [key: string]: any[] } = {};
+  searchSubject = new Subject<string>();
   ngOnInit(): void {
     this.tempFilters = JSON.parse(JSON.stringify(this.columnFilters));
     if(this.is_leaveTypes){
       this.getAllLeaveTypes();
     } 
-    
+    this.searchSubject
+    .pipe(
+      debounceTime(500),
+      distinctUntilChanged()
+    )
+    .subscribe((value) => {
+      this.actionEvent.emit({ actionType:'search', detail: value });
+      this.applyFilters();
+    });
    }
 
    getEmployeesList(reset:boolean){
@@ -429,6 +439,8 @@ clearDateFilter(columnKey: string): void {
   // Parent component is expected to handle the data refresh.
 }
 clearRangeDateFilter(columnKey: string): void {
+  this.startDate = '';
+  this.endDate = ''
   this.columnFilters[columnKey] = null; // Clear the stored filter for this specific column
   this.actionEvent.emit({ actionType:'dateRange' , detail: null, key:columnKey });
 
@@ -484,17 +496,33 @@ public getHistoryDatasetList(){
 }
 // Include All Jobs Checkbox event
 public onIncludeJobsChange(event:any){
-  this.selectedItemsMap['job_name']=[];
-  this.columnFilters['job_name']=[];
-  this.tempFilters['job_name']=[];
-  this.loadingFilters['job_name'] = {};
-  this.filterSearchText['job_name'] = '';
-  this.nextPage['job_name'] = 1;
-  this.config.columns.forEach(col => {
-    if (col.key === 'job_name') {
-      col.filterOptions = [];
-    }
+  const filtersToReset = ['job_name', 'is_primary'];
+    filtersToReset.forEach(key => {
+    this.selectedItemsMap[key] = [];
+    this.columnFilters[key] = [];
+    this.tempFilters[key] = [];
+    this.loadingFilters[key] = {};
+    this.filterSearchText[key] = '';
+    this.nextPage[key] = 1;
+
+    // Clear dropdown data
+    this.config.columns.forEach(col => {
+      if (col.key === key) {
+        col.filterOptions = [];
+      }
+    });
   });
+  // this.selectedItemsMap['job_name']=[];
+  // this.columnFilters['job_name']=[];
+  // this.tempFilters['job_name']=[];
+  // this.loadingFilters['job_name'] = {};
+  // this.filterSearchText['job_name'] = '';
+  // this.nextPage['job_name'] = 1;
+  // this.config.columns.forEach(col => {
+  //   if (col.key === 'job_name') {
+  //     col.filterOptions = [];
+  //   }
+  // });
   this.actionEvent.emit({ actionType: 'includeAllJobs', action:event.checked,client_id:this.selected_client_id});
 }
 
@@ -967,7 +995,7 @@ onSearchInput(col: any) {
     this.searchSubjects[key] = new Subject<string>();
     this.searchSubjects[key]
       .pipe(
-        debounceTime(300),
+        debounceTime(500),
         distinctUntilChanged()
       )
       .subscribe((value) => {

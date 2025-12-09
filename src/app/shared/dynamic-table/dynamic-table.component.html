@@ -1,12 +1,13 @@
 <section class="settings-table-bg px-3">
     <div class="row mx-0 my-3 px-0 align-items-center">
       <!-- Search Field -->
+        <!-- (input)="onSearch(config.searchTerm)" -->
       <div class="col-12 mt-2 col-sm-12 col-md-4 col-lg-3 search-div px-0 position-relative" *ngIf="config.searchable">
         <input
           type="search"
           class="form-control p-2 sizeinput"
           [(ngModel)]="config.searchTerm"
-          (input)="onSearch(config.searchTerm)"
+          (input)="searchSubject.next(config.searchTerm)"
           [placeholder]="config?.searchPlaceholder"
           autocomplete="off"
           aria-describedby="emailHelp"
@@ -78,10 +79,10 @@
       <div class="col-auto col-sm-auto col-md-auto col-lg-auto px-0 mx-0 my-1 downloads"
       *ngIf="config?.showDownload && paginatedData?.length > 0">
        <!-- <div [ngClass]="config?.hideDownload ? 'set-position' : 'my-1'"> -->
-        <button mat-mini-fab  class="download-icons" (click)="downloadCSV()" >
+        <button mat-mini-fab  class="download-icons" (click)="downloadCSV()" [disabled]="config?.disableDownload">
             <mat-icon style="color: green" ngbTooltip="CSV" placement="top">table_view</mat-icon>
           </button>
-          <button mat-mini-fab  class="download-icons" (click)="downloadPDF()">
+          <button mat-mini-fab  class="download-icons" (click)="downloadPDF()" [disabled]="config?.disableDownload">
             <mat-icon style="color: red" ngbTooltip="PDF" placement="top">picture_as_pdf</mat-icon>
           </button>
         <!-- <button
@@ -300,7 +301,12 @@
           *ngFor="
             let item of paginatedData
               | customSort: directionValue : sortValue
-              | paginate: paginationConfig;let i = index"
+              | paginate: {
+          id: paginationId,
+          itemsPerPage: paginationConfig.itemsPerPage,
+          currentPage: paginationConfig.currentPage,
+          totalItems: paginationConfig.totalItems
+        };let i = index"
         >
         <tr *ngIf="config.formContent" [formGroup]="getFormGroup(i)">
           <td *ngFor="let col of config.columns">
@@ -447,6 +453,7 @@
   <div class="pagination-container pt-1" *ngIf="paginatedData?.length > 0 && config?.pagination">
     <!-- Pagination Controls (Center-Aligned) -->
     <pagination-controls
+     [id]="paginationId"
       previousLabel="Prev"
       nextLabel="Next"
       (pageChange)="onTableDataChange($event)"

@@ -142,7 +142,7 @@ export class NonProductiveHoursComponent implements OnInit,OnChanges {
         });
     }
    exportCsvOrPdf(fileType) {
-   let query=`?client-name=Vedalekha professionals&download=True`;
+   let query=`?client-name=Vedalekha professionals`;
     if(query){
       if(this.dropdwonFilterData){
         query+= this.dropdwonFilterData.employee_id ? `&timesheet-employee=${this.dropdwonFilterData.employee_id}`:this.user_role_name ==='Admin' ? '':`&timesheet-employee=${this.user_id}`;
@@ -152,7 +152,7 @@ export class NonProductiveHoursComponent implements OnInit,OnChanges {
         query += this.user_role_name ==='Admin' ? '':`&timesheet-employee=${this.user_id}`;
        }
      }
-     const url = `${environment.live_url}/${environment.vlp_timesheets}/${query}&file-type=${fileType}`;
+     const url = `${environment.live_url}/${environment.non_productivity}/${query}&file-type=${fileType}`;
      downloadFileFromUrl({
        url,
        fileName: 'VLP - Non-Productive Hours Report',
@@ -213,7 +213,9 @@ export class NonProductiveHoursComponent implements OnInit,OnChanges {
 public viewtimesheetDetails(item:any){
       this.dialog.open(JobTimeSheetDetailsPopupComponent, {
       panelClass: 'custom-details-dialog',
-      data: { 'job_id': item?.job_id,'job_name':item?.job_name,'employee_id':item.employee_id,'download-api':'','download':true},
+      data: { 'job_id': item?.job_id,'job_name':item?.job_name,'employee_id':item.employee_id,'download-api':'','download':true,
+        'dropdwonFilterData':this.dropdwonFilterData,'report_type':'non-productive-hours'
+      },
     });
     }
 

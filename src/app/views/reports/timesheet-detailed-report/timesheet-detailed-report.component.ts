@@ -398,6 +398,7 @@ async getTableData(params?: { page?: number; pageSize?: number; searchTerm?: str
     const searchTerm = params?.searchTerm ?? this.term;
 
     let query = buildPaginationQuery({ page, pageSize, searchTerm });
+    let disableFlag = true;
     query +=`&timesheet-report-type=detailed`;
     if(this.user_role_name !== 'Admin'){
       query +=`&timesheet-employee=${this.user_id}`
@@ -414,6 +415,7 @@ async getTableData(params?: { page?: number; pageSize?: number; searchTerm?: str
         query += `&timesheet-employee-ids=[${params.employee_ids.join(',')}]`;
       }
       if(params?.timesheet_dates){
+        disableFlag=this.getDisableDownload(params.timesheet_dates.startDate, params.timesheet_dates.endDate);
         query += `&start-date=${params.timesheet_dates.startDate}&end-date=${params.timesheet_dates.endDate}`
       }
       if(this.directionValue && this.sortValue){
@@ -461,6 +463,7 @@ async getTableData(params?: { page?: number; pageSize?: number; searchTerm?: str
         currentPage:page,
         totalRecords: res.total_no_of_record,
         showDownload:true,
+        disableDownload: disableFlag,
         timesheetDetailedReport:true,
         searchPlaceholder:'Search by Client/Job',
     }
@@ -468,6 +471,29 @@ async getTableData(params?: { page?: number; pageSize?: number; searchTerm?: str
     });
     
 }
+containsLeapYear(start: Date, end: Date): boolean {
+  for (let y = start.getFullYear(); y <= end.getFullYear(); y++) {
+    if (this.isLeapYear(y)) return true;
+  }
+  return false;
+}
+
+isLeapYear(year: number): boolean {
+  return (year % 4 === 0 && year % 100 !== 0) || (year % 400 === 0);
+}
+
+getDisableDownload(startStr: string, endStr: string): boolean {
+  const start = new Date(startStr);
+  const end = new Date(endStr);
+
+  const diffDays = Math.floor((end.getTime() - start.getTime()) / 86400000);
+
+  const hasLeap = this.containsLeapYear(start, end);
+  const limit = hasLeap ? 366 : 365;
+  return diffDays > limit;
+}
+
+
 
 
   filterDataCache: {

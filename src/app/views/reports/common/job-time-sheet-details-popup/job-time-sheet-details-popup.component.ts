@@ -7,6 +7,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { buildPaginationQuery } from 'src/app/shared/pagination.util';
 import { getUniqueValues } from 'src/app/shared/unique-values.utils';
 import { DatePipe } from '@angular/common';
+import { downloadFileFromUrl } from 'src/app/shared/file-download.util';
 
 @Component({
   selector: 'app-job-time-sheet-details-popup',
@@ -94,6 +95,12 @@ export class JobTimeSheetDetailsPopupComponent implements OnInit {
       case 'tableSizeChange':
         this.onTableSizeChange(event.detail);
         break;
+      case 'export_csv':
+        this.exportCsvOrPdf(event.detail);
+        break;
+      case 'export_pdf':
+        this.exportCsvOrPdf(event.detail);
+        break;
       case 'sorting':
         this.onSorting(event);
         break;
@@ -115,6 +122,49 @@ export class JobTimeSheetDetailsPopupComponent implements OnInit {
     });
   }
 
+  exportCsvOrPdf(fileType) {
+    console.log(this.data)
+    let query : string = ''
+    let query_end_point:string;
+    if(this.data.report_type==='non-productive-hours'){
+      query_end_point = `${environment.non_productivity}`
+       query += `client-name='Vedalekha professionals'&job-ids=${this.data?.job_id}&timesheet-employee=${this.employee_id}`
+       query += this.data.dropdwonFilterData.periodicity ? `&periodicity=${this.data.dropdwonFilterData.periodicity}`:'';
+       query += this.data.dropdwonFilterData.period ? `&period=${encodeURIComponent(JSON.stringify(this.data.dropdwonFilterData.period))}`:'';
+    }
+      // let query = buildPaginationQuery({
+      //   page: this.page,
+      //   pageSize: this.tableSize,
+      // });
+      // query += this.client_id ? `&client=${this.client_id}` : '';
+      // query += (this.userRole ==='Admin' || (this.userRole !='Admin' && this.client_id)) ? '':`&employee-id=${this.user_id}`;
+      //    if (this.selectedClientIds?.length) {
+      //      query += `&client-ids=[${this.selectedClientIds.join(',')}]`;
+      //    }
+      //    if (this.selectedJobIds?.length) {
+      //      query += `&job-ids=[${this.selectedJobIds.join(',')}]`;
+      //    }
+      //    // if (this.selectedStatusIds?.length) {
+      //    //   query += `&job-status-ids=[${this.selectedStatusIds.join(',')}]`;
+      //    // }
+      //    if (this.selectedEmployeeIds?.length) {
+      //     query += `&employee-ids=[${this.selectedEmployeeIds.join(',')}]`;
+      //   }
+      //    if(this.time?.start_date && this.time?.end_date){
+      //     query += `&timesheet-start-date=${this.time?.start_date}&timesheet-end-date=${this.time?.end_date}`;
+      //   }
+ 
+         // const startDate = this.fromDate?.start_date ?? this.time.start_date;
+         // const formattedStartDate = this.datePipe.transform(startDate, 'yyyy-MM-dd');
+         // query += `&from-date=${formattedStartDate}`;
+ // &job-status=[${this.statusList}]
+      const url = `${environment.live_url}/${query_end_point}/?${query}&file-type=${fileType}`;
+      downloadFileFromUrl({
+        url,
+        fileName: `VLP - ${this.data.report_type}`,
+        fileType
+      });
+    }
 
   async getTableData(params?: { page?: number; pageSize?: number; searchTerm?: string, startDate?: string; endDate?: string }) {
     const page = params?.page ?? this.page;
@@ -125,6 +175,13 @@ export class JobTimeSheetDetailsPopupComponent implements OnInit {
     } 
     if(this.data.report_type==='job-time-report'){
        query += `&timesheet-report-type=job-time-report`
+    }
+    if(this.data?.report_type==='job-time-report'){
+       query += `&timesheet-report-type=job-time-report`
+    }
+    if(this.data.report_type==='non-productive-hours'){
+      query += this.data.dropdwonFilterData.periodicity ? `&periodicity=${this.data.dropdwonFilterData.periodicity}`:'';
+       query += this.data.dropdwonFilterData.period ? `&period=${encodeURIComponent(JSON.stringify(this.data.dropdwonFilterData.period))}`:'';
     }
     query += `&job-ids=[${this.jobId}]`;
     query += this.employee_id ? `&timesheet-employee=${this.employee_id}` : ``;
