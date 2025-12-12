@@ -242,7 +242,7 @@ export class LeaveApplyAdminComponent implements OnInit {
 
   convertDateTime(dateVal: Date) {
     const date: Date = dateVal;
-
+    if (!dateVal) return null;
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0'); // month is 0-based
     const day = String(date.getDate()).padStart(2, '0');
@@ -559,10 +559,10 @@ export class LeaveApplyAdminComponent implements OnInit {
     const file = event.dataTransfer?.files?.[0];
     if (!file) return;
 
-    if (!file.type.startsWith('image/')) {
-      this.apiService.showError("Only image files are allowed.");
-      return;
-    }
+    // if (!file.type.startsWith('image/')) {
+    //   this.apiService.showError("Only image files are allowed.");
+    //   return;
+    // }
 
     this.handleDroppedImage(file);
   }

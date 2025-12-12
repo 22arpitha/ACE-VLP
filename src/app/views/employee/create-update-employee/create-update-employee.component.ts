@@ -39,7 +39,7 @@ export class CreateUpdateEmployeeComponent implements CanComponentDeactivate, On
   managerOfAccountant:any
   genders =[{name:'Male',value:'1',value_check:'male'},{name:'Female',value:'2',value_check:'female'},{name:'Others',value:'3',value_check:'others'}]
   getGenderValue:any;
-  leaveTypeEnabled:boolean =false
+  leaveTypeEnabled:boolean =false;
   constructor(private fb: FormBuilder, private activeRoute: ActivatedRoute,
     private common_service: CommonServiceService, private router: Router,
     private apiService: ApiserviceService, private modalService: NgbModal,
@@ -126,7 +126,7 @@ export class CreateUpdateEmployeeComponent implements CanComponentDeactivate, On
       enable_leave: this.fb.group({
         leave_type_id: [''],
         enabled_by: [''],
-        is_enable: ['']
+        is_enable: this.leaveTypeEnabled
       }),
     });
   }
@@ -163,11 +163,22 @@ export class CreateUpdateEmployeeComponent implements CanComponentDeactivate, On
     // if (temp?.designation_name === 'Manager') {
     //   this.getDirectData()
     // } else {
-      //  this.reportingManagerId = this.reportingManagerId.filter((data: any) => data.user__full_name != 'Vinayak Hegde')
+    //   this.reportingManagerId = this.reportingManagerId.filter((data: any) => data.user__full_name != 'Vinayak Hegde')
+    //   // console.log(this.reportingManagerId)
     // }
-    this.reportingManagerId = this.reportingManagerId.filter((data: any) => data.user__full_name != 'Vinayak Hegde')
   }
 
+  getDirectData() {
+    let query = `?page=1&page_size=10&search=Vinayak Hegde&employee=True`
+    this.apiService.getData(`${environment.live_url}/${environment.employee}/${query}`).subscribe(
+      (res: any) => {
+        // console.log(res);
+        this.reportingManagerId.push(res?.results[0])
+        // console.log(this.reportingManagerId)
+
+      }
+    )
+  }
   private getDesignationList(role_id: any) {
     this.allDesignation = [];
     this.apiService.getData(`${environment.live_url}/${environment.settings_designation}/?designation_id=${role_id}`).subscribe((respData: any) => {
@@ -210,15 +221,16 @@ export class CreateUpdateEmployeeComponent implements CanComponentDeactivate, On
         gender: respData?.user__gender,
         is_active: respData?.is_active,
       });
-      this.leaveTypeEnabled = respData?.maternity_and_paternity_details[0]?.is_enabled;
-      const temp = this.allUserRoleList.find((data: any) => data.id ===respData?.designation_id);
+      if(respData?.maternity_and_paternity_details.length>0){
+        this.leaveTypeEnabled = respData?.maternity_and_paternity_details[0]?.is_enabled;
+      }
+      // const temp = this.allUserRoleList.find((data: any) => data.id ===respData?.designation_id);
       // if (temp?.designation_name === 'Manager') {
       //   this.getDirectData()
       // } else {
       //   this.reportingManagerId = this.reportingManagerId.filter((data: any) => data.user__full_name != 'Vinayak Hegde')
       //   // console.log(this.reportingManagerId)
       // }
-        this.reportingManagerId = this.reportingManagerId.filter((data: any) => data.user__full_name != 'Vinayak Hegde')
 
       this.initialFormValue = this.employeeFormGroup?.getRawValue();
 
@@ -250,7 +262,6 @@ export class CreateUpdateEmployeeComponent implements CanComponentDeactivate, On
            );
           }
 
-          console.log('Filtered Leave Types:', this.filteredLeaves);
         },
         (error: any) => {
           this.apiService.showError(error?.error?.detail);

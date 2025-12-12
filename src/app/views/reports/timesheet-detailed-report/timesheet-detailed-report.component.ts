@@ -203,10 +203,12 @@ this.getTableData({
 }
 
 exportCsvOrPdf(fileType) {
-  let query = buildPaginationQuery({
-    page: this.page,
-    pageSize: this.tableSize
-  });
+  // let query = buildPaginationQuery({
+  //   page: this.page,
+  //   pageSize: this.tableSize
+  // });
+  let query =   `?download=true`
+  const searchParam = this.term?.trim().length >= 2 ? `&search=${encodeURIComponent(this.term.trim())}` : '';
   if(this.user_role_name !== 'Admin'){
     query +=`&timesheet-employee=${this.user_id}`
     }if (this.selectedClientIds.length) {
@@ -221,16 +223,26 @@ exportCsvOrPdf(fileType) {
       if (this.selectedEmployeeIds?.length) {
         query += `&timesheet-employee-ids=[${this.selectedEmployeeIds.join(',')}]`;
       }if(this.term){
-        query += `&search=${this.term}`
+        query += `&search=${searchParam}`
       }if(this.selectedDate){
          query += `&start-date=${this.selectedDate.startDate}&end-date=${this.selectedDate.endDate}`
       }
-  const url = `${environment.live_url}/${environment.timesheet_reports}/${query}&file-type=${fileType}&timsheet-type=detailed`;
-  downloadFileFromUrl({
-    url,
-    fileName: 'VLP - Timesheet Detail Report',
-    fileType
-  });
+  const url = `${environment.live_url}/${environment.vlp_timesheets}/${query}&file-type=${fileType}&timesheet-report-type=detailed`;
+  const newTab = window.open(url, '_blank');
+
+  // Try closing after some delay
+  setTimeout(() => {
+    try {
+      newTab?.close();
+    } catch (err) {
+      console.error('Could not close tab:', err);
+    }
+  }, 3000);
+  // downloadFileFromUrl({
+  //   url,
+  //   fileName: 'VLP - Timesheet Detail Report',
+  //   fileType
+  // });
 }
 getClienList(){
   let query = `?status=True`
@@ -463,7 +475,8 @@ async getTableData(params?: { page?: number; pageSize?: number; searchTerm?: str
         currentPage:page,
         totalRecords: res.total_no_of_record,
         showDownload:true,
-        disableDownload: disableFlag,
+        disableDownload:false,
+        // disableDownload: disableFlag,
         timesheetDetailedReport:true,
         searchPlaceholder:'Search by Client/Job',
     }

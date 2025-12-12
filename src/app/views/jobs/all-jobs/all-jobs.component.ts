@@ -10,6 +10,8 @@ import { environment } from '../../../../environments/environment';
 import { GenericTableFilterComponent } from '../../../shared/generic-table-filter/generic-table-filter.component';
 import { DropDownPaginationService } from '../../../service/drop-down-pagination.service';
 import { FilterStateService } from '../../../service/filter-state.service';
+import { NgxUiLoaderService } from 'ngx-ui-loader';
+import { HttpClient } from '@angular/common/http';
 
 export interface IdNamePair {
   id: any;
@@ -132,6 +134,7 @@ private searchSubject = new Subject<string>();
     private fb: FormBuilder,
     private dropdownService: DropDownPaginationService,
     private filterState: FilterStateService,
+    private http: HttpClient, private ngxLoader: NgxUiLoaderService,
     private datePipe: DatePipe) {
     this.common_service.setTitle(this.BreadCrumbsTitle);
     this.user_id = sessionStorage.getItem('user_id');
@@ -709,6 +712,12 @@ private searchSubject = new Subject<string>();
     return manager ? manager?.manager_name : '';
   }
 
+  removePagination(url: string) {
+    const params = new URLSearchParams(url);
+    params.delete('page');
+    params.delete('page_size');
+    return params.toString();  
+  }
   downloadOption(type: any) {
     let status: any
     if (this.isCurrent) {
@@ -719,23 +728,44 @@ private searchSubject = new Subject<string>();
       status = 'False';
       this.jobStatusList(status);
     }
-    let query = '';
-    if (this.filterQuery) {
-      query = this.filterQuery + `&file-type=${type}`;
-    } else {
-      query = `?page=${this.page}&page_size=${this.tableSize}&file-type=${type}&job-status=[${this.statusList}]`;
-      query += this.userRole !== 'Admin' ? `&employee-id=${this.user_id}` : '';
+    let cleanedFilterQuery = this.filterQuery;
+    const updated_query = this.removePagination(cleanedFilterQuery)
+    let query = `?download=true&file-type=${type}`;
+    query += `&${updated_query}`;
+    query += this.userRole !== 'Admin' ? `&employee-id=${this.user_id}` : '';
+    console.log(query)
+    // let apiUrl = `${environment.live_url}/${environment.only_jobs}/${query}`;
+    let apiUrl = `${environment.live_url}/timesheet/?timesheet-report-type=detailed&download=true&file-type=csv`
+     this.ngxLoader.start();
+    this.http.get(apiUrl, { responseType: 'blob' }).subscribe({
+    next: (blob: Blob) => {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `job-details.${type}`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+
+      this.ngxLoader.stop(); // stop on success
+    },
+    error: err => {
+      console.error(err);
+      this.ngxLoader.stop(); // stop on error
+      // show in-panel message if you want
     }
-    let apiUrl = `${environment.live_url}/${environment.job_details}/${query}`;
-    fetch(apiUrl)
-      .then(res => res.blob())
-      .then(blob => {
-        //console.log('blob',blob);
-        const a = document.createElement('a');
-        a.href = URL.createObjectURL(blob);
-        a.download = `VLP - Job Details.${type}`;
-        a.click();
-      });
+  });
+    // let apiUrl = `${environment.live_url}/${environment.only_jobs}/${query}`;
+    //  this.ngxLoader.start();
+    // fetch(apiUrl)
+    //   .then(res => res.blob())
+    //   .then(blob => {
+    //     const a = document.createElement('a');
+    //     a.href = URL.createObjectURL(blob);
+    //     a.download = `job-details.${type}`;
+    //     a.click();
+    //   });
   }
 
   jobStatusList(status: any) {

@@ -214,7 +214,7 @@ public viewtimesheetDetails(item:any){
       this.dialog.open(JobTimeSheetDetailsPopupComponent, {
       panelClass: 'custom-details-dialog',
       data: { 'job_id': item?.job_id,'job_name':item?.job_name,'employee_id':item.employee_id,'download-api':'','download':true,
-        'dropdwonFilterData':this.dropdwonFilterData,'report_type':'non-productive-hours'
+        'dropdwonFilterData':this.dropdwonFilterData,'report_type':'non-productive-hours','client_id':item.client_id
       },
     });
     }

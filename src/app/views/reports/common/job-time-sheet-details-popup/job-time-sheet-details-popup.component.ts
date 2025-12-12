@@ -180,6 +180,7 @@ export class JobTimeSheetDetailsPopupComponent implements OnInit {
        query += `&timesheet-report-type=job-time-report`
     }
     if(this.data.report_type==='non-productive-hours'){
+      query += `&client=${this.data.client_id}`;
       query += this.data.dropdwonFilterData.periodicity ? `&periodicity=${this.data.dropdwonFilterData.periodicity}`:'';
        query += this.data.dropdwonFilterData.period ? `&period=${encodeURIComponent(JSON.stringify(this.data.dropdwonFilterData.period))}`:'';
     }

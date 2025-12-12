@@ -86,7 +86,7 @@ BreadCrumbsTitle: any = 'Invoices';
         filter((term: string) => term === '' || term.length >= 2)
       ).subscribe((search: string) => {
         this.term = search
-        this.filterData();
+        this.filterData();;
       });
       const saved = this.filterState.loadState();
       if (saved) {
@@ -104,7 +104,7 @@ BreadCrumbsTitle: any = 'Invoices';
         this.arrowState[this.state.sortValue] = this.state.directionValue === 'ascending' ? true : false;
          this.filters = this.state.filters;
       } 
-      this.filterData();
+      this.filterData();;
     }
 
     public initalCall(){
@@ -192,12 +192,12 @@ BreadCrumbsTitle: any = 'Invoices';
       if (event) {
         this.page = 1;
         this.tableSize = Number(event.value);
-          this.filterData()
+          this.filterData();
       }
     }
     public onTableDataChange(event: any) {
       this.page = event;
-      this.filterData()
+      this.filterData();
     }
     public filterSearch(event: any) {
       const value = event?.target?.value || '';
@@ -208,10 +208,10 @@ BreadCrumbsTitle: any = 'Invoices';
       // this.term = event.target.value?.trim();
       // if (this.term && this.term.length >= 2) {
       //   this.page = 1;
-      //     this.filterData()
+      //     this.filterData();
       // }
       // else if (!this.term) {
-      //   this.filterData()
+      //   this.filterData();
       // }
     }
 
@@ -229,7 +229,7 @@ BreadCrumbsTitle: any = 'Invoices';
       this.arrowState[column] = direction === 'ascending' ? true : false;
       this.directionValue = direction;
       this.sortValue = column;
-       this.filterData()
+       this.filterData();
     }
 
     public getContinuousIndex(index: number): number {
@@ -258,14 +258,14 @@ BreadCrumbsTitle: any = 'Invoices';
     if (selectedDate) {
       this.invoiceDate = this.datePipe.transform(selectedDate, 'yyyy-MM-dd');
     }
-    this.filterData()
+    // this.filterData();
     }
     onDateSelected(event: any): void {
       const selectedDate = event.value;
       if (selectedDate) {
        this.invoiceDate = this.datePipe.transform(selectedDate, 'yyyy-MM-dd');
       }
-      this.filterData()
+      this.filterData();
     }
 
     saveState() {
@@ -313,7 +313,7 @@ BreadCrumbsTitle: any = 'Invoices';
       this.dateFilterValue = null;
       this.startDate = null;
       this.endDate = null;
-      this.filterData()
+      this.filterData();
     }
     onStartDateChange(event: any) {
       const selectedDate = event.value;
@@ -326,7 +326,7 @@ BreadCrumbsTitle: any = 'Invoices';
       if (selectedDate) {
         this.endDate = this.datePipe.transform(selectedDate, 'yyyy-MM-dd');
       }
-      this.filterData()
+      this.filterData();
     }
     dateClass = (date: Date) => {
       return date.getDay() === 0 ? 'sunday-highlight' : '';

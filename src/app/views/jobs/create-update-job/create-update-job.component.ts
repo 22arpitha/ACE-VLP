@@ -470,6 +470,8 @@ onManagerSelectOpened(opened: boolean, index: number): void {
     const peroidicityId = event.value;
     this.jobFormGroup.get('period')?.reset(null, { emitEvent: false });
     this.modeName = this.allPeroidicitylist.find((peroidicity: any) => peroidicity.id === peroidicityId)?.periodicty_name;
+    this.yearDefault =new Date()?.getFullYear();
+    this.year = new Date()?.getFullYear();
     this.checkthePerodicityName()
   }
   checkthePerodicityName(){

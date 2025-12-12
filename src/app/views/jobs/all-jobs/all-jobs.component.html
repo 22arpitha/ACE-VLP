@@ -199,7 +199,7 @@
                     (selectedOptionsChange)="filterData()"></app-generic-table-filter>
                 </mat-menu>
               </th>
-              <th scope="col" *ngIf="isColumnVisible('percentage_of_completion')">POC (%)</th>
+              <th scope="col" *ngIf="isColumnVisible('percentage_of_completion')">%</th>
               <th scope="col" *ngIf="isColumnVisible('job_status_date')">
                 Stat Date
                 <button mat-icon-button (click)="datepicker.open()" class=" btn-menu-trigger"

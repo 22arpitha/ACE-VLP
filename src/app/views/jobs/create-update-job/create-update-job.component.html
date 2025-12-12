@@ -228,9 +228,12 @@
         <mat-icon>chevron_left</mat-icon>
       </button>
 
-      <button mat-button (click)="toggleView();$event.stopPropagation()">
+      <button mat-button>
         {{ showSelection ? (year || yearDefault) : (yearRangeStart + ' - ' + (yearRangeStart + 9)) }}
       </button>
+      <!-- <button mat-button (click)="toggleView();$event.stopPropagation()">
+        {{ showSelection ? (year || yearDefault) : (yearRangeStart + ' - ' + (yearRangeStart + 9)) }}
+      </button> -->
 
       <button mat-icon-button (click)="nextDecade();$event.stopPropagation()" aria-label="Next Decade">
         <mat-icon>chevron_right</mat-icon>
