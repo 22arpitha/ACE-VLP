@@ -10,12 +10,12 @@
           <div class="col-12 mt-2 col-sm-12 col-md-4 col-lg-6 text-end px-0 downloads">
               <button mat-raised-button class="mat-btn-s tab-button-content" [ngClass]="{'isActive': isCurrent}" type="button" (click)="getCurrentClients();">Current</button>
               <button mat-raised-button class="mat-btn-s tab-button-content" [ngClass]="{'isActive': isHistory}" type="button" (click)="getClientsHistory();">History</button>
-              <button mat-mini-fab  class="download-icons" (click)="downloadOption('csv')" ngbTooltip="CSV" placement="top" [disabled]="filteredList?.length === 0 || isHistory">
+              <button mat-mini-fab  class="download-icons" (click)="downloadOption('csv')" ngbTooltip="CSV" placement="top" [disabled]="filteredList?.length === 0">
                 <mat-icon style="color: green">table_view</mat-icon>
               </button>
-              <button mat-mini-fab  class="download-icons" (click)="downloadOption('pdf')" ngbTooltip="PDF" placement="top" [disabled]="filteredList?.length === 0 || isHistory">
+              <!-- <button mat-mini-fab  class="download-icons" (click)="downloadOption('pdf')" ngbTooltip="PDF" placement="top" [disabled]="filteredList?.length === 0 || isHistory">
                 <mat-icon style="color: red">picture_as_pdf</mat-icon>
-              </button>
+              </button> -->
               <!-- <button mat-raised-button class="proceedbtn mat-btn-s download-btn" type="button" [disabled]="filteredList?.length === 0" [matMenuTriggerFor]="downloadMenu"><i class="fa fa-download"></i></button> -->
               <button mat-raised-button class="proceedbtn mat-btn-s" type="button" (click)="openCreateClientPage()" *ngIf="userRole !='Admin' && accessPermissions[0]?.create || userRole === 'Admin'">Create
                 Client</button>

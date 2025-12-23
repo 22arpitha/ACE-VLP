@@ -134,36 +134,15 @@ private searchSubject = new Subject<string>();
     private fb: FormBuilder,
     private dropdownService: DropDownPaginationService,
     private filterState: FilterStateService,
-    private http: HttpClient, private ngxLoader: NgxUiLoaderService,
     private datePipe: DatePipe) {
     this.common_service.setTitle(this.BreadCrumbsTitle);
     this.user_id = sessionStorage.getItem('user_id');
     this.userRole = sessionStorage.getItem('user_role_name');
     this.getModuleAccess();
     this.loadInitialData();
-    // this.getCurrentJobs(); 
-    // this.getJobStatusList();
-    // this.getJobTypeList();
-    // this.getAllEmployeeList();
-    // this.getAllActiveManagerList();
-    // this.getClientList();
-
-    // this.common_service.jobStatus$.subscribe((status: boolean) => {
-    //   if (status) {
-    //     this.getJobsHistoryList();
-    //   } else {
-    //     console.log("is it coming here")
-    //     this.getCurrentJobsList();
-    //   }
-    // })
   }
 
   ngOnInit() {
-    this.initialForm();
-    //  setTimeout(() => {
-    //   this.getCurrentJobs();
-    //  }, 500)
-
     this.searchSubject.pipe(
           debounceTime(500),
           distinctUntilChanged(),
@@ -174,20 +153,6 @@ private searchSubject = new Subject<string>();
         });
   }
   access_name: any;
-
-  getUniqueValues(
-    extractor: (item: any) => { id: any; name: string }
-  ): { id: any; name: string }[] {
-    const seen = new Map();
-    this.jobList?.forEach(job => {
-      const value = extractor(job);
-      if (value && value.id && !seen.has(value.id)) {
-        seen.set(value.id, value.name);
-      }
-    });
-
-    return Array.from(seen, ([id, name]) => ({ id, name }));
-  }
 
   loadInitialData() {
     let query = `?status=True`;
@@ -381,29 +346,7 @@ private searchSubject = new Subject<string>();
       }
     });
   }
-  // getJobStatusList() {
-  //   this.apiService.getData(`${environment.live_url}/${environment.settings_job_status}/`).subscribe(
-  //     (resData: any) => {
-  //       // console.log(resData);
-  //       resData.forEach((element:any)=>{
-  //         element['valueChanged']=false
-  //       })
-  //       this.allJobStatus = resData;
-  //       this.jobStatusList('True');
-  //     }
-  //   )
-  // }
-  // getJobTypeList() {
-  //   this.apiService.getData(`${environment.live_url}/${environment.settings_job_type}/`).subscribe((res: any) => {
-  //     if (res) {
-  //       this.allJobTypeNames = res?.map((item: any) => ({
-  //         id: item.id,
-  //         name: item.job_type_name
-  //       }));
-  //     }
-  //   })
-  //   return this.allJobTypeNames;
-  // }
+  
   getAllCientsBaseGroupList(clientIds: any) {
     // console.log('ClientIDs:',clientIds);
     let query = this.userRole === 'Admin' ? '' : `?client-ids=[${clientIds}]`
@@ -431,18 +374,6 @@ private searchSubject = new Subject<string>();
     }));
   }
 
-  // getAllActiveManagerList(){
-  //   this.allManagerlist =[];
-  //   this.apiService.getData(`${environment.live_url}/${environment.employee}/?is_active=True&employee=True&designation=manager`).subscribe((respData: any) => {
-  //   this.allManagerlist = respData;
-  //   this.allManagerNames = respData?.map((emp: any) => ({
-  //     id: emp?.user_id,
-  //     name: emp?.user__first_name
-  //   }))
-  //   },(error => {
-  //     this.apiService.showError(error?.error?.detail)
-  //   }));
-  // }
   onFilterChange(event: any, filterType: string) {
     const selectedOptions = event;
     this.filters[filterType] = selectedOptions;
@@ -483,24 +414,6 @@ private searchSubject = new Subject<string>();
     this.selectedItemId = item?.id;
     sessionStorage.setItem('access-name', this.access_name?.name)
     this.router.navigate(['/jobs/update-job', this.selectedItemId]);
-    // try {
-    //   const modalRef = await this.modalService.open(GenericEditComponent, {
-    //     size: 'sm',
-    //     backdrop: 'static',
-    //     centered: true
-    //   });
-
-    //   modalRef.componentInstance.status.subscribe(resp => {
-    //     if (resp === 'ok') {
-    //       modalRef.dismiss();
-
-    //     } else {
-    //       modalRef.dismiss();
-    //     }
-    //   });
-    // } catch (error) {
-    // //  console.error('Error opening modal:', error);
-    // }
   }
   getCurrentJobsList() {
     this.allJobsList = [];
@@ -514,17 +427,19 @@ private searchSubject = new Subject<string>();
     // // let jobStatusParam = encodeURIComponent(JSON.stringify(this.statusList));
     // // let query = `${this.getFilterBaseUrl()}&job-status=${jobStatusParam}`;
     // add this ==> this.statusList.length != 0 ( when you are displaying the job status)
-    if (this.allStatuGroupNames.length != 0) {
-      let query: any = `${this.getFilterBaseUrl()}&job-status=[${this.statusList}]`;
-      this.apiService.getData(`${environment.live_url}/${environment.only_jobs}/${query}`).subscribe((res: any) => {
-        this.allJobsList = res?.results;
-        this.filteredList = res?.results;
-        const noOfPages: number = res?.['total_pages']
-        this.count = noOfPages * this.tableSize;
-        this.count = res?.['total_no_of_record'];
-        this.page = res?.['current_page'];
-      });
-    }
+
+    this.filterData();
+    // if (this.allStatuGroupNames.length != 0) {
+    //   let query: any = `${this.getFilterBaseUrl()}&job-status=[${this.statusList}]`;
+    //   this.apiService.getData(`${environment.live_url}/${environment.only_jobs}/${query}`).subscribe((res: any) => {
+    //     this.allJobsList = res?.results;
+    //     this.filteredList = res?.results;
+    //     const noOfPages: number = res?.['total_pages']
+    //     this.count = noOfPages * this.tableSize;
+    //     this.count = res?.['total_no_of_record'];
+    //     this.page = res?.['current_page'];
+    //   });
+    // }
   }
   getJobsHistoryList() {
     this.allJobsList = [];
@@ -535,17 +450,19 @@ private searchSubject = new Subject<string>();
     this.jobStatusList('False');
     // console.log('history',this.statusList)
     // this.allStatuGroupNames
-    let query = `${this.getFilterBaseUrl()}&job-status=[${this.statusList}]`;
-    this.apiService.getData(`${environment.live_url}/${environment.only_jobs}/${query}`).subscribe(
-      (res: any) => {
-        this.allJobsList = res?.results;
-        this.filteredList = res?.results;
-        const noOfPages: number = res?.['total_pages']
-        this.count = noOfPages * this.tableSize;
-        this.count = res?.['total_no_of_record'];
-        this.page = res?.['current_page'];
-      }
-    )
+
+    this.filterData();
+    // let query = `${this.getFilterBaseUrl()}&job-status=[${this.statusList}]`;
+    // this.apiService.getData(`${environment.live_url}/${environment.only_jobs}/${query}`).subscribe(
+    //   (res: any) => {
+    //     this.allJobsList = res?.results;
+    //     this.filteredList = res?.results;
+    //     const noOfPages: number = res?.['total_pages']
+    //     this.count = noOfPages * this.tableSize;
+    //     this.count = res?.['total_no_of_record'];
+    //     this.page = res?.['current_page'];
+    //   }
+    // )
   }
    getUnassignedJobsList() {
     this.allJobsList = [];
@@ -604,14 +521,6 @@ private searchSubject = new Subject<string>();
       this.page = 1
     }
     this.searchSubject.next(value);
-    // this.term = event.target.value?.trim();
-    // if (this.term && this.term.length >= 2) {
-    //   this.page = 1;
-    //   this.filterData()
-    // }
-    // else if (!this.term) {
-    //   this.filterData();
-    // }
   }
 
   getFilterBaseUrl(): string {
@@ -733,29 +642,26 @@ private searchSubject = new Subject<string>();
     let query = `?download=true&file-type=${type}`;
     query += `&${updated_query}`;
     query += this.userRole !== 'Admin' ? `&employee-id=${this.user_id}` : '';
-    console.log(query)
-    // let apiUrl = `${environment.live_url}/${environment.only_jobs}/${query}`;
-    let apiUrl = `${environment.live_url}/timesheet/?timesheet-report-type=detailed&download=true&file-type=csv`
-     this.ngxLoader.start();
-    this.http.get(apiUrl, { responseType: 'blob' }).subscribe({
-    next: (blob: Blob) => {
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `job-details.${type}`;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      URL.revokeObjectURL(url);
+    let apiUrl = `${environment.live_url}/${environment.only_jobs}/${query}`;
+    window.open(apiUrl, '_blank');
+    // const newTab = window.open(apiUrl, '_blank');
 
-      this.ngxLoader.stop(); // stop on success
-    },
-    error: err => {
-      console.error(err);
-      this.ngxLoader.stop(); // stop on error
-      // show in-panel message if you want
-    }
-  });
+    // setTimeout(() => {
+    //   try {
+    //     newTab?.close();
+    //   } catch (err) {
+    //     console.error('Could not close tab:', err);
+    //   }
+    // }, 1000);
+
+  //     this.ngxLoader.stop(); // stop on success
+  //   },
+  //   error: err => {
+  //     console.error(err);
+  //     this.ngxLoader.stop(); // stop on error
+  //     // show in-panel message if you want
+  //   }
+  // });
     // let apiUrl = `${environment.live_url}/${environment.only_jobs}/${query}`;
     //  this.ngxLoader.start();
     // fetch(apiUrl)
@@ -797,15 +703,12 @@ private searchSubject = new Subject<string>();
     console.log(event.value)
   }
   allocationStartDate(event: any): void {
-    // console.log(event)
     const selectedDate = event.value;
     if (selectedDate) {
       this.dateRange.start = this.datePipe.transform(selectedDate, 'yyyy-MM-dd');
     }
-    // this.filterData()
   }
   allocationEndDate(event: any): void {
-    // console.log(event)
     const selectedDate = event.value;
     if (selectedDate) {
       this.dateRange.end = this.datePipe.transform(selectedDate, 'yyyy-MM-dd');
@@ -982,12 +885,6 @@ private searchSubject = new Subject<string>();
     }
   }
 
-
-  //   resetAllFilters() {
-  //   this.allFilters.forEach(filter => {
-  //     filter.clearSearch();
-  //   });
-  // }
 
   resetFilters(): void {
   // clears only status group filter

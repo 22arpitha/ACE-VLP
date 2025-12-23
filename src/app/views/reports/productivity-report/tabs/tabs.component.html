@@ -13,7 +13,7 @@
     <button mat-raised-button class="proceedbtn mat-btn-s mr-2" type="button" (click)="applySearch()" [disabled]="(employee && !periodicityId && !period) || (!employee && !periodicityId && !period)">Search</button>
     <button mat-raised-button class="cancel-button mat-btn-s" type="button" (click)="resetSearch()" [disabled]="resetBtnDisable">
       Reset</button>
-    <button mat-raised-button class="proceedbtn mat-btn-s" type="button" (click)="downloadExcel()">Export to Excel</button>
+    <button *ngIf="url!='/reports/non-productive-hours'" mat-raised-button class="proceedbtn mat-btn-s" type="button" (click)="downloadExcel()">Export to Excel</button>
   </div>
 </div>
 <div class="row ms-2 d-flex align-items-center mb-2" *ngIf="url!='/reports/non-productive-hours'">

@@ -277,10 +277,8 @@ export class TimesheetsSummaryReportComponent implements OnInit {
     });
   }
    exportCsvOrPdf(fileType) {
-     let query = buildPaginationQuery({
-       page: this.page,
-       pageSize: this.tableSize,
-     });
+     const search = this.term?.trim().length >= 2? `search=${encodeURIComponent(this.term.trim())}&`: '';
+    let query = `?${search}download=true`
      query += this.client_id ? `&client=${this.client_id}` : '';
      query += (this.userRole ==='Admin' || (this.userRole !='Admin' && this.client_id)) ? '':`&employee-id=${this.user_id}`;
         if (this.selectedClientIds?.length) {
@@ -299,16 +297,8 @@ export class TimesheetsSummaryReportComponent implements OnInit {
          query += `&timesheet-start-date=${this.time?.start_date}&timesheet-end-date=${this.time?.end_date}`;
        }
 
-        // const startDate = this.fromDate?.start_date ?? this.time.start_date;
-        // const formattedStartDate = this.datePipe.transform(startDate, 'yyyy-MM-dd');
-        // query += `&from-date=${formattedStartDate}`;
-// &job-status=[${this.statusList}]
-     const url = `${environment.live_url}/${environment.job_reports}/${query}&report-type=timesheet-summary-report-new&file-type=${fileType}`;
-     downloadFileFromUrl({
-       url,
-       fileName: 'VLP - Timesheet-summary-report',
-       fileType
-     });
+       const url = `${environment.live_url}/${environment.all_jobs}/${query}&file-type=${fileType}&report-type=timesheet-summary-report-new`;
+        window.open(url, '_blank');
    }
    getClientList(){
   let query = `?status=True`;
@@ -405,7 +395,7 @@ export class TimesheetsSummaryReportComponent implements OnInit {
   public viewtimesheetDetails(item:any){
         this.dialog.open(JobTimeSheetDetailsPopupComponent, {
         panelClass: 'custom-details-dialog',
-        data: { 'job_id': item?.id,'job_name':item?.job_name,'report_type':'timesheet-summary-report','download-api':'','download':true}
+        data: { 'job_id': item?.id,'job_name':item?.job_name,'report_type':'timesheet-summary-report','download_api':environment.vlp_timesheets,'download':true,'showCsv':true,}
       });
       }
   
@@ -522,6 +512,8 @@ export class TimesheetsSummaryReportComponent implements OnInit {
          disableDownload: disableFlag,
          totalRecords: res.total_no_of_record,
          showDownload:true,
+         showCsv:true,
+         showPdf:false,
          searchPlaceholder:'Search by Client/Job/Employee',
         };
       }

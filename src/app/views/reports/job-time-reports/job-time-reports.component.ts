@@ -224,6 +224,7 @@ onApplyFilter(filteredData: any[], filteredKey: string): void {
   if (filteredKey === 'client-ids') {
     this.selectedClientIds = filteredData;
     if(filteredData && filteredData.length===0 || filteredData.length>1){
+      this.filterDataCache={};
       this.isIncludeAllJobEnable=true;
       this.isIncludeAllJobValue=false;
       this.client_id=null;
@@ -264,12 +265,18 @@ this.formattedData = [];
   });
 }
  exportCsvOrPdf(fileType) {
-   let query = buildPaginationQuery({
-     page: this.page,
-     pageSize: this.tableSize,
-   });
-   query += this.client_id ? `&client=${this.client_id}` : '';
-   query += (this.userRole ==='Admin' || (this.userRole !='Admin' && this.client_id)) ? '':`&employee-id=${this.user_id}`;
+    const search = this.term?.trim().length >= 2? `search=${encodeURIComponent(this.term.trim())}&`: '';
+    let query = `?${search}job-status=[${this.statusList}]&report-type=job-time-report&file-type=${fileType}&download=true`
+    query += this.client_id ? `&client=${this.client_id}` : '';
+    if(this.userRole ==='Manager' && !this.client_id){
+          query += `&manager-ids=[${this.user_id}]`;
+        } else if ((this.userRole !='Manager' && this.userRole !='Admin')  && !this.client_id){
+          query += `&employee-ids=[${this.user_id}]`;
+        }
+        if( this.primaryEmployees?.length>0){
+          query += `&employee-ids=[${this.primaryEmployees}]`;
+        }
+  //  query += (this.userRole ==='Admin' || (this.userRole !='Admin' && this.client_id)) ? '':`&employee-id=${this.user_id}`;
       if (this.selectedClientIds?.length) {
         query += `&client-ids=[${this.selectedClientIds.join(',')}]`;
       }
@@ -279,12 +286,8 @@ this.formattedData = [];
       if (this.selectedStatusIds?.length) {
         query += `&job-status-ids=[${this.selectedStatusIds.join(',')}]`;
       }
-   const url = `${environment.live_url}/${environment.job_reports}/${query}&job-status=[${this.statusList}]&report-type=job-time-report&file-type=${fileType}`;
-   downloadFileFromUrl({
-     url,
-     fileName: 'VLP - Job Time Report',
-     fileType
-   });
+      const url = `${environment.live_url}/${environment.all_jobs}/${query}`;
+      window.open(url, '_blank');
  }
  getClientList(){
 let query = `?status=True`;
@@ -483,7 +486,7 @@ public sendEamils(){
 public viewtimesheetDetails(item:any){
       this.dialog.open(JobTimeSheetDetailsPopupComponent, {
       panelClass: 'custom-details-dialog',
-      data: { 'job_id': item?.id,'job_name':item?.job_name,'report_type':'job-time-report','download-api':'','download':true}
+      data: { 'job_id': item?.id,'job_name':item?.job_name,'report_type':'job-time-report','download_api':`${environment.vlp_timesheets}`,'download':true,showCsv:true}
     });
     }
 
@@ -511,29 +514,37 @@ public viewtimesheetDetails(item:any){
    const query = buildPaginationQuery({ page, pageSize, searchTerm });
    this.jobStatusList(this.tabStatus);
     finalQuery = query + `&job-status=[${this.statusList}]`;
-    let emp_ids:any= [];
-       if(this.userRole!='Admin' && params?.prime_emp?.length>0){
-        emp_ids = [...params?.prime_emp, Number(this.user_id)];
-       } else  if(this.userRole!='Admin'){
-         emp_ids = [Number(this.user_id)];
-       } else if(this.userRole==='Admin' && params?.prime_emp?.length>0){
-        emp_ids = [params?.prime_emp];
-       }
-       let emp_query
-       if(this.client_id && this.userRole!='Admin' && !params?.prime_emp){
-        emp_query = ''
-       } else if(this.client_id && this.userRole!='Admin' && params?.prime_emp.length>0){
-        if(this.userRole==='Manager'){
-          emp_ids = [params?.prime_emp];
-          emp_query = `&employee-ids=[${emp_ids}]`;
-        } 
-       } else if(this.userRole==='Admin' && params?.prime_emp?.length>0){
-          emp_query = `&employee-ids=[${emp_ids}]`;
-       } else if(this.userRole!='Admin' && !this.client_id){
-          emp_query = `&employee-ids=[${emp_ids}]`
-       }
+    if(this.userRole ==='Manager' && !this.client_id){
+      finalQuery += `&manager-ids=[${this.user_id}]`;
+    } else if ((this.userRole !='Manager' && this.userRole !='Admin')  && !this.client_id){
+      finalQuery += `&employee-ids=[${this.user_id}]`;
+    }
+    if( params?.prime_emp?.length>0){
+      finalQuery += `&employee-ids=[${params?.prime_emp}]`;
+    }
+    // let emp_ids:any= [];
+    //    if(this.userRole!='Admin' && params?.prime_emp?.length>0){
+    //     emp_ids = [...params?.prime_emp, Number(this.user_id)];
+    //    } else  if(this.userRole!='Admin'){
+    //      emp_ids = [Number(this.user_id)];
+    //    } else if(this.userRole==='Admin' && params?.prime_emp?.length>0){
+    //     emp_ids = [params?.prime_emp];
+    //    }
+    //    let emp_query
+    //    if(this.client_id && this.userRole!='Admin' && !params?.prime_emp){
+    //     emp_query = ''
+    //    } else if(this.client_id && this.userRole!='Admin' && params?.prime_emp.length>0){
+    //     if(this.userRole==='Manager'){
+    //       emp_ids = [params?.prime_emp];
+    //       emp_query = `&employee-ids=[${emp_ids}]`;
+    //     } 
+    //    } else if(this.userRole==='Admin' && params?.prime_emp?.length>0){
+    //       emp_query = `&employee-ids=[${emp_ids}]`;
+    //    } else if(this.userRole!='Admin' && !this.client_id){
+    //       emp_query = `&employee-ids=[${emp_ids}]`
+    //    }
 
-       finalQuery += emp_query || ''
+    //    finalQuery += emp_query || ''
     // finalQuery += (this.userRole ==='Admin' || (this.userRole !='Admin' && this.client_id)) ? '':`&employee-id=${this.user_id}`;
     finalQuery += this.client_id ? `&client=${this.client_id}` : '';
     finalQuery += `&report-type=job-time-report`;
@@ -603,7 +614,8 @@ public viewtimesheetDetails(item:any){
        currentPage:page,
        totalRecords: res.total_no_of_record,
        showDownload:true,
-       disableDownload: this.tabStatus === "True" ? false : true,
+       showCsv:true,
+       showPdf:false,
        searchPlaceholder:'Search by Client/Job/Status',
       };
     }

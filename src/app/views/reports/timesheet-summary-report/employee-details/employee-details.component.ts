@@ -116,17 +116,23 @@ export class EmployeeDetailsComponent implements OnInit {
    });
  }
  exportCsvOrPdf(fileType) {
-   let query = buildPaginationQuery({
-     page: this.page,
-     pageSize: this.tableSize,
-   });
-
-   const url = `${environment.live_url}/${environment.timesheet_reports}/${query}&file-type=${fileType}&timsheet-type=detailed`;
-   downloadFileFromUrl({
-     url,
-     fileName: 'timesheet_details',
-     fileType
-   });
+   const search = this.term?.trim().length >= 2? `search=${encodeURIComponent(this.term.trim())}&`: '';
+    let query = `?${search}download=true`
+    if(this.user_role_name !== 'Admin'){
+      query +=`&employee-id=${this.user_id}`
+      }
+    query +=`&timesheet-employee=${this.data?.employee.keyId}&timesheet-as-per-date=${this.data.selectedDay}`
+    if(this.directionValue && this.sortValue){
+        query += `&sort-by=${this.sortValue}&sort-type=${this.directionValue}`;
+      }
+      const url = `${environment.live_url}/${environment.vlp_timesheets}/${query}&file-type=${fileType}`
+      window.open(url, '_blank');
+      //  const url = `${environment.live_url}/${environment.vlp_timesheets}/${query}&file-type=${fileType}&timsheet-type=detailed`;
+  //  downloadFileFromUrl({
+  //    url,
+  //    fileName: 'timesheet_details',
+  //    fileType
+  //  });
  }
 
  // Fetch table data from API with given params
@@ -163,6 +169,8 @@ export class EmployeeDetailsComponent implements OnInit {
        searchable: true,
        currentPage:page,
        showDownload:true,
+       showCsv:true,
+       showPdf:true,
        totalRecords : noOfPages * this.tableSize,
       //  totalRecords: res.total_no_of_record,
        searchPlaceholder:'Search by Employee',

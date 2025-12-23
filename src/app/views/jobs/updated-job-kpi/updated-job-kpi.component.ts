@@ -175,7 +175,7 @@ private createMrpCrpGroup(): FormGroup {
     const detailsArray = this.fb.array([this.createMrpCrpGroup()]);
     const employeeForm = this.fb.group({
       employee: [{ value: emp?.employee, disabled: true}],
-      processing_time: [{ value: emp?.kpi ? emp?.kpi?.processing_time:formattedbudget_time?.toString(), disabled: true}],
+      processing_time: [{ value: emp?.kpi ? emp?.kpi?.processing_time:'000:00'.toString(), disabled: true}],
       review_time: [{ value: emp?.kpi ? emp?.kpi?.review_time:'000:00', disabled: true}],
       budget_file: [{ value: null, disabled: true}],
       budget_file_name: [null],
@@ -354,7 +354,7 @@ public backBtnFunc(): void {
       }
      // Save JOB KPI
 public async saveJobKPIDetails(){
-console.log('controls',this.jobKPIFormGroup.controls);
+// console.log('controls',this.jobKPIFormGroup.controls);
   if (this.jobKPIFormGroup.invalid) {
     this.jobKPIFormGroup.markAllAsTouched();
     this.formErrorScrollService.setUnsavedChanges(true);
@@ -368,7 +368,7 @@ console.log('controls',this.jobKPIFormGroup.controls);
   }).catch((error) => {
     reqPayload['data']=[];
   });
-    console.log('reqPayload',reqPayload,typeof reqPayload);
+    // console.log('reqPayload',reqPayload,typeof reqPayload);
               this.apiService.postData(`${environment.live_url}/${environment.jobs_kpi}/`, reqPayload).subscribe((respData: any) => {
               if (respData) {
                 this.apiService.showSuccess(respData['message']);
@@ -523,7 +523,7 @@ public onPageChanged(event: any) {
   const input: HTMLInputElement = document.querySelector(selector) as HTMLInputElement;
   if (input) input.value = '';
 
-  console.log(`Removed ${type.toUpperCase()} file for row ${index}, col ${col}`);
+  // console.log(`Removed ${type.toUpperCase()} file for row ${index}, col ${col}`);
 }
 
 
@@ -896,9 +896,9 @@ onFileDropped(event: DragEvent) {
                   }
 }
 public triggerFileInput(index:any) {
-  console.log('fileInputs',this.fileInputs);
+  // console.log('fileInputs',this.fileInputs);
   const fileInput = this.fileInputs?.toArray()[index];
-  console.log('fileInput',fileInput);
+  // console.log('fileInput',fileInput);
 
   if (fileInput) {
     fileInput?.nativeElement?.click();

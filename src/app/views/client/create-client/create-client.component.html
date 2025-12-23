@@ -165,11 +165,16 @@
                 <mat-label *ngIf="selectedFile && selectedFile?.name"><a type="button" (click)="openFileInNewTab()">{{selectedFile?.name}}</a></mat-label>
                 <mat-label *ngIf="!selectedFile && !selectedFile?.name">Upload File</mat-label>
 
-                <button type="button" mat-icon-button [disabled]="!shouldDisableFileds " (click)="triggerFileInput()">
+                <div>
+                  <button type="button" mat-icon-button [disabled]="!shouldDisableFileds " (click)="triggerFileInput()">
                   <i matTooltip="{{selectedFile ? 'Edit' : 'Upload File'}}"
                     class="{{selectedFile ? 'bi bi-pencil-fill' : 'bi bi-file-earmark-spreadsheet'}}"
                     id="edit-or-upload-icon"></i>
                 </button>
+                <button type="button" mat-icon-button *ngIf="selectedFile" (click)="removeImage()">
+                  <mat-icon>close</mat-icon>
+                </button>
+                </div>
               </div>
   </div>
               <div *ngIf="f['client_file']?.touched && f['client_file']?.invalid"

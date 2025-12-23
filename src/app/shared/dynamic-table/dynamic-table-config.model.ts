@@ -39,6 +39,8 @@ export interface DynamicTableConfig {
   tableFooterContent?:any;
   hideDownload?:boolean;
   showDownload?:boolean;
+  showCsv?:boolean;
+  showPdf?:boolean;
   disableDownload?:boolean
   averageProductivity?:boolean;
   average_productive_hour?:boolean;

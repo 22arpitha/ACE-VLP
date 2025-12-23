@@ -123,14 +123,27 @@ export class JobTimeSheetDetailsPopupComponent implements OnInit {
   }
 
   exportCsvOrPdf(fileType) {
-    console.log(this.data)
     let query : string = ''
     let query_end_point:string;
+    query += `?job-ids=[${this.jobId}]`;
+    query += this.employee_id ? `&timesheet-employee=${this.employee_id}` : ``;
     if(this.data.report_type==='non-productive-hours'){
-      query_end_point = `${environment.non_productivity}`
-       query += `client-name='Vedalekha professionals'&job-ids=${this.data?.job_id}&timesheet-employee=${this.employee_id}`
-       query += this.data.dropdwonFilterData.periodicity ? `&periodicity=${this.data.dropdwonFilterData.periodicity}`:'';
+       query += `&client=${this.data.client_id}`;
+      query += this.data.dropdwonFilterData.periodicity ? `&periodicity=${this.data.dropdwonFilterData.periodicity}`:'';
        query += this.data.dropdwonFilterData.period ? `&period=${encodeURIComponent(JSON.stringify(this.data.dropdwonFilterData.period))}`:'';
+      // query_end_point = `${environment.non_productivity}`
+      //  query += `client-name='Vedalekha professionals'&job-ids=${this.data?.job_id}&timesheet-employee=${this.employee_id}`
+      //  query += this.data.dropdwonFilterData.periodicity ? `&periodicity=${this.data.dropdwonFilterData.periodicity}`:'';
+      //  query += this.data.dropdwonFilterData.period ? `&period=${encodeURIComponent(JSON.stringify(this.data.dropdwonFilterData.period))}`:'';
+    }
+    if(this.data?.report_type==='job-time-report'){
+       query += `&timesheet-report-type=job-time-report`
+    }
+    if(this.data.report_type ==='timesheet-summary-report'){
+      query += `&only-processing=${true}`
+    }
+     if (this.directionValue && this.sortValue) {
+      query += `&sort-by=${this.sortValue}&sort-type=${this.directionValue}`;
     }
       // let query = buildPaginationQuery({
       //   page: this.page,
@@ -158,12 +171,14 @@ export class JobTimeSheetDetailsPopupComponent implements OnInit {
          // const formattedStartDate = this.datePipe.transform(startDate, 'yyyy-MM-dd');
          // query += `&from-date=${formattedStartDate}`;
  // &job-status=[${this.statusList}]
-      const url = `${environment.live_url}/${query_end_point}/?${query}&file-type=${fileType}`;
-      downloadFileFromUrl({
-        url,
-        fileName: `VLP - ${this.data.report_type}`,
-        fileType
-      });
+      // const url = `${environment.live_url}/${query_end_point}/?${query}&file-type=${fileType}`;
+      // downloadFileFromUrl({
+      //   url,
+      //   fileName: `VLP - ${this.data.report_type}`,
+      //   fileType
+      // });
+      const url = `${environment.live_url}/${this.data?.download_api}/${query}&file-type=${fileType}&download=true`;
+      window.open(url, '_blank');
     }
 
   async getTableData(params?: { page?: number; pageSize?: number; searchTerm?: string, startDate?: string; endDate?: string }) {
@@ -173,9 +188,6 @@ export class JobTimeSheetDetailsPopupComponent implements OnInit {
     if(this.data.report_type==='timesheet-summary-report'){
       query += `&only-processing=${true}`
     } 
-    if(this.data.report_type==='job-time-report'){
-       query += `&timesheet-report-type=job-time-report`
-    }
     if(this.data?.report_type==='job-time-report'){
        query += `&timesheet-report-type=job-time-report`
     }
@@ -210,7 +222,8 @@ export class JobTimeSheetDetailsPopupComponent implements OnInit {
         currentPage: page,
         totalRecords : noOfPages * this.tableSize,
         // totalRecords: res.total_no_of_record,
-        showDownload:this.data.download
+        showDownload:this.data.download,
+        showCsv: this.data.showCsv
       };
     });
   }

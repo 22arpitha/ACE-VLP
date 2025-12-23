@@ -142,22 +142,21 @@ export class NonProductiveHoursComponent implements OnInit,OnChanges {
         });
     }
    exportCsvOrPdf(fileType) {
-   let query=`?client-name=Vedalekha professionals`;
-    if(query){
+   const search = this.term?.trim().length >= 2? `search=${encodeURIComponent(this.term.trim())}&`: '';
+    let query = `?${search}download=true&client-name=Vedalekha professionals&file-type=${fileType}`;
+    if(this.directionValue && this.sortValue){
+      query += `&sort-by=${this.sortValue}&sort-type=${this.directionValue}`;
+    }
       if(this.dropdwonFilterData){
         query+= this.dropdwonFilterData.employee_id ? `&timesheet-employee=${this.dropdwonFilterData.employee_id}`:this.user_role_name ==='Admin' ? '':`&timesheet-employee=${this.user_id}`;
         query+= this.dropdwonFilterData.periodicity ? `&periodicity=${this.dropdwonFilterData.periodicity}`:'';
         query+= this.dropdwonFilterData.period ? `&period=${encodeURIComponent(JSON.stringify(this.dropdwonFilterData.period))}`:'';
+        query += this.dropdwonFilterData.employee_id && this.dropdwonFilterData.periodicity && this.dropdwonFilterData.period ? '&is_dropdown_selected=True' :'&is_dropdown_selected=False';
        }else{
         query += this.user_role_name ==='Admin' ? '':`&timesheet-employee=${this.user_id}`;
        }
-     }
-     const url = `${environment.live_url}/${environment.non_productivity}/${query}&file-type=${fileType}`;
-     downloadFileFromUrl({
-       url,
-       fileName: 'VLP - Non-Productive Hours Report',
-       fileType
-     });
+      const url = `${environment.live_url}/${environment.timesheet_non_productivity}/${query}`;
+      window.open(url, '_blank');
    }
 
    // Fetch table data from API with given params
@@ -172,6 +171,8 @@ export class NonProductiveHoursComponent implements OnInit,OnChanges {
        finalQuery += this.dropdwonFilterData.employee_id ? `&timesheet-employee=${this.dropdwonFilterData.employee_id}`:this.user_role_name ==='Admin' ? '':`&timesheet-employee=${this.user_id}`;
        finalQuery += this.dropdwonFilterData.periodicity ? `&periodicity=${this.dropdwonFilterData.periodicity}`:'';
        finalQuery += this.dropdwonFilterData.period ? `&period=${encodeURIComponent(JSON.stringify(this.dropdwonFilterData.period))}`:'';
+       finalQuery += this.dropdwonFilterData.employee_id && this.dropdwonFilterData.periodicity && this.dropdwonFilterData.period ? '&is_dropdown_selected=True' :'&is_dropdown_selected=False';
+       
       }else{
        finalQuery += this.user_role_name ==='Admin' ? '':`&timesheet-employee=${this.user_id}`;
       }
@@ -198,6 +199,8 @@ export class NonProductiveHoursComponent implements OnInit,OnChanges {
         totalRecords: res.total_no_of_record,
         hideDownload:true,
         showDownload:true,
+        showCsv:true,
+        showPdf:false,
         searchPlaceholder:'Search by Client/Job',
       };
      });
@@ -213,7 +216,7 @@ export class NonProductiveHoursComponent implements OnInit,OnChanges {
 public viewtimesheetDetails(item:any){
       this.dialog.open(JobTimeSheetDetailsPopupComponent, {
       panelClass: 'custom-details-dialog',
-      data: { 'job_id': item?.job_id,'job_name':item?.job_name,'employee_id':item.employee_id,'download-api':'','download':true,
+      data: { 'job_id': item?.job_id,'job_name':item?.job_name,'employee_id':item.employee_id,'download_api':`${environment.vlp_timesheets}`,'download':true,showCsv:true,
         'dropdwonFilterData':this.dropdwonFilterData,'report_type':'non-productive-hours','client_id':item.client_id
       },
     });

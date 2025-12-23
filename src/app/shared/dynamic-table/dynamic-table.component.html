@@ -79,10 +79,10 @@
       <div class="col-auto col-sm-auto col-md-auto col-lg-auto px-0 mx-0 my-1 downloads"
       *ngIf="config?.showDownload && paginatedData?.length > 0">
        <!-- <div [ngClass]="config?.hideDownload ? 'set-position' : 'my-1'"> -->
-        <button mat-mini-fab  class="download-icons" (click)="downloadCSV()" [disabled]="config?.disableDownload">
+        <button mat-mini-fab  class="download-icons" (click)="downloadCSV()" *ngIf="config?.showCsv">
             <mat-icon style="color: green" ngbTooltip="CSV" placement="top">table_view</mat-icon>
           </button>
-          <button mat-mini-fab  class="download-icons" (click)="downloadPDF()" [disabled]="config?.disableDownload">
+          <button mat-mini-fab  class="download-icons" (click)="downloadPDF()" *ngIf="config?.showPdf">
             <mat-icon style="color: red" ngbTooltip="PDF" placement="top">picture_as_pdf</mat-icon>
           </button>
         <!-- <button

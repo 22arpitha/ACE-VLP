@@ -120,7 +120,7 @@ export class JobStatusReportComponent implements OnInit {
      client_ids: this.selectedClientIds,
      job_ids: this.selectedJobIds,
      group_ids: this.selectedGroupIds,
-     job_allocation_date: this.selectedDate,
+     job_allocation_date:  this.jobAllocationDate,
      job_status_date:this.selectedStatusDate,
      job_status: this.selectedStatusIds,
      prime_emp: this.primaryEmployees
@@ -140,7 +140,7 @@ export class JobStatusReportComponent implements OnInit {
        client_ids: this.selectedClientIds,
        job_ids: this.selectedJobIds,
        group_ids: this.selectedGroupIds,
-       job_allocation_date: this.selectedDate,
+       job_allocation_date:  this.jobAllocationDate,
        job_status_date:this.selectedStatusDate,
        job_status: this.selectedStatusIds,
        prime_emp: this.primaryEmployees
@@ -206,7 +206,7 @@ export class JobStatusReportComponent implements OnInit {
           client_ids: this.selectedClientIds,
           job_ids: this.selectedJobIds,
           group_ids: this.selectedGroupIds,
-          job_allocation_date: this.selectedDate,
+          job_allocation_date:  this.jobAllocationDate,
           job_status_date:this.selectedStatusDate,
           job_status: this.selectedStatusIds,
           prime_emp: this.primaryEmployees
@@ -218,7 +218,7 @@ export class JobStatusReportComponent implements OnInit {
       break;
       case 'dateRange':
         // console.log(event.detail, event.key);
-      this.onApplyDateFilter(event.detail,event.key);
+      this.onApplyDateFilter(event.detail,event.detail.key);
       break;
       case 'sorting':
         this.onSorting(event);
@@ -251,7 +251,7 @@ export class JobStatusReportComponent implements OnInit {
     client_ids: this.selectedClientIds,
     job_ids: this.selectedJobIds,
     group_ids: this.selectedGroupIds,
-    job_allocation_date: this.selectedDate,
+    job_allocation_date:  this.jobAllocationDate,
     job_status_date:this.selectedStatusDate,
     job_status: this.selectedStatusIds,
   });
@@ -262,6 +262,7 @@ export class JobStatusReportComponent implements OnInit {
   if (filteredKey === 'client-ids') {
    this.selectedClientIds = filteredData;
     if(filteredData && filteredData.length===0 || filteredData.length>1){
+      this.filterDataCache={};
       this.isIncludeAllJobEnable=true;
       this.isIncludeAllJobValue=false;
       this.client_id=null;
@@ -294,7 +295,7 @@ export class JobStatusReportComponent implements OnInit {
     client_ids: this.selectedClientIds,
     job_ids: this.selectedJobIds,
     group_ids: this.selectedGroupIds,
-    job_allocation_date: this.selectedDate,
+    job_allocation_date:  this.jobAllocationDate,
     job_status_date:this.selectedStatusDate,
     job_status: this.selectedStatusIds,
     prime_emp: this.primaryEmployees
@@ -315,44 +316,12 @@ onApplyDateFilter(filteredDate:string, filteredKey: string): void {
     client_ids: this.selectedClientIds,
     job_ids: this.selectedJobIds,
     group_ids: this.selectedGroupIds,
-    job_allocation_date: this.selectedDate,
+    job_allocation_date:  this.jobAllocationDate,
     job_status_date:this.selectedStatusDate,
     prime_emp: this.primaryEmployees
   });
 }
- exportCsvOrPdf(fileType) {
-   let query = buildPaginationQuery({
-     page: this.page,
-     pageSize: this.tableSize,
-   });
-   query += (this.userRole ==='Admin' || (this.userRole !='Admin' && this.client_id)) ? '':`&employee-id=${this.user_id}`;
-   query += this.client_id ? `&client=${this.client_id}` : '';
-  let fileName:any = this.selectedClientIds.length === 1 ? `VLP - ${this.getClientNameById(this.selectedClientIds[0])} Status Report` : 'VLP - Job Status Report';
-    if (this.selectedClientIds?.length) {
-        query += `&client-ids=[${this.selectedClientIds.join(',')}]`;
-      }
-      if (this.selectedJobIds?.length) {
-        query += `&job-ids=[${this.selectedJobIds.join(',')}]`;
-      }
-      if (this.selectedGroupIds?.length) {
-        query += `&group-ids=[${this.selectedGroupIds.join(',')}]`;
-      }
-      if (this.selectedStatusDate?.length) {
-        query += `&job-status-date=[${this.selectedStatusDate.join(',')}]`;
-      }
-      if(this.selectedDate){
-         query += `&start-date=${this.selectedDate['startDate']}&end-date=${this.selectedDate['endDate']}`
-      }
-      // if(this.jobAllocationDate?.length){
-      //   query += `&job-allocation-date=[${this.jobAllocationDate}]`;
-      // }
-   const url = `${environment.live_url}/${environment.job_reports}/${query}&job-status=[${this.statusList}]&report-type=job-status-report&file-type=${fileType}`;
-   downloadFileFromUrl({
-     url,
-     fileName: fileName,
-     fileType
-   });
- }
+
 getClienList(){
   let query = `?status=True`;
  query += this.userRole ==='Admin' ? '':`&employee-id=${this.user_id}`;
@@ -527,7 +496,7 @@ getClienList(){
        client_ids: this.selectedClientIds,
        job_ids: this.selectedJobIds,
        group_ids: this.selectedGroupIds,
-       job_allocation_date: this.selectedDate,
+       job_allocation_date:  this.jobAllocationDate,
        job_status_date:this.selectedStatusDate,
        job_status: this.selectedStatusIds,
        prime_emp: this.primaryEmployees
@@ -615,6 +584,45 @@ private updateFilterColumn(key: string, cache: any) {
     );
   }
 
+   exportCsvOrPdf(fileType) {
+    const search = this.term?.trim().length >= 2? `search=${encodeURIComponent(this.term.trim())}&`: '';
+    let finalQuery = `?${search}job-status=[${this.statusList}]&report-type=job-status-report&file-type=${fileType}&download=true`;
+    finalQuery += this.client_id ? `&client=${this.client_id}` : '';
+       if(this.userRole ==='Manager' && !this.client_id){
+          finalQuery += `&manager-ids=[${this.user_id}]`;
+        } else if ((this.userRole !='Manager' && this.userRole !='Admin')  && !this.client_id){
+          finalQuery += `&employee-ids=[${this.user_id}]`;
+        }
+        if( this.primaryEmployees?.length>0){
+          finalQuery += `&employee-ids=[${this.primaryEmployees}]`;
+        }
+        if (this.selectedClientIds?.length) {
+            finalQuery += `&client-ids=[${this.selectedClientIds.join(',')}]`;
+          }if (this.selectedJobIds?.length) {
+            finalQuery += `&job-ids=[${this.selectedJobIds.join(',')}]`;
+          }if (this.selectedGroupIds?.length) {
+            finalQuery += `&group-ids=[${this.selectedGroupIds.join(',')}]`;
+          }if(this.jobAllocationDate){
+           finalQuery += `&start-date=${this.jobAllocationDate['startDate']}&end-date=${this.jobAllocationDate['endDate']}`
+          }
+          if (this.selectedStatusDate) {
+            finalQuery += `&job-status-date=[${this.selectedStatusDate}]`;
+          }if (this.selectedStatusIds?.length) {
+            finalQuery += `&status-group-ids=[${this.selectedStatusIds.join(',')}]`;
+          }
+          if(this.directionValue && this.sortValue){
+            finalQuery += `&sort-by=${this.sortValue}&sort-type=${this.directionValue}`;
+          }
+          const url = `${environment.live_url}/${environment.all_jobs}/${finalQuery}`;
+          window.open(url, '_blank');
+  //  const url = `${environment.live_url}/${environment.job_reports}/${query}&job-status=[${this.statusList}]&report-type=job-status-report&file-type=${fileType}`;
+  //  downloadFileFromUrl({
+  //    url,
+  //    fileName: fileName,
+  //    fileType
+  //  });
+ }
+
 async getTableData(params?: { page?: number; pageSize?: number; searchTerm?: string;client_ids?:any;job_ids?:any;group_ids?:any;job_allocation_date?:any;job_status_date?:any,job_status?: any[]; prime_emp?:any}) {
     let finalQuery;
    const page = params?.page ?? this.page;
@@ -623,29 +631,38 @@ async getTableData(params?: { page?: number; pageSize?: number; searchTerm?: str
     let query = buildPaginationQuery({ page, pageSize, searchTerm });
     this.jobStatusList(this.tabStatus);
        finalQuery = query + `&job-status=[${this.statusList}]`;
-       let emp_ids:any= [];
-       if(this.userRole!='Admin' && params?.prime_emp?.length>0){
-        emp_ids = [...params?.prime_emp, Number(this.user_id)];
-       } else  if(this.userRole!='Admin'){
-         emp_ids = [Number(this.user_id)];
-       } else if(this.userRole==='Admin' && params?.prime_emp?.length>0){
-        emp_ids = [params?.prime_emp];
-       }
+       if(this.userRole ==='Manager' && !this.client_id){
+          finalQuery += `&manager-ids=[${this.user_id}]`;
+        } else if ((this.userRole !='Manager' && this.userRole !='Admin')  && !this.client_id){
+          finalQuery += `&employee-ids=[${this.user_id}]`;
+        }
+        if( params?.prime_emp?.length>0){
+          finalQuery += `&employee-ids=[${params?.prime_emp}]`;
+        }
 
-       let emp_query
-       if(this.client_id && this.userRole!='Admin' && !params?.prime_emp){
-        emp_query = ''
-       } else if(this.client_id && this.userRole!='Admin' && params?.prime_emp.length>0){
-        if(this.userRole==='Manager'){
-          emp_ids = [params?.prime_emp];
-          emp_query = `&employee-ids=[${emp_ids}]`;
-        } 
-       } else if(this.userRole==='Admin' && params?.prime_emp?.length>0){
-          emp_query = `&employee-ids=[${emp_ids}]`;
-       } else if(this.userRole!='Admin' && !this.client_id){
-          emp_query = `&employee-ids=[${emp_ids}]`
-       }
-       finalQuery += emp_query || '';
+      //  let emp_ids:any= [];
+      //  if(this.userRole!='Admin' && params?.prime_emp?.length>0){
+      //   emp_ids = [...params?.prime_emp, Number(this.user_id)];
+      //  } else  if(this.userRole!='Admin'){
+      //    emp_ids = [Number(this.user_id)];
+      //  } else if(this.userRole==='Admin' && params?.prime_emp?.length>0){
+      //   emp_ids = [params?.prime_emp];
+      //  }
+
+      //  let emp_query
+      //  if(this.client_id && this.userRole!='Admin' && !params?.prime_emp){
+      //   emp_query = ''
+      //  } else if(this.client_id && this.userRole!='Admin' && params?.prime_emp.length>0){
+      //   if(this.userRole==='Manager'){
+      //     emp_ids = [params?.prime_emp];
+      //     emp_query = `&employee-ids=[${emp_ids}]`;
+      //   } 
+      //  } else if(this.userRole==='Admin' && params?.prime_emp?.length>0){
+      //     emp_query = `&employee-ids=[${emp_ids}]`;
+      //  } else if(this.userRole!='Admin' && !this.client_id){
+      //     emp_query = `&employee-ids=[${emp_ids}]`
+      //  }
+      //  finalQuery += emp_query || '';
       //  if(emp_query){
       //    finalQuery += emp_query;
       //  }
@@ -725,7 +742,9 @@ async getTableData(params?: { page?: number; pageSize?: number; searchTerm?: str
            currentPage:page,
            totalRecords: res.total_no_of_record, // Correctly use 'response' from inner call
            showDownload:true,
-           disableDownload: this.tabStatus === "True" ? false : true,
+           showCsv:true,
+           showPdf:this.tabStatus === "True" ? true : false,
+          //  disableDownload: this.tabStatus === "True" ? false : true,
            searchPlaceholder:'Search by Client/Group/Job',
     }
   }else{

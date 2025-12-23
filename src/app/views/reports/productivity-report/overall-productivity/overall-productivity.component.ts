@@ -65,11 +65,7 @@ BreadCrumbsTitle: any = 'Overall Productivity';
               let query= this.getUpdateFilterQueryParams();
               query+=`&file-type=${fileType}&download=True`;
               const url = `${environment.live_url}/${environment.over_all_productivity_reports}/${query}`;
-              downloadFileFromUrl({
-                url,
-                fileName: 'VLP - Overall-Productivity Report',
-                fileType
-              });
+              window.open(url, '_blank');
             }
 
         triggerAction(event: any) {
@@ -89,6 +85,8 @@ getOverAllProductivity(){
                          pagination: false,
                          searchable: false,
                          showDownload:true,
+                         showCsv:true,
+                         showPdf:false,
                         };
                     },
                               (error)=>{
@@ -100,6 +98,12 @@ public getUpdateFilterQueryParams(){
   let query ='';
   if (this.dropdwonFilterData) {
     const params = [];
+   const isDropdownSelected = this.dropdwonFilterData.employee_id && this.dropdwonFilterData.periodicity &&
+      this.dropdwonFilterData.period
+        ? 'True'
+        : 'False';
+
+    params.push(`is_dropdown_selected=${isDropdownSelected}`);
     if (this.dropdwonFilterData.periodicity) {
       params.push(`periodicity=${this.dropdwonFilterData.periodicity}`);
     }

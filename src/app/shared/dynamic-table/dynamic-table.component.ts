@@ -961,6 +961,25 @@ onSelectionChange(newSelected: any[], col: any) {
   const newlySelected = (col.filterOptions || []).filter(opt =>
     newSelected.includes(opt.id)
   );
+  // if prim emp or job is added while doing the include jobs
+  if(col.paramskeyId==='client-ids' && this.selected_client_id && newSelected.length>1){
+    const filtersToReset = ['job_name', 'is_primary'];
+    filtersToReset.forEach(key => {
+    this.selectedItemsMap[key] = [];
+    this.columnFilters[key] = [];
+    this.tempFilters[key] = [];
+    this.loadingFilters[key] = {};
+    this.filterSearchText[key] = '';
+    this.nextPage[key] = 1;
+
+    // Clear dropdown data
+    this.config.columns.forEach(col => {
+      if (col.key === key) {
+        col.filterOptions = [];
+      }
+    });
+  });
+  }
   this.selectedItemsMap[col.key] = [...stillSelected, ...newlySelected]
     .filter((item, idx, arr) => arr.findIndex(o => o.id === item.id) === idx);
   if (col?.filterOptions) {

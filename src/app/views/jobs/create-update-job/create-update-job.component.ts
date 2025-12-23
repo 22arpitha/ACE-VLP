@@ -197,9 +197,7 @@ export class CreateUpdateJobComponent implements CanComponentDeactivate, OnInit,
   getModuleAccess() {
     this.accessControlService.getAccessForActiveUrl(this.user_id).subscribe(
       (res: any) => {
-        console.log(res);
         this.accessPermissions = res[0].operations;
-        // console.log('this.accessPermissions', this.accessPermissions)
         if (this.user_role_name != 'Admin') {
           if (this.job_id) {
             if(this.accessPermissions[0]?.['update']){
@@ -222,10 +220,6 @@ export class CreateUpdateJobComponent implements CanComponentDeactivate, OnInit,
         }
       }
     )
-    // if(this.job_id){
-    //       this.shouldDisableFields = this.accessPermissions[0]?.['update'];
-    //     } else{
-    //       this.shouldDisableFields = this.accessPermissions[0]?.['create'] };
   }
   public enableEdit() {
     if (this.user_role_name === 'Admin') {
@@ -903,7 +897,7 @@ onManagerSelectOpened(opened: boolean, index: number): void {
       this.jobFormGroup.markAllAsTouched();
       this.formErrorScrollService.setUnsavedChanges(true);
       this.formErrorScrollService.scrollToFirstError(this.jobFormGroup);
-      console.log('this.jobFormGroup',this.jobFormGroup.controls)
+      // console.log('this.jobFormGroup',this.jobFormGroup.controls)
     } else {
       if (this.isEditItem) {
         this.formData = this.createFromData();
@@ -1407,7 +1401,7 @@ getUnassignedTooltip(): string {
       const newVal = `${this.year}`;
       this.jobFormGroup.get('period')?.patchValue(newVal, { emitEvent: false });
     }
-    this.cdr.detectChanges();
+    // this.cdr.detectChanges();
     this.onPeroidChange();
   }
 
@@ -1475,7 +1469,7 @@ getUnassignedTooltip(): string {
       this.yearRangeStart -= 10;
     }
     this.showSelection = true;
-    this.cdr.detectChanges();
+    // this.cdr.detectChanges();
 
   }
 
@@ -1489,7 +1483,7 @@ getUnassignedTooltip(): string {
       this.yearRangeStart += 10;
     }
     this.showSelection = true;
-    this.cdr.detectChanges();
+    // this.cdr.detectChanges();
   }
 
   dateClass = (date: Date) => {
@@ -1615,7 +1609,7 @@ fetchData(key: string, append = false) {
         state.list = [...selectedItems, ...filteredResults];
       }
       state.loading = false;
-      this.cdr.detectChanges();
+      // this.cdr.detectChanges();
     }, () => {
       state.loading = false;
     });

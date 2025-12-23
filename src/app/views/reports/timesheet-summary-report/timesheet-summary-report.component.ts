@@ -125,22 +125,7 @@ export class TimesheetSummaryReportComponent implements OnInit {
        });
 
   }
-  exportCsvOrPdf(fileType: string): void {
-    let query = buildPaginationQuery({ page: this.page, pageSize: this.tableSize });
-
-    if (this.user_role_name !== 'Admin') {
-      query += `&employee-id=${this.user_id}`;
-    }
-    const startDate = this.fromDate?.start_date ?? this.time.start_date;
-    const formattedStartDate = this.datePipe.transform(startDate, 'yyyy-MM-dd');
-    query += `&from-date=${formattedStartDate}`;
-
-    if (this.selectedEmployeeId?.length > 0) {
-      query += `&employee-ids=[${this.selectedEmployeeId}]`;
-    }
-    const url = `${environment.live_url}/${environment.timesheet_reports}/${query}&file-type=${fileType}&timsheet-type=summary`;
-    downloadFileFromUrl({ url, fileName: 'VLP - Timesheet Summary Report', fileType: fileType as 'csv' | 'pdf' });
-  }
+  
 
   filterByDate(date: string): void {
     this.getTableData({ page: this.page, pageSize: this.tableSize, searchTerm: this.term ,employee_ids:this.selectedEmployeeId, fromdate: date });
@@ -311,6 +296,51 @@ private updateFilterColumn(key: string, cache: any) {
   [key: string]: { data: any[], page: number, total: number, searchTerm: string }
 } = {};
 
+exportCsvOrPdf(fileType: string): void {
+    // let query = buildPaginationQuery({ page: this.page, pageSize: this.tableSize });
+    const search = this.term?.trim().length >= 2? `search=${encodeURIComponent(this.term.trim())}&`: '';
+    let query = `?${search}download=true`
+    const startDate = this.fromDate?.start_date ?? this.time.start_date;
+    const formattedStartDate = this.datePipe.transform(startDate, 'yyyy-MM-dd');
+    query += `&from-date=${formattedStartDate}`;
+    const currentSelectedIds =  this.selectedEmployeeId ?? [];
+    if (this.user_role_name !== 'Admin') {
+            if (currentSelectedIds.length > 0) {
+                const idsForQuery = new Set<string>();
+                currentSelectedIds.forEach(id => {
+                    if (id != null) idsForQuery.add(String(id));
+                });
+                if (idsForQuery.size > 0) {
+                    query += `&employee-ids=[${Array.from(idsForQuery).join(',')}]`;
+                }else{
+                  if (this.user_id != null) {
+                    query += `&employee-id=${this.user_id}&timesheet-report-type=detailed`;
+                  }
+                }
+            } else {
+                if (this.user_id != null) {
+                    query += `&employee-id=${this.user_id}&timesheet-report-type=detailed`;
+                }
+            }
+        } else {
+            if (currentSelectedIds.length > 0) {
+                const idsForQuery = new Set<string>();
+                currentSelectedIds.forEach(id => {
+                    if (id != null) idsForQuery.add(String(id));
+                });
+                if (idsForQuery.size > 0) {
+                     query += `&employee-ids=[${Array.from(idsForQuery).join(',')}]`;
+                }
+            }
+        }
+    if(this.directionValue && this.sortValue){
+      query += `&sort-by=${this.sortValue}&sort-type=${this.directionValue}`;
+    }
+     const url = `${environment.live_url}/${environment.timesheet_summary}/${query}&file-type=${fileType}`;
+     window.open(url, '_blank');
+    // const url = `${environment.live_url}/${environment.timesheet_reports}/${query}&file-type=${fileType}&timsheet-type=summary`;
+    // downloadFileFromUrl({ url, fileName: 'VLP - Timesheet Summary Report', fileType: fileType as 'csv' | 'pdf' });
+  }
  async getTableData(params?: { page?: number; pageSize?: number; searchTerm?: string; fromdate?:any; employee_ids?: any; startDate?; endDate? }) {
 
       this.filterOptions =  this.employeeName
@@ -442,6 +472,8 @@ private updateFilterColumn(key: string, cache: any) {
                  dateRangeFilter: true,
                  navigation: true,
                  showDownload:true,
+                 showCsv:true,
+                 showPdf:true,
                  searchPlaceholder:'Search by Employee',
                };
              }

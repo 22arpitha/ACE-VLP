@@ -442,7 +442,9 @@ async getTableData(params?: { page?: number; pageSize?: number; searchTerm?: str
           reset: true,
           currentPage: page,
           totalRecords: res.total_no_of_record,
-          showDownload: false,
+          showDownload: true,
+          showCsv:true,
+          showPdf:false,
           searchPlaceholder: 'Search by Client/Job/Employee',
           employeeDropdown: this.userRole === 'Admin',
         };

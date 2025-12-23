@@ -17,15 +17,15 @@ export const tableColumns = [
     sortable: true
   },
   {
-    label: 'Job',
-    key: 'job_name',
-    sortKey: 'job_name',
-    sortable: true
-  },
-  {
     label: 'Job Id',
     key: 'job_number',
     sortKey: 'job_number',
+    sortable: true
+  },
+  {
+    label: 'Job',
+    key: 'job_name',
+    sortKey: 'job_name',
     sortable: true
   },
   {

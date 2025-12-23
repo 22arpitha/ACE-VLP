@@ -419,7 +419,9 @@ export class LeaveSummaryReportComponent implements OnInit {
           reset: true,
           currentPage: page,
           totalRecords: res.total_no_of_record,
-          showDownload: false,
+          showDownload: true,
+          showCsv:true,
+          showPdf:true,
           searchPlaceholder: 'Search by Client/Job/Employee',
         };
       }

@@ -25,6 +25,7 @@ interface NavItem {
   styleUrls: ['./default-layout.component.scss'],
 })
 export class DefaultLayoutComponent {
+  lastExpandedItem: any = null;
   iconSize = false;
   fgSize: number = 30;
   user_role_Name: any;
@@ -146,18 +147,32 @@ export class DefaultLayoutComponent {
       }
     });
     item.isExpanded = !item.isExpanded;
+    if (item.isExpanded) {
+      this.lastExpandedItem = item;
+    }
     this.isSidebarCollapsed = false;
   }
 
   setInitialExpandedState() {
     const currentUrl = this.router.url;
-    this.sidebarNavItems.forEach((item) => {
-      if (item.children?.length) {
-        item.isExpanded = item.children.some((child) =>
-          currentUrl.includes(child.url)
-        );
+    this.sidebarNavItems.forEach((item: any) => {
+    if (item.children?.length) {
+      const isActive = item.children.some((child: any) =>
+        currentUrl.includes(child.url)
+      );
+      item.isExpanded = false;
+      if (isActive) {
+        this.lastExpandedItem = item;
       }
-    });
+    }
+  });
+    // this.sidebarNavItems.forEach((item) => {
+    //   if (item.children?.length) {
+    //     item.isExpanded = item.children.some((child) =>
+    //       currentUrl.includes(child.url)
+    //     );
+    //   }
+    // });
   }
 
   // Helper function to move subscription to top
@@ -209,6 +224,7 @@ export class DefaultLayoutComponent {
         // Move subscription to top before assigning to sidebarNavItems
         this.sidebarNavItems = this.moveSubscriptionToTop(res.access_list);
         // console.log(this.sidebarNavItems,'this.sidebarNavItems')
+        this.setInitialExpandedState();
       });
   }
 
@@ -266,5 +282,16 @@ export class DefaultLayoutComponent {
 
   toggleSidebar(){
     this.isSidebarCollapsed = !this.isSidebarCollapsed;
+    if (this.isSidebarCollapsed) {
+      this.sidebarNavItems.forEach((item: any) => {
+        item.isExpanded = false;
+      });
+    }
+    else {
+    // expanding → reopen last expanded
+    if (this.lastExpandedItem) {
+      this.lastExpandedItem.isExpanded = true;
+    }
+   }
   }
 }

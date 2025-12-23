@@ -129,27 +129,28 @@ onSorting(data){
               });
           }
 exportCsvOrPdf(fileType) {
-  let query = buildPaginationQuery({
-    page: this.page,
-    pageSize: this.tableSize,
-    searchTerm :this.term
-  });
-  if(query){
+  const search =this.term?.trim().length >= 2 ? `search=${encodeURIComponent(this.term.trim())}&`: '';          
+  let query =`?${search}download=true&file-type=${fileType}&report-type=productive-hour`;
+  if(this.directionValue && this.sortValue){
+      query += `&sort-by=${this.sortValue}&sort-type=${this.directionValue}`;
+      }
     if(this.dropdwonFilterData){
       query+= this.dropdwonFilterData.employee_id ? `&employee-id=${this.dropdwonFilterData.employee_id}`:this.userRole ==='Admin' ? '':`&employee-id=${this.user_id}`;
       query+= this.dropdwonFilterData.periodicity ? `&periodicity=${this.dropdwonFilterData.periodicity}`:'';
       query+= this.dropdwonFilterData.period ? `&period=${encodeURIComponent(JSON.stringify(this.dropdwonFilterData.period))}`:'';
-      query+= this.dropdwonFilterData.employee_id || this.dropdwonFilterData.periodicity || this.dropdwonFilterData.period ? '&is_dropdown_selected=True' :'';
+      query+= this.dropdwonFilterData.employee_id && this.dropdwonFilterData.periodicity && this.dropdwonFilterData.period ? '&is_dropdown_selected=True' :'&is_dropdown_selected=False';
+      // query+= this.dropdwonFilterData.employee_id || this.dropdwonFilterData.periodicity || this.dropdwonFilterData.period ? '&is_dropdown_selected=True' :'';
     }else{
       query += this.userRole ==='Admin' ? '':`&employee-id=${this.user_id}`;
      }
-   }
-  const url = `${environment.live_url}/${environment.productivity_reports}/${query}&file-type=${fileType}&productivity-type=productive-hour`;
-  downloadFileFromUrl({
-    url,
-    fileName: 'VLP - Productive Hours Report',
-    fileType
-  });
+     const url = `${environment.live_url}/${environment.all_jobs}/${query}`;
+       window.open(url, '_blank');
+  // const url = `${environment.live_url}/${environment.productivity_reports}/${query}&file-type=${fileType}&productivity-type=productive-hour`;
+  // downloadFileFromUrl({
+  //   url,
+  //   fileName: 'VLP - Productive Hours Report',
+  //   fileType
+  // });
 }
  // Fetch table data from API with given params
          getTableData(params?: { page?: number; pageSize?: number; searchTerm?: string }) {
@@ -163,7 +164,8 @@ exportCsvOrPdf(fileType) {
             finalQuery+= this.dropdwonFilterData.employee_id ? `&employee-id=${this.dropdwonFilterData.employee_id}`:this.userRole ==='Admin' ? '':`&employee-id=${this.user_id}`;
             finalQuery+= this.dropdwonFilterData.periodicity ? `&periodicity=${this.dropdwonFilterData.periodicity}`:'';
             finalQuery+= this.dropdwonFilterData.period ? `&period=${encodeURIComponent(JSON.stringify(this.dropdwonFilterData.period))}`:'';
-            finalQuery+= this.dropdwonFilterData.employee_id || this.dropdwonFilterData.periodicity || this.dropdwonFilterData.period ? '&is_dropdown_selected=True' :'';
+            finalQuery+= this.dropdwonFilterData.employee_id && this.dropdwonFilterData.periodicity && this.dropdwonFilterData.period ? '&is_dropdown_selected=True' :'&is_dropdown_selected=False';
+            // finalQuery+= this.dropdwonFilterData.employee_id || this.dropdwonFilterData.periodicity || this.dropdwonFilterData.period ? '&is_dropdown_selected=True' :'';
           }else{
             finalQuery += this.userRole ==='Admin' ? '':`&employee-id=${this.user_id}`;
            }
@@ -193,6 +195,8 @@ exportCsvOrPdf(fileType) {
              hideDownload:true,
              tableFooterContent:tableFooterContent,
              showDownload:true,
+             showCsv:true,
+             showPdf:false,
             searchPlaceholder:'Search by Client/Job',
             };
            },(error:any)=>{  this.api.showError(error?.error?.detail);

@@ -82,6 +82,8 @@ export class WorkCultureAndWorkEthicsComponent implements OnInit,OnChanges {
                          tableSize: formattedData.length,
                          totalRecords: formattedData.length,
                          showDownload:true,
+                         showCsv:true,
+                         showPdf:false,
                         };
                     },
                               (error)=>{

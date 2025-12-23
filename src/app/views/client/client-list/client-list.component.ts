@@ -306,6 +306,12 @@ export class ClientListComponent implements OnInit {
     });
   }
 
+  removePagination(url: string) {
+    const params = new URLSearchParams(url);
+    params.delete('page');
+    params.delete('page_size');
+    return params.toString();  
+  }
 
   public downloadOption(type: any) {
     let status: any
@@ -315,23 +321,29 @@ export class ClientListComponent implements OnInit {
     else {
       status = 'False';
     }
-    let query = '';
-    if (this.filterQuery) {
-      query = this.filterQuery + `&file-type=${type}&status=${status}`
-    } else {
-      query = `?page=${this.page}&page_size=${this.tableSize}&file-type=${type}&status=${status}`
-      query += this.userRole !== 'Admin' ? `&employee-id=${this.user_id}` : '';
-    }
-    let apiUrl = `${environment.live_url}/${environment.clients_details}/${query}`;
-    fetch(apiUrl)
-      .then(res => res.blob())
-      .then(blob => {
-        // console.log('blob',blob);
-        const a = document.createElement('a');
-        a.href = URL.createObjectURL(blob);
-        a.download = `Client Details.${type}`;
-        a.click();
-      });
+    let cleanedFilterQuery = this.filterQuery;
+    const updated_query = this.removePagination(cleanedFilterQuery)
+    let query = `?download=true&file-type=${type}`;
+    query += `&${updated_query}`;
+    // if (this.filterQuery) {
+    //   query = this.filterQuery + `&file-type=${type}&status=${status}`
+    // } else {
+    //   query = `?page=${this.page}&page_size=${this.tableSize}&file-type=${type}&status=${status}`
+    //   query += this.userRole !== 'Admin' ? `&employee-id=${this.user_id}` : '';
+    // }
+    query += this.userRole !== 'Admin' ? `&employee-id=${this.user_id}` : '';
+    let apiUrl = `${environment.live_url}/${environment.all_clients}/${query}`;
+    window.open(apiUrl, '_blank');
+   
+    // fetch(apiUrl)
+    //   .then(res => res.blob())
+    //   .then(blob => {
+    //     // console.log('blob',blob);
+    //     const a = document.createElement('a');
+    //     a.href = URL.createObjectURL(blob);
+    //     a.download = `Client Details.${type}`;
+    //     a.click();
+    //   });
   }
 
    saveState() {

@@ -227,17 +227,9 @@ exportCsvOrPdf(fileType) {
       }if(this.selectedDate){
          query += `&start-date=${this.selectedDate.startDate}&end-date=${this.selectedDate.endDate}`
       }
-  const url = `${environment.live_url}/${environment.vlp_timesheets}/${query}&file-type=${fileType}&timesheet-report-type=detailed`;
-  const newTab = window.open(url, '_blank');
+      const url = `${environment.live_url}/${environment.vlp_timesheets}/${query}&file-type=${fileType}&timesheet-report-type=detailed`;
+      window.open(url, '_blank');
 
-  // Try closing after some delay
-  setTimeout(() => {
-    try {
-      newTab?.close();
-    } catch (err) {
-      console.error('Could not close tab:', err);
-    }
-  }, 3000);
   // downloadFileFromUrl({
   //   url,
   //   fileName: 'VLP - Timesheet Detail Report',
@@ -427,7 +419,7 @@ async getTableData(params?: { page?: number; pageSize?: number; searchTerm?: str
         query += `&timesheet-employee-ids=[${params.employee_ids.join(',')}]`;
       }
       if(params?.timesheet_dates){
-        disableFlag=this.getDisableDownload(params.timesheet_dates.startDate, params.timesheet_dates.endDate);
+        // disableFlag=this.getDisableDownload(params.timesheet_dates.startDate, params.timesheet_dates.endDate);
         query += `&start-date=${params.timesheet_dates.startDate}&end-date=${params.timesheet_dates.endDate}`
       }
       if(this.directionValue && this.sortValue){
@@ -475,7 +467,8 @@ async getTableData(params?: { page?: number; pageSize?: number; searchTerm?: str
         currentPage:page,
         totalRecords: res.total_no_of_record,
         showDownload:true,
-        disableDownload:false,
+        showCsv:true,
+        showPdf:false,
         // disableDownload: disableFlag,
         timesheetDetailedReport:true,
         searchPlaceholder:'Search by Client/Job',

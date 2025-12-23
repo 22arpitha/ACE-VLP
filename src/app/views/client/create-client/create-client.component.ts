@@ -538,6 +538,11 @@ onClientFileDropped(event: DragEvent) {
     }
   }
 
+  removeImage(){
+    this.selectedFile = null;
+    this.file = '';
+    this.selectedFileLink = '';
+  }
   public enbleFields() {
     this.isEnabledEdit = true;
     if (this.userRole === 'Admin') {
