@@ -15,7 +15,7 @@ export class UserDashboardComponent implements OnInit {
   selectedItems: any = [];
   dropdownSettings: any = {};
 
-
+  genders =[{name:'Male',value:'1',value_check:'male'},{name:'Female',value:'2',value_check:'female'},{name:'Others',value:'3',value_check:'others'}]
   BreadCrumbsTitle: any = 'Dashboard';
   accessPermissions = [];
   user_id: any;
@@ -26,6 +26,7 @@ export class UserDashboardComponent implements OnInit {
   tableSize = 50;
   tableSizes = [50, 75, 100];
   filterQuery:any;
+  userGender: any= '';
   upcomingPendingLeaves:any =[]
   constructor(private common_service: CommonServiceService, private accessControlService: SubModuleService,
     private apiService: ApiserviceService,) {
@@ -37,12 +38,23 @@ export class UserDashboardComponent implements OnInit {
     this.userRole = sessionStorage.getItem('user_role_name');
     this.common_service.setTitle(this.BreadCrumbsTitle);
     this.getModuleAccess();
-    this.getEmployeeLeaves();
+    // this.getEmployeeLeaves();
+    this.employeeGender(this.user_id)
     this.getUpcomingHoliday();
     this.getPendingLeaves(this.user_id);
   }
 
   all_leaves: any;
+  employeeGender(user_id:number){
+    this.apiService.getData(`${environment.live_url}/${environment.employee}/${user_id}/`).subscribe(
+      (res:any)=>{
+        // if(res?.user__gender){
+         this.userGender = this.genders.find((x:any)=>x.value == res?.user__gender);
+          this.getEmployeeLeaves()
+        // }
+      }
+    ) 
+  }
 
   getEmployeeLeaves() {
     console.log(this.selectedItemsMap['employee'])
@@ -55,7 +67,8 @@ export class UserDashboardComponent implements OnInit {
     }
     this.apiService.getData(`${environment.live_url}/${environment.employees_leave}/?employee=${user_id}`).subscribe(
       (res: any) => {
-        this.all_leaves = res.results
+        // this.all_leaves = res.results
+        this.all_leaves = res?.results?.filter((item:any)=>item.is_active===true && (item.leave_for===this.userGender?.value_check || item.leave_for==='all employees'))
       },
       (err) => {
 
@@ -64,7 +77,8 @@ export class UserDashboardComponent implements OnInit {
   }
    public onEmployeeChange(event: any) {
     this.updateSelectedItems('employee', event.value);
-    this.getEmployeeLeaves();
+    this.employeeGender(event.value)
+    // this.getEmployeeLeaves();
     this.getPendingLeaves(event.value)
   }
 

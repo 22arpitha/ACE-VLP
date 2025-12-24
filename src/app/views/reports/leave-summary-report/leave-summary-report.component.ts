@@ -128,17 +128,11 @@ export class LeaveSummaryReportComponent implements OnInit {
   // Called from <app-dynamic-table> via @Output actionEvent
   handleAction(event: { actionType: string; detail: any, key: any }) {
     switch (event.actionType) {
-      case 'navigate':
-        this.viewtimesheetDetails(event['row']);
-        break;
       case 'tableDataChange':
         this.onTableDataChange(event.detail);
         break;
       case 'tableSizeChange':
         this.onTableSizeChange(event.detail);
-        break;
-      case 'search':
-        this.onSearch(event.detail);
         break;
       case 'export_csv':
         this.exportCsvOrPdf(event.detail);
@@ -285,61 +279,24 @@ export class LeaveSummaryReportComponent implements OnInit {
       employee_ids: this.selectedEmployeeIds,
     });
   }
-  exportCsvOrPdf(fileType) {
-    let query = buildPaginationQuery({
-      page: this.page,
-      pageSize: this.tableSize,
-    });
-    query += this.client_id ? `&client=${this.client_id}` : '';
-    query += (this.userRole === 'Admin' || (this.userRole != 'Admin' && this.client_id)) ? '' : `&employee-id=${this.user_id}`;
-    if (this.selectedClientIds?.length) {
-      query += `&client-ids=[${this.selectedClientIds.join(',')}]`;
-    }
-    if (this.selectedJobIds?.length) {
-      query += `&job-ids=[${this.selectedJobIds.join(',')}]`;
-    }
-    // if (this.selectedStatusIds?.length) {
-    //   query += `&job-status-ids=[${this.selectedStatusIds.join(',')}]`;
-    // }
+  exportCsvOrPdf(fileType:string) {
+     let query = `?file-type=${fileType}&download=true`;
     if (this.selectedEmployeeIds?.length) {
       query += `&employee-ids=[${this.selectedEmployeeIds.join(',')}]`;
     }
-    if (this.time?.start_date && this.time?.end_date) {
-      query += `&timesheet-start-date=${this.time?.start_date}&timesheet-end-date=${this.time?.end_date}`;
+    if (this.selectedLeaveType) {
+      query += `&leave-type-id=${this.selectedLeaveType}`;
     }
-
-    // const startDate = this.fromDate?.start_date ?? this.time.start_date;
-    // const formattedStartDate = this.datePipe.transform(startDate, 'yyyy-MM-dd');
-    // query += `&from-date=${formattedStartDate}`;
-    // &job-status=[${this.statusList}]
-    const url = `${environment.live_url}/${environment.job_reports}/${query}&report-type=timesheet-summary-report-new&file-type=${fileType}`;
-    downloadFileFromUrl({
-      url,
-      fileName: 'VLP - Timesheet-summary-report',
-      fileType
-    });
+    if (this.directionValue && this.sortValue) {
+      query += `&sort-by=${this.sortValue}&sort-type=${this.directionValue}`;
+    }
+    if (this.time?.start_date && this.time?.end_date) {
+      query += `&start-date=${this.time?.start_date}&end-date=${this.time?.end_date}`;
+    }
+    const url = `${environment.live_url}/${environment.leave_summary_report}/${query}`;
+    // console.log(url);
+    window.open(url, '_blank');
   }
-
-  onSearch(term: string): void {
-    this.term = term;
-    this.getTableData({
-      page: 1,
-      pageSize: this.tableSize,
-      searchTerm: this.term,
-      leave_type: this.selectedLeaveType,
-      employee_ids: this.selectedEmployeeIds,
-    });
-  }
-
-
- 
-  public viewtimesheetDetails(item: any) {
-    this.dialog.open(JobTimeSheetDetailsPopupComponent, {
-      panelClass: 'custom-details-dialog',
-      data: { 'job_id': item?.id, 'job_name': item?.job_name, 'report_type': 'timesheet-summary-report' }
-    });
-  }
-
 
   // new code
   private updateFilterColumn(key: string, cache: any) {

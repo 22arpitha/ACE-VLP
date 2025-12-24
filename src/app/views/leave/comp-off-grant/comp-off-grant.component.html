@@ -65,7 +65,7 @@
                         <div class="col-sm-12 col-md-4 col-lg-3 px-0 px-md-1">
                             <mat-form-field appearance="outline" class="w-100 p-0 custom-mat-form-field">
                                 <mat-label>From</mat-label>
-                                <input matInput [matDatepicker]="picker1" (dateInput)="startDateFun($event)"
+                                <input matInput [matDatepicker]="picker1" [max]="startMaxDate" (dateInput)="startDateFun($event)"
                                     placeholder="Enter From" autocomplete="off" formControlName="from_date" />
                                 <!-- <button ngbTooltip="Clear" matSuffix mat-icon-button aria-label="Clear" type="button">
               <mat-icon>close</mat-icon>

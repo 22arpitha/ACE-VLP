@@ -16,6 +16,7 @@ import { downloadFileFromUrl } from 'src/app/shared/file-download.util';
 })
 export class JobTimeSheetDetailsPopupComponent implements OnInit {
   user_role_name: any;
+  user_id:any;
   jobId: any;
   jobName: any;
   tableSize: number = 50;
@@ -44,6 +45,7 @@ export class JobTimeSheetDetailsPopupComponent implements OnInit {
   ) {
     console.log(data)
     this.user_role_name = sessionStorage.getItem('user_role_name') || '';
+    this.user_id = sessionStorage.getItem('user_id') || '';
     // this.jobId = data.job_id;
     // this.jobName = data.job_name;
     // this.employee_id = data.employee_id;
@@ -187,9 +189,12 @@ export class JobTimeSheetDetailsPopupComponent implements OnInit {
     let query = buildPaginationQuery({ page, pageSize });
     if(this.data.report_type==='timesheet-summary-report'){
       query += `&only-processing=${true}`
+      query += this.user_role_name==='Accountant'? `&employee-id=${this.user_id}`: '';
     } 
     if(this.data?.report_type==='job-time-report'){
        query += `&timesheet-report-type=job-time-report`
+       query += this.user_role_name==='Accountant'? `&employee-id=${this.user_id}`: '';
+      //  query += `&employee-id=${this.user_id}`
     }
     if(this.data.report_type==='non-productive-hours'){
       query += `&client=${this.data.client_id}`;

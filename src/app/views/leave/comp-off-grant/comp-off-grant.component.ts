@@ -40,6 +40,7 @@ export class CompOffGrantComponent implements OnInit {
   url: any;
   fileUrl: string | ArrayBuffer;
   minDate: any;
+  startMaxDate= new Date();
 
   emailCtrl = new FormControl('');
   filteredEmails!: Observable<{ email: string }[]>;

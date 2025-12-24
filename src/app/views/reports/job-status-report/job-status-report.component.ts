@@ -591,7 +591,7 @@ private updateFilterColumn(key: string, cache: any) {
        if(this.userRole ==='Manager' && !this.client_id){
           finalQuery += `&manager-ids=[${this.user_id}]`;
         } else if ((this.userRole !='Manager' && this.userRole !='Admin')  && !this.client_id){
-          finalQuery += `&employee-ids=[${this.user_id}]`;
+          finalQuery += `&employee-id=${this.user_id}`;
         }
         if( this.primaryEmployees?.length>0){
           finalQuery += `&employee-ids=[${this.primaryEmployees}]`;
@@ -634,7 +634,7 @@ async getTableData(params?: { page?: number; pageSize?: number; searchTerm?: str
        if(this.userRole ==='Manager' && !this.client_id){
           finalQuery += `&manager-ids=[${this.user_id}]`;
         } else if ((this.userRole !='Manager' && this.userRole !='Admin')  && !this.client_id){
-          finalQuery += `&employee-ids=[${this.user_id}]`;
+          finalQuery += `&employee-id=${this.user_id}`;
         }
         if( params?.prime_emp?.length>0){
           finalQuery += `&employee-ids=[${params?.prime_emp}]`;
