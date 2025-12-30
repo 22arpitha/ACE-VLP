@@ -269,7 +269,7 @@ getUniqueValues(
     this.apiService.delete(`${environment.live_url}/${environment.end_clients}/${item?.id}/`).subscribe(async (data: any) => {
       if (data) {
         this.allEndClients = []
-        this.apiService.showWarning(data['message']);
+        this.apiService.showSuccess(data['message']);
         this.common_service.setEndClientCreationState(true);
         let query = this.getFilterBaseUrl();
         if (this.term) {
@@ -279,7 +279,7 @@ getUniqueValues(
       }
 
     }, (error => {
-      this.apiService.showError(error?.error?.detail)
+      this.apiService.showError(error?.error?.error)
     }))
   }
 

@@ -212,7 +212,7 @@ getWeekRangeFromSelectedDate(date: any): { startOfWeek: string; endOfWeek: strin
   const endOfWeek = new Date(startOfWeek);
   endOfWeek.setDate(startOfWeek.getDate() + 6);
 
-  // Format date as YYYY-MM-DD
+  // Format date as yyyy-MM-DD
   const format = (d: Date) => d.toISOString().split('T')[0];
 
   return {
@@ -240,11 +240,11 @@ checkTimesheetSubmission(startDate,endDate) {
   }
 
   getStartTimePreviousData() {
-   let date =  this.datePipe.transform(this.timesheetFormGroup.value.date, 'YYYY-MM-dd')
+   let date =  this.datePipe.transform(this.timesheetFormGroup.value.date, 'yyyy-MM-dd')
     let queryparams = `?timesheet-employee=${this.user_id}&higest-end-time=True&date=${date}`
     this.apiService.getData(`${environment.live_url}/${environment.vlp_timesheets}/${queryparams}`).subscribe(
       (res: any) => {
-        let currentDate = this.datePipe.transform(new Date().toDateString(), 'YYYY-MM-dd')
+        let currentDate = this.datePipe.transform(new Date().toDateString(), 'yyyy-MM-dd')
         if (res?.higest_end_time) {
           if (date === currentDate) {
             // console.log('Selected date is today.');
@@ -388,14 +388,14 @@ this.timesheetFormGroup.controls['time_spent']?.reset();
     this.router.navigate(['/timesheets/all-timesheets']);
   }
   saveTimesheets() {
-    this.timesheetFormGroup.patchValue({ date: this.datePipe.transform(this.timesheetFormGroup?.get('date')?.value, 'YYYY-MM-dd') })
     this.isEndTimeBeforeStartTime(); 
     if (this.timesheetFormGroup.invalid) {
       this.timesheetFormGroup.markAllAsTouched();
       this.formErrorScrollService.setUnsavedChanges(true);
       this.formErrorScrollService.scrollToFirstError(this.timesheetFormGroup);
     } else {
-      if (this.isEditItem) {
+      this.timesheetFormGroup.patchValue({ date: this.datePipe.transform(this.timesheetFormGroup?.get('date')?.value, 'yyyy-MM-dd') })
+     if (this.isEditItem) {
         this.apiService.updateData(`${environment.live_url}/${environment.vlp_timesheets}/${this.timesheet_id}/`, this.timesheetFormGroup.value).subscribe((respData: any) => {
           if (respData) {
             this.apiService.showSuccess(respData['message']);

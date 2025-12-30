@@ -40,7 +40,7 @@
                            }; let i=index'>
                            <td (click)="edit(item)">{{getContinuousIndex(i)}}</td>
                            <td (click)="edit(item)" class="text-nowrap">{{item.name}}</td>
-                           <td (click)="edit(item)">{{(item?.date || '-')}}</td>
+                           <td (click)="edit(item)">{{(item?.date | dateFormater)}}</td>
                     </tr>
                   </ng-container>
                 </tbody>

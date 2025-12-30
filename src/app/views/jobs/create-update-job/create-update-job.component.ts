@@ -953,11 +953,11 @@ onManagerSelectOpened(opened: boolean, index: number): void {
       job_allocation_date =  this.jobFormGroup?.get('job_allocation_date')?.value;
       // console.log(job_allocation_date,'user input')
     }
-    this.formData.set('job_allocation_date', this.datepipe.transform(job_allocation_date, 'YYYY-MM-dd'));
+    this.formData.set('job_allocation_date', this.datepipe.transform(job_allocation_date, 'yyyy-MM-dd'));
     this.formData.set('budget_time', this.jobFormGroup?.get('budget_time')?.value);
     this.formData.set('job_status', this.jobFormGroup?.get('job_status')?.value);
     this.formData.set('percentage_of_completion', this.jobFormGroup?.get('percentage_of_completion')?.value);
-    this.formData.set('job_status_date', this.datepipe.transform(this.jobFormGroup?.get('job_status_date')?.value, 'YYYY-MM-dd'));
+    this.formData.set('job_status_date', this.datepipe.transform(this.jobFormGroup?.get('job_status_date')?.value, 'yyyy-MM-dd'));
     this.formData.set('option', this.jobFormGroup?.get('option')?.value.toString());
     this.formData.set('created_by', this.jobFormGroup?.get('created_by')?.value);
     this.formData.set('job_notes', this.jobFormGroup?.get('job_notes')?.value || '');

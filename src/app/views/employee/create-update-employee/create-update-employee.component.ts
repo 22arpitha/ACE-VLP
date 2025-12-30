@@ -407,7 +407,7 @@ export class CreateUpdateEmployeeComponent implements CanComponentDeactivate, On
       this.formErrorScrollService.setUnsavedChanges(true);
       this.formErrorScrollService.scrollToFirstError(this.employeeFormGroup);
     } else {
-      this.employeeFormGroup.patchValue({ date_joined: this.datePipe.transform(this.employeeFormGroup?.get('date_joined')?.value, 'YYYY-MM-dd') })
+      this.employeeFormGroup.patchValue({ date_joined: this.datePipe.transform(this.employeeFormGroup?.get('date_joined')?.value, 'yyyy-MM-dd') })
       if(this.filteredLeaves.length>0) {
       this.employeeFormGroup.get('enable_leave')?.patchValue({
       leave_type_id: this.filteredLeaves[0]['leave_type_id'] || '',

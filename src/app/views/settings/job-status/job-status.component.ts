@@ -230,7 +230,7 @@ export class JobStatusComponent implements CanComponentDeactivate, OnInit,OnDest
     this.apiService.delete(`${environment.live_url}/${environment.settings_job_status}/${item?.id}/`).subscribe(async (data: any) => {
       if (data) {
         this.allJobStatusList = []
-        this.apiService.showWarning('Job Status deleted successfully!')
+        this.apiService.showSuccess('Job Status deleted successfully!')
         let query = `?page=${1}&page_size=${this.tableSize}`
         if (this.term) {
           query += `&search=${this.term}`

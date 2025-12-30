@@ -253,8 +253,8 @@ export class WorkCalendarComponent implements OnInit {
       this.workCalendarForm.markAllAsTouched();
     } else {
       this.workCalendarForm.patchValue({
-        custom_year_start_date: this.datepipe.transform(this.workCalendarForm?.get('custom_year_start_date')?.value, 'YYYY-MM-dd'),
-        custom_year_end_date: this.datepipe.transform(this.workCalendarForm?.get('custom_year_end_date')?.value, 'YYYY-MM-dd')
+        custom_year_start_date: this.datepipe.transform(this.workCalendarForm?.get('custom_year_start_date')?.value, 'yyyy-MM-dd'),
+        custom_year_end_date: this.datepipe.transform(this.workCalendarForm?.get('custom_year_end_date')?.value, 'yyyy-MM-dd')
       })
       if (this.buttonName == 'Add') {
         this.apiService.postData(`${environment.live_url}/${environment.work_calendar}/`, this.workCalendarForm.value).subscribe(

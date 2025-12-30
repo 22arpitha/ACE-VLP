@@ -69,11 +69,12 @@
                                 <button mat-button class="cancel-button mat-btn-s" type="button" mat-dialog-close>
                                     Close</button>
                             </div>
-                            <div *ngIf="data?.item_id && user_role_name !='Admin' && accessPermissions[0]?.delete || user_role_name === 'Admin'">
+                            <div *ngIf="data?.item_id && (user_role_name === 'Admin' ||accessPermissions[0]?.delete)">
                                 <button mat-button class="delete-item-button mat-btn-s" type="button" (click)="delete()">
                                     delete</button>
                             </div>
                     </div>
+
             </div>
             </form>
         </div>

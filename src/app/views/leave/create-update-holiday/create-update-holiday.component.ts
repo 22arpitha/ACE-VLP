@@ -106,7 +106,7 @@ export class CreateUpdateHolidayComponent implements OnInit {
     if (this.holidayForm.invalid) {
       this.holidayForm.markAllAsTouched();
     } else {
-      this.holidayForm.patchValue({ date: this.datepipe.transform(this.holidayForm?.get('date')?.value, 'YYYY-MM-dd') })
+      this.holidayForm.patchValue({ date: this.datepipe.transform(this.holidayForm?.get('date')?.value, 'yyyy-MM-dd') })
       if (this.data.edit) {
         this.apiService.updateData(`${environment.live_url}/${environment.holiday_calendar}/${this.data.item_id}/`, this.holidayForm.value).subscribe(
           (res: any) => {

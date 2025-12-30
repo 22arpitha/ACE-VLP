@@ -686,8 +686,8 @@ onClientFileDropped(event: DragEvent) {
     } else {
       this.formData.set("client_file", null);
     }
-    let updatedStartDateValue = this.datepipe.transform(this.clientFormGroup?.get('service_start_date')?.value, 'YYYY-MM-dd');
-    let updatedEndDateValue = this.datepipe.transform(this.clientFormGroup?.get('service_end_date')?.value, 'YYYY-MM-dd');
+    let updatedStartDateValue = this.datepipe.transform(this.clientFormGroup?.get('service_start_date')?.value, 'yyyy-MM-dd');
+    let updatedEndDateValue = this.datepipe.transform(this.clientFormGroup?.get('service_end_date')?.value, 'yyyy-MM-dd');
     this.formData.set("client_number", this.clientFormGroup?.get('client_number')?.value);
     this.formData.set("client_name", this.clientFormGroup?.get('client_name')?.value);
     this.formData.set("email", this.clientFormGroup?.get('email')?.value);
@@ -708,8 +708,8 @@ onClientFileDropped(event: DragEvent) {
     const empresult = this.clientFormGroup?.get('employee_details')?.getRawValue().map((item: any) => {
       return {
         employee_id: item?.employee_id?.toString(),
-        start_date: this.datepipe.transform(item?.start_date, 'YYYY-MM-dd'),
-        end_date: this.datepipe.transform(item?.end_date, 'YYYY-MM-dd'),
+        start_date: this.datepipe.transform(item?.start_date, 'yyyy-MM-dd'),
+        end_date: this.datepipe.transform(item?.end_date, 'yyyy-MM-dd'),
       };
     });
     this.formData.set("employee_details", JSON.stringify(empresult) || []);

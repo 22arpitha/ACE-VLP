@@ -300,7 +300,7 @@ export class GroupComponent implements CanComponentDeactivate, OnInit {
       }
 
     }, (error => {
-      this.api.showError(error?.error?.detail)
+      this.api.showError(error?.error?.error)
     }))
   }
 
