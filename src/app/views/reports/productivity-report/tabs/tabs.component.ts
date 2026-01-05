@@ -24,6 +24,8 @@ tabs:string[] = ['Overall Productivity', 'Quantitative Productivity', 'Qualitati
   commonFilterData:any={'employee_id':'','periodicity':'','period':''};
   user_id:any;
   allPeroidicitylist:any=[];
+  resetPeriodOnPeriodicityChange = false;
+
   selectTab(index: number): void {
     this.selectedTab = index;
     if(((this.userRole ==='Accountant' && !this.periodicityId && !this.period)||(!this.employee && !this.periodicityId && !this.period))){
@@ -50,56 +52,95 @@ tabs:string[] = ['Overall Productivity', 'Quantitative Productivity', 'Qualitati
   applySearch(){
     this.commonFilterData={'employee_id':this.employee,'periodicity':this.periodicityId,'period':this.period};
   }
+  // resetSearch(): void {
+  //   this.resetBtnDisable=true;
+  //   // Reset all filter-related data
+  //   this.commonFilterData = {
+  //     employee_id: '',
+  //     periodicity: '',
+  //     period: ''
+  //   };
+  //   this.periodicityId = null;
+  //   this.period = null;
+  //   this.employee = null;
+  
+  //   // Flags to manage UI state
+  //   this.resetFilter = true;
+  //   this.ondefaultSelection = false;
+  
+  //   // Determine if no filters are selected based on user role and current values
+  //   const noFiltersSelected =
+  //     !this.periodicityId && !this.period &&
+  //     (this.userRole === 'Accountant' || !this.employee);  
+  //   // Reset UI state and possibly re-apply search
+  //   setTimeout(() => {
+  //     this.resetFilter = false;
+  //     if (noFiltersSelected) {
+  //       this.ondefaultSelection = true;
+  //       this.resetBtnDisable=false;
+  //       // Apply the search with a slight delay
+  //       setTimeout(() => {
+  //         this.resetBtnDisable=false;
+  //         this.applySearch()
+  //       }, 300);
+  //     }
+  //   }, 100);
+  // }
+
   resetSearch(): void {
-    this.resetBtnDisable=true;
-    // Reset all filter-related data
-    this.commonFilterData = {
-      employee_id: '',
-      periodicity: '',
-      period: ''
-    };
-    this.periodicityId = null;
-    this.period = null;
-    this.employee = null;
-  
-    // Flags to manage UI state
-    this.resetFilter = true;
-    this.ondefaultSelection = false;
-  
-    // Determine if no filters are selected based on user role and current values
-    const noFiltersSelected =
-      !this.periodicityId && !this.period &&
-      (this.userRole === 'Accountant' || !this.employee);  
-    // Reset UI state and possibly re-apply search
+  this.resetBtnDisable = true;
+
+  this.employee = null;
+  this.period = null;
+  this.commonFilterData = {
+    employee_id: '',
+    periodicity: '',
+    period: ''
+  };
+
+  this.resetFilter = true;
+  this.ondefaultSelection = false;
+
+  setTimeout(() => {
+    this.ondefaultSelection = true;   // Monthly + last month
+    this.resetFilter = false;
+    this.resetBtnDisable = false;
+
+    // 🔥 THIS IS THE MISSING LINE
     setTimeout(() => {
-      this.resetFilter = false;
-      if (noFiltersSelected) {
-        this.ondefaultSelection = true;
-        this.resetBtnDisable=false;
-        // Apply the search with a slight delay
-        setTimeout(() => {
-          this.resetBtnDisable=false;
-          this.applySearch()
-        }, 300);
-      }
-    }, 100);
-  }
-  
+      this.applySearch();
+    }, 0);
+
+  }, 100);
+}
+
+
+
   
 
   selectedEmployee(event:any){
 this.employee=event;
   }
 selectedPeriodicity(event:any){
+  if (this.periodicityId === event) {
+    return;
+  }
   this.periodicityId=event;
   this.modeName = this.allPeroidicitylist.find((peroidicity:any)=>peroidicity.id=== this.periodicityId)?.periodicty_name;
+  this.period = null;
+  this.resetPeriodOnPeriodicityChange = true;
+  setTimeout(() => {
+    this.resetPeriodOnPeriodicityChange = false;
+  });
 }
 selectedPeriod(event:{ year: string; month_list: string }){
 this.period=event;
 }
 
+
 downloadExcel(){
  let query = `?productivity-type-for-all=Overall`;
+ query+= this.employee && this.periodicityId && this.period ? '&is_dropdown_selected=True' :'&is_dropdown_selected=False';
   if(this.userRole === 'Admin' && !this.employee){
     query +=`&admin=True`
   }else{
@@ -112,15 +153,17 @@ query +=`&period=${encodeURIComponent(JSON.stringify(this.period))}`
 query +=`&periodicity=${this.periodicityId}`
   }
       let apiUrl = `${environment.live_url}/${environment.download_excel}/${query}`;
-      fetch(apiUrl)
-      .then(res => res.blob())
-      .then(blob => {
-        //console.log('blob',blob);
-        const a = document.createElement('a');
-        a.href = URL.createObjectURL(blob);
-        a.download = `productivity_reports.${'xlsx'}`;
-        a.click();
-      });
+      // console.log(apiUrl)
+      window.open(apiUrl, '_blank');
+      // fetch(apiUrl)
+      // .then(res => res.blob())
+      // .then(blob => {
+      //   //console.log('blob',blob);
+      //   const a = document.createElement('a');
+      //   a.href = URL.createObjectURL(blob);
+      //   a.download = `productivity_reports.${'xlsx'}`;
+      //   a.click();
+      // });
 }
 
 public getAllPeriodicity() {

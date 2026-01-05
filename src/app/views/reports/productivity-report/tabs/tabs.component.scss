@@ -47,3 +47,6 @@ button:hover {
 .cancel-button{
   margin-right: 0px !important;
 }
+.mat-raised-button.mat-button-disabled.mat-button-disabled{
+    background-color: rgba(0, 0, 0, .12) !important;
+}

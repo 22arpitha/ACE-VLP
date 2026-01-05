@@ -4,8 +4,8 @@
 <app-quarter-month-year-picker *ngIf="mode==='Monthly'"
   [mode]="'Monthly'"
   [control]="monthControl"
-  [defaultSelectPreviousMonth]="defaultSelection"
-  (valueChange)="onMonthChange($event)">
+  [defaultSelectPreviousMonth]="defaultSelection && isInitialLoad"
+  (valueChange)="onMonthChange($event)" [resetOnPeriodicityChange]="resetOnPeriodicityChange">
 </app-quarter-month-year-picker>
 
 <!-- Quarter Picker -->

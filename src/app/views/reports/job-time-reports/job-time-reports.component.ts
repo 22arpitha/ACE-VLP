@@ -466,12 +466,12 @@ jobStatusList(status:any){
 // Send Email Action Button event
 public sendEamils(){
    let finalQuery = `?send_mail=True&file-type=pdf&report-type=job-time-report`;
-   finalQuery += this.client_id ? `&client=${this.client_id}` : '';
+   finalQuery += this.client_id ? `&client-ids=[${this.client_id}]` : '';
    this.jobStatusList(this.tabStatus);
    finalQuery += `&job-status=[${this.statusList}]`;
     // Yet to integrate
       if(this.client_id){
-              this.api.getData(`${environment.live_url}/${environment.jobs}/${finalQuery}`).subscribe((respData: any) => {
+              this.api.getData(`${environment.live_url}/${environment.all_jobs}/${finalQuery}`).subscribe((respData: any) => {
                   if (respData) {
               this.api.showSuccess(respData['message']);
                }

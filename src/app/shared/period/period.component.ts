@@ -13,6 +13,8 @@ export class PeriodComponent implements OnInit,OnChanges {
   @Input() mode: 'Monthly' | 'Quarterly' | 'Yearly'  = 'Monthly';
   @Input() defaultSelection: boolean = false;
   @Input() resetFilterField: boolean = false;
+  @Input() resetOnPeriodicityChange: boolean = false;
+  isInitialLoad = true;
   monthControl = new FormControl('');
   quarterControl = new FormControl('');
   yearControl  = new FormControl('');
@@ -28,10 +30,11 @@ export class PeriodComponent implements OnInit,OnChanges {
   ngOnChanges(changes: SimpleChanges): void {
    
    if (changes['resetFilterField'] && changes['resetFilterField']?.currentValue === true) {
+    this.isInitialLoad = true;
     this.selectedPeriodVal={
-  month_list: '',
-  year: ''
-};
+      month_list: '',
+      year: ''
+    };
 this.selectPeriod.emit(this.selectedPeriodVal); 
   }
   if(changes['defaultSelection'] && changes['defaultSelection']?.currentValue === true){
@@ -46,12 +49,24 @@ this.selectPeriod.emit(this.selectedPeriodVal);
 };
 this.selectPeriod.emit(this.selectedPeriodVal);
    }
+   if (changes['resetOnPeriodicityChange']?.currentValue === true) {
+    this.clearPeriod();
+  }
   }
   ngOnInit(): void {
 
   }
+  private clearPeriod() {
+  this.selectedPeriodVal = { month_list: '', year: '' };
+  this.monthControl.setValue('', { emitEvent: false });
+  this.quarterControl.setValue('', { emitEvent: false });
+  this.yearControl.setValue('', { emitEvent: false });
+
+  this.selectPeriod.emit(this.selectedPeriodVal);
+}
 
 onMonthChange(val: { 'month_list': string; 'year': string }) {
+  this.isInitialLoad = false;
   this.selectedPeriodVal=val;
    this.selectPeriod.emit(this.selectedPeriodVal); 
 }
