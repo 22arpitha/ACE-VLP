@@ -56,9 +56,22 @@
     color:red;
     padding-left: 10px;
   }
+  //  in the updated material version required star is not needed
   .r-star{
     color: red;
+    display: none;
   }
+  .static-star{
+     color: red;
+  }
+  .mat-placeholder-required.mat-form-field-required-marker {
+      color: red !important;
+      font-size: 18px !important;
+  }
+  .mat-form-field-infix {
+      padding: .5em 0 1em !important;
+  }
+ 
   .image-container{
     border: 1px solid #e0e0e0;
     border-radius: 5px;

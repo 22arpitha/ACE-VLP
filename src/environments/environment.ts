@@ -7,6 +7,7 @@ export const environment = {
   // media_url: 'https://vlp.thestorywallcafe.com',
   media_url: 'https://vlp-prod.s3.amazonaws.com',
   live_url:'https://vlp.thestorywallcafe.com/api-vlp',
+  // live_url:'https://65.2.116.105/api-vlp',
   socket_url:'projectacedevelop.thestorywallcafe.com',
 
   // UAT url
@@ -76,7 +77,6 @@ submit_weekly_timesheet:`submit-weekly-timesheet`,
 client_invoice:'client-invoice',
 invoice_details:'invoice-details',
 view_invoice:'client-invoices',
-job_reports:'job-reports',
 productivity_reports:'productivity-reports',
 upload_assessment:'upload-assessment',
 over_all_productivity_reports:'over-all-productivity-reports',

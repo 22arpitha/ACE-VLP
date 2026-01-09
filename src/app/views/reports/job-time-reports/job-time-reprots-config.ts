@@ -47,21 +47,21 @@ export const tableColumns  = [
     label: 'Task',
     key: 'task',
     sortKey:'task',
-    sortable: true
+    sortable: false
   },
    {
     label: 'PRIM EMP',
     key: 'is_primary',
-    sortKey:'not_done',
-    sortable: false,
+    sortKey:'primary_employee_name',
+    sortable: true,
     keyId: 'is_primary',
     paramskeyId: 'is-primary-ids',
     filterable: true,
     filterType: 'multi-select',
   },
-  { label: 'Est. Hrs', key: 'estimated_time', sortKey:'estimated_time', sortable: true },
-  { label: 'Act. Hrs', key: 'actual_time', sortKey:'actual_time', sortable: true ,navigation:true},
-  { label: 'Rem./Ex. Hrs', key: 'remaining_time', sortKey:'remaining_time', sortable: true },
+  { label: 'Est. Hrs', key: 'estimated_time', sortKey:'est_time', sortable: false }, // sorting issue
+  { label: 'Act. Hrs', key: 'actual_time', sortKey:'act_time', sortable: false ,navigation:true},
+  { label: 'Rem./Ex. Hrs', key: 'remaining_time', sortKey:'remaining_time', sortable: false },
 
 ]
 

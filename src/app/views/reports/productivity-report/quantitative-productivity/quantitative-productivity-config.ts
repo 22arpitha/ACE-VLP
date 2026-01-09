@@ -30,11 +30,11 @@ export const tableColumns = [
       label: 'Task',
       key: 'task',
       sortKey:'task',
-      sortable: true
+      sortable: false
     },
-   { label: 'Est. Hrs', key: 'estimated_time', sortKey: 'estimated_time', sortable: true },
-  { label: 'Act. Hrs', key: 'actual_time', sortKey: 'actual_time', sortable: true},
-  { label: 'Rem./Ex. Hrs', key: 'remaining_time', sortKey: 'remaining_time', sortable: true },
+   { label: 'Est. Hrs', key: 'estimated_time', sortKey: 'est_time', sortable: false }, // sorting issue
+  { label: 'Act. Hrs', key: 'actual_time', sortKey: 'actual_time_val', sortable: false},
+  { label: 'Rem./Ex. Hrs', key: 'remaining_time', sortKey: 'remaining_time', sortable: false },
   {
     label: 'TAT (Days',
     key: 'diff_days',

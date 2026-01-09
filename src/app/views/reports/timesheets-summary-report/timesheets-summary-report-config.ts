@@ -46,9 +46,9 @@ export const tableColumns  = [
     label: 'Task',
     key: 'task',
     sortKey:'task',
-    sortable: true
+    sortable: false
   },
-  { label: 'Act. Hrs', key: 'actual_time', sortKey:'actual_time', sortable: true ,navigation:true},
+  { label: 'Act. Hrs', key: 'actual_time', sortKey:'actual_time_val', sortable: true ,navigation:true},
 
 ]
 

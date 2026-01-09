@@ -694,7 +694,9 @@ onClientFileDropped(event: DragEvent) {
     this.formData.set("country", this.clientFormGroup?.get('country')?.value);
     this.formData.set("address", this.clientFormGroup?.get('address')?.value);
     this.formData.set("service_start_date", updatedStartDateValue);
-    this.formData.set("service_end_date", updatedEndDateValue || null);
+    if(updatedEndDateValue){
+      this.formData.set("service_end_date", updatedEndDateValue || null);
+    }
     this.formData.set("source", this.clientFormGroup?.get('source')?.value);
     this.formData.set("practice_notes", this.clientFormGroup?.get('practice_notes')?.value || '');
     this.formData.set("allow_sending_status_report_to_client", this.clientFormGroup?.get('allow_sending_status_report_to_client')?.value ? 'true' : 'false');

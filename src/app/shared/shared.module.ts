@@ -44,7 +44,7 @@ import { NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
 import { QuarterMonthYearPickerComponent } from './quarter-month-year-picker/quarter-month-year-picker.component';
 import { MatOptionModule } from '@angular/material/core';
 import { DateFormaterPipe } from './date-formater.pipe';
-
+import { OverlayModule } from '@angular/cdk/overlay';
 @NgModule({
   declarations: [
     SortPipe,
@@ -94,7 +94,8 @@ import { DateFormaterPipe } from './date-formater.pipe';
     NgxPaginationModule,
     NgbTooltipModule,
     MatDialogModule,
-    NgbDropdownModule
+    NgbDropdownModule,
+    OverlayModule
   ],
   exports:[
     AlphabetOnlyDirective,

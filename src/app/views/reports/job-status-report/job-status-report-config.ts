@@ -17,7 +17,7 @@ export const tableColumns  = [
   {
     label: 'Group',
     key: 'group_name',
-    sortKey:'group_name',
+    sortKey:'group__group_name',
     keyId: 'group',
     paramskeyId: 'group-ids',
     filterable: true,
@@ -45,7 +45,7 @@ export const tableColumns  = [
     key: 'job_type_name',
     filterable: false,
     sortable:'true',
-    sortKey:'job_type_name'
+    sortKey:'job_type__job_type_name'
   },
   {
     label: 'Alloc On',
@@ -89,8 +89,8 @@ export const tableColumns  = [
   {
     label: 'PRIM EMP',
     key: 'is_primary',
-    sortKey:'not_done',
-    sortable: false,
+    sortKey:'primary_employee_name',
+    sortable: true,
     keyId: 'is_primary',
     paramskeyId: 'is-primary-ids',
     filterable: true,

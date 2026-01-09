@@ -93,7 +93,7 @@ body {
   // transform: scale(0.95);
   // zoom: 98%;
   margin: 5px;
-  height: 95% !important;
+  height: 100% !important; //95
 
   mat-card.header-card{
     height: 10vh;
@@ -521,6 +521,10 @@ body {
  table tr>th {
    font-size: 12px !important;
  }
+ table {
+    border-collapse: separate !important;
+    border-spacing: 0 !important;
+}
 
  .profile-settings-content {
    cursor: pointer !important;

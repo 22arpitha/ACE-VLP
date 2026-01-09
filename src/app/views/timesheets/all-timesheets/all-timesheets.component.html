@@ -301,13 +301,13 @@
               <th scope="col">
                 Task
                 <i
-                  *ngIf="!arrowState['task_nmae']"
-                  (click)="sort('ascending', 'task_nmae')"
+                  *ngIf="!arrowState['task']"
+                  (click)="sort('ascending', 'task')"
                   class="bi bi-arrow-down"
                 ></i>
                 <i
-                  (click)="sort('descending', 'task_nmae')"
-                  *ngIf="arrowState['task_nmae']"
+                  (click)="sort('descending', 'task')"
+                  *ngIf="arrowState['task']"
                   class="bi bi-arrow-up"
                 ></i>
                 <button mat-icon-button [matMenuTriggerFor]="taskFilterMenu" [ngClass]="filters.task_nmae.length>=1 ? 'filterdColumn':''">

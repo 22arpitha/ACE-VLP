@@ -74,7 +74,7 @@ import { PdfViewComponent } from './views/pdf-view/pdf-view.component';
 import { GenericTimesheetConfirmationComponent } from './generic-components/generic-timesheet-confirmation/generic-timesheet-confirmation.component';
 import { CUSTOM_DATE_FORMATS, CustomDateAdapter } from './shared/custom-date-adapter';
 import { NotificationsComponent } from './views/notifications/notifications.component';
-
+import { MAT_TOOLTIP_SCROLL_STRATEGY_FACTORY_PROVIDER } from '@angular/material/tooltip';
 const APP_CONTAINERS = [
   DefaultFooterComponent,
   DefaultHeaderComponent,
@@ -168,6 +168,7 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
     //   useClass: HashLocationStrategy,
     // },
     BsModalService,
+    MAT_TOOLTIP_SCROLL_STRATEGY_FACTORY_PROVIDER,
     RazorpayService,
     FormErrorScrollUtilityService,
     ActivateChildGuard,

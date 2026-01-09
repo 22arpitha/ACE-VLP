@@ -28,12 +28,12 @@ export const tableColumns = [
       label: 'Task',
       key: 'task',
       sortKey: 'task',
-      sortable: true
+      sortable: false
     },
-    { label: 'Est. Hrs', key: 'estimated_time', sortKey: 'estimated_time', sortable: true },
-    { label: 'POC (%)',key: 'current_month_percentage_of_completion', sortKey: 'current_month_percentage_of_completion', sortable: true },
-    { label: 'Productive Hours', key: 'productive_hours', sortKey: 'productive_hours', sortable: true },
-    { label: 'Act. Hrs', key: 'actual_time', sortKey: 'actual_time', sortable: true},
+    { label: 'Est. Hrs', key: 'estimated_time', sortKey: 'est_time', sortable: false }, // sorting issue
+    { label: 'POC (%)',key: 'current_month_percentage_of_completion', sortKey: 'current_month_percentage_of_completion', sortable: false },
+    { label: 'Productive Hours', key: 'productive_hours', sortKey: 'productive_hours', sortable: false },
+    { label: 'Act. Hrs', key: 'actual_time', sortKey: 'actual_time_val', sortable: false},
   ]
 
 

@@ -43,8 +43,8 @@ export class ClientListComponent implements OnInit {
   arrowState: { [key: string]: boolean } = {
     client_number: false,
     client_name: false,
-    country_name: false,
-    source_name: false,
+    country__country_name: false,
+    source__source_name: false,
     designation__designation_name: false,
     is_active: false,
   };

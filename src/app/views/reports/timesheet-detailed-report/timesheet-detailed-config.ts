@@ -26,7 +26,7 @@ const tableColumns = [
   {
     label: 'Task',
     key: 'task_name',
-    sortKey:'task_name',
+    sortKey:'task',
     keyId:'task',
     paramskeyId: 'timesheet-task-ids',
     filterable: true,
