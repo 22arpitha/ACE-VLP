@@ -9,7 +9,7 @@ export const tableColumns  = [
   {
     label: 'Client',
     key: 'client_name',
-    sortKey:'client__client_name',
+    sortKey:'client_name',
     keyId: 'client_id',
     paramskeyId: 'client-ids',
     filterable: true,
@@ -34,10 +34,10 @@ export const tableColumns  = [
   },
    {
     label: 'Employee',
-    key: 'is_primary',
+    key: 'primary_employee',
     keyId:'employee_id',
-    sortKey:'not_done',
-    sortable: false,
+    sortKey:'primary_employee',
+    sortable: true,
     paramskeyId: 'timesheet-employee-ids',
     filterType: 'multi-select',
     filterable: true,
@@ -48,7 +48,7 @@ export const tableColumns  = [
     sortKey:'task',
     sortable: false
   },
-  { label: 'Act. Hrs', key: 'actual_time', sortKey:'actual_time_val', sortable: true ,navigation:true},
+  { label: 'Act. Hrs', key: 'actual_hours', sortKey:'total_actual_minutes', sortable: true ,navigation:true},
 
 ]
 

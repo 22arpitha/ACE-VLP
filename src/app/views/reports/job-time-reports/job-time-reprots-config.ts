@@ -9,7 +9,7 @@ export const tableColumns  = [
   {
     label: 'Client',
     key: 'client_name',
-    sortKey:'client__client_name',
+    sortKey:'client_name',
     keyId: 'client_id',
     paramskeyId: 'client-ids',
     filterable: true,
@@ -35,8 +35,8 @@ export const tableColumns  = [
  
   {
     label: 'Status',
-    key: 'job_status__status_name',
-    sortKey:'job_status__status_name',
+    key: 'job_status_name',
+    sortKey:'job_status_name',
     keyId: 'job_status',
     paramskeyId: 'job-status-ids',
     filterable: true,
@@ -51,17 +51,17 @@ export const tableColumns  = [
   },
    {
     label: 'PRIM EMP',
-    key: 'is_primary',
-    sortKey:'primary_employee_name',
+    key: 'primary_employee',
+    sortKey:'primary_employee',
     sortable: true,
     keyId: 'is_primary',
     paramskeyId: 'is-primary-ids',
     filterable: true,
     filterType: 'multi-select',
   },
-  { label: 'Est. Hrs', key: 'estimated_time', sortKey:'est_time', sortable: false }, // sorting issue
-  { label: 'Act. Hrs', key: 'actual_time', sortKey:'act_time', sortable: false ,navigation:true},
-  { label: 'Rem./Ex. Hrs', key: 'remaining_time', sortKey:'remaining_time', sortable: false },
+  { label: 'Est. Hrs', key: 'estimated_hours', sortKey:'total_estimated_minutes', sortable: true },
+  { label: 'Act. Hrs', key: 'actual_hours', sortKey:'total_actual_minutes', sortable: true ,navigation:true},
+  { label: 'Rem./Ex. Hrs', key: 'remaining_hours', sortKey:'remaining_minutes', sortable: true },
 
 ]
 

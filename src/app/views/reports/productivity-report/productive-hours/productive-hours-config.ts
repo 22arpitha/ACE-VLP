@@ -3,7 +3,7 @@ export const tableColumns = [
     {
       label: 'Client',
       key: 'client_name',
-      sortKey:'client__client_name',
+      sortKey:'client_name',
       sortable: true
     },
     {
@@ -30,10 +30,10 @@ export const tableColumns = [
       sortKey: 'task',
       sortable: false
     },
-    { label: 'Est. Hrs', key: 'estimated_time', sortKey: 'est_time', sortable: false }, // sorting issue
-    { label: 'POC (%)',key: 'current_month_percentage_of_completion', sortKey: 'current_month_percentage_of_completion', sortable: false },
-    { label: 'Productive Hours', key: 'productive_hours', sortKey: 'productive_hours', sortable: false },
-    { label: 'Act. Hrs', key: 'actual_time', sortKey: 'actual_time_val', sortable: false},
+    { label: 'Est. Hrs', key: 'estimated_hours', sortKey: 'total_estimated_minutes', sortable: true },
+    { label: 'POC (%)',key: 'poc', sortKey: 'poc', sortable: true },
+    { label: 'Productive Hours', key: 'productive_hours', sortKey: 'productive_minutes', sortable: true },
+    { label: 'Act. Hrs', key: 'actual_hours', sortKey: 'total_actual_minutes', sortable: true},
   ]
 
 

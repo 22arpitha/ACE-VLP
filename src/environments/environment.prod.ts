@@ -63,7 +63,7 @@ end_client_jobs:`end-client-jobs`,
 // jobs
 jobs:`jobs`,
 only_jobs:`only-jobs`,
-all_jobs:`all-jobs`,
+all_jobs:`all-jobs-test`,
 jobs_kpi:'kpi',
 jobs_search:`jobs-search`,
 // timesheet

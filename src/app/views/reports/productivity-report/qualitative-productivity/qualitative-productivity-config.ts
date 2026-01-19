@@ -13,7 +13,7 @@ export const tableColumns = [
   {
     label: 'Group',
     key: 'group_name',
-    sortKey: 'group__group_name',
+    sortKey: 'group_name',
     sortable: true
   },
   {
@@ -36,26 +36,26 @@ export const tableColumns = [
   },
   {
     label: 'MRP',
-    key: 'mrp',
-    sortKey: 'mrp',
-    sortable: false
+    key: 'total_mrp',
+    sortKey: 'total_mrp',
+    sortable: true
   },
   {
     label: 'CRP',
-    key: 'crp',
-    sortKey: 'crp',
-    sortable: false
+    key: 'total_crp',
+    sortKey: 'total_crp',
+    sortable: true
   },
   {
     label: 'Points Lost',
     key: 'points_lost',
     sortKey: 'points_lost',
-    sortable: false
+    sortable: true
   },
   {
     label: 'Points earned',
     key: 'points_earned',
     sortKey: 'points_earned',
-    sortable: false
+    sortable: true
   }
 ]

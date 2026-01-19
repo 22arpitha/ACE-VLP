@@ -59,8 +59,8 @@ export const tableColumns  = [
   },
   {
    label: 'Status',
-    key: 'job_status__status_name',
-    sortKey:'job_status__status_name',
+    key: 'job_status_name',
+    sortKey:'job_status_name',
     keyId: 'job_status',
     paramskeyId: 'job-status-ids',
     filterable: true,
@@ -88,8 +88,8 @@ export const tableColumns  = [
   },
   {
     label: 'PRIM EMP',
-    key: 'is_primary',
-    sortKey:'primary_employee_name',
+    key: 'primary_employee',
+    sortKey:'primary_employee',
     sortable: true,
     keyId: 'is_primary',
     paramskeyId: 'is-primary-ids',

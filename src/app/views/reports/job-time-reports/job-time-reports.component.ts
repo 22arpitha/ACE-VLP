@@ -269,7 +269,8 @@ this.formattedData = [];
     let query = `?${search}job-status=[${this.statusList}]&report-type=job-time-report&file-type=${fileType}&download=true`
     query += this.client_id ? `&client=${this.client_id}` : '';
     if(this.userRole ==='Manager' && !this.client_id){
-          query += `&manager-ids=[${this.user_id}]`;
+          // query += `&manager-ids=[${this.user_id}]`;
+           query += `&employee-id=${this.user_id}`;
         } else if ((this.userRole !='Manager' && this.userRole !='Admin')  && !this.client_id){
           query += `&employee-id=${this.user_id}`;
         }
@@ -515,7 +516,8 @@ public viewtimesheetDetails(item:any){
    this.jobStatusList(this.tabStatus);
     finalQuery = query + `&job-status=[${this.statusList}]`;
     if(this.userRole ==='Manager' && !this.client_id){
-      finalQuery += `&manager-ids=[${this.user_id}]`;
+      // finalQuery += `&manager-ids=[${this.user_id}]`;
+       finalQuery += `&employee-id=${this.user_id}`;
     } else if ((this.userRole !='Manager' && this.userRole !='Admin')  && !this.client_id){
       finalQuery += `&employee-id=${this.user_id}`;
     }
