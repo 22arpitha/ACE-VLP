@@ -36,7 +36,7 @@ export class DesignationsComponent implements CanComponentDeactivate, OnInit,OnD
   directionValue: string = '';
   arrowState: { [key: string]: boolean } = {
     sub_designation_name: false,
-    role_name:false,
+    designation__designation_name:false,
   };
   arrow: boolean = false;
   term: any;

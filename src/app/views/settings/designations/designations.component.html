@@ -67,8 +67,8 @@
                   <i *ngIf="arrowState['sub_designation_name']" (click)="sort('descending', 'sub_designation_name')" class="bi bi-arrow-up"></i>
                 </th>
                 <th>Role Name
-                  <i *ngIf="!arrowState['role_name']" (click)="sort('ascending', 'role_name')" class="bi bi-arrow-down"></i>
-                <i *ngIf="arrowState['role_name']" (click)="sort('descending', 'role_name')" class="bi bi-arrow-up"></i>
+                  <i *ngIf="!arrowState['designation__designation_name']" (click)="sort('ascending', 'designation__designation_name')" class="bi bi-arrow-down"></i>
+                <i *ngIf="arrowState['designation__designation_name']" (click)="sort('descending', 'designation__designation_name')" class="bi bi-arrow-up"></i>
                 </th>
                 <th>Action</th>
               </tr>
