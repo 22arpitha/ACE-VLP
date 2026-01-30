@@ -21,8 +21,8 @@ form input {
 }
 
 .page-content table {
-    border-collapse: separate;
-    border-spacing: 0;
+    border-collapse: separate !important;
+    border-spacing: 0 !important;
     min-width: 350px;
 }
 

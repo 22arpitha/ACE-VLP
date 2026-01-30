@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Validators, FormBuilder, FormGroup } from '@angular/forms';
 import { ApiserviceService } from '../../service/apiservice.service';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { jwtDecode } from "jwt-decode";
 // import { WebsocketService } from '../../service/websocket.service';
 // import { EmployeeStatusWebsocketService } from '../../service/employee-status-websocket.service';
@@ -16,7 +16,7 @@ export class LoginComponent implements OnInit {
   loginForm: FormGroup;
   permission: any;
   showFieldset: boolean = false;
-  constructor(private builder: FormBuilder, private api: ApiserviceService, private router: Router,
+  constructor(private builder: FormBuilder, private api: ApiserviceService, private router: Router,private route: ActivatedRoute
     // private websocketService:WebsocketService, private employeeSocket:EmployeeStatusWebsocketService,
     // private useraccessSocket:UserAccessWebsocketService
   ) { }
@@ -29,7 +29,7 @@ export class LoginComponent implements OnInit {
   minValue = 0.01;
   ngOnInit(): void {
     this.getWelomeMessage();
-    sessionStorage.clear();
+    // sessionStorage.clear();
     this.loginForm = this.builder.group({
       // username: ['', [Validators.required, Validators.email]],
       // password: ['', [Validators.required]],
@@ -79,6 +79,7 @@ export class LoginComponent implements OnInit {
         const decoded:any = jwtDecode(token);
         // console.log(decoded)
         sessionStorage.setItem('token', response['token']),
+        // localStorage.setItem('token', response['token']),
         sessionStorage.setItem('logged_count', response['logged_in_time']);
         sessionStorage.setItem('user_id',decoded.user_id )
         
@@ -92,6 +93,13 @@ export class LoginComponent implements OnInit {
               sessionStorage.setItem('user_role_name', data.user_role);
             }
             sessionStorage.setItem('user_name', data.user_info[0].first_name);
+            const returnUrl = this.route.snapshot.queryParams['returnUrl'] || null;
+            //  If user came from email link, go there first
+            if (returnUrl) {
+              this.router.navigateByUrl(returnUrl);
+              this.api.showSuccess('Login successful!');
+              return;
+            }
             let access = data.access_list.find(data=>data.name==='Jobs')
             // console.log(access)
             if(data.access_list.length!=0){

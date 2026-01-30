@@ -21,3 +21,21 @@
 ::ng-deep .holidays .mat-dialog-container {
     width: 80% !important;
 }
+.year-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100px;
+  height: 36px;
+  background-color: #126eb4 !important;
+  color: #fff;
+  padding: 6px 0px;
+  border-radius: 4px;
+}
+.year-nav .mat-icon-button {
+    width: 30px !important;
+}
+// .year-text {
+//   font-size: 18px;
+//   font-weight: 500;
+// }

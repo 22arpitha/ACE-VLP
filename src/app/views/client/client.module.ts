@@ -12,7 +12,6 @@ import { ClientComponent } from './client.component';
 import { ClientListComponent } from './client-list/client-list.component';
 import { CreateClientComponent } from './create-client/create-client.component';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
-import { UpdateClientComponent } from './update-client/update-client.component';
 import { SharedModule } from '../../shared/shared.module';
 import {MatTabsModule} from '@angular/material/tabs';
 import { TabsListComponent } from './tabs-list/tabs-list.component';
@@ -27,7 +26,6 @@ import { JobsOfClientsComponent } from './jobs-of-clients/jobs-of-clients.compon
     ClientComponent,
     ClientListComponent,
     CreateClientComponent,
-    UpdateClientComponent,
     GroupComponent,
     EditClientComponent,
     TabsListComponent,

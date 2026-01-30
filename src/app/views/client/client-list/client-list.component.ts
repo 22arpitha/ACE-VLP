@@ -64,7 +64,7 @@ export class ClientListComponent implements OnInit {
   allCountriesNames: IdNamePair[] = [];
   allSourceNames: IdNamePair[] = [];
   filteredList = [];
-  filterQuery: string;
+  filterQuery: string = '';
    state:any = {
     filters: {},
     pageIndex: 0,

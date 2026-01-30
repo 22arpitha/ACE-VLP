@@ -47,6 +47,7 @@ export class HolidayListComponent implements OnInit {
   };
   allClientNames: any[] = [];
   datepicker: null;
+  currentYear: number = new Date().getFullYear();
   constructor(private common_service: CommonServiceService, private accessControlService: SubModuleService,
     private router: Router, private modalService: NgbModal, private dialog: MatDialog,
     private datePipe: DatePipe,
@@ -79,8 +80,12 @@ export class HolidayListComponent implements OnInit {
     });
   }
 
-
-
+ changeYear(step: number) {
+    this.currentYear += step;
+    this.page = 1;
+    this.filterData()
+  }
+ 
 
   public openCreateHolidayPage() {
     sessionStorage.setItem('access-name', this.access_name?.name)
@@ -141,9 +146,7 @@ export class HolidayListComponent implements OnInit {
   }
 
   getFilterBaseUrl(): string {
-     const currentDate = new Date();
-    const currentYear = currentDate.getFullYear();
-    const base = `?page=${this.page}&page_size=${this.tableSize}&year=${currentYear}`;
+    const base = `?page=${this.page}&page_size=${this.tableSize}&year=${this.currentYear}`;
     //  const searchParam = this.term?.trim().length >= 2 ? `&search=${this.term.trim()}` : '';
     // return `${base}${searchParam}`;
     return `${base}`;

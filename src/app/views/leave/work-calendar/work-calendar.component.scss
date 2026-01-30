@@ -16,9 +16,9 @@
 
 .weekend-table {
   // width: 100%;
-  table-layout: fixed;
-  border-collapse: separate;
-  border-spacing: 8px;
+  table-layout: fixed !important;
+  border-collapse: separate !important;
+  border-spacing: 8px !important;
 }
 // .weekend-table th{
 //   color: #126eb4 !important;

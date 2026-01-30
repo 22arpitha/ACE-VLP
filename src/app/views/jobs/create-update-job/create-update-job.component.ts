@@ -1493,6 +1493,8 @@ getUnassignedTooltip(): string {
 
 
 // new code=================================================================
+filteredClientOptions: any[] = [];
+
 pageSizeDropdown = 10;
 
 dropdownState = {
@@ -1566,7 +1568,23 @@ onSearch(key: string, text: string) {
   state.page = 1;
   state.list = [];
   this.fetchData(key, false);
+  // if (key === 'client') {
+  //   this.filteredClientOptions = state.list;
+  // }
 }
+// onClientAutoSelected(selectedName: string) {
+//   const selected = this.dropdownState.client.list.find(
+//     item => item.client_name === selectedName
+//   );
+
+//   if (selected) {
+//     // Patch ID into form (same as mat-select did)
+//     this.jobFormGroup.get('client')?.setValue(selected.id);
+
+//     // Keep your selected-at-top logic
+//     this.updateSelectedItems('client', [selected.id]);
+//   }
+// }
 
 // Clear search input
 clearSearchDropD(key: string) {
