@@ -162,5 +162,9 @@ vlp_notifications:`notifications`,
   // working_hour_config: `super-admin-conf-working-hour`,
   // timesheet:`timesheet`,
   // timesheet_reports:`timesheet-reports`,
-  // timesheet_summary:`timesheet-summary`
+  // timesheet_summary:`timesheet-summary`,
+  wfh_categories:`work-from-home-categories`,
+  wfh_type_conf:`wfh-type-conf`,
+  employee_wfh_details:`employee-wfh-details`,
+  apply_wfh:`apply-wfh`
 };

@@ -24,6 +24,9 @@ import { CompOffGrantComponent } from './comp-off-grant/comp-off-grant.component
 import { LeaveApplyAdminComponent } from './leave-apply-admin/leave-apply-admin.component';
 import { ResourceAvailabilityComponent } from './resource-availability/resource-availability.component';
 import { FullCalendarModule } from '@fullcalendar/angular';
+import { WorkFromHomeComponent } from './work-from-home/work-from-home.component';
+import { WfhRequestsComponent } from './wfh-requests/wfh-requests.component';
+import { ViewWfhRequestComponent } from './view-wfh-request/view-wfh-request.component';
 @NgModule({
   declarations: [
     WorkCalendarComponent,
@@ -43,6 +46,9 @@ import { FullCalendarModule } from '@fullcalendar/angular';
     CompOffGrantComponent,
     LeaveApplyAdminComponent,
     ResourceAvailabilityComponent,
+    WorkFromHomeComponent,
+    WfhRequestsComponent,
+    ViewWfhRequestComponent,
   ],
   imports: [
     CommonModule,

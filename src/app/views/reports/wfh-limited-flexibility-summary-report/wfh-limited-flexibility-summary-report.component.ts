@@ -1,0 +1,517 @@
+import { Component, OnInit } from '@angular/core';
+import { environment } from '../../../../environments/environment';
+import { tableColumns } from './wfh-limited-flexibility-summary-report.config';
+import { buildPaginationQuery } from '../../../shared/pagination.util';
+import { CommonServiceService } from '../../../service/common-service.service';
+import { ApiserviceService } from '../../../service/apiservice.service';
+import { MatDialog } from '@angular/material/dialog';
+import { DatePipe } from '@angular/common';
+
+@Component({
+  selector: 'app-wfh-limited-flexibility-summary-report',
+  templateUrl: './wfh-limited-flexibility-summary-report.component.html',
+  styleUrls: ['./wfh-limited-flexibility-summary-report.component.scss'],
+  standalone:false
+})
+export class WfhLimitedFlexibilitySummaryReportComponent implements OnInit {
+BreadCrumbsTitle: any = 'WFH Limited Flexibility Summary Report';
+  term: string = '';
+  tableSize: number = 50;
+  page: any = 1;
+  tableSizes = [50, 75, 100];
+  tableConfig: any = {
+    columns: [],
+    data: [],
+    searchTerm: '',
+    actions: [],
+    accessConfig: [],
+    tableSize: 50,
+    pagination: true,
+    showDownload: false,
+    leaveTypes: true,
+    reset: true,
+  };
+  tabStatus: any = 'True';
+  allJobStatus: any = [];
+  statusList: String[] = [];
+  fromDate: any = {};
+  selectedDate: any;
+  time = {
+    start_date: '',
+    end_date: ''
+  };
+  user_id: any;
+  userRole: any;
+  client_id: any;
+  isIncludeAllJobEnable: boolean = true;
+  isIncludeAllJobValue: boolean = false;
+  jobFilterList: any = [];
+  clientName!: { id: any; name: string; }[];
+  jobName!: { id: any; name: string; }[];
+  statusName!: { id: any; name: string; }[];
+  leaveTypes!: { id: any; name: string; }[];
+  selectedClientIds: any = [];
+  selectedJobIds: any = [];
+  selectedEmployeeIds: any = [];
+  selectedLeaveType: any
+  selectedStatusIds: any = [];
+  formattedData: any = [];
+  sortValue: string = '';
+  directionValue: string = '';
+  constructor(
+    private common_service: CommonServiceService,
+    private api: ApiserviceService,
+    private dialog: MatDialog,
+    private datePipe: DatePipe
+  ) {
+    this.user_id = sessionStorage.getItem('user_id');
+    this.userRole = sessionStorage.getItem('user_role_name');
+    // this.getJobList();
+    // this.getClientList();
+    // this.getStatusList();
+  }
+
+  ngOnInit(): void {
+    this.common_service.setTitle(this.BreadCrumbsTitle)
+    // this.tableConfig = tableColumns;
+    // this.getTableData({
+    //   page: this.page,
+    //   pageSize: this.tableSize,
+    //   searchTerm: this.term
+    // });
+  }
+
+  getLeaveTypes() {
+    this.api.getData(`${environment.live_url}/${environment.settings_leave_type}/`).subscribe((respData: any) => {
+      this.leaveTypes = respData?.map((item: any) => ({
+        id: item.id,
+        name: item.leave_type_name
+      }));
+    }, (error: any) => {
+      this.api.showError(error?.error?.detail);
+    })
+  }
+
+
+  // Called when user changes page number from the dynamic table
+  onTableDataChange(event: any) {
+    const page = event;
+    this.page = page;
+
+    this.getTableData({
+      page: page,
+      pageSize: this.tableSize,
+      searchTerm: this.term,
+      leave_type: this.selectedLeaveType,
+      employee_ids: this.selectedEmployeeIds,
+    });
+  }
+
+  // Called when user changes page size from the dynamic table
+  onTableSizeChange(event: any): void {
+    if (event) {
+      const newSize = Number(event.value || event);
+      this.tableSize = newSize;
+      this.page = 1; // reset to first page
+      this.getTableData({
+        page: this.page,
+        pageSize: this.tableSize,
+        searchTerm: this.term,
+        leave_type: this.selectedLeaveType,
+        employee_ids: this.selectedEmployeeIds,
+      });
+    }
+
+  }
+
+  // Called from <app-dynamic-table> via @Output actionEvent
+  handleAction(event: { actionType: string; detail: any, key: any }) {
+    switch (event.actionType) {
+      case 'tableDataChange':
+        this.onTableDataChange(event.detail);
+        break;
+      case 'tableSizeChange':
+        this.onTableSizeChange(event.detail);
+        break;
+      case 'export_csv':
+        this.exportCsvOrPdf(event.detail);
+        break;
+      case 'export_pdf':
+        this.exportCsvOrPdf(event.detail);
+        break;
+      case 'sorting':
+        this.onSorting(event);
+        break;
+      case 'reset':
+        this.resetData(event);
+        break;
+      case 'filter':
+        this.onApplyFilter(event.detail, event.key);
+        break;
+      case 'leaveType':
+        this.onLeaveType(event.detail);
+        break;
+      case 'mainDateRangeFilter':
+        this.time.start_date = event.detail?.startDate;
+        this.time.end_date = event.detail?.endDate
+        this.getTableData({
+          page: 1,
+          pageSize: this.tableSize,
+          searchTerm: this.term,
+          leave_type: this.selectedLeaveType,
+          employee_ids: this.selectedEmployeeIds,
+        })
+        break;
+      case 'weekDate':
+        this.fromDate = event.detail;
+        this.getTableData({
+          page: 1,
+          pageSize: this.tableSize,
+          searchTerm: this.term,
+          leave_type: this.selectedLeaveType,
+          employee_ids: this.selectedEmployeeIds,
+        })
+        break;
+      default:
+        this.getTableData({
+          page: 1,
+          pageSize: this.tableSize,
+          searchTerm: this.term,
+          leave_type: this.selectedLeaveType,
+          employee_ids: this.selectedEmployeeIds,
+        });
+    }
+  }
+
+  onLeaveType(detail:any) {
+    if(detail.reset===true){
+      this.formattedData = [];
+    this.term = ''
+    this.page = 1;
+    this.tableSize = 50;
+    this.selectedEmployeeIds = [];
+    this.time.start_date = '';
+    this.time.end_date = '';
+    this.directionValue = '';
+    this.sortValue = '';
+    this.tableConfig = {
+      columns: [],
+      data: this.formattedData,
+      searchTerm: '',
+      actions: [],
+      accessConfig: [],
+      tableSize: 50,
+      pagination: true,
+      searchable: false,
+      startAndEndDateFilter: true,
+      leaveTypes: true,
+      showDownload: false,
+      reset: true,
+      searchPlaceholder: 'Search',
+    };
+    } else{
+      this.page = 1
+    }
+    this.selectedLeaveType = detail?.leave_type;
+    this.getTableData({
+      page: this.page,
+      pageSize: this.tableSize,
+      searchTerm: this.term,
+      leave_type: this.selectedLeaveType,
+      employee_ids: this.selectedEmployeeIds,
+    });
+  }
+  onSorting(data:any) {
+    this.directionValue = data.detail.directionValue;
+    this.sortValue = data.detail.sortValue;
+    this.getTableData({
+      page: this.page,
+      pageSize: this.tableSize,
+      searchTerm: this.term,
+      leave_type: this.selectedLeaveType,
+      employee_ids: this.selectedEmployeeIds,
+    });
+  }
+
+  resetData(data: any) {
+    this.formattedData = [];
+    this.term = ''
+    this.page = 1;
+    this.tableSize = 50;
+    this.selectedEmployeeIds = [];
+    this.time.start_date = '';
+    this.time.end_date = '';
+    this.directionValue = '';
+    this.sortValue = '';
+    this.tableConfig = {
+      columns: [],
+      data: this.formattedData,
+      searchTerm: '',
+      actions: [],
+      accessConfig: [],
+      tableSize: 50,
+      pagination: true,
+      searchable: false,
+      startAndEndDateFilter: true,
+      leaveTypes: true,
+      showDownload: false,
+      reset: true,
+      searchPlaceholder: 'Search',
+    };
+    this.getTableData({
+      page: this.page,
+      pageSize: this.tableSize,
+      searchTerm: this.term
+    });
+  }
+
+  onApplyFilter(filteredData: any[], filteredKey: string): void {
+    if (filteredKey === 'timesheet-employee-ids') {
+      this.selectedEmployeeIds = filteredData;
+    }
+    this.formattedData = [];
+    this.getTableData({
+      page: 1,
+      pageSize: this.tableSize,
+      searchTerm: this.term,
+      leave_type: this.selectedLeaveType,
+      employee_ids: this.selectedEmployeeIds,
+    });
+  }
+  exportCsvOrPdf(fileType:string) {
+     let query = `?file-type=${fileType}&download=true`;
+    if (this.selectedEmployeeIds?.length) {
+      query += `&employee-ids=[${this.selectedEmployeeIds.join(',')}]`;
+    }
+    if (this.selectedLeaveType) {
+      query += `&leave-type-id=${this.selectedLeaveType}`;
+    }
+    if (this.directionValue && this.sortValue) {
+      query += `&sort-by=${this.sortValue}&sort-type=${this.directionValue}`;
+    }
+    if (this.time?.start_date && this.time?.end_date) {
+      query += `&start-date=${this.time?.start_date}&end-date=${this.time?.end_date}`;
+    }
+    const url = `${environment.live_url}/${environment.leave_summary_report}/${query}`;
+    // console.log(url);
+    window.open(url, '_blank');
+  }
+
+  // new code
+  private updateFilterColumn(key: string, cache: any) {
+    this.tableConfig.columns = this.tableConfig.columns.map((col:any) =>
+      col.paramskeyId === key
+        ? {
+          ...col,
+          filterOptions: cache.data,
+          currentPage: cache.page,
+          totalPages: Math.ceil(cache.total / 20)
+        }
+        : col
+    );
+  }
+
+  async getTableData(params?: { page?: number; pageSize?: number; searchTerm?: string; employee_ids?: any; leave_type?: any }) {
+    let finalQuery;
+    this.formattedData = [];
+    const page = params?.page ?? this.page;
+    const pageSize = params?.pageSize ?? this.tableSize;
+    const searchTerm = params?.searchTerm ?? this.term;
+    const query = buildPaginationQuery({ page, pageSize, searchTerm });
+    finalQuery = query
+    if (params?.employee_ids?.length) {
+      finalQuery += `&employee-ids=[${params.employee_ids.join(',')}]`;
+    }
+    if (params?.leave_type) {
+      finalQuery += `&leave-type-id=${params.leave_type}`;
+    }
+    if (this.directionValue && this.sortValue) {
+      finalQuery += `&sort-by=${this.sortValue}&sort-type=${this.directionValue}`;
+    }
+    if (this.time?.start_date && this.time?.end_date) {
+      finalQuery += `&start-date=${this.time?.start_date}&end-date=${this.time?.end_date}`;
+    }
+    await this.api.getData(`${environment.live_url}/${environment.leave_summary_report}/${finalQuery}`).subscribe((res: any) => {
+      if (res.results) {
+        this.formattedData = res.results?.map((item: any, i: number) => ({
+          sl: (page - 1) * pageSize + i + 1,
+          ...item,
+          daily_consumed_leaves: item?.leave[0]?.daily_consumed_leaves ?? 0,
+          accrued_leaves: item?.leave[0]?.accrued_leaves ?? 0,
+          closing_balance_leaves: item?.leave[0]?.closing_balance_leaves ?? 0,
+          available: item?.leave[0]?.available ?? 0,
+          opening_balance: item?.leave[0]?.opening_balance ?? 0,
+        }));
+        this.tableConfig = {
+          columns: tableColumns?.map(col => {
+            let filterOptions: any = [];
+            const existingCol = this.tableConfig?.columns?.find((c:any) => c.key === col.key);
+            if (existingCol?.filterOptions?.length) {
+              filterOptions = existingCol.filterOptions;
+            } else if (col.filterable) {
+              // Fallback to initial options if none present
+              if (col.key === 'client_name') {
+                filterOptions = this.clientName;
+              } else if (col.key === 'job_name') {
+                filterOptions = this.jobName;
+              } else if (col.key === 'job_status_name') {
+                filterOptions = this.statusName;
+              }
+            }
+            return {
+              ...col,
+              filterOptions
+            };
+          }),
+          data: this.formattedData,
+          searchTerm: this.term,
+          actions: [],
+          accessConfig: [],
+          tableSize: pageSize,
+          pagination: true,
+          searchable: false,
+          startAndEndDateFilter: true,
+          leaveTypes: true,
+          reset: true,
+          currentPage: page,
+          totalRecords: res.total_no_of_record,
+          showDownload: true,
+          showCsv:true,
+          showPdf:true,
+          searchPlaceholder: 'Search by Client/Job/Employee',
+        };
+      }
+      else {
+        this.tableConfig = {
+          columns: tableColumns?.map(col => {
+            let filterOptions: any = [];
+            if (col.filterable) {
+              if (col.key === 'client_name') { filterOptions = this.clientName; }
+              else if (col.key === 'job_name') { filterOptions = this.jobName; }
+              else if (col.key === 'employee_name') {
+                filterOptions = [];
+              }
+            }
+            return { ...col, filterOptions };
+          }),
+          data: [],
+          searchTerm: this.term,
+          actions: [],
+          accessConfig: [],
+          tableSize: pageSize,
+          pagination: true,
+          searchable: false,
+          // headerTabs:true,
+          // showIncludeAllJobs:true,
+          // includeAllJobsEnable:this.isIncludeAllJobEnable ? this.isIncludeAllJobEnable : false,
+          // includeAllJobsValue:this.isIncludeAllJobValue ? this.isIncludeAllJobValue : false,
+          // selectedClientId:this.client_id ? this.client_id:null,
+          // sendEmail:true,
+          currentPage: page,
+          totalRecords: 0,
+          showDownload: false,
+          searchPlaceholder: 'Search by Client/Job/Status',
+        };
+      }
+
+    }, (error: any) => {
+      this.api.showError(error?.error?.detail);
+    });
+  }
+
+
+  filterDataCache: {
+    [key: string]: { data: any[], page: number, total: number, searchTerm: string }
+  } = {};
+
+  getFilterOptions(event: { detail: any; key: string }) {
+    const { detail, key } = event;
+    let cache = this.filterDataCache[key];
+    const searchTerm = detail.search || '';
+
+    if (!cache || detail.reset || cache.searchTerm !== searchTerm) {
+      cache = this.filterDataCache[key] = {
+        data: [],
+        page: 0,
+        total: 0,
+        searchTerm
+      };
+    }
+
+    // If already loaded all records, don’t fetch again
+    if (cache.data.length >= cache.total && cache.total > 0) {
+      this.updateFilterColumn(key, cache);
+      return;
+    }
+
+    const nextPage = cache.page + 1;
+    let query = `?page=${nextPage}&page_size=${detail.pageSize}`;
+    if (searchTerm) query += `&search=${searchTerm}`;
+
+    let endpoint = '';
+    if (key === 'client-ids') {
+      endpoint = environment.clients;
+      query += `&status=True`;
+      query += this.userRole === 'Admin' ? '' : `&employee-id=${this.user_id}`;
+    }
+    if (key === 'job-ids') {
+      endpoint = environment.jobs
+      query += this.userRole === 'Admin' ? '' : `&employee-id=${this.user_id}`;
+    };
+    if (key === 'job-status-ids') {
+      endpoint = environment.settings_job_status;
+    }
+    if (key === 'timesheet-employee-ids') {
+      endpoint = environment.employee;
+      query += `&is_active=True&employee=True`
+    }
+    // if (key === 'timesheet-task-ids') {
+    //   // Task filter static
+    //   this.updateFilterColumn(key, { data: this.taskName, page: 1, total: this.taskName.length, searchTerm: '' });
+    //   return;
+    // }
+
+    this.api.getData(`${environment.live_url}/${endpoint}/${query}`)
+      .subscribe((res: any) => {
+        if (!res) return;
+
+        const fieldMap: any = {
+          'client-ids': { id: 'id', name: 'client_name' },
+          'job-ids': { id: 'id', name: 'job_name' },
+          'job-status-ids': { id: 'id', name: 'status_name' },
+          'timesheet-employee-ids': { id: 'user_id', name: 'user__full_name' },
+        };
+
+        const newData = res.results?.map((item: any) => ({
+          id: item[fieldMap[key]?.id] || '',
+          name: item[fieldMap[key]?.name] || ''
+        }));
+
+        cache.data = [
+          ...cache.data,
+          ...newData.filter((opt:any) => !cache.data.some(existing => existing.id === opt.id))
+        ];
+        cache.page = nextPage;
+        cache.total = res.total_no_of_record || cache.total;
+
+        this.updateFilterColumn(key, cache);
+      });
+  }
+
+  // when filter opens or checkboxes selected
+  onFilterOpened(event: any) {
+    this.getFilterOptions({ detail: { page: 1, pageSize: 10, search: event.search, reset: event.reset }, key: event.column.paramskeyId });
+  }
+
+  // when user scrolls
+  onFilterScrolled(event: any) {
+    this.getFilterOptions({ detail: { page: event.page, pageSize: 10, search: event.search }, key: event.column.paramskeyId });
+  }
+  onFilterSearched(event: any) {
+    this.getFilterOptions({
+      detail: { page: 1, pageSize: 10, search: event.search, reset: event.reset },
+      key: event.column.paramskeyId
+    });
+  }
+
+}

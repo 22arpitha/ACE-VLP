@@ -18,6 +18,8 @@ import { PeriodicityComponent } from './periodicity/periodicity.component';
 import { PeriodComponent } from './period/period.component';
 import { CanDeactivateGuard } from '../../auth-guard/can-deactivate.guard';
 import { TabsOfEmployeeComponent } from '../employee/tabs-of-employee/tabs-of-employee.component';
+import { WfhConfigurationComponent } from './wfh-configuration/wfh-configuration.component';
+import { WfhTypeComponent } from './wfh-type/wfh-type.component';
 
 
 
@@ -56,6 +58,11 @@ const routes: Routes = [
         component: LeaveTypeComponent,
         canDeactivate:[CanDeactivateGuard]
       },
+       {
+        path: 'wfh-config',
+        component: WfhTypeComponent,
+        canDeactivate:[CanDeactivateGuard]
+      },
       {
         path: 'leave-config',
         component: LeaveConfigurationComponent,
@@ -64,6 +71,16 @@ const routes: Routes = [
       {
         path: 'leave-config/:id',
         component: LeaveConfigurationComponent,
+        canDeactivate:[CanDeactivateGuard]
+      },
+         {
+        path: 'create-wfh-configuration',
+        component:WfhConfigurationComponent,
+        canDeactivate:[CanDeactivateGuard]
+      },
+      {
+        path: 'edit-wfh-configuration/:id',
+        component:WfhConfigurationComponent,
         canDeactivate:[CanDeactivateGuard]
       },
       {

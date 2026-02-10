@@ -1,0 +1,319 @@
+<!-- <div class="ticket-container">
+
+  <header class="ticket-header">
+    <div class="header-content">
+      <div class="title-section">
+        <h1 class="page-title">IT Support Tickets</h1>
+        <p class="page-subtitle">Track and manage your technical issues</p>
+      </div>
+      <button class="btn-raise-ticket" (click)="raiseNewTicket()">
+        <span class="btn-icon">+</span>
+        <span class="btn-text">Raise New Ticket</span>
+      </button>
+    </div>
+  </header>
+
+ 
+  <div class="filter-section" [class.mobile-open]="showMobileFilters">
+    <div class="filter-header">
+      <h2 class="filter-title">Filters</h2>
+      <button class="btn-mobile-filter" (click)="toggleMobileFilters()">
+        <span *ngIf="!showMobileFilters">Show Filters</span>
+        <span *ngIf="showMobileFilters">Hide Filters</span>
+      </button>
+    </div>
+
+    <div class="filter-grid">
+ 
+      <div class="filter-group">
+        <label class="filter-label">Ticket Raised Date</label>
+        <div class="date-range">
+          <input 
+            type="datetime-local" 
+            class="filter-input" 
+            [(ngModel)]="filter.ticketRaisedDateFrom"
+            (change)="onFilterChange()"
+            placeholder="From">
+          <span class="date-separator">to</span>
+          <input 
+            type="datetime-local" 
+            class="filter-input" 
+            [(ngModel)]="filter.ticketRaisedDateTo"
+            (change)="onFilterChange()"
+            placeholder="To">
+        </div>
+      </div>
+
+      <div class="filter-group">
+        <label class="filter-label">Issue</label>
+        <input 
+          type="text" 
+          class="filter-input" 
+          [(ngModel)]="filter.issue"
+          (input)="onFilterChange()"
+          placeholder="Search by issue...">
+      </div>
+
+
+      <div class="filter-group">
+        <label class="filter-label">Status</label>
+        <select 
+          class="filter-select" 
+          [(ngModel)]="filter.status"
+          (change)="onFilterChange()">
+          <option [ngValue]="undefined">All Statuses</option>
+          <option *ngFor="let status of ticketStatuses" [ngValue]="status">
+            {{ status }}
+          </option>
+        </select>
+      </div>
+
+   
+      <div class="filter-group">
+        <label class="filter-label">Status Date</label>
+        <div class="date-range">
+          <input 
+            type="datetime-local" 
+            class="filter-input" 
+            [(ngModel)]="filter.statusDateFrom"
+            (change)="onFilterChange()"
+            placeholder="From">
+          <span class="date-separator">to</span>
+          <input 
+            type="datetime-local" 
+            class="filter-input" 
+            [(ngModel)]="filter.statusDateTo"
+            (change)="onFilterChange()"
+            placeholder="To">
+        </div>
+      </div>
+
+  
+      <div class="filter-group filter-actions">
+        <button class="btn-clear-filters" (click)="clearFilters()">
+          Clear All Filters
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="loading" class="loading-container">
+    <div class="loader"></div>
+    <p>Loading tickets...</p>
+  </div>
+
+
+  <div *ngIf="!loading" class="table-container">
+    <div class="table-wrapper">
+      <table class="ticket-table">
+        <thead>
+          <tr>
+            <th class="sortable" (click)="onSort('ticketNumber')">
+              <div class="th-content">
+                Ticket Number
+                <span class="sort-icon" *ngIf="sortColumn === 'ticketNumber'">
+                  {{ sortDirection === 'asc' ? '↑' : '↓' }}
+                </span>
+              </div>
+            </th>
+            <th class="sortable" (click)="onSort('ticketRaisedDate')">
+              <div class="th-content">
+                Raised Date
+                <span class="sort-icon" *ngIf="sortColumn === 'ticketRaisedDate'">
+                  {{ sortDirection === 'asc' ? '↑' : '↓' }}
+                </span>
+              </div>
+            </th>
+            <th class="issue-column sortable" (click)="onSort('issue')">
+              <div class="th-content">
+                Issue
+                <span class="sort-icon" *ngIf="sortColumn === 'issue'">
+                  {{ sortDirection === 'asc' ? '↑' : '↓' }}
+                </span>
+              </div>
+            </th>
+            <th class="sortable" (click)="onSort('status')">
+              <div class="th-content">
+                Status
+                <span class="sort-icon" *ngIf="sortColumn === 'status'">
+                  {{ sortDirection === 'asc' ? '↑' : '↓' }}
+                </span>
+              </div>
+            </th>
+            <th class="sortable" (click)="onSort('statusDate')">
+              <div class="th-content">
+                Status Date
+                <span class="sort-icon" *ngIf="sortColumn === 'statusDate'">
+                  {{ sortDirection === 'asc' ? '↑' : '↓' }}
+                </span>
+              </div>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr 
+            *ngFor="let ticket of filteredTickets" 
+            class="ticket-row"
+            (click)="openTicket(ticket)">
+            <td class="ticket-number">{{ ticket.ticketNumber }}</td>
+            <td class="date-cell">{{ formatDate(ticket.ticketRaisedDate) }}</td>
+            <td class="issue-cell">
+              <span class="issue-text">{{ truncateText(ticket.issue, 150) }}</span>
+            </td>
+            <td class="status-cell">
+              <span class="status-badge" [ngClass]="getStatusClass(ticket.status)">
+                {{ ticket.status }}
+              </span>
+            </td>
+            <td class="date-cell">{{ formatDate(ticket.statusDate) }}</td>
+          </tr>
+          <tr *ngIf="filteredTickets.length === 0">
+            <td colspan="5" class="no-tickets">
+              <div class="empty-state">
+                <div class="empty-icon">📋</div>
+                <p class="empty-title">No tickets found</p>
+                <p class="empty-subtitle">Try adjusting your filters or raise a new ticket</p>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+
+  <div class="ticket-count" *ngIf="!loading">
+    <p>Showing <strong>{{ filteredTickets.length }}</strong> of <strong>{{ tickets.length }}</strong> tickets</p>
+  </div>
+</div> -->
+
+
+
+<mat-toolbar class="ticket-toolbar">
+  <div class="toolbar-left">
+    <h1>IT Support Tickets</h1>
+    <p>Track and manage your technical issues</p>
+  </div>
+
+  <button mat-raised-button  (click)="raiseNewTicket()">
+    <mat-icon>add</mat-icon>
+    Raise  New Ticket
+  </button>
+</mat-toolbar>
+
+<mat-card class="filter-card">
+  <div class="filter-grid">
+
+  <mat-form-field appearance="outline">
+  <mat-label>Raised Date From</mat-label>
+  <input
+    matInput
+    [matDatepicker]="raisedFromPicker"
+    [(ngModel)]="filter.ticketRaisedDateFrom"
+    (dateChange)="onFilterChange()">
+
+  <mat-datepicker-toggle matSuffix [for]="raisedFromPicker"></mat-datepicker-toggle>
+  <mat-datepicker #raisedFromPicker></mat-datepicker>
+</mat-form-field>
+
+
+   <mat-form-field appearance="outline">
+  <mat-label>Raised Date To</mat-label>
+  <input
+    matInput
+    [matDatepicker]="raisedToPicker"
+    [(ngModel)]="filter.ticketRaisedDateTo"
+    (dateChange)="onFilterChange()">
+
+  <mat-datepicker-toggle matSuffix [for]="raisedToPicker"></mat-datepicker-toggle>
+  <mat-datepicker #raisedToPicker></mat-datepicker>
+</mat-form-field>
+
+
+    <mat-form-field appearance="outline">
+      <mat-label>Issue</mat-label>
+      <input matInput placeholder="Search issue"
+             [(ngModel)]="filter.issue"
+             (input)="onFilterChange()">
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Status</mat-label>
+      <mat-select [(ngModel)]="filter.status" (selectionChange)="onFilterChange()">
+        <mat-option [value]="undefined">All</mat-option>
+        <mat-option *ngFor="let status of ticketStatuses" [value]="status">
+          {{ status }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <button mat-stroked-button color="primary" (click)="clearFilters()">
+      Clear Filters
+    </button>
+
+  </div>
+</mat-card>
+
+<!-- Loading -->
+<div class="loading" *ngIf="loading">
+  <mat-spinner diameter="40"></mat-spinner>
+  <p>Loading tickets...</p>
+</div>
+
+<!-- Table -->
+<div *ngIf="!loading" class="table-wrapper">
+  <table mat-table [dataSource]="filteredTickets" class="mat-elevation-z2">
+
+    <ng-container matColumnDef="ticketNumber">
+      <th mat-header-cell *matHeaderCellDef (click)="onSort('ticketNumber')">
+        Ticket #
+      </th>
+      <td mat-cell *matCellDef="let t">{{ t.ticketNumber }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="ticketRaisedDate">
+      <th mat-header-cell *matHeaderCellDef (click)="onSort('ticketRaisedDate')">
+        Raised Date
+      </th>
+      <td mat-cell *matCellDef="let t">{{ formatDate(t.ticketRaisedDate) }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="issue">
+      <th mat-header-cell *matHeaderCellDef (click)="onSort('issue')">
+        Issue
+      </th>
+      <td mat-cell *matCellDef="let t">
+        {{ truncateText(t.issue, 120) }}
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="status">
+      <th mat-header-cell *matHeaderCellDef (click)="onSort('status')">
+        Status
+      </th>
+      <td mat-cell *matCellDef="let t">
+        <mat-chip [ngClass]="getStatusClass(t.status)">
+          {{ t.status }}
+        </mat-chip>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="statusDate">
+      <th mat-header-cell *matHeaderCellDef (click)="onSort('statusDate')">
+        Status Date
+      </th>
+      <td mat-cell *matCellDef="let t">
+        {{ formatDate(t.statusDate) }}
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"
+        (click)="openTicket(row)">
+    </tr>
+  </table>
+
+  <div class="ticket-count">
+    Showing <b>{{ filteredTickets.length }}</b> of <b>{{ tickets.length }}</b> tickets
+  </div>
+</div>

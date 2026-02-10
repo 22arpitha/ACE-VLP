@@ -167,6 +167,7 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
     //   provide: LocationStrategy,
     //   useClass: HashLocationStrategy,
     // },
+    
     BsModalService,
     RazorpayService,
     FormErrorScrollUtilityService,

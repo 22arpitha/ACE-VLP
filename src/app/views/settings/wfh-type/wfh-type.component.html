@@ -1,0 +1,81 @@
+<div class="container-wrapper settings-main-content px-0">
+  <section class="settings-form-bg" *ngIf="userRole !='Admin' && accessPermissions[0]?.create || userRole === 'Admin'">
+    <div class="row mx-0 px-0">
+      <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0 text-end">
+            <button mat-raised-button class="proceedbtn mat-btn-s" type="submit" [routerLink]="'/settings/create-wfh-configuration'">Create WFH type</button>
+      </div>
+    </div>
+  </section>
+  <section class="settings-table-bg" [ngClass]="{'disabled-section': isEditItem}">
+    <div class="row mx-0 my-2 px-0">
+      <div class="col-12 col-sm-12 col-md-6 col-lg-4 search-div px-0">
+        <input type="search" class="form-control p-2 sizeinput" [(ngModel)]="term" placeholder="Search by WFH type"
+          aria-describedby="emailHelp" autocomplete="off" (input)="filterSearch($event)">
+        <i *ngIf="!term" class="bi bi-search" id="search-icon-tab"></i>
+      </div>
+    </div>
+    <div class="row mx-0 my-2 px-0 table-wrapper">
+      <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0 ">
+        <table class="table table table-hover table-list">
+          <thead>
+            <tr>
+              <th>
+                Sl no
+              </th>
+              <th>WFH Type
+                <i *ngIf="!arrowState['category_name']" (click)="sort('asc', 'category_name')" class="bi bi-arrow-down"></i>
+                <i *ngIf="arrowState['category_name']" (click)="sort('desc', 'category_name')" class="bi bi-arrow-up"></i>
+              </th>
+              <th>Description</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor='let type of allleavetypeList | customSort:directionValue:sortValue
+                        |paginate : {
+                                 itemsPerPage: tableSize,
+                                 currentPage: page,
+                                 totalItems: count
+                               }; let i=index'>
+              <td>{{getContinuousIndex(i)}}</td>
+              <td>{{formatCategoryName(type?.category_name) || '-'}}</td>
+               <td>{{type?.description || '-'}}</td>
+              <td>
+                <ng-container>
+                  <img src="../../../../assets/images/Edit.svg" class="icon-image" container="body" ngbTooltip="Edit"
+                    type="button" (click)="editContent(type)" *ngIf="userRole !='Admin' && accessPermissions[0]?.update || userRole === 'Admin'"/>
+                  <img src="../../../../assets/images/Delete.svg" class="icon-image" container="body"
+                    ngbTooltip="Delete" type="button" (click)="confirmDelete(type)" *ngIf="userRole !='Admin' && accessPermissions[0]?.delete || userRole === 'Admin'"/>
+                    <span  *ngIf="userRole !='Admin' && !accessPermissions[0]?.update && !accessPermissions[0]?.delete">-</span>
+                </ng-container>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+
+    <div *ngIf="allleavetypeList.length === 0">
+      <app-generic-norecards></app-generic-norecards>
+    </div>
+  </section>
+  <div class="row mx-0 my-2 px-2" [ngClass]="{'disabled-section': isEditItem}">
+    <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0" *ngIf="allleavetypeList.length > 0">
+      <div class="pagination-container p-0 pt-2">
+        <!-- Pagination Controls (Center-Aligned) -->
+        <pagination-controls previousLabel="Prev" nextLabel="Next" (pageChange)="onTableDataChange($event)">
+        </pagination-controls>
+
+        <!-- Items Per Page Selector (Right-Aligned) -->
+        <div class="items-per-page-container">
+          <div>Items per page</div>
+          <mat-select [(ngModel)]="tableSize" (selectionChange)="onTableSizeChange($event)" placeholder="10" disableOptionCentering panelClass="paginationPanelClass"
+            class="page-size">
+            <mat-option *ngFor="let size of tableSizes" [value]="size">{{size}}</mat-option>
+          </mat-select>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
