@@ -16,6 +16,9 @@ import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { MatDialog } from '@angular/material/dialog';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { CompOffGrantComponent } from '../comp-off-grant/comp-off-grant.component';
+import { ActivatedRoute, Router } from '@angular/router';
+import { urlToFile } from '../../../shared/fileUtils.utils';
+import { SubModuleService } from 'src/app/service/sub-module.service';
 @Component({
   selector: 'app-leave-apply',
   templateUrl: './leave-apply.component.html',
@@ -29,7 +32,7 @@ export class LeaveApplyComponent implements OnInit {
   emppoyeeActive:any
   user_id: any;
   allleavetypeList: any = [];
-  BreadCrumbsTitle: any = 'Leave Request';
+  BreadCrumbsTitle: any;
   sessions: any = [
     { value: 'session 1', label: 'Session 1' },
     { value: 'session 2', label: 'Session 2' },
@@ -45,7 +48,10 @@ export class LeaveApplyComponent implements OnInit {
   url: any;
   fileUrl: string | ArrayBuffer;
   minDate: any;
-
+  leaveApplictaionId:any;
+  editLeaveDetails: boolean = false;
+  shouldDisableFields: boolean = true;
+  accessPermissions: any = [];
   emailCtrl = new FormControl('');
   filteredEmails!: Observable<{ email: string }[]>;
   selectedEmails: string[] = [];
@@ -64,38 +70,114 @@ export class LeaveApplyComponent implements OnInit {
     this.selectedFile = null;
     this.fileName = '';
     this.fileDataUrl = '';
+    this.leaveApplyForm.patchValue({ attachment: '' });
+    this.leaveApplyForm.get('attachment')?.updateValueAndValidity();
   }
 
   constructor(
     private apiService: ApiserviceService,
     private common_service: CommonServiceService,
     private dialog: MatDialog,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private router:Router,
+    private activeRoute: ActivatedRoute,
+    private accessControlService: SubModuleService
   ) {
+    this.leaveApplictaionId = this.activeRoute.snapshot.paramMap.get('id')
     this.filteredEmails = this.emailCtrl.valueChanges.pipe(
       startWith(null),
       map((value: string | null) =>
         value ? this._filter(value) : this.ccEmailsList.slice()
       )
     );
-
+    this.BreadCrumbsTitle = this.leaveApplictaionId ? 'Edit Leave Application' : 'Apply Leave';
     this.common_service.setTitle(this.BreadCrumbsTitle);
     this.user_id = sessionStorage.getItem('user_id');
   }
 
   ngOnInit(): void {
     this.initialForm();
+    this.getModuleAccess();
+    this.getAllLeaveTypes();
     this.getAllEmployeeList2();
     this.getUserData();
-    this.getAllLeaveTypes();
     this.workCalendarlist();
     this.holidaylistsss();
     this.leaveApplyForm.get('from_date')?.valueChanges.subscribe(() => this.computeTotalDays());
     this.leaveApplyForm.get('to_date')?.valueChanges.subscribe(() => this.computeTotalDays());
     this.leaveApplyForm.get('from_session')?.valueChanges.subscribe(() => this.computeTotalDays());
     this.leaveApplyForm.get('to_session')?.valueChanges.subscribe(() => this.computeTotalDays());
+    if(this.leaveApplictaionId){
+      this.shouldDisableFields = false;
+      setTimeout(() => {
+        this.editLeaveApplication();
+      }, 2000);
+    }
+    console.log(this.shouldDisableFields)
+  }
+  getModuleAccess() {
+    this.accessControlService.getAccessForActiveUrl(this.user_id).subscribe(
+      (res: any) => {
+        console.log(res,'ddddddddddd')
+        let temp = res.find((item: any) => item.name === 'Apply Leave');
+        if(temp){
+          this.accessPermissions = temp?.operations;
+          this.editLeaveDetails = !this.accessPermissions[0]?.['update'];
+         }
+      })
   }
 
+  editLeaveApplication(){
+    this.apiService.getData(`${environment.live_url}/${environment.apply_leaves}/${this.leaveApplictaionId}/`).subscribe(
+      (res:any)=>{
+        console.log(res);
+        this.leaveApplyForm.patchValue({
+          leave_type: String(res?.leave_type),
+          from_date: res?.from_date,
+          to_date: res?.to_date,
+          from_session: res?.from_session,
+          to_session: res?.to_session,
+          cc: JSON.parse(res?.cc),
+          reporting_to: res?.reporting_to,
+          message: res?.message,
+          attachment: [''],
+          employee: res?.employee,
+          number_of_leaves_applying_for:res?.number_of_leaves_applying_for
+        });
+        this.getLeaveTypeBalance(String(res?.leave_type));
+        this.selectedEmails = JSON.parse(res?.cc) || [];
+        if (res?.attachment) {
+          const fileName = this.getFileName(res.attachment);
+          urlToFile(res.attachment, fileName).then((file: File) => {
+            this.selectedFile = file;
+            this.fileName = file.name;
+            this.fileDataUrl = res.attachment;
+            this.leaveApplyForm.patchValue({ attachment: file });
+            // mark valid
+            this.leaveApplyForm.get('attachment')?.setErrors(null);
+
+          }).catch(err => console.error(err));
+
+        } else {
+          this.selectedFile = null;
+          this.fileName = '';
+          this.fileDataUrl = null;
+          this.leaveApplyForm.patchValue({ attachment: '' });
+        }
+      },
+      (error:any)=>{
+        console.log(error);
+      }
+    )
+  }
+
+   public enableEdit() {
+    this.editLeaveDetails = true;
+    this.shouldDisableFields = this.accessPermissions[0]?.['update'];
+  }
+  getFileName(url: any) {
+    return url?.split('/')?.pop();
+  }
 
   holidaylistsss(){
     this.apiService
@@ -141,10 +223,14 @@ employeeGender:any;
   }
 
   onLeaveTypeChange(event: any) {
-    let temp = this.allleavetypeList.find((item: any) => item.leave_type_id === event.value)
-    this.selectedLeaveTypeName = temp.leave_type.toLowerCase() || ''
-    this.leave_balance = temp.closing_balance_leave;
-          this.employeeActive = temp.is_active;
+   this.getLeaveTypeBalance(event.value);
+  }
+
+  getLeaveTypeBalance(leave_type_id:string){
+    let temp = this.allleavetypeList.find((item: any) => item.leave_type_id === leave_type_id)
+    this.selectedLeaveTypeName = temp?.leave_type.toLowerCase() || ''
+    this.leave_balance = temp?.closing_balance_leave;
+          this.employeeActive = temp?.is_active;
          if (this.selectedLeaveTypeName.includes('paternity') || 
           this.selectedLeaveTypeName.includes('maternity')) {
           this.leaveApplyForm.controls['attachment'].setValidators([Validators.required]);
@@ -543,7 +629,7 @@ employeeGender:any;
   handleDroppedImage(file: File) {
     this.selectedFile = file;
     this.fileName = file.name;
-    this.leaveApplyForm.get('file')?.updateValueAndValidity();
+    this.leaveApplyForm.get('attachment')?.updateValueAndValidity();
 
     const reader = new FileReader();
     reader.onload = () => (this.fileDataUrl = reader.result);
@@ -657,12 +743,20 @@ employeeGender:any;
     const value = this.leaveApplyForm.value[key];
     formData.append(key, value);
   });
-  this.apiService
-    .postData(`${environment.live_url}/${environment.apply_leaves}/`, formData)
-    .subscribe(
+    let request$;
+    if (this.leaveApplictaionId) {
+      request$ = this.apiService.updateData(
+        `${environment.live_url}/my-leave/?leave_applied_id=${this.leaveApplictaionId}`,
+        formData
+      );
+    } else {
+      request$ = this.apiService.postData(
+        `${environment.live_url}/${environment.apply_leaves}/`,formData);
+      }
+    request$.subscribe(
       (res: any) => {
         this.apiService.showSuccess(res.message);
-        this.resetFormState();
+        // this.router.navigate(['/leave/dashboard']);
       },
       (err) => {
         this.apiService.showError(err?.error?.detail);
@@ -911,5 +1005,8 @@ private getDateFromControl(controlName: string): Date | null {
     return s.includes('2') || s.includes('pm') || s.includes('afternoon') || s.includes('session2');
   }
 
+  onCancel(){
+    this.router.navigate(['/leave/dashboard'])
+  }
 
 }

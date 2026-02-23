@@ -158,8 +158,8 @@ export class LeaveApplyAdminComponent implements OnInit {
       leave_type: [{ value: '', disabled: true }, Validators.required],
       from_date: ['', Validators.required],
       to_date: ['', Validators.required],
-      from_session: ['', Validators.required],
-      to_session: ['', Validators.required],
+      from_session: ['session 1', Validators.required],
+      to_session: ['session 2', Validators.required],
       cc: [''],
       reporting_to: ['', Validators.required],
       message: ['', Validators.required],
@@ -619,49 +619,44 @@ export class LeaveApplyAdminComponent implements OnInit {
   const fromDateRaw = this.leaveApplyForm.get('from_date')?.value;
   const toDateRaw = this.leaveApplyForm.get('to_date')?.value;
 
-  if (!fromDateRaw || !toDateRaw) {
-    this.apiService.showError('Please select both From and To dates');
-    return;
-  }
-
   // normalize dates to midnight
-  const msPerDay = 24 * 60 * 60 * 1000;
-  const current = new Date();
-  current.setHours(0, 0, 0, 0);
+  // const msPerDay = 24 * 60 * 60 * 1000;
+  // const current = new Date();
+  // current.setHours(0, 0, 0, 0);
 
-  const fromDate = new Date(fromDateRaw);
-  fromDate.setHours(0, 0, 0, 0);
+  // const fromDate = new Date(fromDateRaw);
+  // fromDate.setHours(0, 0, 0, 0);
 
-  const toDate = new Date(toDateRaw);
-  toDate.setHours(0, 0, 0, 0);
+  // const toDate = new Date(toDateRaw);
+  // toDate.setHours(0, 0, 0, 0);
 
-    if (fromDate < current) {
-    if (leaveTypeData?.utilization_after && Number(leaveTypeData.utilization_after) > 0) {
-      if (toDate < current) {
-        // Count days from current date to TO date, excluding TO date
-        const daysDiff = Math.floor((current.getTime() - toDate.getTime()) / msPerDay);
-        if (daysDiff > Number(leaveTypeData.utilization_after)) {
-          this.apiService.showError(
-            `${leaveTypeData.leave_type} must be applied within ${leaveTypeData.utilization_after} days from leave date.`
-          );
-          return;
-        }
-      }
-    }
-  }
+  //   if (fromDate < current) {
+  //   if (leaveTypeData?.utilization_after && Number(leaveTypeData.utilization_after) > 0) {
+  //     if (toDate < current) {
+  //       // Count days from current date to TO date, excluding TO date
+  //       const daysDiff = Math.floor((current.getTime() - toDate.getTime()) / msPerDay);
+  //       if (daysDiff > Number(leaveTypeData.utilization_after)) {
+  //         this.apiService.showError(
+  //           `${leaveTypeData.leave_type} must be applied within ${leaveTypeData.utilization_after} days from leave date.`
+  //         );
+  //         return;
+  //       }
+  //     }
+  //   }
+  // }
 
-  if (fromDate >= current) {
-    if (leaveTypeData?.utilization_before && Number(leaveTypeData.utilization_before) > 0) {
-      const daysDiff = Math.floor((fromDate.getTime() - current.getTime()) / msPerDay);
-      if (daysDiff < Number(leaveTypeData.utilization_before)) {
-        this.apiService.showError(
-          `${this.selectedLeaveTypeName} must be applied at least ${leaveTypeData.utilization_before} days before the leave date`
-          // `You cannot apply this leave. You must apply at least ${leaveTypeData.utilization_before} day(s) in advance.`
-        );
-        return;
-      }
-    }
-  }
+  // if (fromDate >= current) {
+  //   if (leaveTypeData?.utilization_before && Number(leaveTypeData.utilization_before) > 0) {
+  //     const daysDiff = Math.floor((fromDate.getTime() - current.getTime()) / msPerDay);
+  //     if (daysDiff < Number(leaveTypeData.utilization_before)) {
+  //       this.apiService.showError(
+  //         `${this.selectedLeaveTypeName} must be applied at least ${leaveTypeData.utilization_before} days before the leave date`
+  //         // `You cannot apply this leave. You must apply at least ${leaveTypeData.utilization_before} day(s) in advance.`
+  //       );
+  //       return;
+  //     }
+  //   }
+  // }
 
   // passed all checks → submit
   const formData = new FormData();

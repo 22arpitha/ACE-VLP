@@ -466,7 +466,7 @@ jobStatusList(status:any){
 }
 // Send Email Action Button event
 public sendEamils(){
-   let finalQuery = `?send_mail=True&file-type=pdf&report-type=job-time-report`;
+   let finalQuery = `?send_mail=True&file-type=csv&report-type=job-time-report`;
    finalQuery += this.client_id ? `&client-ids=[${this.client_id}]` : '';
    this.jobStatusList(this.tabStatus);
    finalQuery += `&job-status=[${this.statusList}]`;

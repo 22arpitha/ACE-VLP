@@ -14,6 +14,8 @@ import { ApiserviceService } from '../../../service/apiservice.service';
 import { CommonServiceService } from '../../../service/common-service.service';
 import { MatAutocomplete, MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { Optional } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-comp-off-grant',
@@ -26,7 +28,7 @@ export class CompOffGrantComponent implements OnInit {
   userRole: any;
   user_id: any;
   allleavetypeList: any = [];
-  BreadCrumbsTitle: any = 'Comp Off Grant';
+  BreadCrumbsTitle: any = 'Comp-Off Request';
   sessions: any = [
     { value: 'session 1', label: 'Session 1' },
     { value: 'session 2', label: 'Session 2' },
@@ -53,8 +55,11 @@ export class CompOffGrantComponent implements OnInit {
     private apiService: ApiserviceService,
     private common_service: CommonServiceService,
     private fb: FormBuilder,
-    public dialogRef: MatDialogRef<CompOffGrantComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: any
+    private route: ActivatedRoute,
+    @Optional() public dialogRef: MatDialogRef<CompOffGrantComponent>,
+    @Optional() @Inject(MAT_DIALOG_DATA) public data: any
+    // public dialogRef: MatDialogRef<CompOffGrantComponent>,
+    // @Inject(MAT_DIALOG_DATA) public data: any
   ) {
     this.userRole = sessionStorage.getItem('user_role_name');
     this.common_service.setTitle(this.BreadCrumbsTitle);
@@ -68,11 +73,23 @@ export class CompOffGrantComponent implements OnInit {
     this.workCalendarlist();
     this.holidaylistsss();
     this.getAllEmployeeList2();
+    const isDialogMode = !!this.data;
+
+  let employeeMode = false;
+
+  if (isDialogMode) {
+    employeeMode = this.data?.employee;
+  } else {
+    // If opened via route, read from query params (optional)
+    this.route.queryParams.subscribe(params => {
+      employeeMode = params['employee'] === 'true';
+    });
+  }
     if(this.data?.employee===false){
         this.getManagerOfEmployee(this.user_id);
       } 
     this.leaveApplyForm.get('from_date')?.valueChanges.subscribe(() => this.computeTotalDays());
-    this.leaveApplyForm.get('to_date')?.valueChanges.subscribe(() => this.computeTotalDays());
+    this.leaveApplyForm.get('from_date')?.valueChanges.subscribe(() => this.computeTotalDays());
     this.leaveApplyForm.get('from_session')?.valueChanges.subscribe(() => this.computeTotalDays());
     this.leaveApplyForm.get('to_session')?.valueChanges.subscribe(() => this.computeTotalDays());
     this.employeeCtrl.valueChanges.subscribe(value => {
@@ -203,7 +220,9 @@ export class CompOffGrantComponent implements OnInit {
       );
   }
   
-
+  get isPopup(): boolean {
+    return !!this.dialogRef;
+  }
 
   onSubmit(): void {
     const ccIds = this.selectedEmployees.map((e:any) => e.user_id);
@@ -236,7 +255,10 @@ export class CompOffGrantComponent implements OnInit {
           (res: any) => {
             this.apiService.showSuccess(res.message);
             this.resetFormState();
-             this.dialogRef.close({data:'refresh'});
+            if (this.dialogRef) {
+              this.dialogRef.close({ data: 'refresh' });
+            }
+            //  this.dialogRef.close({data:'refresh'});
           },
           (err) => {
             console.log('err', err);
@@ -479,7 +501,7 @@ private getDateFromControl(controlName: string): Date | null {
 computeTotalDays(): void {
   const from: Date | null = this.getDateFromControl('from_date');
   this.minDate = from;
-  const to: Date | null = this.getDateFromControl('to_date');
+  const to: Date | null = this.getDateFromControl('from_date');
   const fromSession = this.leaveApplyForm.get('from_session')?.value;
   const toSession = this.leaveApplyForm.get('to_session')?.value;
 
