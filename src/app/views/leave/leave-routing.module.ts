@@ -22,6 +22,12 @@ const routes: Routes = [
         canDeactivate:[CanDeactivateGuard]
       },
       {
+        path:'leave-application/:id',
+        component: LeaveApplyComponent,
+        canDeactivate:[CanDeactivateGuard]
+      },
+      {
+        
         path:'holidays',
         component: HolidayListComponent,
         canDeactivate:[CanDeactivateGuard]

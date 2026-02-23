@@ -1,10 +1,14 @@
 import { Component, OnInit } from '@angular/core';
-import { ApiserviceService } from 'src/app/service/apiservice.service';
-import { environment } from 'src/environments/environment';
+import { ApiserviceService } from '../../../service/apiservice.service'
+import { environment } from '../../../../environments/environment';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { GenericDeleteComponent } from 'src/app/generic-components/generic-delete/generic-delete.component';
-import { GenericRemoveComponent } from 'src/app/generic-components/generic-remove/generic-remove.component';
+import { GenericRemoveComponent } from '../../../generic-components/generic-remove/generic-remove.component';
 import { DatePipe } from '@angular/common';
+import { Router } from '@angular/router';
+import { GenericEditComponent } from '../../../generic-components/generic-edit/generic-edit.component';
+import { GenericDeleteComponent } from '../../../generic-components/generic-delete/generic-delete.component';
+import { MatDialog } from '@angular/material/dialog';
+import {CancelLeaveRequestComponent} from '../cancel-leave-request/cancel-leave-request.component'
 
 @Component({
   selector: 'app-my-leaves',
@@ -16,7 +20,9 @@ export class MyLeavesComponent implements OnInit {
   userRole: any = "";
   user_id: any;
 
-  constructor(private apiService: ApiserviceService, private modalService: NgbModal,private datePipe: DatePipe,) {
+  constructor(private apiService: ApiserviceService, private modalService: NgbModal,private datePipe: DatePipe,
+    private router: Router,private dialog: MatDialog,
+  ) {
     this.userRole = sessionStorage.getItem('user_role_name');
     this.user_id = sessionStorage.getItem('user_id');
   }
@@ -42,6 +48,7 @@ export class MyLeavesComponent implements OnInit {
     employees: [],
     status_name: [],
   }
+  selectedItemData:any;
   ngOnInit(): void {
     this.getLeaveStatus();
     this.getallLeaveTypes();
@@ -105,13 +112,18 @@ export class MyLeavesComponent implements OnInit {
     return (this.page - 1) * this.tableSize + index + 1;
   }
 
+  private ids(filterArray: any[]): string {
+    if (!Array.isArray(filterArray)) return '';
+    return filterArray.map(x => x.id).join(',');
+  }
+
   getMyLeaves() {
     this.filterQuery = this.getFilterBaseUrl()
     if (this.filters.leave_type.length) {
-      this.filterQuery += `&leave_type_ids=[${this.filters.leave_type.join(',')}]`
+      this.filterQuery += `&leave_type_ids=[${this.ids(this.filters.leave_type)}]`
     }
     if (this.filters.status_name.length) {
-      this.filterQuery += `&status_values=[${this.filters.status_name.join(',')}]`;
+      this.filterQuery += `&status_values=[${this.ids(this.filters.status_name)}]`;
     }
     if(this.mainStartDate && this.mainEndDate){
       let start_date = this.datePipe.transform(this.mainStartDate, 'yyyy-MM-dd');
@@ -120,7 +132,6 @@ export class MyLeavesComponent implements OnInit {
     }
     this.apiService.getData(`${environment.live_url}/${environment.my_leaves}/${this.filterQuery}`).subscribe(
       (res: any) => {
-        console.log(res.results);
         this.myLeavesList = res.results
         const noOfPages: number = res?.['total_pages']
         this.count = noOfPages * this.tableSize;
@@ -136,27 +147,47 @@ export class MyLeavesComponent implements OnInit {
     return `${base}${employeeParam}`;
   }
 
-  revoke(data) {
-    console.log(data)
-    const modelRef = this.modalService.open(GenericRemoveComponent, {
-      size: <any>'sm',
-      backdrop: true,
-      centered: true
-    });
-    modelRef.componentInstance.title = `Are you sure you want to revoke`;
-    modelRef.componentInstance.message = `Revoke`;
-    modelRef.componentInstance.status.subscribe(resp => {
-      if (resp == "ok") {
-        this.revokeContent(data?.id);
-        modelRef.close();
-      }
-      else {
-        modelRef.close();
-      }
-    })
+  selectedItem(item:any){
+    this.selectedItemData = item;
+  }
+   editItem(item:any){
+     this.router.navigate([`/leave/leave-application/${item?.id}`])
+    // try {
+    //       const modalRef = await this.modalService.open(GenericEditComponent, {
+    //         size: 'sm',
+    //         backdrop: 'static',
+    //         centered: true
+    //       });
+    //       modalRef.componentInstance.status.subscribe((resp:any) => {
+    //         if (resp === 'ok') {
+    //           modalRef.dismiss();
+    //           this.router.navigate([`/leave/leave-application/${item?.id}`])
+    //         } else {
+    //           modalRef.dismiss();
+    //         }
+    //       });
+    //     } catch (error) {
+    //       console.error('Error opening modal:', error);
+    //     }
+  }
+  revoke(data:any) {
+    const modelRef = this.modalService.open(GenericDeleteComponent, {
+            size: <any>'sm',
+            backdrop: true,
+            centered: true
+          });
+          modelRef.componentInstance.status.subscribe((resp:any) => {
+            if (resp == "ok") {
+              this.revokeContent(data?.id);
+              modelRef.close();
+            }
+            else {
+              modelRef.close();
+            }
+          })
   }
 
-  revokeContent(id) {
+  revokeContent(id:any) {
     console.log(id)
     let data = {
       leave_applied_id: id
@@ -171,6 +202,23 @@ export class MyLeavesComponent implements OnInit {
 
       }
     )
+  }
+
+  cancelRequest(data:any){
+     this.dialog.open(CancelLeaveRequestComponent, {
+          data: data,
+          // panelClass: 'custom-details-dialog',
+          panelClass: 'cancel-leave-details-dialog',
+          disableClose: true,
+        });
+       
+        this.dialog.afterAllClosed.subscribe((resp: any) => {
+          if(resp?.data==='refresh'){
+            this.getMyLeaves()
+          }
+          // console.log('resp',resp);
+          //  this.initalCall();
+        });
   }
 
   reset(){

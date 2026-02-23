@@ -48,7 +48,7 @@ export const PERIOD_OPTIONS= [
   { label: 'Monthly', value: 'monthly' },
 ]
 export const EFFECTIVE_FROM_OPTIONS = [
-  { label: 'Date Of Joning', value: 'Date Of Joning'},
+  { label: 'Date Of Joining', value: 'Date Of Joining'},
   { label: 'Date Of Confirmation', value: 'Date Of Confirmation'}
 ]
 

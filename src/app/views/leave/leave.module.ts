@@ -24,6 +24,8 @@ import { CompOffGrantComponent } from './comp-off-grant/comp-off-grant.component
 import { LeaveApplyAdminComponent } from './leave-apply-admin/leave-apply-admin.component';
 import { ResourceAvailabilityComponent } from './resource-availability/resource-availability.component';
 import { FullCalendarModule } from '@fullcalendar/angular';
+import { UserCompOffListComponent } from './user-comp-off-list/user-comp-off-list.component';
+import { CancelLeaveRequestComponent } from './cancel-leave-request/cancel-leave-request.component';
 @NgModule({
   declarations: [
     WorkCalendarComponent,
@@ -43,6 +45,8 @@ import { FullCalendarModule } from '@fullcalendar/angular';
     CompOffGrantComponent,
     LeaveApplyAdminComponent,
     ResourceAvailabilityComponent,
+    UserCompOffListComponent,
+    CancelLeaveRequestComponent,
   ],
   imports: [
     CommonModule,

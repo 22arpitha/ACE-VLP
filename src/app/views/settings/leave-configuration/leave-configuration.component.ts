@@ -69,6 +69,7 @@ export class LeaveConfigurationComponent implements OnInit {
           leave_description: res.leave_description,
           utilization_before: res.utilization_before,
           utilization_after: res.utilization_after,
+          maximum_no_of_consequtive_leaves: res.maximum_no_of_consequtive_leaves,
           effective_value: res.effective_value,
           effective_cycle: res.effective_cycle,
           leave_effective_from: res.leave_effective_from,
@@ -85,7 +86,7 @@ export class LeaveConfigurationComponent implements OnInit {
           is_carry_forward: res.is_carry_forward,
           carry_forward_cycle: 'carry_forward',
           carry_forward_days: res.carry_forward_days,
-          encash_leaves_above_limit: res.encash_leaves_above_limit,
+          encashment: Number(res?.encashment),
           leave_for: res?.leave_for
         })
       if(res.is_accrual===false && res.accrual_credits===0 && res.accrual_month===0){
@@ -118,6 +119,7 @@ export class LeaveConfigurationComponent implements OnInit {
       leave_description: ['', [Validators.pattern(/^[a-zA-Z0-9!@#$%^&*()_+{}\[\]:;"'<>,.?/\\|`~\-]+( [a-zA-Z0-9!@#$%^&*()_+{}\[\]:;"'<>,.?/\\|`~\-]+)*$/), Validators.maxLength(200)]],
       utilization_before: [''],
       utilization_after: [''],
+      maximum_no_of_consequtive_leaves:[''],
       effective_value: ['', [Validators.required, Validators.pattern(/^\d{1,2}$/), Validators.maxLength(2), Validators.min(0)]],
       effective_cycle: ['', Validators.required],
       leave_effective_from: ['', Validators.required],
@@ -133,11 +135,10 @@ export class LeaveConfigurationComponent implements OnInit {
       reset_cycle: ['', Validators.required],
       reset_day: ['', Validators.required],
       reset_month: ['', Validators.required],
-      is_carry_forward: [false],
+      is_carry_forward: [true],
       carry_forward_cycle: ['carry_forward'],
       carry_forward_days: [0],
-      encash_leaves_above_limit: [false],
-      encash_leaves_with_expiry: [false],
+      encashment: ['1'],
       leave_for:['',Validators.required]
     });
     this.initialFormValue = this.leaveTypeForm?.getRawValue();
@@ -192,7 +193,7 @@ export class LeaveConfigurationComponent implements OnInit {
       'reset_day',
       'reset_month',
       'is_carry_forward',
-      'encash_leaves_above_limit',
+      'encashment',
     ];
 
     if (!event.checked) {
@@ -208,17 +209,31 @@ export class LeaveConfigurationComponent implements OnInit {
       'carry_forward_days',
     ]);
   }
+  onRadioChange(event:any){
+    let carryValue : any;
+    if(event.value===3 && this.leaveTypeForm.get('is_reset')?.value===true){
+      carryValue = false;
+    }
+    else{
+      carryValue = true;
+    }
+     this.leaveTypeForm.patchValue({is_carry_forward: carryValue})
+      this.simpleToggleRequired(carryValue, [
+      'carry_forward_cycle',
+      'carry_forward_days',
+    ]);
+  }
 
   public isEncashEnabled(event: any) {
 
   }
   addOrUpdate() {
-    if (this.leaveTypeForm.value.encash_leaves_above_limit === true){
-        this.leaveTypeForm.value.encash_leaves_with_expiry = false
-    }
-    else if (this.leaveTypeForm.value.encash_leaves_above_limit === false){
-        this.leaveTypeForm.value.encash_leaves_with_expiry = true
-    }
+    // if (this.leaveTypeForm.value.encashment === true){
+    //     this.leaveTypeForm.value.encash_leaves_with_expiry = false
+    // }
+    // else if (this.leaveTypeForm.value.encashment === false){
+    //     this.leaveTypeForm.value.encash_leaves_with_expiry = true
+    // }
 
     if (this.leaveTypeForm.invalid) {
       this.leaveTypeForm.markAllAsTouched();
@@ -228,7 +243,7 @@ export class LeaveConfigurationComponent implements OnInit {
         this.leaveTypeForm.patchValue({accrual_credits:0,accrual_month:0})
       }
       if(this.item_id){
-        this.apiService.updateData(`${environment.live_url}/${environment.settings_leave_type}/${this.item_id}/`,this.leaveTypeForm.value).subscribe(
+        this.apiService.updateData(`${environment.live_url}/${environment.new_leave_type}/?conf_id=${this.item_id}`,this.leaveTypeForm.value).subscribe(
           (res:any)=>{
             this.apiService.showSuccess(res?.message);
             this.resetFormState();
@@ -239,7 +254,7 @@ export class LeaveConfigurationComponent implements OnInit {
           }
         )
       } else{
-        this.apiService.postData(`${environment.live_url}/${environment.settings_leave_type}/`,this.leaveTypeForm.value).subscribe(
+        this.apiService.postData(`${environment.live_url}/${environment.new_leave_type}/`,this.leaveTypeForm.value).subscribe(
           (res:any)=>{
             this.apiService.showSuccess(res?.message);
             this.resetFormState();

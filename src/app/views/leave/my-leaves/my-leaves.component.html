@@ -67,7 +67,7 @@
               <tr *ngFor="let item of result | customSort:directionValue:sortValue | paginate: { itemsPerPage: tableSize, currentPage: page,totalItems: count }; let i=index">
                  <td>{{getContinuousIndex(i)}}</td>
                 <td>{{item.leave_type_name}}</td>
-                <td>{{item.from_date}} - {{item.to_date}}</td>
+                <td>{{item.from_date | dateFormater}} - {{item.to_date | dateFormater}}</td>
                 <td>{{item.number_of_leaves_applying_for}}</td>
                 <td>{{item.created_datetime | dateFormater}}</td>
                 <td *ngIf="item.status === 'Pending'"><span style="background: #ffface; color: #978419;"
@@ -76,9 +76,33 @@
                     class="p-2 rounded">APPROVED</span></td>
                 <td *ngIf="item.status === 'rejected'"><span style="background:#fee2e2; color: #b91c1c;"
                     class="p-2 rounded">REJECTED</span></td>
+                <td *ngIf="item.status === 'cancelled'"><span style="background:#e0e0e0; color: #d74c4c;"
+                    class="p-2 rounded">CANCELLED</span></td>
+                <td *ngIf="item.status === 'cancel request sent'"><span style="background:#e0e0e0; color: #d74c4c;"
+                    class="p-2 rounded">CANCEL REQUEST SENT</span></td>
                 <td>{{item?.message}}</td>
                 <td>{{item.rejected_reason}}</td>
                 <td>
+                  <button *ngIf="item.status==='approved' || item.status==='Pending'" mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu" (click)="selectedItem(item)">
+                    <mat-icon>more_vert</mat-icon>
+                  </button>
+                  <span *ngIf="item.status!=='approved' && item.status!=='Pending'">-</span>
+                  <mat-menu #menu="matMenu">
+                    <button mat-menu-item *ngIf="selectedItemData?.status === 'Pending'" (click)="editItem(selectedItemData)">
+                      <mat-icon>edit</mat-icon>
+                      <span>Edit</span>
+                    </button>
+                    <button mat-menu-item *ngIf="selectedItemData?.status === 'Pending'" (click)="revoke(selectedItemData)">
+                      <mat-icon>delete</mat-icon>
+                      <span>Delete</span>
+                    </button>
+                    <button mat-menu-item *ngIf="selectedItemData?.status=== 'approved'" (click)="cancelRequest(selectedItemData)">
+                      <mat-icon>cancel</mat-icon>
+                      <span>Cancel Request</span>
+                    </button>
+                  </mat-menu>
+                </td>
+                <!-- <td>
                   <div *ngIf="item.status === 'Pending'">
                     <button  class="btn btn-sm custom-btn" type="button"
                       (click)="revoke(item)">Revoke</button>
@@ -86,7 +110,7 @@
                   <div *ngIf="item.status != 'Pending'">
                     <span>-</span>
                   </div>
-                </td>
+                </td> -->
               </tr>
             </ng-container>
           </tbody>
