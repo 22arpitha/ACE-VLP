@@ -3,6 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Ticket, TicketStatus } from 'src/app/models/ticket.models';
+import { CommonServiceService } from 'src/app/service/common-service.service';
 import { TicketService } from 'src/app/service/ticket.service';
 
 
@@ -19,7 +20,7 @@ export class TicketDetailComponent implements OnInit, OnDestroy {
   showRejectModal = false;
   rejectionReason = '';
   private destroy$ = new Subject<void>();
-
+BreadCrumbsTitle: any = 'Ticket Details';
   // Current user info (should come from auth service)
   currentUserId = 'user123';
   currentUserRole = 'EMPLOYEE';
@@ -32,17 +33,21 @@ export class TicketDetailComponent implements OnInit, OnDestroy {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private ticketService: TicketService
-  ) {}
+    private ticketService: TicketService,
+    private commonService:CommonServiceService
+  ) {
+    this.commonService.setTitle(this.BreadCrumbsTitle)
+  }
 
   ngOnInit(): void {
+      this.ticketService.loadTickets();
     const ticketId = this.route.snapshot.params['id'];
     this.loadTicket(ticketId);
   }
 
   ngOnDestroy(): void {
     this.destroy$.next();
-    this.destroy$.complete();
+    this.destroy$.complete(); 
   }
 
   loadTicket(id: string): void {

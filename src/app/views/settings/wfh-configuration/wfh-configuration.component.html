@@ -384,10 +384,10 @@
                                                 autocomplete="off" panelClass="custom-select-panel"
                                                 [disableOptionCentering]="true"
                                                 (selectionChange)="accrualAndResetLeaveCycle($event,'reset')">
-                                                <mat-option value="quarterly">Quarterly</mat-option>
-                                                <!-- <mat-option *ngFor="let period of periodList" [value]="period.value">
+                                                <!-- <mat-option value="quarterly">Quarterly</mat-option> -->
+                                                <mat-option *ngFor="let period of periodList" [value]="period.value">
                         {{ period.label }}
-                      </mat-option> -->
+                      </mat-option>
                                             </mat-select>
                                             <mat-error
                                                 *ngIf="f['reset_cycle']?.invalid && f['reset_cycle']?.touched || f['reset_cycle']?.dirty">

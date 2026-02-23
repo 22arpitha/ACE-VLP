@@ -4,6 +4,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { TicketService } from 'src/app/service/ticket.service';
+import { CommonServiceService } from 'src/app/service/common-service.service';
 
 
 @Component({
@@ -22,12 +23,15 @@ export class NewTicketComponent implements OnInit, OnDestroy {
   // Current user info (should come from auth service)
   currentUserId = 'user123';
   currentUserName = 'John Doe';
-
+ BreadCrumbsTitle: any = 'Create Tickets';
   constructor(
     private fb: FormBuilder,
     private router: Router,
-    private ticketService: TicketService
-  ) {}
+    private ticketService: TicketService,
+    private commonService:CommonServiceService
+  ) {
+    this.commonService.setTitle(this.BreadCrumbsTitle)
+  }
 
   ngOnInit(): void {
     this.initializeForm();

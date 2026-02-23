@@ -59,7 +59,7 @@ export const CARRYFORWARD_FROM_OPTIONS = [
 ]
 
 export const PERIOD_OPTIONS_WFH= [
-  // { label: 'Yearly', value: 'yearly' },
-  // { label: 'Monthly', value: 'monthly' },
+  { label: 'Yearly', value: 'yearly' },
+  { label: 'Monthly', value: 'monthly' },
   { label: 'Quarterly', value: 'quarterly' },
 ]

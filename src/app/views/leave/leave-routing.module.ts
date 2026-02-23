@@ -37,11 +37,11 @@ const routes: Routes = [
         component: CompOffGrantComponent,
         canDeactivate:[CanDeactivateGuard]
       },
-      {
-        path:'work-from-home',
-        component: WorkFromHomeComponent,
-        canDeactivate:[CanDeactivateGuard]
-      }
+      // {
+      //   path:'work-from-home',
+      //   component: WorkFromHomeComponent,
+      //   canDeactivate:[CanDeactivateGuard]
+      // }
     ]
   }
 ];

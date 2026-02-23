@@ -27,6 +27,7 @@ import { FullCalendarModule } from '@fullcalendar/angular';
 import { WorkFromHomeComponent } from './work-from-home/work-from-home.component';
 import { WfhRequestsComponent } from './wfh-requests/wfh-requests.component';
 import { ViewWfhRequestComponent } from './view-wfh-request/view-wfh-request.component';
+import { MatDialogModule } from '@angular/material/dialog';
 @NgModule({
   declarations: [
     WorkCalendarComponent,
@@ -60,6 +61,7 @@ import { ViewWfhRequestComponent } from './view-wfh-request/view-wfh-request.com
     RouterModule,
     NgMultiSelectDropDownModule,
     FullCalendarModule,
+    MatDialogModule
   ]
 })
 export class LeaveModule { }

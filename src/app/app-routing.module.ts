@@ -62,6 +62,11 @@ const routes: Routes = [
         loadChildren: () =>
           import('./views/leave/leave.module').then((m) => m.LeaveModule),
       },
+          {
+        path: 'wfh',
+        loadChildren: () =>
+          import('./views/work-from-home/work-from-home.module').then((m) => m.WorkFromHomeModule),
+      },
       // {
       //   path: 'leave',
       //   loadChildren: () =>

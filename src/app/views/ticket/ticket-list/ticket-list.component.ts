@@ -7,6 +7,7 @@ import {
   TicketFilter,
   TicketStatus,
 } from 'src/app/models/ticket.models';
+import { CommonServiceService } from 'src/app/service/common-service.service';
 
 import { TicketService } from 'src/app/service/ticket.service';
 
@@ -20,7 +21,11 @@ export class TicketListComponent implements OnInit, OnDestroy {
   filteredTickets: Ticket[] = [];
   loading = false;
   private destroy$ = new Subject<void>();
-
+  // Pagination
+  page: number = 1;
+  tableSize: number = 10;
+  tableSizes: number[] = [5, 10, 25, 50];
+  BreadCrumbsTitle: any = 'Tickets';
   // Current user info (should come from auth service)
   currentUserId = 'user123'; // Replace with actual auth service
   currentUserRole = 'EMPLOYEE'; // Replace with actual auth service
@@ -39,14 +44,6 @@ export class TicketListComponent implements OnInit, OnDestroy {
     'status',
     'statusDate',
   ];
-  // filter = {
-  //   ticketRaisedDateFrom: null as Date | null,
-  //   ticketRaisedDateTo: null as Date | null,
-  //   statusDateFrom: null as Date | null,
-  //   statusDateTo: null as Date | null,
-  //   issue: '',
-  //   status: undefined
-  // };
 
   // Mobile menu
   showMobileFilters = false;
@@ -54,7 +51,10 @@ export class TicketListComponent implements OnInit, OnDestroy {
   constructor(
     private ticketService: TicketService,
     private router: Router,
-  ) {}
+    private common_service:CommonServiceService
+  ) {
+     this.common_service.setTitle(this.BreadCrumbsTitle);
+  }
 
   ngOnInit(): void {
     this.loadTickets();
@@ -70,19 +70,40 @@ export class TicketListComponent implements OnInit, OnDestroy {
     this.ticketService
       .getTicketsForUser(this.currentUserId, this.currentUserRole)
       .pipe(takeUntil(this.destroy$))
-      .subscribe((tickets) => {
+      .subscribe((tickets: any) => {
         this.tickets = tickets;
         this.applyFiltersAndSort();
         this.loading = false;
       });
   }
 
-  applyFiltersAndSort(): void {
+  // applyFiltersAndSort(): void {
+  //   this.ticketService
+  //     .getFilteredTickets(this.filter, this.sortColumn, this.sortDirection)
+  //     .pipe(takeUntil(this.destroy$))
+  //     .subscribe((filtered: any) => {
+  //       // Additional role-based filtering
+  //       if (this.currentUserRole === 'EMPLOYEE') {
+  //         if (this.filter.status && this.filter.status.length > 0) {
+  //           filtered = filtered.filter((t) =>
+  //             this.filter.status?.includes(t.status),
+  //           );
+  //         }
+
+  //         this.filteredTickets = filtered.filter(
+  //           (t: any) => t.employeeId === this.currentUserId,
+  //         );
+  //       } else {
+  //         this.filteredTickets = filtered;
+  //       }
+  //     });
+  // }
+
+  applyFiltersAndSort() {
     this.ticketService
       .getFilteredTickets(this.filter, this.sortColumn, this.sortDirection)
       .pipe(takeUntil(this.destroy$))
-      .subscribe((filtered) => {
-        // Additional role-based filtering
+      .subscribe((filtered: Ticket[]) => {
         if (this.currentUserRole === 'EMPLOYEE') {
           this.filteredTickets = filtered.filter(
             (t) => t.employeeId === this.currentUserId,
@@ -123,13 +144,13 @@ export class TicketListComponent implements OnInit, OnDestroy {
   getStatusClass(status: TicketStatus): string {
     switch (status) {
       case TicketStatus.OPEN:
-        return 'status-open';
+        return 'open';
       case TicketStatus.CLOSE_REQUEST_SENT:
-        return 'status-close-request';
+        return 'close-request-sent';
       case TicketStatus.REOPEN:
-        return 'status-reopen';
+        return 're-open';
       case TicketStatus.CLOSED:
-        return 'status-closed';
+        return 'closed';
       default:
         return '';
     }
@@ -168,4 +189,51 @@ export class TicketListComponent implements OnInit, OnDestroy {
         return 'secondary';
     }
   }
+
+  columns = [
+    { key: 'ticketNumber', label: 'Ticket #', visible: true },
+    { key: 'ticketRaisedDate', label: 'Raised Date', visible: true },
+    { key: 'issue', label: 'Issue', visible: true },
+    { key: 'status', label: 'Status', visible: true },
+    { key: 'statusDate', label: 'Status Date', visible: true },
+  ];
+
+  isColumnVisible(key: string): boolean {
+    return this.columns.find((c) => c.key === key)?.visible ?? true;
+  }
+  clearDateFilter(): void {
+    this.filter.ticketRaisedDateFrom = undefined;
+    this.filter.ticketRaisedDateTo = undefined;
+    this.applyFiltersAndSort();
+  }
+
+
+  onStatusChange(ticket: Ticket, event: any): void {
+
+  const newStatus = event.value;
+
+  ticket.status = newStatus;
+  ticket.statusDate = new Date();
+
+  // If using dummy backend:
+  this.ticketService.updateTicketStatus(ticket.id, newStatus);
+
+  this.applyFiltersAndSort();
+}
+
+ticketStatusValidation(ticket: Ticket, newStatus: TicketStatus): boolean {
+
+  // Example rules:
+  if (ticket.status === TicketStatus.CLOSED) {
+    return true; // cannot change closed ticket
+  }
+
+  if (ticket.status === TicketStatus.OPEN &&
+      newStatus === TicketStatus.REOPEN) {
+    return true; // cannot reopen if not closed
+  }
+
+  return false;
+}
+
 }
