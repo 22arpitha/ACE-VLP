@@ -1,21 +1,22 @@
-<div class="container-wrapper settings-main-content px-2">
+<div class="container-wrapper">
     <section class="p-0 create-update-custom-balance">
         <div class="row mx-0">
             <div class="col-12 mx-0">
                 <form [formGroup]="customizeBalanceForm" class="p-0">
                     <div class="row mx-0">
-                        <div class="col-12 my-2">
+                        <div class="col-12 my-3">
                             <h4>{{headingText}}</h4>
                         </div>
                         <div class="col-12">
                             <h5>Employee Name: {{data.item.employee_name}}</h5>
                         </div>
-                        <div class="my-3">
+                        <div class="my-3 overflow-x-auto">
                          <table class="table table-hover table-list leave-balance-table">
                             <thead>
                                 <tr>
                                 <th>S No</th>
                                 <th>Leave Type</th>
+                                <th>Date</th>
                                 <th>Existing Balance</th>
                                 <th>New Balance</th>
                                 <th>Reason</th>
@@ -26,10 +27,22 @@
                                 <tr *ngFor="let leave of leavesFormArray.controls; let i = index" [formGroupName]="i">
                                     <td>{{ i + 1 }}</td>
                                     <td>{{ leave.get('leave_type')?.value }}</td>
-                                    <td>{{ leave.get('existing_balance')?.value }}</td>
                                     <td>
-                                        <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
-                                        <input matInput type="number" formControlName="new_balance" placeholder="New Balance">
+                                        <mat-form-field appearance="outline" class="w-50 p-0 custom-mat-form-field">
+                                            <mat-label>Date <b class="r-star">*</b></mat-label>
+                                            <input matInput [matDatepicker]="picker1" placeholder="Enter date"
+                                                formControlName="date" autocomplete="off" [max]="minDate">
+                                                <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+                                                <mat-datepicker #picker1></mat-datepicker>
+                                        </mat-form-field>
+                                        <div *ngIf="leave.get('date')?.invalid && leave.get('date')?.touched">
+                                        <span class="text-errors">Date is required</span>
+                                        </div>
+                                    </td>
+                                    <td>{{ leave.get('existing_balance')?.value }}</td>
+                                    <td class="days-field">
+                                        <mat-form-field appearance="outline" class="custom-mat-form-field">
+                                        <input matInput type="number" formControlName="new_balance">
                                         </mat-form-field>
                                         <div *ngIf="leave.get('new_balance')?.invalid && leave.get('new_balance')?.touched">
                                         <span class="text-errors">New Balance is required</span>
@@ -37,7 +50,7 @@
                                     </td>
                                     <td>
                                         <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
-                                        <input matInput formControlName="reason" placeholder="Reason">
+                                        <input matInput formControlName="reason" placeholder="Manual correction">
                                         </mat-form-field>
                                         <div *ngIf="leave.get('reason')?.invalid && leave.get('reason')?.touched">
                                         <span class="text-errors">Reason is required</span>

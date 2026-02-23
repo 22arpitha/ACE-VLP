@@ -16,11 +16,16 @@
   padding: 8px;
   background-color: #fff;
 }
-
+ ::ng-deep.days-field .mat-form-field-flex {
+  width: 38px;
+  text-align: center;
+}
 .mat-select-search {
   width: 100%;
 }
-
+.create-update-custom-balance td{
+  align-content: center;
+}
  table .contact-form-content ::ng-deep .mat-form-field-appearance-outline .mat-form-field-wrapper,
   table .contact-form-content ::ng-deep .mat-form-field-wrapper {
   margin: 0 !important;
