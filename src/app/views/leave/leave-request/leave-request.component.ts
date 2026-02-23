@@ -10,6 +10,8 @@ import { LeaveApplyAdminComponent } from '../leave-apply-admin/leave-apply-admin
 import { DropDownPaginationService } from 'src/app/service/drop-down-pagination.service';
 import { GenericTableFilterComponent } from 'src/app/shared/generic-table-filter/generic-table-filter.component';
 import { DatePipe } from '@angular/common';
+import { ActivatedRoute, Router } from '@angular/router';
+import { take } from 'rxjs';
 
 export interface IdNamePair {
   id: any;
@@ -22,6 +24,7 @@ export interface IdNamePair {
 })
 export class LeaveRequestComponent implements OnInit {
   @ViewChild('employeeFilter') employeeFilter!: GenericTableFilterComponent;
+  @ViewChild('statusFilter') statusFilter!: GenericTableFilterComponent;
   page = 1;
   count = 0;
   tableSize = 50;
@@ -49,6 +52,8 @@ export class LeaveRequestComponent implements OnInit {
   searchLeave: any;
   user_id: any;
   userRole: any;
+  leaveApplictaionId: any;
+  tabId:any;
   constructor(
     private accessControlService: SubModuleService,
     modalService: NgbModal,
@@ -56,18 +61,62 @@ export class LeaveRequestComponent implements OnInit {
     private apiService: ApiserviceService,
     private cdr: ChangeDetectorRef,
     private datePipe: DatePipe,
+    private activateRoute: ActivatedRoute,
+    private router: Router,
     private dropdownService: DropDownPaginationService,
   ) {
     this.userRole = sessionStorage.getItem('user_role_name');
     this.user_id = sessionStorage.getItem('user_id');
+    // this.leaveApplictaionId = this.activateRoute.snapshot.queryParamMap.get('leave-id');
+    // this.tabId = this.activateRoute.snapshot.queryParamMap.get('tab');
+    // console.log(this.leaveApplictaionId,this.tabId)
+    // const data= { item_id: this.leaveApplictaionId }
+
+    
+    // if(this.leaveApplictaionId && this.tabId){
+    //   this.viewLeaveRequest(data);
+    // }
   }
 
   ngOnInit(): void {
-    this.getLeaveStatus();
     this.getPeriodData();
     this.getallLeaveTypes();
-    this.getleaverequest();
-  }
+    this.getLeaveStatus();
+
+    const navEntries = performance.getEntriesByType("navigation") as PerformanceNavigationTiming[];
+    const isReload = navEntries.length > 0 && navEntries[0].type === "reload";
+    this.activateRoute.queryParamMap.pipe(take(1)).subscribe(params => {
+      const leaveId = params.get('leave-id');
+      const view = params.get('view');
+      if (view === 'leave-requests' && leaveId && !isReload) {
+        setTimeout(() => {
+          this.getAppliedLeaveData(leaveId).subscribe({
+          next: (res: any) => {
+            this.viewLeaveRequest(leaveId);
+          },
+          error: (error: any) => {
+            this.router.navigate([], {
+              queryParams: { 'leave-id': null, view: null, user_id: null },
+              queryParamsHandling: 'merge',
+              replaceUrl: true
+            });
+            this.apiService.showError(error?.error?.detail);
+          }
+        });
+          // this.viewLeaveRequest(leaveId);
+        }, 300);
+
+      }
+      if (isReload && leaveId) {
+        this.router.navigate([], {
+          queryParams: { 'leave-id': null, view: null,user_id: null },
+          queryParamsHandling: 'merge',
+          replaceUrl: true
+        });
+      }
+    });
+
+ }
 
   filters: { leave_type: IdNamePair[], employees: IdNamePair[], status_name: IdNamePair[] } = {
     leave_type: [],
@@ -81,8 +130,18 @@ export class LeaveRequestComponent implements OnInit {
           id: item.key,
           name: item.value
         }));
+        const pendingStatus = this.leaveStatus.find((x: any) => x.name === 'Pending');
+        if (pendingStatus) {
+          this.filters.status_name = [pendingStatus];
+          setTimeout(() => {
+            if (this.statusFilter) {
+              this.statusFilter.selectedOptions  = [pendingStatus];
+            }
+          });
+        }
+        this.getleaverequest();
       },
-      (error) => {
+      (error:any) => {
         console.log(error)
       }
     )
@@ -98,6 +157,12 @@ export class LeaveRequestComponent implements OnInit {
     )
   }
 
+getAppliedLeaveData(leaveId: any) {
+  return this.apiService.getData(
+    `${environment.live_url}/${environment.apply_leaves}/${leaveId}/`
+  );
+}
+
 
   viewDetails(data: any) {
     let emails = [];
@@ -111,7 +176,7 @@ export class LeaveRequestComponent implements OnInit {
     const dialogRef = this.dialog.open(ViewLeaveRequestComponent, {
       height: '500px',
       width: '50%',
-      data: { data: data },
+      data: { item_id: data.id }
     });
 
     dialogRef.afterClosed().subscribe((result) => {
@@ -161,9 +226,9 @@ export class LeaveRequestComponent implements OnInit {
   onFilterChange(event: any, filterType: string) {
     const selectedOptions = event;
     this.filters[filterType] = selectedOptions;
-    console.log(event)
+    // console.log(event)
     if (event.value === 'custom') {
-      console.log('period is selected')
+      // console.log('period is selected')
     }
     this.getleaverequest();
   }
@@ -180,7 +245,7 @@ export class LeaveRequestComponent implements OnInit {
   }
 
   selectedPeriodFunc(event) {
-    console.log(this.selectedPeriod)
+    // console.log(this.selectedPeriod)
     this.mainStartDate = '';
     this.mainEndDate = '';
     if(this.selectedPeriod!='custom'){
@@ -201,13 +266,27 @@ export class LeaveRequestComponent implements OnInit {
     }
   }
 
-  viewLeaveRequest(item) {
+  viewLeaveRequest(id:any) {
     this.dialog.open(ViewLeaveRequestComponent, {
-      data: { item_id: item?.id },
-      panelClass: 'custom-details-dialog',
+      data: { item_id: id },
+      // panelClass: 'custom-details-dialog',
+      panelClass: 'view-leave-details-dialog',
       disableClose: true,
     });
+    this.router.navigate([], {
+    relativeTo: this.activateRoute,
+    queryParams: {
+      'leave-id': null,
+      'view': null,
+      'user_id':null
+    },
+    queryParamsHandling: 'merge',
+    replaceUrl: true
+  });
     this.dialog.afterAllClosed.subscribe((resp: any) => {
+      if(resp.data==='refresh'){
+        this.getleaverequest();
+      }
       // console.log('resp',resp);
       //  this.initalCall();
     });
@@ -216,12 +295,12 @@ export class LeaveRequestComponent implements OnInit {
   openleaveForm() {
     const dialogRef = this.dialog.open(LeaveApplyAdminComponent, {
       // data: { item_id: item?.id },
-      panelClass: 'custom-details-dialog',
+      panelClass: 'leave-or-compoff-form-dialog',
       disableClose: true,
     });
     dialogRef.afterClosed().subscribe((resp: any) => {
-      console.log('resp', resp);
-      if (resp.data === 'refresh') {
+      // console.log('resp', resp);
+      if (resp?.data === 'refresh') {
         this.getleaverequest();
       }
     });
@@ -303,7 +382,8 @@ private ids(filterArray: any[]): string {
     this.mainStartDate = '';
     this.mainEndDate = '';
     this.filters = {leave_type: [],employees: [],status_name: []};
-    this.getleaverequest()
+    this.getLeaveStatus()
+    // this.getleaverequest();
   }
 
 }

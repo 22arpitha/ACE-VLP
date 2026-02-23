@@ -107,7 +107,7 @@
               </button>
 
               <mat-menu #statusFilterMenu="matMenu">
-                  <app-generic-table-filter [options]="leaveStatus"
+                  <app-generic-table-filter [options]="leaveStatus" #statusFilter
                       [(selectedOptions)]="filters.status_name"
                       (selectedOptionsChange)="onFilterChange($event, 'status_name')">
                   </app-generic-table-filter>
@@ -140,7 +140,7 @@
                   <!-- <i class="bi bi-eye fw-bold fs-4"></i> -->
                   <span>
                     <img src="../../../../assets/images/view.svg" class="icon-image" container="body" ngbTooltip="View"
-                      (click)="viewDetails(item)" />
+                      (click)="viewLeaveRequest(item.id)" />
                   </span>
                 </td>
               </tr>
