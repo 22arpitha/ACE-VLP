@@ -4,6 +4,7 @@ import { Router, NavigationEnd } from '@angular/router';
 import { IconSetService } from '@coreui/icons-angular';
 import { iconSubset } from './icons/icon-subset';
 import { Title } from '@angular/platform-browser';
+import { ApiserviceService } from './service/apiservice.service';
 // import { WebsocketService } from './service/websocket.service';
 // import { EmployeeStatusWebsocketService } from './service/employee-status-websocket.service';
 // import { UserAccessWebsocketService } from './service/user-access-websocket.service';
@@ -24,6 +25,7 @@ export class AppComponent implements OnInit {
     private router: Router,
     private titleService: Title,
     private iconSetService: IconSetService,
+    private api: ApiserviceService
     // private websocketService: WebsocketService,
     // private employeeSocket: EmployeeStatusWebsocketService,
     // private useraccessSocket:UserAccessWebsocketService
@@ -35,6 +37,7 @@ export class AppComponent implements OnInit {
   }
  
   async ngOnInit() {
+    // this.api.restoreSessionFromToken();
     this.router.events.subscribe((evt) => {
       if (!(evt instanceof NavigationEnd)) {
         return;

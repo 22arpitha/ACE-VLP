@@ -1,5 +1,5 @@
 import { Component, OnInit, Inject } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, FormArray, FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { ApiserviceService } from '../../../service/apiservice.service';
 import { environment } from '../../../../environments/environment';
@@ -18,6 +18,7 @@ export class AddCustomizeBalanceComponent implements OnInit {
   customizeBalanceForm: FormGroup;
   headingText: string;
   buttonName: string;
+  minDate = new Date()
   user_id: number
   userRole: string
   leaveTypes = [
@@ -49,7 +50,7 @@ export class AddCustomizeBalanceComponent implements OnInit {
       this.headingText = 'Customize Balance'
       this.buttonName = 'Add'
     }
-    console.log(this.data)
+    // console.log(this.data)
   }
 
 
@@ -70,19 +71,24 @@ export class AddCustomizeBalanceComponent implements OnInit {
   getEmpCustomBalance() {
     this.apiService.getData(`${environment.live_url}/${environment.all_emp_custom_balance}/?employee-ids=[${this.data?.item?.employee}]`).subscribe(
       (res: any) => {
-        console.log(res)
+        // console.log(res)
         if (res.results.length) {
           this.leavesFormArray.clear();
           res.results[0].leave.forEach((leave: any) => {
-            this.leavesFormArray.push(
-              this.fb.group({
-                leave_type_id: [leave.leave_type_id || leave.id || ''],
-                leave_type: [leave.name || leave.leave_type],
-                existing_balance: [leave.available || 0],
-                new_balance: [leave.new_leave_value || 0, Validators.required],
-                reason: [leave.reason ]
-              })
-            );
+           const group = this.fb.group({
+              leave_type_id: [leave.leave_type_id || leave.id || ''],
+              leave_type: [leave.name || leave.leave_type],
+              date: [new Date(), Validators.required],
+              existing_balance: [leave.available || 0],
+              new_balance: [leave.new_leave_value || 0, Validators.required],
+              reason: [leave.reason]
+            });
+
+            group.get('date')?.valueChanges.subscribe((dateValue) => {
+              this.onDateChange(dateValue, group);
+            });
+
+            this.leavesFormArray.push(group);
           });
         }
       },
@@ -91,6 +97,28 @@ export class AddCustomizeBalanceComponent implements OnInit {
       }
     )
   }
+
+  onDateChange(dateValue: any, group: FormGroup) {
+    if (!dateValue) return;
+    const formattedDate = this.datepipe.transform(dateValue, 'yyyy-MM-dd');
+    const empId = this.data?.item?.employee;
+    const leaveTypeId = group.get('leave_type_id')?.value;
+    const url = `?employee_id=${empId}&leave_type_id=${leaveTypeId}&date=${formattedDate}`;
+    // group.patchValue({
+    //       existing_balance: 10
+    //     });
+    this.apiService.getData(`${environment.live_url}/${environment.get_leaves_till_Date}/${url}`).subscribe(
+      (res: any) => {
+        group.patchValue({
+          existing_balance: res.total_leaves
+        });
+      },
+      (error) => {
+        this.apiService.showError('Unable to fetch balance');
+      }
+    );
+  }
+
 
   addOrUpdateBalance() {
     if (this.customizeBalanceForm.invalid) {
@@ -104,10 +132,10 @@ export class AddCustomizeBalanceComponent implements OnInit {
         reason: c.get('reason')?.value || ''
         }))
       };
-      console.log(payload)
+      // console.log(payload)
        this.apiService.postData(`${environment.live_url}/${environment.all_emp_custom_balance}/`, payload).subscribe(
           (res: any) => {
-            console.log(res);
+            // console.log(res);
             this.apiService.showSuccess(res['message']);
              this.dialogRef.close({data:'refresh'});
           },

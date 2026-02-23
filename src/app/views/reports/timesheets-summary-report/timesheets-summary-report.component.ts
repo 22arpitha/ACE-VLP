@@ -395,7 +395,10 @@ export class TimesheetsSummaryReportComponent implements OnInit {
   public viewtimesheetDetails(item:any){
         this.dialog.open(JobTimeSheetDetailsPopupComponent, {
         panelClass: 'custom-details-dialog',
-        data: { 'job_id': item?.id,'job_name':item?.job_name,'report_type':'timesheet-summary-report','download_api':environment.vlp_timesheets,'download':true,'showCsv':true,}
+        data: { 'job_id': item?.id,'job_name':item?.job_name,'report_type':'timesheet-summary-report',
+          'download_api':environment.vlp_timesheets,'download':true,'showCsv':true, 
+          dates: { start_date: this.time?.start_date,end_date: this.time?.end_date }
+        }
       });
       }
   
@@ -460,7 +463,7 @@ export class TimesheetsSummaryReportComponent implements OnInit {
         this.formattedData = res.results?.map((item: any, i: number) => ({
           sl: (page - 1) * pageSize + i + 1,
           ...item,
-          is_primary:item?.employees?.find((emp: any) => emp?.is_primary === true)?.employee_name || '',
+          // is_primary:item?.employees?.find((emp: any) => emp?.is_primary === true)?.employee_name || '',
         }));
           this.tableConfig = {
               columns: tableColumns?.map(col => {

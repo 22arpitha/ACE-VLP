@@ -66,7 +66,7 @@
               <span class="fw-bold ps-3"><u>Upcoming Holidays</u></span>
             </div>
             <div class="row p-3" *ngFor="let i of upcoming_holidays">
-              <div class="col-4 fw-bold">{{i.date}}</div>
+              <div class="col-4 fw-bold">{{i.date | dateFormater}}</div>
               <div class="col-6 fw-bold">{{i.name}}</div>
             </div>
           </div>
@@ -93,7 +93,7 @@
 
             <!-- Data Rows -->
             <div class="row py-2 my-1" *ngFor="let i of upcomingPendingLeaves">
-              <div class="col-sm-12 col-md-6 col-lg-4">{{i.from_date}} - {{i.to_date}}</div>
+              <div class="col-sm-12 col-md-6 col-lg-4">{{i.from_date | dateFormater}} - {{i.to_date | dateFormater}}</div>
               <div class="col-sm-12 col-md-6 col-lg-4">{{i.message}}</div>
               <div class="col-sm-12 col-md-6 col-lg-4">{{i.leave_type_name}}</div>
             </div>

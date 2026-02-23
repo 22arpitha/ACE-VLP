@@ -7,12 +7,12 @@
             <h4>Leave Request Details</h4>
           </div>
           <div class="col-sm-4 col-md-4 col-lg-7 text-end">
-            <span style="background: #ffface; color: #978419; font-size: 14px" *ngIf="leave_data.status === 'Pending'"
-              class="rounded p-2">{{ leave_data.status | uppercase }}</span>
-            <span *ngIf="leave_data.status === 'rejected'" style="font-size: 14px;background:#fee2e2; color: #b91c1c;"
-              class="rounded p-2">{{ leave_data.status | uppercase }}</span>
-            <span *ngIf="leave_data.status === 'approved'" style="font-size: 14px ;background: #dcfce7; color: #15803d;"
-              class="rounded p-2">{{ leave_data.status | uppercase }}</span>
+            <span style="background: #ffface; color: #978419; font-size: 14px" *ngIf="leave_data?.status === 'Pending'"
+              class="rounded p-2">{{ leave_data?.status | uppercase }}</span>
+            <span *ngIf="leave_data?.status === 'rejected'" style="font-size: 14px;background:#fee2e2; color: #b91c1c;"
+              class="rounded p-2">{{ leave_data?.status | uppercase }}</span>
+            <span *ngIf="leave_data?.status === 'approved'" style="font-size: 14px ;background: #dcfce7; color: #15803d;"
+              class="rounded p-2">{{ leave_data?.status | uppercase }}</span>
           </div>
         </div>
       </div>
@@ -21,50 +21,50 @@
         <div class="row mx-0">
           <div class="col-sm-12 col-md-6 col-lg-6 my-2">
             <h4 class="label-name">Employee Id</h4>
-            <p>#{{ leave_data.employee }}</p>
+            <p>#{{ leave_data?.employee }}</p>
           </div>
           <div class="col-sm-12 col-md-6 col-lg-6 my-2">
             <h4 class="label-name">Leave Type</h4>
-            <p>{{ leave_data.leave_type_name }}</p>
+            <p>{{ leave_data?.leave_type_name }}</p>
           </div>
           <div class="col-sm-12 col-md-6 col-lg-6 my-2">
             <h4 class="label-name">From</h4>
-            <p>{{ leave_data.from_date | dateFormater }} ({{leave_data?.from_session}})</p>
+            <p>{{ leave_data?.from_date | dateFormater }} ({{leave_data?.from_session}})</p>
           </div>
           <div class="col-sm-12 col-md-6 col-lg-6 my-2">
             <h4 class="label-name">To</h4>
-            <p>{{ leave_data.to_date | dateFormater }} ({{leave_data?.to_session}})</p>
+            <p>{{ leave_data?.to_date | dateFormater }} ({{leave_data?.to_session}})</p>
           </div>
           <div class="col-sm-12 col-md-6 col-lg-6 my-2">
             <h4 class="label-name">Days</h4>
-            <p>{{ leave_data.number_of_leaves_applying_for}}</p>
+            <p>{{ leave_data?.number_of_leaves_applying_for}}</p>
           </div>
           <div class="col-sm-12 col-md-6 col-lg-6 my-2">
             <h4 class="label-name">Applying To</h4>
-            <p>{{ leave_data.reporting_to_name }}</p>
+            <p>{{ leave_data?.reporting_to_name }}</p>
           </div>
           <div class="col-sm-12 col-md-6 col-lg-6 my-2" *ngIf="leave_data?.cc">
             <h4 class="label-name">CC To</h4>
-            <p *ngIf="leave_data?.cc.length>0">{{ leave_data?.cc }}</p>
+            <p *ngIf="leave_data?.cc.length>0" style="word-wrap: break-word;">{{ leave_data?.cc }}</p>
           </div>
           <div class="col-sm-12 col-md-6 col-lg-6 my-2">
             <h4 class="label-name">Date of request</h4>
-            <p>{{ leave_data.created_datetime | dateFormater }}</p>
+            <p>{{ leave_data?.created_datetime | dateFormater }}</p>
           </div>
           <div class="col-sm-12 col-md-6 col-lg-6 my-2">
             <h4 class="label-name">Reason</h4>
-            <p>{{ leave_data.message }}</p>
+            <p>{{ leave_data?.message }}</p>
           </div>
           <div class="col-sm-12 col-md-6 col-lg-6 my-2" *ngIf="leave_data?.attachment">
            <h4 class="label-name">Attachment</h4>
            <img src="../../../assets/images/eye icon.svg" class="icon-image" container="body"
-                    ngbTooltip="View" type="button" (click)="openInNewTab(leave_data.attachment)" /> 
-            <!-- <button class="btn"  (click)="openInNewTab(leave_data.attachment)">View</button> -->
+                    ngbTooltip="View" type="button" (click)="openInNewTab(leave_data?.attachment)" /> 
+            <!-- <button class="btn"  (click)="openInNewTab(leave_data?.attachment)">View</button> -->
           </div>
 
           <div class="col-sm-12 col-md-6 col-lg-6 my-2" *ngIf="leave_data?.rejected_reason">
             <h4 class="label-name">Reason of Rejection</h4>
-            <p>{{ leave_data.rejected_reason }}</p>
+            <p>{{ leave_data?.rejected_reason }}</p>
           </div>
 
           <div class="col-12" *ngIf="displayButton">
@@ -89,15 +89,15 @@
               </mat-hint>
             </mat-form-field>
           </div>
-          <div class="col-12 my-4 px-2 d-flex justify-content-end" *ngIf="displayButton">
+          <div class="col-12 my-4 px-2 d-flex justify-content-end" >
             <div>
               <button mat-button class="cancel-button mat-btn-s me-2" type="button" mat-dialog-close>
                 Close
               </button>
-              <button mat-raised-button class="proceedbtn mat-btn-s me-2" type="button" (click)="approve(leave_data)">
+              <button *ngIf="displayButton" mat-raised-button class="proceedbtn mat-btn-s me-2" type="button" (click)="approve(leave_data)">
                 Approve
               </button>
-              <button mat-button class="delete-item-button mat-btn-s" type="button" (click)="onRejectClick(leave_data)">
+              <button *ngIf="displayButton" mat-button class="delete-item-button mat-btn-s" type="button" (click)="onRejectClick(leave_data)">
                 Reject
               </button>
             </div>

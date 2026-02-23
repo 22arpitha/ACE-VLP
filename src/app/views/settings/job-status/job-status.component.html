@@ -100,8 +100,8 @@
               </th>
               <th>
                 Status Group
-                <i *ngIf="!arrowState['status_group_name']" (click)="sort('ascending', 'status_group_name')" class="bi bi-arrow-down"></i>
-                <i *ngIf="arrowState['status_group_name']" (click)="sort('descending', 'status_group_name')" class="bi bi-arrow-up"></i>               
+                <i *ngIf="!arrowState['status_group__group_name']" (click)="sort('ascending', 'status_group__group_name')" class="bi bi-arrow-down"></i>
+                <i *ngIf="arrowState['status_group__group_name']" (click)="sort('descending', 'status_group__group_name')" class="bi bi-arrow-up"></i>               
               </th>
               <th>Job Status
                 <i *ngIf="!arrowState['status_name']" (click)="sort('ascending', 'status_name')" class="bi bi-arrow-down"></i>

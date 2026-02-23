@@ -1,6 +1,6 @@
 <!-- Input field with the calendar icon -->
 <mat-form-field appearance="outline" class="w-100">
-   <mat-label>Period <b class="r-star">*</b></mat-label>
+   <mat-label>Period <b class="static-star">*</b></mat-label>
   <input matInput [formControl]="control" placeholder="{{ mode === 'Quarterly' ? 'Qx YYYY' : mode === 'Monthly' ? 'Mon YYYY' : 'YYYY' }}" readonly [matMenuTriggerFor]="pickerMenu">
   <button
   mat-icon-button

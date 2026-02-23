@@ -1,0 +1,56 @@
+<div class="row gx-0 mx-0">
+    <div class="col-12">
+        <div class="row gx-0 mx-0">
+            <h4>Cancel Leave Request</h4>
+        </div>
+        <form [formGroup]="cancelLeaveform" class="worked-session-form">
+            <div formArrayName="date_ranges">
+                <div class="session-row" *ngFor="let group of dateRanges.controls; let i=index" [formGroupName]="i">
+                    <div class="row gx-0 mx-0 p-2">
+                        <!-- checkbox -->
+                        <div class="col-sm-12 col-md-2 col-lg-2 align-content-center text-center">
+                            <mat-checkbox formControlName="selected" class="check"></mat-checkbox>
+                        </div>
+                        <!-- date -->
+                        <div class="col-sm-12 col-md-3 col-lg-3 date align-content-center">
+                            {{ group.get('date')?.value | dateFormater }}
+                        </div>
+                        <!-- session 1 -->
+                        <div class="col-sm-12 col-md-4 col-lg-4">
+                            <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+                                <mat-label>Sessions</mat-label>
+                                <mat-select formControlName="sessions" multiple>
+                                    <mat-option *ngFor="let session of group.get('availableSessions')?.value" [value]="session">
+                                        {{ session | titlecase }}
+                                    </mat-option>
+                                </mat-select>
+
+                            </mat-form-field>
+
+                        </div>
+                        <!-- session 2 -->
+                        <!-- <div class="col-sm-12 col-md-3 col-lg-3">
+                            <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+                                <mat-label>Session 2</mat-label>
+                                <mat-select formControlName="session2">
+                                    <mat-option *ngFor="let s of sessions" [value]="s.value">
+                                        {{ s.label }}
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </div> -->
+                    </div>
+                </div>
+            </div>
+        </form>
+        <div class="row p-2 mx-0">
+            <div class="action-btn d-flex gap-1 my-1 px-0">
+                <button mat-button class="cancel-button mat-btn-s" type="button" mat-dialog-close>
+                    Colse</button>
+                <button mat-raised-button class="proceedbtn mat-btn-s" [disabled]="!hasAnySelected" (click)="submit()">
+                    Request Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

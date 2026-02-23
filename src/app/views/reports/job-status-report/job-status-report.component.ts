@@ -514,13 +514,13 @@ jobStatusList(status:any){
 }
 // Send Email Action Button event
 public sendEamils(){
-   let finalQuery = `?send_mail=True&file-type=pdf&report-type=job-status-report`;
-   finalQuery += this.client_id ? `&client=${this.client_id}` : '';
+   let finalQuery = `?send_mail=True&file-type=csv&report-type=job-status-report`;
+   finalQuery += this.client_id ? `&client-ids=[${this.client_id}]` : '';
    this.jobStatusList(this.tabStatus);
    finalQuery += `&job-status=[${this.statusList}]`;
     // Yet to integrate
       if(this.client_id){
-              this.api.getData(`${environment.live_url}/${environment.jobs}/${finalQuery}`).subscribe((respData: any) => {
+              this.api.getData(`${environment.live_url}/${environment.all_jobs}/${finalQuery}`).subscribe((respData: any) => {
                   if (respData) {
               this.api.showSuccess(respData['message']);
     //           this.resetValues();
@@ -589,7 +589,8 @@ private updateFilterColumn(key: string, cache: any) {
     let finalQuery = `?${search}job-status=[${this.statusList}]&report-type=job-status-report&file-type=${fileType}&download=true`;
     finalQuery += this.client_id ? `&client=${this.client_id}` : '';
        if(this.userRole ==='Manager' && !this.client_id){
-          finalQuery += `&manager-ids=[${this.user_id}]`;
+          // finalQuery += `&manager-ids=[${this.user_id}]`;
+           finalQuery += `&employee-id=${this.user_id}`;
         } else if ((this.userRole !='Manager' && this.userRole !='Admin')  && !this.client_id){
           finalQuery += `&employee-id=${this.user_id}`;
         }
@@ -632,40 +633,14 @@ async getTableData(params?: { page?: number; pageSize?: number; searchTerm?: str
     this.jobStatusList(this.tabStatus);
        finalQuery = query + `&job-status=[${this.statusList}]`;
        if(this.userRole ==='Manager' && !this.client_id){
-          finalQuery += `&manager-ids=[${this.user_id}]`;
+          // finalQuery += `&manager-ids=[${this.user_id}]`;
+          finalQuery += `&employee-id=${this.user_id}`;
         } else if ((this.userRole !='Manager' && this.userRole !='Admin')  && !this.client_id){
           finalQuery += `&employee-id=${this.user_id}`;
         }
         if( params?.prime_emp?.length>0){
           finalQuery += `&employee-ids=[${params?.prime_emp}]`;
         }
-
-      //  let emp_ids:any= [];
-      //  if(this.userRole!='Admin' && params?.prime_emp?.length>0){
-      //   emp_ids = [...params?.prime_emp, Number(this.user_id)];
-      //  } else  if(this.userRole!='Admin'){
-      //    emp_ids = [Number(this.user_id)];
-      //  } else if(this.userRole==='Admin' && params?.prime_emp?.length>0){
-      //   emp_ids = [params?.prime_emp];
-      //  }
-
-      //  let emp_query
-      //  if(this.client_id && this.userRole!='Admin' && !params?.prime_emp){
-      //   emp_query = ''
-      //  } else if(this.client_id && this.userRole!='Admin' && params?.prime_emp.length>0){
-      //   if(this.userRole==='Manager'){
-      //     emp_ids = [params?.prime_emp];
-      //     emp_query = `&employee-ids=[${emp_ids}]`;
-      //   } 
-      //  } else if(this.userRole==='Admin' && params?.prime_emp?.length>0){
-      //     emp_query = `&employee-ids=[${emp_ids}]`;
-      //  } else if(this.userRole!='Admin' && !this.client_id){
-      //     emp_query = `&employee-ids=[${emp_ids}]`
-      //  }
-      //  finalQuery += emp_query || '';
-      //  if(emp_query){
-      //    finalQuery += emp_query;
-      //  }
       //  finalQuery += (this.userRole ==='Admin' || (this.userRole !='Admin' && this.client_id)) ? '':`&employee-ids=[${emp_ids}]`;
        finalQuery += this.client_id ? `&client=${this.client_id}` : '';
        finalQuery += `&report-type=job-status-report`;
@@ -694,9 +669,9 @@ async getTableData(params?: { page?: number; pageSize?: number; searchTerm?: str
       this.formattedData = res?.results?.map((item: any, i: number) => ({
         sl: (page - 1) * pageSize + i + 1,
         ...item,
-         is_primary:item?.unassigned === true && item?.employees?.length === 0
-            ? 'Unassigned'
-            : item?.employees?.find((emp: any) => emp?.is_primary === true)?.employee_name || '',
+        //  is_primary:item?.unassigned === true && item?.employees?.length === 0
+        //     ? 'Unassigned'
+        //     : item?.employees?.find((emp: any) => emp?.is_primary === true)?.employee_name || '',
         //  is_primary:item?.employees?.find((emp: any) => emp?.is_primary === true)?.employee_name || '',
         //  diff_days:item.tat_days
       }));

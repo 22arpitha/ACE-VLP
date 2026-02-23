@@ -397,7 +397,7 @@ export class CreateUpdateEmployeeComponent implements CanComponentDeactivate, On
         this.router.navigate(['/settings/all-employee']);
       }
     }, (error => {
-      this.apiService.showError(error?.error?.detail)
+      this.apiService.showError(error?.error?.detail || error?.error?.error)
     }))
   }
 

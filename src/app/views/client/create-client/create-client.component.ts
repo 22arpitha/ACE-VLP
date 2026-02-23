@@ -186,6 +186,7 @@ export class CreateClientComponent implements CanComponentDeactivate, OnInit, On
       contact_details: this.fb.array([this.createContactGroup()], this.duplicateNameValidator),
       employee_details: this.fb.array([]),
       allow_sending_status_report_to_client: [{value:false,disable:!this.shouldDisableFileds}],
+      allow_sending_public_holiday_information:[{value:false,disable:!this.shouldDisableFileds}],
       practice_notes: [''],
     });
   }
@@ -302,6 +303,7 @@ export class CreateClientComponent implements CanComponentDeactivate, OnInit, On
         service_end_date: respData?.service_end_date ? new Date(respData?.service_end_date)?.toISOString() : null,
         source: respData?.source_id,
         allow_sending_status_report_to_client: respData?.allow_sending_status_report_to_client,
+        allow_sending_public_holiday_information:respData?.allow_sending_public_holiday_information,
         practice_notes: respData?.practice_notes,
       });
       this.clientFormGroup?.get('client_file')?.setErrors(null);
@@ -694,10 +696,13 @@ onClientFileDropped(event: DragEvent) {
     this.formData.set("country", this.clientFormGroup?.get('country')?.value);
     this.formData.set("address", this.clientFormGroup?.get('address')?.value);
     this.formData.set("service_start_date", updatedStartDateValue);
-    this.formData.set("service_end_date", updatedEndDateValue || null);
+    if(updatedEndDateValue){
+      this.formData.set("service_end_date", updatedEndDateValue || null);
+    }
     this.formData.set("source", this.clientFormGroup?.get('source')?.value);
     this.formData.set("practice_notes", this.clientFormGroup?.get('practice_notes')?.value || '');
     this.formData.set("allow_sending_status_report_to_client", this.clientFormGroup?.get('allow_sending_status_report_to_client')?.value ? 'true' : 'false');
+    this.formData.set("allow_sending_public_holiday_information", this.clientFormGroup?.get('allow_sending_public_holiday_information')?.value ? 'true' : 'false');
     const result = this.clientFormGroup?.get('contact_details')?.getRawValue().map((item: any) => {
       return {
         ...item,

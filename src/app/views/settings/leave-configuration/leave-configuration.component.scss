@@ -44,3 +44,10 @@
     background-color: #cccccc !important;
     color: #666666;
 }
+
+.days{
+  white-space: nowrap;
+}
+::ng-deep .days .mat-form-field-flex {
+  width: 50px !important;
+}

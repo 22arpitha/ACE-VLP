@@ -22,7 +22,7 @@ export interface IdNamePair {
 })
 export class CompensatoryRequestComponent implements OnInit {
   @ViewChild('employeeFilter') employeeFilter!: GenericTableFilterComponent;
-  @ViewChild('employeeFilter') leaveStatusFilter!: GenericTableFilterComponent;
+  @ViewChild('leaveStatusFilter') leaveStatusFilter!: GenericTableFilterComponent;
   page = 1;
   count = 0;
   tableSize = 50;
@@ -57,7 +57,7 @@ export class CompensatoryRequestComponent implements OnInit {
 
   ngOnInit(): void {
     this.getLeaveStatus();
-    this.getAllCompOffData();
+    // this.getAllCompOffData();
   }
   filters: {status_name: IdNamePair[],employees:IdNamePair[] } = {
     status_name: [],
@@ -71,8 +71,18 @@ export class CompensatoryRequestComponent implements OnInit {
           id: item.key,
           name: item.value
         }));
+        const pendingStatus = this.leaveStatus.find((x: any) => x.name === 'Pending');
+        if (pendingStatus) {
+          this.filters.status_name = [pendingStatus];
+          setTimeout(() => {
+            if (this.leaveStatusFilter) {
+              this.leaveStatusFilter.selectedOptions  = [pendingStatus];
+            }
+          });
+        }
+        this.getAllCompOffData();
       },
-      (error) => {
+      (error:any) => {
         console.log(error)
       }
     )
@@ -245,7 +255,7 @@ export class CompensatoryRequestComponent implements OnInit {
   openGrantCompOff() {
     const dialogRef = this.dialog.open(CompOffGrantComponent, {
        data: { employee: true},
-      panelClass: 'custom-details-dialog',
+       panelClass: 'leave-or-compoff-form-dialog',
       disableClose: true
     });
     dialogRef.afterClosed().subscribe((resp: any) => {
@@ -267,8 +277,8 @@ export class CompensatoryRequestComponent implements OnInit {
     this.filters.status_name = [];
     this.leaveStatus = []
     this.filters = {status_name: [],employees: []};
-    this.employeeFilter.clearSelection();
-    this.leaveStatusFilter.clearSelection();
+    // this.employeeFilter.clearSelection();
+    // this.leaveStatusFilter.clearSelection();
     this.getLeaveStatus();
     // this.getAllCompOffData();
   }

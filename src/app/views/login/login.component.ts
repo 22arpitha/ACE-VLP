@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Validators, FormBuilder, FormGroup } from '@angular/forms';
 import { ApiserviceService } from '../../service/apiservice.service';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { jwtDecode } from "jwt-decode";
 // import { WebsocketService } from '../../service/websocket.service';
 // import { EmployeeStatusWebsocketService } from '../../service/employee-status-websocket.service';
@@ -16,7 +16,7 @@ export class LoginComponent implements OnInit {
   loginForm: FormGroup;
   permission: any;
   showFieldset: boolean = false;
-  constructor(private builder: FormBuilder, private api: ApiserviceService, private router: Router,
+  constructor(private builder: FormBuilder, private api: ApiserviceService, private router: Router,private route: ActivatedRoute
     // private websocketService:WebsocketService, private employeeSocket:EmployeeStatusWebsocketService,
     // private useraccessSocket:UserAccessWebsocketService
   ) { }
@@ -28,8 +28,18 @@ export class LoginComponent implements OnInit {
   passwordType = "password";
   minValue = 0.01;
   ngOnInit(): void {
+    const sessionToken = sessionStorage.getItem('token');
+    const localToken = localStorage.getItem('token');
+    const forceUser = this.route.snapshot.queryParamMap.get('forceUser');
+    if (!forceUser && !sessionToken && localToken) {
+      sessionStorage.setItem('token', localToken);
+
+      const decoded: any = jwtDecode(localToken);
+      sessionStorage.setItem('user_id', decoded.user_id);
+      // this.getUserAccess(decoded.user_id);
+    }
     this.getWelomeMessage();
-    sessionStorage.clear();
+    // sessionStorage.clear();
     this.loginForm = this.builder.group({
       // username: ['', [Validators.required, Validators.email]],
       // password: ['', [Validators.required]],
@@ -79,9 +89,17 @@ export class LoginComponent implements OnInit {
         const decoded:any = jwtDecode(token);
         // console.log(decoded)
         sessionStorage.setItem('token', response['token']),
+        localStorage.setItem('token', response['token']),
         sessionStorage.setItem('logged_count', response['logged_in_time']);
         sessionStorage.setItem('user_id',decoded.user_id )
-        
+
+        const forceUser = this.route.snapshot.queryParamMap.get('forceUser');
+        if (forceUser && forceUser != decoded.user_id) {
+          this.api.showError('Please login with the correct account');
+          sessionStorage.clear();
+          localStorage.removeItem('token');
+          return;
+        }
         this.api.getData(`${environment.live_url}/${environment.user_access}/${decoded.user_id}/`).subscribe(
           (data:any)=>{
             // console.log('user access',data)
@@ -92,6 +110,13 @@ export class LoginComponent implements OnInit {
               sessionStorage.setItem('user_role_name', data.user_role);
             }
             sessionStorage.setItem('user_name', data.user_info[0].first_name);
+            const returnUrl = this.route.snapshot.queryParams['returnUrl'] || null;
+            //  If user came from email link, go there first
+            if (returnUrl) {
+              this.router.navigateByUrl(returnUrl);
+              this.api.showSuccess('Login successful!');
+              return;
+            }
             let access = data.access_list.find(data=>data.name==='Jobs')
             // console.log(access)
             if(data.access_list.length!=0){
@@ -102,29 +127,6 @@ export class LoginComponent implements OnInit {
             }
             this.api.showSuccess('Login successful!');
             }
-            // if(access){
-            //   this.router.navigate([access.url])
-            // } else{
-            //   this.router.navigate([data.access_list[0].url || data.access_list[0].children[0].url])
-            // }
-            // this.router.navigate(['settings/country']) // remove this line once the user access api  is done
-        //     sessionStorage.setItem('organization_id', data.organization_id);
-        //     sessionStorage.setItem('designation', data.designation);
-        //       let permissionArr: any = []
-        //       permissionArr = JSON.parse(sessionStorage.getItem('permissionArr'));
-        //       if(data.access_list.length!=0){
-        //         this.router.navigate([data.access_list[0].url || data.access_list[0].children[0].url]);
-        //       } else{
-        //         this.router.navigate(['profile'])
-        //       }
-        //       if(sessionStorage.getItem('user_role_name')!='SuperAdmin'){
-        //         this.websocketService.connectWebSocket();
-        //       }
-        //       if(sessionStorage.getItem('user_role_name')==='Employee'){
-        //         this.employeeSocket.connectWebSocket();
-        //         this.useraccessSocket.connectWebSocket();
-        //       }
-        //       this.api.showSuccess('Login successful!');
           },
           (error:any)=>{
            console.log('error',error.error.detail)
@@ -143,6 +145,23 @@ export class LoginComponent implements OnInit {
 
   }
 
+  getUserAccess(user_id:any){
+    this.api.getData(`${environment.live_url}/${environment.user_access}/${user_id}/`).subscribe(
+          (data:any)=>{
+            console.log('rrrrrrrrrr access',data)
+            if (data.user_role == 'Employee') {
+              sessionStorage.setItem('user_role_name', data.designation);
+              sessionStorage.setItem('designation', data.sub_designation);
+            } else {
+              sessionStorage.setItem('user_role_name', data.user_role);
+            }
+            sessionStorage.setItem('user_name', data.user_info[0].first_name);
+          },
+          (error:any)=>{
+           console.log('error',error.error.detail)
+          }
+        )
+  }
 
   showPassword() {
     this.eyeState = !this.eyeState

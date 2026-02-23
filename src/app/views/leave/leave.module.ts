@@ -28,6 +28,8 @@ import { WorkFromHomeComponent } from './work-from-home/work-from-home.component
 import { WfhRequestsComponent } from './wfh-requests/wfh-requests.component';
 import { ViewWfhRequestComponent } from './view-wfh-request/view-wfh-request.component';
 import { MatDialogModule } from '@angular/material/dialog';
+import { UserCompOffListComponent } from './user-comp-off-list/user-comp-off-list.component';
+import { CancelLeaveRequestComponent } from './cancel-leave-request/cancel-leave-request.component';
 @NgModule({
   declarations: [
     WorkCalendarComponent,
@@ -50,6 +52,8 @@ import { MatDialogModule } from '@angular/material/dialog';
     WorkFromHomeComponent,
     WfhRequestsComponent,
     ViewWfhRequestComponent,
+    UserCompOffListComponent,
+    CancelLeaveRequestComponent,
   ],
   imports: [
     CommonModule,

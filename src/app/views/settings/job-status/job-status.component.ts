@@ -36,7 +36,7 @@ export class JobStatusComponent implements CanComponentDeactivate, OnInit,OnDest
   directionValue: string = '';
   arrowState: { [key: string]: boolean } = {
     status_name: false,
-    status_group_name:false,
+    status_group__group_name:false,
     percentage_of_completion:false,
 
   };

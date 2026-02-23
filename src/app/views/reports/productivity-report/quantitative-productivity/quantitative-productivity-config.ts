@@ -5,7 +5,7 @@ export const tableColumns = [
     {
       label: 'Client',
       key: 'client_name',
-      sortKey: 'client__client_name',
+      sortKey: 'client_name',
       sortable: true
     },
     {
@@ -22,19 +22,19 @@ export const tableColumns = [
     },
     {
       label: 'Job Status',
-      key: 'job_status__status_name',
-      sortKey: 'job_status__status_name',
+      key: 'job_status_name',
+      sortKey: 'job_status_name',
       sortable: true
     },
     {
       label: 'Task',
       key: 'task',
       sortKey:'task',
-      sortable: true
+      sortable: false
     },
-   { label: 'Est. Hrs', key: 'estimated_time', sortKey: 'estimated_time', sortable: true },
-  { label: 'Act. Hrs', key: 'actual_time', sortKey: 'actual_time', sortable: true},
-  { label: 'Rem./Ex. Hrs', key: 'remaining_time', sortKey: 'remaining_time', sortable: true },
+   { label: 'Est. Hrs', key: 'estimated_hours', sortKey: 'total_estimated_minutes', sortable: true },
+  { label: 'Act. Hrs', key: 'actual_hours', sortKey: 'total_actual_minutes', sortable: true},
+  { label: 'Rem./Ex. Hrs', key: 'remaining_hours', sortKey: 'remaining_minutes', sortable: true },
   {
     label: 'TAT (Days',
     key: 'diff_days',

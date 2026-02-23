@@ -139,6 +139,14 @@ export class WorkCultureAndWorkEthicsComponent implements OnInit,OnChanges {
         let query ='';
         if (this.dropdwonFilterData) {
           const params = [];
+          const isDropdownSelected =
+            !!(
+              this.dropdwonFilterData.employee_id &&
+              this.dropdwonFilterData.periodicity &&
+              this.dropdwonFilterData.period
+            );
+
+          params.push(`is_dropdown_selected=${isDropdownSelected ? 'True' : 'False'}`);
           if (this.dropdwonFilterData.periodicity) {
             params.push(`periodicity=${this.dropdwonFilterData.periodicity}`);
           }

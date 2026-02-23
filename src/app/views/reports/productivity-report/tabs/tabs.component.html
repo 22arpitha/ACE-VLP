@@ -7,10 +7,12 @@
     <app-periodicity (selectPeriodicity)="selectedPeriodicity($event)" [defaultSelection]="ondefaultSelection" [resetFilterField]="resetFilter"></app-periodicity>
   </div>
   <div class="col-sm-12 col-md-4 col-lg-2">
-    <app-period (selectPeriod)="selectedPeriod($event)" [mode]="modeName" [defaultSelection]="ondefaultSelection" [resetFilterField]="resetFilter"></app-period>
+    <app-period (selectPeriod)="selectedPeriod($event)" [mode]="modeName" [defaultSelection]="ondefaultSelection" [resetFilterField]="resetFilter"  [resetOnPeriodicityChange]="resetPeriodOnPeriodicityChange"></app-period>
   </div>
   <div class="col-sm-12 col-md-6 col-lg-4 d-flex justify-content-evenly">
-    <button mat-raised-button class="proceedbtn mat-btn-s mr-2" type="button" (click)="applySearch()" [disabled]="(employee && !periodicityId && !period) || (!employee && !periodicityId && !period)">Search</button>
+    <!-- [disabled]="(employee && !periodicityId && !period) || (!employee && !periodicityId && !period)" -->
+
+    <button mat-raised-button class="proceedbtn mat-btn-s mr-2" type="button" (click)="applySearch()" [disabled]=" !periodicityId || !period || !period.year || !period.month_list">Search</button>
     <button mat-raised-button class="cancel-button mat-btn-s" type="button" (click)="resetSearch()" [disabled]="resetBtnDisable">
       Reset</button>
     <button *ngIf="url!='/reports/non-productive-hours'" mat-raised-button class="proceedbtn mat-btn-s" type="button" (click)="downloadExcel()">Export to Excel</button>

@@ -6,12 +6,12 @@ export const tableColumns = [
     {
       label: 'Employee',
       key: 'full_name',
-      sortable: true
+      sortable: false
     },
     {
       label: 'Month',
       key: 'month',
-      sortable: true
+      sortable: false
     },
     {
       label: 'Upload Assessment File',

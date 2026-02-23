@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output, ChangeDetectorRef, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, ChangeDetectorRef, ViewChild, SimpleChanges, OnChanges } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { MatMenuTrigger } from '@angular/material/menu';
 
@@ -8,12 +8,13 @@ import { MatMenuTrigger } from '@angular/material/menu';
   styleUrls: ['./quarter-month-year-picker.component.scss']
 })
 
-export class QuarterMonthYearPickerComponent implements OnInit {
+export class QuarterMonthYearPickerComponent implements OnInit,OnChanges {
   @Input() mode: 'Monthly' | 'Quarterly' | 'Yearly' = 'Monthly';
   @Input() defaultSelectPreviousMonth: boolean = false;
   @Input() control = new FormControl('');
   @Output() valueChange = new EventEmitter<{ year: string; month_list: string }>();
   @ViewChild('trigger') menuTrigger!: MatMenuTrigger;
+  @Input() resetOnPeriodicityChange: boolean = false;
   showSelection = true;
   year: number = new Date().getFullYear();
   yearDefault = new Date().getFullYear();
@@ -21,11 +22,11 @@ export class QuarterMonthYearPickerComponent implements OnInit {
   yearRangeStart: number;
   selectedMonth: string | null = null;
   selectedQuarter: string | null = null;
-
   months: string[] = [
     'January', 'February', 'March', 'April', 'May', 'June',
     'July', 'August', 'September', 'October', 'November', 'December'
   ];
+
 
   quarters: { value: string; months: string[] }[] = [
     { value: 'Q1', months: ['January', 'February', 'March'] },
@@ -35,11 +36,22 @@ export class QuarterMonthYearPickerComponent implements OnInit {
   ];
 
   constructor(private cdr: ChangeDetectorRef) {}
+  ngOnChanges(changes: SimpleChanges): void {
+  if (changes['resetOnPeriodicityChange']?.currentValue === true) {
+    this.resetInternalState();
+  }
+}
 
   ngOnInit(): void {
+    this.months = [
+    'January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December'
+  ];
     this.yearRangeStart = this.yearDefault - (this.yearDefault % 10);
+    this.generateYearList();
 
-    if (this.defaultSelectPreviousMonth) {
+    // ✅ default ONLY on first load
+    if (this.defaultSelectPreviousMonth && this.mode === 'Monthly') {
       const now = new Date();
       const prevMonthDate = new Date(now.getFullYear(), now.getMonth() - 1);
 
@@ -47,25 +59,70 @@ export class QuarterMonthYearPickerComponent implements OnInit {
       const prevYear = prevMonthDate.getFullYear();
 
       this.year = prevYear;
-
-      if (this.mode === 'Monthly') {
-        this.selectedMonth = prevMonth;
-        this.emitValue(prevMonth);
-      } else if (this.mode === 'Quarterly') {
-        const quarter = this.quarters.find(q => q.months.includes(prevMonth));
-        if (quarter) {
-          this.selectedQuarter = quarter.value;
-          this.emitValue(quarter.value);
-        }
-      } else if (this.mode === 'Yearly') {
-        this.emitValue(prevYear.toString());
-      }
+      this.selectedMonth = prevMonth;
+      this.emitValue(prevMonth);
     }
 
-    this.control.valueChanges.subscribe((val: any) => {
-      this.parseInput(val);
+    this.control.valueChanges.subscribe(val => this.parseInput(val));
+  }
+
+
+  // ngOnInit(): void {
+  //   this.yearRangeStart = this.yearDefault - (this.yearDefault % 10);
+
+  //   if (this.defaultSelectPreviousMonth) {
+  //     const now = new Date();
+  //     const prevMonthDate = new Date(now.getFullYear(), now.getMonth() - 1);
+
+  //     const prevMonth = this.months[prevMonthDate.getMonth()];
+  //     const prevYear = prevMonthDate.getFullYear();
+
+  //     this.year = prevYear;
+
+  //     if (this.mode === 'Monthly') {
+  //       this.selectedMonth = prevMonth;
+  //       this.emitValue(prevMonth);
+  //     } else if (this.mode === 'Quarterly') {
+  //       const quarter = this.quarters.find(q => q.months.includes(prevMonth));
+  //       if (quarter) {
+  //         this.selectedQuarter = quarter.value;
+  //         this.emitValue(quarter.value);
+  //       }
+  //     } else if (this.mode === 'Yearly') {
+  //       this.emitValue(prevYear.toString());
+  //     }
+  //   }
+
+  //   this.control.valueChanges.subscribe((val: any) => {
+  //     this.parseInput(val);
+  //   });
+  //   this.generateYearList();
+  // }
+
+  private resetInternalState() {
+    this.selectedMonth = null;
+    this.selectedQuarter = null;
+    this.year = this.yearDefault;
+
+    this.control.setValue('', { emitEvent: false });
+
+    this.valueChange.emit({
+      year: '',
+      month_list: ''
     });
-    this.generateYearList();
+
+    this.cdr.detectChanges();
+  }
+
+  private applyMonthlyDefault() {
+    if (!this.defaultSelectPreviousMonth) return;
+    const now = new Date();
+    const prevMonthDate = new Date(now.getFullYear(), now.getMonth() - 1);
+    const prevMonth = this.months[prevMonthDate.getMonth()];
+    const prevYear = prevMonthDate.getFullYear();
+    this.year = prevYear;
+    this.selectedMonth = prevMonth;
+    this.emitValue(prevMonth);
   }
 
   parseInput(val: string) {

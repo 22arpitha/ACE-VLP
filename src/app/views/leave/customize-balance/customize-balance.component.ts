@@ -138,7 +138,7 @@ export class CustomizeBalanceComponent implements OnInit {
     sessionStorage.setItem('access-name', this.access_name?.name)
    const dialogRef = this.dialog.open(AddCustomizeBalanceComponent, {
       data: { edit: true, item:data },
-      panelClass: 'custom-details-dialog',
+      panelClass: 'customize-balance-dialog',
       disableClose: true
     });
     dialogRef.afterClosed().subscribe((resp: any) => {

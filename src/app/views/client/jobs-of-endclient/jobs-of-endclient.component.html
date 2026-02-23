@@ -49,9 +49,9 @@
 
               </th>
               <th scope="col">Employee
-                <i *ngIf="!arrowState['employee_name']" (click)="sort('ascending', 'employee_name')"
+                <i *ngIf="!arrowState['primary_employee_name']" (click)="sort('ascending', 'primary_employee_name')"
                   class="bi bi-arrow-down"></i>
-                <i *ngIf="arrowState['employee_name']" (click)="sort('descending', 'employee_name')"
+                <i *ngIf="arrowState['primary_employee_name']" (click)="sort('descending', 'primary_employee_name')"
                   class="bi bi-arrow-up"></i>
                 <button mat-icon-button [matMenuTriggerFor]="employeesFilterMenu" (menuOpened)="openFilter(employeeFilter)"
                   [ngClass]="filters.employees.length>=1 ? 'filterdColumn':''">
@@ -66,8 +66,8 @@
                 </mat-menu>
               </th>
               <th scope="col">Status
-                <i *ngIf="!arrowState['status']" (click)="sort('ascending', 'status')" class="bi bi-arrow-down"></i>
-                <i *ngIf="arrowState['status']" (click)="sort('descending', 'status')" class="bi bi-arrow-up"></i>
+                <i *ngIf="!arrowState['job_status__status_name']" (click)="sort('ascending', 'job_status__status_name')" class="bi bi-arrow-down"></i>
+                <i *ngIf="arrowState['job_status__status_name']" (click)="sort('descending', 'job_status__status_name')" class="bi bi-arrow-up"></i>
                 <button mat-icon-button [matMenuTriggerFor]="statusFilterMenu" (menuOpened)="openFilter(jobStatusFilter)"
                   [ngClass]="filters.status.length>=1 ? 'filterdColumn':''">
                   <span *ngIf="filters.status.length>=1">{{filters.status.length.toString().padStart(2, '0')}}</span>
@@ -116,7 +116,7 @@
                 <td>{{item.job_name}}</td>
                 <td>{{item.job_allocation_date | dateFormater}}</td>
                 <td>{{getEmployeeName(item?.employees) || '-'}}</td>
-                <td>{{item.job_status_name}}</td>
+                <td>{{item.job_status__status_name}}</td>
                 <td [ngStyle]="{ color: item?.status_date_color ? item?.status_date_color : 'black' }">
                   {{item.job_status_date | dateFormater}}</td>
                 <!-- <td>

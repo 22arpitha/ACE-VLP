@@ -21,4 +21,28 @@ export class CanDeactivateGuard implements CanDeactivate<CanComponentDeactivate>
   // If logout is not confirmed, proceed with canDeactivate() check
   return component.canDeactivate ? component.canDeactivate() : true;
   }
+
+//   canDeactivate(
+//   component: CanComponentDeactivate | null
+// ): Observable<boolean> | Promise<boolean> | boolean {
+
+//   // 1️⃣ If logout already confirmed → allow navigation
+//   if (this.logoutConfirmationService.getLogoutConfirmed()) {
+//     return true;
+//   }
+
+//   // 2️⃣ IMPORTANT: component may be null (topbar / refresh / redirect)
+//   if (!component) {
+//     return true;
+//   }
+
+//   // 3️⃣ Call canDeactivate only if it exists
+//   if (typeof component.canDeactivate === 'function') {
+//     return component.canDeactivate();
+//   }
+
+//   // 4️⃣ Default allow
+//   return true;
+// }
+
 }

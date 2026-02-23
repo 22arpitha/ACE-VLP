@@ -158,9 +158,18 @@ export class ResourceAvailabilityComponent implements OnInit {
     if (this.selectedPeriod) {
       this.filterQuery += `&leave_period=${this.selectedPeriod}`;
     }
-    if (this.filters.employees.length) {
-      this.filterQuery += `&employee-ids=[${this.ids(this.filters.employees)}]`;
+    const isDropdownSelected = this.userRole !== 'Admin' && this.filters.employees.length !== 0;
+    this.filterQuery += `&is_dropdown_selected=${isDropdownSelected}`;
+    let employeeIds = this.filters.employees.length ? this.ids(this.filters.employees): '';
+    if (this.userRole === 'Manager') {
+      employeeIds = employeeIds ? `${employeeIds},${this.user_id}`: `${this.user_id}`;
     }
+    if (employeeIds) {
+      this.filterQuery += `&employee-ids=[${employeeIds}]`;
+    }
+    // if (this.filters.employees.length) {
+    //   this.filterQuery += `&employee-ids=[${this.ids(this.filters.employees)}]`;
+    // }
     if (this.mainStartDate && this.mainEndDate) {
       let start_date = this.datePipe.transform(this.mainStartDate, 'yyyy-MM-dd');
       let end_date = this.datePipe.transform(this.mainEndDate, 'yyyy-MM-dd');

@@ -56,7 +56,7 @@ authToken:any;
 
     if (!skipUrl.includes(request.url)) {
       const authToken = sessionStorage.getItem('token');
-
+      // const authToken = localStorage.getItem('token');
       if (authToken) {
           request = request.clone({
               setHeaders: {

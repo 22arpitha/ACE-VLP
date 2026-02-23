@@ -413,7 +413,8 @@ private menuOpened = false;
     const baseList = (this.fetchOptions || this.stableFetchOptions)
       ? this.infiniteScrollOptions
       : this.filteredOptions;
-      const selectedItems = this.selectedOptions.map(sel => {
+      // console.log(baseList)
+      const selectedItems = this.selectedOptions?.map(sel => {
   return baseList.find(opt => opt.id === sel.id) ||
          this.options.find(opt => opt.id === sel.id) ||
          sel; // use stored {id, name}
@@ -426,7 +427,7 @@ private menuOpened = false;
     // });
 
     const combined = [...selectedItems, ...baseList.filter(opt =>
-      !this.selectedOptions.includes(opt.id)
+      !this.selectedOptions?.includes(opt.id)
     )];
 
     return Array.from(new Map(combined.map(opt => [opt.id, opt])).values());

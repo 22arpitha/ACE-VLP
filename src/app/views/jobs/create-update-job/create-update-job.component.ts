@@ -109,16 +109,7 @@ export class CreateUpdateJobComponent implements CanComponentDeactivate, OnInit,
     this.common_service.setTitle(this.BreadCrumbsTitle);
     this.user_role_name = sessionStorage.getItem('user_role_name');
     this.user_id = Number(sessionStorage.getItem('user_id'));
-    if (this.activeRoute.snapshot.paramMap.get('id')) {
-      // this.common_service.setTitle('Update ' + this.BreadCrumbsTitle)
-      this.job_id = this.activeRoute.snapshot.paramMap.get('id')
-      this.isEditItem = true;
-      this.getAllDropdownData();
-      this.getJobDetails(this.job_id);
-    } else {
-      this.common_service.setTitle('Create ' + this.BreadCrumbsTitle)
-      this.getAllDropdownData()
-    }
+    
   }
 
   ngOnInit(): void {
@@ -133,6 +124,15 @@ export class CreateUpdateJobComponent implements CanComponentDeactivate, OnInit,
       let unSavedChanges = isFormChanged || isInvalid;
       this.formErrorScrollService.setUnsavedChanges(unSavedChanges);
     });
+    if (this.activeRoute.snapshot.paramMap.get('id')) {
+      this.job_id = this.activeRoute.snapshot.paramMap.get('id')
+      this.isEditItem = true;
+      this.getAllDropdownData();
+      this.getJobDetails(this.job_id);
+    } else {
+      this.common_service.setTitle('Create ' + this.BreadCrumbsTitle)
+      this.getAllDropdownData()
+    }
   }
 
   ngOnDestroy(): void {
@@ -1493,6 +1493,8 @@ getUnassignedTooltip(): string {
 
 
 // new code=================================================================
+filteredClientOptions: any[] = [];
+
 pageSizeDropdown = 10;
 
 dropdownState = {
@@ -1566,7 +1568,23 @@ onSearch(key: string, text: string) {
   state.page = 1;
   state.list = [];
   this.fetchData(key, false);
+  // if (key === 'client') {
+  //   this.filteredClientOptions = state.list;
+  // }
 }
+// onClientAutoSelected(selectedName: string) {
+//   const selected = this.dropdownState.client.list.find(
+//     item => item.client_name === selectedName
+//   );
+
+//   if (selected) {
+//     // Patch ID into form (same as mat-select did)
+//     this.jobFormGroup.get('client')?.setValue(selected.id);
+
+//     // Keep your selected-at-top logic
+//     this.updateSelectedItems('client', [selected.id]);
+//   }
+// }
 
 // Clear search input
 clearSearchDropD(key: string) {

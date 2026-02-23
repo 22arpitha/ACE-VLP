@@ -1,7 +1,9 @@
 <div class="container-wrapper settings-main-content px-2">
-    <section class="comp-off-grant">
+    <section class="comp-off-grant"  [ngStyle]="{'padding': isPopup ? '0px' : '0px 20px'}" >
+        <!-- [ngStyle]="{'padding': isPopup ? '0px' : '0px 25px'}" -->
+
         <form [formGroup]="leaveApplyForm" class="bg-leave-details">
-            <div class="my-3">
+            <div class="my-3" *ngIf="isPopup">
                <h4>Comp Off Grant</h4>
            </div>
             <div class="row mx-0 my-0 mb-3 p-2">
@@ -34,16 +36,13 @@
                         </div>
                     </div>
                     <div class="row mx-0 my-0 p-0">
-                        <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0">
-                            <p><b>Leave Type</b></p>
-                        </div>
                         <div class="col-sm-12 col-md-4 col-lg-4 px-0 ">
                             <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
                                 <mat-label>Leave Type<b class="r-star">*</b></mat-label>
                                 <mat-select placeholder="Leave Type" autocomplete="off" panelClass="custom-select-panel"
                                     [disableOptionCentering]="true" formControlName="leave_type">
                                     <!-- (selectionChange)="onLeaveTypeChange($event)" -->
-                                    <mat-option *ngFor="let leave of allleavetypeList" [value]="leave.id">{{
+                                    <mat-option *ngFor="let leave of allleavetypeList" [value]="leave.id" selected>{{
                                         leave.leave_type_name }}</mat-option>
                                 </mat-select>
                                 <mat-error *ngIf="f['leave_type']?.invalid && f['leave_type']?.touched || f['leave_type']?.dirty">
@@ -58,18 +57,16 @@
                 <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0">
                     <div class="row mx-0 my-0 p-0">
                         <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0">
-                            <p><b>Leave Days</b></p>
+                            <p><b>Worked Date</b></p>
                         </div>
                     </div>
                     <div class="row mx-0 my-0 p-0">
                         <div class="col-sm-12 col-md-4 col-lg-3 px-0 px-md-1">
                             <mat-form-field appearance="outline" class="w-100 p-0 custom-mat-form-field">
                                 <mat-label>From</mat-label>
-                                <input matInput [matDatepicker]="picker1" [max]="startMaxDate" (dateInput)="startDateFun($event)"
+                                <input matInput [matDatepicker]="picker1" [max]="startMaxDate"
                                     placeholder="Enter From" autocomplete="off" formControlName="from_date" />
-                                <!-- <button ngbTooltip="Clear" matSuffix mat-icon-button aria-label="Clear" type="button">
-              <mat-icon>close</mat-icon>
-            </button> -->
+                              
                                 <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
                                 <mat-datepicker #picker1></mat-datepicker>
                                 <mat-error *ngIf="f['from_date']?.invalid && f['from_date']?.touched || f['from_date']?.dirty">
@@ -77,11 +74,41 @@
                                 </mat-error>
                             </mat-form-field>
                         </div>
-                        <div class="col-sm-12 col-md-4 col-lg-3 px-0 px-md-1">
+                        <!-- <div class="col-sm-12 col-md-4 col-lg-3 px-0 px-md-1">
                             <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
                                 <mat-label>Session<b class="r-star">*</b></mat-label>
                                 <mat-select placeholder="Session" autocomplete="off" panelClass="custom-select-panel"
-                                    [disableOptionCentering]="true" (selectionChange)="sessionFun1($event)"
+                                    [disableOptionCentering]="true"
+                                    formControlName="from_session">
+                                    <mat-option *ngFor="let session of sessions" [value]="session.value">{{
+                                        session.label }}</mat-option>
+                                </mat-select>
+                                 <mat-error *ngIf="f['from_session']?.invalid && f['from_session']?.touched || f['from_session']?.dirty">
+                                        <span  *ngIf="f['from_session']?.errors?.['required']">Session is required</span>
+                                </mat-error>
+                            </mat-form-field>
+                        </div> -->
+                    </div>
+                    <div class="row mx-0 my-0 p-0">
+                        <div class="col-sm-12 col-md-4 col-lg-3 px-0 px-md-1">
+                            <!-- <mat-form-field appearance="outline" class="w-100 p-0 custom-mat-form-field">
+                                <mat-label>To</mat-label>
+                                <input matInput [matDatepicker]="picker2" [min]="minDate"
+                                    placeholder="Enter To" autocomplete="off"
+                                    formControlName="to_date" />
+                                <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+                                <mat-datepicker #picker2></mat-datepicker>
+                                <mat-error *ngIf="f['to_date']?.invalid && f['to_date']?.touched || f['to_date']?.dirty">
+                                        <span  *ngIf="f['to_date']?.errors?.['required']">To Date is required</span>
+                                        <span class="mb-2" *ngIf="f['to_date']?.errors?.['matDatepickerMin']">
+                                            To Date cannot be greater than the from date.
+                                        </span>
+                                </mat-error>
+                            </mat-form-field> -->
+                            <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+                                <mat-label>Session<b class="r-star">*</b></mat-label>
+                                <mat-select placeholder="Session" autocomplete="off" panelClass="custom-select-panel"
+                                    [disableOptionCentering]="true"
                                     formControlName="from_session">
                                     <mat-option *ngFor="let session of sessions" [value]="session.value">{{
                                         session.label }}</mat-option>
@@ -91,32 +118,11 @@
                                 </mat-error>
                             </mat-form-field>
                         </div>
-                    </div>
-                    <div class="row mx-0 my-0 p-0">
-                        <div class="col-sm-12 col-md-4 col-lg-3 px-0 px-md-1">
-                            <mat-form-field appearance="outline" class="w-100 p-0 custom-mat-form-field">
-                                <mat-label>To</mat-label>
-                                <input matInput [matDatepicker]="picker2" [min]="minDate"
-                                    (dateInput)="endDateFun($event)" placeholder="Enter To" autocomplete="off"
-                                    formControlName="to_date" />
-                                <!-- <button ngbTooltip="Clear" matSuffix mat-icon-button aria-label="Clear" type="button">
-              <mat-icon>close</mat-icon>
-            </button> -->
-                                <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
-                                <mat-datepicker #picker2></mat-datepicker>
-                                <mat-error *ngIf="f['to_date']?.invalid && f['to_date']?.touched || f['to_date']?.dirty">
-                                        <span  *ngIf="f['to_date']?.errors?.['required']">To Date is required</span>
-                                        <span class="mb-2" *ngIf="f['to_date']?.errors?.['matDatepickerMin']">
-                                            To Date cannot be greater than the from date.
-                                        </span>
-                                </mat-error>
-                            </mat-form-field>
-                        </div>
                         <div class="col-sm-12 col-md-4 col-lg-3 px-0 px-md-1">
                             <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
                                 <mat-label>Session<b class="r-star">*</b></mat-label>
                                 <mat-select placeholder="Session" autocomplete="off" panelClass="custom-select-panel"
-                                    [disableOptionCentering]="true" (selectionChange)="sessionFun2($event)"
+                                    [disableOptionCentering]="true"
                                     formControlName="to_session">
                                     <mat-option *ngFor="let session of sessions" [value]="session.value">{{
                                         session.label }}</mat-option>
@@ -210,9 +216,9 @@
             </div>
             <div class="row mx-0 my-2 p-2">
                 <div class="action-btn d-flex gap-1 my-1 px-0">
-                    <button mat-button class="cancel-button mat-btn-s" type="button" mat-dialog-close>
+                    <button *ngIf="isPopup" mat-button class="cancel-button mat-btn-s" type="button" mat-dialog-close>
                     Close</button>
-                    <button mat-raised-button class="proceedbtn mat-btn-s" (click)="onSubmit()" type="submit">
+                    <button mat-raised-button class="proceedbtn mat-btn-s" [disabled]="totalDays === 0" (click)="onSubmit()" type="submit">
                         Apply
                     </button>
                 </div>

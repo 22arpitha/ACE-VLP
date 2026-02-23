@@ -27,7 +27,7 @@ export class JobsOfClientsComponent implements OnInit {
     arrowState: { [key: string]: boolean } = {
       job_number: false,
       job_name: false,
-      employee_name: false,
+      primary_employee_name: false,
       job_status__status_name: false,
     };
     page = 1;

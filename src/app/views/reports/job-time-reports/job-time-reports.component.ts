@@ -269,7 +269,8 @@ this.formattedData = [];
     let query = `?${search}job-status=[${this.statusList}]&report-type=job-time-report&file-type=${fileType}&download=true`
     query += this.client_id ? `&client=${this.client_id}` : '';
     if(this.userRole ==='Manager' && !this.client_id){
-          query += `&manager-ids=[${this.user_id}]`;
+          // query += `&manager-ids=[${this.user_id}]`;
+           query += `&employee-id=${this.user_id}`;
         } else if ((this.userRole !='Manager' && this.userRole !='Admin')  && !this.client_id){
           query += `&employee-id=${this.user_id}`;
         }
@@ -465,13 +466,13 @@ jobStatusList(status:any){
 }
 // Send Email Action Button event
 public sendEamils(){
-   let finalQuery = `?send_mail=True&file-type=pdf&report-type=job-time-report`;
-   finalQuery += this.client_id ? `&client=${this.client_id}` : '';
+   let finalQuery = `?send_mail=True&file-type=csv&report-type=job-time-report`;
+   finalQuery += this.client_id ? `&client-ids=[${this.client_id}]` : '';
    this.jobStatusList(this.tabStatus);
    finalQuery += `&job-status=[${this.statusList}]`;
     // Yet to integrate
       if(this.client_id){
-              this.api.getData(`${environment.live_url}/${environment.jobs}/${finalQuery}`).subscribe((respData: any) => {
+              this.api.getData(`${environment.live_url}/${environment.all_jobs}/${finalQuery}`).subscribe((respData: any) => {
                   if (respData) {
               this.api.showSuccess(respData['message']);
                }
@@ -515,7 +516,8 @@ public viewtimesheetDetails(item:any){
    this.jobStatusList(this.tabStatus);
     finalQuery = query + `&job-status=[${this.statusList}]`;
     if(this.userRole ==='Manager' && !this.client_id){
-      finalQuery += `&manager-ids=[${this.user_id}]`;
+      // finalQuery += `&manager-ids=[${this.user_id}]`;
+       finalQuery += `&employee-id=${this.user_id}`;
     } else if ((this.userRole !='Manager' && this.userRole !='Admin')  && !this.client_id){
       finalQuery += `&employee-id=${this.user_id}`;
     }

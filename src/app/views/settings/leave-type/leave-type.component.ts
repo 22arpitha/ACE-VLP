@@ -185,7 +185,7 @@ this.formUtilityService.resetHasUnsavedValue();
     }
   }
   public deleteContent(item: any) {
-    this.apiService.delete(`${environment.live_url}/${environment.settings_leave_type}/${item?.id}/`).subscribe(async (data: any) => {
+    this.apiService.delete(`${environment.live_url}/${environment.new_leave_type}/?conf_id=${item?.id}`).subscribe(async (data: any) => {
       if (data) {
         this.allleavetypeList = []
         this.apiService.showSuccess(data.message);

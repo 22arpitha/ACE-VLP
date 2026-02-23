@@ -320,6 +320,7 @@ export class LeaveSummaryReportComponent implements OnInit {
     const searchTerm = params?.searchTerm ?? this.term;
     const query = buildPaginationQuery({ page, pageSize, searchTerm });
     finalQuery = query
+    finalQuery += this.userRole === 'Manager' ? `&manager-id=${this.user_id}` : '';
     if (params?.employee_ids?.length) {
       finalQuery += `&employee-ids=[${params.employee_ids.join(',')}]`;
     }
@@ -450,21 +451,12 @@ export class LeaveSummaryReportComponent implements OnInit {
     if (searchTerm) query += `&search=${searchTerm}`;
 
     let endpoint = '';
-    if (key === 'client-ids') {
-      endpoint = environment.clients;
-      query += `&status=True`;
-      query += this.userRole === 'Admin' ? '' : `&employee-id=${this.user_id}`;
-    }
-    if (key === 'job-ids') {
-      endpoint = environment.jobs
-      query += this.userRole === 'Admin' ? '' : `&employee-id=${this.user_id}`;
-    };
-    if (key === 'job-status-ids') {
-      endpoint = environment.settings_job_status;
-    }
     if (key === 'timesheet-employee-ids') {
       endpoint = environment.employee;
       query += `&is_active=True&employee=True`
+      if (this.userRole === 'Manager') {
+        query += `&reporting_manager_id=${this.user_id}`;
+      }
     }
     // if (key === 'timesheet-task-ids') {
     //   // Task filter static

@@ -32,18 +32,18 @@ export const tableColumns = [
     label: 'Total Points',
     key: 'total_points',
     sortKey: 'total_points',
-    sortable: true
+    sortable: false
   },
   {
     label: 'MRP',
-    key: 'mrp',
-    sortKey: 'mrp',
+    key: 'total_mrp',
+    sortKey: 'total_mrp',
     sortable: true
   },
   {
     label: 'CRP',
-    key: 'crp',
-    sortKey: 'crp',
+    key: 'total_crp',
+    sortKey: 'total_crp',
     sortable: true
   },
   {

@@ -28,8 +28,8 @@ export class JobsOfEndclientComponent implements OnInit {
   arrowState: { [key: string]: boolean } = {
     job_number: false,
     job_name: false,
-    employee_name: false,
-    status: false,
+    primary_employee_name: false,
+    job_status__status_name: false,
   };
   page = 1;
   count = 0;
@@ -128,7 +128,7 @@ export class JobsOfEndclientComponent implements OnInit {
     }));
   }
   getJobsOfEndClient(params: any) {
-      this.api.getData(`${environment.live_url}/${environment.jobs}/${params}`).subscribe(
+      this.api.getData(`${environment.live_url}/${environment.only_jobs}/${params}`).subscribe(
         (res: any) => {
           this.allJobs = res.results;
           this.filteredList = res.results;
@@ -211,7 +211,7 @@ export class JobsOfEndclientComponent implements OnInit {
       if (this.statusDate) {
         this.filterQuery += `&job-status-date=[${this.statusDate}]`;
       }
-      this.api.getData(`${environment.live_url}/${environment.jobs}/${this.filterQuery}`).subscribe(
+      this.api.getData(`${environment.live_url}/${environment.only_jobs}/${this.filterQuery}`).subscribe(
         (res: any) => {
           this.allJobs = res.results;
           this.filteredList = res?.results;

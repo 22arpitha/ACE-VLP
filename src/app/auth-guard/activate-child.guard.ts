@@ -3,6 +3,7 @@ import { ActivatedRouteSnapshot, CanActivateChild, Router, RouterStateSnapshot }
 import { SubModuleService } from '../service/sub-module.service';
 import isOnline from 'is-online';
 import { lastValueFrom } from 'rxjs';
+import { jwtDecode } from 'jwt-decode';
 
 @Injectable({
   providedIn: 'root'
@@ -21,10 +22,28 @@ export class ActivateChildGuard implements CanActivateChild {
       this._router.navigate(['/no-internet']);
       return false;
     }
-
+    // const token = localStorage.getItem('token');
     const userId = sessionStorage.getItem('user_id');
+    // let userId :any = sessionStorage.getItem('user_id');
     const roleName = sessionStorage.getItem('user_role_name')?.toLowerCase();
 
+    // if (!token) {
+    //   this._router.navigate(['/login'], {
+    //     queryParams: { returnUrl: state.url }
+    //   });
+    //   return false;
+    // }
+    // if (!userId) {
+    //   try {
+    //     const decoded: any = jwtDecode(token);
+    //     userId = decoded.user_id;
+    //     sessionStorage.setItem('user_id', userId);
+    //   } catch {
+    //     localStorage.removeItem('token');
+    //     this._router.navigate(['/login']);
+    //     return false;
+    //   }
+    // }
     if (!userId) {
       this._router.navigate(['/login']);
       return false;

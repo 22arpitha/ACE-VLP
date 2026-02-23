@@ -194,7 +194,7 @@ export class DefaultLayoutComponent {
         item.children = [];
       }
       if (this.user_role_Name === 'Admin' && item.name === 'Leave' && Array.isArray(item.children)) {
-      item.children = item.children.filter((child:any) => child.name !== 'Apply Leave');
+      item.children = item.children.filter((child:any) => child.name !== 'Apply Leave' &&child.name !== 'Comp-off Request');
       }
       // if(this.user_role_Name!='Admin' && item.name ==='Reports' && Array.isArray(item.children)){
       //   item.children = item.children.filter((child:any)=> child.name!='Leave Summary Report');

@@ -30,13 +30,13 @@ export const tableColumns  = [
   },
   
   {
-    label: 'Accrued Balance',
+    label: 'Increase',
     key: 'accrued',
     sortKey:'accrued',
     sortable: false
   },
   {
-    label: 'Utilized',
+    label: 'Decrease',
     key: 'utilized',
     sortKey:'utilized',
     sortable: false

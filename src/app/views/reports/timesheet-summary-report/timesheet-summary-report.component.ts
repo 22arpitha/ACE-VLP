@@ -94,7 +94,7 @@ export class TimesheetSummaryReportComponent implements OnInit {
         break;
         case 'filter':
         this.selectedEmployeeId = event.detail;
-        this.getTableData({ page: 1, pageSize: this.tableSize, searchTerm: this.term , employee_ids: event.detail});
+        this.getTableData({ page: 1, pageSize: this.tableSize, searchTerm: this.term , employee_ids: event.detail,fromdate: this.fromDate});
         break;
         case 'sorting':
         this.onSorting(event);

@@ -21,13 +21,15 @@ export class ViewLeaveRequestComponent implements OnInit {
     public dialogRef: MatDialogRef<ViewLeaveRequestComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {
-    this.leave_data = data.data;
-    this.leave_data.cc = JSON.parse(this.leave_data.cc);
-    if (this.leave_data.status != 'Pending') {
-      this.displayButton = false;
-    } else {
-      this.displayButton = true;
-    }
+    console.log(data)
+     this.getAppliedLeaveData();
+    // this.leave_data = data.data;
+    // this.leave_data.cc = JSON.parse(this.leave_data.cc);
+    // if (this.leave_data.status != 'Pending') {
+    //   this.displayButton = false;
+    // } else {
+    //   this.displayButton = true;
+    // }
   }
 
   isRejectClicked = false;
@@ -37,6 +39,26 @@ export class ViewLeaveRequestComponent implements OnInit {
   );
 
   ngOnInit(): void {    
+    // this.getAppliedLeaveData();
+  }
+  getAppliedLeaveData(){
+    this.apiService.getData(`${environment.live_url}/${environment.apply_leaves}/${this.data.item_id}/`).subscribe(
+      (res:any)=>{
+        this.leave_data = res;
+        console.log(this.leave_data)
+        this.leave_data.cc = JSON.parse(this.leave_data.cc);
+        if (this.leave_data?.status != 'Pending') {
+          this.displayButton = false;
+        } else {
+          this.displayButton = true;
+        }
+      },
+      (error:any)=>{
+        console.log(error);
+        this.apiService.showError(error?.error?.detail);
+        this.dialogRef.close();
+      }
+    )
   }
 
   approve(data: any) {
@@ -54,7 +76,8 @@ export class ViewLeaveRequestComponent implements OnInit {
       )
       .subscribe((res: any) => {
         this.apiService.showSuccess(res?.message);
-        this.dialogRef.close(res);
+        this.dialogRef.close({data:'refresh'});
+        // this.dialogRef.close(res);
       },
             (error: any) => {
               console.log('error', error);
@@ -78,7 +101,7 @@ export class ViewLeaveRequestComponent implements OnInit {
             (res: any) => {
               console.log(res);
               this.apiService.showSuccess(res['message']);
-              this.dialogRef.close();
+              this.dialogRef.close({data:'refresh'});
             },
             (error: any) => {
               console.log('error', error);
@@ -115,7 +138,8 @@ export class ViewLeaveRequestComponent implements OnInit {
       )
       .subscribe((res: any) => {
         this.apiService.showSuccess(res?.message);
-        this.dialogRef.close(res);
+        this.dialogRef.close({data:'refresh'});
+        // this.dialogRef.close(res);
       });
   }
 

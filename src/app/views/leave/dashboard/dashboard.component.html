@@ -1,6 +1,6 @@
 <div class="row mx-0 px-0 dashboard-tabs">
     <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0">
-        <mat-tab-group mat-stretch-tabs="false" mat-align-tabs="start" (selectedTabChange)="onTabChange($event)">
+        <mat-tab-group mat-stretch-tabs="false" mat-align-tabs="start" (selectedTabChange)="onTabChange($event)" [selectedIndex]="selectedIndex">
             <mat-tab label="Leave Requests" *ngIf="userRole!='Accountant'">
                 <ng-template matTabContent>
                     <app-leave-request></app-leave-request>
@@ -16,12 +16,12 @@
                     <app-customize-balance></app-customize-balance>
                 </ng-template>
             </mat-tab>
-            <mat-tab label="Resource Availability " *ngIf="userRole==='Admin'">
+            <mat-tab label="Resource Availability "  *ngIf="userRole!='Accountant'">
                 <ng-template matTabContent>
                     <app-resource-availability></app-resource-availability>
                 </ng-template>
             </mat-tab>
-            <mat-tab label="Dashboard" *ngIf="userRole!='Admin'">
+            <mat-tab label="Dashboard"  *ngIf="userRole!='Admin'">
                 <ng-template matTabContent>
                     <app-user-dashboard></app-user-dashboard>
                 </ng-template>
@@ -31,18 +31,11 @@
                     <app-my-leaves></app-my-leaves>
                 </ng-template>
             </mat-tab>
-            <!-- <mat-tab label="Work From Home">
+            <mat-tab label="Comp-off" *ngIf="userRole!='Admin'">
                 <ng-template matTabContent>
-                    <app-wfh-requests></app-wfh-requests>
+                    <app-user-comp-off-list></app-user-comp-off-list>
                 </ng-template>
-            </mat-tab> -->
-
-<!-- 
-            <mat-tab label="Holidays" *ngIf="userRole==='Admin'">
-                <ng-template matTabContent>
-                    <app-holiday-list></app-holiday-list>
-                </ng-template>
-            </mat-tab> -->
+            </mat-tab>
         </mat-tab-group>
     </div>
 </div>

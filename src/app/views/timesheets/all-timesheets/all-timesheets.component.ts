@@ -44,7 +44,7 @@ export class AllTimesheetsComponent implements OnInit {
     employee_name: false,
     client_name: false,
     job_name: false,
-    task_nmae: false,
+    task: false,
     notes: false,
   };
   startDate: any = '';

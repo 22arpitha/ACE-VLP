@@ -35,3 +35,12 @@
   border-color: #3f51b5;
   background-color: #f0f4ff;
 }
+::ng-deep .Leave-apply .highlight-background .mat-form-field-flex {
+    background-color: rgb(235 235 235) !important;
+    pointer-events: none !important;
+  }
+
+  .disabled {
+  pointer-events: none;
+  opacity: 0.5;
+}

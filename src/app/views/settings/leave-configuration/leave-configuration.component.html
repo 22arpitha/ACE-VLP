@@ -27,7 +27,7 @@
             </mat-error>
           </mat-form-field>
         </div>
-        <div class="col-sm-12 col-md-6 col-lg-4 my-1 no-padding pl-0 pr-5">
+       <div class="col-sm-12 col-md-6 col-lg-4 my-1 no-padding pl-0 pr-5">
           <mat-form-field appearance="outline" [ngClass]="{ 'highlight-background':!editLeaveType}" class="w-100 custom-mat-form-field">
             <mat-label>Description</mat-label>
             <textarea matInput placeholder="Enter Description" formControlName="leave_description"
@@ -35,52 +35,10 @@
             <mat-error
               *ngIf="f['leave_description']?.invalid && f['leave_description']?.touched || f['leave_description']?.dirty">
               <span *ngIf="f['leave_description']?.errors?.['maxlength']">
-                Address cannot exceed more than 200 characters.
+                Description cannot exceed more than 200 characters.
               </span>
               <span *ngIf="f['leave_description']?.errors?.['pattern']">
                 Extra space charaters are not allowed.
-              </span>
-            </mat-error>
-          </mat-form-field>
-        </div>
-        <div class="col-sm-12 col-md-3 col-lg-2 my-1 no-padding pl-0 pr-5">
-          <mat-form-field appearance="outline" [ngClass]="{ 'highlight-background':!editLeaveType}" class="w-100 custom-mat-form-field">
-            <mat-label>Utilization Before<b class="r-star"></b></mat-label>
-            <input matInput type="number" formControlName="utilization_before" placeholder="Utilization Before"
-              autocomplete="off">
-            <mat-error
-              *ngIf="f['utilization_before']?.invalid && f['utilization_before']?.touched || f['utilization_before']?.dirty">
-              <span *ngIf="f['utilization_before'].errors?.['required']">Utilization is required</span>
-              <span
-                *ngIf="!f['utilization_before'].errors?.['required'] && f['utilization_before'].errors?.['maxlength']">
-                Utilization cannot exceed 3 digits.
-              </span>
-              <span *ngIf="!f['utilization_before'].errors?.['required'] && f['utilization_before'].errors?.['pattern']">
-                Only digits allowed (max 2 digits, no decimals).
-              </span>
-              <span *ngIf="!f['utilization_before'].errors?.['required'] && f['utilization_before'].errors?.['min']">
-                Utilization cannot be negative.
-              </span>
-            </mat-error>
-          </mat-form-field>
-        </div>
-        <div class="col-sm-12 col-md-3 col-lg-2 my-1 no-padding pl-0 pr-5">
-          <mat-form-field appearance="outline" [ngClass]="{ 'highlight-background':!editLeaveType}" class="w-100 custom-mat-form-field">
-            <mat-label>Utilization After<b class="r-star"></b></mat-label>
-            <input matInput type="number" formControlName="utilization_after" placeholder="Utilization After"
-              autocomplete="off">
-            <mat-error
-              *ngIf="f['utilization_after']?.invalid && f['utilization_after']?.touched || f['utilization_after']?.dirty">
-              <span *ngIf="f['utilization_after'].errors?.['required']">Utilization is required</span>
-              <span
-                *ngIf="!f['utilization_after'].errors?.['required'] && f['utilization_after'].errors?.['maxlength']">
-                Utilization cannot exceed 3 digits.
-              </span>
-              <span *ngIf="!f['utilization_after'].errors?.['required'] && f['utilization_after'].errors?.['pattern']">
-                Only digits allowed (max 2 digits, no decimals).
-              </span>
-              <span *ngIf="!f['utilization_after'].errors?.['required'] && f['utilization_after'].errors?.['min']">
-                Utilization cannot be negative.
               </span>
             </mat-error>
           </mat-form-field>
@@ -100,6 +58,99 @@
                   <span  *ngIf="f['leave_for']?.errors?.['required']">Gender is required</span>
             </mat-error>
           </mat-form-field>
+        </div> 
+      </div>
+      <div class="row mx-0 my-0 p-0">
+        <div class="col-sm-12 col-md-3 col-lg-3 my-1 no-padding pl-0 pr-5 days">
+          <span>To be applied </span>
+          <mat-form-field appearance="outline" [ngClass]="{ 'highlight-background':!editLeaveType}" class="custom-mat-form-field">
+            <!-- <mat-label>Utilization Before<b class="r-star"></b></mat-label> -->
+            <input matInput type="number" formControlName="utilization_before"
+              autocomplete="off">
+            <mat-error
+              *ngIf="f['utilization_before']?.invalid && f['utilization_before']?.touched || f['utilization_before']?.dirty">
+              <span *ngIf="f['utilization_before'].errors?.['required']">Utilization is required</span>
+              <span
+                *ngIf="!f['utilization_before'].errors?.['required'] && f['utilization_before'].errors?.['maxlength']">
+                Utilization cannot exceed 3 digits.
+              </span>
+              <span *ngIf="!f['utilization_before'].errors?.['required'] && f['utilization_before'].errors?.['pattern']">
+                Only digits allowed (max 2 digits, no decimals).
+              </span>
+              <span *ngIf="!f['utilization_before'].errors?.['required'] && f['utilization_before'].errors?.['min']">
+                Utilization cannot be negative.
+              </span>
+            </mat-error>
+          </mat-form-field>
+          <span> days in Advance</span>
+        </div>
+        <div class="col-sm-12 col-md-3 col-lg-3 my-1 no-padding pl-0 pr-5 days">
+          <span>Apply within </span>
+          <mat-form-field appearance="outline" [ngClass]="{ 'highlight-background':!editLeaveType}" class="custom-mat-form-field">
+            <!-- <mat-label>Utilization After<b class="r-star"></b></mat-label> -->
+            <input matInput type="number" formControlName="utilization_after"
+              autocomplete="off">
+            <mat-error
+              *ngIf="f['utilization_after']?.invalid && f['utilization_after']?.touched || f['utilization_after']?.dirty">
+              <span *ngIf="f['utilization_after'].errors?.['required']">Utilization is required</span>
+              <span
+                *ngIf="!f['utilization_after'].errors?.['required'] && f['utilization_after'].errors?.['maxlength']">
+                Utilization cannot exceed 3 digits.
+              </span>
+              <span *ngIf="!f['utilization_after'].errors?.['required'] && f['utilization_after'].errors?.['pattern']">
+                Only digits allowed (max 2 digits, no decimals).
+              </span>
+              <span *ngIf="!f['utilization_after'].errors?.['required'] && f['utilization_after'].errors?.['min']">
+                Utilization cannot be negative.
+              </span>
+            </mat-error>
+          </mat-form-field>
+          <span> days after the leave date</span>
+        </div>
+        <div class="col-sm-12 col-md-6 col-lg-4 my-1 no-padding pl-0 pr-5 days">
+          <span>Maximum number of consequetive days leave allowed </span>
+          <mat-form-field appearance="outline" [ngClass]="{ 'highlight-background':!editLeaveType}" class="custom-mat-form-field">
+            <!-- <mat-label>Utilization Before<b class="r-star"></b></mat-label> -->
+            <input matInput type="number" formControlName="maximum_no_of_consequtive_leaves"
+              autocomplete="off">
+            <mat-error
+              *ngIf="f['maximum_no_of_consequtive_leaves']?.invalid && f['maximum_no_of_consequtive_leaves']?.touched || f['maximum_no_of_consequtive_leaves']?.dirty">
+              <span *ngIf="f['maximum_no_of_consequtive_leaves'].errors?.['required']">Maximum number of consequetive days is required</span>
+              <span
+                *ngIf="!f['maximum_no_of_consequtive_leaves'].errors?.['required'] && f['maximum_no_of_consequtive_leaves'].errors?.['maxlength']">
+                Maximum number of consequetive days cannot exceed 3 digits.
+              </span>
+              <span *ngIf="!f['maximum_no_of_consequtive_leaves'].errors?.['required'] && f['maximum_no_of_consequtive_leaves'].errors?.['pattern']">
+                Only digits allowed (max 2 digits, no decimals).
+              </span>
+              <span *ngIf="!f['maximum_no_of_consequtive_leaves'].errors?.['required'] && f['maximum_no_of_consequtive_leaves'].errors?.['min']">
+                Maximum number of consequetive days cannot be negative.
+              </span>
+            </mat-error>
+          </mat-form-field>
+        </div>
+        <div class="col-sm-12 col-md-6 col-lg-3 my-1 no-padding pl-0 pr-5 days">
+          <span>Leave application for future dates allowed up to </span>
+          <mat-form-field appearance="outline" [ngClass]="{ 'highlight-background':!editLeaveType}" class="custom-mat-form-field">
+            <!-- <mat-label>Utilization After<b class="r-star"></b></mat-label> -->
+            <input matInput type="number" formControlName="leave_application_for_future_dates"
+              autocomplete="off">
+            <mat-error
+              *ngIf="f['leave_application_for_future_dates']?.invalid && f['leave_application_for_future_dates']?.touched || f['leave_application_for_future_dates']?.dirty">
+              <span *ngIf="f['leave_application_for_future_dates'].errors?.['required']">Leave application for future dates is required</span>
+              <span
+                *ngIf="!f['leave_application_for_future_dates'].errors?.['required'] && f['leave_application_for_future_dates'].errors?.['maxlength']">
+                Leave application for future dates cannot exceed 3 digits.
+              </span>
+              <span *ngIf="!f['leave_application_for_future_dates'].errors?.['required'] && f['leave_application_for_future_dates'].errors?.['pattern']">
+                Only digits allowed (max 2 digits, no decimals).
+              </span>
+              <span *ngIf="!f['leave_application_for_future_dates'].errors?.['required'] && f['leave_application_for_future_dates'].errors?.['min']">
+                Leave application for future dates cannot be negative.
+              </span>
+            </mat-error>
+          </mat-form-field>
+          <span> days</span>
         </div>
       </div>
       <div class="row mx-0 my-0 p-0">
@@ -263,7 +314,7 @@
                     <mat-label>Day of Accrual<b class="r-star">*</b></mat-label>
                     <mat-select placeholder="Day of Accrual" formControlName="accrual_day" autocomplete="off"
                       panelClass="custom-select-panel" [disableOptionCentering]="true">
-                      <mat-option *ngFor="let day of accrualDaysList" [value]="day.label">
+                      <mat-option *ngFor="let day of accrualDaysList" [value]="day.value">
                         {{day.label}}
                       </mat-option>
                     </mat-select>
@@ -345,10 +396,10 @@
                     <mat-select placeholder="Leave Accrual Cycle" formControlName="reset_cycle" autocomplete="off"
                       panelClass="custom-select-panel" [disableOptionCentering]="true"
                       (selectionChange)="accrualAndResetLeaveCycle($event,'reset')">
-                      <mat-option value="yearly">Yearly</mat-option>
-                      <!-- <mat-option *ngFor="let period of periodList" [value]="period.value">
+                      <!-- <mat-option value="yearly">Yearly</mat-option> -->
+                      <mat-option *ngFor="let period of periodList" [value]="period.value">
                         {{ period.label }}
-                      </mat-option> -->
+                      </mat-option>
                     </mat-select>
                     <mat-error
                       *ngIf="f['reset_cycle']?.invalid && f['reset_cycle']?.touched || f['reset_cycle']?.dirty">
@@ -385,7 +436,7 @@
                     <mat-label>Day of Accrual<b class="r-star">*</b></mat-label>
                     <mat-select placeholder="Day of Accrual" formControlName="reset_day" autocomplete="off"
                       panelClass="custom-select-panel" [disableOptionCentering]="true">
-                      <mat-option *ngFor="let day of accrualDaysList" [value]="day.label">
+                      <mat-option *ngFor="let day of accrualDaysList" [value]="day.value">
                         {{ day.label }}
                       </mat-option>
                     </mat-select>
@@ -400,12 +451,13 @@
               <div class="row mx-2 my-0 px-0">
                 <div class="col-sm-12 col-md-12 col-lg-12 my-1 px-0 bg-carry-forward-content">
                   <div class="row mx-0 my-0 px-3">
-                    <div class="col-sm-12 col-md-12 col-lg-12 my-1 px-0">
+                    <div>Carry forward</div>
+                    <!-- <div class="col-sm-12 col-md-12 col-lg-12 my-1 px-0">
                       <mat-checkbox color="primary" class="example-margin" formControlName="is_carry_forward"
                         (change)="isCarryForwardEnabled($event)" [disabled]="!leaveTypeForm.get('is_reset')?.value">
                         <h5 class="c-header">Carry forward unused leaves</h5>
                       </mat-checkbox>
-                    </div>
+                    </div> -->
                   </div>
                   <div class="row mx-2 my-0 px-2">
                     <div class="col-sm-12 col-md-3 col-lg-3 my-1 pr-0 pr-md-5">
@@ -466,18 +518,20 @@
                 <!-- <div class="col-sm-12 col-md-12 col-lg-12 my-1 px-0 bg-carry-forward-content"> -->
                   <!-- <div class="row mx-0 my-0 px-3"> -->
                     <div class="col-sm-12 col-md-12 col-lg-12 my-1 px-0">
-                      <mat-radio-group formControlName="encash_leaves_above_limit">
-                        <mat-radio-button class="radio-button" [value]="true"
+                      <mat-radio-group formControlName="encashment" (change)="onRadioChange($event)">
+                        <mat-radio-button class="radio-button" [value]="1"
                           [disabled]="!leaveTypeForm.get('is_reset')?.value">
                           Encash unused leaves above limit
                         </mat-radio-button>
-                        <mat-radio-button class="radio-button" [value]="false"
+                        <mat-radio-button class="radio-button" [value]="2"
                           [disabled]="!leaveTypeForm.get('is_reset')?.value">
                           Encash unused leaves with expiry
                         </mat-radio-button>
-                      </mat-radio-group>
-
-                      
+                         <mat-radio-button class="radio-button" [value]="3"
+                          [disabled]="!leaveTypeForm.get('is_reset')?.value">
+                          Expiry
+                        </mat-radio-button>
+                      </mat-radio-group> 
                     </div>
                   <!-- </div>
                 </div> -->

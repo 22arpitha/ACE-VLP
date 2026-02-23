@@ -142,7 +142,8 @@ export class JobTimeSheetDetailsPopupComponent implements OnInit {
        query += `&timesheet-report-type=job-time-report`
     }
     if(this.data.report_type ==='timesheet-summary-report'){
-      query += `&only-processing=${true}`
+      query += `&only-processing=${true}`;
+      query += `&start-date=${this.data?.dates?.start_date}&end-date=${this.data?.dates?.end_date}`;
     }
      if (this.directionValue && this.sortValue) {
       query += `&sort-by=${this.sortValue}&sort-type=${this.directionValue}`;
@@ -190,6 +191,7 @@ export class JobTimeSheetDetailsPopupComponent implements OnInit {
     if(this.data.report_type==='timesheet-summary-report'){
       query += `&only-processing=${true}`
       query += this.user_role_name==='Accountant'? `&employee-id=${this.user_id}`: '';
+      query += `&start-date=${this.data?.dates?.start_date}&end-date=${this.data?.dates?.end_date}`;
     } 
     if(this.data?.report_type==='job-time-report'){
        query += `&timesheet-report-type=job-time-report`
