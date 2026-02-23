@@ -148,6 +148,39 @@ zoom:80%;
     max-width: 97vw !important;
     width: 97vw !important;
 }
+.view-leave-details-dialog{
+    // max-width: 97vw !important;
+    height: 500px !important;
+    width: 50% !important;
+}
+@media only screen and (min-width: 280px) and (max-width: 767px)  {
+    .view-leave-details-dialog{
+        width: 80% !important;
+    }
+}
+.leave-or-compoff-form-dialog{
+    // max-width: 97vw !important;
+    // height: 500px !important;
+    width: 80% !important;
+}
+@media only screen and (min-width: 280px) and (max-width: 767px)  {
+    .leave-or-compoff-form-dialog{
+        width: 90% !important;
+    }
+}
+.cancel-leave-details-dialog{
+    height: auto !important;
+    width: 60% !important;
+}
+@media only screen and (min-width: 280px) and (max-width: 767px)  {
+    .cancel-leave-details-dialog{
+        width: 90% !important;
+    }
+}
+.customize-balance-dialog{
+  height: auto !important;
+  width: auto !important;
+}
 
 .mat-select-panel .mat-optgroup-label, 
 .mat-select-panel .mat-option{
