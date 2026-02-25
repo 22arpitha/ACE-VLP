@@ -230,7 +230,7 @@ export class WfhRequestsComponent implements OnInit {
   openleaveForm() {
     const dialogRef = this.dialog.open(ApplyWorkFromHomeComponent, {
       // data: { item_id: item?.id },
-      panelClass: 'custom-details-dialog',
+      panelClass: 'leave-or-compoff-form-dialog',
       disableClose: true,
     });
     dialogRef.afterClosed().subscribe((resp: any) => {

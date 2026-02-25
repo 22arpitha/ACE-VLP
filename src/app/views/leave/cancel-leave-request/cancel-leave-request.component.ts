@@ -49,7 +49,7 @@ export class CancelLeaveRequestComponent implements OnInit {
   buildForm() {
     this.dateRanges.clear();
 
-    this.date_ranges_list.forEach(d => {
+    this.date_ranges_list.forEach((d: { [x: string]: boolean; date?: any; }) => {
 
       // extract sessions dynamically from response
       const availableSessions = Object.keys(d).filter(k => k !== 'date');

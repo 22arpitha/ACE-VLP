@@ -17,31 +17,36 @@ export const tableColumns  = [
     filterable: true,
   },
    
+  // {
+  //   label: 'Opening Balance',
+  //   key: 'opening_balance',
+  //   sortKey:'opening_balance',
+  //   sortable: false
+  // },
+  // {
+  //   label: 'Accrued Balance',
+  //   key: 'accrued_leaves',
+  //   sortKey:'accrued_leaves',
+  //   sortable: false
+  // },
+  // {
+  //   label: 'Utilized',
+  //   key: 'daily_consumed_leaves',
+  //   sortKey:'daily_consumed_leaves',
+  //   sortable: false
+  // },
+  // {
+  //   label: 'Closing Balance',
+  //   key: 'closing_balance_leaves',
+  //   sortKey:'closing_balance_leaves',
+  //   sortable: false
+  // },
   {
-    label: 'Opening Balance',
-    key: 'opening_balance',
-    sortKey:'opening_balance',
+    label: 'Total WFH days',
+    key: 'total_wfh_days',
+    sortKey:'total_wfh_days',
     sortable: false
-  },
-  {
-    label: 'Accrued Balance',
-    key: 'accrued_leaves',
-    sortKey:'accrued_leaves',
-    sortable: false
-  },
-  {
-    label: 'Utilized',
-    key: 'daily_consumed_leaves',
-    sortKey:'daily_consumed_leaves',
-    sortable: false
-  },
-  {
-    label: 'Closing Balance',
-    key: 'closing_balance_leaves',
-    sortKey:'closing_balance_leaves',
-    sortable: false
-  },
-  
+  }
 ]
 
 

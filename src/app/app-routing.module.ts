@@ -62,10 +62,12 @@ const routes: Routes = [
         loadChildren: () =>
           import('./views/leave/leave.module').then((m) => m.LeaveModule),
       },
-          {
+      {
         path: 'wfh',
         loadChildren: () =>
-          import('./views/work-from-home/work-from-home.module').then((m) => m.WorkFromHomeModule),
+          import('./views/work-from-home/work-from-home.module').then(
+            (m) => m.WorkFromHomeModule,
+          ),
       },
       // {
       //   path: 'leave',
@@ -235,6 +237,4 @@ const routes: Routes = [
   ],
   exports: [RouterModule],
 })
-export class AppRoutingModule {
-  
-}
+export class AppRoutingModule {}

@@ -7,7 +7,7 @@ import { HolidayListComponent } from './holiday-list/holiday-list.component';
 import { CanDeactivateGuard } from '../../auth-guard/can-deactivate.guard';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { CompOffGrantComponent } from './comp-off-grant/comp-off-grant.component';
-import { WorkFromHomeComponent } from './work-from-home/work-from-home.component';
+
 
 const routes: Routes = [
   {
@@ -43,11 +43,7 @@ const routes: Routes = [
         component: CompOffGrantComponent,
         canDeactivate:[CanDeactivateGuard]
       },
-      // {
-      //   path:'work-from-home',
-      //   component: WorkFromHomeComponent,
-      //   canDeactivate:[CanDeactivateGuard]
-      // }
+      
     ]
   }
 ];

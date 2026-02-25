@@ -292,7 +292,7 @@ BreadCrumbsTitle: any = 'WFH Limited Flexibility Summary Report';
     if (this.time?.start_date && this.time?.end_date) {
       query += `&start-date=${this.time?.start_date}&end-date=${this.time?.end_date}`;
     }
-    const url = `${environment.live_url}/${environment.leave_summary_report}/${query}`;
+    const url = `${environment.live_url}/${environment.wfh_limited_flexibility_summary_report}/${query}`;
     // console.log(url);
     window.open(url, '_blank');
   }
@@ -311,113 +311,217 @@ BreadCrumbsTitle: any = 'WFH Limited Flexibility Summary Report';
     );
   }
 
-  async getTableData(params?: { page?: number; pageSize?: number; searchTerm?: string; employee_ids?: any; leave_type?: any }) {
-    let finalQuery;
-    this.formattedData = [];
-    const page = params?.page ?? this.page;
-    const pageSize = params?.pageSize ?? this.tableSize;
-    const searchTerm = params?.searchTerm ?? this.term;
-    const query = buildPaginationQuery({ page, pageSize, searchTerm });
-    finalQuery = query
-    if (params?.employee_ids?.length) {
-      finalQuery += `&employee-ids=[${params.employee_ids.join(',')}]`;
-    }
-    if (params?.leave_type) {
-      finalQuery += `&leave-type-id=${params.leave_type}`;
-    }
-    if (this.directionValue && this.sortValue) {
-      finalQuery += `&sort-by=${this.sortValue}&sort-type=${this.directionValue}`;
-    }
-    if (this.time?.start_date && this.time?.end_date) {
-      finalQuery += `&start-date=${this.time?.start_date}&end-date=${this.time?.end_date}`;
-    }
-    await this.api.getData(`${environment.live_url}/${environment.leave_summary_report}/${finalQuery}`).subscribe((res: any) => {
-      if (res.results) {
-        this.formattedData = res.results?.map((item: any, i: number) => ({
-          sl: (page - 1) * pageSize + i + 1,
-          ...item,
-          daily_consumed_leaves: item?.leave[0]?.daily_consumed_leaves ?? 0,
-          accrued_leaves: item?.leave[0]?.accrued_leaves ?? 0,
-          closing_balance_leaves: item?.leave[0]?.closing_balance_leaves ?? 0,
-          available: item?.leave[0]?.available ?? 0,
-          opening_balance: item?.leave[0]?.opening_balance ?? 0,
-        }));
-        this.tableConfig = {
-          columns: tableColumns?.map(col => {
-            let filterOptions: any = [];
-            const existingCol = this.tableConfig?.columns?.find((c:any) => c.key === col.key);
-            if (existingCol?.filterOptions?.length) {
-              filterOptions = existingCol.filterOptions;
-            } else if (col.filterable) {
-              // Fallback to initial options if none present
-              if (col.key === 'client_name') {
-                filterOptions = this.clientName;
-              } else if (col.key === 'job_name') {
-                filterOptions = this.jobName;
-              } else if (col.key === 'job_status_name') {
-                filterOptions = this.statusName;
-              }
-            }
-            return {
-              ...col,
-              filterOptions
-            };
-          }),
-          data: this.formattedData,
-          searchTerm: this.term,
-          actions: [],
-          accessConfig: [],
-          tableSize: pageSize,
-          pagination: true,
-          searchable: false,
-          startAndEndDateFilter: true,
-          leaveTypes: true,
-          reset: true,
-          currentPage: page,
-          totalRecords: res.total_no_of_record,
-          showDownload: true,
-          showCsv:true,
-          showPdf:true,
-          searchPlaceholder: 'Search by Client/Job/Employee',
-        };
-      }
-      else {
-        this.tableConfig = {
-          columns: tableColumns?.map(col => {
-            let filterOptions: any = [];
-            if (col.filterable) {
-              if (col.key === 'client_name') { filterOptions = this.clientName; }
-              else if (col.key === 'job_name') { filterOptions = this.jobName; }
-              else if (col.key === 'employee_name') {
-                filterOptions = [];
-              }
-            }
-            return { ...col, filterOptions };
-          }),
-          data: [],
-          searchTerm: this.term,
-          actions: [],
-          accessConfig: [],
-          tableSize: pageSize,
-          pagination: true,
-          searchable: false,
-          // headerTabs:true,
-          // showIncludeAllJobs:true,
-          // includeAllJobsEnable:this.isIncludeAllJobEnable ? this.isIncludeAllJobEnable : false,
-          // includeAllJobsValue:this.isIncludeAllJobValue ? this.isIncludeAllJobValue : false,
-          // selectedClientId:this.client_id ? this.client_id:null,
-          // sendEmail:true,
-          currentPage: page,
-          totalRecords: 0,
-          showDownload: false,
-          searchPlaceholder: 'Search by Client/Job/Status',
-        };
-      }
+  // async getTableData(params?: { page?: number; pageSize?: number; searchTerm?: string; employee_ids?: any; leave_type?: any }) {
+  //   let finalQuery;
+  //   this.formattedData = [];
+  //   const page = params?.page ?? this.page;
+  //   const pageSize = params?.pageSize ?? this.tableSize;
+  //   const searchTerm = params?.searchTerm ?? this.term;
+  //   const query = buildPaginationQuery({ page, pageSize, searchTerm });
+  //   finalQuery = query
+  //   if (params?.employee_ids?.length) {
+  //     finalQuery += `&employee-ids=[${params.employee_ids.join(',')}]`;
+  //   }
+  //   if (params?.leave_type) {
+  //     finalQuery += `&leave-type-id=${params.leave_type}`;
+  //   }
+  //   if (this.directionValue && this.sortValue) {
+  //     finalQuery += `&sort-by=${this.sortValue}&sort-type=${this.directionValue}`;
+  //   }
+  //   if (this.time?.start_date && this.time?.end_date) {
+  //     finalQuery += `&start-date=${this.time?.start_date}&end-date=${this.time?.end_date}`;
+  //   }
+  //   await this.api.getData(`${environment.live_url}/${environment.wfh_limited_flexibility_summary_report}/${finalQuery}`).subscribe((res: any) => {
+  //     if (res.results) {
+  //       this.formattedData = res.results?.map((item: any, i: number) => ({
+  //         sl: (page - 1) * pageSize + i + 1,
+  //         ...item,
+  //         daily_consumed_leaves: item?.leave[0]?.daily_consumed_leaves ?? 0,
+  //         accrued_leaves: item?.leave[0]?.accrued_leaves ?? 0,
+  //         closing_balance_leaves: item?.leave[0]?.closing_balance_leaves ?? 0,
+  //         available: item?.leave[0]?.available ?? 0,
+  //         opening_balance: item?.leave[0]?.opening_balance ?? 0,
+  //       }));
+  //       this.tableConfig = {
+  //         columns: tableColumns?.map(col => {
+  //           let filterOptions: any = [];
+  //           const existingCol = this.tableConfig?.columns?.find((c:any) => c.key === col.key);
+  //           if (existingCol?.filterOptions?.length) {
+  //             filterOptions = existingCol.filterOptions;
+  //           } else if (col.filterable) {
+  //             // Fallback to initial options if none present
+  //             if (col.key === 'client_name') {
+  //               filterOptions = this.clientName;
+  //             } else if (col.key === 'job_name') {
+  //               filterOptions = this.jobName;
+  //             } else if (col.key === 'job_status_name') {
+  //               filterOptions = this.statusName;
+  //             }
+  //           }
+  //           return {
+  //             ...col,
+  //             filterOptions
+  //           };
+  //         }),
+  //         data: this.formattedData,
+  //         searchTerm: this.term,
+  //         actions: [],
+  //         accessConfig: [],
+  //         tableSize: pageSize,
+  //         pagination: true,
+  //         searchable: false,
+  //         startAndEndDateFilter: true,
+  //         leaveTypes: true,
+  //         reset: true,
+  //         currentPage: page,
+  //         totalRecords: res.total_no_of_record,
+  //         showDownload: true,
+  //         showCsv:true,
+  //         showPdf:true,
+  //         searchPlaceholder: 'Search by Client/Job/Employee',
+  //       };
+  //     }
+  //     else {
+  //       this.tableConfig = {
+  //         columns: tableColumns?.map(col => {
+  //           let filterOptions: any = [];
+  //           if (col.filterable) {
+  //             if (col.key === 'client_name') { filterOptions = this.clientName; }
+  //             else if (col.key === 'job_name') { filterOptions = this.jobName; }
+  //             else if (col.key === 'employee_name') {
+  //               filterOptions = [];
+  //             }
+  //           }
+  //           return { ...col, filterOptions };
+  //         }),
+  //         data: [],
+  //         searchTerm: this.term,
+  //         actions: [],
+  //         accessConfig: [],
+  //         tableSize: pageSize,
+  //         pagination: true,
+  //         searchable: false,
+  //         // headerTabs:true,
+  //         // showIncludeAllJobs:true,
+  //         // includeAllJobsEnable:this.isIncludeAllJobEnable ? this.isIncludeAllJobEnable : false,
+  //         // includeAllJobsValue:this.isIncludeAllJobValue ? this.isIncludeAllJobValue : false,
+  //         // selectedClientId:this.client_id ? this.client_id:null,
+  //         // sendEmail:true,
+  //         currentPage: page,
+  //         totalRecords: 0,
+  //         showDownload: false,
+  //         searchPlaceholder: 'Search by Client/Job/Status',
+  //       };
+  //     }
 
-    }, (error: any) => {
-      this.api.showError(error?.error?.detail);
-    });
+  //   }, (error: any) => {
+  //     this.api.showError(error?.error?.detail);
+  //   });
+  // }
+
+
+  async getTableData(params?: { 
+  page?: number; 
+  pageSize?: number; 
+  searchTerm?: string; 
+  employee_ids?: any; 
+  leave_type?: any 
+}) {
+
+  let finalQuery;
+  this.formattedData = [];
+
+  const page = params?.page ?? this.page;
+  const pageSize = params?.pageSize ?? this.tableSize;
+  const searchTerm = params?.searchTerm ?? this.term;
+
+  const query = buildPaginationQuery({ page, pageSize, searchTerm });
+  finalQuery = query;
+
+  if (params?.employee_ids?.length) {
+    finalQuery += `&employee-ids=[${params.employee_ids.join(',')}]`;
   }
+
+  if (params?.leave_type) {
+    finalQuery += `&leave-type-id=${params.leave_type}`;
+  }
+
+  if (this.directionValue && this.sortValue) {
+    finalQuery += `&sort-by=${this.sortValue}&sort-type=${this.directionValue}`;
+  }
+
+  if (this.time?.start_date && this.time?.end_date) {
+    finalQuery += `&start-date=${this.time?.start_date}&end-date=${this.time?.end_date}`;
+  }
+
+  this.api.getData(
+    `${environment.live_url}/${environment.wfh_limited_flexibility_summary_report}/${finalQuery}`
+  ).subscribe((res: any) => {
+
+    if (res.results?.length) {
+
+      this.formattedData = res.results.map((item: any, i: number) => {
+
+        const wfhData = item?.wfh?.[0] ?? {};
+
+        return {
+          sl: (page - 1) * pageSize + i + 1,
+          employee_id: item.employee_id,
+          employee_name: item.employee_name,
+
+          // Updated fields from new API
+          opening_balance: wfhData.opening_balance ?? 0,
+          accrued_wfh: wfhData.accrued_wfh ?? 0,
+          consumed_wfh: wfhData.consumed_wfh ?? 0,
+          closing_balance_wfh: wfhData.closing_balance_wfh ?? 0,
+        };
+      });
+
+      this.tableConfig = {
+        columns: tableColumns?.map(col => ({
+          ...col,
+          filterOptions: this.tableConfig?.columns?.find((c: any) => c.key === col.key)?.filterOptions ?? []
+        })),
+        data: this.formattedData,
+        searchTerm: this.term,
+        actions: [],
+        accessConfig: [],
+        tableSize: pageSize,
+        pagination: true,
+        searchable: false,
+        startAndEndDateFilter: true,
+        leaveTypes: false,
+        reset: true,
+        currentPage: res.current_page ?? page,
+        totalRecords: res.total_no_of_record,
+        showDownload: true,
+        showCsv: true,
+        showPdf: true,
+        searchPlaceholder: 'Search by Employee',
+      };
+
+    } else {
+
+      this.tableConfig = {
+        columns: tableColumns,
+        data: [],
+        searchTerm: this.term,
+        actions: [],
+        accessConfig: [],
+        tableSize: pageSize,
+        pagination: true,
+        searchable: false,
+        currentPage: page,
+        totalRecords: 0,
+        showDownload: false,
+        searchPlaceholder: 'Search by Employee',
+      };
+    }
+
+  }, (error: any) => {
+    this.api.showError(error?.error?.detail);
+  });
+}
 
 
   filterDataCache: {

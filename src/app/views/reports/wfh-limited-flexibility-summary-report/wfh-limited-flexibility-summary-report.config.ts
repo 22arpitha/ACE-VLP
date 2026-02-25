@@ -25,20 +25,20 @@ export const tableColumns  = [
   },
   {
     label: 'Accrued Balance',
-    key: 'accrued_leaves',
-    sortKey:'accrued_leaves',
+    key: 'accrued_wfh',
+    sortKey:'accrued_wfh',
     sortable: false
   },
   {
     label: 'Utilized',
-    key: 'daily_consumed_leaves',
-    sortKey:'daily_consumed_leaves',
+    key: 'consumed_wfh',
+    sortKey:'consumed_wfh',
     sortable: false
   },
   {
     label: 'Closing Balance',
-    key: 'closing_balance_leaves',
-    sortKey:'closing_balance_leaves',
+    key: 'closing_balance_wfh',
+    sortKey:'closing_balance_wfh',
     sortable: false
   },
   

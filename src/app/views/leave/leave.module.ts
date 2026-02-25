@@ -24,9 +24,7 @@ import { CompOffGrantComponent } from './comp-off-grant/comp-off-grant.component
 import { LeaveApplyAdminComponent } from './leave-apply-admin/leave-apply-admin.component';
 import { ResourceAvailabilityComponent } from './resource-availability/resource-availability.component';
 import { FullCalendarModule } from '@fullcalendar/angular';
-import { WorkFromHomeComponent } from './work-from-home/work-from-home.component';
-import { WfhRequestsComponent } from './wfh-requests/wfh-requests.component';
-import { ViewWfhRequestComponent } from './view-wfh-request/view-wfh-request.component';
+
 import { MatDialogModule } from '@angular/material/dialog';
 import { UserCompOffListComponent } from './user-comp-off-list/user-comp-off-list.component';
 import { CancelLeaveRequestComponent } from './cancel-leave-request/cancel-leave-request.component';
@@ -49,9 +47,6 @@ import { CancelLeaveRequestComponent } from './cancel-leave-request/cancel-leave
     CompOffGrantComponent,
     LeaveApplyAdminComponent,
     ResourceAvailabilityComponent,
-    WorkFromHomeComponent,
-    WfhRequestsComponent,
-    ViewWfhRequestComponent,
     UserCompOffListComponent,
     CancelLeaveRequestComponent,
   ],
