@@ -81,7 +81,7 @@
                 <td *ngIf="item.status === 'cancel request sent'"><span style="background:#e0e0e0; color: #d74c4c;"
                     class="p-2 rounded">CANCEL REQUEST SENT</span></td>
                 <td>{{item?.message}}</td>
-                <td>{{item.rejected_reason}}</td>
+                <td>{{item?.rejected_reason || '-'}}</td>
                 <td>
                   <button *ngIf="item.status==='approved' || item.status==='Pending'" mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu" (click)="selectedItem(item)">
                     <mat-icon>more_vert</mat-icon>

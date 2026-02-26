@@ -45,7 +45,7 @@ export class ViewLeaveRequestComponent implements OnInit {
     this.apiService.getData(`${environment.live_url}/${environment.apply_leaves}/${this.data.item_id}/`).subscribe(
       (res:any)=>{
         this.leave_data = res;
-        console.log(this.leave_data)
+        // console.log(this.leave_data)
         this.leave_data.cc = JSON.parse(this.leave_data.cc);
         if (this.leave_data?.status != 'Pending') {
           this.displayButton = false;
@@ -76,6 +76,7 @@ export class ViewLeaveRequestComponent implements OnInit {
       )
       .subscribe((res: any) => {
         this.apiService.showSuccess(res?.message);
+        this.dialogRef.close({data:'refresh'});
         this.dialogRef.close({data:'refresh'});
         // this.dialogRef.close(res);
       },
