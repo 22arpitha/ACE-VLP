@@ -16,7 +16,8 @@ export class ActivateChildGuard implements CanActivateChild {
     state: RouterStateSnapshot
   ): Promise<boolean> {
     let hasViewPermission = false;
-    const online = await isOnline();
+    // const online = await isOnline();
+    const online = navigator.onLine;
 
     if (!online) {
       this._router.navigate(['/no-internet']);

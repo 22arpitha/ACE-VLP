@@ -30,7 +30,8 @@ export class LoginComponent implements OnInit {
   ngOnInit(): void {
     const sessionToken = sessionStorage.getItem('token');
     const localToken = localStorage.getItem('token');
-    const forceUser = this.route.snapshot.queryParamMap.get('forceUser');
+      const forceUser = this.route.snapshot.queryParamMap.get('forceUser');
+    console.log(forceUser)
     if (!forceUser && !sessionToken && localToken) {
       sessionStorage.setItem('token', localToken);
 
@@ -88,11 +89,6 @@ export class LoginComponent implements OnInit {
         const token = response['token'];
         const decoded:any = jwtDecode(token);
         // console.log(decoded)
-        sessionStorage.setItem('token', response['token']),
-        localStorage.setItem('token', response['token']),
-        sessionStorage.setItem('logged_count', response['logged_in_time']);
-        sessionStorage.setItem('user_id',decoded.user_id )
-
         const forceUser = this.route.snapshot.queryParamMap.get('forceUser');
         if (forceUser && forceUser != decoded.user_id) {
           this.api.showError('Please login with the correct account');
@@ -100,6 +96,11 @@ export class LoginComponent implements OnInit {
           localStorage.removeItem('token');
           return;
         }
+        sessionStorage.setItem('token', response['token']),
+        localStorage.setItem('token', response['token']),
+        sessionStorage.setItem('logged_count', response['logged_in_time']);
+        sessionStorage.setItem('user_id',decoded.user_id )
+
         this.api.getData(`${environment.live_url}/${environment.user_access}/${decoded.user_id}/`).subscribe(
           (data:any)=>{
             // console.log('user access',data)

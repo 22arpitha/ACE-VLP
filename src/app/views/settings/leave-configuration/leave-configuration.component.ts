@@ -136,7 +136,7 @@ export class LeaveConfigurationComponent implements OnInit {
       reset_day: ['', Validators.required],
       reset_month: ['', Validators.required],
       is_carry_forward: [true],
-      carry_forward_cycle: ['carry_forward'],
+      carry_forward_cycle: [{value: 'carry_forward', disabled: true}],
       carry_forward_days: [0],
       encashment: ['1'],
       leave_for:['',Validators.required]
@@ -153,6 +153,9 @@ export class LeaveConfigurationComponent implements OnInit {
       const control = this.leaveTypeForm.get(name);
       if (enable) {
         control?.setValidators(Validators.required);
+        if(name === 'carry_forward_cycle'){
+          control?.setValue('carry_forward');
+        }
       } else {
           control?.clearValidators();
           control?.reset();

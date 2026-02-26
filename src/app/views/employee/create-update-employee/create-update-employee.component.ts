@@ -477,7 +477,7 @@ export class CreateUpdateEmployeeComponent implements CanComponentDeactivate, On
     if(this.isEditItem && role_name.designation_name==='Accountant' && this.managerOfAccountant!=event.value){
        const dialogRef =this.dialog.open(JobsOfAccountantComponent, {
         data: { employeeId:this.employee_id},
-       panelClass: 'custom-details-dialog',
+       panelClass: 'leave-or-compoff-form-dialog',
        disableClose: true,
       });
       dialogRef.afterClosed().subscribe((result:any)=>{

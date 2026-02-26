@@ -239,7 +239,7 @@ BreadCrumbsTitle: any = 'Invoices';
     public openEditInvoicePopup(item:any){
       this.dialog.open(EditInvoiceComponent, {
       data: { invoice_id: item?.id,client_id:item?.client_id },
-      panelClass: 'custom-details-dialog',
+      panelClass: 'customize-balance-dialog',
       disableClose: true
     });
     this.dialog.afterAllClosed.subscribe((resp:any)=>{
