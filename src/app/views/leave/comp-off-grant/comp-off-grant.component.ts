@@ -86,10 +86,7 @@ export class CompOffGrantComponent implements OnInit {
     if(!this.data){
         this.getManagerOfEmployee(this.user_id);
       } 
-    this.leaveApplyForm.get('from_date')?.valueChanges.subscribe(() => this.computeTotalDays());
-    this.leaveApplyForm.get('from_date')?.valueChanges.subscribe(() => this.computeTotalDays());
-    this.leaveApplyForm.get('from_session')?.valueChanges.subscribe(() => this.computeTotalDays());
-    this.leaveApplyForm.get('to_session')?.valueChanges.subscribe(() => this.computeTotalDays());
+    this.subscribeToDateChanges();
     this.employeeCtrl.valueChanges.subscribe(value => {
       const search = typeof value === 'string' ? value.toLowerCase() : '';
       this.filteredEmployees = this.allEmployees.filter((emp: any) =>
@@ -148,7 +145,9 @@ export class CompOffGrantComponent implements OnInit {
       .getData(`${environment.live_url}/${environment.settings_leave_type}/`)
       .subscribe(
         (respData: any) => {
-          this.allleavetypeList = respData.filter((data: any) => data.leave_type_name === 'Comp Off');
+          this.allleavetypeList = respData.filter((data: any) => data.leave_type_name.toLowerCase() === 'comp off');
+          this.leaveApplyForm.patchValue({leave_type: this.allleavetypeList[0].id });
+          this.leaveApplyForm.get('leave_type')?.disable();
         },
         (error: any) => {
           this.apiService.showError(error?.error?.detail);
@@ -270,10 +269,21 @@ export class CompOffGrantComponent implements OnInit {
     this.totalDays = 0;
     this.leave_balance = 0
     this.formGroupDirective?.resetForm();
+    this.initialForm();
+    if(!this.data){
+      this.getManagerOfEmployee(this.user_id);
+    }
+    this.subscribeToDateChanges();
     // this.formErrorScrollService.resetHasUnsavedValue();
     // this.isEditItem = false;
     // this.initialFormValue = this.jobFormGroup?.getRawValue();
   }
+   subscribeToDateChanges(): void {
+    this.leaveApplyForm.get('from_date')?.valueChanges.subscribe(() => this.computeTotalDays());
+    this.leaveApplyForm.get('from_date')?.valueChanges.subscribe(() => this.computeTotalDays());
+    this.leaveApplyForm.get('from_session')?.valueChanges.subscribe(() => this.computeTotalDays());
+    this.leaveApplyForm.get('to_session')?.valueChanges.subscribe(() => this.computeTotalDays());
+}
 
 
   add(event: MatChipInputEvent): void {

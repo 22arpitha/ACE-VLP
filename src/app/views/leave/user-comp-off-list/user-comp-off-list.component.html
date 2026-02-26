@@ -52,7 +52,7 @@
             <ng-container *ngIf="(myLeavesList) as result">
               <tr *ngFor="let item of result | customSort:directionValue:sortValue | paginate: { itemsPerPage: tableSize, currentPage: page,totalItems: count }; let i=index">
                  <td>{{getContinuousIndex(i)}}</td>
-                <td>{{item.from_date}} - {{item.to_date}}</td>
+                <td>{{item.from_date | dateFormater}}</td>
                 <td>{{item.number_of_leaves_applying_for}}</td>
                 <td>{{item.created_datetime | dateFormater}}</td>
                 <td *ngIf="item.status === 'Pending'"><span style="background: #ffface; color: #978419;"
