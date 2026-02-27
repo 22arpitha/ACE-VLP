@@ -72,6 +72,9 @@ export class LeaveApplyComponent implements OnInit {
     this.fileDataUrl = '';
     this.leaveApplyForm.patchValue({ attachment: '' });
     this.leaveApplyForm.get('attachment')?.updateValueAndValidity();
+    if (this.fileInput) {
+      this.fileInput.nativeElement.value = '';
+    }
   }
 
   constructor(
@@ -103,22 +106,17 @@ export class LeaveApplyComponent implements OnInit {
     this.getUserData();
     this.workCalendarlist();
     this.holidaylistsss();
-    this.leaveApplyForm.get('from_date')?.valueChanges.subscribe(() => this.computeTotalDays());
-    this.leaveApplyForm.get('to_date')?.valueChanges.subscribe(() => this.computeTotalDays());
-    this.leaveApplyForm.get('from_session')?.valueChanges.subscribe(() => this.computeTotalDays());
-    this.leaveApplyForm.get('to_session')?.valueChanges.subscribe(() => this.computeTotalDays());
+    this.subscribeToDateChanges();
     if(this.leaveApplictaionId){
       this.shouldDisableFields = false;
       setTimeout(() => {
         this.editLeaveApplication();
       }, 2000);
     }
-    console.log(this.shouldDisableFields)
   }
   getModuleAccess() {
     this.accessControlService.getAccessForActiveUrl(this.user_id).subscribe(
       (res: any) => {
-        console.log(res,'ddddddddddd')
         let temp = res.find((item: any) => item.name === 'Apply Leave');
         if(temp){
           this.accessPermissions = temp?.operations;
@@ -239,6 +237,7 @@ employeeGender:any;
           this.leaveApplyForm.controls['attachment'].setErrors(null);
         }
         this.leaveApplyForm.controls['attachment'].updateValueAndValidity();
+        this.updateAttachmentValidator();
   }
 
   initialForm() {
@@ -261,6 +260,12 @@ employeeGender:any;
     return this.leaveApplyForm.controls;
   }
 
+ subscribeToDateChanges(): void {
+  this.leaveApplyForm.get('from_date')?.valueChanges.subscribe(() => this.computeTotalDays());
+  this.leaveApplyForm.get('to_date')?.valueChanges.subscribe(() => this.computeTotalDays());
+  this.leaveApplyForm.get('from_session')?.valueChanges.subscribe(() => this.computeTotalDays());
+  this.leaveApplyForm.get('to_session')?.valueChanges.subscribe(() => this.computeTotalDays());
+}
   public getAllLeaveTypes() {
     this.allleavetypeList = [];
     this.apiService
@@ -629,6 +634,8 @@ employeeGender:any;
   handleDroppedImage(file: File) {
     this.selectedFile = file;
     this.fileName = file.name;
+    this.leaveApplyForm.patchValue({ attachment: file });
+    this.leaveApplyForm.get('attachment')?.markAsTouched();
     this.leaveApplyForm.get('attachment')?.updateValueAndValidity();
 
     const reader = new FileReader();
@@ -651,7 +658,9 @@ employeeGender:any;
       this.selectedFile = file;
       this.fileName = file.name;
       // this.leaveApplyForm.patchValue({ attachment: file });
-      this.leaveApplyForm.get('file')?.updateValueAndValidity();
+      this.leaveApplyForm.patchValue({ attachment: file });
+      this.leaveApplyForm.get('attachment')?.markAsTouched();
+      this.leaveApplyForm.get('attachment')?.updateValueAndValidity();
 
       // Preview image
       const reader = new FileReader();
@@ -660,6 +669,19 @@ employeeGender:any;
       };
       reader.readAsDataURL(file);
     }
+  }
+   updateAttachmentValidator(): void {
+    const attachmentControl = this.leaveApplyForm.get('attachment');
+    const totalDays = this.totalDays;
+    const leaveType = this.selectedLeaveTypeName?.toLowerCase();
+
+    if (leaveType?.includes('sick') && totalDays >= 3) {
+      attachmentControl?.setValidators([Validators.required]);
+    } else {
+      attachmentControl?.clearValidators();
+    }
+
+    attachmentControl?.updateValueAndValidity();
   }
 
   private _isValidEmail(email: string): boolean {
@@ -756,7 +778,12 @@ employeeGender:any;
     request$.subscribe(
       (res: any) => {
         this.apiService.showSuccess(res.message);
-        // this.router.navigate(['/leave/dashboard']);
+        this.resetFormState();
+        if (this.leaveApplictaionId) {
+          setTimeout(() => {
+            this.router.navigate(['/leave/dashboard'])
+          }, 1000);
+        }
       },
       (err) => {
         this.apiService.showError(err?.error?.detail);
@@ -772,7 +799,8 @@ employeeGender:any;
     this.selectedEmails = []
     this.leave_balance = 0
     this.formGroupDirective?.resetForm();
-    this.initialForm()
+    this.initialForm();
+    this.subscribeToDateChanges();
   }
 
   openGrantCompOff(){
@@ -795,8 +823,23 @@ employeeGender:any;
     if (this.selectedLeaveTypeName === 'loss of pay') {
       return false; 
     }
-    if (this.leave_balance === 0) {
+    const toDateValue = this.leaveApplyForm.get('to_date')?.value;
+    const leave_type_id = this.leaveApplyForm.get('leave_type')?.value;
+     let temp = this.allleavetypeList.find((item: any) => item.leave_type_id === leave_type_id)
+    if (!toDateValue) {
       return true;
+    }
+    const selectedDate = new Date(toDateValue);
+    const today = new Date();
+    // First day of next month (handles Dec → Jan automatically)
+    const nextMonthStart = new Date(today.getFullYear(), today.getMonth() + 1, 1);
+    // If leave balance is 0
+    if (this.leave_balance === 0) {
+      // Allow only if date is from next month onwards
+      if (selectedDate >= nextMonthStart) {
+        return false; 
+      }
+      return true; 
     }
     return false;
   }
@@ -892,6 +935,7 @@ computeTotalDays(): void {
   }
 
   this.totalDays = total;
+  this.updateAttachmentValidator();
 }
 
 private isWorkCalendarHoliday(wc: any, d: Date): boolean {

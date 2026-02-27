@@ -208,7 +208,7 @@ export class ResourceAvailabilityComponent implements OnInit {
   }
 
   onScroll(event: any) {
-    console.log(event)
+    // console.log(event)
     const element = event.target;
     const atBottom = element.scrollHeight - element.scrollTop <= element.clientHeight + 20;
 

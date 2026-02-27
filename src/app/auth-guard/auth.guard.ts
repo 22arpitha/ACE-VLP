@@ -38,10 +38,18 @@ export class AuthGuard implements CanActivate {
 
     // 🚨 Not logged in
     if (!sessionUserId) {
+      // this._router.navigate(['/login'], {
+      //   queryParams: { returnUrl: state.url }
+      // });
+      // return of(false);
+      const urlUserId =route.queryParams['user_id'] || route.params['user_id'];
       this._router.navigate(['/login'], {
-        queryParams: { returnUrl: state.url }
-      });
-      return of(false);
+          queryParams: {
+            returnUrl: state.url,...(urlUserId && { forceUser: urlUserId })
+          }
+        });
+
+        return of(false);
     }
 
     // 🧠 CHECK URL USER ID

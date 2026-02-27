@@ -67,14 +67,12 @@ export class CompOffGrantComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    console.log(this.data?.employee===false)
     this.initialForm();
     this.getAllLeaveTypes();
     this.workCalendarlist();
     this.holidaylistsss();
     this.getAllEmployeeList2();
     const isDialogMode = !!this.data;
-
   let employeeMode = false;
 
   if (isDialogMode) {
@@ -85,13 +83,10 @@ export class CompOffGrantComponent implements OnInit {
       employeeMode = params['employee'] === 'true';
     });
   }
-    if(this.data?.employee===false){
+    if(!this.data){
         this.getManagerOfEmployee(this.user_id);
       } 
-    this.leaveApplyForm.get('from_date')?.valueChanges.subscribe(() => this.computeTotalDays());
-    this.leaveApplyForm.get('from_date')?.valueChanges.subscribe(() => this.computeTotalDays());
-    this.leaveApplyForm.get('from_session')?.valueChanges.subscribe(() => this.computeTotalDays());
-    this.leaveApplyForm.get('to_session')?.valueChanges.subscribe(() => this.computeTotalDays());
+    this.subscribeToDateChanges();
     this.employeeCtrl.valueChanges.subscribe(value => {
       const search = typeof value === 'string' ? value.toLowerCase() : '';
       this.filteredEmployees = this.allEmployees.filter((emp: any) =>
@@ -100,8 +95,7 @@ export class CompOffGrantComponent implements OnInit {
       );
      
     });
-    
-    // this.getAllEmployeeList();
+     // this.getAllEmployeeList();
   }
 
   getAllEmployeeList2() {
@@ -133,7 +127,7 @@ export class CompOffGrantComponent implements OnInit {
     this.leaveApplyForm = this.fb.group({
       leave_type: ['', Validators.required],
       from_date: ['', Validators.required],
-      to_date: ['', Validators.required],
+      to_date: [''],
       from_session: ['session 1', Validators.required],
       to_session: ['session 2', Validators.required],
       cc: [''],
@@ -151,7 +145,9 @@ export class CompOffGrantComponent implements OnInit {
       .getData(`${environment.live_url}/${environment.settings_leave_type}/`)
       .subscribe(
         (respData: any) => {
-          this.allleavetypeList = respData.filter((data: any) => data.leave_type_name === 'Comp Off');
+          this.allleavetypeList = respData.filter((data: any) => data.leave_type_name.toLowerCase() === 'comp off');
+          this.leaveApplyForm.patchValue({leave_type: this.allleavetypeList[0].id });
+          this.leaveApplyForm.get('leave_type')?.disable();
         },
         (error: any) => {
           this.apiService.showError(error?.error?.detail);
@@ -226,17 +222,19 @@ export class CompOffGrantComponent implements OnInit {
 
   onSubmit(): void {
     const ccIds = this.selectedEmployees.map((e:any) => e.user_id);
-    if(this.data?.employee===false){
+    if(!this.data){
       this.leaveApplyForm.patchValue({employee: this.user_id });
     }
-    this.leaveApplyForm.patchValue({ cc: ccIds,number_of_leaves_applying_for: this.totalDays });
+    let new_start_date: any = this.convertDateTime(this.getDateFromControl('from_date'));
+    this.leaveApplyForm.patchValue({ cc: ccIds,number_of_leaves_applying_for: this.totalDays, from_date:new_start_date, to_date: new_start_date });
 
     console.log(this.leaveApplyForm.value)
      if (this.totalDays === 0) {
-    this.apiService.showError("Comp off can only be applied on holidays or non-working days");
+    this.apiService.showWarning("Comp off can only be applied on holidays or non-working days");
     return;
   }
     if (this.leaveApplyForm.invalid) {
+      console.log('ee',this.leaveApplyForm.controls)
       this.leaveApplyForm.markAllAsTouched();
     }
     else {
@@ -271,10 +269,21 @@ export class CompOffGrantComponent implements OnInit {
     this.totalDays = 0;
     this.leave_balance = 0
     this.formGroupDirective?.resetForm();
+    this.initialForm();
+    if(!this.data){
+      this.getManagerOfEmployee(this.user_id);
+    }
+    this.subscribeToDateChanges();
     // this.formErrorScrollService.resetHasUnsavedValue();
     // this.isEditItem = false;
     // this.initialFormValue = this.jobFormGroup?.getRawValue();
   }
+   subscribeToDateChanges(): void {
+    this.leaveApplyForm.get('from_date')?.valueChanges.subscribe(() => this.computeTotalDays());
+    this.leaveApplyForm.get('from_date')?.valueChanges.subscribe(() => this.computeTotalDays());
+    this.leaveApplyForm.get('from_session')?.valueChanges.subscribe(() => this.computeTotalDays());
+    this.leaveApplyForm.get('to_session')?.valueChanges.subscribe(() => this.computeTotalDays());
+}
 
 
   add(event: MatChipInputEvent): void {
@@ -555,7 +564,7 @@ computeTotalDays(): void {
     if (!isHoliday(d)) {
       this.totalDays = 0;
       console.log('Not holiday date found:', this.totalDays);
-      this.apiService.showError("Comp off can only be applied on holidays or non-working days");
+      this.apiService.showWarning("Comp off can only be applied on holidays or non-working days");
       return;
     }
   }
@@ -627,30 +636,34 @@ private isSessionMorning(sessionValue: any): boolean {
   );
   return !!specificHoliday;
 }
-
 private weekdayNameFromCalendar(wc: any, date: Date): string {
-  const daysFromCalendar = wc.working_days.map((d: any) => d.day);
-
-  if (!daysFromCalendar || daysFromCalendar.length < 7) {
-    const fallback = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-    return fallback[date.getDay()];
-  }
-
-  const actualIndex = date.getDay();
-  const startDay = wc.work_week_starts_on;
-  const startIndex = daysFromCalendar.findIndex(
-    (d: string) => d.toLowerCase() === startDay.toLowerCase()
-  );
-
-  if (startIndex === -1) return daysFromCalendar[actualIndex] || daysFromCalendar[0];
-
-  const rotatedDays = [
-    ...daysFromCalendar.slice(startIndex),
-    ...daysFromCalendar.slice(0, startIndex),
-  ];
-
-  return rotatedDays[actualIndex] || rotatedDays[0];
+  const jsDays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  return jsDays[date.getDay()];
 }
+
+// private weekdayNameFromCalendar(wc: any, date: Date): string {
+//   const daysFromCalendar = wc.working_days.map((d: any) => d.day);
+//   console.log(daysFromCalendar)
+//   if (!daysFromCalendar || daysFromCalendar.length < 7) {
+//     const fallback = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+//     return fallback[date.getDay()];
+//   }
+
+//   const actualIndex = date.getDay();
+//   const startDay = wc.work_week_starts_on;
+//   const startIndex = daysFromCalendar.findIndex(
+//     (d: string) => d.toLowerCase() === startDay.toLowerCase()
+//   );
+
+//   if (startIndex === -1) return daysFromCalendar[actualIndex] || daysFromCalendar[0];
+
+//   const rotatedDays = [
+//     ...daysFromCalendar.slice(startIndex),
+//     ...daysFromCalendar.slice(0, startIndex),
+//   ];
+
+//   return rotatedDays[actualIndex] || rotatedDays[0];
+// }
 
 private getWeekNumberOfMonthKey(d: Date): string {
   const date = d.getDate();

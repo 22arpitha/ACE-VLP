@@ -267,7 +267,7 @@ getAppliedLeaveData(leaveId: any) {
   }
 
   viewLeaveRequest(id:any) {
-    this.dialog.open(ViewLeaveRequestComponent, {
+   const dialogRef = this.dialog.open(ViewLeaveRequestComponent, {
       data: { item_id: id },
       // panelClass: 'custom-details-dialog',
       panelClass: 'view-leave-details-dialog',
@@ -283,11 +283,11 @@ getAppliedLeaveData(leaveId: any) {
     queryParamsHandling: 'merge',
     replaceUrl: true
   });
-    this.dialog.afterAllClosed.subscribe((resp: any) => {
-      if(resp.data==='refresh'){
-        this.getleaverequest();
+    dialogRef.afterClosed().subscribe((resp: any) => {
+      console.log('resp',resp);
+      if(resp?.data==='refresh'){
+        this.getLeaveStatus();
       }
-      // console.log('resp',resp);
       //  this.initalCall();
     });
   }
@@ -301,7 +301,7 @@ getAppliedLeaveData(leaveId: any) {
     dialogRef.afterClosed().subscribe((resp: any) => {
       // console.log('resp', resp);
       if (resp?.data === 'refresh') {
-        this.getleaverequest();
+        this.leaveStatus();
       }
     });
     this.cdr.detectChanges();

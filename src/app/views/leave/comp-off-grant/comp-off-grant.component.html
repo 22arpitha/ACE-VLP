@@ -42,7 +42,7 @@
                                 <mat-select placeholder="Leave Type" autocomplete="off" panelClass="custom-select-panel"
                                     [disableOptionCentering]="true" formControlName="leave_type">
                                     <!-- (selectionChange)="onLeaveTypeChange($event)" -->
-                                    <mat-option *ngFor="let leave of allleavetypeList" [value]="leave.id" selected>{{
+                                    <mat-option selected *ngFor="let leave of allleavetypeList" [value]="leave.id" selected>{{
                                         leave.leave_type_name }}</mat-option>
                                 </mat-select>
                                 <mat-error *ngIf="f['leave_type']?.invalid && f['leave_type']?.touched || f['leave_type']?.dirty">

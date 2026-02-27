@@ -45,14 +45,14 @@
               </th>
               <th scope="col">MESSAGE</th>
               <th scope="col">Rejected REASON</th>
-              <th scope="col">ACTION</th>
+              <!-- <th scope="col">ACTION</th> -->
             </tr>
           </thead>
           <tbody>
             <ng-container *ngIf="(myLeavesList) as result">
               <tr *ngFor="let item of result | customSort:directionValue:sortValue | paginate: { itemsPerPage: tableSize, currentPage: page,totalItems: count }; let i=index">
                  <td>{{getContinuousIndex(i)}}</td>
-                <td>{{item.from_date}} - {{item.to_date}}</td>
+                <td>{{item.from_date | dateFormater}}</td>
                 <td>{{item.number_of_leaves_applying_for}}</td>
                 <td>{{item.created_datetime | dateFormater}}</td>
                 <td *ngIf="item.status === 'Pending'"><span style="background: #ffface; color: #978419;"
@@ -63,7 +63,7 @@
                     class="p-2 rounded">REJECTED</span></td>
                 <td>{{item?.message}}</td>
                 <td>{{item.rejected_reason}}</td>
-                <td>
+                <!-- <td>
                   <div *ngIf="item.status === 'Pending'">
                     <button  class="btn btn-sm custom-btn" type="button"
                       (click)="revoke(item)">Revoke</button>
@@ -71,7 +71,7 @@
                   <div *ngIf="item.status != 'Pending'">
                     <span>-</span>
                   </div>
-                </td>
+                </td> -->
               </tr>
             </ng-container>
           </tbody>

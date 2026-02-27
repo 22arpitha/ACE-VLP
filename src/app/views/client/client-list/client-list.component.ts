@@ -301,7 +301,7 @@ export class ClientListComponent implements OnInit {
 
   public viewContactDetails(item: any) {
     this.dialog.open(ClientContactDetailsPopupComponent, {
-      panelClass: 'custom-details-dialog',
+      panelClass: 'customize-balance-dialog',
       data: { contact_details: item?.contact_details }
     });
   }
