@@ -62,7 +62,7 @@
                                     (selectedOptionsChange)="onFilterChange($event, 'employee')"></app-generic-table-filter>
                                 </mat-menu>
                         </th>
-                        <th *ngFor="let date of weekDates">{{ date.date }}</th>
+                        <th *ngFor="let date of weekDates">{{ date.date | dateFormater}}</th>
                         </tr>
                     </thead>
                     <tbody>

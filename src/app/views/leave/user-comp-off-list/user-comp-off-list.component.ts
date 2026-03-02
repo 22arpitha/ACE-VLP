@@ -50,8 +50,8 @@ export class UserCompOffListComponent implements OnInit {
    getLeaveStatus() {
      this.apiService.getData(`${environment.live_url}/${environment.leave_status}/`).subscribe(
        (res: any) => {
-         this.leaveStatus = res?.data?.filter((item: any) => item.value !== 'Pending')
-        .map((item: any) => ({
+        // .filter((item: any) => item.value !== 'Pending')
+         this.leaveStatus = res?.data?.map((item: any) => ({
           id: item.key,
           name: item.value
         }));
@@ -116,9 +116,9 @@ export class UserCompOffListComponent implements OnInit {
        this.filterQuery += `&status_values=[${this.filters.status_name.join(',')}]`;
        this.filterQuery += `&status_values=[${this.ids(this.filters.status_name)}]`;
      } 
-     if(this.filters.status_name.length===0){
-       this.filterQuery += `&status_values=[Approved,Rejected]`;
-     }
+    //  if(this.filters.status_name.length===0){
+    //    this.filterQuery += `&status_values=[Approved,Rejected,pending]`;
+    //  }
      if(this.mainStartDate && this.mainEndDate){
        let start_date = this.datePipe.transform(this.mainStartDate, 'yyyy-MM-dd');
        let end_date = this.datePipe.transform(this.mainEndDate, 'yyyy-MM-dd');

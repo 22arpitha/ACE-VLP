@@ -58,10 +58,10 @@ export class CancelLeaveRequestComponent implements OnInit {
       const selectedSessions = availableSessions.filter(k => d[k] === true);
 
       const group = this.fb.group({
-        selected: [false],
+        selected: [true],
         date: [d.date],
         availableSessions: [availableSessions],  // for dropdown options
-        sessions: [{ value: selectedSessions, disabled: true }], // for display
+        sessions: [{ value: selectedSessions, disabled: false }], // for display
         original: [d] // for submit toggle
       });
 
@@ -140,7 +140,5 @@ export class CancelLeaveRequestComponent implements OnInit {
     );
   }
 
-
-  // this.dialogRef.close({data:'refresh'});
 
 }

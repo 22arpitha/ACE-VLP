@@ -205,14 +205,14 @@ export class MyLeavesComponent implements OnInit {
   }
 
   cancelRequest(data:any){
-     this.dialog.open(CancelLeaveRequestComponent, {
+    const dialogRef= this.dialog.open(CancelLeaveRequestComponent, {
           data: data,
           // panelClass: 'custom-details-dialog',
           panelClass: 'cancel-leave-details-dialog',
           disableClose: true,
         });
        
-        this.dialog.afterAllClosed.subscribe((resp: any) => {
+        dialogRef.afterClosed().subscribe((resp: any) => {
           if(resp?.data==='refresh'){
             this.getMyLeaves()
           }

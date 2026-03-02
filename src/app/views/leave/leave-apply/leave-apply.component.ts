@@ -913,7 +913,7 @@ computeTotalDays(): void {
       this.totalDays = 0;
       return;
     }
-
+    this.updateAttachmentValidator();
     total = (fromSession === toSession) ? 0.5 : 1;
     this.totalDays = total;
     return;
