@@ -29,6 +29,13 @@ export const tableColumns = [
     sortable: true
   },
   {
+      label: 'Status Date',
+      key: 'job_status_date',
+      sortKey: 'job_status_date',
+      sortable: true,
+      type:'date',
+    },
+  {
     label: 'Total Points',
     key: 'total_points',
     sortKey: 'total_points',

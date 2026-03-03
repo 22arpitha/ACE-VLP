@@ -27,6 +27,7 @@ BreadCrumbsTitle: any = 'Non Billable Hours';
         tableSize: this.tableSize,
         pagination: true,
         showDownload:true,
+        total_hours:true,
       };
       user_id:any;
       userRole:any;
@@ -171,6 +172,7 @@ exportCsvOrPdf(fileType) {
                 sl: (page - 1) * pageSize + i + 1,
                 ...item,
               }));
+              let tableFooterContent = {'total_actual_time':res?.total_actual_time}
               this.tableConfig = {
                 columns: tableColumns.map(col => ({
                   ...col,
@@ -185,7 +187,9 @@ exportCsvOrPdf(fileType) {
                currentPage:page,
                totalRecords: res.total_no_of_record,
                hideDownload:true,
-               showDownload:true,  
+               showDownload:true, 
+               total_hours:true, 
+               tableFooterContent:tableFooterContent,
                showCsv:true,
                showPdf:false, 
               searchPlaceholder:'Search by Employee/Job',

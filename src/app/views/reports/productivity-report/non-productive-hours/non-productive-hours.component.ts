@@ -28,6 +28,7 @@ export class NonProductiveHoursComponent implements OnInit,OnChanges {
        tableSize: this.tableSize,
        pagination: true,
        showDownload:true,
+       total_hours:true,
      };
 
   user_id: string;
@@ -184,6 +185,7 @@ export class NonProductiveHoursComponent implements OnInit,OnChanges {
          sl: (page - 1) * pageSize + i + 1,
          ...item
        }));
+       let tableFooterContent = {'total_actual_time':res?.total_actual_time}
        this.tableConfig = {
         columns: tableColumns.map(col => ({
                         ...col,
@@ -199,6 +201,8 @@ export class NonProductiveHoursComponent implements OnInit,OnChanges {
         totalRecords: res.total_no_of_record,
         hideDownload:true,
         showDownload:true,
+        total_hours:true,
+        tableFooterContent:tableFooterContent,
         showCsv:true,
         showPdf:false,
         searchPlaceholder:'Search by Client/Job',

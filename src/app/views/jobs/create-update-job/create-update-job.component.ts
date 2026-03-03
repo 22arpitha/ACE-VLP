@@ -23,7 +23,7 @@ import { MatSelect, MatSelectModule } from '@angular/material/select';
   styleUrls: ['./create-update-job.component.scss']
 })
 export class CreateUpdateJobComponent implements CanComponentDeactivate, OnInit, OnDestroy {
-  BreadCrumbsTitle: any = 'Job';
+  BreadCrumbsTitle: any;
   @ViewChild(FormGroupDirective) formGroupDirective!: FormGroupDirective;
   @ViewChild(MatPaginator) paginator: MatPaginator | undefined;
   @Output() isEmployeeAdded:EventEmitter<boolean> = new EventEmitter<boolean>();
@@ -168,7 +168,7 @@ export class CreateUpdateJobComponent implements CanComponentDeactivate, OnInit,
       only_admin_can_change_job_status: [''],
       is_amendment: [false],
       amdment_number:[''],
-      customer_service:['', [Validators.pattern(/^[a-zA-Z0-9!@#$%^&*()_+{}\[\]:;"'<>,.?/\\|`~\-]+( [a-zA-Z0-9!@#$%^&*()_+{}\[\]:;"'<>,.?/\\|`~\-]+)*$/), Validators.maxLength(25)]],
+      customer_service:['', [Validators.pattern(/^[a-zA-Z0-9!@#$%^&*()_+{}\[\]:;"'<>,.?/\\|`~\-]+( [a-zA-Z0-9!@#$%^&*()_+{}\[\]:;"'<>,.?/\\|`~\-]+)*$/), Validators.maxLength(100)]],
     });
     this.initialFormValue = this.jobFormGroup?.getRawValue();
     this.filteredEmployeeLists[0] = [...this.allEmployeeList];
@@ -247,10 +247,23 @@ export class CreateUpdateJobComponent implements CanComponentDeactivate, OnInit,
     return this.fb.group({
       employee: ['',Validators.required],
       manager: ['',Validators.required],
-      is_primary: [this.user_role_name === 'Accountant' ? true : false],
+      // is_primary: [this.user_role_name === 'Accountant' ? true : false],
+      is_primary: [false],
     });
   }
 
+  private updatePrimaryEmployee(): void {
+    const controls = this.employeeFormArray.controls;
+    if (controls.length === 1) {
+      controls[0].get('is_primary')?.setValue(true, { emitEvent: false });
+      return;
+    }
+    // Check if already one primary exists
+    const alreadyPrimary = controls.some(control => control.get('is_primary')?.value === true);
+    if (!alreadyPrimary && controls.length > 0) {
+      controls[0].get('is_primary')?.setValue(true, { emitEvent: false });
+    }
+}
   public getJobBillingOptions() {
     this.jobBillingOption = {};
     this.apiService.getData(`${environment.live_url}/${environment.jobs}/?get-options=True`).subscribe((respData: any) => {
@@ -635,7 +648,7 @@ onManagerSelectOpened(opened: boolean, index: number): void {
     this.apiService.getData(`${environment.live_url}/${environment.jobs}/${id}/`).subscribe((respData: any) => {
         // console.log(respData)
       if (respData) {
-        this.BreadCrumbsTitle = this.BreadCrumbsTitle + ` (${respData.job_name})`
+        this.BreadCrumbsTitle = ` ${respData?.job_number}` + ` (${respData.job_name})`
         this.common_service.setTitle(this.BreadCrumbsTitle);
         this.jobDetails = respData;
         this.estimatedTime = respData?.estimated_time
@@ -828,6 +841,7 @@ onManagerSelectOpened(opened: boolean, index: number): void {
       const newIndex = this.employeeFormArray.length - 1;
       this.filteredEmployeeLists[newIndex] = this.allEmployeeList;
       this.filteredManagerLists[newIndex] = this.allManagerList;
+       this.updatePrimaryEmployee();
     } else{
       this.employeeFormArray.markAllAsTouched();
     }
@@ -857,6 +871,7 @@ onManagerSelectOpened(opened: boolean, index: number): void {
         ['employee', 'manager', 'is_primary'].forEach(field => lastItem.get(field)?.enable());
       }
     }
+     this.updatePrimaryEmployee();
     this.checkAllEmployeeCheckbox();
   }
 
@@ -893,6 +908,14 @@ onManagerSelectOpened(opened: boolean, index: number): void {
 }
 
   public saveJobDetails() {
+    if (
+      this.jobFormGroup.get('unassigned')?.value === false &&
+      this.employeeFormArray.length > 0 &&
+      !this.hasPrimaryEmployee()
+    ) {
+      this.apiService.showError('Please select one Primary Employee before saving.');
+      return;
+    }
     if (this.jobFormGroup.invalid) {
       this.jobFormGroup.markAllAsTouched();
       this.formErrorScrollService.setUnsavedChanges(true);
@@ -1229,22 +1252,37 @@ getUnassignedTooltip(): string {
       const selectedEmp = this.allEmployeeList.find((emp: any) => emp.user_id === event.value);
       this.employeeFormArray.at(i).patchValue({ 'employee': event.value });
       this.employeeFormArray.at(i).patchValue({ 'manager': selectedEmp?.reporting_manager_id });
-      this.employeeFormArray.at(i).patchValue({ 'is_primary': this.user_role_name === 'Accountant' ? true : false });
+      // this.employeeFormArray.at(i).patchValue({ 'is_primary': this.user_role_name === 'Accountant' ? true : false });
+      if (this.employeeFormArray.length === 1) {
+        this.employeeFormArray.at(i).patchValue({ 'is_primary': true });
+      }
     }
 
   }
 
   public isPrimarySelection(event: { checked: boolean }, selectedIndex: number): void {
+    if (event.checked) {
     this.employeeFormArray.controls.forEach((control, index) => {
-      if (event.checked && index !== selectedIndex) {
-        control.get('is_primary')?.setValue(false, { emitEvent: false });
-        control.get('is_primary')?.disable();
-      } else {
-        control.get('is_primary')?.enable();
-      }
+      control.get('is_primary')?.setValue(index === selectedIndex, { emitEvent: false });
     });
   }
+    // this.employeeFormArray.controls.forEach((control, index) => {
+    //   if (event.checked && index !== selectedIndex) {
+    //     control.get('is_primary')?.setValue(false, { emitEvent: false });
+    //     control.get('is_primary')?.disable();
+    //   } else {
+    //     control.get('is_primary')?.enable();
+    //   }
+    // });
+  }
 
+   hasPrimaryEmployee(): boolean {
+    const employees = this.employeeFormArray?.getRawValue() || [];
+
+    if (!employees.length) return false;
+
+    return employees.some((emp: any) => emp?.is_primary === true);
+  }
 
   get currentPageRows() {
     const startIndex = (this.currentPage - 1) * this.pageSize;

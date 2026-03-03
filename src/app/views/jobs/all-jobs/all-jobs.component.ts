@@ -625,6 +625,7 @@ private searchSubject = new Subject<string>();
     const params = new URLSearchParams(url);
     params.delete('page');
     params.delete('page_size');
+    this.isUnassigned===true? params.delete('job-status'):'';
     return params.toString();  
   }
   downloadOption(type: any) {
@@ -641,37 +642,10 @@ private searchSubject = new Subject<string>();
     const updated_query = this.removePagination(cleanedFilterQuery)
     let query = `?download=true&file-type=${type}`;
     query += `&${updated_query}`;
+    query += this.isUnassigned === true ?`unassigned=True` : '';
     query += this.userRole !== 'Admin' ? `&employee-id=${this.user_id}` : '';
     let apiUrl = `${environment.live_url}/${environment.only_jobs}/${query}`;
     window.open(apiUrl, '_blank');
-    // const newTab = window.open(apiUrl, '_blank');
-
-    // setTimeout(() => {
-    //   try {
-    //     newTab?.close();
-    //   } catch (err) {
-    //     console.error('Could not close tab:', err);
-    //   }
-    // }, 1000);
-
-  //     this.ngxLoader.stop(); // stop on success
-  //   },
-  //   error: err => {
-  //     console.error(err);
-  //     this.ngxLoader.stop(); // stop on error
-  //     // show in-panel message if you want
-  //   }
-  // });
-    // let apiUrl = `${environment.live_url}/${environment.only_jobs}/${query}`;
-    //  this.ngxLoader.start();
-    // fetch(apiUrl)
-    //   .then(res => res.blob())
-    //   .then(blob => {
-    //     const a = document.createElement('a');
-    //     a.href = URL.createObjectURL(blob);
-    //     a.download = `job-details.${type}`;
-    //     a.click();
-    //   });
   }
 
   jobStatusList(status: any) {

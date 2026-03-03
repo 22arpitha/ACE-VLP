@@ -27,6 +27,13 @@ export const tableColumns = [
       sortable: true
     },
     {
+      label: 'Status Date',
+      key: 'job_status_date',
+      sortKey: 'job_status_date',
+      sortable: true,
+      type:'date',
+    },
+    {
       label: 'Task',
       key: 'task',
       sortKey:'task',
