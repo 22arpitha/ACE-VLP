@@ -143,6 +143,17 @@ export class ViewInvoiceComponent implements OnInit {
       });
   }
 
+  getEmployeeName(employees: any): string {
+    if (!employees || employees.length === 0) {
+    return '-';
+    }
+    const employee = employees.find((emp: any) => emp?.is_primary === true);
+    return employee ? employee?.employee__full_name : '';
+  }
+  getManagerName(employees: any): string {
+    const manager = employees.find((man: any) => man?.is_primary === true);
+    return manager ? manager?.manager__full_name : '';
+  }
   public deleteClient() {
     if (this.invoice_id) {
       const modelRef = this.modalService.open(GenericDeleteComponent, {

@@ -95,11 +95,11 @@
                             <div class="mrp-content">
                               <mat-form-field appearance="outline" class="custom-mat-form-field">
                                 <mat-label>MRP {{ j + 1 }}</mat-label>
-                                <input matInput type="text" pattern="[0-9]*" placeholder="MRP {{ j + 1 }}"
+                                <input matInput type="text" pattern="^(-|[0-9]*)$" [value]="mrpCrpitem.get('mrp')?.value === null ? '-' : mrpCrpitem.get('mrp')?.value"
                                   formControlName="mrp" [maxlength]="3" [minlength]="1" autocomplete="off"
-                                  (focusout)="setDefaultValueIfEmpty($event, ((currentPage - 1) * pageSize + i), j, 'mrp')"
-                                  (keypress)="validateKeyPress($event)">
-
+                                  (focus)="handleFocus(mrpCrpitem, 'mrp')"
+                                  (keypress)="validateKeyPress($event)" (blur)="handleBlur(mrpCrpitem, 'mrp')">
+                                <!-- (focusout)="setDefaultValueIfEmpty($event, ((currentPage - 1) * pageSize + i), j, 'mrp')" -->
                               </mat-form-field>
                               <div class="mx-0 my-1 px-0 justify-content-center">
                                 <div class="drop-zone" data-type="mrp"
@@ -169,10 +169,11 @@
                         <div class="crp-content">
                           <mat-form-field appearance="outline" class="custom-mat-form-field">
                             <mat-label>CRP {{ j + 1 }}</mat-label>
-                            <input matInput type="text" pattern="[0-9]*" placeholder="CRP {{ j + 1 }}" [min]="0"
+                            <input matInput type="text" pattern="^(-|[0-9]*)$"  [value]="mrpCrpitem.get('crp')?.value === null ? '-' : mrpCrpitem.get('crp')?.value" 
                               formControlName="crp" autocomplete="off" [maxlength]="3" [minlength]="1"
-                              (focusout)="setDefaultValueIfEmpty($event, ((currentPage - 1) * pageSize + i), j, 'crp')"
-                              (keypress)="validateKeyPress($event)">
+                              (keypress)="validateKeyPress($event)" (focus)="handleFocus(mrpCrpitem, 'crp')"
+                                (blur)="handleBlur(mrpCrpitem, 'crp')">
+                              <!-- (focusout)="setDefaultValueIfEmpty($event, ((currentPage - 1) * pageSize + i), j, 'crp')" -->
                           </mat-form-field>
                           <div class="mx-0 my-1 px-0 justify-content-center">
                             <div class="drop-zone" data-type="crp" [attr.data-row]="((currentPage - 1) * pageSize + i)"

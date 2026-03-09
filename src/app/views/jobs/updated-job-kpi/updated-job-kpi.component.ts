@@ -108,10 +108,10 @@ export class UpdatedJobKpiComponent implements CanComponentDeactivate, OnInit, O
 
   private createMrpCrpGroup(): FormGroup {
     const group = this.fb.group({
-      mrp: [0],
+      mrp: [null],
       mrpFile: [null],
       mrp_file_name: [null],
-      crp: [0],
+      crp: [null],
       crpFile: [null],
       crp_file_name: [null],
       'unique-id': [null],
@@ -225,8 +225,11 @@ export class UpdatedJobKpiComponent implements CanComponentDeactivate, OnInit, O
               emp.kpi.details.forEach((detail, detailIndex) => {
                 const detailGroup = this.createMrpCrpGroup();
                 detailGroup.patchValue({
-                  mrp: detail?.mrp ?? 0,
-                  crp: detail?.crp ?? 0,
+                  // mrp: detail?.mrp ?? 0,
+                  // crp: detail?.crp ?? 0,
+                  mrp: detail?.mrp !== null && detail?.mrp !== undefined && detail?.mrp !== '' ? detail?.mrp : '-',
+                  crp: detail?.crp !== null && detail?.crp !== undefined && detail?.crp !== '' ? detail?.crp : '-',
+  
                   mrp_file_name: detail?.mrp_file_name ?? null,
                   crp_file_name: detail?.crp_file_name ?? null,
                   'unique-id': detail?.id ?? null,
@@ -270,7 +273,8 @@ export class UpdatedJobKpiComponent implements CanComponentDeactivate, OnInit, O
 
                 // CRP File
                 if (detail && detail?.crpFile) {
-                  detailGroup?.get('mrpFile')?.setErrors(null);
+                  // detailGroup?.get('mrpFile')?.setErrors(null);
+                  detailGroup?.get('crpFile')?.setErrors(null);
                   urlToFile(detail.crpFile, this.getFileName(detail.crpFile))
                     .then((file) => {
                       const fileToSet = file ?? null;
@@ -702,9 +706,9 @@ export class UpdatedJobKpiComponent implements CanComponentDeactivate, OnInit, O
         this.selectedCrpFile[rowIndex] = this.selectedCrpFile[rowIndex] || [];
         this.crpFileLink[rowIndex] = this.crpFileLink[rowIndex] || [];
 
-        this.crpFile[rowIndex][crpIndex] = selectedFile;
-        this.selectedCrpFile[rowIndex][crpIndex] = this.crpFile[rowIndex][crpIndex];
-        this.crpFileLink[rowIndex][crpIndex] = null;
+        // this.crpFile[rowIndex][crpIndex] = selectedFile;
+        // this.selectedCrpFile[rowIndex][crpIndex] = this.crpFile[rowIndex][crpIndex];
+        // this.crpFileLink[rowIndex][crpIndex] = null;
         this.crpFile[rowIndex][crpIndex] = selectedFile;
         this.selectedCrpFile[rowIndex][crpIndex] = this.crpFile[rowIndex][crpIndex];
         this.crpFileLink[rowIndex][crpIndex] = null;
@@ -840,27 +844,60 @@ export class UpdatedJobKpiComponent implements CanComponentDeactivate, OnInit, O
       employeesDetailsArray?.at(index)?.patchValue({ 'review_time': rawValue });
     }
   }
+  displayValue(value: any) {
+  return value === null || value === '' ? '-' : value;
+}
+handleFocus(group: any, field: 'mrp' | 'crp') {
+  const control = group.get(field);
+  // Remove '-' or null on focus for clean editing
+  if (control.value === null || control.value === '-') {
+    control.setValue('', { emitEvent: false });
+  }
+}
+
+handleBlur(group: any, field: 'mrp' | 'crp') {
+  const control = group.get(field);
+  // Restore '-' if input is empty or whitespace on blur
+  if (control.value === '' || control.value === null || (typeof control.value === 'string' && control.value.trim() === '')) {
+    control.setValue('-', { emitEvent: false });
+  }
+}
   setDefaultValueIfEmpty(
     event: any,
     rowIndex: number,
     mrpIndex: number,
     fieldName: 'mrp' | 'crp'
   ): void {
-    const rawValue = event?.target?.value;
-
-    if (!rawValue) {
+     const rawValue = event?.target?.value;
       const employeesDetailsArray = this.jobKPIFormGroup?.get('data') as FormArray;
-
       if (employeesDetailsArray?.at(rowIndex)) {
         const detailFormGroup = employeesDetailsArray.at(rowIndex) as FormGroup;
         const detailsArray = detailFormGroup.get('details') as FormArray;
 
         if (detailsArray?.at(mrpIndex)) {
-          detailsArray.at(mrpIndex).patchValue({ [fieldName]: 0 });
+
+          // if user clears input -> store null
+          if (rawValue === '' || rawValue === '-') {
+            detailsArray.at(mrpIndex).patchValue({ [fieldName]: null });
+          }
+
         }
+
+        // const rawValue = event?.target?.value;
+        // if (!rawValue) {
+        //   const employeesDetailsArray = this.jobKPIFormGroup?.get('data') as FormArray;
+
+        //   if (employeesDetailsArray?.at(rowIndex)) {
+        //     const detailFormGroup = employeesDetailsArray.at(rowIndex) as FormGroup;
+        //     const detailsArray = detailFormGroup.get('details') as FormArray;
+
+        //     if (detailsArray?.at(mrpIndex)) {
+        //       detailsArray.at(mrpIndex).patchValue({ [fieldName]: 0 });
+        //     }
+        //   }
+        // }
       }
-    }
-  }
+}
   public validateKeyPress(event: KeyboardEvent) {
     const keyCode = event.which || event.keyCode;
     if (
@@ -1002,8 +1039,10 @@ export class UpdatedJobKpiComponent implements CanComponentDeactivate, OnInit, O
     const detailGroup = dataArray?.at(rowIndex).get('details')?.get([index]) as FormGroup;
     if (detailGroup) {
       this.originalRowValues[key] = {
-      mrp: Number(detailGroup.get('mrp')?.value || 0),
-      crp: Number(detailGroup.get('crp')?.value || 0),
+        mrp: detailGroup.get('mrp')?.value ?? null,
+        crp: detailGroup.get('crp')?.value ?? null,
+      // mrp: Number(detailGroup.get('mrp')?.value || 0),
+      // crp: Number(detailGroup.get('crp')?.value || 0),
       mrpFileName:
         this.selectedMrpFile?.[rowIndex]?.[index]?.name || '',
       crpFileName:
@@ -1052,11 +1091,15 @@ export class UpdatedJobKpiComponent implements CanComponentDeactivate, OnInit, O
           this.budgetFile[rowIndex]
         );
       }
-      console.log(this.jobKPIFormGroup.value)
+      // console.log(this.jobKPIFormGroup.value)
       detailGroup.markAllAsTouched();
     // ---- Proper hybrid file validation ----
-      const mrpValue = Number(detailGroup.get('mrp')?.value || 0);
-      const crpValue = Number(detailGroup.get('crp')?.value || 0);
+      const mrpRaw = detailGroup.get('mrp')?.value;
+      const crpRaw = detailGroup.get('crp')?.value;
+
+      // If value is '-' treat as null (empty)
+      const mrpValue:any = (mrpRaw === '' || mrpRaw === null || mrpRaw === '-') ? null : Number(mrpRaw);
+      const crpValue:any = (crpRaw === '' || crpRaw === null || crpRaw === '-') ? null : Number(crpRaw);
 
       // consider BOTH new files and already saved files
       const hasMrpFile =
@@ -1118,8 +1161,10 @@ export class UpdatedJobKpiComponent implements CanComponentDeactivate, OnInit, O
       const payload = {
         employee_id: employeeGroup.get('employee')?.value,
         job_id: this.jobKPIFormGroup.get('job')?.value,
-        mrp: detailValue.mrp,
-        crp: detailValue.crp,
+        // mrp: detailValue.mrp,
+        // crp: detailValue.crp,
+        mrp: mrpValue,
+        crp: crpValue,
         mrpFile: mrpBase64,
         mrp_file_name: this.selectedMrpFile?.[rowIndex]?.[index]?.name || null,
         crpFile: crpBase64,
@@ -1130,6 +1175,7 @@ export class UpdatedJobKpiComponent implements CanComponentDeactivate, OnInit, O
         budget_file_name: this.selectedBudgetFile?.[rowIndex]?.name || null,
         "unique-id": detailValue['unique-id'] ?? null
       };
+      console.log('Payload to submit:', payload);
       this.submitLineItem(payload, rowIndex, index);
     }
   }
@@ -1175,8 +1221,12 @@ export class UpdatedJobKpiComponent implements CanComponentDeactivate, OnInit, O
 
         // Patch values
         detailGroup.patchValue({
-          mrp: updatedDetail.mrp ?? 0,
-          crp: updatedDetail.crp ?? 0,
+          // mrp: updatedDetail.mrp ?? 0,
+          // crp: updatedDetail.crp ?? 0,
+          // mrp: updatedDetail.mrp ?? null,
+          // crp: updatedDetail.crp ?? null,
+          mrp: updatedDetail.mrp !== null && updatedDetail.mrp !== undefined && updatedDetail.mrp !== '' ? updatedDetail.mrp : '-',
+          crp: updatedDetail.crp !== null && updatedDetail.crp !== undefined && updatedDetail.crp !== '' ? updatedDetail.crp : '-',
           mrp_file_name: updatedDetail.mrp_file_name ?? null,
           crp_file_name: updatedDetail.crp_file_name ?? null
         });
@@ -1186,7 +1236,7 @@ export class UpdatedJobKpiComponent implements CanComponentDeactivate, OnInit, O
         // Patch MRP file
         if (updatedDetail.mrpFile) {
           urlToFile(updatedDetail.mrpFile, this.getFileName(updatedDetail.mrpFile))
-            .then(file => {
+            .then((file:any) => {
               this.mrpFile[rowIndex] ||= [];
               this.selectedMrpFile[rowIndex] ||= [];
               this.mrpFileLink[rowIndex] ||= [];
@@ -1200,7 +1250,7 @@ export class UpdatedJobKpiComponent implements CanComponentDeactivate, OnInit, O
         // Patch CRP file
         if (updatedDetail.crpFile) {
           urlToFile(updatedDetail.crpFile, this.getFileName(updatedDetail.crpFile))
-            .then(file => {
+            .then((file:any) => {
               this.crpFile[rowIndex] ||= [];
               this.selectedCrpFile[rowIndex] ||= [];
               this.crpFileLink[rowIndex] ||= [];
@@ -1228,11 +1278,16 @@ isRowModified(rowIndex: number, index: number): boolean {
   // THIS IS THE MAIN FIX
   const current = detailGroup.getRawValue();
 
-  const currentMrp = Number(current.mrp || 0);
-  const currentCrp = Number(current.crp || 0);
+  // const currentMrp = Number(current.mrp || 0);
+  // const currentCrp = Number(current.crp || 0);
 
-  const originalMrp = Number(original.mrp || 0);
-  const originalCrp = Number(original.crp || 0);
+  // const originalMrp = Number(original.mrp || 0);
+  // const originalCrp = Number(original.crp || 0);
+  const currentMrp = current.mrp ?? null;
+  const currentCrp = current.crp ?? null;
+
+  const originalMrp = original.mrp ?? null;
+  const originalCrp = original.crp ?? null;
 
   const currentMrpFileName =
     this.selectedMrpFile?.[rowIndex]?.[index]?.name || '';
@@ -1256,25 +1311,35 @@ isRowModified(rowIndex: number, index: number): boolean {
     return emp ? emp.user__full_name : 'Selected Employee';
   }
 
-  public getTotalMrpValue(index) {
-    let totalMrp: any = 0;
+  public getTotalMrpValue(index:number) {
+    let totalMrp = 0;
+    let hasNumber = false;
     const dataArray = this.jobKPIFormGroup.get('data') as FormArray;
     const rowGroup = dataArray.at(index) as FormGroup;
     const mrpCrpList = rowGroup.get('details') as FormArray;
     mrpCrpList.controls.forEach((control) => {
-      totalMrp += Number(control?.get('mrp')?.value);
-    })
-    return totalMrp ?? 0;
+      const val = control?.get('mrp')?.value;
+      if (val !== null && val !== '' && val !== '-' && !isNaN(Number(val))) {
+        totalMrp += Number(val);
+        hasNumber = true;
+      }
+    });
+    return hasNumber ? totalMrp : '';
   }
-  public getTotalCrpValue(index) {
-    let totalCrp: any = 0;
+  public getTotalCrpValue(index:number) {
+    let totalCrp = 0;
+    let hasNumber = false;
     const dataArray = this.jobKPIFormGroup.get('data') as FormArray;
     const rowGroup = dataArray.at(index) as FormGroup;
     const mrpCrpList = rowGroup.get('details') as FormArray;
     mrpCrpList.controls.forEach((control) => {
-      totalCrp += Number(control?.get('crp')?.value);
-    })
-    return totalCrp ?? 0;
+      const val = control?.get('crp')?.value;
+      if (val !== null && val !== '' && val !== '-' && !isNaN(Number(val))) {
+        totalCrp += Number(val);
+        hasNumber = true;
+      }
+    });
+    return hasNumber ? totalCrp : '';
   }
 
 }

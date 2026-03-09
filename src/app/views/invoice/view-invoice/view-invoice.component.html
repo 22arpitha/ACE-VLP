@@ -1,52 +1,55 @@
 <div class="container-wrapper settings-main-content px-0">
-    <div class="row mx-0 my-2 px-0">
-<div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0">
-    <div class="card px-0 invoice-details-header">
-<div class="row row mr-2 ml-0 gx-0">
-    <div class="col-1 col-sm-1 col-md-1 col-lg-1 px-0 align-self-center text-center">
-            <img src="../../../../assets/images/left-arrow.png" (click)="backToAllInvoice()" alt="" class="back-btn" ngbTooltip="Back">
-    </div>
-    <div class="col-9 col-sm-8 col-md-7 col-lg-9 px-0 align-self-center text-start">
-        <div class="d-block">
-<h4 class="my-1">
-    <b>{{allClientBasedJobsLists?.client_name || '-'}}</b>
-</h4>
-<div class="d-flex gap-1 my-1">
-    <h5>{{allClientBasedJobsLists?.invoice_number || '-'}}</h5>
-    <span>|</span>
-    <h5>{{allClientBasedJobsLists?.created_date ||'-'}}</h5>
-</div>
+  <div class="row mx-0 my-2 px-0">
+    <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0">
+      <div class="card px-0 invoice-details-header">
+        <div class="row row mr-2 ml-0 gx-0">
+          <div class="col-1 col-sm-1 col-md-1 col-lg-1 px-0 align-self-center text-center">
+            <img src="../../../../assets/images/left-arrow.png" (click)="backToAllInvoice()" alt="" class="back-btn"
+              ngbTooltip="Back">
+          </div>
+          <div class="col-9 col-sm-8 col-md-7 col-lg-9 px-0 align-self-center text-start">
+            <div class="d-block">
+              <h4 class="my-1">
+                <b>{{allClientBasedJobsLists?.client_name || '-'}}</b>
+              </h4>
+              <div class="d-flex gap-1 my-1">
+                <h5>{{allClientBasedJobsLists?.invoice_number || '-'}}</h5>
+                <span>|</span>
+                <h5>{{allClientBasedJobsLists?.created_date ||'-'}}</h5>
+              </div>
+            </div>
+          </div>
+          <div class="col-2 col-sm-3 col-md-4 col-lg-2 pl-0 pr-5 no-padding align-self-center text-center"
+            *ngIf="userRole !='Admin' && accessPermissions[0]?.update || userRole === 'Admin'">
+            <button mat-button class="delete-invoice-btn mat-btn-s" type="button" (click)="deleteClient()">
+              <img src="../../../../assets/images/Delete.svg" class="icon-image" container="body" /> Delete
+              Invoice</button>
+          </div>
         </div>
+      </div>
     </div>
-    <div class="col-2 col-sm-3 col-md-4 col-lg-2 pl-0 pr-5 no-padding align-self-center text-center" *ngIf="userRole !='Admin' && accessPermissions[0]?.update || userRole === 'Admin'">
-        <button mat-button class="delete-invoice-btn mat-btn-s" type="button" (click)="deleteClient()">
-           <img src="../../../../assets/images/Delete.svg" class="icon-image" container="body"/> Delete Invoice</button>
-    </div>
-</div>
-    </div>
-</div>
-    </div>
-    <section class="settings-table-bg px-3">
-        <div class="row mx-0 my-1 px-0 py-2">
-            <!-- <div class="col-12 mt-2 col-sm-12 col-md-4 col-lg-3 search-div px-0">
+  </div>
+  <section class="settings-table-bg px-3">
+    <div class="row mx-0 my-1 px-0 py-2">
+      <!-- <div class="col-12 mt-2 col-sm-12 col-md-4 col-lg-3 search-div px-0">
               <input type="search" (input)="filterSearch($event)" class="form-control p-2 sizeinput" [(ngModel)]="term"
                 placeholder="Search by Jobs " aria-describedby="emailHelp" autocomplete="off">
               <i *ngIf="!term" class="bi bi-search" id="search-icon-tab"></i>
             </div> -->
 
-            <div class="col-12 mt-2 col-sm-12 col-md-8 col-lg-9"></div>
-            <div class="col-12 mt-2 col-sm-12 col-md-4 col-lg-3 text-end px-0 downloads">
-               <button mat-mini-fab *ngIf="userRole !='Admin' && accessPermissions[0]?.update || userRole === 'Admin'" 
-                class="download-icons" (click)="downloadOption('csv')" ngbTooltip="CSV" placement="top">
-                <mat-icon style="color: green">table_view</mat-icon>
-              </button>
-              <button mat-mini-fab *ngIf="userRole !='Admin' && accessPermissions[0]?.update || userRole === 'Admin'" 
-                class="download-icons" (click)="downloadOption('pdf')" ngbTooltip="PDF" placement="top">
-                <mat-icon style="color: red">picture_as_pdf</mat-icon>
-              </button>
-                <!-- <button *ngIf="userRole !='Admin' && accessPermissions[0]?.update || userRole === 'Admin'" mat-raised-button class="proceedbtn mat-btn-s download-btn" type="button" [matMenuTriggerFor]="downloadMenu"><i class="fa fa-download"></i></button> -->
+      <div class="col-12 mt-2 col-sm-12 col-md-8 col-lg-9"></div>
+      <div class="col-12 mt-2 col-sm-12 col-md-4 col-lg-3 text-end px-0 downloads">
+        <button mat-mini-fab *ngIf="userRole !='Admin' && accessPermissions[0]?.update || userRole === 'Admin'"
+          class="download-icons" (click)="downloadOption('csv')" ngbTooltip="CSV" placement="top">
+          <mat-icon style="color: green">table_view</mat-icon>
+        </button>
+        <button mat-mini-fab *ngIf="userRole !='Admin' && accessPermissions[0]?.update || userRole === 'Admin'"
+          class="download-icons" (click)="downloadOption('pdf')" ngbTooltip="PDF" placement="top">
+          <mat-icon style="color: red">picture_as_pdf</mat-icon>
+        </button>
+        <!-- <button *ngIf="userRole !='Admin' && accessPermissions[0]?.update || userRole === 'Admin'" mat-raised-button class="proceedbtn mat-btn-s download-btn" type="button" [matMenuTriggerFor]="downloadMenu"><i class="fa fa-download"></i></button> -->
 
-                <!-- <mat-menu #downloadMenu="matMenu">
+        <!-- <mat-menu #downloadMenu="matMenu">
                    <button mat-menu-item (click)="downloadOption('csv')">
                        <mat-icon style="color: green">table_view</mat-icon>
                         <span>CSV</span>
@@ -56,100 +59,128 @@
                         <span>PDF</span>
                     </button>
                 </mat-menu> -->
-                 <button mat-raised-button class="proceedbtn mat-btn-s mx-2" type="button" (click)="edit()"
-                 *ngIf="userRole !='Admin' && (accessPermissions[0]?.view || accessPermissions[0]?.update) || userRole === 'Admin'">Edit</button>
-              </div>
+        <button mat-raised-button class="proceedbtn mat-btn-s mx-2" type="button" (click)="edit()"
+          *ngIf="userRole !='Admin' && (accessPermissions[0]?.view || accessPermissions[0]?.update) || userRole === 'Admin'">Edit</button>
+      </div>
 
 
-        </div>
+    </div>
 
-        <div class="row mx-1 my-2 px-0 table-wrapper">
-            <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0 ">
-              <table class="table table table-hover table-list">
-                <thead>
-                  <tr>
-                    <th scope="col">Job Id
-                      <i *ngIf="!arrowState['job_number']" (click)="sort('ascending','job_number')" class="bi bi-arrow-down"></i>
+    <div class="row mx-1 my-2 px-0 table-wrapper">
+      <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0 ">
+        <table class="table table table-hover table-list">
+          <thead>
+            <tr>
+              <th scope="col">Job Id
+                <i *ngIf="!arrowState['job_number']" (click)="sort('ascending','job_number')"
+                  class="bi bi-arrow-down"></i>
                 <i (click)="sort('descending','job_number')" *ngIf="arrowState['job_number']"
                   class="bi bi-arrow-up"></i>
-                    </th>
-                    <th scope="col" class="name-col">Job
-                      <i *ngIf="!arrowState['job_name']" (click)="sort('ascending','job_name')" class="bi bi-arrow-down"></i>
-                      <i (click)="sort('descending','job_name')" *ngIf="arrowState['job_name']"
-                        class="bi bi-arrow-up"></i>
-                    </th>
-                    <th scope="col">Job Type
-                        <i *ngIf="!arrowState['job_type_name']" (click)="sort('ascending','job_type_name')" class="bi bi-arrow-down"></i>
-                        <i (click)="sort('descending','job_type_name')" *ngIf="arrowState['job_type_name']"
-                          class="bi bi-arrow-up"></i>
-                      </th>
-                    <th scope="col">Job Status
+              </th>
+              <th scope="col" class="name-col">Job
+                <i *ngIf="!arrowState['job_name']" (click)="sort('ascending','job_name')" class="bi bi-arrow-down"></i>
+                <i (click)="sort('descending','job_name')" *ngIf="arrowState['job_name']" class="bi bi-arrow-up"></i>
+              </th>
+              <th scope="col">Job Type
+                <i *ngIf="!arrowState['job_type_name']" (click)="sort('ascending','job_type_name')"
+                  class="bi bi-arrow-down"></i>
+                <i (click)="sort('descending','job_type_name')" *ngIf="arrowState['job_type_name']"
+                  class="bi bi-arrow-up"></i>
+              </th>
+              <th scope="col" class="name-col">Allocation Date
+                <i *ngIf="!arrowState['job_allocation_date']" (click)="sort('ascending','job_allocation_date')"
+                  class="bi bi-arrow-down"></i>
+                <i (click)="sort('descending','job_allocation_date')" *ngIf="arrowState['job_allocation_date']"
+                  class="bi bi-arrow-up"></i>
+              </th>
+              <th scope="col" class="name-col">Employee</th>
+              <th scope="col" class="name-col">Manager</th>
+              <th scope="col" class="name-col">Status Date
+                <i *ngIf="!arrowState['status_date']" (click)="sort('ascending','status_date')"
+                  class="bi bi-arrow-down"></i>
+                <i (click)="sort('descending','status_date')" *ngIf="arrowState['status_date']"
+                  class="bi bi-arrow-up"></i>
+              </th>
+              <th scope="col" class="name-col">Billable
+                <i *ngIf="!arrowState['option_value']" (click)="sort('ascending','option_value')"
+                  class="bi bi-arrow-down"></i>
+                <i (click)="sort('descending','option_value')" *ngIf="arrowState['option_value']"
+                  class="bi bi-arrow-up"></i>
+              </th>
+              <!-- <th scope="col">Job Status
                       <i *ngIf="!arrowState['job_status_name']" (click)="sort('ascending','job_status_name')" class="bi bi-arrow-down"></i>
                       <i (click)="sort('descending','job_status_name')" *ngIf="arrowState['job_status_name']"
                         class="bi bi-arrow-up"></i>
-                    </th>
-                    <th scope="col">Budget Time (hrs)
-                      <i *ngIf="!arrowState['budget_time']" (click)="sort('ascending','budget_time')" class="bi bi-arrow-down"></i>
-                      <i (click)="sort('descending','budget_time')" *ngIf="arrowState['budget_time']"
-                        class="bi bi-arrow-up"></i>
-                    </th>
-                    <th scope="col">Price (Rs)
-                        <i *ngIf="!arrowState['job_price']" (click)="sort('ascending','job_price')" class="bi bi-arrow-down"></i>
-                        <i (click)="sort('descending','job_price')" *ngIf="arrowState['job_price']"
-                          class="bi bi-arrow-up"></i>
-                      </th>
-                      <th scope="col">Total Amount (Rs)
-                        <i *ngIf="!arrowState['total_price']" (click)="sort('ascending','total_price')" class="bi bi-arrow-down"></i>
-                        <i (click)="sort('descending','total_price')" *ngIf="arrowState['total_price']"
-                          class="bi bi-arrow-up"></i>
-                      </th>
-                  </tr>
-                </thead>
-                <tbody>
+                    </th> -->
+              <th scope="col">Budget Time (hrs)
+                <i *ngIf="!arrowState['budget_time']" (click)="sort('ascending','budget_time')"
+                  class="bi bi-arrow-down"></i>
+                <i (click)="sort('descending','budget_time')" *ngIf="arrowState['budget_time']"
+                  class="bi bi-arrow-up"></i>
+              </th>
+              <th scope="col">Price (Rs)
+                <i *ngIf="!arrowState['job_price']" (click)="sort('ascending','job_price')"
+                  class="bi bi-arrow-down"></i>
+                <i (click)="sort('descending','job_price')" *ngIf="arrowState['job_price']" class="bi bi-arrow-up"></i>
+              </th>
+              <th scope="col">Total Amount (Rs)
+                <i *ngIf="!arrowState['total_price']" (click)="sort('ascending','total_price')"
+                  class="bi bi-arrow-down"></i>
+                <i (click)="sort('descending','total_price')" *ngIf="arrowState['total_price']"
+                  class="bi bi-arrow-up"></i>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
 
-                  <ng-container *ngIf="(allClientBasedJobsLists?.results) as result">
-                    <tr *ngFor='let item of result | customSort:directionValue:sortValue|paginate : {
+            <ng-container *ngIf="(allClientBasedJobsLists?.results) as result">
+              <tr *ngFor='let item of result | customSort:directionValue:sortValue|paginate : {
                              itemsPerPage: tableSize,
                              currentPage: page,
                              totalItems: count
                            }; let i=index'>
-                      <td>{{item?.job_number || '-'}}</td>
-                      <td>{{item?.job_name || '-'}}</td>
-                      <td>{{item?.job_type_name || '-'}}</td>
-                      <td>{{item?.job_status_name || '-'}}</td>
-                      <td>{{item?.budget_time || '-'}}</td>
-                      <td>{{item?.job_price || '-'}}</td>
-                      <td>{{item?.total_amount || '-'}}</td>
-                    </tr>
-                    <tr class="bg-transparent">
-                      <td colspan="4" class="bg-transparent"></td>
-                      <td class="bg-transparent"><b>TOTAL {{allClientBasedJobsLists?.total_hours}} hrs</b></td>
-                      <td class="bg-transparent"></td>
-                      <td class="bg-transparent"><b>{{allClientBasedJobsLists?.total_amount}} /-</b></td>
-                    </tr>
-                  </ng-container>
-                </tbody>
-              </table>
-            </div>
-          </div>
-          <div class="row mx-1 my-2 px-0" *ngIf="allClientBasedJobsLists?.results?.length === 0" >
-            <app-generic-norecards></app-generic-norecards>
-          </div>
+                <td>{{item?.job_number || '-'}}</td>
+                <td>{{item?.job_name || '-'}}</td>
+                <td>{{item?.job_type_name || '-'}}</td>
+                <td>{{item?.job_allocation_date | dateFormater}}</td>
+                <td>{{item?.employee[0].employee__full_name || '-'}}</td>
+                <td>{{item?.employee[0]?.manager__full_name || '-'}}</td>
+                <td>{{item?.status_date | dateFormater}}</td>
+                <td>{{item?.option_value || '-'}}</td>
+                <!-- <td>{{item?.job_status_name || '-'}}</td> -->
+                <td>{{item?.budget_time || '-'}}</td>
+                <td>{{item?.job_price || '-'}}</td>
+                <td>{{item?.total_amount || '-'}}</td>
+              </tr>
+              <tr class="bg-transparent">
+                <td colspan="4" class="bg-transparent"></td>
+                <td class="bg-transparent"><b>TOTAL {{allClientBasedJobsLists?.total_hours}} hrs</b></td>
+                <td class="bg-transparent"></td>
+                <td class="bg-transparent"><b>{{allClientBasedJobsLists?.total_amount}} /-</b></td>
+              </tr>
+            </ng-container>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="row mx-1 my-2 px-0" *ngIf="allClientBasedJobsLists?.results?.length === 0">
+      <app-generic-norecards></app-generic-norecards>
+    </div>
 
-    </section>
-    <div class="row mx-0 px-3" *ngIf="allClientBasedJobsLists?.results?.length > 0">
-      <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0">
-        <div class="pagination-container p-0">
-          <pagination-controls previousLabel="Prev" nextLabel="Next" (pageChange)="onTableDataChange($event)">
-          </pagination-controls>
-          <div class="items-per-page-container">
-            <div>Items per page</div>
-            <mat-select [(ngModel)]="tableSize" (selectionChange)="onTableSizeChange($event)" placeholder="10" disableOptionCentering panelClass="paginationPanelClass"
-              class="page-size">
-              <mat-option *ngFor="let size of tableSizes" [value]="size">{{size}}</mat-option>
-            </mat-select>
-          </div>
+  </section>
+  <div class="row mx-0 px-3" *ngIf="allClientBasedJobsLists?.results?.length > 0">
+    <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0">
+      <div class="pagination-container p-0">
+        <pagination-controls previousLabel="Prev" nextLabel="Next" (pageChange)="onTableDataChange($event)">
+        </pagination-controls>
+        <div class="items-per-page-container">
+          <div>Items per page</div>
+          <mat-select [(ngModel)]="tableSize" (selectionChange)="onTableSizeChange($event)" placeholder="10"
+            disableOptionCentering panelClass="paginationPanelClass" class="page-size">
+            <mat-option *ngFor="let size of tableSizes" [value]="size">{{size}}</mat-option>
+          </mat-select>
         </div>
       </div>
     </div>
+  </div>
 </div>

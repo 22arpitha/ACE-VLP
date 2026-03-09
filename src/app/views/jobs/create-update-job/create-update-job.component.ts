@@ -130,7 +130,7 @@ export class CreateUpdateJobComponent implements CanComponentDeactivate, OnInit,
       this.getAllDropdownData();
       this.getJobDetails(this.job_id);
     } else {
-      this.common_service.setTitle('Create ' + this.BreadCrumbsTitle)
+      this.common_service.setTitle('Create Job')
       this.getAllDropdownData()
     }
   }
