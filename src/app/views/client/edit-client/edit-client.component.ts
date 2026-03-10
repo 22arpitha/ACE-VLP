@@ -13,6 +13,7 @@ import { debounceTime, distinctUntilChanged, filter, Observable, Subject } from 
 import { SubModuleService } from '../../../service/sub-module.service';
 import { GenericTableFilterComponent } from '../../../shared/generic-table-filter/generic-table-filter.component';
 import { DropDownPaginationService } from '../../../service/drop-down-pagination.service';
+import { GenericTimesheetConfirmationComponent } from 'src/app/generic-components/generic-timesheet-confirmation/generic-timesheet-confirmation.component';
 export interface IdNamePair {
   id: any;
   name: string;
@@ -204,6 +205,10 @@ getUniqueValues(
       } else {
         this.apiService.postData(`${environment.live_url}/${environment.end_clients}/`, this.endClientForm.value).subscribe((respData: any) => {
           if (respData) {
+            if(respData?.confirm_required){
+              this.Warningconfirmation(respData);
+              return;
+            }
             this.apiService.showSuccess(respData['message']);
             this.resetFormState();
             this.common_service.setEndClientCreationState(true);
@@ -217,6 +222,46 @@ getUniqueValues(
     }
   }
 
+  Warningconfirmation(data){
+    const modelRef = this.modalService.open(GenericTimesheetConfirmationComponent, {
+          size: <any>'sm',
+          backdrop: true,
+          centered: true,
+        });
+        modelRef.componentInstance.title = data?.warning;
+        modelRef.componentInstance.message = `Confirmation`;
+        modelRef.componentInstance.buttonName = `Yes`;
+        modelRef.componentInstance.status.subscribe(resp => {
+          if (resp == "ok") {
+            this.confirmSubmit(data);
+            modelRef.close();
+          }
+          else {
+            modelRef.close();
+          }
+        })
+  }
+
+  confirmSubmit(data){
+    const formData = { ...this.endClientForm.value, confirm: data?.confirm_required };
+    const apiCall = this.isEditItem
+      ? this.apiService.updateData(`${environment.live_url}/${environment.end_clients}/${this.selectedJobStatus}/`, formData)
+      : this.apiService.postData(`${environment.live_url}/${environment.end_clients}/`, formData);
+    console.log(formData)
+    apiCall.subscribe({
+      next: (respData: any) => {
+        if (respData) {
+          this.apiService.showSuccess(respData['message']);
+          this.resetFormState();
+          this.common_service.setEndClientCreationState(true);
+          this.filterData();
+        }
+      },
+      error: (error: any) => {
+        this.apiService.showError(error?.error?.detail);
+      }
+    });
+  }
   public resetFormState() {
     this.formGroupDirective.resetForm();
     this.endClientForm.patchValue({"client":this.client_id});

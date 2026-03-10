@@ -1,212 +1,315 @@
-<!--sidebar-->
-<c-sidebar
-  #sidebar="cSidebar"
-  class="d-print-none sidebar sidebar-fixed"
-  [ngClass]="{ 'collapsed-sidebar': isSidebarCollapsed }"
-  id="sidebar"
-  [visible]="true"
->
-  <c-sidebar-brand class="p-r">
-    <img
-      src="../../../assets/images/VLP Logo Final main - Sep 12.png"
-      width="90px"
-      height="90px"
-      [ngStyle]="{width:isSidebarCollapsed ? '45px':'90px',height:isSidebarCollapsed ? '45px':'90px' }"
-      class="sidebar-logo-sidebar"
-    />
-    <button *ngIf="isDesktop" mat-icon-button class="sidebar-toggle-fab" (click)="toggleSidebar()">
-      <mat-icon>{{ isSidebarCollapsed ? 'chevron_right' : 'chevron_left' }}</mat-icon>
-    </button>
-  </c-sidebar-brand>
+<!-- ===================== DESKTOP TOP NAVBAR ===================== -->
+<mat-toolbar class="top-navbar" *ngIf="isDesktop">
 
-  <!-- Trial Info -->
-  <div *ngFor="let items of subscriptionData" class="mb-3 d-block d-lg-none text-center">
-    <button
-      mat-button
-      type="button"
-      class="btn-4"
-      *ngIf="items?.subscription_type_name === 'Free Trial' && items?.is_active"
-    >
-      <div>
-        <img
-          src="../../../../assets/images/megaphone_white.svg"
-          style="position: absolute; left: 10px; top: 10px"
-        />
-        <small>{{ items?.subscription_type_name }}</small>
-      </div>
-      <strong>
-        {{ items?.remaining_number_of_days || 0 }}
-        {{ items?.remaining_number_of_days > 1 ? "days left" : "day left" }}
-      </strong>
-    </button>
+  <!-- LOGO -->
+  <img src="../../../assets/images/VLP Logo Final main - Sep 12.png" class="logo" />
+
+  <!-- NAVIGATION MENU -->
+  <div class="menu-container">
+    <div class="menu-items">
+      <ng-container *ngFor="let item of sidebarNavItems">
+
+        <!-- MENU WITH CHILDREN -->
+        <ng-container *ngIf="item.children && item.children.length > 0">
+
+          <button mat-button class="nav-button" [matMenuTriggerFor]="menu"
+            [ngClass]="{'active-link': isParentActive(item)}">
+            <!-- <i [class]="item.icon" style="padding-right:6px"></i> -->
+            {{ item.name }}
+          </button>
+
+          <mat-menu #menu="matMenu">
+
+            <button mat-menu-item *ngFor="let child of item.children" [routerLink]="child.url"
+              routerLinkActive="active-link">
+              <!-- <i [class]="child.icon" style="padding-right:10px"></i> -->
+              {{ child.name }}
+            </button>
+
+          </mat-menu>
+
+        </ng-container>
+
+
+        <!-- MENU WITHOUT CHILDREN -->
+        <button *ngIf="!item.children || item.children.length === 0" mat-button class="nav-button"
+          [routerLink]="item.url" routerLinkActive="active-link" [ngClass]="{'active-link': isParentActive(item)}">
+          <!-- <i [class]="item.icon" style="padding-right:6px"></i> -->
+          {{ item.name }}
+        </button>
+
+      </ng-container>
+    </div>
+
   </div>
 
-  <!-- Sidebar Menu -->
-  <perfect-scrollbar [config]="perfectScrollbarConfig">
-    <ng-container *ngTemplateOutlet="renderSidebar; context: { isMobile: true }"></ng-container>
-    <ng-container *ngTemplateOutlet="renderSidebar; context: { isMobile: false }"></ng-container>
-  </perfect-scrollbar>
+  <!-- <span class="spacer"></span> -->
+  <div class="profile ps-2">
+    <!-- Notification Button -->
+    <button mat-icon-button aria-label="Notifications" class="icon-button me-2" matTooltip="Notifications"
+      (click)="openNotification()" style="position: relative;">
+      <img src="../../../assets/images/Notification.svg" class="notification-icon" />
+      <!-- Custom Badge -->
+      <span class="custom-badge" *ngIf="notification_count > 0"
+        [ngClass]="notification_count > 99 ? 'cs-notification-pad' : ''">
+        {{ notification_count > 99 ? '99+' : notification_count }}
+      </span>
+    </button>
 
-  <!-- User Profile Settings -->
-  <mat-card class="profile-settings-card">
+    <!-- Get Started Button (User Guide) -->
+    <button mat-icon-button aria-label="Get Started" class="icon-button user-guide-btn" matTooltip="Get started"
+      (click)="openWelcomeDialog()">
+      <img src="../../../assets/images/bulb.svg" width="25" height="25">
+    </button>
+
+    <!-- Profile Icon Button -->
+    <button mat-icon-button class="profile-btn" [matMenuTriggerFor]="menu1"
+      aria-label="Example icon-button with a menu">
+      <mat-icon>person</mat-icon>
+    </button>
+
+  </div>
+  <mat-menu #menu1="matMenu">
+    <p class="ps-2 py-2 mb-0">{{user_role_Name}} {{user_name}}</p>
+    <hr class="m-0">
+    <button mat-menu-item (click)="openDialogue()">
+      <mat-icon>power_settings_new</mat-icon>
+      <span>Logout</span>
+    </button>
+    <button mat-menu-item [routerLink]="'/changePasswords'">
+      <mat-icon>vpn_key</mat-icon>
+      <span>Change Password</span>
+    </button>
+  </mat-menu>
+  <!-- USER PROFILE -->
+  <!-- <mat-card class="profile-settings-card">
+
     <div class="d-flex justify-content-between align-items-center">
-      <!-- <c-avatar cTextColor="primary" shape="rounded-1" size="md"  [src]="profileImage? profileImage: '../assets/images/no-profile-pic.png'" >
-      </c-avatar> -->
-      <p
-        class="mx-2"
-        [ngClass]="user_role_Name !== 'EMPLOYEE' ? 'nonemployee' : 'employee'"
-      >
+
+      <p class="mx-2" [ngClass]="user_role_Name !== 'EMPLOYEE' ? 'nonemployee' : 'employee'">
         <small class="user-name" *ngIf="user_role_Name !== 'EMPLOYEE'">
           {{ user_name | titlecase }} {{ last_name }}
         </small>
+
         <br />
-        <mat-label class="user-role">{{ user_role_Name }}</mat-label>
+
+        <mat-label class="user-role">
+          {{ user_role_Name }}
+        </mat-label>
+
       </p>
-      <ng-container *ngTemplateOutlet="userDropdown"></ng-container>
+
+      <ng-container *ngTemplateOutlet="navbarUserDropdown"></ng-container>
+
     </div>
+
+  </mat-card> -->
+
+</mat-toolbar>
+
+
+
+<!-- ===================== MOBILE SIDEBAR (UNCHANGED) ===================== -->
+
+<c-sidebar *ngIf="!isDesktop" #sidebar="cSidebar" class="d-print-none sidebar sidebar-fixed"
+  [ngClass]="{ 'collapsed-sidebar': isSidebarCollapsed }" id="sidebar" [visible]="true">
+
+  <c-sidebar-brand class="p-r">
+
+    <img src="../../../assets/images/VLP Logo Final main - Sep 12.png" width="90px" height="90px" [ngStyle]="{
+        width:isSidebarCollapsed ? '45px':'90px',
+        height:isSidebarCollapsed ? '45px':'90px'
+      }" class="sidebar-logo-sidebar" />
+
+  </c-sidebar-brand>
+
+
+  <!-- SIDEBAR MENU -->
+  <perfect-scrollbar [config]="perfectScrollbarConfig">
+
+    <ng-container *ngTemplateOutlet="renderSidebar; context: { isMobile: true }"></ng-container>
+
+  </perfect-scrollbar>
+
+
+  <!-- USER PROFILE -->
+  <mat-card class="profile-settings-card">
+
+    <div class="d-flex justify-content-between align-items-center">
+
+      <p class="mx-2" [ngClass]="user_role_Name !== 'EMPLOYEE' ? 'nonemployee' : 'employee'">
+        <small class="user-name" *ngIf="user_role_Name !== 'EMPLOYEE'">
+          {{ user_name | titlecase }} {{ last_name }}
+        </small>
+
+        <br />
+
+        <mat-label class="user-role">
+          {{ user_role_Name }}
+        </mat-label>
+
+      </p>
+
+      <ng-container *ngTemplateOutlet="userDropdown"></ng-container>
+
+    </div>
+
   </mat-card>
+
 </c-sidebar>
 
-<!-- Main Content -->
+
+
+<!-- ===================== MAIN CONTENT ===================== -->
+
 <div class="wrapper d-flex flex-column dark:bg-transparent">
-  <ngx-ui-loader
-    fgsColor="#126EB4"
-    pbColor="#126EB4"
-    textColor="#126EB4"
-    overlayColor="rgba(255,255,255,0.25)"
-    blur="0"
-    fgsType="rectangle-bounce"
-    [fgsSize]="fgSize"
-  ></ngx-ui-loader>
+
+  <ngx-ui-loader fgsColor="#126EB4" pbColor="#126EB4" textColor="#126EB4" overlayColor="rgba(255,255,255,0.25)" blur="0"
+    fgsType="rectangle-bounce" [fgsSize]="fgSize"></ngx-ui-loader>
 
   <div class="body scroll-fix">
+
     <mat-card class="p-0 default-header-card">
+
       <mat-card class="p-0 mb-1 header-card">
-        <app-default-header
-          class="d-print-none header header-sticky"
-          position="sticky"
-          sidebarId="sidebar"
-        ></app-default-header>
+
+        <app-default-header class="header header-sticky"></app-default-header>
+
       </mat-card>
+
       <router-outlet></router-outlet>
+
     </mat-card>
+
   </div>
+
 </div>
 
-<!-- Sidebar Navigation Template -->
+
+
+<!-- ===================== SIDEBAR MENU TEMPLATE ===================== -->
+
 <ng-template #renderSidebar let-isMobile="isMobile">
-  <mat-nav-list
-    [ngClass]="{
+
+  <mat-nav-list [ngClass]="{
       'd-block d-lg-none nav-list-custom': isMobile,
-      'd-none d-lg-block nav-list-custom': !isMobile,
       'disabled-item': mySubscription
-    }"
-    style="padding-right: 2px"
-  >
+    }" style="padding-right:2px">
+
     <ng-container *ngFor="let item of sidebarNavItems">
-      <!-- Parent Item -->
-      <mat-list-item
-        [routerLink]="shouldDisableItem(item) || item.children?.length ? null : item.url"
-        routerLinkActive="active-link"
-        (click)="shouldDisableItem(item) ? null : toggleSubmenu(item)"
-        [class.parent-item]="item.children?.length"
-        [class.disabled-item]="shouldDisableItem(item)"
-        [ngClass]="item.children?.length && item.isExpanded ? 'set-bg' : ''"
-        [style.opacity]="shouldDisableItem(item) ? '0.7' : '1'"
-        [style.pointer-events]="shouldDisableItem(item) ? 'none' : 'auto'"
-        [matTooltip]="isSidebarCollapsed ? item.name : ''"
-        matTooltipPosition="right"
-        style="font-size: 14px !important;"
-      >
-        <i [class]="item.icon" style="padding-right: 15px"></i>
-        <span class="sidebar-label">{{ item.name }}</span>
+
+      <!-- PARENT MENU -->
+      <mat-list-item [routerLink]="shouldDisableItem(item) || item.children?.length ? null : item.url"
+        routerLinkActive="active-link" (click)="shouldDisableItem(item) ? null : toggleSubmenu(item)"
+        [class.parent-item]="item.children?.length" [class.disabled-item]="shouldDisableItem(item)"
+        [ngClass]="item.children?.length && item.isExpanded ? 'set-bg' : ''">
+
+        <i [class]="item.icon" style="padding-right:15px"></i>
+
+        <span class="sidebar-label">
+          {{ item.name }}
+        </span>
+
         <mat-icon class="expand-icon" *ngIf="item.children?.length">
           {{ item.isExpanded ? "expand_more" : "chevron_right" }}
         </mat-icon>
+
       </mat-list-item>
 
-      <!-- Child Items -->
-      <mat-list-item
-        *ngFor="let child of item.children"
-        [routerLink]="shouldDisableItem(child) ? null : child.url"
-        routerLinkActive="active-link"
-        class="child-item"
-        [style.display]="item.isExpanded ? 'flex' : 'none'"
-        [class.disabled-item]="shouldDisableItem(child)"
-        [style.opacity]="shouldDisableItem(child) ? '0.7' : '1'"
-        [style.pointer-events]="shouldDisableItem(child) ? 'none' : 'auto'"
-        style="font-size: 14px !important;"
-      >
-        <i [class]="child.icon" style="padding-right: 15px"></i>
-        <span class="sidebar-label">{{ child.name }}</span>
+
+      <!-- CHILD MENU -->
+      <mat-list-item *ngFor="let child of item.children" [routerLink]="shouldDisableItem(child) ? null : child.url"
+        routerLinkActive="active-link" class="child-item" [style.display]="item.isExpanded ? 'flex' : 'none'">
+
+        <i [class]="child.icon" style="padding-right:15px"></i>
+
+        <span class="sidebar-label">
+          {{ child.name }}
+        </span>
+
       </mat-list-item>
+
     </ng-container>
 
-    <!-- Logout -->
-    <mat-list-item
-      *ngIf="isMobile"
-      class="d-block d-lg-none"
-      routerLinkActive="active-link"
-      routerLink="/login"
-    >
-      <i class="bi bi-power" style="padding-right: 15px"></i>
-      <span class="sidebar-label">Logout</span>
+
+    <!-- LOGOUT -->
+    <mat-list-item routerLink="/login">
+
+      <i class="bi bi-power" style="padding-right:15px"></i>
+
+      <span class="sidebar-label">
+        Logout
+      </span>
+
     </mat-list-item>
+
   </mat-nav-list>
+
 </ng-template>
 
-<!-- User Dropdown -->
+
+
+<!-- ===================== USER DROPDOWN ===================== -->
+
 <ng-template #userDropdown>
+
   <c-dropdown alignment="end" variant="nav-item">
-    <button
-      mat-stroked-button
-      [caret]="false"
-      cDropdownToggle
-      class="py-1"
-      style="border: none"
-    >
+
+    <button mat-stroked-button [caret]="false" cDropdownToggle class="py-1" style="border:none">
       <img src="../../../assets/images/Settings.png" alt="" />
     </button>
-    <ul
-      cDropdownMenu
-      class="py-2 pr-5 w-auto c-dropClass"
-      style="
-        padding: 11px !important;
-        background: rgb(255 255 255) !important;
-        font-size: 12px !important;
-        position: absolute;
-        inset: auto 0px 0px auto;
-        border: 1px solid #ecfaff;
-        margin: 2px;
-        transform: translate3d(0px, -40.6667px, 0px);
-      "
-    >
-<li class="user-info-content">
-    <!-- <c-avatar cTextColor="primary" shape="rounded-1" size="md"  [src]="profileImage? profileImage: '../assets/images/no-profile-pic.png'" >
-      </c-avatar> -->
-  <p
-        class="mx-2"
-        [ngClass]="user_role_Name !== 'EMPLOYEE' ? 'nonemployee' : 'employee'"
-      >
-        <small class="user-name" *ngIf="user_role_Name !== 'EMPLOYEE'">
-          {{ user_name | titlecase }} {{ last_name }}
-        </small>
-        <br />
-        <mat-label class="user-role">{{ user_role_Name }}</mat-label>
-      </p>
-</li>
-      <li *ngFor="let headNav of headerNav">
-        <div [ngClass]="getHeaderNavStyles(headNav)">
-          <a
-            (click)="navigateTo(headNav)"
-            cDropdownItem
-            class="profile-settings-content"
-          >
-            <i class="{{ headNav.icons }}" id="nav-icon"></i>
-            <span class="title">&nbsp;&nbsp;{{ headNav.page | titlecase }}</span>
-          </a>
-        </div>
+
+    <ul cDropdownMenu class="py-2 pr-5 w-auto c-dropClass" style="
+        padding:11px !important;
+        background:rgb(255 255 255) !important;
+        font-size:12px !important;
+        border:1px solid #ecfaff;
+      ">
+
+      <!-- USER INFO -->
+      <li class="user-info-content">
+
+        <p class="mx-2" [ngClass]="user_role_Name !== 'EMPLOYEE' ? 'nonemployee' : 'employee'">
+
+          <small class="user-name" *ngIf="user_role_Name !== 'EMPLOYEE'">
+            {{ user_name | titlecase }} {{ last_name }}
+          </small>
+          <br />
+
+          <mat-label class="user-role">
+            {{ user_role_Name }}
+          </mat-label>
+
+        </p>
+
       </li>
+
+
+      <!-- SETTINGS -->
+      <li *ngFor="let headNav of headerNav">
+
+        <div [ngClass]="getHeaderNavStyles(headNav)">
+
+          <a (click)="navigateTo(headNav)" cDropdownItem class="profile-settings-content">
+
+            <i class="{{ headNav.icons }}"></i>
+
+            <span class="title">
+              {{ headNav.page | titlecase }}
+            </span>
+
+          </a>
+
+        </div>
+
+      </li>
+
     </ul>
+
   </c-dropdown>
+
 </ng-template>
+
+<!-- <div class="title">
+    <h1 class="breadcrumb-title" *ngIf="pageName">{{pageName}}</h1>
+  </div> -->

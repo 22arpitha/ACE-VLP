@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { NgxUiLoaderService } from 'ngx-ui-loader';
 import { navItems1 } from '../../views/_nav1';
 import { ApiserviceService } from '../../service/apiservice.service';
@@ -11,6 +11,10 @@ import { WebsocketService } from '../../service/websocket.service';
 import { EmployeeStatusWebsocketService } from '../../service/employee-status-websocket.service';
 import { UserAccessWebsocketService } from '../../service/user-access-websocket.service';
 import { BreakpointObserver } from '@angular/cdk/layout';
+import { UserGuideModalComponent } from '../../views/user-guide-modal/user-guide-modal.component';
+import { NotificationsComponent } from '../../views/notifications/notifications.component';
+import { UserWelcomeMsgComponent } from '../../views/user-welcome-msg/user-welcome-msg.component';
+import { NotificationService } from '../../views/pages/notification/notification.service';
 
 interface NavItem {
   name: string;
@@ -25,6 +29,9 @@ interface NavItem {
   styleUrls: ['./default-layout.component.scss'],
 })
 export class DefaultLayoutComponent {
+  notification_count: number = 0;
+  isModalOpen = false;
+  @Input() pageName: any;
   lastExpandedItem: any = null;
   iconSize = false;
   fgSize: number = 30;
@@ -60,7 +67,7 @@ export class DefaultLayoutComponent {
   mySubscription: boolean = false;
   orgId: any;
   subscriptionData = [];
-  isSidebarCollapsed:boolean=true;
+  isSidebarCollapsed: boolean = true;
   isDesktop = true;
   constructor(
     private ngxService: NgxUiLoaderService,
@@ -71,7 +78,8 @@ export class DefaultLayoutComponent {
     private webSocket: WebsocketService,
     private employeeSocket: EmployeeStatusWebsocketService,
     private useraccessSocket: UserAccessWebsocketService,
-    private breakpointObserver: BreakpointObserver
+    private breakpointObserver: BreakpointObserver,
+    private notificationServive: NotificationService,
   ) {
     // this.common_service.profilePhoto$.subscribe(
     //   (data:any)=>{
@@ -84,13 +92,18 @@ export class DefaultLayoutComponent {
     // )
   }
 
+
   async ngOnInit() {
     this.user_role_Name = sessionStorage.getItem('user_role_name');
     this.orgId = sessionStorage.getItem('organization_id');
+    this.user_id = JSON.parse(sessionStorage.getItem('user_id') || '');
     this.user_name = sessionStorage.getItem('user_name') || '';
-
+    this.common_service.title$.subscribe(title => {
+      this.pageName = title;
+      // this.cdref.detectChanges();
+    });
     this.testingFunction();
-
+    this.getNotification();
     // this.ngxService.start();
     // setTimeout(() => {
     //   this.ngxService.stop();
@@ -116,7 +129,7 @@ export class DefaultLayoutComponent {
     this.breakpointObserver
       .observe([`(max-width: 1023px)`])
       .subscribe(result => {
-         this.isDesktop = !result.matches; 
+        this.isDesktop = !result.matches;
         if (result.matches) {
           // Screen <= 1023px → always expanded
           this.isSidebarCollapsed = false;
@@ -127,7 +140,71 @@ export class DefaultLayoutComponent {
       });
   }
 
- 
+  openNotification() {
+    // Replicating logic from DefaultHeaderComponent
+    const modelRef = this.modalService.open(NotificationsComponent, {
+      size: <any>'md',
+      backdrop: true,
+      centered: window.innerWidth < 1023 ? true : false,
+      modalDialogClass: 'c_class'
+    });
+    modelRef.componentInstance.status.subscribe((resp: any) => {
+      modelRef.close();
+    });
+  }
+
+  openWelcomeDialog() {
+    this.isModalOpen = true;
+    let data = {
+      title: 'Hello',
+      message1: `Welcome to VLP!. We’re thrilled to have you here. Let us guide you through the main features of our website.`,
+      message2: `Click 'Next' to begin the tour or 'Skip' to explore on your own.`,
+      isModalOpen: this.isModalOpen
+    };
+    const modelRef = this.modalService.open(UserWelcomeMsgComponent, {
+      size: <any>'sm',
+      backdrop: 'static',
+      centered: true,
+      windowClass: 'welcome-msg'
+    });
+    modelRef.componentInstance.data = data;
+    modelRef.componentInstance.status.subscribe((resp: any) => {
+      modelRef.close();
+      this.isModalOpen = false;
+      sessionStorage.setItem('logged_count', '2');
+      if (resp == 'ok') {
+        this.openUserGuideModalComponent();
+      }
+    });
+  }
+
+  openUserGuideModalComponent() {
+    this.isModalOpen = true;
+    const initialState: any = {
+      initialState: {},
+      class: 'modal-dialog-centered custom-modal-lg',
+      ignoreBackdropClick: true,
+      keyboard: false,
+    };
+    this.modalService.open(UserGuideModalComponent, initialState);
+  }
+
+  getNotification() {
+    this.notificationServive.notificationCount.subscribe((data) => {
+      if (data) {
+        this.notification_count = data;
+      } else {
+        let params = `${environment.live_url}/${environment.vlp_notifications}/?user-id=${this.user_id}&page=1&page_size=10`
+        this.api.getData(params).subscribe((res: any) => {
+          if (res) {
+            this.notification_count = res?.total_no_of_record
+          }
+        }, ((error: any) => {
+          this.api.showError(error?.error?.detail)
+        }))
+      }
+    })
+  }
 
   shouldDisableItem(item: any): boolean {
     // Don't disable anything for SuperAdmin
@@ -156,16 +233,16 @@ export class DefaultLayoutComponent {
   setInitialExpandedState() {
     const currentUrl = this.router.url;
     this.sidebarNavItems.forEach((item: any) => {
-    if (item.children?.length) {
-      const isActive = item.children.some((child: any) =>
-        currentUrl.includes(child.url)
-      );
-      item.isExpanded = false;
-      if (isActive) {
-        this.lastExpandedItem = item;
+      if (item.children?.length) {
+        const isActive = item.children.some((child: any) =>
+          currentUrl.includes(child.url)
+        );
+        item.isExpanded = false;
+        if (isActive) {
+          this.lastExpandedItem = item;
+        }
       }
-    }
-  });
+    });
     // this.sidebarNavItems.forEach((item) => {
     //   if (item.children?.length) {
     //     item.isExpanded = item.children.some((child) =>
@@ -194,13 +271,13 @@ export class DefaultLayoutComponent {
         item.children = [];
       }
       if (this.user_role_Name === 'Admin' && item.name === 'Leave' && Array.isArray(item.children)) {
-      item.children = item.children.filter((child:any) => child.name !== 'Apply Leave' &&child.name !== 'Comp-off Request');
+        item.children = item.children.filter((child: any) => child.name !== 'Apply Leave' && child.name !== 'Comp-off Request');
       }
       // if(this.user_role_Name!='Admin' && item.name ==='Reports' && Array.isArray(item.children)){
       //   item.children = item.children.filter((child:any)=> child.name!='Leave Summary Report');
       // }
     });
-    
+
     return navigationData;
   }
 
@@ -208,8 +285,7 @@ export class DefaultLayoutComponent {
     // this.sidebarNavItems = this.sidebarNavItemsStatic;
     this.api
       .getData(
-        `${environment.live_url}/${
-          environment.user_access
+        `${environment.live_url}/${environment.user_access
         }/${sessionStorage.getItem('user_id')}/`
       )
       .subscribe((res: any) => {
@@ -228,12 +304,12 @@ export class DefaultLayoutComponent {
       });
   }
 
-  getCountDetails() {
-    this.user_id = JSON.parse(sessionStorage.getItem('user_id') || '');
-    let id = {
-      user_id: this.user_id,
-    };
-  }
+  // getCountDetails() {
+  //   this.user_id = JSON.parse(sessionStorage.getItem('user_id') || '');
+  //   let id = {
+  //     user_id: this.user_id,
+  //   };
+  // }
 
   clearStorage(type) {
     if (type['page'] === 'Logout') {
@@ -280,7 +356,7 @@ export class DefaultLayoutComponent {
     }
   }
 
-  toggleSidebar(){
+  toggleSidebar() {
     this.isSidebarCollapsed = !this.isSidebarCollapsed;
     if (this.isSidebarCollapsed) {
       this.sidebarNavItems.forEach((item: any) => {
@@ -288,10 +364,17 @@ export class DefaultLayoutComponent {
       });
     }
     else {
-    // expanding → reopen last expanded
-    if (this.lastExpandedItem) {
-      this.lastExpandedItem.isExpanded = true;
+      // expanding → reopen last expanded
+      if (this.lastExpandedItem) {
+        this.lastExpandedItem.isExpanded = true;
+      }
     }
-   }
+  }
+  isParentActive(item: any): boolean {
+    const currentUrl = this.router.url;
+    if (item.children && item.children.length > 0) {
+      return item.children.some((child: any) => currentUrl.includes(child.url));
+    }
+    return currentUrl.includes(item.url);
   }
 }
