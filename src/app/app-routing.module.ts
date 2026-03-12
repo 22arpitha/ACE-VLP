@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
+import { Router, RouterModule, Routes } from '@angular/router';
 
 import { DefaultLayoutComponent } from './containers';
 import { Page404Component } from './views/pages/page404/page404.component';
@@ -8,7 +8,6 @@ import { LoginComponent } from './views/login/login.component';
 import { ForgotPasswordComponent } from './views/pages/forgot-password/forgot-password.component';
 import { OtpComponent } from './views/pages/otp/otp.component';
 import { ForgotChangeComponent } from './views/pages/forgot-change/forgot-change.component';
-
 
 import { NoInternetComponent } from './views/pages/no-internet/no-internet.component';
 import { Page504Component } from './views/pages/page504/page504.component';
@@ -27,8 +26,8 @@ const routes: Routes = [
     data: {
       title: 'Home',
     },
-    canActivateChild: [ActivateChildGuard],
-    canActivate:[AuthGuard],
+    // canActivateChild: [ActivateChildGuard],
+    // canActivate: [AuthGuard],
     children: [
       // {
       //   path: 'dashboards',
@@ -41,28 +40,33 @@ const routes: Routes = [
         path: 'accounts',
         loadChildren: () =>
           import('./views/accounts/accounts.module').then(
-            (m) => m.AccountsModule
+            (m) => m.AccountsModule,
           ),
       },
       {
         path: 'generic',
         loadChildren: () =>
           import('./generic-components/generic-delete/generic-delete.module').then(
-            (m) => m.GenericDeleteModule
+            (m) => m.GenericDeleteModule,
           ),
       },
       {
         path: 'generic-remove',
         loadChildren: () =>
           import('./generic-components/generic-remove/generic-remove.module').then(
-            (m) => m.GenericRemoveModule
+            (m) => m.GenericRemoveModule,
           ),
       },
-{
+      {
         path: 'leave',
         loadChildren: () =>
-          import('./views/leave/leave.module').then(
-            (m) => m.LeaveModule
+          import('./views/leave/leave.module').then((m) => m.LeaveModule),
+      },
+      {
+        path: 'wfh',
+        loadChildren: () =>
+          import('./views/work-from-home/work-from-home.module').then(
+            (m) => m.WorkFromHomeModule,
           ),
       },
       // {
@@ -85,7 +89,9 @@ const routes: Routes = [
       {
         path: 'timesheets',
         loadChildren: () =>
-          import('./views/timesheets/timesheets.module').then((m) => m.TimesheetsModule),
+          import('./views/timesheets/timesheets.module').then(
+            (m) => m.TimesheetsModule,
+          ),
       },
       {
         path: 'invoice',
@@ -114,26 +120,25 @@ const routes: Routes = [
         path: 'changePasswords',
         loadChildren: () =>
           import('./views/change-passwords/change-passwords.module').then(
-            (m) => m.ChangePasswordsModule
+            (m) => m.ChangePasswordsModule,
           ),
       },
       {
         path: 'settings',
         loadChildren: () =>
           import('./views/settings/settings.module').then(
-            (m) => m.SettingsModule
+            (m) => m.SettingsModule,
           ),
       },
       {
         path: 'templates',
         component: TemplatesComponent,
-        canDeactivate:[CanDeactivateGuard]
+        canDeactivate: [CanDeactivateGuard],
       },
       {
         path: 'company-policy',
         component: CompanyPolicyComponent,
-        canDeactivate:[CanDeactivateGuard]
-
+        canDeactivate: [CanDeactivateGuard],
       },
 
       {
@@ -143,10 +148,14 @@ const routes: Routes = [
       },
       {
         path: 'reports',
-        loadChildren: () => import('./views/reports/reports.module').then(
-          (m) => m.ReportsModule)
-      }
-
+        loadChildren: () =>
+          import('./views/reports/reports.module').then((m) => m.ReportsModule),
+      },
+      {
+        path: 'tickets',
+        loadChildren: () =>
+          import('./views/ticket/ticket.module').then((m) => m.TicketModule),
+      },
     ],
   },
 

@@ -22,6 +22,8 @@ import { PeriodicityComponent } from './periodicity/periodicity.component';
 import { PeriodComponent } from './period/period.component';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { LeaveConfigurationComponent } from './leave-configuration/leave-configuration.component';
+import { WfhConfigurationComponent } from './wfh-configuration/wfh-configuration.component';
+import { WfhTypeComponent } from './wfh-type/wfh-type.component';
 @NgModule({
   declarations: [
     SettingsComponent,
@@ -38,7 +40,9 @@ import { LeaveConfigurationComponent } from './leave-configuration/leave-configu
     AccessToModulesComponent,
     PeriodicityComponent,
     PeriodComponent,
-    LeaveConfigurationComponent
+    LeaveConfigurationComponent,
+    WfhConfigurationComponent,
+    WfhTypeComponent
   ],
   imports: [
     CommonModule,

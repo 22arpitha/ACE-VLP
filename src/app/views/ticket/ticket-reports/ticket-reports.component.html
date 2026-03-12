@@ -1,0 +1,255 @@
+<div class="reports-container">
+  <!-- Header Section -->
+  <header class="reports-header">
+    <div class="header-content">
+      <div class="title-section">
+        <h1 class="page-title">IT Issues Report</h1>
+        <p class="page-subtitle">Comprehensive view of all IT support tickets</p>
+      </div>
+      <div class="header-actions">
+        <button class="btn-export" (click)="exportToCSV()" [disabled]="exporting || loading">
+          <span class="btn-icon">📥</span>
+          <span *ngIf="!exporting">Export CSV</span>
+          <span *ngIf="exporting">Exporting...</span>
+        </button>
+        <button class="btn-export" (click)="printReport()" [disabled]="loading">
+          <span class="btn-icon">🖨️</span>
+          <span>Print</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Statistics Cards -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-icon">📊</div>
+      <div class="stat-content">
+        <div class="stat-label">Total Tickets</div>
+        <div class="stat-value">{{ totalTickets }}</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon status-open">📂</div>
+      <div class="stat-content">
+        <div class="stat-label">Open Tickets</div>
+        <div class="stat-value">{{ openTickets }}</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon status-closed">✅</div>
+      <div class="stat-content">
+        <div class="stat-label">Closed Tickets</div>
+        <div class="stat-value">{{ closedTickets }}</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">⏱️</div>
+      <div class="stat-content">
+        <div class="stat-label">Avg. TAT</div>
+        <div class="stat-value">{{ formatTAT(averageTAT) }}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filter Section -->
+  <div class="filter-section" [class.mobile-open]="showMobileFilters">
+    <div class="filter-header">
+      <h2 class="filter-title">Filters</h2>
+      <button class="btn-mobile-filter" (click)="toggleMobileFilters()">
+        <span *ngIf="!showMobileFilters">Show Filters</span>
+        <span *ngIf="showMobileFilters">Hide Filters</span>
+      </button>
+    </div>
+
+    <div class="filter-grid">
+      <!-- Date Range Filter -->
+      <div class="filter-group">
+        <label class="filter-label">Ticket Raised Date</label>
+        <div class="date-range">
+          <input 
+            type="date" 
+            class="filter-input" 
+            [(ngModel)]="filter.ticketRaisedDateFrom"
+            (change)="onFilterChange()"
+            placeholder="From">
+          <span class="date-separator">to</span>
+          <input 
+            type="date" 
+            class="filter-input" 
+            [(ngModel)]="filter.ticketRaisedDateTo"
+            (change)="onFilterChange()"
+            placeholder="To">
+        </div>
+      </div>
+
+      <!-- Issue Filter -->
+      <div class="filter-group">
+        <label class="filter-label">Issue</label>
+        <input 
+          type="text" 
+          class="filter-input" 
+          [(ngModel)]="filter.issue"
+          (input)="onFilterChange()"
+          placeholder="Search by issue...">
+      </div>
+
+      <!-- Status Filter -->
+      <div class="filter-group">
+        <label class="filter-label">Status</label>
+        <select 
+          class="filter-select" 
+          [(ngModel)]="filter.status"
+          (change)="onFilterChange()">
+          <option [ngValue]="undefined">All Statuses</option>
+          <option *ngFor="let status of ticketStatuses" [ngValue]="status">
+            {{ status }}
+          </option>
+        </select>
+      </div>
+
+      <!-- Status Date Range Filter -->
+      <div class="filter-group">
+        <label class="filter-label">Status Date</label>
+        <div class="date-range">
+          <input 
+            type="date" 
+            class="filter-input" 
+            [(ngModel)]="filter.statusDateFrom"
+            (change)="onFilterChange()"
+            placeholder="From">
+          <span class="date-separator">to</span>
+          <input 
+            type="date" 
+            class="filter-input" 
+            [(ngModel)]="filter.statusDateTo"
+            (change)="onFilterChange()"
+            placeholder="To">
+        </div>
+      </div>
+
+      <!-- Clear Filters Button -->
+      <div class="filter-group filter-actions">
+        <button class="btn-clear-filters" (click)="clearFilters()">
+          Clear All Filters
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-container">
+    <div class="loader"></div>
+    <p>Generating report...</p>
+  </div>
+
+  <!-- Report Table -->
+  <div *ngIf="!loading" class="table-container">
+    <div class="table-wrapper">
+      <table class="report-table">
+        <thead>
+          <tr>
+            <th class="sortable" (click)="onSort('employeeName')">
+              <div class="th-content">
+                Employee Name
+                <span class="sort-icon" *ngIf="sortColumn === 'employeeName'">
+                  {{ sortDirection === 'asc' ? '↑' : '↓' }}
+                </span>
+              </div>
+            </th>
+            <th class="sortable" (click)="onSort('issue')">
+              <div class="th-content">
+                Issue
+                <span class="sort-icon" *ngIf="sortColumn === 'issue'">
+                  {{ sortDirection === 'asc' ? '↑' : '↓' }}
+                </span>
+              </div>
+            </th>
+            <th class="sortable" (click)="onSort('details')">
+              <div class="th-content">
+                Details
+                <span class="sort-icon" *ngIf="sortColumn === 'details'">
+                  {{ sortDirection === 'asc' ? '↑' : '↓' }}
+                </span>
+              </div>
+            </th>
+            <th>Attachment</th>
+            <th class="sortable" (click)="onSort('status')">
+              <div class="th-content">
+                Status
+                <span class="sort-icon" *ngIf="sortColumn === 'status'">
+                  {{ sortDirection === 'asc' ? '↑' : '↓' }}
+                </span>
+              </div>
+            </th>
+            <th class="sortable" (click)="onSort('statusDate')">
+              <div class="th-content">
+                Status Date
+                <span class="sort-icon" *ngIf="sortColumn === 'statusDate'">
+                  {{ sortDirection === 'asc' ? '↑' : '↓' }}
+                </span>
+              </div>
+            </th>
+            <th class="sortable" (click)="onSort('tat')">
+              <div class="th-content">
+                TAT (Hours)
+                <span class="sort-icon" *ngIf="sortColumn === 'tat'">
+                  {{ sortDirection === 'asc' ? '↑' : '↓' }}
+                </span>
+              </div>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let report of filteredReports" class="report-row">
+            <td class="employee-cell">{{ report.employeeName }}</td>
+            <td class="issue-cell">
+              <span class="issue-text" [title]="report.issue">
+                {{ truncateText(report.issue, 50) }}
+              </span>
+            </td>
+            <td class="details-cell">
+              <span class="details-text" [title]="report.details">
+                {{ truncateText(report.details, 60) }}
+              </span>
+            </td>
+            <td class="attachment-cell">
+              <button 
+                *ngIf="report.attachment" 
+                class="btn-view-attachment"
+                (click)="viewAttachment(report.attachment)">
+                📎 View
+              </button>
+              <span *ngIf="!report.attachment" class="no-attachment">—</span>
+            </td>
+            <td class="status-cell">
+              <span class="status-badge" [ngClass]="getStatusClass(report.status)">
+                {{ report.status }}
+              </span>
+            </td>
+            <td class="date-cell">{{ formatDate(report.statusDate) }}</td>
+            <td class="tat-cell">
+              <span [class.tat-highlight]="report.tat && report.tat > 48">
+                {{ formatTAT(report.tat) }}
+              </span>
+            </td>
+          </tr>
+          <tr *ngIf="filteredReports.length === 0">
+            <td colspan="7" class="no-data">
+              <div class="empty-state">
+                <div class="empty-icon">📋</div>
+                <p class="empty-title">No reports found</p>
+                <p class="empty-subtitle">Try adjusting your filters</p>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Report Count -->
+  <div class="report-count" *ngIf="!loading">
+    <p>Showing <strong>{{ filteredReports.length }}</strong> report(s)</p>
+  </div>
+</div>

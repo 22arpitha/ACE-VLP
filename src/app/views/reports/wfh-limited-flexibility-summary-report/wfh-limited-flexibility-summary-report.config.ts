@@ -1,0 +1,47 @@
+
+// Column Definitions
+export const tableColumns  = [
+  {
+    label: 'Sl No',
+    key: 'sl',
+    sortable: false
+  },
+  {
+    label: 'Employee',
+    key: 'employee_name',
+    keyId:'employee_id',
+    sortKey:'not_done',
+    sortable: false,
+    paramskeyId: 'timesheet-employee-ids',
+    filterType: 'multi-select',
+    filterable: true,
+  },
+   
+  {
+    label: 'Opening Balance',
+    key: 'opening_balance',
+    sortKey:'opening_balance',
+    sortable: false
+  },
+  {
+    label: 'Accrued Balance',
+    key: 'accrued_wfh',
+    sortKey:'accrued_wfh',
+    sortable: false
+  },
+  {
+    label: 'Utilized',
+    key: 'consumed_wfh',
+    sortKey:'consumed_wfh',
+    sortable: false
+  },
+  {
+    label: 'Closing Balance',
+    key: 'closing_balance_wfh',
+    sortKey:'closing_balance_wfh',
+    sortable: false
+  },
+  
+]
+
+

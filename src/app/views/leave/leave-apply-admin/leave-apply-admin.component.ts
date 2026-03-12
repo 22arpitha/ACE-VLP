@@ -1012,7 +1012,7 @@ private getWeekNumberOfMonthKey(d: Date): string {
 }
 
   
-private getDateFromControl(controlName: string): Date | null {
+private getDateFromControl(controlName: string): any  {
     const val = this.leaveApplyForm.get(controlName)?.value;
     if (!val) return null;
     if (val instanceof Date) return val;

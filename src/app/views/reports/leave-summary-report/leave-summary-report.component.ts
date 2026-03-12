@@ -47,10 +47,10 @@ export class LeaveSummaryReportComponent implements OnInit {
   isIncludeAllJobEnable: boolean = true;
   isIncludeAllJobValue: boolean = false;
   jobFilterList: any = [];
-  clientName: { id: any; name: string; }[];
-  jobName: { id: any; name: string; }[];
-  statusName: { id: any; name: string; }[];
-  leaveTypes: { id: any; name: string; }[];
+  clientName!: { id: any; name: string; }[];
+  jobName!: { id: any; name: string; }[];
+  statusName!: { id: any; name: string; }[];
+  leaveTypes!: { id: any; name: string; }[];
   selectedClientIds: any = [];
   selectedJobIds: any = [];
   selectedEmployeeIds: any = [];
@@ -222,7 +222,7 @@ export class LeaveSummaryReportComponent implements OnInit {
       employee_ids: this.selectedEmployeeIds,
     });
   }
-  onSorting(data) {
+  onSorting(data:any) {
     this.directionValue = data.detail.directionValue;
     this.sortValue = data.detail.sortValue;
     this.getTableData({
@@ -300,7 +300,7 @@ export class LeaveSummaryReportComponent implements OnInit {
 
   // new code
   private updateFilterColumn(key: string, cache: any) {
-    this.tableConfig.columns = this.tableConfig.columns.map(col =>
+    this.tableConfig.columns = this.tableConfig.columns.map((col:any) =>
       col.paramskeyId === key
         ? {
           ...col,
@@ -347,7 +347,7 @@ export class LeaveSummaryReportComponent implements OnInit {
         this.tableConfig = {
           columns: tableColumns?.map(col => {
             let filterOptions: any = [];
-            const existingCol = this.tableConfig?.columns?.find(c => c.key === col.key);
+            const existingCol = this.tableConfig?.columns?.find((c:any) => c.key === col.key);
             if (existingCol?.filterOptions?.length) {
               filterOptions = existingCol.filterOptions;
             } else if (col.filterable) {
@@ -482,7 +482,7 @@ export class LeaveSummaryReportComponent implements OnInit {
 
         cache.data = [
           ...cache.data,
-          ...newData.filter(opt => !cache.data.some(existing => existing.id === opt.id))
+          ...newData.filter((opt:any) => !cache.data.some(existing => existing.id === opt.id))
         ];
         cache.page = nextPage;
         cache.total = res.total_no_of_record || cache.total;

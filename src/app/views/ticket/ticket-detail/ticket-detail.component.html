@@ -1,0 +1,192 @@
+<div class="ticket-detail-container">
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-container">
+    <div class="loader"></div>
+    <p>Loading ticket details...</p>
+  </div>
+
+  <!-- Ticket Details -->
+  <div *ngIf="!loading && ticket" class="ticket-detail">
+    <!-- Header -->
+    <header class="detail-header">
+      <button class="btn-back" (click)="goBack()">
+        <span class="back-icon">←</span>
+        <span>Back to Tickets</span>
+      </button>
+      
+      <div class="header-info">
+        <h1 class="ticket-title">{{ ticket.ticketNumber }}</h1>
+        <span class="status-badge" [ngClass]="getStatusClass(ticket.status)">
+          {{ ticket.status }}
+        </span>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="detail-content">
+      <!-- Info Cards Grid -->
+      <div class="info-grid">
+        <!-- Employee Card -->
+        <div class="info-card">
+          <div class="card-label">Raised By</div>
+          <div class="card-value">{{ ticket.employeeName }}</div>
+        </div>
+
+        <!-- Raised Date Card -->
+        <div class="info-card">
+          <div class="card-label">Ticket Raised Date</div>
+          <div class="card-value">{{ formatDate(ticket.ticketRaisedDate) }}</div>
+        </div>
+
+        <!-- Status Date Card -->
+        <div class="info-card">
+          <div class="card-label">Status Date</div>
+          <div class="card-value">{{ formatDate(ticket.statusDate) }}</div>
+        </div>
+      </div>
+
+      <!-- Issue Section -->
+      <div class="detail-section">
+        <h2 class="section-title">Issue</h2>
+        <div class="section-content issue-content">
+          {{ ticket.issue }}
+        </div>
+      </div>
+
+      <!-- Details Section -->
+      <div class="detail-section">
+        <h2 class="section-title">Details</h2>
+        <div class="section-content details-content">
+          {{ ticket.details }}
+        </div>
+      </div>
+
+      <!-- Attachment Section -->
+      <div class="detail-section" *ngIf="ticket.attachment || ticket.attachmentUrl">
+        <h2 class="section-title">Attachment</h2>
+        <div class="section-content">
+          <button class="btn-attachment" (click)="downloadAttachment()">
+            <span class="attachment-icon">📎</span>
+            <span>View Attachment</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Rejection Reason (if reopened) -->
+      <div class="detail-section alert-section" *ngIf="ticket.status === 'Re-Open' && ticket.rejectionReason">
+        <h2 class="section-title">Rejection Reason</h2>
+        <div class="section-content rejection-content">
+          <div class="alert-icon">⚠️</div>
+          <div class="alert-text">{{ ticket.rejectionReason }}</div>
+        </div>
+      </div>
+
+      <!-- Close Request Notice -->
+      <div class="detail-section alert-section" *ngIf="ticket.status === 'Close Request sent' && canApproveReject">
+        <div class="section-content notice-content">
+          <div class="notice-icon">📬</div>
+          <div class="notice-text">
+            <h3>Close Request Pending</h3>
+            <p>Technical Support has requested to close this ticket. Please review and approve or reject this request.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="action-bar">
+      <!-- Close Ticket Button (Owner/Admin) -->
+      <button 
+        *ngIf="canClose"
+        class="btn-action btn-close"
+        (click)="openCloseConfirmation()"
+        [disabled]="processing">
+        <span *ngIf="!processing">Close Ticket</span>
+        <span *ngIf="processing">Processing...</span>
+      </button>
+
+      <!-- Send Close Request (Tech Support) -->
+      <button 
+        *ngIf="canSendCloseRequest"
+        class="btn-action btn-request"
+        (click)="sendCloseRequest()"
+        [disabled]="processing">
+        <span *ngIf="!processing">Send Close Request</span>
+        <span *ngIf="processing">Sending...</span>
+      </button>
+
+      <!-- Approve/Reject Buttons (Owner when close request sent) -->
+      <div class="button-group" *ngIf="canApproveReject">
+        <button 
+          class="btn-action btn-approve"
+          (click)="approveCloseRequest()"
+          [disabled]="processing">
+          <span *ngIf="!processing">✓ Approve & Close</span>
+          <span *ngIf="processing">Processing...</span>
+        </button>
+        <button 
+          class="btn-action btn-reject"
+          (click)="openRejectModal()"
+          [disabled]="processing">
+          <span *ngIf="!processing">✗ Reject & Reopen</span>
+          <span *ngIf="processing">Processing...</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Not Found -->
+  <div *ngIf="!loading && !ticket" class="not-found">
+    <div class="not-found-icon">🔍</div>
+    <h2>Ticket Not Found</h2>
+    <p>The ticket you're looking for doesn't exist or you don't have permission to view it.</p>
+    <button class="btn-action" (click)="goBack()">Back to Tickets</button>
+  </div>
+</div>
+
+<!-- Close Confirmation Modal -->
+<div class="modal-overlay" *ngIf="showCloseConfirmation" (click)="cancelCloseConfirmation()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>Confirm Close Ticket</h2>
+    </div>
+    <div class="modal-body">
+      <p>Are you sure you want to close this ticket? This action cannot be undone.</p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-modal btn-cancel" (click)="cancelCloseConfirmation()">Cancel</button>
+      <button class="btn-modal btn-confirm" (click)="closeTicket()" [disabled]="processing">
+        <span *ngIf="!processing">Close Ticket</span>
+        <span *ngIf="processing">Closing...</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Reject Modal -->
+<div class="modal-overlay" *ngIf="showRejectModal" (click)="cancelRejectModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>Reject Close Request</h2>
+    </div>
+    <div class="modal-body">
+      <p>Please provide a reason for rejecting the close request:</p>
+      <textarea 
+        class="rejection-textarea"
+        [(ngModel)]="rejectionReason"
+        placeholder="Enter your reason here..."
+        rows="4"
+        [disabled]="processing"></textarea>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-modal btn-cancel" (click)="cancelRejectModal()">Cancel</button>
+      <button 
+        class="btn-modal btn-confirm" 
+        (click)="rejectCloseRequest()" 
+        [disabled]="processing || !rejectionReason.trim()">
+        <span *ngIf="!processing">Reject & Reopen</span>
+        <span *ngIf="processing">Processing...</span>
+      </button>
+    </div>
+  </div>
+</div>

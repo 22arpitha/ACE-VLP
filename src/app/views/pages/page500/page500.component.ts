@@ -7,7 +7,7 @@ import { Router } from '@angular/router';
 })
 export class Page500Component {
 
-  user_id: string;
+  user_id!: string;
 
   constructor(
     private router:Router) { }
