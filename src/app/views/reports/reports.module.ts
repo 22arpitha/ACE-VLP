@@ -19,6 +19,7 @@ import { WfhLimitedFlexibilitySummaryReportComponent } from './wfh-limited-flexi
 import { WfhLimitedFlexibilityTransactionReportComponent } from './wfh-limited-flexibility-transaction-report/wfh-limited-flexibility-transaction-report.component';
 import { WfhProlongedHealthIssuesSummaryReportComponent } from './wfh-prolonged-health-issues-summary-report/wfh-prolonged-health-issues-summary-report.component';
 import { WfhProlongedHealthIssuesTransactionReportComponent } from './wfh-prolonged-health-issues-transaction-report/wfh-prolonged-health-issues-transaction-report.component';
+import { DashboardWfhComponent } from './dashboard-wfh/dashboard-wfh.component';
 
 
 @NgModule({
@@ -38,7 +39,8 @@ import { WfhProlongedHealthIssuesTransactionReportComponent } from './wfh-prolon
     WfhLimitedFlexibilitySummaryReportComponent,
     WfhLimitedFlexibilityTransactionReportComponent,
     WfhProlongedHealthIssuesSummaryReportComponent,
-    WfhProlongedHealthIssuesTransactionReportComponent
+    WfhProlongedHealthIssuesTransactionReportComponent,
+    DashboardWfhComponent
   ],
   imports: [
     CommonModule,

@@ -134,11 +134,11 @@ export class TicketListComponent implements OnInit, OnDestroy {
   }
 
   openTicket(ticket: Ticket): void {
-    this.router.navigate(['/tickets', ticket.id]);
+    this.router.navigate(['it-support/tickets/', ticket.id]);
   }
 
   raiseNewTicket(): void {
-    this.router.navigate(['/tickets/new']);
+    this.router.navigate(['/it-support/tickets/new']);
   }
 
   getStatusClass(status: TicketStatus): string {
