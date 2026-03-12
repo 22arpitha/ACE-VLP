@@ -188,6 +188,9 @@ export class DefaultLayoutComponent {
     };
     this.modalService.open(UserGuideModalComponent, initialState);
   }
+  suggestionBox() {
+     window.open('https://www.custominsight.net/box/?cb43003dpcu', '_blank');
+  }
 
   getNotification() {
     this.notificationServive.notificationCount.subscribe((data) => {

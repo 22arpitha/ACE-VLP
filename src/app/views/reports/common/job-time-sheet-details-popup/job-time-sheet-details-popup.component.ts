@@ -203,12 +203,16 @@ export class JobTimeSheetDetailsPopupComponent implements OnInit {
       query += this.data.dropdwonFilterData.periodicity ? `&periodicity=${this.data.dropdwonFilterData.periodicity}`:'';
        query += this.data.dropdwonFilterData.period ? `&period=${encodeURIComponent(JSON.stringify(this.data.dropdwonFilterData.period))}`:'';
     }
-    query += `&job-ids=[${this.jobId}]`;
+    if(this.data.report_type ==='job-time-emp-report'){
+      query += `&job_id=${this.jobId}`;
+    } else{
+      query += `&job-ids=[${this.jobId}]`;
+    }
     query += this.employee_id ? `&timesheet-employee=${this.employee_id}` : ``;
     if (this.directionValue && this.sortValue) {
       query += `&sort-by=${this.sortValue}&sort-type=${this.directionValue}`;
     }
-    this.api.getData(`${environment.live_url}/${environment.vlp_timesheets}/${query}`).subscribe((res: any) => {
+    this.api.getData(`${environment.live_url}/${this.data?.table_api}/${query}`).subscribe((res: any) => {
       const formattedData = res.results.map((item: any, i: number) => ({
         sl: (page - 1) * pageSize + i + 1,
         ...item,

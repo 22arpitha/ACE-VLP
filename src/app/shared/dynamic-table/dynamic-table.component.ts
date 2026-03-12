@@ -452,6 +452,9 @@ clearRangeDateFilter(columnKey: string): void {
 }
 
 navigateToEmployee(event,col:any){
+  if(col.keyId==='is_primary' && event?.is_multiple_employee){
+    this.actionEvent.emit({ actionType: 'navigate_employee', row: event });
+  }
   if ('keyId' in event) {
   this.actionEvent.emit({ actionType: 'navigate', row: event, selectedDay:event[col.keyId] });
   }

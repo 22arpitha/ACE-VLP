@@ -310,7 +310,7 @@
         >
         <tr *ngIf="config.formContent" [formGroup]="getFormGroup(i)">
           <td *ngFor="let col of config.columns">
-            <div *ngIf="!col.navigation">
+            <div *ngIf="!col.navigation && !col.empNavigation">
                <ng-container *ngIf="!col.inputField && !col.fileInputField">
                 {{ col.type === 'date' ? (item[col.key] | dateFormater) : item[col.key] !== null && item[col.key] !== undefined && item[col.key] !== '' ? item[col.key] : 'NA'}}
                </ng-container>
@@ -400,7 +400,7 @@
         </tr>
         <tr *ngIf="!config.formContent">
           <td *ngFor="let col of config.columns">
-            <div *ngIf="!col.navigation && col.key != 'diff_days'" [ngStyle]="{ color:col.key === 'job_status_date' && item?.status_date_color ? item?.status_date_color : col.key === 'short_fall' ? item?.color : 'black' }" [ngClass]="col.key === 'remaining_time' ? isPositiveOrNegative(item?.remaining_time):''">
+            <div *ngIf="!col.navigation && !col.empNavigation && col.key != 'diff_days'" [ngStyle]="{ color:col.key === 'job_status_date' && item?.status_date_color ? item?.status_date_color : col.key === 'short_fall' ? item?.color : 'black' }" [ngClass]="col.key === 'remaining_time' ? isPositiveOrNegative(item?.remaining_time):''">
               {{ col.type === 'date' ? (item[col.key] | dateFormater) : item[col.key] !== null && item[col.key] !== undefined && item[col.key] !== '' ? item[col.key] : 'NA' }}
             </div>
 
@@ -412,6 +412,32 @@
               >
               {{ item[col.key] !== null && item[col.key] !== undefined && item[col.key] !== '' ? item[col.key] : 'NA' }}
               </a>
+            </ng-container>
+            <!-- <ng-container *ngIf="col.empNavigation">
+              <a
+                *ngIf="item?.is_multiple_employee && (userRole === 'Admin' || userRole === 'Manager' || userRole === 'Director')"
+                (click)="navigateToEmployee(item,col)"
+                class="text-primary text-decoration-underline"
+                style="cursor:pointer"
+              >
+                {{ item[col.key] || 'NA' }}
+              </a>
+
+              <span *ngIf="!item?.is_multiple_employee">
+                {{ item[col.key] || 'NA' }}
+              </span>
+            </ng-container> -->
+             <ng-container *ngIf="col.empNavigation">
+              <a *ngIf="item?.is_multiple_employee && (userRole === 'Admin' || userRole === 'Manager' || userRole === 'Director')"
+                (click)="navigateToEmployee(item,col)"
+                class="text-primary text-decoration-underline"
+                style="cursor:pointer">
+                {{ item[col.key] || 'NA' }}
+              </a>
+
+              <span *ngIf="!item?.is_multiple_employee">
+                {{ item[col.key] || 'NA' }}
+              </span>
             </ng-container>
             <!-- the below code is to show the tat day with background color identification -->
             <ng-container *ngIf="col.key === 'diff_days'">

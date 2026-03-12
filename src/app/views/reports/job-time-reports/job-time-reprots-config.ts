@@ -58,6 +58,8 @@ export const tableColumns  = [
     paramskeyId: 'is-primary-ids',
     filterable: true,
     filterType: 'multi-select',
+    empNavigation: true
+    // navigation:true
   },
   { label: 'Est. Hrs', key: 'estimated_hours', sortKey:'total_estimated_minutes', sortable: true },
   { label: 'Act. Hrs', key: 'actual_hours', sortKey:'total_actual_minutes', sortable: true ,navigation:true},

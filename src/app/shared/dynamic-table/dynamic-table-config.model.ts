@@ -8,6 +8,7 @@ export interface TableColumn {
   filterType?: 'text' | 'date' | 'multi-select';
   filterOptions?: string[];
   navigation?: boolean;
+  empNavigation?:boolean;
   inputField?:boolean;
   fileInputField?:boolean;
   sortKey?:string;
