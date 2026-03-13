@@ -1,421 +1,495 @@
 <div class="container-wrapper settings-main-content clients px-0">
-    <section class="settings-form-bg px-0">
-       <div class="row mx-0 px-0">
-        <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0 text-end mr-2" *ngIf="isEditItem">
-             <button mat-raised-button class="proceedbtn mat-btn-s" type="button" [disabled]="isEnabledEdit" (click)="enbleFields()">Edit</button>
-        </div></div>
-      <div class="row mx-0 px-0 create-client">
-        <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0">
-            <form [formGroup]="clientFormGroup">
-                <div class="row mx-0 my-0 px-2">
-                    <div class="col-12 col-sm-12 col-md-6 col-lg-3 my-1 px-0">
-                    <mat-form-field appearance="outline" [ngClass]="{ 'highlight-background': !shouldDisableFileds}" class="w-100 custom-mat-form-field">
-                        <mat-label>Client Number <b class="r-star">*</b></mat-label>
-                        <input matInput type="text" placeholder="Enter Client Number" formControlName="client_number" autocomplete="off" readonly>
-                        <mat-error *ngIf="f['client_number']?.invalid && f['client_number']?.touched || f['client_number']?.dirty">
-                          <span *ngIf="f['client_number']?.errors?.['required']">Client Number is required</span>
-                        </mat-error>
-                      </mat-form-field>  
-                    </div>
-<!-- Client name -->
-<div class="col-12 col-sm-12 col-md-6 col-lg-3 my-1 no-padding pl-5 pr-0">
-
-<mat-form-field appearance="outline" [ngClass]="{ 'highlight-background': !shouldDisableFileds}" class="w-100 custom-mat-form-field">
-    <mat-label>Client Name <b class="r-star">*</b></mat-label>
-    <input matInput placeholder="Enter Client name" formControlName="client_name" autocomplete="off">
-    <mat-error *ngIf="f['client_name']?.invalid && f['client_name']?.touched || f['client_name']?.dirty">
-        <span  *ngIf="f['client_name']?.errors?.['required']">Client name is required
-        </span>
-        <span  *ngIf="f['client_name']?.errors?.['pattern']">
-            Extra space charaters are not allowed.
-        </span>
-        <span 
-            *ngIf="f['client_name']?.errors?.['maxlength']">
-            Client name cannot exceed more than 50 characters.
-        </span>
-    </mat-error>
-</mat-form-field>
-
-</div>
-
-<!-- Email Address -->
-<div class="col-12 col-sm-12 col-md-6 col-lg-3 my-1 no-padding pl-0 pr-5">
-<mat-form-field appearance="outline" [ngClass]="{ 'highlight-background': !shouldDisableFileds}" class="w-100 custom-mat-form-field">
-    <mat-label>Email Id <b class="r-star">*</b></mat-label>
-    <input matInput type="email" placeholder="Enter email" formControlName="email"
-        autocomplete="off" oninput="this.value = this.value.toLowerCase()">
-        <mat-error *ngIf="f['email']?.invalid && f['email']?.touched || f['email']?.dirty">
-            <span  *ngIf="f['email']?.errors?.['required']">Email is required</span>
-            <span  *ngIf="f['email']?.errors?.['pattern']">Invalid email Id</span>
-        </mat-error>
-</mat-form-field>
-
-</div>
-<!-- Country Field -->
-<div class="col-12 col-sm-12 col-md-6 col-lg-3 my-1 px-0">
-    <mat-form-field appearance="outline" [ngClass]="{ 'highlight-background': !shouldDisableFileds}" class="w-100 custom-mat-form-field">
-        <mat-label>Select Country <b class="r-star">*</b></mat-label>
-        <mat-select formControlName="country" autocomplete="off"
-                placeholder="Select" panelClass="custom-select-panel"
-                [disableOptionCentering]="true" >
-                <div class="mat-select-search-wrapper d-flex">
-                  <input matInput [(ngModel)]="searchCountryText"  [ngModelOptions]="{standalone: true}" placeholder="Search Country" class="mat-select-search">
-                  <mat-icon class="search-icon" *ngIf="!searchCountryText">search</mat-icon>
-                  <mat-icon class="search-icon" *ngIf="searchCountryText" type="button" (click)="clearSearch('con')">close</mat-icon>
-                </div>
-                <mat-option *ngFor="let item of filteredCountryList()" [value]="item?.id">
-                    {{item?.country_name}}
-                </mat-option>
-        </mat-select>
-        <mat-error *ngIf="f['country']?.invalid && f['country']?.touched || f['role']?.dirty">
-            <span  *ngIf="f['country']?.errors?.['required']">Country is required</span>
-      </mat-error>
-    </mat-form-field>
-
-</div>
-<!-- Address Field -->
-<div class="col-12 col-sm-12 col-md-12 col-lg-12 my-1 px-0">
-
-    <mat-form-field appearance="outline" [ngClass]="{ 'highlight-background': !shouldDisableFileds}" class="w-100 custom-mat-form-field">
-        <mat-label>Address <b class="r-star">*</b></mat-label>
-        <textarea matInput placeholder="Enter Address" formControlName="address" autocomplete="off"></textarea>
-        <mat-error *ngIf="f['address']?.invalid && f['address']?.touched || f['address']?.dirty">
-            <span  *ngIf="f['address']?.errors?.['required']">Address is required
-            </span>
-            <span 
-            *ngIf="f['address']?.errors?.['maxlength']">
-            Address cannot exceed more than 200 characters.
-        </span>
-        <span 
-        *ngIf="f['address']?.errors?.['pattern']">
-        Extra space charaters are not allowed.
-    </span>
-        </mat-error>
-    </mat-form-field>
-    
+  <section class="settings-form-bg px-0">
+    <div class="row mx-0 px-0">
+      <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0 text-end mr-2" *ngIf="isEditItem">
+        <button mat-raised-button class="proceedbtn mat-btn-s" type="button" [disabled]="isEnabledEdit"
+          (click)="enbleFields()">Edit</button>
+      </div>
     </div>
-    <!-- Source Field -->
-    <div class="col-12 col-sm-12 col-md-6 col-lg-3 my-1 px-0">
-        <mat-form-field appearance="outline" [ngClass]="{ 'highlight-background': !shouldDisableFileds}" class="w-100 custom-mat-form-field">
-            <mat-label>Select Source <b class="r-star">*</b></mat-label>
-            <mat-select formControlName="source" autocomplete="off"
-                    placeholder="Select" panelClass="custom-select-panel"
-                    [disableOptionCentering]="true">
-                    <div class="mat-select-search-wrapper d-flex">
-                      <input matInput [(ngModel)]="searchSourceText"  [ngModelOptions]="{standalone: true}" placeholder="Search Source" class="mat-select-search">
-                      <mat-icon class="search-icon" *ngIf="!searchSourceText">search</mat-icon>
-                      <mat-icon class="search-icon" *ngIf="searchSourceText" type="button" (click)="clearSearch('sou')">close</mat-icon>
-                    </div>
-                    <mat-option *ngFor="let item of filteredSourceList()" [value]="item?.id">
-                        {{item?.source_name}}
-                    </mat-option>
-            </mat-select>
-            <mat-error *ngIf="f['source']?.invalid && f['source']?.touched || f['source']?.dirty">
-                <span  *ngIf="f['source']?.errors?.['required']">Source is required</span>
-          </mat-error>
-        </mat-form-field>
-     
-    </div> 
-        <!-- Start Date -->
-   
-<div class="col-12 col-sm-12 col-md-6 col-lg-3 my-1 no-padding pl-5 pr-0">
-    <mat-form-field appearance="outline" [ngClass]="{ 'highlight-background': !shouldDisableFileds}" class="w-100 p-0 custom-mat-form-field">
-        <mat-label>Start Date <b class="r-star">*</b></mat-label>
-        <input matInput [matDatepicker]="picker1" placeholder="Enter Start date"
-            formControlName="service_start_date" autocomplete="off">
-            <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
-             <mat-datepicker #picker1 [dateClass]="dateClass"></mat-datepicker>
-             <mat-error *ngIf="f['service_start_date']?.invalid && f['service_start_date']?.touched || f['service_start_date']?.dirty">
-                <span  *ngIf="f['service_start_date']?.errors?.['required']">Start Date is required</span>
-          </mat-error>
-    </mat-form-field>
-  
-</div>
-  <!-- End Date -->
-<div class="col-12 col-sm-12 col-md-6 col-lg-3 my-1 no-padding pl-0 pr-5">
-    <mat-form-field appearance="outline" [ngClass]="{ 'highlight-background': !shouldDisableFileds}" class="w-100 p-0 custom-mat-form-field">
-        <mat-label>End Date</mat-label>
-        <input matInput [matDatepicker]="picker2" placeholder="Enter End date" 
-            formControlName="service_end_date" autocomplete="off">
-            <button *ngIf="clientFormGroup?.get('service_end_date')?.value" ngbTooltip="Clear" matSuffix mat-icon-button aria-label="Clear" (click)="resetDate()" type="button">
-              <mat-icon>close</mat-icon>
-            </button>
-            <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
-             <mat-datepicker #picker2 [dateClass]="dateClass"></mat-datepicker>
-             <mat-error *ngIf="f['service_end_date']?.invalid && f['service_end_date']?.touched || f['service_end_date']?.dirty">
-                <span  *ngIf="f['service_end_date']?.errors?.['required']">End date is required</span>
-          </mat-error>
-    </mat-form-field>
-  
-</div>
-  <!-- Upload File -->
-<div class="col-12 col-sm-12 col-md-6 col-lg-3 my-1 px-0 align-content-center" *ngIf="userRole === 'Admin'">
-  <div class="client-drop-zone"
-       data-type="client"
-       [class.disabled]="!shouldDisableFileds"
-       (drop)="onClientFileDropped($event)"
-       (dragover)="onDragOver($event)"
-       (dragleave)="onDragLeave($event)"
-       [class.drag-active]="isDragActive">
-       <input type="file" accept=".xlsx,.xls,.doc,.docx,.pdf" formControlName="client_file" #fileInput
-                (change)="onFileSelected($event)" hidden>
-              <div class="image-container w-100 d-flex justify-content-between align-items-center"
-                style="padding: 1px 15px;border:none"
-                [ngClass]="{'is-invalid': f['client_file']?.touched && f['client_file']?.invalid}">
-                <mat-label *ngIf="selectedFile && selectedFile?.name"><a type="button" (click)="openFileInNewTab()">{{selectedFile?.name}}</a></mat-label>
-                <mat-label *ngIf="!selectedFile && !selectedFile?.name">Upload File</mat-label>
+    <div class="row mx-0 px-0 create-client">
+      <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0">
+        <form [formGroup]="clientFormGroup">
+          <div class="row mx-0 my-0 px-2">
+            <div class="col-12 col-sm-12 col-md-6 col-lg-3 my-1 px-0">
+              <mat-form-field appearance="outline" [ngClass]="{ 'highlight-background': !shouldDisableFileds}"
+                class="w-100 custom-mat-form-field">
+                <mat-label>Client Number <b class="r-star">*</b></mat-label>
+                <input matInput type="text" placeholder="Enter Client Number" formControlName="client_number"
+                  autocomplete="off" readonly>
+                <mat-error
+                  *ngIf="f['client_number']?.invalid && f['client_number']?.touched || f['client_number']?.dirty">
+                  <span *ngIf="f['client_number']?.errors?.['required']">Client Number is required</span>
+                </mat-error>
+              </mat-form-field>
+            </div>
+            <!-- Client name -->
+            <div class="col-12 col-sm-12 col-md-6 col-lg-3 my-1 no-padding pl-5 pr-0">
 
-                <div>
-                  <button type="button" mat-icon-button [disabled]="!shouldDisableFileds " (click)="triggerFileInput()">
-                  <i matTooltip="{{selectedFile ? 'Edit' : 'Upload File'}}"
-                    class="{{selectedFile ? 'bi bi-pencil-fill' : 'bi bi-file-earmark-spreadsheet'}}"
-                    id="edit-or-upload-icon"></i>
-                </button>
-                <button type="button" mat-icon-button *ngIf="selectedFile" (click)="removeImage()">
+              <mat-form-field appearance="outline" [ngClass]="{ 'highlight-background': !shouldDisableFileds}"
+                class="w-100 custom-mat-form-field">
+                <mat-label>Client Name <b class="r-star">*</b></mat-label>
+                <input matInput placeholder="Enter Client name" formControlName="client_name" autocomplete="off">
+                <mat-error *ngIf="f['client_name']?.invalid && f['client_name']?.touched || f['client_name']?.dirty">
+                  <span *ngIf="f['client_name']?.errors?.['required']">Client name is required
+                  </span>
+                  <span *ngIf="f['client_name']?.errors?.['pattern']">
+                    Extra space charaters are not allowed.
+                  </span>
+                  <span *ngIf="f['client_name']?.errors?.['maxlength']">
+                    Client name cannot exceed more than 50 characters.
+                  </span>
+                </mat-error>
+              </mat-form-field>
+
+            </div>
+
+            <!-- Email Address -->
+            <div class="col-12 col-sm-12 col-md-6 col-lg-3 my-1 no-padding pl-0 pr-5">
+              <mat-form-field appearance="outline" [ngClass]="{ 'highlight-background': !shouldDisableFileds}"
+                class="w-100 custom-mat-form-field">
+                <mat-label>Email Id <b class="r-star">*</b></mat-label>
+                <input matInput type="email" placeholder="Enter email" formControlName="email" autocomplete="off"
+                  oninput="this.value = this.value.toLowerCase()">
+                <mat-error *ngIf="f['email']?.invalid && f['email']?.touched || f['email']?.dirty">
+                  <span *ngIf="f['email']?.errors?.['required']">Email is required</span>
+                  <span *ngIf="f['email']?.errors?.['pattern']">Invalid email Id</span>
+                </mat-error>
+              </mat-form-field>
+
+            </div>
+            <!-- Country Field -->
+            <div class="col-12 col-sm-12 col-md-6 col-lg-3 my-1 px-0">
+              <mat-form-field appearance="outline" [ngClass]="{ 'highlight-background': !shouldDisableFileds}"
+                class="w-100 custom-mat-form-field">
+                <mat-label>Select Country <b class="r-star">*</b></mat-label>
+                <mat-select formControlName="country" autocomplete="off" placeholder="Select"
+                  panelClass="custom-select-panel" [disableOptionCentering]="true">
+                  <div class="mat-select-search-wrapper d-flex">
+                    <input matInput [(ngModel)]="searchCountryText" [ngModelOptions]="{standalone: true}"
+                      placeholder="Search Country" class="mat-select-search">
+                    <mat-icon class="search-icon" *ngIf="!searchCountryText">search</mat-icon>
+                    <mat-icon class="search-icon" *ngIf="searchCountryText" type="button"
+                      (click)="clearSearch('con')">close</mat-icon>
+                  </div>
+                  <mat-option *ngFor="let item of filteredCountryList()" [value]="item?.id">
+                    {{item?.country_name}}
+                  </mat-option>
+                </mat-select>
+                <mat-error *ngIf="f['country']?.invalid && f['country']?.touched || f['role']?.dirty">
+                  <span *ngIf="f['country']?.errors?.['required']">Country is required</span>
+                </mat-error>
+              </mat-form-field>
+
+            </div>
+            <!-- Address Field -->
+            <div class="col-12 col-sm-12 col-md-12 col-lg-12 my-1 px-0">
+
+              <mat-form-field appearance="outline" [ngClass]="{ 'highlight-background': !shouldDisableFileds}"
+                class="w-100 custom-mat-form-field">
+                <mat-label>Address <b class="r-star">*</b></mat-label>
+                <textarea matInput placeholder="Enter Address" formControlName="address" autocomplete="off"></textarea>
+                <mat-error *ngIf="f['address']?.invalid && f['address']?.touched || f['address']?.dirty">
+                  <span *ngIf="f['address']?.errors?.['required']">Address is required
+                  </span>
+                  <span *ngIf="f['address']?.errors?.['maxlength']">
+                    Address cannot exceed more than 200 characters.
+                  </span>
+                  <span *ngIf="f['address']?.errors?.['pattern']">
+                    Extra space charaters are not allowed.
+                  </span>
+                </mat-error>
+              </mat-form-field>
+
+            </div>
+            <!-- Source Field -->
+            <div class="col-12 col-sm-12 col-md-6 col-lg-3 my-1 px-0">
+              <mat-form-field appearance="outline" [ngClass]="{ 'highlight-background': !shouldDisableFileds}"
+                class="w-100 custom-mat-form-field">
+                <mat-label>Select Source <b class="r-star">*</b></mat-label>
+                <mat-select formControlName="source" autocomplete="off" placeholder="Select"
+                  panelClass="custom-select-panel" [disableOptionCentering]="true">
+                  <div class="mat-select-search-wrapper d-flex">
+                    <input matInput [(ngModel)]="searchSourceText" [ngModelOptions]="{standalone: true}"
+                      placeholder="Search Source" class="mat-select-search">
+                    <mat-icon class="search-icon" *ngIf="!searchSourceText">search</mat-icon>
+                    <mat-icon class="search-icon" *ngIf="searchSourceText" type="button"
+                      (click)="clearSearch('sou')">close</mat-icon>
+                  </div>
+                  <mat-option *ngFor="let item of filteredSourceList()" [value]="item?.id">
+                    {{item?.source_name}}
+                  </mat-option>
+                </mat-select>
+                <mat-error *ngIf="f['source']?.invalid && f['source']?.touched || f['source']?.dirty">
+                  <span *ngIf="f['source']?.errors?.['required']">Source is required</span>
+                </mat-error>
+              </mat-form-field>
+
+            </div>
+            <!-- Start Date -->
+
+            <div class="col-12 col-sm-12 col-md-6 col-lg-3 my-1 no-padding pl-5 pr-0">
+              <mat-form-field appearance="outline" [ngClass]="{ 'highlight-background': !shouldDisableFileds}"
+                class="w-100 p-0 custom-mat-form-field">
+                <mat-label>Start Date <b class="r-star">*</b></mat-label>
+                <input matInput [matDatepicker]="picker1" placeholder="Enter Start date"
+                  formControlName="service_start_date" autocomplete="off">
+                <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+                <mat-datepicker #picker1 [dateClass]="dateClass"></mat-datepicker>
+                <mat-error
+                  *ngIf="f['service_start_date']?.invalid && f['service_start_date']?.touched || f['service_start_date']?.dirty">
+                  <span *ngIf="f['service_start_date']?.errors?.['required']">Start Date is required</span>
+                </mat-error>
+              </mat-form-field>
+
+            </div>
+            <!-- End Date -->
+            <div class="col-12 col-sm-12 col-md-6 col-lg-3 my-1 no-padding pl-0 pr-5">
+              <mat-form-field appearance="outline" [ngClass]="{ 'highlight-background': !shouldDisableFileds}"
+                class="w-100 p-0 custom-mat-form-field">
+                <mat-label>End Date</mat-label>
+                <input matInput [matDatepicker]="picker2" placeholder="Enter End date"
+                  formControlName="service_end_date" autocomplete="off">
+                <button *ngIf="clientFormGroup?.get('service_end_date')?.value" ngbTooltip="Clear" matSuffix
+                  mat-icon-button aria-label="Clear" (click)="resetDate()" type="button">
                   <mat-icon>close</mat-icon>
                 </button>
+                <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+                <mat-datepicker #picker2 [dateClass]="dateClass"></mat-datepicker>
+                <mat-error
+                  *ngIf="f['service_end_date']?.invalid && f['service_end_date']?.touched || f['service_end_date']?.dirty">
+                  <span *ngIf="f['service_end_date']?.errors?.['required']">End date is required</span>
+                </mat-error>
+              </mat-form-field>
+
+            </div>
+            <!-- Upload File -->
+            <div class="col-12 col-sm-12 col-md-6 col-lg-3 my-1 px-0 align-content-center" *ngIf="userRole === 'Admin'">
+              <div class="client-drop-zone" data-type="client" [class.disabled]="!shouldDisableFileds"
+                (drop)="onClientFileDropped($event)" (dragover)="onDragOver($event)" (dragleave)="onDragLeave($event)"
+                [class.drag-active]="isDragActive">
+                <input type="file" accept=".xlsx,.xls,.doc,.docx,.pdf" formControlName="client_file" #fileInput
+                  (change)="onFileSelected($event)" hidden>
+                <div class="image-container w-100 d-flex justify-content-between align-items-center"
+                  style="padding: 1px 15px;border:none"
+                  [ngClass]="{'is-invalid': f['client_file']?.touched && f['client_file']?.invalid}">
+                  <mat-label *ngIf="selectedFile && selectedFile?.name"><a type="button"
+                      (click)="openFileInNewTab()">{{selectedFile?.name}}</a></mat-label>
+                  <mat-label *ngIf="!selectedFile && !selectedFile?.name">Upload File</mat-label>
+
+                  <div>
+                    <button type="button" mat-icon-button [disabled]="!shouldDisableFileds "
+                      (click)="triggerFileInput()">
+                      <i matTooltip="{{selectedFile ? 'Edit' : 'Upload File'}}"
+                        class="{{selectedFile ? 'bi bi-pencil-fill' : 'bi bi-file-earmark-spreadsheet'}}"
+                        id="edit-or-upload-icon"></i>
+                    </button>
+                    <button type="button" mat-icon-button *ngIf="selectedFile" (click)="removeImage()">
+                      <mat-icon>close</mat-icon>
+                    </button>
+                  </div>
                 </div>
               </div>
-  </div>
               <div *ngIf="f['client_file']?.touched && f['client_file']?.invalid"
                 style="font-size: 11px;padding-left: 10px;color:#f44336">
-                <span *ngIf="f['client_file']?.errors?.['accept']">Invalid file type. Please upload .xlsx, .xls, .doc, .docx, .pdf file.</span>
+                <span *ngIf="f['client_file']?.errors?.['accept']">Invalid file type. Please upload .xlsx, .xls, .doc,
+                  .docx, .pdf file.</span>
                 <span *ngIf="f['client_file']?.errors?.['maxSize']">File size exceeds 10MB.</span>
               </div>
-</div>
-</div>
-<section class="settings-table-bg">
-<div class="row mx-0 my-1 px-0">
-    <div class="col-12 col-sm-12 col-md-12 col-lg-12 py-1 px-0">
-        <h4>Contact Details</h4>
-    </div>
-</div>
-<div class="row mx-0 my-1 px-0">
-    <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0 table-responsive table-responsive-sm table-responsive-md px-0">
-        <table class="table table table-hover table-list contact-details-table">
-            <thead>
-                <tr>
-                  <th>S No</th>
-                  <th>Name</th>
-                  <th>Email</th>
-                  <th>Phone Number</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-             
-              <tbody formArrayName="contact_details" class="contact-form-content">
-                <tr *ngFor="let contact of contactDetails.controls; let i = index" [formGroupName]="i">
-                  <td>{{i+1}}</td>
-                  <td><mat-form-field appearance="outline" [ngClass]="{ 'highlight-background': !shouldDisableFileds}" class="w-100 custom-mat-form-field">
-                    <mat-label>Name<b class="r-star">*</b></mat-label>
-                    <input matInput type="text" placeholder="Enter Name" formControlName="name" autocomplete="off" >
-                  </mat-form-field>
-                  <div class="px-2" *ngIf="contact?.get('name')?.invalid && contact?.get('name')?.touched || contact?.get('name')?.dirty">
-                    <span class="text-errors" *ngIf="contact?.get('name')?.errors?.['required']">Name is required</span>
-                   <span class="text-errors"
-        *ngIf="contact?.get('name')?.errors?.['pattern']">
-        Extra space charaters are not allowed.
-    </span>
-                  </div>
-                </td>
-                  <td><mat-form-field appearance="outline" [ngClass]="{ 'highlight-background': !shouldDisableFileds}" class="w-100 custom-mat-form-field">
-                    <mat-label>Email Id <b class="r-star">*</b></mat-label>
-                    <input matInput type="email" placeholder="Enter email" formControlName="email"
-                        autocomplete="off" oninput="this.value = this.value.toLowerCase()">
-                       
-                </mat-form-field>
-                <div class="px-2" *ngIf="contact?.get('email')?.invalid && contact?.get('email')?.touched || contact?.get('email')?.dirty">
-                  <span class="text-errors"  *ngIf="contact?.get('email').errors?.['required']">Email is required</span>
-                  <span class="text-errors" *ngIf="contact?.get('email')?.errors?.['pattern']">Email Id is invalid.</span>
-                  <span class="text-errors" *ngIf="contact?.get('email')?.hasError('duplicateEmail')">Email must be unique</span>
-                  
-                </div>
-              </td>
-                  <td> <mat-form-field appearance="outline" [ngClass]="{ 'highlight-background': !shouldDisableFileds}" class="w-100 custom-mat-form-field">
-                    <mat-label>Phone No <b class="r-star">*</b></mat-label>
-                    <input matInput type="number" placeholder="Enter phone no"
-                        formControlName="phone_number" autocomplete="off"
-                        (keypress)="validateKeyPress($event)">
-                </mat-form-field>
-                <div class="px-2" *ngIf="contact?.get('phone_number')?.invalid && contact?.get('phone_number')?.touched || contact?.get('phone_number')?.dirty">
-                    <span class="text-errors" *ngIf="contact?.get('phone_number')?.errors?.['required']">Phone number is
-                        required.</span>
-                        <span class="text-errors" *ngIf="contact?.get('phone_number')?.hasError('duplicatePhoneNo')">Phone number must be unique</span>
+            </div>
+          </div>
+          <section class="settings-table-bg">
+            <div class="row mx-0 my-1 px-0">
+              <div class="col-12 col-sm-12 col-md-12 col-lg-12 py-1 px-0">
+                <h4>Contact Details</h4>
+              </div>
+            </div>
+            <div class="row mx-0 my-1 px-0">
+              <div
+                class="col-12 col-sm-12 col-md-12 col-lg-12 px-0 table-responsive table-responsive-sm table-responsive-md px-0">
+                <table class="table table table-hover table-list contact-details-table">
+                  <thead>
+                    <tr>
+                      <th>S No</th>
+                      <th>Name</th>
+                      <th>Email</th>
+                      <th>Phone Number</th>
+                      <th>Actions</th>
+                      <th>Feedback</th>
+                    </tr>
+                  </thead>
 
-                  </div>
-              </td>
-                  <td>
-                    <ng-container *ngIf="shouldDisableFileds">
-                      <img src="../../../../assets/images/Edit.svg"  class="icon-image" type="button" container="body"
-                        ngbTooltip="Edit" (click)="editContact(i)" *ngIf="contact?.get('name')?.disabled && i < contactDetails?.length - 1 || (contact?.get('name')?.disabled && i === 4)"/>
-                        <img src="../../../../assets/images/tick.svg" class="icon-image"  type="button" container="body"
-                        ngbTooltip="save" (click)="saveChanges(i)" *ngIf="contact?.get('name')?.enabled  && i < contactDetails?.length - 1 || (contact?.get('name')?.enabled && i === 4)"/>
-                        <img src="../../../../assets/images/Delete.svg"  class="icon-image" type="button" container="body"
-                        ngbTooltip="delete" (click)="deleteContact(i)" *ngIf="i<= contactDetails?.length - 1" />
-                        <img src="../../../../assets/images/addnew.svg" class="icon-image" type="button" container="body"
-                        ngbTooltip="add" (click)="addContact()"   *ngIf="i === contactDetails?.length - 1 && contactDetails?.length < 5"/>
-                   </ng-container>
-                   <span class="no-actions" *ngIf="!shouldDisableFileds">-</span>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-        </div>
-</div>
-</section>
-<section class="settings-table-bg">
-  <div class="row mx-0 my-1 px-0 d-flex">
-      <div class="col-12 col-sm-12 col-md-6 col-lg-10 py-1 px-0 text-start">
-          <h4>Employee Details </h4>
-      </div>
-      <div class="col-12 col-sm-12 col-md-6 col-lg-2 py-1 px-0 text-end">
-        <button *ngIf="employeeFormArray.controls.length===0" [disabled]="!shouldDisableFileds" mat-raised-button class="proceedbtn mat-btn-s emp-add-btn" type="button" (click)="addEmployee()">Add Employee</button>
-    
-      </div>
-  </div>
-     
-     <div class="row mx-0 my-1 px-0">
-    <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0 table-responsive table-responsive-sm table-responsive-md" *ngIf="employeeFormArray.controls.length >= 1">
-      <table class="table table-hover table-list employee-details-table">
-        <thead>
-          <tr>
-            <th>S No</th>
-            <th>Employee</th>
-            <th>Start Date</th>
-            <th>End Date</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody formArrayName="employee_details" class="contact-form-content">
-         <tr *ngFor="let emp of currentPageRows; let i = index" [formGroupName]="(currentPage - 1) * pageSize + i">
-            <td>{{getContinuousIndex(i)}}</td>
-            <td>
-              <mat-form-field appearance="outline" class="w-100 custom-mat-form-field" [ngClass]="{ 'highlight-background': !shouldDisableFileds}">
-                <mat-label>Select Employee <b class="r-star">*</b></mat-label>
-                <mat-select formControlName="employee_id"  autocomplete="off" placeholder="Select" panelClass="custom-select-panel" (selectionChange)="onEmployeeChange($event,((currentPage - 1) * pageSize + i))" (openedChange)="onSelectOpened($event, ((currentPage - 1) * pageSize + i))">
-                  
-                  <!-- Search input field inside the panel -->
-                  <div class="mat-select-search-wrapper d-flex">
-                    <!-- <input matInput [(ngModel)]="searchEmployeeTextList[((currentPage - 1) * pageSize + i)]" [ngModelOptions]="{standalone: true}" placeholder="Search Employee" class="mat-select-search" (ngModelChange)="filterEmployeeList(((currentPage - 1) * pageSize + i))">
+                  <tbody formArrayName="contact_details" class="contact-form-content">
+                    <tr *ngFor="let contact of contactDetails.controls; let i = index" [formGroupName]="i">
+                      <td>{{i+1}}</td>
+                      <td><mat-form-field appearance="outline"
+                          [ngClass]="{ 'highlight-background': !shouldDisableFileds}"
+                          class="w-100 custom-mat-form-field">
+                          <mat-label>Name<b class="r-star">*</b></mat-label>
+                          <input matInput type="text" placeholder="Enter Name" formControlName="name"
+                            autocomplete="off">
+                        </mat-form-field>
+                        <div class="px-2"
+                          *ngIf="contact?.get('name')?.invalid && contact?.get('name')?.touched || contact?.get('name')?.dirty">
+                          <span class="text-errors" *ngIf="contact?.get('name')?.errors?.['required']">Name is
+                            required</span>
+                          <span class="text-errors" *ngIf="contact?.get('name')?.errors?.['pattern']">
+                            Extra space charaters are not allowed.
+                          </span>
+                        </div>
+                      </td>
+                      <td><mat-form-field appearance="outline"
+                          [ngClass]="{ 'highlight-background': !shouldDisableFileds}"
+                          class="w-100 custom-mat-form-field">
+                          <mat-label>Email Id <b class="r-star">*</b></mat-label>
+                          <input matInput type="email" placeholder="Enter email" formControlName="email"
+                            autocomplete="off" oninput="this.value = this.value.toLowerCase()">
+
+                        </mat-form-field>
+                        <div class="px-2"
+                          *ngIf="contact?.get('email')?.invalid && contact?.get('email')?.touched || contact?.get('email')?.dirty">
+                          <span class="text-errors" *ngIf="contact?.get('email').errors?.['required']">Email is
+                            required</span>
+                          <span class="text-errors" *ngIf="contact?.get('email')?.errors?.['pattern']">Email Id is
+                            invalid.</span>
+                          <span class="text-errors" *ngIf="contact?.get('email')?.hasError('duplicateEmail')">Email must
+                            be unique</span>
+
+                        </div>
+                      </td>
+                      <td> <mat-form-field appearance="outline"
+                          [ngClass]="{ 'highlight-background': !shouldDisableFileds}"
+                          class="w-100 custom-mat-form-field">
+                          <mat-label>Phone No <b class="r-star">*</b></mat-label>
+                          <input matInput type="number" placeholder="Enter phone no" formControlName="phone_number"
+                            autocomplete="off" (keypress)="validateKeyPress($event)">
+                        </mat-form-field>
+                        <div class="px-2"
+                          *ngIf="contact?.get('phone_number')?.invalid && contact?.get('phone_number')?.touched || contact?.get('phone_number')?.dirty">
+                          <span class="text-errors" *ngIf="contact?.get('phone_number')?.errors?.['required']">Phone
+                            number is
+                            required.</span>
+                          <span class="text-errors"
+                            *ngIf="contact?.get('phone_number')?.hasError('duplicatePhoneNo')">Phone number must be
+                            unique</span>
+
+                        </div>
+                      </td>
+
+                      <td>
+                        <ng-container *ngIf="shouldDisableFileds">
+                          <img src="../../../../assets/images/Edit.svg" class="icon-image" type="button"
+                            container="body" ngbTooltip="Edit" (click)="editContact(i)"
+                            *ngIf="contact?.get('name')?.disabled && i < contactDetails?.length - 1 || (contact?.get('name')?.disabled && i === 4)" />
+                          <img src="../../../../assets/images/tick.svg" class="icon-image" type="button"
+                            container="body" ngbTooltip="save" (click)="saveChanges(i)"
+                            *ngIf="contact?.get('name')?.enabled  && i < contactDetails?.length - 1 || (contact?.get('name')?.enabled && i === 4)" />
+                          <img src="../../../../assets/images/Delete.svg" class="icon-image" type="button"
+                            container="body" ngbTooltip="delete" (click)="deleteContact(i)"
+                            *ngIf="i<= contactDetails?.length - 1" />
+                          <img src="../../../../assets/images/addnew.svg" class="icon-image" type="button"
+                            container="body" ngbTooltip="add" (click)="addContact()"
+                            *ngIf="i === contactDetails?.length - 1 && contactDetails?.length < 5" />
+                        </ng-container>
+                        <span class="no-actions" *ngIf="!shouldDisableFileds">-</span>
+                      </td>
+
+
+                      <td>
+
+                        <!-- <mat-form-field [disabled]="!shouldDisableFileds" [ngClass]="{ 'highlight-background': !shouldDisableFileds}"> -->
+                          <mat-checkbox  [disabled]="!shouldDisableFileds" ></mat-checkbox>
+                        <!-- </mat-form-field> -->
+
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </section>
+          <section class="settings-table-bg">
+            <div class="row mx-0 my-1 px-0 d-flex">
+              <div class="col-12 col-sm-12 col-md-6 col-lg-10 py-1 px-0 text-start">
+                <h4>Employee Details </h4>
+              </div>
+              <div class="col-12 col-sm-12 col-md-6 col-lg-2 py-1 px-0 text-end">
+                <button *ngIf="employeeFormArray.controls.length===0" [disabled]="!shouldDisableFileds"
+                  mat-raised-button class="proceedbtn mat-btn-s emp-add-btn" type="button" (click)="addEmployee()">Add
+                  Employee</button>
+
+              </div>
+            </div>
+
+            <div class="row mx-0 my-1 px-0">
+              <div
+                class="col-12 col-sm-12 col-md-12 col-lg-12 px-0 table-responsive table-responsive-sm table-responsive-md"
+                *ngIf="employeeFormArray.controls.length >= 1">
+                <table class="table table-hover table-list employee-details-table">
+                  <thead>
+                    <tr>
+                      <th>S No</th>
+                      <th>Employee</th>
+                      <th>Start Date</th>
+                      <th>End Date</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody formArrayName="employee_details" class="contact-form-content">
+                    <tr *ngFor="let emp of currentPageRows; let i = index"
+                      [formGroupName]="(currentPage - 1) * pageSize + i">
+                      <td>{{getContinuousIndex(i)}}</td>
+                      <td>
+                        <mat-form-field appearance="outline" class="w-100 custom-mat-form-field"
+                          [ngClass]="{ 'highlight-background': !shouldDisableFileds}">
+                          <mat-label>Select Employee <b class="r-star">*</b></mat-label>
+                          <mat-select formControlName="employee_id" autocomplete="off" placeholder="Select"
+                            panelClass="custom-select-panel"
+                            (selectionChange)="onEmployeeChange($event,((currentPage - 1) * pageSize + i))"
+                            (openedChange)="onSelectOpened($event, ((currentPage - 1) * pageSize + i))">
+
+                            <!-- Search input field inside the panel -->
+                            <div class="mat-select-search-wrapper d-flex">
+                              <!-- <input matInput [(ngModel)]="searchEmployeeTextList[((currentPage - 1) * pageSize + i)]" [ngModelOptions]="{standalone: true}" placeholder="Search Employee" class="mat-select-search" (ngModelChange)="filterEmployeeList(((currentPage - 1) * pageSize + i))">
                     <mat-icon class="search-icon" *ngIf="!searchEmployeeTextList[((currentPage - 1) * pageSize + i)]">search</mat-icon>
                     <mat-icon class="search-icon" *ngIf="searchEmployeeTextList[((currentPage - 1) * pageSize + i)]" type="button" (click)="clearSearch('emp',((currentPage - 1) * pageSize + i))">close</mat-icon> -->
-                    <input matInput 
-                      [(ngModel)]="dropdownState['emp_' + ((currentPage - 1) * pageSize + i)].search"
-                      [ngModelOptions]="{standalone: true}"
-                      placeholder="Search Employee"
-                      (ngModelChange)="onSearch('emp_' + ((currentPage - 1) * pageSize + i), $event)">
-                    <mat-icon class="search-icon" *ngIf="!dropdownState['emp_' + ((currentPage - 1) * pageSize + i)].search">search</mat-icon>
-                    <mat-icon class="search-icon" *ngIf="dropdownState['emp_' + ((currentPage - 1) * pageSize + i)].search"
-                      (click)="clearSearchDropD('emp_' + ((currentPage - 1) * pageSize + i))">close</mat-icon>
-                  </div>
-              
-                  <!-- Filtered options -->
-                  <!-- <mat-option *ngFor="let emp of filteredEmployeeLists[((currentPage - 1) * pageSize + i)]" [value]="emp?.user_id">
+                              <input matInput
+                                [(ngModel)]="dropdownState['emp_' + ((currentPage - 1) * pageSize + i)].search"
+                                [ngModelOptions]="{standalone: true}" placeholder="Search Employee"
+                                (ngModelChange)="onSearch('emp_' + ((currentPage - 1) * pageSize + i), $event)">
+                              <mat-icon class="search-icon"
+                                *ngIf="!dropdownState['emp_' + ((currentPage - 1) * pageSize + i)].search">search</mat-icon>
+                              <mat-icon class="search-icon"
+                                *ngIf="dropdownState['emp_' + ((currentPage - 1) * pageSize + i)].search"
+                                (click)="clearSearchDropD('emp_' + ((currentPage - 1) * pageSize + i))">close</mat-icon>
+                            </div>
+
+                            <!-- Filtered options -->
+                            <!-- <mat-option *ngFor="let emp of filteredEmployeeLists[((currentPage - 1) * pageSize + i)]" [value]="emp?.user_id">
                     {{ emp?.user__full_name }}
                   </mat-option> -->
-                  <mat-option hidden disabled></mat-option>
-                   <mat-option *ngFor="let empOpt of getOptionsWithSelectedOnTop('emp_' + ((currentPage - 1) * pageSize + i))"
-                      [value]="empOpt.user_id">
-                      {{ empOpt.user__full_name }}
-                    </mat-option>
+                            <mat-option hidden disabled></mat-option>
+                            <mat-option
+                              *ngFor="let empOpt of getOptionsWithSelectedOnTop('emp_' + ((currentPage - 1) * pageSize + i))"
+                              [value]="empOpt.user_id">
+                              {{ empOpt.user__full_name }}
+                            </mat-option>
 
-                </mat-select>
-              </mat-form-field>
-              <div class="px-2" *ngIf="emp?.get('employee_id')?.invalid && emp?.get('employee_id')?.touched || emp?.get('employee_id')?.dirty">
-                <span class="text-errors" *ngIf="emp?.get('employee_id')?.errors?.['required']">Employee is required</span>
+                          </mat-select>
+                        </mat-form-field>
+                        <div class="px-2"
+                          *ngIf="emp?.get('employee_id')?.invalid && emp?.get('employee_id')?.touched || emp?.get('employee_id')?.dirty">
+                          <span class="text-errors" *ngIf="emp?.get('employee_id')?.errors?.['required']">Employee is
+                            required</span>
+                        </div>
+                      </td>
+                      <td>
+                        <mat-form-field appearance="outline" [ngClass]="{ 'highlight-background': !shouldDisableFileds}"
+                          class="w-100 p-0 custom-mat-form-field">
+                          <mat-label>Start Date <b class="r-star">*</b></mat-label>
+                          <input matInput [matDatepicker]="picker3" placeholder="Enter Start date"
+                            formControlName="start_date" autocomplete="off">
+                          <mat-datepicker-toggle matSuffix [for]="picker3"></mat-datepicker-toggle>
+                          <mat-datepicker #picker3 [dateClass]="dateClass"></mat-datepicker>
+                        </mat-form-field>
+                        <div class="px-2"
+                          *ngIf="emp?.get('start_date')?.invalid && emp?.get('start_date')?.touched || emp?.get('start_date')?.dirty">
+                          <span class="text-errors" *ngIf="emp?.get('start_date')?.errors?.['required']">Start Date is
+                            required</span>
+                        </div>
+                      </td>
+                      <td>
+                        <mat-form-field appearance="outline" [ngClass]="{ 'highlight-background': !shouldDisableFileds}"
+                          class="w-100 p-0 custom-mat-form-field">
+                          <mat-label>End Date</mat-label>
+                          <input matInput [matDatepicker]="picker4" placeholder="Enter Start date"
+                            formControlName="end_date" autocomplete="off">
+                          <mat-datepicker-toggle matSuffix [for]="picker4"></mat-datepicker-toggle>
+                          <mat-datepicker #picker4 [dateClass]="dateClass"></mat-datepicker>
+                        </mat-form-field>
+                      </td>
+                      <td>
+                        <ng-container *ngIf="shouldDisableFileds">
+                          <img src="../../../../assets/images/Edit.svg" class="icon-image" type="button"
+                            container="body" ngbTooltip="Edit"
+                            (click)="editEmpployee(((currentPage - 1) * pageSize + i))"
+                            *ngIf="emp?.get('employee_id')?.disabled && (currentPage - 1) * pageSize + i < employeeFormArray?.length - 1 || (emp?.get('employee_id')?.disabled && (currentPage - 1) * pageSize + i === allEmployeeList?.length-1)" />
+                          <img src="../../../../assets/images/tick.svg" class="icon-image" type="button"
+                            container="body" ngbTooltip="save"
+                            (click)="saveEmpployeeChanges(((currentPage - 1) * pageSize + i))"
+                            *ngIf="emp?.get('employee_id')?.enabled  && (currentPage - 1) * pageSize + i < employeeFormArray?.length - 1 || (emp?.get('employee_id')?.enabled && (currentPage - 1) * pageSize + i === allEmployeeList?.length-1)" />
+
+                          <img src="../../../../assets/images/Delete.svg" class="icon-image" type="button"
+                            container="body" ngbTooltip="Delete"
+                            (click)="removeEmployee((currentPage - 1) * pageSize + i)" />
+                          <!-- <button mat-raised-button disabled style="background: none !important; font-size: 5px !important; min-width: 20px !important; padding: 0px !important;" *ngIf="!shouldShowAddButton(emp)" ><mat-icon>delete</mat-icon></button> -->
+                          <img src="../../../../assets/images/addnew.svg" class="icon-image" type="button"
+                            container="body" ngbTooltip="add" (click)="addEmployee()" *ngIf="(currentPage - 1) * pageSize + i === employeeFormArray.length - 1 &&
+            employeeFormArray.length < allEmployeeList.length" />
+                        </ng-container>
+                        <span class="no-actions" *ngIf="!shouldDisableFileds">-</span>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
-            </td>
-            <td>
-             <mat-form-field appearance="outline" [ngClass]="{ 'highlight-background': !shouldDisableFileds}" class="w-100 p-0 custom-mat-form-field">
-        <mat-label>Start Date <b class="r-star">*</b></mat-label>
-        <input matInput [matDatepicker]="picker3" placeholder="Enter Start date"
-            formControlName="start_date" autocomplete="off">
-            <mat-datepicker-toggle matSuffix [for]="picker3"></mat-datepicker-toggle>
-             <mat-datepicker #picker3 [dateClass]="dateClass"></mat-datepicker>
-    </mat-form-field>
-     <div class="px-2" *ngIf="emp?.get('start_date')?.invalid && emp?.get('start_date')?.touched || emp?.get('start_date')?.dirty">
-                <span class="text-errors" *ngIf="emp?.get('start_date')?.errors?.['required']">Start Date is required</span>
+            </div>
+            <div class="row mx-0 my-1 px-0" *ngIf="employeeFormArray.controls.length >= 1">
+              <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0">
+                <mat-paginator [length]="employeeFormArray.length" [pageSize]="5" [pageIndex]="currentPage - 1"
+                  (page)="onPageChanged($event)">
+                </mat-paginator>
               </div>
-             </td>
-            <td>
-           <mat-form-field appearance="outline" [ngClass]="{ 'highlight-background': !shouldDisableFileds}" class="w-100 p-0 custom-mat-form-field">
-        <mat-label>End Date</mat-label>
-        <input matInput [matDatepicker]="picker4" placeholder="Enter Start date"
-            formControlName="end_date" autocomplete="off">
-            <mat-datepicker-toggle matSuffix [for]="picker4"></mat-datepicker-toggle>
-             <mat-datepicker #picker4 [dateClass]="dateClass"></mat-datepicker>
-    </mat-form-field>
-          </td>
-            <td>
-              <ng-container *ngIf="shouldDisableFileds">
-                <img src="../../../../assets/images/Edit.svg" class="icon-image" type="button" container="body"
-                        ngbTooltip="Edit" (click)="editEmpployee(((currentPage - 1) * pageSize + i))"  *ngIf="emp?.get('employee_id')?.disabled && (currentPage - 1) * pageSize + i < employeeFormArray?.length - 1 || (emp?.get('employee_id')?.disabled && (currentPage - 1) * pageSize + i === allEmployeeList?.length-1)"/>
-                        <img src="../../../../assets/images/tick.svg" class="icon-image" type="button" container="body"
-                        ngbTooltip="save" (click)="saveEmpployeeChanges(((currentPage - 1) * pageSize + i))"  *ngIf="emp?.get('employee_id')?.enabled  && (currentPage - 1) * pageSize + i < employeeFormArray?.length - 1 || (emp?.get('employee_id')?.enabled && (currentPage - 1) * pageSize + i === allEmployeeList?.length-1)"/>
-                        
-                <img src="../../../../assets/images/Delete.svg" class="icon-image" type="button" container="body" ngbTooltip="Delete"  (click)="removeEmployee((currentPage - 1) * pageSize + i)"/>
-                <!-- <button mat-raised-button disabled style="background: none !important; font-size: 5px !important; min-width: 20px !important; padding: 0px !important;" *ngIf="!shouldShowAddButton(emp)" ><mat-icon>delete</mat-icon></button> -->
-                <img src="../../../../assets/images/addnew.svg" class="icon-image" type="button" container="body"
-                ngbTooltip="add" (click)="addEmployee()" *ngIf="(currentPage - 1) * pageSize + i === employeeFormArray.length - 1 &&
-            employeeFormArray.length < allEmployeeList.length"/>
-              </ng-container>
-              <span class="no-actions" *ngIf="!shouldDisableFileds">-</span>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-    </div>
-    <div class="row mx-0 my-1 px-0" *ngIf="employeeFormArray.controls.length >= 1">
-      <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0">
-      <mat-paginator [length]="employeeFormArray.length"
-      [pageSize]="5"
-      [pageIndex]="currentPage - 1"
-      (page)="onPageChanged($event)">
-    </mat-paginator>
+            </div>
+          </section>
+          <section class="rich-editor-bg mx-2 my-3 px-2">
+            <h4 class="p-2 fs-5">Practice Notes</h4>
+            <div class="editor-container NgxEditor__Wrapper px-0">
+              <ngx-editor-menu [editor]="editor" [toolbar]="toolbar"> </ngx-editor-menu>
+              <ngx-editor [editor]="editor" formControlName="practice_notes" [style.height.px]="200"
+                [style.overflow]="'auto'"></ngx-editor>
+            </div>
+          </section>
+          <!-- [disabled]="!shouldDisableFileds" -->
+          <!-- <section class="d-flex align-items-center mx-0 my-3 px-2"> -->
+          <div class="row gx-0 mx-0 my-3 px-2">
+            <div class="col-sm-12 col-md-6 col-lg-4" *ngIf="userRole === 'Admin'">
+              <mat-checkbox [disabled]="!shouldDisableFileds" color="primary" class="example-margin"
+                formControlName="allow_sending_status_report_to_client">
+                <h5 class="c-header">Allow sending the status report to client</h5>
+              </mat-checkbox>
+            </div>
+            <div class="col-sm-12 col-md-6 col-lg-4" *ngIf="userRole === 'Admin'">
+              <mat-checkbox [disabled]="!shouldDisableFileds" color="primary" class="example-margin"
+                formControlName="allow_sending_public_holiday_information">
+                <h5 class="c-header">Allow Public Holiday notification</h5>
+              </mat-checkbox>
+            </div>
+          </div>
+          <!-- </section> -->
+
+          <div class="row mx-0 my-3 px-2">
+            <div class="col-12 col-sm-12 col-md-6 col-lg-3 align-content-center px-0">
+              <button mat-button class="cancel-button mat-btn-s" type="button" (click)="backBtnFunc()">
+                Back</button>
+              <button mat-raised-button class="proceedbtn mat-btn-s" type="submit" (click)="saveClientDetails()"
+                *ngIf="!isEditItem && ((userRole !='Admin' && accessPermissions[0]?.create) || userRole === 'Admin')"><span
+                  *ngIf="!isEditItem">Submit</span></button>
+              <button mat-raised-button class="proceedbtn mat-btn-s" [disabled]="!isEnabledEdit" type="submit"
+                (click)="saveClientDetails()"
+                *ngIf="isEditItem && ((userRole !='Admin' && accessPermissions[0]?.update) || userRole === 'Admin')">
+                <span *ngIf="isEditItem">Update</span></button>
+            </div>
+            <div class="col-lg-3"></div>
+            <div class="col-lg-3"></div>
+            <div *ngIf="userRole !='Admin' && accessPermissions[0]?.delete || userRole === 'Admin'"
+              class="col-12 col-sm-12 col-md-6 col-lg-3 justify-content-end text-end align-content-end">
+              <button mat-button class="mat-btn-s delete-item-button" type="button" *ngIf="isEditItem"
+                (click)="deleteClient()">
+                Delete</button>
+            </div>
+          </div>
+        </form>
       </div>
     </div>
-  </section>  
-<section class="rich-editor-bg mx-2 my-3 px-2">
-    <h4 class="p-2 fs-5">Practice Notes</h4>
-    <div class="editor-container NgxEditor__Wrapper px-0">
-      <ngx-editor-menu [editor]="editor" [toolbar]="toolbar"> </ngx-editor-menu>
-      <ngx-editor
-      [editor]="editor"
-      formControlName="practice_notes" [style.height.px]="200" [style.overflow]="'auto'"
-    ></ngx-editor>
-      </div>
-</section>
-<!-- [disabled]="!shouldDisableFileds" -->
-<!-- <section class="d-flex align-items-center mx-0 my-3 px-2"> -->
-  <div class="row gx-0 mx-0 my-3 px-2">
-    <div class="col-sm-12 col-md-6 col-lg-4" *ngIf="userRole === 'Admin'">
-      <mat-checkbox [disabled]="!shouldDisableFileds" color="primary" class="example-margin" formControlName="allow_sending_status_report_to_client" ><h5 class="c-header">Allow sending the status report to client</h5></mat-checkbox>
-    </div>
-    <div class="col-sm-12 col-md-6 col-lg-4" *ngIf="userRole === 'Admin'">
-      <mat-checkbox [disabled]="!shouldDisableFileds" color="primary" class="example-margin" formControlName="allow_sending_public_holiday_information" ><h5 class="c-header">Allow Public Holiday notification</h5></mat-checkbox>
-    </div>
-  </div>
-  <!-- </section> -->
-  
-<div class="row mx-0 my-3 px-2">
-    <div class="col-12 col-sm-12 col-md-6 col-lg-3 align-content-center px-0">
-        <button mat-button class="cancel-button mat-btn-s" type="button" (click)="backBtnFunc()" >
-            Back</button>
-        <button mat-raised-button class="proceedbtn mat-btn-s" type="submit" (click)="saveClientDetails()" *ngIf="!isEditItem && ((userRole !='Admin' && accessPermissions[0]?.create) || userRole === 'Admin')"><span
-            *ngIf="!isEditItem">Submit</span></button>
-        <button mat-raised-button class="proceedbtn mat-btn-s" [disabled]="!isEnabledEdit" type="submit" (click)="saveClientDetails()" *ngIf="isEditItem && ((userRole !='Admin' && accessPermissions[0]?.update) || userRole === 'Admin')">
-            <span *ngIf="isEditItem" >Update</span></button>
-      </div>
-      <div class="col-lg-3"></div>
-      <div class="col-lg-3"></div>
-      <div *ngIf="userRole !='Admin' && accessPermissions[0]?.delete || userRole === 'Admin'" class="col-12 col-sm-12 col-md-6 col-lg-3 justify-content-end text-end align-content-end">
-        <button mat-button class="mat-btn-s delete-item-button" type="button" *ngIf="isEditItem" (click)="deleteClient()">
-          Delete</button>
-      </div>
-</div>
-            </form>
-        </div>
-        </div>
-    </section>
+  </section>
 </div>

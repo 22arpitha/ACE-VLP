@@ -20,7 +20,8 @@ import { JobsOfEndclientComponent } from './jobs-of-endclient/jobs-of-endclient.
 import { ClientsOfGroupComponent } from './clients-of-group/clients-of-group.component';
 import { ClientContactDetailsPopupComponent } from './client-contact-details-popup/client-contact-details-popup.component';
 import {EditClientComponent} from './edit-client/edit-client.component';
-import { JobsOfClientsComponent } from './jobs-of-clients/jobs-of-clients.component'
+import { JobsOfClientsComponent } from './jobs-of-clients/jobs-of-clients.component';
+import { ClientFeedbackPopupComponent } from './client-feedback-popup/client-feedback-popup.component'
 @NgModule({
   declarations: [
     ClientComponent,
@@ -32,7 +33,8 @@ import { JobsOfClientsComponent } from './jobs-of-clients/jobs-of-clients.compon
     JobsOfEndclientComponent,
     ClientsOfGroupComponent,
     ClientContactDetailsPopupComponent,
-    JobsOfClientsComponent
+    JobsOfClientsComponent,
+    ClientFeedbackPopupComponent
   ],
   imports: [
     CommonModule,

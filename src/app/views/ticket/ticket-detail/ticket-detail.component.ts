@@ -176,7 +176,7 @@ BreadCrumbsTitle: any = 'Ticket Details';
   }
 
   goBack(): void {
-    this.router.navigate(['/tickets']);
+    this.router.navigate(['/it-support/tickets/']);
   }
 
   getStatusClass(status: TicketStatus): string {

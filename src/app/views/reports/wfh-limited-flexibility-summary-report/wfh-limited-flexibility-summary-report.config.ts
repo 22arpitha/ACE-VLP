@@ -24,7 +24,7 @@ export const tableColumns  = [
     sortable: false
   },
   {
-    label: 'Accrued Balance',
+    label: 'Accrued',
     key: 'accrued_wfh',
     sortKey:'accrued_wfh',
     sortable: false

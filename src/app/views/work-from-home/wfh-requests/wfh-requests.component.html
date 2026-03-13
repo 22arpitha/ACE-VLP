@@ -119,7 +119,7 @@
                 </mat-menu>
               </th>
               <th scope="col">View</th>
-              <th scope="col" *ngIf="userRole==='Admin'">Confirmation by Director</th>
+              <th scope="col" *ngIf="userRole==='Admin'">Management Approval</th>
             </tr>
           </thead>
           <tbody>
@@ -159,7 +159,7 @@
                   <span style="background: #dcfce7; color: #15803d;" class="p-2 rounded">APPROVED</span></td>
                 <td
                   *ngIf="userRole==='Admin'&&item.is_confirmed_by_director===false&&item.wfh_type_name==='limited_flexibility'">
-                  -</td>
+                  NA</td>
               </tr>
             </ng-container>
           </tbody>

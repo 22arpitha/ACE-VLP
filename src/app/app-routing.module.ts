@@ -152,7 +152,7 @@ const routes: Routes = [
           import('./views/reports/reports.module').then((m) => m.ReportsModule),
       },
       {
-        path: 'tickets',
+        path: 'it-support/tickets',
         loadChildren: () =>
           import('./views/ticket/ticket.module').then((m) => m.TicketModule),
       },

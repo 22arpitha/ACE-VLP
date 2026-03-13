@@ -15,6 +15,7 @@ import { WfhLimitedFlexibilitySummaryReportComponent } from './wfh-limited-flexi
 import { WfhLimitedFlexibilityTransactionReportComponent } from './wfh-limited-flexibility-transaction-report/wfh-limited-flexibility-transaction-report.component';
 import { WfhProlongedHealthIssuesSummaryReportComponent } from './wfh-prolonged-health-issues-summary-report/wfh-prolonged-health-issues-summary-report.component';
 import { WfhProlongedHealthIssuesTransactionReportComponent } from './wfh-prolonged-health-issues-transaction-report/wfh-prolonged-health-issues-transaction-report.component';
+import { DashboardWfhComponent } from './dashboard-wfh/dashboard-wfh.component';
 
 const routes: Routes = [
   {
@@ -46,17 +47,25 @@ const routes: Routes = [
         path: 'leave-transaction-report',
         component: LeaveTransactionReportComponent,
       },
-      {
+      // {
+      //   path: 'wfh-limited-flexibility-summary-report',
+      //   component: WfhLimitedFlexibilitySummaryReportComponent,
+      // },
+         {
         path: 'wfh-limited-flexibility-summary-report',
-        component: WfhLimitedFlexibilitySummaryReportComponent,
+        component: DashboardWfhComponent,
       },
       {
         path: 'wfh-limited-flexibility-transaction-report',
         component: WfhLimitedFlexibilityTransactionReportComponent,
       },
-      {
+      // {
+      //   path: 'wfh-prolonged-health-issues-summary-report',
+      //   component: WfhProlongedHealthIssuesSummaryReportComponent,
+      // },
+        {
         path: 'wfh-prolonged-health-issues-summary-report',
-        component: WfhProlongedHealthIssuesSummaryReportComponent,
+        component: DashboardWfhComponent,
       },
       {
         path: 'wfh-prolonged-health-issues-transaction-report',

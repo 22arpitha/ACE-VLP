@@ -29,7 +29,7 @@ export const tableColumns = [
   },
 
   {
-    label: 'Accrued Balance',
+    label: 'Accrued',
     key: 'accrued',
     sortKey: 'accrued',
     sortable: false,
