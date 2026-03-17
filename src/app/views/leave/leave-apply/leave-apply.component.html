@@ -218,7 +218,8 @@
             <span *ngIf="fileName" class="ms-2">{{ fileName }}</span>
             <mat-label *ngIf="!fileDataUrl">File Attachment</mat-label>
 
-            <button type="button" [disabled]="!shouldDisableFields" (click)="openFileDialog()" mat-icon-button>
+           <div>
+             <button type="button" [disabled]="!shouldDisableFields" (click)="openFileDialog()" mat-icon-button>
               <mat-icon matTooltip="{{ fileDataUrl ? 'Edit' : 'Upload' }}"
                         class="edit-or-upload-icon">
                 {{ fileDataUrl ? "edit" : "attach_file" }}
@@ -228,6 +229,7 @@
             <button type="button" mat-icon-button *ngIf="fileDataUrl" (click)="removeImage()">
               <mat-icon>close</mat-icon>
             </button>
+           </div>
 
           </div>
 
