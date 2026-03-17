@@ -147,7 +147,27 @@
     </mat-form-field>
  
 </div>
-
+<div class="col-12 col-sm-12 col-md-6 col-lg-4 my-1 px-1">
+    <mat-form-field appearance="outline" [ngClass]="{ 'highlight-background': shouldDisableFields && !isEnabledEdit}" class="w-100 custom-mat-form-field">
+        <mat-label>Department <b class="r-star">*</b></mat-label>
+        <mat-select formControlName="department_id" autocomplete="off"
+                placeholder="Department" panelClass="custom-select-panel"
+                [disableOptionCentering]="true">
+                <div class="mat-select-search-wrapper d-flex">
+                    <input matInput [(ngModel)]="searchDepartmentText" autofocus [ngModelOptions]="{standalone: true}" placeholder="Search Department" class="mat-select-search">
+                    <mat-icon class="search-icon" *ngIf="!searchDepartmentText">search</mat-icon>
+                    <mat-icon class="search-icon" *ngIf="searchDepartmentText" type="button" (click)="clearSearch('dep')">close</mat-icon>
+                  </div>
+                <mat-option *ngFor="let item of filteredDepartmentList()" [value]="item?.id">
+                    {{item.department_name}}
+                </mat-option>
+        </mat-select>
+        <mat-error *ngIf="f['department_id']?.invalid && f['department_id']?.touched || f['department_id']?.dirty">
+            <span  *ngIf="f['department_id']?.errors?.['required']">Department is required</span>
+      </mat-error>
+    </mat-form-field>
+ 
+</div>
 <div class="col-12 col-sm-12 col-md-6 col-lg-4 my-1 px-1">
     <mat-form-field appearance="outline" [ngClass]="{ 'highlight-background': shouldDisableFields && !isEnabledEdit}" class="w-100 custom-mat-form-field">
         <mat-label>Reporting Manager</mat-label>

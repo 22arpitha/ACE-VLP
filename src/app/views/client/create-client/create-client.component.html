@@ -449,13 +449,17 @@
                 [style.overflow]="'auto'"></ngx-editor>
             </div>
           </section>
-          <!-- [disabled]="!shouldDisableFileds" -->
-          <!-- <section class="d-flex align-items-center mx-0 my-3 px-2"> -->
           <div class="row gx-0 mx-0 my-3 px-2">
             <div class="col-sm-12 col-md-6 col-lg-4" *ngIf="userRole === 'Admin'">
               <mat-checkbox [disabled]="!shouldDisableFileds" color="primary" class="example-margin"
-                formControlName="allow_sending_status_report_to_client">
-                <h5 class="c-header">Allow sending the status report to client</h5>
+                formControlName="allow_sending_job_status_report_to_client">
+                <h5 class="c-header">Allow sending the job status report to client</h5>
+              </mat-checkbox>
+            </div>
+            <div class="col-sm-12 col-md-6 col-lg-4" *ngIf="userRole === 'Admin'">
+              <mat-checkbox [disabled]="!shouldDisableFileds" color="primary" class="example-margin"
+                formControlName="allow_sending_job_time_report_to_client">
+                <h5 class="c-header">Allow sending the job time report to client</h5>
               </mat-checkbox>
             </div>
             <div class="col-sm-12 col-md-6 col-lg-4" *ngIf="userRole === 'Admin'">

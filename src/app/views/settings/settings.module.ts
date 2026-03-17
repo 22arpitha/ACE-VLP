@@ -24,6 +24,8 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
 import { LeaveConfigurationComponent } from './leave-configuration/leave-configuration.component';
 import { WfhConfigurationComponent } from './wfh-configuration/wfh-configuration.component';
 import { WfhTypeComponent } from './wfh-type/wfh-type.component';
+import { DivisionComponent } from './division/division.component';
+import { DepartmentComponent } from './department/department.component';
 @NgModule({
   declarations: [
     SettingsComponent,
@@ -42,7 +44,9 @@ import { WfhTypeComponent } from './wfh-type/wfh-type.component';
     PeriodComponent,
     LeaveConfigurationComponent,
     WfhConfigurationComponent,
-    WfhTypeComponent
+    WfhTypeComponent,
+    DivisionComponent,
+    DepartmentComponent
   ],
   imports: [
     CommonModule,

@@ -22,6 +22,8 @@ import { WfhConfigurationComponent } from './wfh-configuration/wfh-configuration
 import { WfhTypeComponent } from './wfh-type/wfh-type.component';
 
 
+import { DivisionComponent } from './division/division.component';
+import { DepartmentComponent } from './department/department.component';
 
 const routes: Routes = [
   {
@@ -89,6 +91,11 @@ const routes: Routes = [
         canDeactivate:[CanDeactivateGuard]
       },
       {
+        path: 'division',
+        component: DivisionComponent,
+        canDeactivate:[CanDeactivateGuard]
+      },
+      {
         path: 'all-employee',
         component: AllEmployeeComponent,
       },
@@ -121,6 +128,11 @@ const routes: Routes = [
       {
         path: 'designation',
         component: DesignationsComponent,
+        canDeactivate:[CanDeactivateGuard]
+      },
+      {
+        path: 'department',
+        component: DepartmentComponent,
         canDeactivate:[CanDeactivateGuard]
       },
       {

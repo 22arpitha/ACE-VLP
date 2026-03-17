@@ -33,6 +33,7 @@ export class JobTimeReportsComponent implements OnInit {
     includeAllJobsValue: false,
     selectedClientId: null,
     sendEmail: true,
+    reportType:'job-time-report',
     showDownload: true,
   };
   tabStatus: any = 'True';
@@ -600,6 +601,7 @@ export class JobTimeReportsComponent implements OnInit {
           includeAllJobsValue: this.isIncludeAllJobValue ? this.isIncludeAllJobValue : false,
           selectedClientId: this.client_id ? this.client_id : null,
           sendEmail: true,
+          reportType:'job-time-report',
           currentPage: page,
           totalRecords: res.total_no_of_record,
           showDownload: true,
@@ -634,6 +636,7 @@ export class JobTimeReportsComponent implements OnInit {
           includeAllJobsValue: this.isIncludeAllJobValue ? this.isIncludeAllJobValue : false,
           selectedClientId: this.client_id ? this.client_id : null,
           sendEmail: true,
+          reportType:'job-time-report',
           currentPage: page,
           totalRecords: 0,
           showDownload: true,

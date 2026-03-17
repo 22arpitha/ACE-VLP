@@ -700,6 +700,7 @@ export class DynamicTableComponent implements OnInit, OnChanges {
     }
   }
   public getClientDetails() {
+    console.log(this.config);
     this.api
       .getData(
         `${environment.live_url}/${environment.clients}/${this.selected_client_id}/`
@@ -707,9 +708,14 @@ export class DynamicTableComponent implements OnInit, OnChanges {
       .subscribe(
         (respData: any) => {
           if (respData) {
-            this.allow_sending_status =
-              respData?.allow_sending_status_report_to_client;
+            if(this.config?.reportType === 'job-time-report') {
+              this.allow_sending_status =
+                respData?.allow_sending_job_time_report_to_client;
+            } else if(this.config?.reportType === 'job-status-report') {
+              this.allow_sending_status =
+                respData?.allow_sending_job_status_report_to_client;
           }
+        }
         },
         (error: any) => {
           this.api.showError(error?.error?.detail);

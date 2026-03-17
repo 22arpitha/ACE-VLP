@@ -33,6 +33,7 @@ export class JobStatusReportComponent implements OnInit {
      includeAllJobsValue:false,
      selectedClientId:null,
      sendEmail:true,
+     reportType:'job-status-report',
      showDownload:true,
    };
    tabStatus:any='True';
@@ -714,6 +715,7 @@ async getTableData(params?: { page?: number; pageSize?: number; searchTerm?: str
            includeAllJobsValue:this.isIncludeAllJobValue ? this.isIncludeAllJobValue : false,
            selectedClientId:this.client_id ? this.client_id:null,
            sendEmail:true,
+           reportType:'job-status-report',
            currentPage:page,
            totalRecords: res.total_no_of_record, // Correctly use 'response' from inner call
            showDownload:true,
@@ -751,6 +753,7 @@ async getTableData(params?: { page?: number; pageSize?: number; searchTerm?: str
                 includeAllJobsValue:this.isIncludeAllJobValue ? this.isIncludeAllJobValue : false,
                 selectedClientId:this.client_id ? this.client_id:null,
                 sendEmail:true,
+                reportType:'job-status-report',
                 currentPage:page,
                 totalRecords: 0,
                 showDownload:true,

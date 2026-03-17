@@ -187,6 +187,8 @@ export class CreateClientComponent implements CanComponentDeactivate, OnInit, On
       employee_details: this.fb.array([]),
       allow_sending_status_report_to_client: [{value:false,disable:!this.shouldDisableFileds}],
       allow_sending_public_holiday_information:[{value:false,disable:!this.shouldDisableFileds}],
+      allow_sending_job_status_report_to_client: [{value:false,disable:!this.shouldDisableFileds}],
+      allow_sending_job_time_report_to_client: [{value:false,disable:!this.shouldDisableFileds}],
       practice_notes: [''],
     });
   }
@@ -304,6 +306,8 @@ export class CreateClientComponent implements CanComponentDeactivate, OnInit, On
         source: respData?.source_id,
         allow_sending_status_report_to_client: respData?.allow_sending_status_report_to_client,
         allow_sending_public_holiday_information:respData?.allow_sending_public_holiday_information,
+        allow_sending_job_status_report_to_client: respData?.allow_sending_job_status_report_to_client,
+        allow_sending_job_time_report_to_client: respData?.allow_sending_job_time_report_to_client,
         practice_notes: respData?.practice_notes,
       });
       this.clientFormGroup?.get('client_file')?.setErrors(null);
@@ -703,6 +707,8 @@ onClientFileDropped(event: DragEvent) {
     this.formData.set("practice_notes", this.clientFormGroup?.get('practice_notes')?.value || '');
     this.formData.set("allow_sending_status_report_to_client", this.clientFormGroup?.get('allow_sending_status_report_to_client')?.value ? 'true' : 'false');
     this.formData.set("allow_sending_public_holiday_information", this.clientFormGroup?.get('allow_sending_public_holiday_information')?.value ? 'true' : 'false');
+    this.formData.set("allow_sending_job_status_report_to_client", this.clientFormGroup?.get('allow_sending_job_status_report_to_client')?.value ? 'true' : 'false');
+    this.formData.set("allow_sending_job_time_report_to_client", this.clientFormGroup?.get('allow_sending_job_time_report_to_client')?.value ? 'true' : 'false');
     const result = this.clientFormGroup?.get('contact_details')?.getRawValue().map((item: any) => {
       return {
         ...item,

@@ -24,6 +24,7 @@ export class CreateUpdateEmployeeComponent implements CanComponentDeactivate, On
   BreadCrumbsTitle: any = 'Employee';
   employeeFormGroup!: FormGroup;
   allDesignation: any = [];
+  allDepartment: any = [];
   allUserRoleList: any = [];
   reportingManagerId: any = [];
   isEditItem: boolean = false;
@@ -31,6 +32,7 @@ export class CreateUpdateEmployeeComponent implements CanComponentDeactivate, On
   searchReportingManagerText: any
   searchRoleText: any;
   searchDesignationText: any;
+  searchDepartmentText: any;
   isActivelist: any = [{ name: 'In Active', is_active: false }, { name: 'Active', is_active: true }]
   accessPermissions = []
   user_id: any;
@@ -53,12 +55,14 @@ export class CreateUpdateEmployeeComponent implements CanComponentDeactivate, On
       this.isEditItem = true;
       this.getUserRoleList();
       this.getReportingManagerList();
+      this.getDepartmentList();
       this.getEmployeeDetails(this.employee_id);
     } else {
       this.common_service.setTitle('Create ' + this.BreadCrumbsTitle)
       this.getEmployeeUniqueNumber();
       this.getUserRoleList();
       this.getReportingManagerList();
+      this.getDepartmentList();
     }
   }
 
@@ -120,6 +124,7 @@ export class CreateUpdateEmployeeComponent implements CanComponentDeactivate, On
       reporting_manager_id: [''],
       designation: ['', Validators.required],
       sub_designation: ['', Validators.required],
+      department_id: ['', Validators.required],
       gender: ['',Validators.required],
       role: 2,
       is_active: [true, Validators.required],
@@ -187,6 +192,15 @@ export class CreateUpdateEmployeeComponent implements CanComponentDeactivate, On
       this.apiService.showError(error?.error?.detail)
     }));
   }
+   private getDepartmentList() {
+    this.allDepartment = [];
+    this.apiService.getData(`${environment.live_url}/${environment.settings_department}/`).subscribe((respData: any) => {
+      this.allDepartment = respData;
+    }, (error => {
+      this.apiService.showError(error?.error?.detail)
+    }));
+  }
+  
 
   // Get Reporting Manager
   public getReportingManagerList() {
@@ -217,6 +231,7 @@ export class CreateUpdateEmployeeComponent implements CanComponentDeactivate, On
         exit_date: respData?.user__exit_date,
         reporting_manager_id: respData?.reporting_manager_id,
         designation: respData?.designation_id,
+        department_id: respData?.department_id,
         sub_designation: respData?.sub_designation_id,
         gender: respData?.user__gender,
         is_active: respData?.is_active,
@@ -358,6 +373,14 @@ export class CreateUpdateEmployeeComponent implements CanComponentDeactivate, On
     }
     return this.allDesignation.filter((role: any) =>
       role?.sub_designation_name?.toLowerCase()?.includes(this.searchDesignationText?.toLowerCase())
+    );
+  }
+  public filteredDepartmentList() {
+    if (!this.searchDepartmentText) {
+      return this.allDepartment;
+    }
+    return this.allDepartment.filter((role: any) =>
+      role?.department_name?.toLowerCase()?.includes(this.searchDepartmentText?.toLowerCase())
     );
   }
 
