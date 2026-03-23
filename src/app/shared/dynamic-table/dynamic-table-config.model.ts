@@ -12,6 +12,7 @@ export interface TableColumn {
   inputField?:boolean;
   fileInputField?:boolean;
   sortKey?:string;
+  leftAlign?:boolean;
 }
 
 export interface DynamicTableConfig {

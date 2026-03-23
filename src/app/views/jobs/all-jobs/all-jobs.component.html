@@ -221,9 +221,9 @@
                            }; let i=index'>
                 <td (click)="edit(item)" *ngIf="isColumnVisible('sl_no')">{{getContinuousIndex(i)}}</td>
                 <td (click)="edit(item)" *ngIf="isColumnVisible('job_number')">{{item?.job_number || '-'}}</td>
-                <td class="job_name" (click)="edit(item)" *ngIf="isColumnVisible('job_name')">{{item?.job_name || '-'}}</td>
+                <td class="job_name job-client-text-left" (click)="edit(item)" *ngIf="isColumnVisible('job_name')">{{item?.job_name || '-'}}</td>
                 <td (click)="edit(item)" *ngIf="isColumnVisible('job_type_name')">{{item?.job_type_name || '-'}}</td>
-                <td (click)="edit(item)" *ngIf="isColumnVisible('client_name')">{{item?.client_name || '-'}}</td>
+                <td class="job-client-text-left" (click)="edit(item)" *ngIf="isColumnVisible('client_name')">{{item?.client_name || '-'}}</td>
                 <td (click)="edit(item)" *ngIf="isColumnVisible('group_name')">{{item?.group_name || '-'}}</td>
                 <td (click)="edit(item)" *ngIf="isColumnVisible('job_allocation_date')">{{item?.job_allocation_date | dateFormater}}</td>
                 <td (click)="edit(item)" *ngIf="isColumnVisible('employees')">{{getEmployeeName(item?.employees) ||

@@ -140,10 +140,10 @@
                              totalItems: count
                            }; let i=index'>
                 <td>{{item?.job_number || '-'}}</td>
-                <td>{{item?.job_name || '-'}}</td>
+                <td class="job-client-text-left">{{item?.job_name || '-'}}</td>
                 <td>{{item?.job_type_name || '-'}}</td>
                 <td>{{item?.job_allocation_date | dateFormater}}</td>
-                <td>{{item?.employee[0].employee__full_name || '-'}}</td>
+                <td class="job-client-text-left">{{item?.employee[0].employee__full_name || '-'}}</td>
                 <td>{{item?.employee[0]?.manager__full_name || '-'}}</td>
                 <td>{{item?.status_date | dateFormater}}</td>
                 <td>{{item?.option_value || '-'}}</td>

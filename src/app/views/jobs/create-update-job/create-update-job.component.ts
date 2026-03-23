@@ -1731,8 +1731,56 @@ onDropdownOpened(isOpen, key: string) {
     this.removeScrollListener(key);
   }
 }
+getFilteredOptions(key: string) {
+  const selected = this.selectedItemsMap[key] || [];
+  const state = this.dropdownState[key];
 
+  // if something selected and user not searching
+  if (selected.length && !state.search) {
+    return selected;
+  }
 
+  return state.list;
+}
+displayClient(item: any): string {
+  if (!item) return '';
+  return item.client_name || item;
+}
+onClientAutoSelected(item: any) {
+  if (!item) return;
+
+  this.jobFormGroup.get('client')?.setValue(item.id);
+
+  // keep only the selected item
+  this.selectedItemsMap['client'] = [item];
+
+  // IMPORTANT: clear search so only selected shows
+  this.dropdownState.client.search = '';
+
+  // optional: clear list so no old results remain
+  this.dropdownState.client.list = [];
+
+  this.onClientChange({ value: item.id });
+}
+onClientInput(value: string) {
+  this.dropdownState.client.search = value;
+  this.dropdownState.client.page = 1;
+  this.dropdownState.client.list = [];
+  this.fetchData('client', false);
+}
+
+onAutocompleteScroll(event: any, key: string) {
+  const panel = event.target;
+  const atBottom =
+    panel.scrollHeight - panel.scrollTop <= panel.clientHeight + 5;
+
+  const state = this.dropdownState[key];
+
+  if (atBottom && !state.loading && state.page < state.totalPages) {
+    state.page++;
+    this.fetchData(key, true);
+  }
+}
 commonOnchangeFun(event, key){
   this.updateSelectedItems(key, event.value);
 }

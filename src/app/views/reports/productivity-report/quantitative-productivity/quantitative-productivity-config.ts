@@ -6,7 +6,8 @@ export const tableColumns = [
       label: 'Client',
       key: 'client_name',
       sortKey: 'client_name',
-      sortable: true
+      sortable: true,
+      leftAlign:true
     },
     {
       label: 'Job Id',
@@ -18,7 +19,8 @@ export const tableColumns = [
       label: 'Job',
       key: 'job_name',
       sortKey: 'job_name',
-      sortable: true
+      sortable: true,
+      leftAlign:true
     },
     {
       label: 'Job Status',
@@ -37,7 +39,8 @@ export const tableColumns = [
       label: 'Task',
       key: 'task',
       sortKey:'task',
-      sortable: false
+      sortable: false,
+      leftAlign:true
     },
    { label: 'Est. Hrs', key: 'estimated_hours', sortKey: 'total_estimated_minutes', sortable: true },
   { label: 'Act. Hrs', key: 'actual_hours', sortKey: 'total_actual_minutes', sortable: true},

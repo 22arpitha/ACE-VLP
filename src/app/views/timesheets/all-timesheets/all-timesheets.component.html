@@ -236,8 +236,8 @@
                 <td>{{ getContinuousIndex(i) }}</td>
                 <td>{{ (item?.date | dateFormater) || "-" }}</td>
                 <td *ngIf="userRole === 'Admin'">{{ item?.employee_name || "-" }}</td>
-                <td>{{ item?.client_name || "-" }}</td>
-                <td>{{ item?.job_name || "-" }}</td>
+                <td class="job-client-text-left">{{ item?.client_name || "-" }}</td>
+                <td class="job-client-text-left">{{ item?.job_name || "-" }}</td>
                 <td>{{ item?.task_name || "-" }}</td>
                 <td>
                   {{ item?.time_spent }} <br />

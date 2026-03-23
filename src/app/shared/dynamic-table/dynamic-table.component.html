@@ -399,7 +399,7 @@
           </td>
         </tr>
         <tr *ngIf="!config.formContent">
-          <td *ngFor="let col of config.columns">
+          <td *ngFor="let col of config.columns" [ngClass]="col.leftAlign ? 'job-client-text-left' : ''">
             <div *ngIf="!col.navigation && !col.empNavigation && col.key != 'diff_days'" [ngStyle]="{ color:col.key === 'job_status_date' && item?.status_date_color ? item?.status_date_color : col.key === 'short_fall' ? item?.color : 'black' }" [ngClass]="col.key === 'remaining_time' ? isPositiveOrNegative(item?.remaining_time):''">
               {{ col.type === 'date' ? (item[col.key] | dateFormater) : item[col.key] !== null && item[col.key] !== undefined && item[col.key] !== '' ? item[col.key] : 'NA' }}
             </div>

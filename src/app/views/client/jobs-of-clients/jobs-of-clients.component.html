@@ -129,9 +129,9 @@
                                  
                             <td>{{getContinuousIndex(i)}}</td>
                             <td>{{item.job_number}}</td>
-                            <td>{{item.job_name}}</td>
+                            <td class="job-client-text-left">{{item.job_name}}</td>
                             <td>{{item.job_allocation_date | dateFormater}}</td>
-                            <td>{{getEmployeeName(item?.employees) || '-'}}</td>
+                            <td class="job-client-text-left">{{getEmployeeName(item?.employees) || '-'}}</td>
                             <td>{{item.job_status__status_name}}</td>
                             <td [ngStyle]="{ color: item?.status_date_color ? item?.status_date_color : 'black' }">{{item.job_status_date | dateFormater}}</td>
                     <!-- <td>

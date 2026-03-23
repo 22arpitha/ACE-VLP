@@ -4,7 +4,8 @@ export const tableColumns = [
       label: 'Client',
       key: 'client_name',
       sortKey:'client_name',
-      sortable: true
+      sortable: true,
+      leftAlign:true
     },
     {
       label: 'Group',
@@ -22,13 +23,15 @@ export const tableColumns = [
       label: 'Job',
       key: 'job_name',
       sortKey: 'job_name',
-      sortable: true
+      sortable: true,
+      leftAlign:true
     },
     {
       label: 'Task',
       key: 'task',
       sortKey: 'task',
-      sortable: false
+      sortable: false,
+      leftAlign:true
     },
     { label: 'Est. Hrs', key: 'estimated_hours', sortKey: 'total_estimated_minutes', sortable: true },
     { label: 'POC (%)',key: 'poc', sortKey: 'poc', sortable: true },

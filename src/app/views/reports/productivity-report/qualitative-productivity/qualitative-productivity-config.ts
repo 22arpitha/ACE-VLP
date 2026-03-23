@@ -8,7 +8,8 @@ export const tableColumns = [
     label: 'Client',
     key: 'client_name',
     sortKey: 'client__client_name',
-    sortable: true
+    sortable: true,
+    leftAlign:true
   },
   {
     label: 'Group',
@@ -26,7 +27,8 @@ export const tableColumns = [
     label: 'Job',
     key: 'job_name',
     sortKey: 'job_name',
-    sortable: true
+    sortable: true,
+    leftAlign:true
   },
   {
       label: 'Status Date',
