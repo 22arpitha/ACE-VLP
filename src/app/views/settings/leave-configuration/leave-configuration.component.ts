@@ -75,13 +75,13 @@ export class LeaveConfigurationComponent implements OnInit {
           leave_effective_from: res.leave_effective_from,
           is_accrual: res.is_accrual,
           accrual_cycle: res.accrual_cycle,
-          accrual_day: res.accrual_day,
+          accrual_day: isNaN(Number(res.accrual_day)) ? res.accrual_day : Number(res.accrual_day),
           accrual_month: res.accrual_month,
           accrual_credits: res.accrual_credits,
           prorate_accrual: res.prorate_accrual,
           is_reset: res.is_reset,
           reset_cycle: res.reset_cycle,
-          reset_day: res.reset_day,
+          reset_day: isNaN(Number(res.reset_day)) ? res.reset_day : Number(res.reset_day),
           reset_month: res.reset_month,
           is_carry_forward: res.is_carry_forward,
           carry_forward_cycle: 'carry_forward',
@@ -245,6 +245,11 @@ export class LeaveConfigurationComponent implements OnInit {
       if(this.leaveTypeForm.get('is_accrual')?.value==false){
         this.leaveTypeForm.patchValue({accrual_credits:0,accrual_month:0})
       }
+       this.leaveTypeForm.patchValue({
+       accrual_day: this.leaveTypeForm.get('accrual_day')?.value?.toString(),
+       reset_day: this.leaveTypeForm.get('reset_day')?.value?.toString()
+     });
+
       if(this.item_id){
         this.apiService.updateData(`${environment.live_url}/${environment.new_leave_type}/?conf_id=${this.item_id}`,this.leaveTypeForm.value).subscribe(
           (res:any)=>{

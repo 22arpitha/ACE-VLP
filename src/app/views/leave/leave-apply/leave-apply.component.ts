@@ -178,8 +178,9 @@ export class LeaveApplyComponent implements OnInit {
   }
 
   holidaylistsss(){
+   let currentYear: number = new Date().getFullYear();
     this.apiService
-      .getData(`${environment.live_url}/${environment.holiday_calendar}/`)
+      .getData(`${environment.live_url}/${environment.holiday_calendar}/?year=${currentYear}`)
       .subscribe((res: any) => {
         this.holidayList = res;
       },
@@ -823,6 +824,9 @@ employeeGender:any;
     if (this.selectedLeaveTypeName === 'loss of pay') {
       return false; 
     }
+    // if(this.totalDays >this.leave_balance){
+    //   return true;
+    // }
     const toDateValue = this.leaveApplyForm.get('to_date')?.value;
     const leave_type_id = this.leaveApplyForm.get('leave_type')?.value;
      let temp = this.allleavetypeList.find((item: any) => item.leave_type_id === leave_type_id)
@@ -833,6 +837,11 @@ employeeGender:any;
     const today = new Date();
     // First day of next month (handles Dec → Jan automatically)
     const nextMonthStart = new Date(today.getFullYear(), today.getMonth() + 1, 1);
+    const isCurrentMonth = selectedDate.getFullYear() === today.getFullYear() &&
+                         selectedDate.getMonth() === today.getMonth();
+  if (isCurrentMonth && this.totalDays > this.leave_balance) {
+    return true;
+  }
     // If leave balance is 0
     if (this.leave_balance === 0) {
       // Allow only if date is from next month onwards
@@ -960,30 +969,33 @@ private isWorkCalendarHoliday(wc: any, d: Date): boolean {
   );
   return !!specificHoliday;
 }
-
 private weekdayNameFromCalendar(wc: any, date: Date): string {
-  const daysFromCalendar = wc.working_days.map((d: any) => d.day);
-
-  if (!daysFromCalendar || daysFromCalendar.length < 7) {
-    const fallback = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-    return fallback[date.getDay()];
-  }
-
-  const actualIndex = date.getDay();
-  const startDay = wc.work_week_starts_on;
-  const startIndex = daysFromCalendar.findIndex(
-    (d: string) => d.toLowerCase() === startDay.toLowerCase()
-  );
-
-  if (startIndex === -1) return daysFromCalendar[actualIndex] || daysFromCalendar[0];
-
-  const rotatedDays = [
-    ...daysFromCalendar.slice(startIndex),
-    ...daysFromCalendar.slice(0, startIndex),
-  ];
-
-  return rotatedDays[actualIndex] || rotatedDays[0];
+  return date.toLocaleDateString('en-US', { weekday: 'long' });
 }
+
+// private weekdayNameFromCalendar(wc: any, date: Date): string {
+//   const daysFromCalendar = wc.working_days.map((d: any) => d.day);
+
+//   if (!daysFromCalendar || daysFromCalendar.length < 7) {
+//     const fallback = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+//     return fallback[date.getDay()];
+//   }
+
+//   const actualIndex = date.getDay();
+//   const startDay = wc.work_week_starts_on;
+//   const startIndex = daysFromCalendar.findIndex(
+//     (d: string) => d.toLowerCase() === startDay.toLowerCase()
+//   );
+
+//   if (startIndex === -1) return daysFromCalendar[actualIndex] || daysFromCalendar[0];
+
+//   const rotatedDays = [
+//     ...daysFromCalendar.slice(startIndex),
+//     ...daysFromCalendar.slice(0, startIndex),
+//   ];
+
+//   return rotatedDays[actualIndex] || rotatedDays[0];
+// }
 
 private getWeekNumberOfMonthKey(d: Date): string {
   const date = d.getDate();

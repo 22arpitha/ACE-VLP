@@ -68,10 +68,10 @@ export class CompOffGrantComponent implements OnInit {
 
   ngOnInit(): void {
     this.initialForm();
-    this.getAllLeaveTypes();
     this.workCalendarlist();
     this.holidaylistsss();
     this.getAllEmployeeList2();
+    this.getAllLeaveTypes();
     const isDialogMode = !!this.data;
   let employeeMode = false;
 
@@ -156,8 +156,9 @@ export class CompOffGrantComponent implements OnInit {
   }
 
    holidaylistsss(){
+    let currentYear: number = new Date().getFullYear();
     this.apiService
-      .getData(`${environment.live_url}/${environment.holiday_calendar}/`)
+      .getData(`${environment.live_url}/${environment.holiday_calendar}/?year=${currentYear}`)
       .subscribe((res: any) => {
         this.holidayList = res;
       },
@@ -239,11 +240,11 @@ export class CompOffGrantComponent implements OnInit {
     }
     else {
       const formData = new FormData();
-      Object.keys(this.leaveApplyForm.value).forEach((key) => {
-        const value = this.leaveApplyForm.value[key];
-        formData.append(key, value);
+      const formValue = this.leaveApplyForm.getRawValue();
+      Object.keys(formValue).forEach((key) => {
+        formData.append(key, formValue[key]);
       });
-      console.log('form value 2 after valid -->>>', this.leaveApplyForm.value);
+      console.log(this.leaveApplyForm.getRawValue())
 
       this.apiService.postData(
         `${environment.live_url}/${environment.comp_off_grant}/`,
