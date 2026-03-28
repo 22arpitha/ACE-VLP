@@ -52,4 +52,5 @@ export interface DynamicTableConfig {
   leaveTypes?:boolean;
   employeeDropdown?:boolean,
   reportType?:string;
+  showSubmit?:boolean
 }

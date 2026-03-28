@@ -241,7 +241,7 @@ export class GroupComponent implements CanComponentDeactivate, OnInit {
           this.selectedItemId = item?.id;
           this.isEditItem = true;
           modalRef.dismiss();
-          this.scrollToField();
+          // this.scrollToField();
           this.shouldDisableGroupName = this.accessPermissions[0]?.['update']
           this.getSelectedItemData(this.selectedItemId);
         } else {

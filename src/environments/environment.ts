@@ -59,7 +59,7 @@ company_policy:`company-policy`,
 clients:'clients',
 all_clients:`all-clients`,
 clients_details:'clients-details',
-
+client_feedback:`enabled-feedbackform-for-clients`,
 job_details:'job-details',
 jobs_percetage:'jobs-percetage',
 clients_group:'group',
@@ -76,6 +76,8 @@ kpi_submission:`kpi-submission`,
 // timesheet
  timesheet_summary:`timesheet-summary`,
  timesheet_reports:`timesheet-reports`,
+ job_day_report:`job-day-report`,
+ day_reports_mail:`submit-job-report`,
 vlp_timesheets:`timesheet`,
 employee_actual_hours:`all-jobs-test/employee-job-hours`,
 timesheet_non_productivity: `timesheet-non-productivity`,
@@ -114,6 +116,7 @@ wfh_limited_flexibility_transaction_report:`wfh-limited-flexibility-transaction-
 wfh_prolonged_health_summary_report:`wfh-prolonged-health-summary-report`,
 wfh_prolonged_health_transaction_report:`wfh-prolonged-health-transaction-report/`,
 it_ticket:`tickets`,
+it_ticket_rejections:`ticket-rejections`,
 
 // project ace
 //   leave_application: 'leave-application',

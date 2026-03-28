@@ -74,6 +74,9 @@
           <button mat-raised-button class="mat-btn-s tab-button-content" [ngClass]="{'isActive': isCurrent}" type="button" type="button" (click)="getCurrentDatasetList()">Current</button>
           <button mat-raised-button class="mat-btn-s tab-button-content" [ngClass]="{'isActive': isHistory}" type="button" type="button" (click)="getHistoryDatasetList()">History</button>
         </div>
+        <div class="col-auto mt-2 col-sm-auto col-md-auto col-lg-auto" *ngIf="config.showSubmit">
+          <button ngbTooltip="send reports" placement="top" mat-raised-button class="mat-btn-s proceedbtn" type="button" (click)="sendDayEndReport()">Submit</button>
+        </div>
   <!-- Download Menu -->
 
       <div class="col-auto col-sm-auto col-md-auto col-lg-auto px-0 mx-0 my-1 downloads"
@@ -401,7 +404,25 @@
         <tr *ngIf="!config.formContent">
           <td *ngFor="let col of config.columns" [ngClass]="col.leftAlign ? 'job-client-text-left' : ''">
             <div *ngIf="!col.navigation && !col.empNavigation && col.key != 'diff_days'" [ngStyle]="{ color:col.key === 'job_status_date' && item?.status_date_color ? item?.status_date_color : col.key === 'short_fall' ? item?.color : 'black' }" [ngClass]="col.key === 'remaining_time' ? isPositiveOrNegative(item?.remaining_time):''">
-              {{ col.type === 'date' ? (item[col.key] | dateFormater) : item[col.key] !== null && item[col.key] !== undefined && item[col.key] !== '' ? item[col.key] : 'NA' }}
+              <!-- {{ col.type === 'date' ? (item[col.key] | dateFormater) : item[col.key] !== null && item[col.key] !== undefined && item[col.key] !== '' ? item[col.key] : 'NA' }} -->
+            
+              <!-- ✅ Attachment column -->
+              <ng-container *ngIf="col.key === 'attachment'">
+                <a *ngIf="item[col.key]" [href]="item[col.key]" target="_blank" rel="noopener noreferrer">
+                  Open Link
+                </a>
+                <span *ngIf="!item[col.key]">NA</span>
+              </ng-container>
+
+              <!-- ✅ Other columns -->
+              <ng-container *ngIf="col.key !== 'attachment'">
+                {{ col.type === 'date'
+                    ? (item[col.key] | dateFormater)
+                    : item[col.key] !== null && item[col.key] !== undefined && item[col.key] !== ''
+                      ? item[col.key]
+                      : 'NA'
+                }}
+              </ng-container>
             </div>
 
             <ng-container *ngIf="col.navigation && col.key != 'diff_days'">
@@ -456,7 +477,7 @@
           <td class="bg-transparent"><b>Actual TAT Days: {{ config?.tableFooterContent?.avg_tat !== null && config?.tableFooterContent?.avg_tat !== undefined && config?.tableFooterContent?.avg_tat !== '' ? config?.tableFooterContent?.avg_tat : 'NA' }}</b></td>
         </tr>
       <tr *ngIf="config?.averageProductivity" class="bg-transparent" >
-        <td colspan="10" class="bg-transparent"></td>
+        <td colspan="11" class="bg-transparent"></td>
         <td  class="bg-transparent"><b>Average Productivity: {{ config?.tableFooterContent?.avg_qualitative_productivity !== null && config?.tableFooterContent?.avg_qualitative_productivity !== undefined && config?.tableFooterContent?.avg_qualitative_productivity !== '' ? config?.tableFooterContent?.avg_qualitative_productivity : 'NA' }}</b></td>
       </tr>
       <tr *ngIf="config?.total_hours" class="bg-transparent" >

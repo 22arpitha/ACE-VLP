@@ -273,6 +273,10 @@ export class DefaultLayoutComponent {
       if (item.name === 'Clients') {
         item.children = [];
       }
+      if (this.user_role_Name === 'Admin' && item.name === 'Timesheets' && Array.isArray(item.children)) {
+        item.children = item.children.filter((child: any) => child.name !== 'Day End Reports');
+      }
+
       if (this.user_role_Name === 'Admin' && item.name === 'Leave' && Array.isArray(item.children)) {
         item.children = item.children.filter((child: any) => child.name !== 'Apply Leave' && child.name !== 'Comp-off Request');
       }

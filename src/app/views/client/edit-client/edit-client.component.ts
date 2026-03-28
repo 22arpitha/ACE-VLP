@@ -342,7 +342,7 @@ getUniqueValues(
           this.isEditItem = true;
           modalRef.dismiss();
           this.shouldDisableGroupName = this.accessPermissions[0]?.['update']
-          this.scrollToField();
+          // this.scrollToField();
           this.getSelectedEndClient(this.selectedJobStatus);
         } else {
           modalRef.dismiss();

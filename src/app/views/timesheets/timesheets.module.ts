@@ -7,13 +7,19 @@ import { TimesheetsRoutingModule } from './timesheets-routing.module';
 import { TimesheetsComponent } from './timesheets.component';
 import { AllTimesheetsComponent } from './all-timesheets/all-timesheets.component';
 import { CreateUpdateTimesheetComponent } from './create-update-timesheet/create-update-timesheet.component';
+import { DayEndReportsComponent } from './day-end-reports/day-end-reports.component';
+import { JobTimeDailyReportComponent } from './job-time-daily-report/job-time-daily-report.component';
+import { JobStatusDailyReportComponent } from './job-status-daily-report/job-status-daily-report.component';
 
 
 @NgModule({
   declarations: [
     TimesheetsComponent,
     AllTimesheetsComponent,
-    CreateUpdateTimesheetComponent
+    CreateUpdateTimesheetComponent,
+    DayEndReportsComponent,
+    JobTimeDailyReportComponent,
+    JobStatusDailyReportComponent
   ],
   imports: [
     CommonModule,
