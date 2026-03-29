@@ -1,0 +1,135 @@
+<div class="px-0">
+  <section class="p-0 view-leave-request">
+    <div class="row mx-0">
+      <div class="col-12 my-3">
+        <div class="row">
+          <div class="col-sm-8 col-md-6 col-lg-5">
+            <h4>WFH Request Details</h4>
+          </div>
+          <div class="col-sm-4 col-md-4 col-lg-7 text-end">
+            <span style="background: #ffface; color: #978419; font-size: 14px" *ngIf="leave_data.status === 'Pending'"
+              class="rounded p-2">{{ leave_data.status | uppercase }}</span>
+            <span *ngIf="leave_data.status === 'rejected'" style="font-size: 14px;background:#fee2e2; color: #b91c1c;"
+              class="rounded p-2">{{ leave_data.status | uppercase }}</span>
+            <span *ngIf="leave_data.status === 'approved'" style="font-size: 14px ;background: #dcfce7; color: #15803d;"
+              class="rounded p-2">{{ leave_data.status | uppercase }}</span>
+          </div>
+        </div>
+      </div>
+      <hr />
+      <div class="col-12 mx-0 my-3">
+        <div class="row mx-0">
+          <div class="col-sm-12 col-md-6 col-lg-6 my-2">
+            <h4 class="label-name">Employee Id</h4>
+            <p>#{{ leave_data.employee }}</p>
+          </div>
+          <div class="col-sm-12 col-md-6 col-lg-6 my-2">
+            <h4 class="label-name">WFH Type</h4>
+            <p>{{ leave_data.wfh_type_name }}</p>
+          </div>
+          <div class="col-sm-12 col-md-6 col-lg-6 my-2">
+            <h4 class="label-name">From</h4>
+            <p>{{ leave_data.from_date | dateFormater }}
+              <!-- ({{leave_data?.from_session}}) -->
+            </p>
+          </div>
+          <div class="col-sm-12 col-md-6 col-lg-6 my-2">
+            <h4 class="label-name">To</h4>
+            <p>{{ leave_data.to_date | dateFormater }}
+              <!-- ({{leave_data?.to_session}}) -->
+            </p>
+          </div>
+          <div class="col-sm-12 col-md-6 col-lg-6 my-2">
+            <h4 class="label-name">Days</h4>
+            <p>{{ leave_data.number_of_wfh_applying_for}}</p>
+          </div>
+          <div class="col-sm-12 col-md-6 col-lg-6 my-2">
+            <h4 class="label-name">Applying To</h4>
+            <p>{{ leave_data.reporting_to_name }}</p>
+          </div>
+          <!-- <div class="col-sm-12 col-md-6 col-lg-6 my-2" *ngIf="leave_data?.cc || leave_data?.cc.length> 0">
+            <h4 *ngIf="leave_data?.cc || leave_data?.cc.length> 0" class="label-name">CC To</h4>
+            <p *ngIf="leave_data?.cc.length>0">{{ leave_data?.cc }}</p>
+          </div> -->
+          <div class="col-sm-12 col-md-6 col-lg-6 my-2">
+            <h4 class="label-name">Date of request</h4>
+            <p>{{ leave_data.created_datetime | dateFormater }}</p>
+          </div>
+          <div class="col-sm-12 col-md-6 col-lg-6 my-2">
+            <h4 class="label-name">Reason</h4>
+            <p>{{ leave_data.message }}</p>
+          </div>
+          <div class="col-sm-12 col-md-6 col-lg-6 my-2" *ngIf="leave_data?.supporting_document">
+            <h4 class="label-name">Attachment</h4>
+            <img src="../../../assets/images/eye icon.svg" class="icon-image" container="body" ngbTooltip="View"
+              type="button" (click)="openInNewTab(leave_data.supporting_document)" />
+            <!-- <button class="btn"  (click)="openInNewTab(leave_data.attachment)">View</button> -->
+          </div>
+
+          <div class="col-sm-12 col-md-6 col-lg-6 my-2" *ngIf="leave_data?.rejected_reason">
+            <h4 class="label-name">Reason of Rejection</h4>
+            <p>{{ leave_data.rejected_reason }}</p>
+          </div>
+
+          <div class="col-12" *ngIf="displayButton">
+            <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+              <mat-label>Reason for Rejecting<b class="r-star">*</b></mat-label>
+
+              <textarea matInput placeholder="Enter reason" autocomplete="off" style="height: 50px !important"
+                [formControl]="reasonControl" maxlength="200" rows="3"></textarea>
+
+              <mat-error *ngIf="
+                  reasonControl.invalid &&
+                  (reasonControl.dirty || reasonControl.touched)
+                ">
+                Reason is required
+              </mat-error>
+
+              <mat-hint align="end" class="mt-2">
+                {{ reasonControl.value?.length || 0 }}/200 ({{
+                200 - (reasonControl.value?.length || 0)
+                }}
+                left)
+              </mat-hint>
+            </mat-form-field>
+          </div>
+          <div class="col-12 my-4 px-2 d-flex justify-content-end" *ngIf="displayButton">
+            <div>
+              <button mat-button class="cancel-button mat-btn-s me-2" type="button" mat-dialog-close>
+                Close
+              </button>
+              <button mat-raised-button class="proceedbtn mat-btn-s me-2" type="button" (click)="approve(leave_data)">
+                Approve
+              </button>
+              <button mat-button class="delete-item-button mat-btn-s" type="button" (click)="onRejectClick(leave_data)">
+                Reject
+              </button>
+
+            </div>
+          </div>
+          <div class="col-12 my-4 px-2 d-flex justify-content-end" *ngIf="userRole === 'Admin'">
+
+            <!-- Director Approve -->
+            <button *ngIf="isDirectorApprovalVisible" mat-raised-button class="proceedbtn mat-btn-s me-2 mx-2"
+              type="button" (click)="approveByDirector(leave_data)">
+              Approve by Director
+            </button>
+
+            <!-- Director Reject -->
+            <button *ngIf="isDirectorApprovalVisible" mat-button class="delete-item-button mat-btn-s" type="button"
+              (click)="rejectByDirector(leave_data)">
+              Reject by Director
+            </button>
+
+            <!-- Rejected Message -->
+            <p class="text-danger" *ngIf="isDirectorRejectedMessageVisible">
+              Work From Home Request is rejected by {{ leave_data?.reporting_to_name }}
+            </p>
+
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </section>
+</div>

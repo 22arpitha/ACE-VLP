@@ -8,6 +8,7 @@ import { CanDeactivateGuard } from '../../auth-guard/can-deactivate.guard';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { CompOffGrantComponent } from './comp-off-grant/comp-off-grant.component';
 
+
 const routes: Routes = [
   {
     path:'',component: LeaveComponent, children:[
@@ -41,7 +42,8 @@ const routes: Routes = [
         path:'comp-off-grant',
         component: CompOffGrantComponent,
         canDeactivate:[CanDeactivateGuard]
-      }
+      },
+      
     ]
   }
 ];

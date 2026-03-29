@@ -15,6 +15,7 @@ import { GenericTableFilterComponent } from '../../../shared/generic-table-filte
 import { DropDownPaginationService } from '../../../service/drop-down-pagination.service';
 import { debounceTime, distinctUntilChanged, filter, Subject } from 'rxjs';
 import { FilterStateService } from '../../../service/filter-state.service';
+import { ClientFeedbackPopupComponent } from '../client-feedback-popup/client-feedback-popup.component';
 
 
 export interface IdNamePair {
@@ -425,6 +426,14 @@ export class ClientListComponent implements OnInit {
     if (filter) {
       filter.onMenuOpened();
     }
+  }
+
+
+   public viewClientFeedbackContactDetails() {
+    this.dialog.open(ClientFeedbackPopupComponent, {
+      panelClass: 'customize-balance-dialog',
+      // data: { contact_details: item?.contact_details }
+    });
   }
 
 }

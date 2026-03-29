@@ -1,0 +1,110 @@
+<section class="settings-table-bg">
+  <form [formGroup]="clientFormGroup">
+    <div class="row mx-0 my-1 px-0">
+      <div class="col-12 col-sm-12 col-md-12 col-lg-12 py-1 px-0">
+        <h4>Contact Details</h4>
+      </div>
+    </div>
+    <div class="row mx-0 my-1 px-0">
+      <div
+        class="col-12 col-sm-12 col-md-12 col-lg-12 px-0 table-responsive table-responsive-sm table-responsive-md px-0">
+        <table class="table table table-hover table-list contact-details-table">
+          <thead>
+            <tr>
+              <th>
+                <mat-checkbox [checked]="isAllRowsSelected()" [indeterminate]="isRowsIndeterminate()"
+                  (change)="selectAllRows($event.checked)">
+                </mat-checkbox>
+              </th>
+              <th>Client ID</th>
+              <th>Client Name</th>
+              <th>Email</th>
+              <th>Phone Number</th>
+
+              <th>
+                Feedback
+
+              </th>
+
+          </thead>
+
+<tbody formArrayName="contact_details">
+
+  <ng-container *ngFor="let client of allClients 
+      | paginate: { itemsPerPage: tableSize, currentPage: page }">
+
+    <ng-container *ngFor="let contact of client.contact_details; let i = index">
+
+      <tr [formGroup]="getFormGroup(client.client_id, contact.email)">
+
+        <!-- Left Checkbox -->
+        <td>
+          <mat-checkbox formControlName="rowSelected"></mat-checkbox>
+        </td>
+
+        <!-- Client ID (rowspan) -->
+        <td *ngIf="i === 0" [attr.rowspan]="client.contact_details.length">
+          {{client.client_id}}
+        </td>
+
+        <!-- Client Name (rowspan) -->
+        <td *ngIf="i === 0" [attr.rowspan]="client.contact_details.length">
+          {{client.client_name}}
+        </td>
+
+        <!-- Email -->
+        <td>
+          {{contact.email}}
+        </td>
+
+        <!-- Phone -->
+        <td>
+          {{contact.phone_number}}
+        </td>
+
+        <!-- Feedback -->
+        <td>
+          <mat-checkbox formControlName="isSelected"></mat-checkbox>
+        </td>
+
+      </tr>
+
+    </ng-container>
+
+  </ng-container>
+
+</tbody>
+        </table>
+      </div>
+    </div>
+    <div class="text-right my-3 d-flex justify-content-end align-content-center mx-3">
+      <button mat-raised-button class="mat-btn-s feedbackBtn text-light" type="button" (click)="sendRequest()">Send
+        Request</button>
+
+
+    </div>
+  </form>
+
+</section>
+<div class="row mx-0 my-2 px-2">
+  <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0" *ngIf="allClients.length > 0">
+    <div class="pagination-container">
+
+      <pagination-controls previousLabel="Prev" nextLabel="Next" (pageChange)="page = $event">
+      </pagination-controls>
+
+      <div>
+        <span>Items per page</span>
+
+        <mat-select [(ngModel)]="tableSize" (selectionChange)="tableSize = $event.value; page = 1">
+
+          <mat-option *ngFor="let size of tableSizes" [value]="size">
+            {{size}}
+          </mat-option>
+
+        </mat-select>
+      </div>
+
+    </div>
+  </div>
+</div>

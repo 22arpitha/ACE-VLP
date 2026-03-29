@@ -13,7 +13,7 @@ import { environment } from '../../../environments/environment';
   styleUrls: ['./login.component.scss']
 })
 export class LoginComponent implements OnInit {
-  loginForm: FormGroup;
+  loginForm!: FormGroup;
   permission: any;
   showFieldset: boolean = false;
   constructor(private builder: FormBuilder, private api: ApiserviceService, private router: Router,private route: ActivatedRoute
@@ -22,7 +22,7 @@ export class LoginComponent implements OnInit {
   ) { }
   time = new Date();
   message = '';
-  error: boolean;
+  error!: boolean;
   eyeState: boolean = false;
   eyeIcon = 'visibility_off'
   passwordType = "password";
@@ -83,7 +83,7 @@ export class LoginComponent implements OnInit {
     }
     else {
 
-      this.api.postData(`${environment.live_url}/${environment.login}/`,this.loginForm.value).subscribe(response => {
+      this.api.postData(`${environment.live_url}/${environment.login}/`,this.loginForm.value).subscribe((response:any) => {
         let status = Number(200)
         // console.log(response)
         const token = response['token'];
@@ -115,10 +115,10 @@ export class LoginComponent implements OnInit {
             //  If user came from email link, go there first
             if (returnUrl) {
               this.router.navigateByUrl(returnUrl);
-              this.api.showSuccess('Login successful!');
+              this.api.showSuccess('Login ttttttt!');
               return;
             }
-            let access = data.access_list.find(data=>data.name==='Jobs')
+            let access = data.access_list.find((data: { name: string; })=>data.name==='Jobs')
             // console.log(access)
             if(data.access_list.length!=0){
               if(access){

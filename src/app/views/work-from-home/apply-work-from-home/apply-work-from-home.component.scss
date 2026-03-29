@@ -1,0 +1,52 @@
+::ng-deep .mat-form-field-infix{
+    padding: 0.5em 0 !important;
+    padding-bottom: 1em !important;
+}
+::ng-deep .mat-form-field-wrapper{
+    padding: 15px 0px!important;
+}
+.balance-info-content{
+    border-left: 1px solid lightgray;
+    padding: 4px 15px;
+}
+.bg-leave-details{
+    padding: 15px;
+    background: #FBFBFB !important;
+    border-radius: 8px;
+    // min-height: 100px;
+    max-height: max-content;
+}
+.text-clr{
+    color: darkblue;
+}
+::ng-deep .custom-details-dialog .mat-dialog-container {
+    width: 70% !important;
+}
+.bg-leave-details .mat-raised-button.mat-button-disabled.mat-button-disabled{
+    background-color: rgba(0, 0, 0, .12) !important;
+}
+.image-container-leave {
+  border: 2px dashed #ccc;
+  transition: 0.3s ease;
+  border-radius: 5px;
+}
+
+.image-container-leave.drag-active {
+  border-color: #3f51b5;
+  background-color: #f0f4ff;
+}
+
+
+.mat-mdc-radio-button ~ .mat-mdc-radio-button .mdc-radio--checked  {
+  margin-left: 16px;
+  background-color: #126EB4 !important;
+}
+
+.mat-radio-button.mat-accent.mat-radio-checked .mat-radio-outer-circle {
+    border-color:#126EB4 !important;
+    background-color: #126EB4 !important;
+}
+
+span{
+    font-size: 12px;
+}

@@ -1,0 +1,158 @@
+<div class="new-ticket-container">
+  <div class="new-ticket-wrapper">
+    <!-- Header -->
+    <header class="form-header">
+      <h1 class="form-title">Raise New Ticket</h1>
+      <p class="form-subtitle">Please provide details about your IT issue</p>
+    </header>
+
+    <!-- Form -->
+    <form [formGroup]="ticketForm" (ngSubmit)="onSubmit()" class="ticket-form">
+      <!-- Employee Name (Read-only) -->
+      <div class="form-group">
+        <label class="form-label">Employee Name</label>
+        <input
+          type="text"
+          class="form-input"
+          formControlName="employeeName"
+          readonly>
+        <div class="field-hint">This is your registered name</div>
+      </div>
+
+      <!-- Ticket Raised Date Info -->
+      <div class="form-group">
+        <label class="form-label">Ticket Raised Date</label>
+        <div class="info-box">
+          <span class="info-icon">ℹ️</span>
+          <span class="info-text">Will be automatically set when you submit the ticket</span>
+        </div>
+      </div>
+
+      <!-- Issue -->
+      <div class="form-group">
+        <label class="form-label required">Issue</label>
+        <input
+          type="text"
+          class="form-input"
+          formControlName="issue"
+          placeholder="Brief description of the issue (e.g., Unable to access email)"
+          [class.error]="hasError('issue', 'required') || hasError('issue', 'minlength') || hasError('issue', 'maxlength')">
+        
+        <div class="field-footer">
+          <div class="error-message" *ngIf="hasError('issue', 'required')">
+            Issue is required
+          </div>
+          <div class="error-message" *ngIf="hasError('issue', 'minlength')">
+            Issue must be at least 5 characters
+          </div>
+          <div class="error-message" *ngIf="hasError('issue', 'maxlength')">
+            Issue must not exceed 200 characters
+          </div>
+          <div class="char-count" [class.limit-warning]="getCharacterCount('issue') > 180">
+            {{ getCharacterCount('issue') }} / 200
+          </div>
+        </div>
+      </div>
+
+      <!-- Details -->
+      <div class="form-group">
+        <label class="form-label required">Details</label>
+        <textarea
+          class="form-textarea"
+          formControlName="details"
+          rows="6"
+          placeholder="Provide detailed information about the issue, including when it started, what you were trying to do, error messages, etc."
+          [class.error]="hasError('details', 'required') || hasError('details', 'minlength') || hasError('details', 'maxlength')"></textarea>
+        
+        <div class="field-footer">
+          <div class="error-message" *ngIf="hasError('details', 'required')">
+            Details are required
+          </div>
+          <div class="error-message" *ngIf="hasError('details', 'minlength')">
+            Details must be at least 10 characters
+          </div>
+          <div class="error-message" *ngIf="hasError('details', 'maxlength')">
+            Details must not exceed 2000 characters
+          </div>
+          <div class="char-count" [class.limit-warning]="getCharacterCount('details') > 1900">
+            {{ getCharacterCount('details') }} / 2000
+          </div>
+        </div>
+      </div>
+
+      <!-- Attachment -->
+      <div class="form-group">
+        <label class="form-label">Attachment (Optional)</label>
+        
+        <!-- File Upload Area -->
+        <div class="file-upload-area" *ngIf="!selectedFile">
+          <input
+            type="file"
+            id="fileInput"
+            class="file-input"
+            (change)="onFileSelected($event)"
+            accept="image/*,.pdf,.doc,.docx,.txt">
+          <label for="fileInput" class="file-upload-label">
+            <span class="upload-icon">📎</span>
+            <span class="upload-text">
+              <strong>Click to upload</strong> or drag and drop
+            </span>
+            <span class="upload-hint">PNG, JPG, PDF, DOC (max 10MB)</span>
+          </label>
+        </div>
+
+        <!-- Selected File Display -->
+        <div class="selected-file" *ngIf="selectedFile">
+          <div class="file-info">
+            <span class="file-icon">📄</span>
+            <div class="file-details">
+              <div class="file-name">{{ selectedFileName }}</div>
+              <div class="file-size">{{ (selectedFile.size / 1024 / 1024).toFixed(2) }} MB</div>
+            </div>
+          </div>
+          <button type="button" class="btn-remove-file" (click)="removeFile()">
+            <span>✕</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Status Info -->
+      <div class="form-group">
+        <label class="form-label">Status</label>
+        <div class="info-box">
+          <span class="info-icon">📊</span>
+          <span class="info-text">Will be set to <strong>"Open"</strong> when ticket is created</span>
+        </div>
+      </div>
+
+      <!-- Status Date Info -->
+      <div class="form-group">
+        <label class="form-label">Status Date</label>
+        <div class="info-box">
+          <span class="info-icon">📅</span>
+          <span class="info-text">Will be automatically updated when status changes</span>
+        </div>
+      </div>
+
+      <!-- Form Actions -->
+      <div class="form-actions">
+        <button
+          type="button"
+          class="btn-cancel"
+          (click)="cancel()"
+          [disabled]="submitting">
+          Cancel
+        </button>
+        <button
+          type="submit"
+          class="btn-submit"
+          [disabled]="ticketForm.invalid || submitting">
+          <span *ngIf="!submitting && !uploadingFile">Raise Ticket</span>
+          <span *ngIf="uploadingFile">Uploading attachment...</span>
+          <span *ngIf="submitting && !uploadingFile">Submitting...</span>
+          <div class="btn-loader" *ngIf="submitting || uploadingFile"></div>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

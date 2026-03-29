@@ -1,0 +1,46 @@
+<div class="row mx-0 px-0 dashboard-tabs">
+    <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0">
+
+        <mat-tab-group mat-stretch-tabs="false" mat-align-tabs="start">
+
+
+            <ng-container *ngIf="currentReportType === 'LIMITED'">
+
+                <mat-tab label="WFH Limited Flexibility Summary Report" *ngIf="userRole!=='Accountant'">
+                    <ng-template matTabContent>
+                        <app-wfh-limited-flexibility-summary-report></app-wfh-limited-flexibility-summary-report>
+                    </ng-template>
+                </mat-tab>
+
+                <mat-tab label="WFH Limited Flexibility Transaction Report"
+                    *ngIf="userRole==='Accountant' ||userRole==='Manager' || userRole==='Admin'">
+                    <ng-template matTabContent>
+                        <app-wfh-limited-flexibility-transaction-report></app-wfh-limited-flexibility-transaction-report>
+                    </ng-template>
+                </mat-tab>
+
+            </ng-container>
+
+
+            <ng-container *ngIf="currentReportType === 'PROLONGED'">
+
+                <mat-tab label="WFH Prolonged Health Summary Report" *ngIf="userRole!=='Accountant'">
+                    <ng-template matTabContent>
+                        <app-wfh-prolonged-health-issues-summary-report></app-wfh-prolonged-health-issues-summary-report>
+                    </ng-template>
+                </mat-tab>
+
+                <mat-tab label="WFH Prolonged Health Transaction Report"
+                    *ngIf="userRole==='Accountant' ||userRole==='Manager' || userRole==='Admin'">
+                    <ng-template matTabContent>
+                        <app-wfh-prolonged-health-issues-transaction-report></app-wfh-prolonged-health-issues-transaction-report>
+                    </ng-template>
+                </mat-tab>
+
+            </ng-container>
+
+        </mat-tab-group>
+
+
+    </div>
+</div>

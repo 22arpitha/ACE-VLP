@@ -105,6 +105,11 @@ leave_transaction_report: `leave-transaction-report`,
 leave_summary_report:`leave-summary-report`,
 resource_availability:`resource-availability`,
 vlp_notifications:`notifications`,
+wfh_limited_flexibility_summary_report:`wfh-limited-flexibility-summary-report`,
+wfh_limited_flexibility_transaction_report:`wfh-limited-flexibility-transaction-report`,
+wfh_prolonged_health_summary_report:`wfh-prolonged-health-summary-report`,
+wfh_prolonged_health_transaction_report:`wfh-prolonged-health-transaction-report/`,
+
 
 // project ace
 //   leave_application: 'leave-application',
@@ -171,6 +176,11 @@ vlp_notifications:`notifications`,
 //  timesheet:`timesheet`,
 //  timesheet_reports:`timesheet-reports`,
 //  timesheet_summary:`timesheet-summary`,
+wfh_categories:`work-from-home-categories`,
+wfh_type_conf:`wfh-type-conf`,
+employee_wfh_details:`employee-wfh-details`,
+apply_wfh:`apply-wfh`,
+confirm_prolonged_leave:`confirm-prolonged-leave`
 
 };
 

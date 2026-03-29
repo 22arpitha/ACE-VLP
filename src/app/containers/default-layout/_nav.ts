@@ -93,7 +93,7 @@ export const navItems: INavData[] = [
       {
         name: 'Tooltips',
         url: '/base/tooltips'
-      }
+      },
     ]
   },
   {

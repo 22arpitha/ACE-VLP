@@ -12,7 +12,7 @@
                 [(ngModel)]="selectedPeriod" (selectionChange)="selectedPeriodFunc($event)">
                 <mat-option *ngFor="let item of periodValues; let i = index" [value]="item.key">{{
                   item.value }}</mat-option>
-              </mat-select>
+              </mat-select> 
             </mat-form-field>
           </div>
           <!-- date range picker -->

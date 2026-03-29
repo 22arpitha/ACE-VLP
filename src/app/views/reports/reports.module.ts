@@ -15,6 +15,11 @@ import { NonProductiveHoursComponent } from './non-productive-hours/non-producti
 import { TimesheetsSummaryReportComponent } from './timesheets-summary-report/timesheets-summary-report.component';
 import { LeaveSummaryReportComponent } from './leave-summary-report/leave-summary-report.component';
 import { LeaveTransactionReportComponent } from './leave-transaction-report/leave-transaction-report.component';
+import { WfhLimitedFlexibilitySummaryReportComponent } from './wfh-limited-flexibility-summary-report/wfh-limited-flexibility-summary-report.component';
+import { WfhLimitedFlexibilityTransactionReportComponent } from './wfh-limited-flexibility-transaction-report/wfh-limited-flexibility-transaction-report.component';
+import { WfhProlongedHealthIssuesSummaryReportComponent } from './wfh-prolonged-health-issues-summary-report/wfh-prolonged-health-issues-summary-report.component';
+import { WfhProlongedHealthIssuesTransactionReportComponent } from './wfh-prolonged-health-issues-transaction-report/wfh-prolonged-health-issues-transaction-report.component';
+import { DashboardWfhComponent } from './dashboard-wfh/dashboard-wfh.component';
 
 
 @NgModule({
@@ -30,7 +35,12 @@ import { LeaveTransactionReportComponent } from './leave-transaction-report/leav
     NonProductiveHoursComponent,
     TimesheetsSummaryReportComponent,
     LeaveSummaryReportComponent,
-    LeaveTransactionReportComponent
+    LeaveTransactionReportComponent,
+    WfhLimitedFlexibilitySummaryReportComponent,
+    WfhLimitedFlexibilityTransactionReportComponent,
+    WfhProlongedHealthIssuesSummaryReportComponent,
+    WfhProlongedHealthIssuesTransactionReportComponent,
+    DashboardWfhComponent
   ],
   imports: [
     CommonModule,

@@ -33,6 +33,7 @@ export class AuthGuard implements CanActivate {
         sessionStorage.setItem('user_id', decoded.user_id);
         sessionUserId = decoded.user_id;
       }
+      
     }
 
     // 🚨 Not logged in

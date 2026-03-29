@@ -1,0 +1,110 @@
+::ng-deep .mat-form-field-infix{
+  padding: 0.5em 0 !important;
+  padding-bottom: 1em !important;
+}
+::ng-deep .mat-form-field-wrapper{
+  padding: 15px 0 !important;
+}
+::ng-deep .mat-form-field-appearance-outline .mat-form-field-prefix,
+::ng-deep .mat-form-field-appearance-outline .mat-form-field-suffix {
+  top: .25em !important;
+}
+.settings-table-bg{
+  // max-height: max-content !important;
+}
+
+table .contact-form-content ::ng-deep .mat-form-field-appearance-outline .mat-form-field-wrapper,
+table .contact-form-content ::ng-deep .mat-form-field-wrapper {
+margin: 0 !important;
+padding: 0 !important;
+}
+
+.emp-add-btn{
+  height: 40px;
+  margin-left: 15px;
+  align-self: center;
+}
+
+.clients .settings-form-bg{
+  max-height: 79vh !important;
+}
+
+.mat-select-search-wrapper {
+  padding: 8px;
+  background-color: #fff;
+}
+
+.mat-select-search {
+  width: 100%;
+}
+
+.custom-select-panel {
+  max-height: 300px; /* Set a max height for the dropdown */
+  overflow-y: auto; /* Make sure dropdown scrolls if it overflows */
+}
+.search-icon{
+  font-size:x-large;
+  color: #ccc;
+}
+::ng-deep .mat-paginator-page-size{
+  display: none !important;
+}
+
+textarea[matInput] {
+  min-height: 50px; 
+  max-height: max-content;
+  height: auto;
+}
+.settings-main-content ::ng-deep .image-container mat-label {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 10em;
+}
+.settings-main-content ::ng-deep .image-container mat-label a{
+  color: #87CEEB;
+}
+::ng-deep .create-client .highlight-background .mat-form-field-flex {
+  background-color: rgb(235 235 235) !important;
+  pointer-events: none !important;
+}
+::ng-deep .create-client .mat-raised-button.mat-button-disabled.mat-button-disabled,
+::ng-deep .settings-form-bg .mat-raised-button.mat-button-disabled.mat-button-disabled{
+  background-color: rgba(0,0,0,.12) !important;
+}
+::ng-deep .settings-table-bg .highlight-background .mat-form-field-appearance-outline .mat-form-field-outline {
+  background-color: rgb(235, 235, 235) !important;
+  pointer-events: none !important;
+}
+::ng-deep .settings-table-bg input.highlight-background {
+  background-color: rgb(235, 235, 235) !important;
+  pointer-events: none !important;
+}
+.no-actions{
+  text-align: center !important;
+}
+  
+.client-drop-zone {
+  border: 2px dashed #ccc;
+  border-radius: 6px;
+  padding: 6px;
+  transition: border-color .25s, background-color .25s;
+}
+
+.client-drop-zone.drag-active {
+  border-color: #3f51b5;
+  background-color: #eef2ff;
+}
+
+.client-drop-zone.disabled {
+  pointer-events: none;
+  opacity: 0.6;
+}
+
+.selectAllCheckBoxes{
+  color: #fff !important;
+}
+
+ .feedbackBtn{
+    background-color: #0F5C98 !important;
+  }

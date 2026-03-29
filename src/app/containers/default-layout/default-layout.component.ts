@@ -29,7 +29,7 @@ export class DefaultLayoutComponent {
   iconSize = false;
   fgSize: number = 30;
   user_role_Name: any;
-  user_name: string;
+  user_name!: string;
   last_name: any;
   public nav1 = navItems1;
   currentUrl: any = '';
@@ -40,7 +40,7 @@ export class DefaultLayoutComponent {
   admin: any;
   permission: any;
   sidebarNavItems: any;
-  config: string;
+  config!: string;
   access: any = [];
   user_id: any;
   org_id: any;
@@ -140,7 +140,7 @@ export class DefaultLayoutComponent {
   toggleSubmenu(item: any) {
     this.subModulesAccess = item.access;
     // this.api.setSubModules(this.subModulesAccess)
-    this.sidebarNavItems.forEach((navItem) => {
+    this.sidebarNavItems.forEach((navItem:any) => {
       if (navItem !== item) {
         navItem.isExpanded = false;
         this.isSidebarCollapsed = true;
@@ -235,7 +235,7 @@ export class DefaultLayoutComponent {
     };
   }
 
-  clearStorage(type) {
+  clearStorage(type:any) {
     if (type['page'] === 'Logout') {
       this.openDialogue();
     }
@@ -248,7 +248,7 @@ export class DefaultLayoutComponent {
     });
     modelRef.componentInstance.title = `Are you sure you want to logout`;
     modelRef.componentInstance.message = `Logout`;
-    modelRef.componentInstance.status.subscribe((resp) => {
+    modelRef.componentInstance.status.subscribe((resp:any) => {
       if (resp == 'ok') {
         this.api.showSuccess('You have been logged out!');
         this.webSocket.closeWebSocket();
@@ -263,7 +263,7 @@ export class DefaultLayoutComponent {
       }
     });
   }
-  getHeaderNavStyles(type): any {
+  getHeaderNavStyles(type:any): any {
     switch (type['page']) {
       case 'Logout':
         return 'title-logout';

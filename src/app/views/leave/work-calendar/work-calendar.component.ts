@@ -15,7 +15,7 @@ import { DatePipe } from '@angular/common';
 export class WorkCalendarComponent implements OnInit {
   @ViewChild(FormGroupDirective) formGroupDirective!: FormGroupDirective;
   BreadCrumbsTitle: any = 'Work Calendar';
-  workCalendarForm: FormGroup
+  workCalendarForm!: FormGroup
   minDate: any;
   weeks = [
     { week: 'Sunday' },
@@ -36,10 +36,10 @@ export class WorkCalendarComponent implements OnInit {
   accessPermissions = [];
   user_role_name: any;
   user_id: any;
-  isEnabledEdit: boolean;
+  isEnabledEdit!: boolean;
   initialFormValue: any;
   columnKeys: string[] = [];
-  buttonName: string;
+  buttonName!: string;
 
 
   constructor(
@@ -172,16 +172,16 @@ export class WorkCalendarComponent implements OnInit {
       ? allDays.slice(startIndex, endIndex + 1)
       : [...allDays.slice(startIndex), ...allDays.slice(0, endIndex + 1)];
 
-    const existingMap = new Map((this.data || []).map(day => [day.day, day]));
+    const existingMap = new Map((this.data || []).map((day: { day: any; }) => [day.day, day]));
 
-    const keys = this.data?.find(d => d.data?.length)?.data.map(i => i.key)
+    const keys = this.data?.find((d: { data: string | any[]; }) => d.data?.length)?.data.map((i: { key: any; }) => i.key)
       || ['all', ...Array(5).fill(null).map((_, i) => `${i + 1}st`)];
 
     this.filteredWeekendDays = selectedDays.map(day => {
       const existing = existingMap.get(day);
       return existing
         ? existing
-        : { day, data: keys.map(key => ({ key, is_holiday: false })) };
+        : { day, data: keys.map((key: any) => ({ key, is_holiday: false })) };
     });
 
     this.columnKeys = keys;
@@ -207,7 +207,7 @@ export class WorkCalendarComponent implements OnInit {
     startCtrl?.updateValueAndValidity();
     endCtrl?.updateValueAndValidity();
   }
-  startDateFun(event) {
+  startDateFun(event: { value: any; }) {
     this.minDate = event.value
   }
 
@@ -220,7 +220,7 @@ export class WorkCalendarComponent implements OnInit {
 
   buildWeekendFromData() {
     if (this.data.length > 0) {
-      this.columnKeys = this.data[0].data.map(item => item.key);
+      this.columnKeys = this.data[0].data.map((item: { key: any; }) => item.key);
     }
   }
 
@@ -241,7 +241,7 @@ export class WorkCalendarComponent implements OnInit {
     } else {
       // If all 1st–5th are true, set 'all' to true
       const weekChecks = day.data.filter((d: any) => d.key !== 'all');
-      const allTrue = weekChecks.every(d => d.is_holiday);
+      const allTrue = weekChecks.every((d: { is_holiday: any; }) => d.is_holiday);
       const allEntry = day.data.find((d: any) => d.key === 'all');
       if (allEntry) allEntry.is_holiday = allTrue;
     }
