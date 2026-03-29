@@ -33,7 +33,7 @@ export class UserCompOffListComponent implements OnInit {
   arrowState: { [key: string]: boolean } = {
     employee_name: false,
   };
-  filterQuery: string;
+  filterQuery!: string;
   leaveOptions: any = [];
   leaveStatus: any = [];
   mainStartDate: any;
