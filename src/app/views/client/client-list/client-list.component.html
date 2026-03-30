@@ -161,8 +161,7 @@
     </div>
   </div>
 
-  <div class="text-right my-3 d-flex justify-content-end align-content-center mx-3">
-    <button mat-raised-button class="mat-btn-s feedbackBtn text-light" type="button" (click)="viewClientFeedbackContactDetails()">Feedback Request</button>
-
-
+  <div *ngIf="userRole === 'Admin'" class="text-right my-3 d-flex justify-content-end align-content-center mx-3">
+    <button mat-raised-button class="mat-btn-s feedbackBtn text-light" type="button"
+      (click)="viewClientFeedbackContactDetails()">Feedback Request</button>
   </div>

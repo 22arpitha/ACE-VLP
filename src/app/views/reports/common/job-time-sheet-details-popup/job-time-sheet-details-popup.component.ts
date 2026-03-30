@@ -56,7 +56,7 @@ export class JobTimeSheetDetailsPopupComponent implements OnInit {
     this.jobName = this.data.job_name;
     this.employee_id = this.data.employee_id;
     // this.cdr.detectChanges();
-    this.tableData = getTableColumns(this.user_role_name);
+    this.tableData = getTableColumns(this.user_role_name, this.data.report_type);
     setTimeout(() => {
     if (this.jobId) {
       this.getTableData();

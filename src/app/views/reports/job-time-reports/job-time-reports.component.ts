@@ -69,7 +69,7 @@ export class JobTimeReportsComponent implements OnInit {
 
   ngOnInit(): void {
     this.common_service.setTitle(this.BreadCrumbsTitle)
-    this.tableConfig = tableColumns;
+    this.tableConfig = tableColumns(this.userRole);
     setTimeout(() => {
       this.getJobStatusList();
     }, 500);
@@ -565,7 +565,7 @@ export class JobTimeReportsComponent implements OnInit {
           ...item,
         }));
         this.tableConfig = {
-          columns: tableColumns?.map(col => {
+          columns: tableColumns(this.userRole)?.map(col => {
             let filterOptions: any = [];
             const existingCol = this.tableConfig?.columns?.find(c => c.key === col.key);
             if (existingCol?.filterOptions?.length) {
@@ -612,7 +612,7 @@ export class JobTimeReportsComponent implements OnInit {
       }
       else {
         this.tableConfig = {
-          columns: tableColumns?.map(col => {
+          columns: tableColumns(this.userRole)?.map(col => {
             let filterOptions: any = [];
             if (col.filterable) {
               if (col.key === 'client_name') { filterOptions = this.clientName; }

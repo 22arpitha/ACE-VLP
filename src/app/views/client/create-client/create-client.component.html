@@ -213,8 +213,8 @@
                       <th>Name</th>
                       <th>Email</th>
                       <th>Phone Number</th>
-                      <th>Actions</th>
                       <th>Feedback</th>
+                      <th>Actions</th>
                     </tr>
                   </thead>
 
@@ -274,7 +274,11 @@
 
                         </div>
                       </td>
-
+                      <td>
+                        <!-- <mat-form-field [disabled]="!shouldDisableFileds" [ngClass]="{ 'highlight-background': !shouldDisableFileds}"> -->
+                          <mat-checkbox formControlName="is_sending_feedback_form_enabled"  [disabled]="!shouldDisableFileds" ></mat-checkbox>
+                        <!-- </mat-form-field> -->
+                      </td>
                       <td>
                         <ng-container *ngIf="shouldDisableFileds">
                           <img src="../../../../assets/images/Edit.svg" class="icon-image" type="button"
@@ -294,13 +298,7 @@
                       </td>
 
 
-                      <td>
-
-                        <!-- <mat-form-field [disabled]="!shouldDisableFileds" [ngClass]="{ 'highlight-background': !shouldDisableFileds}"> -->
-                          <mat-checkbox  [disabled]="!shouldDisableFileds" ></mat-checkbox>
-                        <!-- </mat-form-field> -->
-
-                      </td>
+                      
                     </tr>
                   </tbody>
                 </table>

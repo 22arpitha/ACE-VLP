@@ -105,6 +105,100 @@ textarea[matInput] {
   color: #fff !important;
 }
 
- .feedbackBtn{
+
+.feedback-section {
+  padding: 12px 16px;
+}
+
+.feedback-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+}
+
+.feedback-table {
+  border-collapse: separate;
+  border-spacing: 0;
+
+  thead th {
+    background-color: #0F5C98;
+    color: #fff;
+    font-weight: 500;
+    font-size: 13px;
+    padding: 10px 12px;
+    white-space: nowrap;
+    border: none;
+  }
+
+  tbody td {
+    padding: 8px 12px;
+    font-size: 13px;
+    vertical-align: middle;
+    border-bottom: 1px solid #eee;
+  }
+
+  .client-first-row td {
+    border-top: 2px solid #dee2e6;
+  }
+
+  .client-row-even td {
+    background-color: #fafbfc;
+  }
+
+  .client-row-odd td {
+    background-color: #fff;
+  }
+
+  .client-rowspan-cell {
+    vertical-align: middle;
+    background-color: #f5f7fa !important;
+    border-right: 2px solid #e8ecf0;
+  }
+}
+
+.checkbox-col {
+  width: 50px;
+  text-align: center;
+}
+
+.client-id-badge {
+  display: inline-block;
+  background-color: #e3edf5;
+  color: #0F5C98;
+  font-weight: 600;
+  font-size: 12px;
+  padding: 3px 10px;
+  border-radius: 12px;
+}
+
+.client-id-cell {
+  text-align: center;
+}
+
+
+::ng-deep .feedback-table {
+  .mat-checkbox-frame {
+    border-color: #adb5bd;
+  }
+  thead .mat-checkbox-frame {
+    border-color: rgba(255,255,255,0.6);
+  }
+  thead .mat-checkbox-checkmark {
+    fill: #fff !important;
+  }
+  thead ::ng-deep .mat-checkbox-background {
+    background-color: transparent;
+  }
+  thead ::ng-deep .mat-checkbox-checked .mat-checkbox-background,
+  thead ::ng-deep .mat-checkbox-indeterminate .mat-checkbox-background {
+    background-color: rgba(255,255,255,0.9) !important;
+  }
+  thead ::ng-deep .mat-checkbox-checked .mat-checkbox-checkmark-path,
+  thead ::ng-deep .mat-checkbox-indeterminate .mat-checkbox-mixedmark {
+    stroke: #0F5C98 !important;
     background-color: #0F5C98 !important;
   }
+}
+.mat-raised-button.mat-button-disabled.mat-button-disabled {
+  background-color: rgba(0, 0, 0, 0.12) !important;
+}

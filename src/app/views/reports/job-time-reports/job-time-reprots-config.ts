@@ -1,6 +1,7 @@
 
 // Column Definitions
-export const tableColumns  = [
+export function tableColumns(role?: string) {
+  return [
   {
     label: 'Sl No',
     key: 'sl',
@@ -61,7 +62,7 @@ export const tableColumns  = [
     paramskeyId: 'is-primary-ids',
     filterable: true,
     filterType: 'multi-select',
-    empNavigation: true,
+    empNavigation: role === 'Admin' || role === 'Director' || role === 'Manager',
     leftAlign:true
     // navigation:true
   },
@@ -69,6 +70,7 @@ export const tableColumns  = [
   { label: 'Act. Hrs', key: 'actual_hours', sortKey:'total_actual_minutes', sortable: true ,navigation:true},
   { label: 'Rem./Ex. Hrs', key: 'remaining_hours', sortKey:'remaining_minutes', sortable: true },
 
-]
+];
+}
 
 
