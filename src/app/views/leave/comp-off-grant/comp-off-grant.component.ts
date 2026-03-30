@@ -270,6 +270,7 @@ export class CompOffGrantComponent implements OnInit {
     this.totalDays = 0;
     this.leave_balance = 0
     this.formGroupDirective?.resetForm();
+    this.getAllLeaveTypes();
     this.initialForm();
     if(!this.data){
       this.getManagerOfEmployee(this.user_id);
