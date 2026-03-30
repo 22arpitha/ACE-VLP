@@ -49,6 +49,8 @@ export class DynamicTableComponent implements OnInit, OnChanges {
   paginationId = 'pagination-' + Math.random();
   filteredData: any[] = [];
   paginatedData: any[] = [];
+  columnStartDates: { [key: string]: any } = {};
+  columnEndDates: { [key: string]: any } = {};
   startDate;
   endDate;
   mainStartDate: any;
@@ -513,6 +515,8 @@ export class DynamicTableComponent implements OnInit, OnChanges {
     // Parent component is expected to handle the data refresh.
   }
   clearRangeDateFilter(columnKey: string): void {
+    this.columnStartDates[columnKey] = null;
+    this.columnEndDates[columnKey] = null;
     this.startDate = '';
     this.endDate = '';
     this.columnFilters[columnKey] = null; // Clear the stored filter for this specific column
@@ -532,7 +536,7 @@ export class DynamicTableComponent implements OnInit, OnChanges {
   navigateToEmployee(event, col: any) {
     if(col.keyId==='is_primary' && event?.is_multiple_employee){
     this.actionEvent.emit({ actionType: 'navigate_employee', row: event });
-    return;
+    return
   }
     if ('keyId' in event) {
       this.actionEvent.emit({
@@ -554,6 +558,8 @@ export class DynamicTableComponent implements OnInit, OnChanges {
     this.loadingFilters = {};
     this.startDate = '';
     this.endDate = '';
+    this.columnStartDates = {};
+    this.columnEndDates = {};
     this.config.columns.forEach((col) => {
       col.filterOptions = [];
     });
@@ -571,6 +577,8 @@ export class DynamicTableComponent implements OnInit, OnChanges {
     this.loadingFilters = {};
     this.startDate = '';
     this.endDate = '';
+    this.columnStartDates = {};
+    this.columnEndDates = {};
     this.config.columns.forEach((col) => {
       col.filterOptions = [];
     });
@@ -710,7 +718,6 @@ export class DynamicTableComponent implements OnInit, OnChanges {
     }
   }
   public getClientDetails() {
-    console.log(this.config);
     this.api
       .getData(
         `${environment.live_url}/${environment.clients}/${this.selected_client_id}/`

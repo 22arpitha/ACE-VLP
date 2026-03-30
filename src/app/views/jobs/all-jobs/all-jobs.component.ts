@@ -413,7 +413,7 @@ private searchSubject = new Subject<string>();
     this.saveState();
     this.selectedItemId = item?.id;
     sessionStorage.setItem('access-name', this.access_name?.name)
-    this.router.navigate(['/jobs/update-job', this.selectedItemId]);
+    this.router.navigate(['/jobs/update-job', this.selectedItemId], { queryParams: { 'jobs': true } });
   }
   getCurrentJobsList() {
     this.allJobsList = [];

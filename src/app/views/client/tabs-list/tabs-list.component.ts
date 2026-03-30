@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonServiceService } from '../../../service/common-service.service';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { MatTabChangeEvent } from '@angular/material/tabs';
 import { SubModuleService } from '../../../service/sub-module.service';
 import { ApiserviceService } from '../../../service/apiservice.service';
@@ -9,7 +9,7 @@ import { ApiserviceService } from '../../../service/apiservice.service';
   templateUrl: './tabs-list.component.html',
   styleUrls: ['./tabs-list.component.scss']
 })
-export class TabsListComponent implements OnInit,OnDestroy {
+export class TabsListComponent implements OnInit, OnDestroy {
   BreadCrumbsTitle: any = 'Client Name'
   client_id: any;
   selectedIndex: any = 0;
@@ -20,21 +20,37 @@ export class TabsListComponent implements OnInit,OnDestroy {
   groupTabVisible: boolean = false
   endClientTabVisible: boolean = false
   jobsTabVisible: boolean = false
+  private subscription: any;
   constructor(private common_service: CommonServiceService, private activeRoute: ActivatedRoute,
     private accessControlService: SubModuleService,
-        private apiService: ApiserviceService,
+    private apiService: ApiserviceService,
+    private router: Router,
   ) {
     this.common_service.setTitle(this.BreadCrumbsTitle);
     this.user_id = sessionStorage.getItem('user_id');
     this.userRole = sessionStorage.getItem('user_role_name');
     if (this.activeRoute.snapshot.paramMap.get('id')) {
       this.client_id = this.activeRoute.snapshot.paramMap.get('id');
-      this.common_service.clientActiveTabindex$.subscribe((index) => {
-        this.selectedIndex = index;
-      })
+      const tabParam = this.activeRoute.snapshot.queryParamMap.get('tab');
+      if (tabParam !== null) {
+        this.selectedIndex = Number(tabParam);
+        this.router.navigate([], {
+          relativeTo: this.activeRoute,
+          queryParams: {},
+          replaceUrl: true
+        });
+      } else {
+        this.common_service.clientActiveTabindex$.subscribe((index) => {
+          this.selectedIndex = index;
+          this.common_service.clientActiveTabindex$.subscribe((index) => {
+            this.selectedIndex = index;
+          });
+        })
+      }
     }
   }
   ngOnDestroy(): void {
+    this.subscription?.unsubscribe();
     this.common_service.setClientActiveTabindex(0);
   }
 
@@ -53,8 +69,8 @@ export class TabsListComponent implements OnInit,OnDestroy {
         this.endClientTabVisible = this.userRole === 'Admin' ? true : this.hasViewPermission(access, 'End Clients');
         this.jobsTabVisible = this.userRole === 'Admin' ? true : this.hasViewPermission(access, 'Jobs');
       }
-    },(error)=>{
-this.apiService.showError(error?.error?.detail);
+    }, (error) => {
+      this.apiService.showError(error?.error?.detail);
     });
   }
 
@@ -62,5 +78,5 @@ this.apiService.showError(error?.error?.detail);
     let item = accessList.find(a => a.name === name);
     return item?.operations?.[0]?.view === true;
   }
-  
+
 }

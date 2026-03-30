@@ -58,6 +58,8 @@ export class CreateUpdateJobComponent implements CanComponentDeactivate, OnInit,
   user_role_name: any;
   editor!: Editor;
   formData: any;
+  fromJobs: boolean;
+  client_id_for_query: any;
   selectAllEmpFlag: boolean = false;
   selectOtherEmpFlag: boolean = false;
   jobDetails: any = []
@@ -109,7 +111,8 @@ export class CreateUpdateJobComponent implements CanComponentDeactivate, OnInit,
     this.common_service.setTitle(this.BreadCrumbsTitle);
     this.user_role_name = sessionStorage.getItem('user_role_name');
     this.user_id = Number(sessionStorage.getItem('user_id'));
-    
+    this.fromJobs = this.activeRoute.snapshot.queryParamMap.get('jobs') === 'true';
+    this.client_id_for_query = this.activeRoute.snapshot.queryParamMap.get('client');
   }
 
   ngOnInit(): void {
@@ -794,7 +797,11 @@ onManagerSelectOpened(opened: boolean, index: number): void {
     } else {
       this.common_service.setjobStatusState(false);
     }
-    this.router.navigate(['/jobs/all-jobs']);
+    if (this.fromJobs) {
+              this.router.navigate(['/jobs/all-jobs']);
+            } else {
+              this.router.navigate(['/client/update-client/', this.client_id_for_query], { queryParams: { tab: 3 } });
+            }
       }
       
       private showConfirmationPopup(): Observable<boolean> {
@@ -935,7 +942,11 @@ onManagerSelectOpened(opened: boolean, index: number): void {
             }
             this.resetFormState();
             sessionStorage.removeItem("access-name")
-            this.router.navigate(['/jobs/all-jobs']);
+             if (this.fromJobs) {
+              this.router.navigate(['/jobs/all-jobs']);
+            } else {
+              this.router.navigate(['/client/update-client/', this.client_id_for_query], { queryParams: { tab: 3 } });
+            }
           }
         }, (error: any) => {
           this.apiService.showError(error?.error?.detail);
@@ -948,7 +959,11 @@ onManagerSelectOpened(opened: boolean, index: number): void {
             this.apiService.showSuccess(respData['message']);
             this.resetFormState();
             sessionStorage.removeItem("access-name")
-            this.router.navigate(['/jobs/all-jobs']);
+            if (this.fromJobs) {
+              this.router.navigate(['/jobs/all-jobs']);
+            } else {
+              this.router.navigate(['/client/update-client/', this.client_id_for_query], { queryParams: { tab: 3 } });
+            }
           }
         }, (error: any) => {
           this.apiService.showError(error?.error?.detail);
@@ -1065,7 +1080,11 @@ onManagerSelectOpened(opened: boolean, index: number): void {
       if (data) {
         this.apiService.showSuccess(data.message);
         this.resetFormState();
-        this.router.navigate(['/jobs/all-jobs']);
+         if (this.fromJobs) {
+              this.router.navigate(['/jobs/all-jobs']);
+            } else {
+              this.router.navigate(['/client/update-client/', this.client_id_for_query], { queryParams: { tab: 3 } });
+            }
       }
     }, (error => {
       this.apiService.showError(error?.error?.detail)

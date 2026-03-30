@@ -144,7 +144,7 @@ export class NonProductiveHoursComponent implements OnInit,OnChanges {
     }
    exportCsvOrPdf(fileType) {
    const search = this.term?.trim().length >= 2? `search=${encodeURIComponent(this.term.trim())}&`: '';
-    let query = `?${search}download=true&client-name=Vedalekha professionals&file-type=${fileType}`;
+    let query = `?${search}download=true&file-type=${fileType}`;
     if(this.directionValue && this.sortValue){
       query += `&sort-by=${this.sortValue}&sort-type=${this.directionValue}`;
     }
@@ -180,7 +180,7 @@ export class NonProductiveHoursComponent implements OnInit,OnChanges {
        if(this.directionValue && this.sortValue){
             finalQuery += `&sort-by=${this.sortValue}&sort-type=${this.directionValue}`;
         }
-     this.api.getData(`${environment.live_url}/${environment.timesheet_non_productivity}/${finalQuery}&client-name=Vedalekha professionals`).subscribe((res: any) => {
+     this.api.getData(`${environment.live_url}/${environment.timesheet_non_productivity}/${finalQuery}`).subscribe((res: any) => {
        const formattedData = res.results.map((item: any, i: number) => ({
          sl: (page - 1) * pageSize + i + 1,
          ...item

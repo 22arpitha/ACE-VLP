@@ -16,7 +16,8 @@ import { WfhLimitedFlexibilityTransactionReportComponent } from './wfh-limited-f
 import { WfhProlongedHealthIssuesSummaryReportComponent } from './wfh-prolonged-health-issues-summary-report/wfh-prolonged-health-issues-summary-report.component';
 import { WfhProlongedHealthIssuesTransactionReportComponent } from './wfh-prolonged-health-issues-transaction-report/wfh-prolonged-health-issues-transaction-report.component';
 import { DashboardWfhComponent } from './dashboard-wfh/dashboard-wfh.component';
-
+import { ItIssueReportsComponent } from './it-issue-reports/it-issue-reports.component';
+import { NonProdSummaryComponent } from './productivity-report/non-prod-summary/non-prod-summary.component';
 const routes: Routes = [
   {
     path: '',
@@ -70,6 +71,10 @@ const routes: Routes = [
       {
         path: 'wfh-prolonged-health-issues-transaction-report',
         component: WfhProlongedHealthIssuesTransactionReportComponent,
+      },
+      {
+        path: 'it-issues',
+        component: ItIssueReportsComponent,
       },
     ],
   },

@@ -1,172 +1,234 @@
-<div class="container-wrapper settings-main-content px-0">
-    <section class="settings-table-bg" >
-        <div class="row mx-0 my-0 px-0 py-2">
-          <div class="col-sm-12 col-md-4 col-lg-4 search-div px-0">
-            <input type="search" (input)="filterSearch($event)" class="form-control p-2 sizeinput" [(ngModel)]="term"
-              placeholder="Search by Job" aria-describedby="emailHelp" autocomplete="off">
-            <i *ngIf="!term" class="bi bi-search" id="search-icon-tab"></i>
+<div class="container-wrapper settings-main-content jobs px-0">
+  <section class="settings-table-bg px-3">
+    <div class="row mx-0 my-1 px-0 py-2">
+      <div class="col-12 mt-2 col-sm-12 col-md-4 col-lg-3 search-div px-0">
+        <input type="search" (input)="filterSearch($event)" class="form-control p-2 sizeinput" [(ngModel)]="term"
+          placeholder="Search by Job" aria-describedby="emailHelp" autocomplete="off">
+        <i *ngIf="!term" class="bi bi-search" id="search-icon-tab"></i>
+      </div>
+      <div class="col-12 col-sm-12 col-md-4 col-lg-3 px-0 text-start align-self-end">
+        <button mat-button [matMenuTriggerFor]="columnMenu" class="ml-5 border-1">
+          <i class="bi bi bi-gear"></i> Column settings
+        </button>
+        <mat-menu #columnMenu="matMenu" class="full-height-menu">
+          <div class="row px-3 py-2">
+            <mat-checkbox *ngFor="let col of columns" [(ngModel)]="col.visible">
+              {{ col.label }}
+            </mat-checkbox>
           </div>
-        </div>
-        <div class="row mx-0 my-2 px-0 table-wrapper">
-          <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0 ">
-            <table class="table table table-hover table-list">
-              <thead>
-                <tr>
-                  <th scope="col"> S.No</th>
-                  <th scope="col">Job Id
-                    <i *ngIf="!arrowState['job_number']" (click)="sort('ascending', 'job_number')" class="bi bi-arrow-down"></i>
-                    <i *ngIf="arrowState['job_number']" (click)="sort('descending', 'job_number')" class="bi bi-arrow-up"></i>  
-                  </th>
-                  <th scope="col" class="name-col">Job
-                    <i *ngIf="!arrowState['job_name']" (click)="sort('ascending', 'job_name')" class="bi bi-arrow-down"></i>
-                    <i *ngIf="arrowState['job_name']" (click)="sort('descending', 'job_name')" class="bi bi-arrow-up"></i>  
-                  </th>
-                  <th scope="col"> Allocated On
-                    <button
-                    mat-icon-button
-                    (click)="picker1.open()"
-                    class="ms-1 btn-menu-trigger"
-                    *ngIf="!dateRange.start">
-                  <i class="bi bi-calendar"></i>
-
+        </mat-menu>
+      </div>
+      <div class="col-12 mt-2 col-sm-12 col-md-12 col-lg-6 text-end px-0 downloads">
+        <button mat-mini-fab class="download-icons" (click)="downloadOption('csv')" [disabled]="filteredList?.length === 0">
+          <mat-icon style="color: green" ngbTooltip="CSV" placement="top">table_view</mat-icon>
+        </button>
+      </div>
+    </div>
+    <div class="row mx-1 my-2 px-0 table-wrapper">
+      <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0 ">
+        <table class="table table table-hover table-list">
+          <thead>
+            <tr>
+              <th scope="col" *ngIf="isColumnVisible('sl_no')"> S.No</th>
+              <th scope="col" *ngIf="isColumnVisible('job_number')">Job Id
+                <i *ngIf="!arrowState['job_number']" (click)="sort('ascending','job_number')" class="bi bi-arrow-down"></i>
+                <i (click)="sort('descending','job_number')" *ngIf="arrowState['job_number']" class="bi bi-arrow-up"></i>
+              </th>
+              <th scope="col" class="name-col job_name" *ngIf="isColumnVisible('job_name')">Job
+                <i *ngIf="!arrowState['job_name']" (click)="sort('ascending','job_name')" class="bi bi-arrow-down"></i>
+                <i (click)="sort('descending','job_name')" *ngIf="arrowState['job_name']" class="bi bi-arrow-up"></i>
+              </th>
+              <th scope="col" *ngIf="isColumnVisible('job_type_name')">Job Type
+                <i *ngIf="!arrowState['job_type__job_type_name']" (click)="sort('ascending','job_type__job_type_name')"
+                  class="bi bi-arrow-down"></i>
+                <i (click)="sort('descending','job_type__job_type_name')" *ngIf="arrowState['job_type__job_type_name']"
+                  class="bi bi-arrow-up"></i>
+                <button mat-icon-button [matMenuTriggerFor]="jobTypeFilterMenu"
+                  [ngClass]="filters.job_type_name.length>=1 ? 'filterdColumn':''" (menuOpened)="openFilter(jobTypeFilter)">
+                  <span *ngIf="filters.job_type_name.length>=1">{{filters.job_type_name.length.toString().padStart(2,
+                    '0')}}</span>
+                  <i class="bi-funnel" *ngIf="filters.job_type_name.length===0"></i>
                 </button>
-                  <button mat-icon-button container="body"
-                  ngbTooltip="Clear Job Allocation Date" placement="top"  *ngIf="dateRange.start" (click)="clearDateFilter()" class="ms-1 btn-menu-trigger">
-                    <i class="bi bi-x-circle"></i>
-                  </button>
-
+                <mat-menu #jobTypeFilterMenu="matMenu">
+                  <app-generic-table-filter #jobTypeFilter [fetchOptions]="fetchJobTypes" [(selectedOptions)]="filters.job_type_name"
+                    (selectedOptionsChange)="filterData()"></app-generic-table-filter>
+                </mat-menu>
+              </th>
+              <th scope="col" *ngIf="isColumnVisible('group_name')"> Group
+                <i *ngIf="!arrowState['group_name']" (click)="sort('ascending','group_name')" class="bi bi-arrow-down"></i>
+                <i (click)="sort('descending','group_name')" *ngIf="arrowState['group_name']" class="bi bi-arrow-up"></i>
+                <button mat-icon-button [matMenuTriggerFor]="groupFilterMenu" (menuOpened)="openFilter(groupClientFilter)"
+                  [ngClass]="filters.group_name.length>=1 ? 'filterdColumn':''">
+                  <span *ngIf="filters.group_name.length>=1">{{filters.group_name.length.toString().padStart(2,
+                    '0')}}</span>
+                  <i class="bi-funnel" *ngIf="filters.group_name.length===0"></i>
+                </button>
+                <mat-menu #groupFilterMenu="matMenu">
+                  <app-generic-table-filter #groupClientFilter [fetchOptions]="fetchGroupClients" [(selectedOptions)]="filters.group_name"
+                    (selectedOptionsChange)="onFilterChange($event, 'group_name')"></app-generic-table-filter>
+                </mat-menu>
+              </th>
+              <th scope="col" *ngIf="isColumnVisible('job_allocation_date')">
+                Allocated On
+                <button mat-icon-button (click)="picker1.open()" class="ms-1 btn-menu-trigger"
+                  *ngIf="!dateRange.start && !dateRange.end">
+                  <i class="bi bi-calendar"></i>
+                </button>
+                <button mat-icon-button container="body" ngbTooltip="Clear Job Allocation Date" placement="top"
+                  *ngIf="dateRange.start || dateRange.end" (click)="clearDateFilter()" class="ms-1 btn-menu-trigger">
+                  <i class="bi bi-x-circle"></i>
+                </button>
                 <mat-form-field class="opacity-0 position-absolute date-picker-input">
-                      <mat-label>Choose a date range</mat-label>
-                      <mat-date-range-input [rangePicker]="picker1">
-                        <input
-                          matStartDate id="clientJobsStartDate"
-                          placeholder="Start date"
-                          [(ngModel)]="dateRange.start"
-                          (dateChange)="allocationStartDate($event)"
-                        />
-                        <input
-                          matEndDate id="clientJobsEndDate"
-                          placeholder="End date"
-                          [(ngModel)]="dateRange.end"
-                          (dateChange)="allocationEndDate($event)"
-                        />
-                      </mat-date-range-input>
-                      <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
-                      <mat-date-range-picker #picker1 [dateClass]="dateClass"></mat-date-range-picker>
-                    </mat-form-field>
-
-                  </th>
-                  <th scope="col">Employee 
-                    <i *ngIf="!arrowState['primary_employee_name']" (click)="sort('ascending', 'primary_employee_name')" class="bi bi-arrow-down"></i>
-                    <i *ngIf="arrowState['primary_employee_name']" (click)="sort('descending', 'primary_employee_name')" class="bi bi-arrow-up"></i>  
-                    <button mat-icon-button [matMenuTriggerFor]="employeesFilterMenu" (menuOpened)="openFilter(employeeFilter)"
+                  <mat-label>Choose a date range</mat-label>
+                  <mat-date-range-input [rangePicker]="picker1">
+                    <input matStartDate id="clientJobsStartDate" placeholder="Start date" [(ngModel)]="dateRange.start"
+                      (dateChange)="allocationStartDate($event)" />
+                    <input matEndDate id="clientJobsEndDate" placeholder="End date" [(ngModel)]="dateRange.end"
+                      (dateChange)="allocationEndDate($event)" />
+                  </mat-date-range-input>
+                  <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+                  <mat-date-range-picker #picker1 [dateClass]="dateClass"></mat-date-range-picker>
+                </mat-form-field>
+              </th>
+              <th scope="col" *ngIf="isColumnVisible('employees')">
+                Employee
+                <i *ngIf="!arrowState['primary_employee_name']" (click)="sort('ascending','primary_employee_name')" class="bi bi-arrow-down"></i>
+                <i (click)="sort('descending','primary_employee_name')" *ngIf="arrowState['primary_employee_name']" class="bi bi-arrow-up"></i>
+                <button mat-icon-button [matMenuTriggerFor]="employeesFilterMenu" (menuOpened)="openFilter(employeeFilter)"
                   [ngClass]="filters.employees.length>=1 ? 'filterdColumn':''">
                   <span *ngIf="filters.employees.length>=1">{{filters.employees.length.toString().padStart(2,
                     '0')}}</span>
                   <i class="bi-funnel" *ngIf="filters.employees.length===0"></i>
                 </button>
-
-                    <mat-menu #employeesFilterMenu="matMenu">
-                      <app-generic-table-filter
-                        #employeeFilter [fetchOptions]="fetchEmployees"
-                        [(selectedOptions)]="filters.employees"
-                        (selectedOptionsChange)="filterData()"
-                      ></app-generic-table-filter>
-                    </mat-menu>
-                  </th>
-                  <th scope="col">Status 
-                    <i *ngIf="!arrowState['job_status__status_name']" (click)="sort('ascending', 'job_status__status_name')" class="bi bi-arrow-down"></i>
-                    <i *ngIf="arrowState['job_status__status_name']" (click)="sort('descending', 'job_status__status_name')" class="bi bi-arrow-up"></i>  
-                    <button mat-icon-button [matMenuTriggerFor]="statusFilterMenu" (menuOpened)="openFilter(jobStatusFilter)"
-                  [ngClass]="filters.status.length>=1 ? 'filterdColumn':''">
-                  <span *ngIf="filters.status.length>=1">{{filters.status.length.toString().padStart(2, '0')}}</span>
-                  <i class="bi-funnel" *ngIf="filters.status.length===0"></i>
+                <mat-menu #employeesFilterMenu="matMenu">
+                  <app-generic-table-filter #employeeFilter [fetchOptions]="fetchEmployees" [(selectedOptions)]="filters.employees"
+                    (selectedOptionsChange)="filterData()"></app-generic-table-filter>
+                </mat-menu>
+              </th>
+              <th scope="col" *ngIf="isColumnVisible('manager')">
+                Manager
+                <button mat-icon-button [matMenuTriggerFor]="managerFilterMenu" (menuOpened)="openFilter(managerFilter)"
+                  [ngClass]="filters.manager.length>=1 ? 'filterdColumn':''">
+                  <span *ngIf="filters.manager.length>=1">{{filters.manager.length.toString().padStart(2, '0')}}</span>
+                  <i class="bi-funnel" *ngIf="filters.manager.length===0"></i>
                 </button>
-  
-                    <mat-menu #statusFilterMenu="matMenu">
-                      <app-generic-table-filter
-                        #jobStatusFilter [fetchOptions]="fetchJobStatus"
-                        [(selectedOptions)]="filters.status"
-                        (selectedOptionsChange)="filterData()"
-                      ></app-generic-table-filter>
-                    </mat-menu>
-                  </th>
-                  <th scope="col">Status Date
-                    <button
-                    mat-icon-button
-                    (click)="setDateFilterColumn($event); datepicker.open()"
-                    class="ms-1 btn-menu-trigger"
-                    *ngIf="!statusDateFilterValue">
+                <mat-menu #managerFilterMenu="matMenu">
+                  <app-generic-table-filter #managerFilter [fetchOptions]="fetchManagers" [(selectedOptions)]="filters.manager"
+                    (selectedOptionsChange)="filterData()"></app-generic-table-filter>
+                </mat-menu>
+              </th>
+              <th scope="col" class="status-col job_name" *ngIf="isColumnVisible('status_name')">Status
+                <i *ngIf="!arrowState['job_status__status_name']" (click)="sort('ascending','job_status__status_name')" class="bi bi-arrow-down"></i>
+                <i (click)="sort('descending','job_status__status_name')" *ngIf="arrowState['job_status__status_name']" class="bi bi-arrow-up"></i>
+                <button mat-icon-button [matMenuTriggerFor]="statusFilterMenu" (menuOpened)="openFilter(satusGroupFilter)"
+                  [ngClass]="filters.status_group_name.length>=1 ? 'filterdColumn':''">
+                  <span *ngIf="filters.status_group_name.length>=1">{{filters.status_group_name.length.toString().padStart(2,
+                    '0')}}</span>
+                  <i class="bi-funnel" *ngIf="filters.status_group_name.length===0"></i>
+                </button>
+                <mat-menu #statusFilterMenu="matMenu">
+                  <app-generic-table-filter #satusGroupFilter [fetchOptions]="fetchStatusGroup" [(selectedOptions)]="filters.status_group_name"
+                    (selectedOptionsChange)="filterData()"></app-generic-table-filter>
+                </mat-menu>
+              </th>
+              <th scope="col" *ngIf="isColumnVisible('percentage_of_completion')">%</th>
+              <th scope="col" *ngIf="isColumnVisible('job_status_date')">
+                Stat Date
+                <button mat-icon-button (click)="datepicker.open()" class="btn-menu-trigger"
+                  *ngIf="!statusDateFilterValue">
                   <i class="bi bi-calendar"></i>
                 </button>
-                 <button mat-icon-button  *ngIf="statusDateFilterValue" (click)="clearStatusDateFilter()" class="ms-1 btn-menu-trigger">
-                      <i class="bi bi-x-circle"></i>
-                 </button>
+                <button mat-icon-button *ngIf="statusDateFilterValue" (click)="clearStatusDateFilter()"
+                  class="ms-1 btn-menu-trigger">
+                  <i class="bi bi-x-circle"></i>
+                </button>
                 <mat-form-field class="opacity-0 position-absolute date-picker-input">
                   <mat-label>Choose a date</mat-label>
-                  <input
-                    matInput
-                    [matDatepicker]="datepicker"
-                    [(ngModel)]="statusDateFilterValue"
-                    (dateChange)="onStatusDateSelected($event)"
-                  />
+                  <input matInput [matDatepicker]="datepicker" [(ngModel)]="statusDateFilterValue"
+                    (dateChange)="onStatusDateSelected($event)" />
                   <mat-hint>MM/DD/YYYY</mat-hint>
                   <mat-datepicker #datepicker [dateClass]="dateClass"></mat-datepicker>
                 </mat-form-field>
-                  </th>
-                  <!-- <th scope="col">Action </th> -->
-                </tr>
-              </thead>
-              <tbody>
-    
-                <ng-container *ngIf="(filteredList) as result">
-                  <tr *ngFor='let item of result | customSort:directionValue:sortValue
-                             |paginate : {
-                                      itemsPerPage: tableSize,
-                                      currentPage: page,
-                                      totalItems: count
-                                    }; let i=index'>
-                                 
-                            <td>{{getContinuousIndex(i)}}</td>
-                            <td>{{item.job_number}}</td>
-                            <td class="job-client-text-left">{{item.job_name}}</td>
-                            <td>{{item.job_allocation_date | dateFormater}}</td>
-                            <td class="job-client-text-left">{{getEmployeeName(item?.employees) || '-'}}</td>
-                            <td>{{item.job_status__status_name}}</td>
-                            <td [ngStyle]="{ color: item?.status_date_color ? item?.status_date_color : 'black' }">{{item.job_status_date | dateFormater}}</td>
-                    <!-- <td>
-                      <ng-container>
-                        <img src="../../../../assets/images/Edit.svg" class="icon-image" type="button" container="body"
-                          ngbTooltip="Edit" (click)="edit(item)" />
-                        <img src="../../../../assets/images/Delete.svg" class="icon-image" type="button" container="body"
-                          ngbTooltip="Delete" (click)="delete(item.id)" />
-                        </ng-container>
-                    </td> -->
-    
-                  </tr>
-    
-                </ng-container>
-              </tbody>
-            </table>
-          </div>
-        </div>
-        <div class="col-12" *ngIf="filteredList.length === 0">
-          <app-generic-norecards></app-generic-norecards>
-        </div>
-      </section>
-      <div class="row mx-0 my-2 px-2" >
-        <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0" *ngIf="filteredList.length > 0">
-          <div class="pagination-container p-0 pt-2">
-            <pagination-controls previousLabel="Prev" nextLabel="Next" (pageChange)="onTableDataChange($event)">
-            </pagination-controls>
-            <div class="items-per-page-container">
-              <div>Items per page</div>
-              <mat-select [(ngModel)]="tableSize" (selectionChange)="onTableSizeChange($event)" placeholder="10"
-                class="page-size">
-                <mat-option *ngFor="let size of tableSizes" [value]="size">{{size}}</mat-option>
-              </mat-select>
-            </div>
-          </div>
+              </th>
+              <th scope="col" *ngIf="isColumnVisible('tat_days')"><span>TAT</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            <ng-container *ngIf="(filteredList) as result">
+              <tr *ngFor='let item of result | customSort:directionValue:sortValue
+                    |paginate : {
+                             itemsPerPage: tableSize,
+                             currentPage: page,
+                             totalItems: count
+                           }; let i=index'>
+                <td (click)="edit(item)" *ngIf="isColumnVisible('sl_no')">{{getContinuousIndex(i)}}</td>
+                <td (click)="edit(item)" *ngIf="isColumnVisible('job_number')">{{item?.job_number || '-'}}</td>
+                <td class="job_name job-client-text-left" (click)="edit(item)" *ngIf="isColumnVisible('job_name')">{{item?.job_name || '-'}}</td>
+                <td (click)="edit(item)" *ngIf="isColumnVisible('job_type_name')">{{item?.job_type_name || '-'}}</td>
+                <td (click)="edit(item)" *ngIf="isColumnVisible('group_name')">{{item?.group_name || '-'}}</td>
+                <td (click)="edit(item)" *ngIf="isColumnVisible('job_allocation_date')">{{item?.job_allocation_date | dateFormater}}</td>
+                <td (click)="edit(item)" *ngIf="isColumnVisible('employees')">{{getEmployeeName(item?.employees) || '-'}}</td>
+                <td (click)="edit(item)" *ngIf="isColumnVisible('manager')">{{getManagerName(item?.employees) || '-'}}</td>
+                <td class="job_name" *ngIf="isColumnVisible('status_name')">
+                  <mat-select panelClass="custom-select-dropdown" class="mat-select-table editable-cell"
+                    [ngModel]="item?.job_status" (selectionChange)="onStatusChange(item, $event)">
+                    <mat-option *ngFor="let status of allJobStatus; let i = index" [value]="status?.id"
+                      [disabled]="jobStatusValidation(item,i)">
+                      {{ status?.status_name }}
+                    </mat-option>
+                  </mat-select>
+                </td>
+                <td *ngIf="isColumnVisible('percentage_of_completion')">
+                  <div class="d-flex justify-content-around align-items-center">
+                    <div class="input-css pe-2">
+                      <input matInput type="number" class="editable-cell" [(ngModel)]="item.percentage_of_completion"
+                        (ngModelChange)="validatePercentage(item)" (keypress)="validateKeyPress($event)"
+                        [class.is-invalid]="item.isInvalid" maxlength="3">
+                      <div *ngIf="item.isInvalid" class="text-danger">
+                        <small *ngIf="item.errorType === 'required'">Percentage is required.</small>
+                        <small *ngIf="item.errorType === 'pattern'">Invalid percentage format.</small>
+                        <small *ngIf="item.errorType === 'max'">Percentage cannot be more than 100.</small>
+                        <small *ngIf="item.errorType === 'min'">Percentage cannot be less than 0.</small>
+                      </div>
+                    </div>
+                    <div
+                      *ngIf="userRole !='Admin' && accessPermissions[0]?.update && item.valueChanged && !item.isInvalid || userRole === 'Admin' && item.valueChanged && !item.isInvalid">
+                      <img src="../../../../assets/images/tick.svg" (click)="saveJobStausPercentage(item)" alt=""
+                        height="20" width="20">
+                    </div>
+                  </div>
+                </td>
+                <td (click)="edit(item)" *ngIf="isColumnVisible('job_status_date')"
+                  [ngStyle]="{ color: item?.status_date_color ? item?.status_date_color : 'black' }">
+                  {{item?.job_status_date | dateFormater}}</td>
+                <th (click)="edit(item)" *ngIf="isColumnVisible('tat_days')">
+                  <span class="circle" [ngStyle]="{ 'color': item?.tat_days?.color}">
+                    {{ item?.tat_days?.diff_days }}
+                  </span>
+                </th>
+              </tr>
+            </ng-container>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="row mx-1 my-2 px-0" *ngIf="filteredList?.length === 0">
+      <app-generic-norecards></app-generic-norecards>
+    </div>
+  </section>
+  <div class="row mx-0 px-3" *ngIf="filteredList?.length > 0">
+    <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0">
+      <div class="pagination-container p-0">
+        <pagination-controls previousLabel="Prev" nextLabel="Next" (pageChange)="onTableDataChange($event)">
+        </pagination-controls>
+        <div class="items-per-page-container">
+          <div>Items per page</div>
+          <mat-select [(ngModel)]="tableSize" (selectionChange)="onTableSizeChange($event)" placeholder="10"
+            disableOptionCentering panelClass="paginationPanelClass" class="page-size">
+            <mat-option *ngFor="let size of tableSizes" [value]="size">{{size}}</mat-option>
+          </mat-select>
         </div>
       </div>
+    </div>
   </div>
+</div>

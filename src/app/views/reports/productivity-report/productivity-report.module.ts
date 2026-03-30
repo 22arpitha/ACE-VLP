@@ -10,6 +10,7 @@ import { ProductiveHoursComponent } from './productive-hours/productive-hours.co
 import { NonBillableHoursComponent } from './non-billable-hours/non-billable-hours.component';
 import { NonProductiveHoursComponent } from './non-productive-hours/non-productive-hours.component';
 import { TabsComponent } from './tabs/tabs.component';
+import { NonProdSummaryComponent } from './non-prod-summary/non-prod-summary.component';
 
 @NgModule({
   declarations: [
@@ -20,7 +21,8 @@ import { TabsComponent } from './tabs/tabs.component';
     ProductiveHoursComponent,
     NonBillableHoursComponent,
     NonProductiveHoursComponent,
-    TabsComponent
+    TabsComponent,
+    NonProdSummaryComponent
   ],
   imports: [
     CommonModule,

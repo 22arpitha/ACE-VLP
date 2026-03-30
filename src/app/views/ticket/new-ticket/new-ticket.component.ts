@@ -1,10 +1,15 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Subject } from 'rxjs';
+import { FormBuilder, FormGroup, FormGroupDirective, Validators } from '@angular/forms';
+import { Observable, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { TicketService } from 'src/app/service/ticket.service';
 import { CommonServiceService } from 'src/app/service/common-service.service';
+import { ApiserviceService } from 'src/app/service/apiservice.service';
+import { environment } from 'src/environments/environment';
+import { FormErrorScrollUtilityService } from 'src/app/service/form-error-scroll-utility-service.service';
+import { GenericRedirectionConfirmationComponent } from 'src/app/generic-components/generic-redirection-confirmation/generic-redirection-confirmation.component';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 
 @Component({
@@ -13,6 +18,7 @@ import { CommonServiceService } from 'src/app/service/common-service.service';
   styleUrls: ['./new-ticket.component.scss']
 })
 export class NewTicketComponent implements OnInit, OnDestroy {
+  @ViewChild(FormGroupDirective) formGroupDirective!: FormGroupDirective;
   ticketForm!: FormGroup;
   submitting = false;
   uploadingFile = false;
@@ -21,20 +27,31 @@ export class NewTicketComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
 
   // Current user info (should come from auth service)
-  currentUserId = 'user123';
-  currentUserName = 'John Doe';
- BreadCrumbsTitle: any = 'Create Tickets';
+  currentUserId = '';
+  currentUserName = '';
+  BreadCrumbsTitle: any = 'Create Tickets';
+  initialFormValue: any;
+  userRole: any;
+  departmentName: any = '';
   constructor(
     private fb: FormBuilder,
     private router: Router,
     private ticketService: TicketService,
-    private commonService:CommonServiceService
+    private apiService: ApiserviceService,
+    private commonService: CommonServiceService,
+    private modalService: NgbModal,
+    private formErrorScrollService: FormErrorScrollUtilityService
   ) {
     this.commonService.setTitle(this.BreadCrumbsTitle)
+    this.currentUserId = sessionStorage.getItem('user_id');
+    this.userRole = sessionStorage.getItem('user_role_name');
   }
 
   ngOnInit(): void {
     this.initializeForm();
+    if (this.isEmployee) {
+      this.getUrserData(this.currentUserId);
+    }
   }
 
   ngOnDestroy(): void {
@@ -42,20 +59,54 @@ export class NewTicketComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
+  get isEmployee(): boolean {
+    return this.userRole !== 'Admin';
+  }
+
   initializeForm(): void {
     this.ticketForm = this.fb.group({
-      employeeName: [{ value: this.currentUserName, disabled: true }, Validators.required],
+      employee_id: [{ value: null, disabled: false }, Validators.required],
       issue: ['', [Validators.required, Validators.minLength(5), Validators.maxLength(200)]],
       details: ['', [Validators.required, Validators.minLength(10), Validators.maxLength(2000)]],
       attachment: [null]
     });
   }
 
+  getUrserData(id:any) {
+    this.apiService.getData(`${environment.live_url}/${environment.user}/${id}/`).subscribe((res: any) => {
+      if (res) {
+        this.departmentName = res.department__department_name || '';
+        const data = {
+          user_id: res.user_id,
+          user__full_name: res.user__first_name + ' ' + res.user__last_name
+        };
+        const shouldPrefillAndDisable =
+          this.userRole !== 'Admin' &&
+          this.departmentName?.toLowerCase() !== 'it department';
+
+        if (shouldPrefillAndDisable) {
+          this.ticketForm.get('employee_id')?.disable();
+
+          this.selectedItemsMap['employee'] = [data];
+          this.dropdownState.employee.list = [data];
+          this.ticketForm.get('employee_id')?.setValue(res.user_id);
+        } else {
+          this.ticketForm.get('employee_id')?.enable();
+        }
+
+        // if (this.isEmployeeDisabled) {
+        //   this.selectedItemsMap['employee'] = [data];
+        //   this.dropdownState.employee.list = [data];
+        //   this.ticketForm.get('employee_id')?.setValue(res.user_id);
+        // }
+      }
+    });
+  }
   onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
       const file = input.files[0];
-      
+
       // Validate file size (max 10MB)
       const maxSize = 10 * 1024 * 1024; // 10MB
       if (file.size > maxSize) {
@@ -92,7 +143,7 @@ export class NewTicketComponent implements OnInit, OnDestroy {
     this.selectedFile = undefined;
     this.selectedFileName = undefined;
     this.ticketForm.patchValue({ attachment: null });
-    
+
     // Reset file input
     const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
     if (fileInput) {
@@ -105,61 +156,86 @@ export class NewTicketComponent implements OnInit, OnDestroy {
       this.markFormGroupTouched(this.ticketForm);
       return;
     }
-
     this.submitting = true;
+    const formValues = this.ticketForm.getRawValue();
+    const ticketData = new FormData();
+    ticketData.append('employee_id', formValues['employee_id']);
+    ticketData.append('issue', formValues['issue']);
+    ticketData.append('details', formValues['details']);
+    if (this.selectedFile) {
+      ticketData.append('attachment', this.selectedFile, this.selectedFile.name);
+    } else {
+      ticketData.append('attachment', '');
+    }
+    // Create ticket
+    // const ticketData = {
+    //   employee_id: this.currentUserId,
+    //   issue: this.ticketForm.get('issue')?.value,
+    //   details: this.ticketForm.get('details')?.value,
+    //   attachment: this.selectedFile
+    // };
 
-    try {
-      let attachmentUrl: string | undefined;
-
-      // Upload attachment if present
-      if (this.selectedFile) {
-        this.uploadingFile = true;
-        try {
-          attachmentUrl = await this.ticketService.uploadAttachment(this.selectedFile).toPromise();
-        } catch (error) {
-          console.error('Error uploading attachment:', error);
-          alert('Failed to upload attachment. Please try again.');
+    this.apiService.postData(`${environment.live_url}/${environment.it_ticket}/`, ticketData)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (ticket: any) => {
           this.submitting = false;
-          this.uploadingFile = false;
-          return;
+          this.apiService.showSuccess(ticket?.message);
+          this.resetForm();
+          // alert('Ticket raised successfully!');
+          // this.router.navigate(['/tickets', ticket.id]);
+        },
+        error: (error: any) => {
+          console.error('Error creating ticket:', error);
+          this.submitting = false;
         }
-        this.uploadingFile = false;
-      }
+      });
 
-      // Create ticket
-      const ticketData = {
-        employeeId: this.currentUserId,
-        employeeName: this.currentUserName,
-        issue: this.ticketForm.get('issue')?.value,
-        details: this.ticketForm.get('details')?.value,
-        attachmentUrl: attachmentUrl
-      };
+  }
 
-      this.ticketService.raiseTicket(ticketData)
-        .pipe(takeUntil(this.destroy$))
-        .subscribe({
-          next: (ticket) => {
-            this.submitting = false;
-            alert('Ticket raised successfully!');
-            this.router.navigate(['/tickets', ticket.id]);
-          },
-          error: (error) => {
-            console.error('Error creating ticket:', error);
-            this.submitting = false;
-            alert('Failed to create ticket. Please try again.');
-          }
-        });
-    } catch (error) {
-      console.error('Error in ticket submission:', error);
-      this.submitting = false;
-      alert('An unexpected error occurred. Please try again.');
+  resetForm() {
+    this.formGroupDirective?.resetForm();
+    this.formErrorScrollService.resetHasUnsavedValue();
+    this.selectedFile = undefined;
+    this.selectedFileName = undefined;
+    const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
+    if (fileInput) fileInput.value = '';
+    if (this.isEmployee) {
+      this.getUrserData(this.currentUserId);
+    }
+    this.initialFormValue = this.ticketForm?.getRawValue();
+  }
+  public hasUnsavedChanges(): boolean {
+    const currentFormValue = this.ticketForm.getRawValue();
+    const isFormChanged = JSON.stringify(currentFormValue) !== JSON.stringify(this.initialFormValue);
+    return isFormChanged || this.ticketForm.dirty;
+  }
+  cancel(): void {
+    if (this.hasUnsavedChanges()) {
+      this.showConfirmationPopup().subscribe((confirmed: boolean) => {
+        if (confirmed) {
+          this.router.navigate(['/it-support/tickets/ticket-list']);
+        }
+      });
+    } else {
+      this.router.navigate(['/it-support/tickets/ticket-list']);
     }
   }
 
-  cancel(): void {
-    if (confirm('Are you sure you want to cancel? All entered data will be lost.')) {
-      this.router.navigate(['/tickets']);
-    }
+  private showConfirmationPopup(): Observable<boolean> {
+    return new Observable<boolean>((observer) => {
+      const modalRef = this.modalService.open(GenericRedirectionConfirmationComponent, {
+        size: 'sm' as any,
+        backdrop: true,
+        centered: true,
+      });
+
+      modalRef.componentInstance.status.subscribe((resp: any) => {
+        observer.next(resp === 'ok');
+        observer.complete();
+        modalRef.close();
+      });
+    });
   }
 
   // Helper method to mark all fields as touched
@@ -197,4 +273,170 @@ export class NewTicketComponent implements OnInit, OnDestroy {
     }
     return fieldName === 'issue' ? 200 : 2000;
   }
+
+
+  // dropdown 
+
+  public onEmployeeChange(event: any) {
+    this.updateSelectedItems('employee', event.value);
+  }
+
+  pageSizeDropdown = 50;
+
+  dropdownState: any = {
+    employee: {
+      page: 1,
+      list: [],
+      search: '',
+      totalPages: 1,
+      loading: false,
+      initialized: false
+    }
+  };
+
+  dropdownEndpoints: any = {
+    employee: environment.user,
+  };
+
+  private scrollListeners: { [key: string]: (event: Event) => void } = {};
+
+
+  selectedItemsMap: { [key: string]: any[] } = {
+    employee: [],
+  };
+
+
+  removeScrollListener(key: string) {
+    const panel = document.querySelector('.cdk-overlay-container .mat-select-panel');
+    if (panel && this.scrollListeners[key]) {
+      panel.removeEventListener('scroll', this.scrollListeners[key]);
+      delete this.scrollListeners[key];
+    }
+  }
+
+  onScroll(key: string, event: Event) {
+    const target = event.target as HTMLElement;
+    const state = this.dropdownState[key];
+    const scrollTop = target.scrollTop;
+    const scrollHeight = target.scrollHeight;
+    const clientHeight = target.clientHeight;
+    const atBottom = scrollHeight - scrollTop <= clientHeight + 5;
+    if (atBottom && !state.loading && state.page < state.totalPages) {
+      state.page++;
+      this.fetchData(key, true);
+    }
+  }
+
+  // Search input for pagination
+  onSearch(key: string, text: string) {
+    const state = this.dropdownState[key];
+    state.search = text.trim();
+    state.page = 1;
+    state.list = [];
+    this.fetchData(key, false);
+  }
+
+  // Clear search input
+  clearSearchDropD(key: string) {
+    this.dropdownState[key].search = '';
+    this.dropdownState[key].page = 1;
+    this.dropdownState[key].list = [];
+    this.fetchData(key, false);
+  }
+
+  // Fetch data from API with pagination and search
+  fetchData(key: string, append = false) {
+    const state = this.dropdownState[key];
+    state.loading = true;
+
+    let query = `page=${state.page}&page_size=${this.pageSizeDropdown}`;
+    if (state.search) {
+      query += `&search=${encodeURIComponent(state.search)}`;
+    }
+    if (key === 'employee') {
+      query += `&is_active=True&employee=True`;
+      if (this.userRole === 'Manager') {
+        query += `&reporting_manager_id=${this.currentUserId}`;
+      }
+    }
+
+
+    this.apiService.getData(`${environment.live_url}/${this.dropdownEndpoints[key]}/?${query}`)
+      .subscribe((res: any) => {
+        state.totalPages = Math.ceil(res.total_no_of_record / this.pageSizeDropdown);
+        const selectedItems = this.selectedItemsMap[key] || [];
+        const selectedIds = selectedItems.map(item => item.user_id);
+        const filteredResults = res.results.filter(
+          (item: any) => !selectedIds.includes(item.user_id)
+        );
+        if (append) {
+          state.list = [...state.list, ...filteredResults];
+        } else {
+          state.list = [...selectedItems, ...filteredResults];
+        }
+        state.loading = false;
+      }, () => {
+        state.loading = false;
+      });
+  }
+
+  // Update selectedItemsMap with full objects to keep selected at top & no duplicates
+  updateSelectedItems(key: string, selectedIds: any[]) {
+    if (!Array.isArray(selectedIds)) {
+      selectedIds = selectedIds != null ? [selectedIds] : [];
+    }
+    const state = this.dropdownState[key];
+    let selectedItems = this.selectedItemsMap[key] || [];
+    // removing the unselected datas
+    selectedItems = selectedItems.filter(item => selectedIds.includes(item.user_id));
+    selectedIds.forEach(id => {
+      if (!selectedItems.some(item => item.user_id === id)) {
+        const found = state.list.find((item: any) => item.user_id === id);
+        if (found) {
+          selectedItems.push(found);
+        } else {
+          // if we want then fetch item from API if not found 
+        }
+      }
+    });
+
+    this.selectedItemsMap[key] = selectedItems;
+  }
+
+  // Return options with selected items on top, no duplicates
+  getOptionsWithSelectedOnTop(key: string) {
+    const state = this.dropdownState[key];
+    const selectedItems = this.selectedItemsMap[key] || [];
+    const unselectedItems = state.list.filter((item: any) =>
+      !selectedItems.some((sel: any) => sel.user_id === item.user_id)
+    );
+    return [...selectedItems, ...unselectedItems];
+  }
+
+
+  // Called when the dropdown opens or closes
+  onDropdownOpened(isOpen: boolean, key: string) {
+    if (isOpen) {
+      if (!this.dropdownState[key].initialized || this.dropdownState[key].list.length === 0) {
+        this.dropdownState[key].page = 1;
+        this.fetchData(key, false);
+        this.dropdownState[key].initialized = true;
+      }
+      setTimeout(() => {
+        this.removeScrollListener(key);
+
+        const panel = document.querySelector('.cdk-overlay-container .mat-select-panel');
+        if (panel) {
+          this.scrollListeners[key] = (event: Event) => this.onScroll(key, event);
+          panel.addEventListener('scroll', this.scrollListeners[key]);
+        }
+      }, 0);
+    } else {
+      this.removeScrollListener(key);
+    }
+  }
+
+
+
+
 }

@@ -1,10 +1,11 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Component, OnInit, OnDestroy, Inject } from '@angular/core';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Ticket, TicketStatus } from 'src/app/models/ticket.models';
+import { ApiserviceService } from 'src/app/service/apiservice.service';
 import { CommonServiceService } from 'src/app/service/common-service.service';
-import { TicketService } from 'src/app/service/ticket.service';
+import { environment } from 'src/environments/environment';
 
 
 @Component({
@@ -13,14 +14,16 @@ import { TicketService } from 'src/app/service/ticket.service';
   styleUrls: ['./ticket-detail.component.scss']
 })
 export class TicketDetailComponent implements OnInit, OnDestroy {
-  ticket?: Ticket;
+  ticket: any;
+  ticketId: any;
   loading = false;
   processing = false;
   showCloseConfirmation = false;
   showRejectModal = false;
+  listOfRejections: any[] = [];
   rejectionReason = '';
+  userId:any;
   private destroy$ = new Subject<void>();
-BreadCrumbsTitle: any = 'Ticket Details';
   // Current user info (should come from auth service)
   currentUserId = 'user123';
   currentUserRole = 'EMPLOYEE';
@@ -31,28 +34,37 @@ BreadCrumbsTitle: any = 'Ticket Details';
   canApproveReject = false;
 
   constructor(
-    private route: ActivatedRoute,
-    private router: Router,
-    private ticketService: TicketService,
-    private commonService:CommonServiceService
+    private apiService: ApiserviceService,
+    public dialogRef: MatDialogRef<TicketDetailComponent>,
+    @Inject(MAT_DIALOG_DATA) public data: any
   ) {
-    this.commonService.setTitle(this.BreadCrumbsTitle)
+    console.log(this.data)
+    this.userId = sessionStorage.getItem('user_id');
   }
 
   ngOnInit(): void {
-      this.ticketService.loadTickets();
-    const ticketId = this.route.snapshot.params['id'];
-    this.loadTicket(ticketId);
+    this.ticketId = this.data?.item?.id;
+    this.getTicketData(this.ticketId);
+    this.ticketRejections(this.ticketId);
   }
 
   ngOnDestroy(): void {
     this.destroy$.next();
-    this.destroy$.complete(); 
+    this.destroy$.complete();
   }
 
-  loadTicket(id: string): void {
+  ticketRejections(id: string): void {
+    this.apiService.getData(`${environment.live_url}/${environment.it_ticket_rejections}/?ticket_id=${id}`)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((rejections: any) => {
+        if (rejections && rejections.results && rejections.results.length > 0) {
+          this.listOfRejections = rejections.results;
+        }
+      });
+  }
+  getTicketData(id: string): void {
     this.loading = true;
-    this.ticketService.getTicketById(id)
+    this.apiService.getData(`${environment.live_url}/${environment.it_ticket}/${id}/`)
       .pipe(takeUntil(this.destroy$))
       .subscribe(ticket => {
         this.ticket = ticket;
@@ -71,112 +83,21 @@ BreadCrumbsTitle: any = 'Ticket Details';
     const isTechSupport = this.currentUserRole === 'TECHNICAL_SUPPORT';
 
     // Can close directly: Owner or Admin
-    this.canClose = (isOwner || isAdmin) && 
-                    (this.ticket.status === TicketStatus.OPEN || this.ticket.status === TicketStatus.REOPEN);
+    this.canClose = (isOwner || isAdmin) &&
+      (this.ticket.status === TicketStatus.OPEN || this.ticket.status === TicketStatus.REOPEN);
 
     // Can send close request: Tech Support
-    this.canSendCloseRequest = isTechSupport && 
-                                (this.ticket.status === TicketStatus.OPEN || this.ticket.status === TicketStatus.REOPEN);
+    this.canSendCloseRequest = isTechSupport &&
+      (this.ticket.status === TicketStatus.OPEN || this.ticket.status === TicketStatus.REOPEN);
 
     // Can approve/reject: Owner when close request is sent
     this.canApproveReject = isOwner && this.ticket.status === TicketStatus.CLOSE_REQUEST_SENT;
-  }
-
-  closeTicket(): void {
-    if (!this.ticket || this.processing) return;
-
-    this.processing = true;
-    this.ticketService.closeTicket(this.ticket.id)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (updatedTicket) => {
-          this.ticket = updatedTicket;
-          this.processing = false;
-          this.showCloseConfirmation = false;
-          this.updatePermissions();
-        },
-        error: (error) => {
-          console.error('Error closing ticket:', error);
-          this.processing = false;
-          alert('Failed to close ticket. Please try again.');
-        }
-      });
-  }
-
-  sendCloseRequest(): void {
-    if (!this.ticket || this.processing) return;
-
-    this.processing = true;
-    this.ticketService.sendCloseRequest(this.ticket.id, this.currentUserId)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (updatedTicket) => {
-          this.ticket = updatedTicket;
-          this.processing = false;
-          this.updatePermissions();
-          alert('Close request sent to employee successfully!');
-        },
-        error: (error) => {
-          console.error('Error sending close request:', error);
-          this.processing = false;
-          alert('Failed to send close request. Please try again.');
-        }
-      });
-  }
-
-  approveCloseRequest(): void {
-    if (!this.ticket || this.processing) return;
-
-    this.processing = true;
-    this.ticketService.approveCloseRequest(this.ticket.id)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (updatedTicket) => {
-          this.ticket = updatedTicket;
-          this.processing = false;
-          this.updatePermissions();
-        },
-        error: (error) => {
-          console.error('Error approving close request:', error);
-          this.processing = false;
-          alert('Failed to approve close request. Please try again.');
-        }
-      });
-  }
-
-  rejectCloseRequest(): void {
-    if (!this.ticket || this.processing || !this.rejectionReason.trim()) {
-      alert('Please provide a reason for rejection');
-      return;
-    }
-
-    this.processing = true;
-    this.ticketService.rejectCloseRequest(this.ticket.id, this.rejectionReason)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (updatedTicket) => {
-          this.ticket = updatedTicket;
-          this.processing = false;
-          this.showRejectModal = false;
-          this.rejectionReason = '';
-          this.updatePermissions();
-        },
-        error: (error) => {
-          console.error('Error rejecting close request:', error);
-          this.processing = false;
-          alert('Failed to reject close request. Please try again.');
-        }
-      });
   }
 
   downloadAttachment(): void {
     if (this.ticket?.attachmentUrl) {
       window.open(this.ticket.attachmentUrl, '_blank');
     }
-  }
-
-  goBack(): void {
-    this.router.navigate(['/it-support/tickets/']);
   }
 
   getStatusClass(status: TicketStatus): string {
@@ -205,21 +126,22 @@ BreadCrumbsTitle: any = 'Ticket Details';
     });
   }
 
-  openCloseConfirmation(): void {
-    this.showCloseConfirmation = true;
+  rejectCloseRequest() {
+    let data:any= {
+    "employee_id": this.userId,
+    "status": 1,
+    "rejection_comment": this.rejectionReason,
+    'issue': this.data?.item?.issue,
+  }
+    this.apiService.updateData(`${environment.live_url}/${environment.it_ticket}/${this.ticketId}/`, data).subscribe((resp: any) => {
+      this.apiService.showSuccess(resp?.message);
+      this.dialogRef.close({ data: 'refresh' });
+    },
+      (error) => {
+        this.apiService.showError(error?.error?.detail);
+      }
+    )
   }
 
-  cancelCloseConfirmation(): void {
-    this.showCloseConfirmation = false;
-  }
 
-  openRejectModal(): void {
-    this.showRejectModal = true;
-    this.rejectionReason = '';
-  }
-
-  cancelRejectModal(): void {
-    this.showRejectModal = false;
-    this.rejectionReason = '';
-  }
 }

@@ -19,7 +19,7 @@ resetBtnDisable:boolean=false;
 modeName:any;
 url:any
 tabs:string[] = ['Overall Productivity', 'Quantitative Productivity', 'Qualitative Productivity','Work Culture and Work Ethics',
-   'Productive Hours','Non Billable Hours','Non Productive Hours' ];
+   'Productive Hours','Non Billable Hours','Non Productive Hours'];
   selectedTab: number = 0;
   commonFilterData:any={'employee_id':'','periodicity':'','period':''};
   user_id:any;

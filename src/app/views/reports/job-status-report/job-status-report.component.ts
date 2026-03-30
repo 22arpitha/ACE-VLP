@@ -219,7 +219,7 @@ export class JobStatusReportComponent implements OnInit {
       break;
       case 'dateRange':
         // console.log(event.detail, event.key);
-      this.onApplyDateFilter(event.detail,event.detail.key);
+      this.onApplyDateFilter(event.detail,event.detail?.key || event.key);
       break;
       case 'sorting':
         this.onSorting(event);
