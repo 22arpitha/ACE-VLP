@@ -357,7 +357,8 @@ export class JobTimeDailyReportComponent implements OnInit {
       query += this.user_role_name === 'Admin' ? '' : `&employee-id=${this.user_id}`;
     }
     if (key === 'job-ids') {
-      endpoint = environment.only_jobs
+      endpoint = environment.only_jobs;
+      query += `&non-productive-jobs=true`;
       query += this.user_role_name === 'Admin' ? '' : `&employee-id=${this.user_id}`;
     };
     if (key === 'timesheet-employee-ids') {

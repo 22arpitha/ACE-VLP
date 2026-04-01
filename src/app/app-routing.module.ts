@@ -26,8 +26,8 @@ const routes: Routes = [
     data: {
       title: 'Home',
     },
-    // canActivateChild: [ActivateChildGuard],
-    // canActivate: [AuthGuard],
+    canActivateChild: [ActivateChildGuard],
+    canActivate: [AuthGuard],
     children: [
       // {
       //   path: 'dashboards',

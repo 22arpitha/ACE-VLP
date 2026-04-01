@@ -524,7 +524,7 @@ private searchSubject = new Subject<string>();
   }
 
   getFilterBaseUrl(): string {
-    const base = `?page=${this.page}&page_size=${this.tableSize}`;
+    const base = `?page=${this.page}&page_size=${this.tableSize}&non-productive-jobs=false`;
     const searchParam = this.term?.trim().length >= 2 ? `&search=${encodeURIComponent(this.term.trim())}` : '';
     const employeeParam = this.userRole !== 'Admin' ? `&employee-id=${this.user_id}` : '';
 
@@ -640,7 +640,7 @@ private searchSubject = new Subject<string>();
     }
     let cleanedFilterQuery = this.filterQuery;
     const updated_query = this.removePagination(cleanedFilterQuery)
-    let query = `?download=true&file-type=${type}`;
+    let query = `?download=true&file-type=${type}&non-productive-jobs=false`;
     query += `&${updated_query}`;
     query += this.isUnassigned === true ?`unassigned=True` : '';
     query += this.userRole !== 'Admin' ? `&employee-id=${this.user_id}` : '';

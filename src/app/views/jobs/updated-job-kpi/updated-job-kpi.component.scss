@@ -186,3 +186,6 @@ td.estimated-time .image-container {
   pointer-events: none;
   opacity: 0.5;
 }
+.mat-raised-button.mat-button-disabled.mat-button-disabled{
+    background-color: rgba(0, 0, 0, .12) !important;
+}

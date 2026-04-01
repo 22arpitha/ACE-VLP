@@ -26,6 +26,7 @@ export class UpdatedJobKpiComponent implements CanComponentDeactivate, OnInit, O
   isEditItem: boolean = false;
   allEmployeeList: any = [];
   accessPermissions: any = [];
+    editKpiDetails: boolean = false;
   @ViewChild(FormGroupDirective) formGroupDirective!: FormGroupDirective;
   jobKPIFormGroup: FormGroup;
   pageSize = 10;
@@ -55,8 +56,8 @@ export class UpdatedJobKpiComponent implements CanComponentDeactivate, OnInit, O
       // this.common_service.setTitle('Update ' + 'KPI')
       this.job_id = this.activeRoute.snapshot.paramMap.get('id')
       this.getAllEmployeeList();
-      this.getModuleAccess();
       this.getJobAndKPIDetails();
+      this.getModuleAccess();
     }
   }
 
@@ -120,21 +121,27 @@ export class UpdatedJobKpiComponent implements CanComponentDeactivate, OnInit, O
   }
 
   public getModuleAccess() {
-    this.apiService.getData(`${environment.live_url}/${environment.user_access}/${sessionStorage.getItem('user_id')}/`).subscribe(
-      (res: any) => {
-        // console.log(res)
-        res.access_list.forEach((access: any) => {
-          access.access.forEach((access_name: any) => {
-            if (access_name.name === sessionStorage.getItem('access-name')) {
-              // console.log(access_name)
-              this.accessPermissions = access_name.operations;
-              // console.log('this.accessPermissions', this.accessPermissions);
-            }
-          })
-        })
+  this.apiService
+    .getData(`${environment.live_url}/${environment.user_access}/${sessionStorage.getItem('user_id')}/`)
+    .subscribe((res: any) => {
+      const accessName = sessionStorage.getItem('access-name');
+      const matchedAccess = res.access_list
+        ?.flatMap((item: any) => item.access || [])
+        ?.find((access: any) => access.name === accessName);
+
+      if (matchedAccess) {
+        this.accessPermissions = matchedAccess.operations || [];
+
+        this.editKpiDetails =
+          this.user_role_name === 'Admin'
+            ? !this.job_id
+            : !(this.job_id && this.accessPermissions[0]?.['update']);
+      } else {
+        this.accessPermissions = [];
+        this.editKpiDetails = true;
       }
-    )
-  }
+    });
+}
 
   public getAllEmployeeList() {
     let queryparams: any = `?is_active=True&employee=True`;
@@ -312,6 +319,7 @@ export class UpdatedJobKpiComponent implements CanComponentDeactivate, OnInit, O
     });
   }
   public editJobKPIDetails() {
+    console.log(this.isEditItem)
     this.isEditItem = !this.isEditItem;
     const employeesDetailsArray = this.jobKPIFormGroup.get('data') as FormArray;
     employeesDetailsArray.controls?.forEach((controls, index) => {

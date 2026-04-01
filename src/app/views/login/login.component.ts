@@ -115,7 +115,7 @@ export class LoginComponent implements OnInit {
             //  If user came from email link, go there first
             if (returnUrl) {
               this.router.navigateByUrl(returnUrl);
-              this.api.showSuccess('Login ttttttt!');
+              this.api.showSuccess('Login successful!');
               return;
             }
             let access = data.access_list.find((data: { name: string; })=>data.name==='Jobs')

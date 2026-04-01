@@ -1,7 +1,6 @@
 import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
 import { CommonServiceService } from '../../../../service/common-service.service';
 import { buildPaginationQuery } from '../../../../shared/pagination.util';
-import { tableColumns } from '../non-productive-hours/non-productive-hours-config';
 import { environment } from '../../../../../environments/environment';
 import { ApiserviceService } from '../../../../service/apiservice.service';
 import { JobTimeSheetDetailsPopupComponent } from '../../common/job-time-sheet-details-popup/job-time-sheet-details-popup.component';
@@ -27,7 +26,7 @@ export class NonProdSummaryComponent implements OnInit, OnChanges, OnDestroy {
     tableSize: this.tableSize,
     pagination: true,
     showDownload: true,
-    total_hours: true,
+    total_hours: false,
   };
 
   user_id: string;
@@ -135,7 +134,7 @@ export class NonProdSummaryComponent implements OnInit, OnChanges, OnDestroy {
 
   exportCsvOrPdf(fileType) {
     const search = this.term?.trim().length >= 2 ? `search=${encodeURIComponent(this.term.trim())}&` : '';
-    let query = `?${search}download=true&client-name=Vedalekha professionals&file-type=${fileType}`;
+    let query = `?${search}download=true&file-type=${fileType}`;
     if (this.directionValue && this.sortValue) {
       query += `&sort-by=${this.sortValue}&sort-type=${this.directionValue}`;
     }
@@ -147,7 +146,7 @@ export class NonProdSummaryComponent implements OnInit, OnChanges, OnDestroy {
     } else {
       query += this.user_role_name === 'Admin' ? '' : `&timesheet-employee=${this.user_id}`;
     }
-    const url = `${environment.live_url}/${environment.timesheet_non_productivity}/${query}`;
+    const url = `${environment.live_url}/${environment.non_productive_summary_report}/${query}`;
     window.open(url, '_blank');
   }
 
@@ -169,14 +168,48 @@ export class NonProdSummaryComponent implements OnInit, OnChanges, OnDestroy {
     if (this.directionValue && this.sortValue) {
       finalQuery += `&sort-by=${this.sortValue}&sort-type=${this.directionValue}`;
     }
-    this.api.getData(`${environment.live_url}/${environment.timesheet_non_productivity}/${finalQuery}&client-name=Vedalekha professionals`).subscribe((res: any) => {
-      const formattedData = res.results.map((item: any, i: number) => ({
-        sl: (page - 1) * pageSize + i + 1,
-        ...item
-      }));
+    this.api.getData(`${environment.live_url}/${environment.non_productive_summary_report}/${finalQuery}`).subscribe((res: any) => {
+      // Collect all unique job names across all employees
+      const jobNamesSet = new Set<string>();
+      (res.results || []).forEach((item: any) => {
+        (item.jobs || []).forEach((job: any) => {
+          jobNamesSet.add(job.job_name);
+        });
+      });
+      const jobNames = Array.from(jobNamesSet);
+
+      // Build dynamic columns: Sl No, Employee, [job names...], Total Time
+      const dynamicColumns: any[] = [
+        { label: 'Sl No', key: 'sl' },
+        { label: 'Employee', key: 'employee_name', sortKey: 'employee_name', sortable: true, leftAlign: true },
+      ];
+      jobNames.forEach((jobName, index) => {
+        dynamicColumns.push({ label: jobName, key: `job_${index}` });
+      });
+      // dynamicColumns.push({ label: 'Total Time', key: 'total_time', sortKey: 'total_minutes', sortable: true });
+
+      // Flatten each employee's jobs into a flat row
+      const formattedData = (res.results || []).map((item: any, i: number) => {
+        const row: any = {
+          sl: (page - 1) * pageSize + i + 1,
+          employee_id: item.employee_id,
+          employee_name: item.employee_name,
+          total_time: item.total_time,
+        };
+        // Map each job's time to the corresponding column key
+        const jobTimeMap: { [key: string]: string } = {};
+        (item.jobs || []).forEach((job: any) => {
+          jobTimeMap[job.job_name] = job.time;
+        });
+        jobNames.forEach((jobName, index) => {
+          row[`job_${index}`] = jobTimeMap[jobName] || '00:00';
+        });
+        return row;
+      });
+
       const tableFooterContent = { 'total_actual_time': res?.total_actual_time };
       this.tableConfig = {
-        columns: tableColumns.map(col => ({ ...col })),
+        columns: dynamicColumns,
         data: formattedData ? formattedData : [],
         searchTerm: this.term,
         actions: [],
@@ -188,11 +221,11 @@ export class NonProdSummaryComponent implements OnInit, OnChanges, OnDestroy {
         totalRecords: res.total_no_of_record,
         hideDownload: true,
         showDownload: true,
-        total_hours: true,
+        total_hours: false,
         tableFooterContent: tableFooterContent,
         showCsv: true,
         showPdf: false,
-        searchPlaceholder: 'Search by Client/Job',
+        searchPlaceholder: 'Search by employee name',
       };
     });
   }

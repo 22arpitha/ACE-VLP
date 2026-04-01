@@ -617,6 +617,7 @@ export class TimesheetsSummaryReportComponent implements OnInit {
         }
         if (key === 'job-ids'){
           endpoint = environment.only_jobs
+          query += `&non-productive-jobs=true`;
           query +=  this.userRole ==='Admin' ? '': `&employee-id=${this.user_id}`;
         } ;
         if (key === 'job-status-ids'){

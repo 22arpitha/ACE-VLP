@@ -179,7 +179,7 @@ export class JobsOfClientsComponent implements OnInit {
   }
 
   getFilterBaseUrl(): string {
-    const base = `?page=${this.page}&page_size=${this.tableSize}`;
+    const base = `?page=${this.page}&page_size=${this.tableSize}&non-productive-jobs=true`;
     const searchParam = this.term?.trim().length >= 2 ? `&search=${encodeURIComponent(this.term.trim())}` : '';
     const clientParam = `&client=${this.client_id}`;
     const employeeParam = this.userRole !== 'Admin' ? `&employee-id=${this.user_id}` : '';
@@ -376,7 +376,7 @@ export class JobsOfClientsComponent implements OnInit {
   downloadOption(type: any) {
     let cleanedFilterQuery = this.filterQuery;
     const updated_query = this.removePagination(cleanedFilterQuery);
-    let query = `?download=true&file-type=${type}`;
+    let query = `?download=true&file-type=${type}&non-productive-jobs=true`;
     query += `&${updated_query}`;
     query += this.userRole !== 'Admin' ? `&employee-id=${this.user_id}` : '';
     let apiUrl = `${environment.live_url}/${environment.only_jobs}/${query}`;
