@@ -12,6 +12,7 @@ import { GenericTableFilterComponent } from 'src/app/shared/generic-table-filter
 import { ViewWfhRequestComponent } from '../view-wfh-request/view-wfh-request.component';
 import { ViewLeaveRequestComponent } from '../../leave/view-leave-request/view-leave-request.component';
 import { ApplyWorkFromHomeComponent } from '../apply-work-from-home/apply-work-from-home.component';
+import { CommonServiceService } from '../../../service/common-service.service';
 export interface IdNamePair {
   id: any;
   name: string;
@@ -51,6 +52,7 @@ export class WfhRequestsComponent implements OnInit {
   searchLeave: any;
   user_id: any;
   userRole: any;
+  BreadCrumbsTitle: any = 'WFH Request';
   constructor(
     private accessControlService: SubModuleService,
     modalService: NgbModal,
@@ -59,9 +61,11 @@ export class WfhRequestsComponent implements OnInit {
     private cdr: ChangeDetectorRef,
     private datePipe: DatePipe,
     private dropdownService: DropDownPaginationService,
+    private common_service: CommonServiceService,
   ) {
     this.userRole = sessionStorage.getItem('user_role_name');
     this.user_id = sessionStorage.getItem('user_id');
+    this.common_service.setTitle(this.BreadCrumbsTitle);
   }
 
   ngOnInit(): void {
@@ -252,6 +256,8 @@ export class WfhRequestsComponent implements OnInit {
     this.filterQuery = this.getFilterBaseUrl();
     if (this.userRole === 'Manager') {
       this.filterQuery += `&manager_id=${this.user_id}`;
+    }  if (this.userRole === 'Accountant') {
+      this.filterQuery += `&employee_id=${this.user_id}`;
     }
     if (this.filters.leave_type.length) {
       this.filterQuery += `&leave_type_ids=[${this.ids(this.filters.leave_type)}]`;
@@ -305,6 +311,9 @@ export class WfhRequestsComponent implements OnInit {
     };
     if (this.userRole === 'Manager') {
       extraParams['reporting_manager_id'] = this.user_id;
+    }
+     if (this.userRole === 'Accountant') {
+      extraParams['employee_id'] = this.user_id;
     }
     return this.dropdownService.fetchDropdownData$(
       environment.employee,
