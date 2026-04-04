@@ -1,0 +1,138 @@
+<div class="filter-section px-3">
+  <div class="row mx-0">
+    <div class="col-sm-12 col-md-6 col-lg-3">
+      <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+        <mat-date-range-input [rangePicker]="gobalPicker1">
+          <input matStartDate placeholder="Start date" [(ngModel)]="mainStartDate" (dateChange)="mainDateChange($event)">
+          <input matEndDate placeholder="End date" [(ngModel)]="mainEndDate" (dateChange)="mainEndDateChange($event)">
+        </mat-date-range-input>
+        <mat-datepicker-toggle matSuffix [for]="gobalPicker1"></mat-datepicker-toggle>
+        <mat-date-range-picker #gobalPicker1 [dateClass]="dateClass"></mat-date-range-picker>
+      </mat-form-field>
+    </div>
+    <div class="col-sm-12 col-md-6 col-lg-9 text-end align-content-center">
+      <button mat-raised-button class="cancel-button mat-btn-s" type="button" (click)="reset()">
+        Reset
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="row mx-0 px-0 leave-request-tabs">
+  <div class="col-12 px-0">
+    <mat-tab-group mat-stretch-tabs="false" mat-align-tabs="start" [selectedIndex]="selectedTabIndex" (selectedTabChange)="onTabChange($event)">
+
+      <mat-tab label="Pending">
+        <ng-template matTabContent>
+          <ng-container *ngTemplateOutlet="leaveTable"></ng-container>
+        </ng-template>
+      </mat-tab>
+
+      <mat-tab label="Approved">
+        <ng-template matTabContent>
+          <ng-container *ngTemplateOutlet="leaveTable"></ng-container>
+        </ng-template>
+      </mat-tab>
+
+      <mat-tab label="Rejected">
+        <ng-template matTabContent>
+          <ng-container *ngTemplateOutlet="leaveTable"></ng-container>
+        </ng-template>
+      </mat-tab>
+
+    </mat-tab-group>
+  </div>
+</div>
+
+<ng-template #leaveTable>
+  <div class="container-wrapper settings-main-content px-0">
+    <section class="settings-table-bg px-3">
+
+      <div *ngIf="loading" class="text-center py-4">
+        Loading...
+      </div>
+
+      <div class="row mx-0 my-2 px-0 table-wrapper" *ngIf="!loading">
+        <div class="col-12 px-0">
+          <table class="table table-hover table-list">
+            <thead>
+              <tr>
+                <th scope="col">SL NO</th>
+                <th scope="col">LEAVE TYPE
+                  <i *ngIf="!arrowState['leave_type_id']" class="bi bi-arrow-down"
+                    (click)="sort('ascending', 'leave_type_id')"></i>
+                  <i *ngIf="arrowState['leave_type_id']" class="bi bi-arrow-up"
+                    (click)="sort('descending', 'leave_type_id')"></i>
+                </th>
+                <th scope="col">LEAVE PERIOD
+                  <i *ngIf="!arrowState['from_date']" class="bi bi-arrow-down"
+                    (click)="sort('ascending', 'from_date')"></i>
+                  <i *ngIf="arrowState['from_date']" class="bi bi-arrow-up"
+                    (click)="sort('descending', 'from_date')"></i>
+                </th>
+                <th scope="col">DAYS
+                  <i *ngIf="!arrowState['number_of_leaves_applying_for']" class="bi bi-arrow-down"
+                    (click)="sort('ascending', 'number_of_leaves_applying_for')"></i>
+                  <i *ngIf="arrowState['number_of_leaves_applying_for']" class="bi bi-arrow-up"
+                    (click)="sort('descending', 'number_of_leaves_applying_for')"></i>
+                </th>
+                <th scope="col">DATE OF REQUEST
+                  <i *ngIf="!arrowState['created_datetime']" class="bi bi-arrow-down"
+                    (click)="sort('ascending', 'created_datetime')"></i>
+                  <i *ngIf="arrowState['created_datetime']" class="bi bi-arrow-up"
+                    (click)="sort('descending', 'created_datetime')"></i>
+                </th>
+                <th scope="col">STATUS</th>
+                <th scope="col">MESSAGE</th>
+                <th scope="col">REJECTED REASON
+                  <i *ngIf="!arrowState['rejected_reason']" class="bi bi-arrow-down"
+                    (click)="sort('ascending', 'rejected_reason')"></i>
+                  <i *ngIf="arrowState['rejected_reason']" class="bi bi-arrow-up"
+                    (click)="sort('descending', 'rejected_reason')"></i>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of leaveRequests | paginate: { itemsPerPage: tableSize, currentPage: page, totalItems: count }; let i = index">
+                <td>{{ getContinuousIndex(i) }}</td>
+                <td>{{ item?.leave_type_name }}</td>
+                <td>{{ item?.from_date | dateFormater }} - {{ item?.to_date | dateFormater }}</td>
+                <td>{{ item?.number_of_leaves_applying_for }}</td>
+                <td>{{ item?.created_datetime | dateFormater }}</td>
+                <td *ngIf="item?.status === 'Pending'"><span style="background: #ffface; color: #978419;" class="p-2 rounded">PENDING</span></td>
+                <td *ngIf="item?.status === 'approved'"><span style="background: #dcfce7; color: #15803d;" class="p-2 rounded">APPROVED</span></td>
+                <td *ngIf="item?.status === 'rejected'"><span style="background:#fee2e2; color: #b91c1c;" class="p-2 rounded">REJECTED</span></td>
+                <td *ngIf="item?.status === 'cancelled'"><span style="background:#e0e0e0; color: #d74c4c;" class="p-2 rounded">CANCELLED</span></td>
+                <td *ngIf="item?.status === 'cancel request sent'"><span style="background:#e0e0e0; color: #d74c4c;" class="p-2 rounded">CANCEL REQUEST SENT</span></td>
+                <td>{{ item?.message }}</td>
+                <td>{{ item?.rejected_reason || '-' }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="row mx-1 my-2 px-0" *ngIf="!loading && leaveRequests?.length === 0">
+        <app-generic-norecards></app-generic-norecards>
+      </div>
+
+      <!-- Pagination -->
+      <div class="row mx-0 px-3" *ngIf="!loading && leaveRequests?.length > 0">
+        <div class="col-12 px-0">
+          <div class="pagination-container p-0">
+            <pagination-controls previousLabel="Prev" nextLabel="Next" (pageChange)="onTableDataChange($event)">
+            </pagination-controls>
+            <div class="items-per-page-container">
+              <div>Items per page</div>
+              <mat-select [(ngModel)]="tableSize" (selectionChange)="onTableSizeChange($event)"
+                panelClass="paginationPanelClass" class="page-size">
+                <mat-option *ngFor="let size of tableSizes" [value]="size">{{ size }}</mat-option>
+              </mat-select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </section>
+  </div>
+</ng-template>

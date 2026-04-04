@@ -2,7 +2,7 @@
 <mat-toolbar class="top-navbar" *ngIf="isDesktop">
 
   <!-- LOGO -->
-  <img src="../../../assets/images/VLP Logo Final main - Sep 12.png" class="logo" />
+  <img src="../../../assets/images/VLP Logo Final main - Sep 12.png" class="logo" (click)="naviagteToDashboard()"/>
 
   <!-- NAVIGATION MENU -->
   <div class="menu-container">
@@ -122,7 +122,7 @@
     <img src="../../../assets/images/VLP Logo Final main - Sep 12.png" width="90px" height="90px" [ngStyle]="{
         width:isSidebarCollapsed ? '45px':'90px',
         height:isSidebarCollapsed ? '45px':'90px'
-      }" class="sidebar-logo-sidebar" />
+      }" class="sidebar-logo-sidebar pe-auto" (click)="naviagteToDashboard()" />
 
   </c-sidebar-brand>
 

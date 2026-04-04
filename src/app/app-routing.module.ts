@@ -156,6 +156,20 @@ const routes: Routes = [
         loadChildren: () =>
           import('./views/ticket/ticket.module').then((m) => m.TicketModule),
       },
+      {
+        path: 'performance',
+        loadChildren: () =>
+          import('./views/performance-dashboard/performance-dashboard.module').then(
+            (m) => m.PerformanceDashboardModule,
+          ),
+      },
+      {
+        path: 'approvals',
+        loadChildren: () =>
+          import('./views/approvals/approvals.module').then(
+            (m) => m.ApprovalsModule,
+          ),
+      },
     ],
   },
 

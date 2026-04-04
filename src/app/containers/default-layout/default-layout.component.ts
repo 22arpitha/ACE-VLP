@@ -288,6 +288,10 @@ export class DefaultLayoutComponent {
     return navigationData;
   }
 
+  naviagteToDashboard(){
+    console.log(this.router.url,'current url')
+    this.router.navigate(['../performance/dashboard']);
+  }
   testingFunction() {
     // this.sidebarNavItems = this.sidebarNavItemsStatic;
     this.api

@@ -150,8 +150,9 @@ export class JobsOfClientsComponent implements OnInit {
   getModuleAccess() {
     this.accessControlService.getAccessForActiveUrl(this.user_id).subscribe((access) => {
       if (access) {
-        this.access_name = access[0];
-        this.accessPermissions = access[0].operations;
+         let temp = access.find((item: any) => item.name === 'Jobs');
+          this.access_name = temp;
+          this.accessPermissions = temp?.operations;
       }
     });
   }

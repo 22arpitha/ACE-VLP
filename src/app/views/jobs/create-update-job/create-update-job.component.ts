@@ -16,6 +16,7 @@ import { CanComponentDeactivate } from '../../../auth-guard/can-deactivate.guard
 import { MatMenuTrigger } from '@angular/material/menu';
 import{GenericRedirectionConfirmationComponent} from '../../../generic-components/generic-redirection-confirmation/generic-redirection-confirmation.component'
 import { MatSelect, MatSelectModule } from '@angular/material/select';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-create-update-job',
@@ -198,31 +199,69 @@ export class CreateUpdateJobComponent implements CanComponentDeactivate, OnInit,
   }
   shouldDisableFields: boolean = false;
   getModuleAccess() {
-    this.accessControlService.getAccessForActiveUrl(this.user_id).subscribe(
-      (res: any) => {
-        this.accessPermissions = res[0].operations;
-        if (this.user_role_name != 'Admin') {
-          if (this.job_id) {
-            if(this.accessPermissions[0]?.['update']){
+    if(!this.fromJobs){
+      this.apiService.getData(`${environment.live_url}/${environment.user_access}/${this.user_id}/`).subscribe(
+        (res: any) => {
+          let access = res?.access_list.find((item: any) => item.name === 'Clients');
+          let subAccess = access?.access?.find((sub: any) => sub.name === 'Jobs');
+          // console.log(subAccess)
+          this.commonAccessPermissions(subAccess.operations);
+        }
+      )
+    }
+    else{
+      this.accessControlService.getAccessForActiveUrl(this.user_id).subscribe(
+        (res: any) => {
+          // console.log(res)
+          this.commonAccessPermissions(res[0].operations);
+          // this.accessPermissions = res[0].operations;
+          // if (this.user_role_name != 'Admin') {
+          //   if (this.job_id) {
+          //     if(this.accessPermissions[0]?.['update']){
+          //       this.editJobDetails = false;
+          //     } else{
+          //       this.editJobDetails = true;
+          //     }
+          //   } else {
+          //     this.editJobDetails = false;
+          //     this.shouldDisableFields = this.accessPermissions[0]?.['create'];
+          //   }
+          // } else {
+          //   if (this.job_id) {
+          //     this.editJobDetails = false;
+          //     this.shouldDisableFields = false;
+          //   } else{
+          //     this.editJobDetails = true;
+          //     this.shouldDisableFields = true;
+          //   }
+          // }
+        }
+      )
+    }
+  }
+
+  commonAccessPermissions(permissions:any){
+    this.accessPermissions = permissions;
+    if (this.user_role_name != 'Admin') {
+            if (this.job_id) {
+              if(this.accessPermissions[0]?.['update']){
+                this.editJobDetails = false;
+              } else{
+                this.editJobDetails = true;
+              }
+            } else {
               this.editJobDetails = false;
-            } else{
-              this.editJobDetails = true;
+              this.shouldDisableFields = this.accessPermissions[0]?.['create'];
             }
           } else {
-             this.editJobDetails = false;
-            this.shouldDisableFields = this.accessPermissions[0]?.['create'];
+            if (this.job_id) {
+              this.editJobDetails = false;
+              this.shouldDisableFields = false;
+            } else{
+              this.editJobDetails = true;
+              this.shouldDisableFields = true;
+            }
           }
-        } else {
-          if (this.job_id) {
-            this.editJobDetails = false;
-            this.shouldDisableFields = false;
-          } else{
-            this.editJobDetails = true;
-            this.shouldDisableFields = true;
-          }
-        }
-      }
-    )
   }
   public enableEdit() {
     if (this.user_role_name === 'Admin') {
@@ -1667,7 +1706,8 @@ fetchData(key: string, append = false) {
     }
   }
   if(key === 'end_client'){
-    query += `&client=${this.jobFormGroup.get('client')?.value}`
+    // query += `&client=${this.jobFormGroup.get('client')?.value?.id}`
+      query += `&client=${this.jobFormGroup.get('client')?.value}`
   }
 
   this.apiService.getData(`${environment.live_url}/${this.dropdownEndpoints[key]}/?${query}`)
@@ -1885,5 +1925,16 @@ simpleToggleRequired(enable: boolean, controlNames: string[]) {
  });
 }
 
+get clientControl(): FormControl {
+  return this.jobFormGroup.get('client') as FormControl;
+}
+
+fetchClients = async ({ search, page, page_size }) => {
+  return await firstValueFrom(
+    this.apiService.getData(
+      `${environment.live_url}/${environment.clients}/?search=${search}&page=${page}&page_size=${page_size}`
+    )
+  );
+};
 
 }

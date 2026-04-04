@@ -3,12 +3,12 @@ import { ApiserviceService } from '../../service/apiservice.service';
 import { environment } from '../../../environments/environment';
 
 @Component({
-  selector: 'app-employee-list',
-  templateUrl: './employee-list.component.html',
-  styleUrls: ['./employee-list.component.scss']
+  selector: 'app-manager-list',
+  templateUrl: './manager-list.component.html',
+  styleUrls: ['./manager-list.component.scss']
 })
-export class EmployeeListComponent implements OnInit, OnChanges {
-  user_role_name: any;
+export class ManagerListComponent implements OnInit {
+user_role_name: any;
   user_id: any;
   allEmployeeList: any = [];
   searchEmployeeText: any;
@@ -22,7 +22,7 @@ export class EmployeeListComponent implements OnInit, OnChanges {
   }
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['resetFilterField'] && changes['resetFilterField'].currentValue ===true) {
-    this.resetFilterField = changes['resetFilterField'].currentValue
+      this.resetFilterField = changes['resetFilterField'].currentValue
       if (this.user_role_name === 'Accountant') {
         this.selectedEmployeeVal = this.allEmployeeList[0]?.user_id;
         this.selectEmployee.emit(this.allEmployeeList[0]?.user_id);
@@ -31,47 +31,19 @@ export class EmployeeListComponent implements OnInit, OnChanges {
         this.searchEmployeeText='';
         this.selectEmployee.emit(null);
       }
-      this.selectedItemsMap['employee'] = [];
-      this.clearSearchDropD('employee');
+      this.selectedItemsMap['manager'] = [];
+      this.clearSearchDropD('manager');
     }
   }
 
   ngOnInit(): void {
-    // this.getAllEmployeeList();
-    if(this.user_role_name==='Accountant'){
-      this.onDropdownOpened(true,'employee')
-    } else if(this.user_role_name==='Manager'){
-      this.getManagerData()
-    }
+      this.onDropdownOpened(true,'manager')
   }
 
-  // public getAllEmployeeList() {
-  //   this.allEmployeeList = [];
-  //   let queryparams = `?is_active=True&employee=True`;
-  //   if (this.user_role_name === 'Accountant') {
-  //     queryparams += `&employee_id=${this.user_id}`;
-  //   } else if (this.user_role_name === 'Manager') {
-  //     queryparams += `&reporting_manager_id=${this.user_id}`;
-  //   }
-  //   this.apiService.getData(`${environment.live_url}/${environment.employee}/${queryparams}`).subscribe((respData: any) => {
-  //     this.allEmployeeList = respData;
-  //     this.allEmployeeList.push(...this.managerData);
-  //     if (this.user_role_name === 'Accountant') {
-  //       this.selectedEmployeeVal = this.allEmployeeList[0].user_id;
-  //       this.selectEmployee.emit(this.allEmployeeList[0].user_id);
-        
-  //     }
-  //     if (this.user_role_name === 'Manager') {
-  //       this.getManagerData()
-  //     }
-  //   }, (error => {
-  //     this.apiService.showError(error?.error?.detail)
-  //   }));
-  // }
 
   managerData: any = []
-  getManagerData() :void{
-    let queryparams = `?is_active=True&employee=True&employee_id=${this.user_id}&is_manager=True`;
+  getManagerList() :void{
+    let queryparams = `?is_active=True&employee=True&designation=manager`;
     this.apiService.getData(`${environment.live_url}/${environment.employee}/${queryparams}`).subscribe((respData: any) => {
       this.managerData = respData;
       // this.allEmployeeList.push(...this.managerData); // uncomment only if you are not using pagination for the emp dropdown
@@ -93,17 +65,17 @@ export class EmployeeListComponent implements OnInit, OnChanges {
   }
 
   public onSelectedEmployee(event: any) {
-     this.selectedEmployeeVal = event.value;
+    this.selectedEmployeeVal = event.value;
     this.selectEmployee.emit(event.value);
-    this.updateSelectedItems('employee', Array.isArray(event.value) ? event.value : event.value)
+    this.updateSelectedItems('manager', Array.isArray(event.value) ? event.value : event.value)
   }
 
   // new code
 
-  pageSizeDropdown = 10;
+  pageSizeDropdown = 50;
 
 dropdownState:any = {
-    employee: {
+    manager: {
     page: 1,
     list: [],
     search: '',
@@ -114,14 +86,14 @@ dropdownState:any = {
 };
 
 dropdownEndpoints:any = {
-  employee: environment.employee,
+  manager: environment.employee,
 };
 
 private scrollListeners: { [key: string]: (event: Event) => void } = {};
 
 // Selected items for pagination dropdowns
 selectedItemsMap: { [key: string]: any[] } = {
-  employee: [],
+  manager: [],
 };
 
 
@@ -174,13 +146,8 @@ fetchData(key: string, append = false) {
   if (state.search) {
     query += `&search=${encodeURIComponent(state.search)}`;
   }
- if(key==='employee'){
-  query += `&is_active=True&employee=True`
-   if (this.user_role_name === 'Accountant') {
-      query += `&employee_id=${this.user_id}`;
-    } else if (this.user_role_name === 'Manager') {
-      query += `&reporting_manager_id=${this.user_id}`;
-    }
+ if(key==='manager'){
+  query += `is_active=True&employee=True&designation=manager`
  }
   
   this.apiService.getData(`${environment.live_url}/${this.dropdownEndpoints[key]}/?${query}`)
@@ -310,3 +277,4 @@ patchDropdownValuesForEdit(data: any) {
 
 
 }
+

@@ -1,0 +1,24 @@
+<div class="row ms-2 d-flex align-items-center my-3 common-filters">
+  <div class="col-sm-12 col-md-4 col-lg-2 text-end">
+    <app-employee-list (selectEmployee)="selectedEmployee($event)" [resetFilterField]="resetFilter || resetEmployeeFilter" [multiple]="mutiple"></app-employee-list>
+  </div>
+  <div class="col-sm-12 col-md-4 col-lg-2 text-end" *ngIf="userRole==='Admin'">
+    <app-manager-list (selectEmployee)="selectedManager($event)" [resetFilterField]="resetFilter || resetManagerFilter" [multiple]="false"></app-manager-list>
+  </div>
+  <div class="col-sm-12 col-md-4 col-lg-2">
+    <app-periodicity (selectPeriodicity)="selectedPeriodicity($event)" [defaultSelection]="ondefaultSelection" [resetFilterField]="resetFilter"></app-periodicity>
+  </div>
+  <div class="col-sm-12 col-md-4 col-lg-2">
+    <app-period (selectPeriod)="selectedPeriod($event)" [mode]="modeName" [defaultSelection]="ondefaultSelection" [resetFilterField]="resetFilter" [resetOnPeriodicityChange]="resetPeriodOnPeriodicityChange"></app-period>
+  </div>
+  <div class="col-sm-12 col-md-6 col-lg-4 d-flex justify-content-evenly">
+    <button mat-raised-button class="proceedbtn mat-btn-s mr-2" type="button" (click)="applySearch()" [disabled]=" !periodicityId || !period || !period.year || !period.month_list">Search</button>
+    <button mat-raised-button class="cancel-button mat-btn-s" type="button" (click)="resetSearch()" [disabled]="resetBtnDisable">
+      Reset</button>
+    </div>
+</div>
+
+<div class="performance-cards">
+  <app-quantitative-performance [dropdwonFilterData]="commonFilterData"></app-quantitative-performance>
+  <app-qualitative-performance [dropdwonFilterData]="commonFilterData"></app-qualitative-performance>
+</div>
