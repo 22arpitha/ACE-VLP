@@ -119,6 +119,7 @@ wfh_prolonged_health_summary_report:`wfh-prolonged-health-summary-report`,
 wfh_prolonged_health_transaction_report:`wfh-prolonged-health-transaction-report/`,
 it_ticket:`tickets`,
 it_ticket_rejections:`ticket-rejections`,
+issue_list: `issues`,
 performance_dashboard:`dashboard`,
 
 // project ace
