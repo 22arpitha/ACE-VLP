@@ -25,10 +25,6 @@ export class ItIssueReportsComponent implements OnInit {
     accessConfig: [],
     tableSize: 50,
     pagination: true,
-    showIncludeAllJobs: true,
-    includeAllJobsEnable: false,
-    includeAllJobsValue: false,
-    selectedClientId: null,
     showDownload: false,
   };
   user_id: any;
@@ -42,6 +38,7 @@ export class ItIssueReportsComponent implements OnInit {
   directionValue: string = '';
   primaryEmployees: any = [];
   selectedStatus: any = [];
+  selectedIssues: any = [];
   constructor(
     private common_service: CommonServiceService,
     private api: ApiserviceService
@@ -68,7 +65,8 @@ export class ItIssueReportsComponent implements OnInit {
       raised_date: this.raisedDate,
       status_date: this.selectedStatusDate,
       prime_emp: this.primaryEmployees,
-      ticket_status: this.selectedStatus
+      ticket_status: this.selectedStatus,
+      issues: this.selectedIssues
     });
   }
 
@@ -85,7 +83,8 @@ export class ItIssueReportsComponent implements OnInit {
         raised_date: this.raisedDate,
         status_date: this.selectedStatusDate,
         prime_emp: this.primaryEmployees,
-        ticket_status: this.selectedStatus
+        ticket_status: this.selectedStatus,
+        issues: this.selectedIssues
       });
     }
 
@@ -129,7 +128,8 @@ export class ItIssueReportsComponent implements OnInit {
           raised_date: this.raisedDate,
           status_date: this.selectedStatusDate,
           prime_emp: this.primaryEmployees,
-          ticket_status: this.selectedStatus
+          ticket_status: this.selectedStatus,
+          issues: this.selectedIssues
         });
     }
   }
@@ -144,11 +144,13 @@ export class ItIssueReportsComponent implements OnInit {
       raised_date: this.raisedDate,
       status_date: this.selectedStatusDate,
       prime_emp: this.primaryEmployees,
-      ticket_status: this.selectedStatus
+      ticket_status: this.selectedStatus,
+      issues: this.selectedIssues
     });
   }
 
   onApplyFilter(filteredData: any[], filteredKey: string): void {
+    console.log(filteredKey)
     if (filteredKey === 'status_date') {
       this.selectedStatusDate = filteredData;
     }
@@ -161,6 +163,9 @@ export class ItIssueReportsComponent implements OnInit {
     if(filteredKey === 'status-ids') {
       this.selectedStatus = filteredData;
     }
+    if(filteredKey === 'issue-ids') {
+      this.selectedIssues = filteredData;
+    }
     this.getTableData({
       page: 1,
       pageSize: this.tableSize,
@@ -168,7 +173,8 @@ export class ItIssueReportsComponent implements OnInit {
       raised_date: this.raisedDate,
       status_date: this.selectedStatusDate,
       prime_emp: this.primaryEmployees,
-      ticket_status: this.selectedStatus
+      ticket_status: this.selectedStatus,
+      issues: this.selectedIssues
     });
   }
   onApplyDateFilter(filteredDate: string, filteredKey: string): void {
@@ -186,7 +192,8 @@ export class ItIssueReportsComponent implements OnInit {
       raised_date: this.raisedDate,
       status_date: this.selectedStatusDate,
       prime_emp: this.primaryEmployees,
-      ticket_status: this.selectedStatus
+      ticket_status: this.selectedStatus,
+      issues: this.selectedIssues
 
     });
   }
@@ -201,8 +208,8 @@ export class ItIssueReportsComponent implements OnInit {
       raised_date: this.raisedDate,
       status_date: this.selectedStatusDate,
       prime_emp: this.primaryEmployees,
-      ticket_status: this.selectedStatus
-
+      ticket_status: this.selectedStatus,
+      issues: this.selectedIssues
     });
   }
 
@@ -245,7 +252,7 @@ export class ItIssueReportsComponent implements OnInit {
     window.open(url, '_blank');
   }
 
-  async getTableData(params?: { page?: number; pageSize?: number; searchTerm?: string; raised_date?: any; status_date?: any, ticket_status?: any[]; prime_emp?: any }) {
+  async getTableData(params?: { page?: number; pageSize?: number; searchTerm?: string; raised_date?: any; status_date?: any, ticket_status?: any[]; prime_emp?: any,issues?: any[] }) {
     let finalQuery;
     const page = params?.page ?? this.page;
     const pageSize = params?.pageSize ?? this.tableSize;
@@ -260,6 +267,10 @@ export class ItIssueReportsComponent implements OnInit {
     } if (params?.status_date?.startDate && params?.status_date?.endDate) {
       finalQuery += `&status_start-date=${params?.status_date.startDate}&status_end-date=${params?.status_date.endDate}`;
     }
+    if (params?.issues?.length > 0) {
+      finalQuery += `&issue=[${params?.issues}]`;
+    }
+
     if (this.directionValue && this.sortValue) {
       finalQuery += `&sort-by=${this.sortValue}&sort-type=${this.directionValue}`;
     }
@@ -358,8 +369,8 @@ export class ItIssueReportsComponent implements OnInit {
 
     let endpoint = '';
 
-    if (key === 'is-primary-ids') {
-      endpoint = environment.user;
+    if (key === 'issue-ids') {
+      endpoint = environment.issue_list;
     } 
     if(key === 'status-ids') {
        this.updateFilterColumn(key, { data: this.it_status, page: 1, total: this.it_status.length, searchTerm: '' });
@@ -371,11 +382,7 @@ export class ItIssueReportsComponent implements OnInit {
         if (!res) return;
 
         const fieldMap: any = {
-          'client-ids': { id: 'id', name: 'client_name' },
-          'job-ids': { id: 'id', name: 'job_name' },
-          'job-status-ids': { id: 'id', name: 'group_name' },
-          'group-ids': { id: 'id', name: 'group_name' },
-          'is-primary-ids': { id: 'employee_id', name: 'employee__full_name' }
+          'issue-ids': { id: 'issue_id', name: 'issue' }
         };
 
         const newData = res.results?.map((item: any) => ({

@@ -66,7 +66,7 @@ export class NewTicketComponent implements OnInit, OnDestroy {
   initializeForm(): void {
     this.ticketForm = this.fb.group({
       employee_id: [{ value: null, disabled: false }, Validators.required],
-      issue: ['', [Validators.required, Validators.minLength(5), Validators.maxLength(200)]],
+      issue_input: ['', [Validators.required, Validators.minLength(5), Validators.maxLength(200)]],
       details: ['', [Validators.required, Validators.minLength(10), Validators.maxLength(2000)]],
       attachment: [null]
     });
@@ -160,7 +160,7 @@ export class NewTicketComponent implements OnInit, OnDestroy {
     const formValues = this.ticketForm.getRawValue();
     const ticketData = new FormData();
     ticketData.append('employee_id', formValues['employee_id']);
-    ticketData.append('issue', formValues['issue']);
+    ticketData.append('issue_input', formValues['issue_input']);
     ticketData.append('details', formValues['details']);
     if (this.selectedFile) {
       ticketData.append('attachment', this.selectedFile, this.selectedFile.name);
@@ -247,7 +247,7 @@ export class NewTicketComponent implements OnInit, OnDestroy {
   }
 
   // Getter methods for form controls
-  get issue() { return this.ticketForm.get('issue'); }
+  get issue_input() { return this.ticketForm.get('issue_input'); }
   get details() { return this.ticketForm.get('details'); }
 
   // Helper method to check if field has error
@@ -271,7 +271,7 @@ export class NewTicketComponent implements OnInit, OnDestroy {
         return validationResult['maxlength'].requiredLength;
       }
     }
-    return fieldName === 'issue' ? 200 : 2000;
+    return fieldName === 'issue_input' ? 200 : 2000;
   }
 
 

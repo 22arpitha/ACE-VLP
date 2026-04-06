@@ -22,11 +22,22 @@ export const tableColumns  = [
     leftAlign:true
   },
   {
+    label: 'Ticket Raised Date',
+    key: 'ticket_raised_date',
+    sortKey:'ticket_raised_date',
+    filterable: true,
+    filterType: 'daterange',
+    sortable: true,
+    type:'date',
+  },
+  {
     label: 'Issue',
     key: 'issue',
     sortKey:'issue',
-    keyId: 'issue',
-    filterable: false,
+    keyId: 'id',
+    filterable: true,
+    filterType: 'multi-select',
+    paramskeyId: 'issue-ids',
     sortable: true,
   },
   {
@@ -38,12 +49,6 @@ export const tableColumns  = [
   },
   
   {
-    label: 'Attachment',
-    key: 'attachment',
-    sortKey:'attachment',
-    sortable: false
-  },
-  {
     label: 'Status',
     key: 'status_display',
     sortKey:'status_display',
@@ -53,18 +58,9 @@ export const tableColumns  = [
     filterType: 'multi-select',
     sortable: true,
   },
-  {
-    label: 'Ticket Raised Date',
-    key: 'ticket_raised_date',
-    sortKey:'ticket_raised_date',
-    filterable: true,
-    filterType: 'daterange',
-    sortable: true,
-    type:'date',
-  },
   
   {
-    label: 'Status Date',
+      label: 'Status Date',
     key: 'status_date',
     sortKey:'status',
     filterable: true,
@@ -73,11 +69,15 @@ export const tableColumns  = [
     sortable: true
   },
   {
+    label: 'Attachment',
+    key: 'attachment',
+    sortKey:'attachment',
+    sortable: false
+  },
+  {
     label: 'TAT',
     key: 'tat_hours',
-    sortKey:'tat_hours',
+    sortKey:'tat_hrs',
     sortable: true
   },
-  
-
 ]

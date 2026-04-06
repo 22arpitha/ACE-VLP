@@ -53,22 +53,22 @@
       <!-- Issue -->
       <div class="form-group">
         <label class="form-label required">Issue</label>
-        <input type="text" class="form-input" formControlName="issue"
+        <input type="text" class="form-input" formControlName="issue_input"
           placeholder="Brief description of the issue (e.g., Unable to access email)"
-          [class.error]="hasError('issue', 'required') || hasError('issue', 'minlength') || hasError('issue', 'maxlength')">
+          [class.error]="hasError('issue_input', 'required') || hasError('issue_input', 'minlength') || hasError('issue_input', 'maxlength')">
 
         <div class="field-footer">
-          <div class="error-message" *ngIf="hasError('issue', 'required')">
+          <div class="error-message" *ngIf="hasError('issue_input', 'required')">
             Issue is required
           </div>
-          <div class="error-message" *ngIf="hasError('issue', 'minlength')">
+          <div class="error-message" *ngIf="hasError('issue_input', 'minlength')">
             Issue must be at least 5 characters
           </div>
-          <div class="error-message" *ngIf="hasError('issue', 'maxlength')">
+          <div class="error-message" *ngIf="hasError('issue_input', 'maxlength')">
             Issue must not exceed 200 characters
           </div>
-          <div class="char-count" [class.limit-warning]="getCharacterCount('issue') > 180">
-            {{ getCharacterCount('issue') }} / 200
+          <div class="char-count" [class.limit-warning]="getCharacterCount('issue_input') > 180">
+            {{ getCharacterCount('issue_input') }} / 200
           </div>
         </div>
       </div>

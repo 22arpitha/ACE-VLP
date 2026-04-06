@@ -11,6 +11,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { TicketDetailComponent } from '../ticket-detail/ticket-detail.component';
 import { GenericTimesheetConfirmationComponent } from 'src/app/generic-components/generic-timesheet-confirmation/generic-timesheet-confirmation.component';
+import { SubModuleService } from 'src/app/service/sub-module.service';
 export interface IdNamePair {
   id: any;
   name: string;
@@ -38,7 +39,7 @@ export class TicketListComponent implements OnInit, OnDestroy {
     issue: false,
     status: false,
     status_date: false,
-    tat_hours:false
+    tat_hrs:false
   };
   page = 1;
   count = 0;
@@ -69,12 +70,14 @@ export class TicketListComponent implements OnInit, OnDestroy {
   user_id: any;
   it_status = [{ id: 1, name: 'Open' }, { id: 2, name: "Close Request sent" }, { id: 3, name: "Re-Open" }, { id: 4, name: "Closed" }];
   userRole: any;
+  accessPermissions = []
   dateRange = {
     start: '',
     end: ''
   };
   constructor(private datePipe: DatePipe, private common_service: CommonServiceService, private activateRoute: ActivatedRoute, private router: Router,
     private api: ApiserviceService, private dropdownService: DropDownPaginationService, private dialog: MatDialog, private modalService: NgbModal,
+    private accessControlService: SubModuleService
   ) {
     this.user_id = sessionStorage.getItem('user_id');
     this.userRole = sessionStorage.getItem('user_role_name').toLowerCase();
@@ -94,7 +97,7 @@ export class TicketListComponent implements OnInit, OnDestroy {
     if (this.userRole !== 'admin') {
       this.getUrserData(this.user_id);
     }
-    this.filterData();
+    this.getModelAccess();
     // this.getEmployees();
     // this.getAllJobStatus();
   }
@@ -112,6 +115,17 @@ export class TicketListComponent implements OnInit, OnDestroy {
     });
   }
 
+  getModelAccess(){
+     this.accessControlService.getAccessForActiveUrl(this.user_id).subscribe((access) => {
+      if (access) {
+        this.accessPermissions = access[0].operations;
+        console.log(access)
+         this.filterData();
+      }
+    },(error: any) => {
+      this.api.showError(error?.error?.detail);
+    });
+  }
   public getAllJobStatus() {
     this.allStatusNames = [];
     this.api.getData(`${environment.live_url}/${environment.settings_job_status}/`).subscribe((respData: any) => {
@@ -157,7 +171,7 @@ export class TicketListComponent implements OnInit, OnDestroy {
         let dataToSend = {
           "status": 4,
           'employee_id': this.user_id,
-          'issue': data?.issue,
+          'issue_input': data?.issue,
         }
         this.api.updateData(`${environment.live_url}/${environment.it_ticket}/${data?.id}/`, dataToSend).subscribe((resp: any) => {
           this.api.showSuccess(resp.message);
@@ -187,7 +201,7 @@ export class TicketListComponent implements OnInit, OnDestroy {
         let dataToSend = {
           "status": 2,
           'employee_id': this.user_id,
-          'issue': data?.issue,
+          'issue_input': data?.issue,
         }
         this.api.updateData(`${environment.live_url}/${environment.it_ticket}/${data?.id}/`, dataToSend).subscribe((resp: any) => {
           this.api.showSuccess(resp.message);
@@ -216,7 +230,7 @@ export class TicketListComponent implements OnInit, OnDestroy {
         let dataToSend = {
           "status": 4,
           'employee_id': this.user_id,
-          'issue': data?.issue,
+          'issue_input': data?.issue,
         }
         this.api.updateData(`${environment.live_url}/${environment.it_ticket}/${data?.id}/`, dataToSend).subscribe((resp: any) => {
           this.api.showSuccess(resp.message);
@@ -241,12 +255,15 @@ export class TicketListComponent implements OnInit, OnDestroy {
   }
 
   getActions(item: any): string[] {
+    if(this.userRole !='admin' && !this.accessPermissions[0]?.update){
+      return [];
+    }
     const actions: string[] = [];
 
     const isAdmin = this.userRole === 'admin';
     const isAccountant = this.userRole === 'accountant';
     const isManager = this.userRole === 'manager';
-    const isIT = this.departmentName?.toLowerCase() === 'it department';
+    const isIT = this.userRole === 'technical team';
 
     // 👇 key condition
     const isAccountantLike = isAccountant || (isManager && item.logged_data);
@@ -257,9 +274,12 @@ export class TicketListComponent implements OnInit, OnDestroy {
 
     if (item.status_display === 'Open') {
       // Admin or Accountant-like (NOT IT) → Close
-      if ((isAdmin || isAccountantLike) && !isIT) {
+      if (isAdmin || (!isIT && item.logged_data)) {
         actions.push('close');
       }
+      // if ((isAdmin || isAccountantLike) && !isIT) {
+      //   actions.push('close');
+      // }
 
       // IT users (not admin/accountant-like) → Close Request
       if (isIT) {
@@ -268,9 +288,12 @@ export class TicketListComponent implements OnInit, OnDestroy {
     }
 
     if (item.status_display === 'Close Request sent') {
-      if (isAccountantLike && !isIT) {
+      if (!isAdmin && !isIT && item.logged_data) {
         actions.push('approve', 'reject');
       }
+      // if (isAccountantLike && !isIT) {
+      //   actions.push('approve', 'reject');
+      // }
     }
 
     return actions;
