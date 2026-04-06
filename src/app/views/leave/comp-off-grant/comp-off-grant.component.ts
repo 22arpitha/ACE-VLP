@@ -8,7 +8,6 @@ import {
   Validators,
 } from '@angular/forms';
 import { MatChipInputEvent } from '@angular/material/chips';
-import { startWith, map, Observable } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { ApiserviceService } from '../../../service/apiservice.service';
 import { CommonServiceService } from '../../../service/common-service.service';
@@ -269,6 +268,8 @@ export class CompOffGrantComponent implements OnInit {
   public resetFormState() {
     this.totalDays = 0;
     this.leave_balance = 0
+    this.selectedEmployees = [];
+    this.employeeCtrl.setValue(null);
     this.formGroupDirective?.resetForm();
     this.getAllLeaveTypes();
     this.initialForm();

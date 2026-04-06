@@ -50,7 +50,7 @@
             <div class="col-sm-12 col-md-3 col-lg-3  px-0 px-md-1">
               <mat-form-field appearance="outline" [ngClass]="{ 'highlight-background': !shouldDisableFields}" class="w-100 p-0 custom-mat-form-field">
                 <mat-label>From</mat-label>
-                <input matInput [matDatepicker]="picker1" (dateInput)="startDateFun($event)" placeholder="Enter From"
+                <input matInput [matDatepicker]="picker1" placeholder="Enter From"
                   autocomplete="off" formControlName="from_date" />
                 <!-- <button ngbTooltip="Clear" matSuffix mat-icon-button aria-label="Clear" type="button">
               <mat-icon>close</mat-icon>
@@ -66,7 +66,7 @@
               <mat-form-field appearance="outline" [ngClass]="{ 'highlight-background': !shouldDisableFields}"class="w-100 custom-mat-form-field">
                 <mat-label>Session<b class="r-star">*</b></mat-label>
                 <mat-select placeholder="Session" autocomplete="off" panelClass="custom-select-panel"
-                  [disableOptionCentering]="true" (selectionChange)="sessionFun1($event)"
+                  [disableOptionCentering]="true" 
                   formControlName="from_session">
                   <mat-option *ngFor="let session of sessions" [value]="session.value">{{ session.label }}</mat-option>
                 </mat-select>
@@ -80,7 +80,7 @@
             <div class="col-sm-12 col-md-3 col-lg-3 px-0 px-md-1">
               <mat-form-field appearance="outline" [ngClass]="{ 'highlight-background': !shouldDisableFields}" class="w-100 p-0 custom-mat-form-field">
                 <mat-label>To</mat-label>
-                <input matInput [matDatepicker]="picker2" [min]="minDate" (dateInput)="endDateFun($event)"
+                <input matInput [matDatepicker]="picker2" [min]="minDate"
                   placeholder="Enter To" autocomplete="off" formControlName="to_date" />
                 <!-- <button ngbTooltip="Clear" matSuffix mat-icon-button aria-label="Clear" type="button">
               <mat-icon>close</mat-icon>
@@ -99,7 +99,7 @@
               <mat-form-field appearance="outline" [ngClass]="{ 'highlight-background': !shouldDisableFields}" class="w-100 custom-mat-form-field">
                 <mat-label>Session<b class="r-star">*</b></mat-label>
                 <mat-select placeholder="Session" autocomplete="off" panelClass="custom-select-panel"
-                  [disableOptionCentering]="true" (selectionChange)="sessionFun2($event)" formControlName="to_session">
+                  [disableOptionCentering]="true" formControlName="to_session">
                   <mat-option *ngFor="let session of sessions" [value]="session.value">{{ session.label }}</mat-option>
                 </mat-select>
                 <mat-error *ngIf="f['to_session']?.invalid && f['to_session']?.touched || f['to_session']?.dirty">

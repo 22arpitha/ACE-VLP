@@ -39,10 +39,10 @@
                             <th>S.NO</th>
                             <th>
                                 Employee Name
-                                <i *ngIf="!arrowState['employee_name']" class="bi bi-arrow-down"
-                                    (click)="sort('asc', 'employee_name')"></i>
-                                <i *ngIf="arrowState['employee_name']" class="bi bi-arrow-up"
-                                    (click)="sort('desc', 'employee_name')"></i>
+                                <i *ngIf="!arrowState['employee__full_name']" class="bi bi-arrow-down"
+                                    (click)="sort('ascending', 'employee__full_name')"></i>
+                                <i *ngIf="arrowState['employee__full_name']" class="bi bi-arrow-up"
+                                    (click)="sort('descending', 'employee__full_name')"></i>
                                 <button mat-icon-button [matMenuTriggerFor]="employeesFilterMenu"
                                     (menuOpened)="openFilter(employeeFilter)"
                                     [ngClass]="filters.employees.length>=1 ? 'filterdColumn':''">
@@ -59,26 +59,30 @@
                             </th>
                             <th>
                                 Reporting To
-                                <i *ngIf="!arrowState['reporting_to']" class="bi bi-arrow-down"
-                                    (click)="sort('asc', 'reporting_to')"></i>
-                                <i *ngIf="arrowState['reporting_to']" class="bi bi-arrow-up"
-                                    (click)="sort('desc', 'reporting_to')"></i>
+                                <i *ngIf="!arrowState['reporting_manager_name']" class="bi bi-arrow-down"
+                                    (click)="sort('ascending', 'reporting_manager_name')"></i>
+                                <i *ngIf="arrowState['reporting_manager_name']" class="bi bi-arrow-up"
+                                    (click)="sort('descending', 'reporting_manager_name')"></i>
                             </th>
                             <th>
                                 From Date
-                                <i *ngIf="!arrowState['worked_date']" class="bi bi-arrow-down"
-                                    (click)="sort('asc', 'worked_date')"></i>
-                                <i *ngIf="arrowState['worked_date']" class="bi bi-arrow-up"
-                                    (click)="sort('desc', 'worked_date')"></i>
+                                <i *ngIf="!arrowState['from_date']" class="bi bi-arrow-down"
+                                    (click)="sort('ascending', 'from_date')"></i>
+                                <i *ngIf="arrowState['from_date']" class="bi bi-arrow-up"
+                                    (click)="sort('descending', 'from_date')"></i>
                             </th>
                             <th>
                                 To Date
-                                <i *ngIf="!arrowState['expiry_date']" class="bi bi-arrow-down"
-                                    (click)="sort('asc', 'expiry_date')"></i>
-                                <i *ngIf="arrowState['expiry_date']" class="bi bi-arrow-up"
-                                    (click)="sort('desc', 'expiry_date')"></i>
+                                <i *ngIf="!arrowState['to_date']" class="bi bi-arrow-down"
+                                    (click)="sort('ascending', 'to_date')"></i>
+                                <i *ngIf="arrowState['to_date']" class="bi bi-arrow-up"
+                                    (click)="sort('descending', 'to_date')"></i>
                             </th>
                             <th>Status
+                                <i *ngIf="!arrowState['status']" class="bi bi-arrow-down"
+                                    (click)="sort('ascending', 'status')"></i>  
+                                <i *ngIf="arrowState['status']" class="bi bi-arrow-up"
+                                    (click)="sort('descending', 'status')"></i>
                                 <button mat-icon-button [matMenuTriggerFor]="statusFilterMenu"
                                     [ngClass]="filters.status_name.length>=1 ? 'filterdColumn':''">
                                     <span *ngIf="filters.status_name.length>=1">{{filters.status_name.length}}</span>
@@ -94,12 +98,18 @@
                             </th>
                             <th>
                                 Credited
-                                <i *ngIf="!arrowState['taken']" class="bi bi-arrow-down"
-                                    (click)="sort('asc', 'taken')"></i>
-                                <i *ngIf="arrowState['taken']" class="bi bi-arrow-up"
-                                    (click)="sort('desc', 'taken')"></i>
+                                <i *ngIf="!arrowState['number_of_leaves_applying_for']" class="bi bi-arrow-down"
+                                    (click)="sort('ascending', 'number_of_leaves_applying_for')"></i>
+                                <i *ngIf="arrowState['number_of_leaves_applying_for']" class="bi bi-arrow-up"
+                                    (click)="sort('descending', 'number_of_leaves_applying_for')"></i>
                             </th>
-                            <th>Reason</th>
+                            <th>
+                                Reason
+                                <i *ngIf="!arrowState['message']" class="bi bi-arrow-down"
+                                    (click)="sort('ascending', 'message')"></i>
+                                <i *ngIf="arrowState['message']" class="bi bi-arrow-up"
+                                    (click)="sort('descending', 'message')"></i>
+                            </th>
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -112,12 +122,12 @@
                                 <td>{{ item.reporting_manager_name }}</td>
                                 <td>{{ item.from_date | dateFormater }}</td>
                                 <td>{{ item.to_date | dateFormater }}</td>
-                                <td *ngIf="item.status === 'Pending'"><span style="background: #ffface; color: #978419;"
+                                <td *ngIf="item.status?.toLowerCase() === 'pending'"><span style="background: #ffface; color: #978419;"
                                         class="p-2 rounded">PENDING</span></td>
-                                <td *ngIf="item.status === 'approved'"><span
+                                <td *ngIf="item.status?.toLowerCase() === 'approved'"><span
                                         style="background: #dcfce7; color: #15803d;" class="p-2 rounded">APPROVED</span>
                                 </td>
-                                <td *ngIf="item.status === 'rejected'"><span style="background:#fee2e2; color: #b91c1c;"
+                                <td *ngIf="item.status?.toLowerCase() === 'rejected'"><span style="background:#fee2e2; color: #b91c1c;"
                                         class="p-2 rounded">REJECTED</span></td>
                                 <!-- <td (click)="addOrViewRequest(true,item)"><span>{{item.status}}</span></td> -->
                                 <!-- <td>{{ item.credited || 0 }}</td> -->

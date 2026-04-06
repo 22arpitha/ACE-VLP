@@ -2,10 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { ApiserviceService } from '../../../service/apiservice.service'
 import { environment } from '../../../../environments/environment';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { GenericRemoveComponent } from '../../../generic-components/generic-remove/generic-remove.component';
 import { DatePipe } from '@angular/common';
 import { Router } from '@angular/router';
-import { GenericEditComponent } from '../../../generic-components/generic-edit/generic-edit.component';
 import { GenericDeleteComponent } from '../../../generic-components/generic-delete/generic-delete.component';
 import { MatDialog } from '@angular/material/dialog';
 import {CancelLeaveRequestComponent} from '../cancel-leave-request/cancel-leave-request.component'
@@ -36,7 +34,14 @@ export class MyLeavesComponent implements OnInit {
   sortValue: string = '';
   directionValue: string = '';
    arrowState: { [key: string]: boolean } = {
-    employee_name: false,
+     leave_type_id: false,
+     from_date:false,
+     number_of_leaves_applying_for: false,
+     created_datetime: false,
+     status: false,
+    to_date: false,
+    employee_id: false,
+    rejected_reason: false,
   };
   filterQuery: string;
   leaveOptions: any = [];
@@ -92,6 +97,15 @@ export class MyLeavesComponent implements OnInit {
       this.getMyLeaves();
     }
   }
+  sort(direction: string, column: string) {
+    Object.keys(this.arrowState).forEach(key => {
+      this.arrowState[key] = false;
+    });
+    this.arrowState[column] = direction === 'ascending' ? true : false;
+    this.directionValue = direction;
+    this.sortValue = column;
+    this.getMyLeaves();
+  }
   onFilterChange(event: any, filterType: string) {
     const selectedOptions = event;
     this.filters[filterType] = selectedOptions;
@@ -129,6 +143,9 @@ export class MyLeavesComponent implements OnInit {
       let start_date = this.datePipe.transform(this.mainStartDate, 'yyyy-MM-dd');
       let end_date = this.datePipe.transform(this.mainEndDate, 'yyyy-MM-dd');
       this.filterQuery +=`&leave-start-date=${start_date}&leave-end-date=${end_date}`;
+    }
+     if(this.directionValue && this.sortValue){
+      this.filterQuery += `&sort-by=${this.sortValue}&sort-type=${this.directionValue}`
     }
     this.apiService.getData(`${environment.live_url}/${environment.my_leaves}/${this.filterQuery}`).subscribe(
       (res: any) => {
