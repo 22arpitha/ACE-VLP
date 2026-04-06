@@ -14,11 +14,10 @@ import { ApiserviceService } from '../../../service/apiservice.service';
 import { CommonServiceService } from '../../../service/common-service.service';
 import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { MatDialog } from '@angular/material/dialog';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { CompOffGrantComponent } from '../comp-off-grant/comp-off-grant.component';
 import { ActivatedRoute, Router } from '@angular/router';
 import { urlToFile } from '../../../shared/fileUtils.utils';
-import { SubModuleService } from 'src/app/service/sub-module.service';
+import { SubModuleService } from '../../../service/sub-module.service';
 @Component({
   selector: 'app-leave-apply',
   templateUrl: './leave-apply.component.html',
@@ -29,7 +28,6 @@ export class LeaveApplyComponent implements OnInit {
   leave_balance: any = 'NA';
   selectedLeaveTypeName:any;
   employeeActive:boolean;
-  emppoyeeActive:any
   user_id: any;
   allleavetypeList: any = [];
   BreadCrumbsTitle: any;
@@ -44,9 +42,6 @@ export class LeaveApplyComponent implements OnInit {
   reportinManagerDetails: any = [];
   fileDataUrl: string | ArrayBuffer | null = null;
   // @ViewChild('fileInput') fileInput: ElementRef;
-  uploadFile: any;
-  url: any;
-  fileUrl: string | ArrayBuffer;
   minDate: any;
   leaveApplictaionId:any;
   editLeaveDetails: boolean = false;
@@ -128,7 +123,7 @@ export class LeaveApplyComponent implements OnInit {
   editLeaveApplication(){
     this.apiService.getData(`${environment.live_url}/${environment.apply_leaves}/${this.leaveApplictaionId}/`).subscribe(
       (res:any)=>{
-        console.log(res);
+        // console.log(res);
         this.leaveApplyForm.patchValue({
           leave_type: String(res?.leave_type),
           from_date: res?.from_date,
@@ -329,7 +324,7 @@ employeeGender:any;
       }
     }
 
-    console.log(total)
+    // console.log(total)
     this.totalDays = total;
   }
 
@@ -347,7 +342,6 @@ employeeGender:any;
 
   working_day_data: any;
   my_calendar:any;
-  allowDaysCounting:boolean = false
   getWorkingDays(date: Date) {
     this.apiService
       .getData(`${environment.live_url}/${environment.work_calendar}/`)
@@ -457,85 +451,7 @@ employeeGender:any;
     }
   }
 
-  startDateFun(event: any) {
-    // let new_date: any = this.convertDateTime(event.value);
-    // this.startDate = event.value;
-    // this.minDate = event.value;
-    // this.calculateDays();
-
-    // this.getWorkingDays(event.value);
-
-    // this.leaveApplyForm.patchValue({ from_date: new_date });
-
-    // let recurringHolidayCount = this.countHolidays(
-    //   this.startDate,
-    //   this.endDate
-    // );
-
-    // this.getHolidayCalender(
-    //   this.startDate,
-    //   this.endDate,
-    //   (fixedHolidayCount) => {
-    //     this.totalDays =
-    //       this.totalDays - (recurringHolidayCount + fixedHolidayCount);
-    //   }
-    // );
-  }
-
-  endDateFun(event: any) {
-    // let new_date: any = this.convertDateTime(event.value);
-    // this.endDate = event.value;
-    // this.getWorkingDays(event.value);
-    // this.calculateDays();
-    // this.leaveApplyForm.patchValue({ to_date: new_date });
-
-    // let recurringHolidayCount = this.countHolidays(
-    //   this.startDate,
-    //   this.endDate
-    // );
-    // this.getHolidayCalender(
-    //   this.startDate,
-    //   this.endDate,
-    //   (fixedHolidayCount) => {
-    //     this.totalDays =
-    //       this.totalDays - (recurringHolidayCount + fixedHolidayCount);
-    //   }
-    // );
-  }
-
-  sessionFun1(event: any) {
-    // this.session1 = event.value; // "first" or "second"
-    // let recurringHolidayCount = this.countHolidays(
-    //   this.startDate,
-    //   this.endDate
-    // );
-    // this.getHolidayCalender(
-    //   this.startDate,
-    //   this.endDate,
-    //   (fixedHolidayCount) => {
-    //     this.totalDays =
-    //       this.totalDays - (recurringHolidayCount + fixedHolidayCount);
-    //   }
-    // );
-    // this.calculateDays();
-  }
-
-  sessionFun2(event: any) {
-    // this.session2 = event.value;
-    // let recurringHolidayCount = this.countHolidays(
-    //   this.startDate,
-    //   this.endDate
-    // );
-    // this.getHolidayCalender(
-    //   this.startDate,
-    //   this.endDate,
-    //   (fixedHolidayCount) => {
-    //     this.totalDays =
-    //       this.totalDays - (recurringHolidayCount + fixedHolidayCount);
-    //   }
-    // );
-    // this.calculateDays();
-  }
+ 
 
   public getAllEmployeeList() {
     this.allEmployeeEmailsList = [];
@@ -712,7 +628,6 @@ employeeGender:any;
   // get leave type config
   const leaveTypeId = this.leaveApplyForm.get('leave_type')?.value;
   const leaveTypeData = this.allleavetypeList?.find((l: any) => l.leave_type_id === leaveTypeId);
-
   const fromDateRaw = this.leaveApplyForm.get('from_date')?.value;
   const toDateRaw = this.leaveApplyForm.get('to_date')?.value;
 
@@ -760,6 +675,16 @@ employeeGender:any;
     }
   }
 
+  // Check future dates leave application limit
+  const today = new Date();
+  const nextMonthStart = new Date(today.getFullYear(), today.getMonth() + 1, 1);
+  if (toDate >= nextMonthStart) {
+    if (leaveTypeData?.leave_application_for_future_dates && this.totalDays > leaveTypeData.leave_application_for_future_dates) {
+      this.apiService.showError(`Leave application for future dates allowed up to ${leaveTypeData.leave_application_for_future_dates} days`);
+      return;
+    }
+  }
+
   // passed all checks → submit
   const formData = new FormData();
   Object.keys(this.leaveApplyForm.value).forEach((key) => {
@@ -801,6 +726,7 @@ employeeGender:any;
     this.leave_balance = 0
     this.formGroupDirective?.resetForm();
     this.initialForm();
+    this.getUserData();
     this.subscribeToDateChanges();
   }
 
@@ -846,10 +772,12 @@ employeeGender:any;
     if (this.leave_balance === 0) {
       // Allow only if date is from next month onwards
       if (selectedDate >= nextMonthStart) {
+
         return false; 
       }
       return true; 
-    }
+     }
+
     return false;
   }
   

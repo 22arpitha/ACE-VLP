@@ -26,10 +26,29 @@
           <thead>
             <tr>
               <th scope="col">SL NO</th>
-              <th scope="col">LEAVE PERIOD</th>
-              <th scope="col">CREDITED</th>
-              <th scope="col">DATE OF REQUEST</th>
+              <th scope="col">LEAVE PERIOD
+                <i *ngIf="!arrowState['from_date']" class="bi bi-arrow-down"
+                    (click)="sort('ascending', 'from_date')"></i>
+                <i *ngIf="arrowState['from_date']" class="bi bi-arrow-up"
+                    (click)="sort('descending', 'from_date')"></i>
+                </th>
+              <th scope="col">CREDITED
+                <i *ngIf="!arrowState['number_of_leaves_applying_for']" class="bi bi-arrow-down"
+                    (click)="sort('ascending', 'number_of_leaves_applying_for')"></i>
+                <i *ngIf="arrowState['number_of_leaves_applying_for']" class="bi bi-arrow-up"
+                    (click)="sort('descending', 'number_of_leaves_applying_for')"></i>
+                </th>
+              <th scope="col">DATE OF REQUEST
+                <i *ngIf="!arrowState['created_datetime']" class="bi bi-arrow-down"
+                    (click)="sort('ascending', 'created_datetime')"></i>
+                <i *ngIf="arrowState['created_datetime']" class="bi bi-arrow-up"
+                    (click)="sort('descending', 'created_datetime')"></i>
+                </th>
               <th scope="col">STATUS
+                <i *ngIf="!arrowState['status']" class="bi bi-arrow-down"
+                    (click)="sort('ascending', 'status')"></i>
+                <i *ngIf="arrowState['status']" class="bi bi-arrow-up"
+                    (click)="sort('descending', 'status')"></i>
                 <button mat-icon-button [matMenuTriggerFor]="statusFilterMenu"
                   [ngClass]="filters.status_name.length>=1 ? 'filterdColumn':''">
                   <span *ngIf="filters.status_name.length>=1">{{filters.status_name.length}}</span>
@@ -43,8 +62,18 @@
                     </app-generic-table-filter>
               </mat-menu>
               </th>
-              <th scope="col">MESSAGE</th>
-              <th scope="col">Rejected REASON</th>
+              <th scope="col">MESSAGE
+                <i *ngIf="!arrowState['message']" class="bi bi-arrow-down"
+                    (click)="sort('ascending', 'message')"></i>
+                <i *ngIf="arrowState['message']" class="bi bi-arrow-up"
+                    (click)="sort('descending', 'message')"></i>
+                </th>
+              <th scope="col">Rejected REASON
+                <i *ngIf="!arrowState['rejected_reason']" class="bi bi-arrow-down"
+                    (click)="sort('ascending', 'rejected_reason')"></i>
+                <i *ngIf="arrowState['rejected_reason']" class="bi bi-arrow-up"
+                    (click)="sort('descending', 'rejected_reason')"></i>
+                </th>
               <!-- <th scope="col">ACTION</th> -->
             </tr>
           </thead>
@@ -55,11 +84,11 @@
                 <td>{{item.from_date | dateFormater}}</td>
                 <td>{{item.number_of_leaves_applying_for}}</td>
                 <td>{{item.created_datetime | dateFormater}}</td>
-                <td *ngIf="item.status === 'Pending'"><span style="background: #ffface; color: #978419;"
+                <td *ngIf="item.status.toLowerCase() === 'pending'"><span style="background: #ffface; color: #978419;"
                     class="p-2 rounded">PENDING</span></td>
-                <td *ngIf="item.status === 'approved'"><span style="background: #dcfce7; color: #15803d;"
+                <td *ngIf="item.status.toLowerCase() === 'approved'"><span style="background: #dcfce7; color: #15803d;"
                     class="p-2 rounded">APPROVED</span></td>
-                <td *ngIf="item.status === 'rejected'"><span style="background:#fee2e2; color: #b91c1c;"
+                <td *ngIf="item.status.toLowerCase() === 'rejected'"><span style="background:#fee2e2; color: #b91c1c;"
                     class="p-2 rounded">REJECTED</span></td>
                 <td>{{item?.message}}</td>
                 <td>{{item.rejected_reason}}</td>

@@ -2,14 +2,13 @@ import { DatePipe } from '@angular/common';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { ApiserviceService } from 'src/app/service/apiservice.service';
-import { SubModuleService } from 'src/app/service/sub-module.service';
-import { CreateUpdateHolidayComponent } from '../create-update-holiday/create-update-holiday.component';
+import { ApiserviceService } from './../../../service/apiservice.service';
+import { SubModuleService } from './../../../service/sub-module.service';
 import { AddCompoffRequestComponent } from '../add-compoff-request/add-compoff-request.component';
-import { environment } from 'src/environments/environment';
+import { environment } from '../../../../environments/environment';
 import { CompOffGrantComponent } from '../comp-off-grant/comp-off-grant.component';
-import { DropDownPaginationService } from 'src/app/service/drop-down-pagination.service';
-import { GenericTableFilterComponent } from 'src/app/shared/generic-table-filter/generic-table-filter.component';
+import { DropDownPaginationService } from '../../../service/drop-down-pagination.service';
+import { GenericTableFilterComponent } from '../../../shared/generic-table-filter/generic-table-filter.component';
 
 export interface IdNamePair {
   id: any;
@@ -36,14 +35,14 @@ export class CompensatoryRequestComponent implements OnInit {
   userRole: any;
    leaveStatus :any = [];
   arrowState: { [key: string]: boolean } = {
-    employee_name: false,
-    reporting_to: false,
-    worked_date: false,
-    expiry_date: false,
+    employee__full_name: false,
+    reporting_manager_name: false,
+    from_date: false,
+    to_date: false,
     credited: false,
-    taken: false,
+    number_of_leaves_applying_for: false,
     balance: false,
-    reason: false,
+    message: false,
   };
   searchLeave: any
   filterQuery: string;
@@ -110,7 +109,7 @@ export class CompensatoryRequestComponent implements OnInit {
     Object.keys(this.arrowState).forEach(key => {
       this.arrowState[key] = false;
     });
-    this.arrowState[column] = direction === 'asc' ? true : false;
+    this.arrowState[column] = direction === 'ascending' ? true : false;
     this.directionValue = direction;
     this.sortValue = column;
     this.getAllCompOffData();
@@ -186,6 +185,9 @@ export class CompensatoryRequestComponent implements OnInit {
     if (this.filters.employees.length) {
       this.filterQuery += `&employee-ids=[${this.ids(this.filters.employees)}]`;
     }
+    if(this.directionValue && this.sortValue){
+      this.filterQuery += `&sort-by=${this.sortValue}&sort-type=${this.directionValue}`
+    }
     this.apiService.getData(`${environment.live_url}/${environment.comp_off_grant}/${this.filterQuery}`).subscribe(
       (res: any) => {
         this.compOffLists = res?.results;
@@ -209,7 +211,7 @@ export class CompensatoryRequestComponent implements OnInit {
   }
 
   fetchEmployees = (page: number, search: string) => {
-    const extraParams = {
+    const extraParams: any = {
       is_active: 'True',
       employee: 'True',
       // ...(this.userRole !== 'Admin' && { 'employee-id': this.user_id })
@@ -231,7 +233,7 @@ export class CompensatoryRequestComponent implements OnInit {
     }
   }
 
-  addOrViewRequest(edit, item) {
+  addOrViewRequest(edit: boolean, item: any) {
     sessionStorage.setItem('access-name', this.access_name?.name)
     const isMobile = window.innerWidth <= 425;
     const dialogRef =this.dialog.open(AddCompoffRequestComponent, {
@@ -249,7 +251,7 @@ export class CompensatoryRequestComponent implements OnInit {
 
   }
 
-  requestRevoke(item){
+  requestRevoke(item: any){
     
   }
   openGrantCompOff() {

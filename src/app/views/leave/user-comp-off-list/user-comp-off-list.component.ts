@@ -31,7 +31,12 @@ export class UserCompOffListComponent implements OnInit {
   sortValue: string = '';
   directionValue: string = '';
   arrowState: { [key: string]: boolean } = {
-    employee_name: false,
+    from_date: false,
+    number_of_leaves_applying_for: false,
+    created_datetime: false,
+    status: false,
+    message: false,
+    rejected_reason: false,
   };
   filterQuery: string;
   leaveOptions: any = [];
@@ -59,7 +64,7 @@ export class UserCompOffListComponent implements OnInit {
       .subscribe(
         (res: any) => {
           this.leaveStatus = res?.data
-            ?.filter((item: any) => item.value !== 'Pending')
+            // ?.filter((item: any) => item.value !== 'Pending')
             .map((item: any) => ({
               id: item.key,
               name: item.value,
@@ -93,6 +98,15 @@ export class UserCompOffListComponent implements OnInit {
   mainDateChange(event: any) {
     // const selectedDate = event.value;
     // const formattedDate = this.datePipe.transform(selectedDate, 'yyyy-MM-dd');
+  }
+  sort(direction: string, column: string) {
+    Object.keys(this.arrowState).forEach(key => {
+      this.arrowState[key] = false;
+    });
+    this.arrowState[column] = direction === 'ascending' ? true : false;
+    this.directionValue = direction;
+    this.sortValue = column;
+    this.getCompoffMyLeaves();
   }
   mainEndDateChange(event: any) {
     if (event.value) {
@@ -130,8 +144,11 @@ export class UserCompOffListComponent implements OnInit {
       this.filterQuery += `&status_values=[${this.filters.status_name.join(',')}]`;
       this.filterQuery += `&status_values=[${this.ids(this.filters.status_name)}]`;
     }
-    if (this.filters.status_name.length === 0) {
-      this.filterQuery += `&status_values=[Approved,Rejected]`;
+    // if (this.filters.status_name.length === 0) {
+    //   this.filterQuery += `&status_values=[Approved,Rejected]`;
+    // }
+    if(this.directionValue && this.sortValue){
+      this.filterQuery += `&sort-by=${this.sortValue}&sort-type=${this.directionValue}`
     }
     if (this.mainStartDate && this.mainEndDate) {
       let start_date = this.datePipe.transform(
