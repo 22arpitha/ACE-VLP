@@ -38,7 +38,7 @@ export class UserCompOffListComponent implements OnInit {
     message: false,
     rejected_reason: false,
   };
-  filterQuery: string;
+  filterQuery!: string;
   leaveOptions: any = [];
   leaveStatus: any = [];
   mainStartDate: any;

@@ -12,9 +12,10 @@ import {
 } from '@angular/forms';
 import { map, Observable, startWith } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
-import { CommonServiceService } from 'src/app/service/common-service.service';
-import { ApiserviceService } from 'src/app/service/apiservice.service';
+
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
+import { ApiserviceService } from '../../../service/apiservice.service';
+import { CommonServiceService } from '../../../service/common-service.service';
 
 @Component({
   selector: 'app-apply-work-from-home',
@@ -220,7 +221,7 @@ export class ApplyWorkFromHomeComponent implements OnInit {
       cc: [''],
       reporting_to: ['', Validators.required],
       message: ['', Validators.required],
-      supporting_document: ['', Validators.required],
+      supporting_document: [''],
       employee: [this.user_id],
       number_of_wfh_applying_for: [],
     });
@@ -240,7 +241,6 @@ export class ApplyWorkFromHomeComponent implements OnInit {
   }
 
   updateAttachmentValidation() {
-   
     this.leaveApplyForm
       .get('wfh_type')
       ?.valueChanges.subscribe((selectedId: any) => {
@@ -277,6 +277,20 @@ export class ApplyWorkFromHomeComponent implements OnInit {
       .subscribe(
         (respData: any) => {
           this.wfhCategories = respData;
+          // Sort so limited_flexibility appears first
+          this.wfhCategories.sort((a: any, b: any) => {
+            if (a.category_name === 'limited_flexibility') return -1;
+            if (b.category_name === 'limited_flexibility') return 1;
+            return 0;
+          });
+
+          const defaultCategory = this.wfhCategories.find(
+            (cat: any) => cat.category_name === 'limited_flexibility',
+          );
+          if (defaultCategory) {
+            this.leaveApplyForm.patchValue({ wfh_type: defaultCategory.id });
+          }
+
           // this.allleavetypeList = respData?.results?.filter(
           //   (item: any) =>
           //     item.is_active === true &&
@@ -771,11 +785,20 @@ export class ApplyWorkFromHomeComponent implements OnInit {
       .postData(`${environment.live_url}/${environment.apply_wfh}/`, formData)
       .subscribe(
         (res: any) => {
-          this.apiService.showSuccess(res.message);
+          const successMsg =
+            res?.message || 'WFH request submitted successfully';
+          this.apiService.showSuccess(successMsg);
           this.resetFormState();
+          this.dialog.closeAll();
         },
-        (err) => {
-          this.apiService.showError(err?.error);
+        (err: any) => {
+          const errorMsg =
+            err?.error?.error ||
+            err?.error?.message ||
+            err?.message ||
+            'Something went wrong';
+
+          this.apiService.showError(errorMsg);
         },
       );
   }

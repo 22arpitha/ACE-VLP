@@ -39,7 +39,7 @@
           Reset
         </button>
         <button mat-raised-button class="proceedbtn mat-btn-s" (click)="openleaveForm()">
-          Add Request
+        {{ userRole === 'Admin' ? 'Add WFH Request' : 'Apply for WFH' }}
         </button>
       </div>
     </div>

@@ -66,12 +66,12 @@
             <!-- <button class="btn"  (click)="openInNewTab(leave_data.attachment)">View</button> -->
           </div>
 
-          <div class="col-sm-12 col-md-6 col-lg-6 my-2" *ngIf="leave_data?.rejected_reason">
+          <div class="col-sm-12 col-md-6 col-lg-6 my-2" *ngIf="leave_data?.rejected_reason && displayButton && (userRole==='Admin' || userRole==='Manager')">
             <h4 class="label-name">Reason of Rejection</h4>
             <p>{{ leave_data.rejected_reason }}</p>
           </div>
 
-          <div class="col-12" *ngIf="displayButton">
+          <div class="col-12" *ngIf="displayButton && (userRole==='Admin' || userRole==='Manager')">
             <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
               <mat-label>Reason for Rejecting<b class="r-star">*</b></mat-label>
 
@@ -93,7 +93,8 @@
               </mat-hint>
             </mat-form-field>
           </div>
-          <div class="col-12 my-4 px-2 d-flex justify-content-end" *ngIf="displayButton">
+          <div *ngIf="userRole==='Admin' || userRole==='Manager'">
+  <div class="col-12 my-4 px-2 d-flex justify-content-end" *ngIf="displayButton">
             <div>
               <button mat-button class="cancel-button mat-btn-s me-2" type="button" mat-dialog-close>
                 Close
@@ -107,6 +108,8 @@
 
             </div>
           </div>
+          </div>
+        
           <div class="col-12 my-4 px-2 d-flex justify-content-end" *ngIf="userRole === 'Admin'">
 
             <!-- Director Approve -->
