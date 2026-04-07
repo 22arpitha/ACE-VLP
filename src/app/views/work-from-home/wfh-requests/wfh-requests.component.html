@@ -38,8 +38,8 @@
         <button mat-raised-button class="cancel-button mat-btn-s" type="button" (click)="reset()">
           Reset
         </button>
-        <button mat-raised-button class="proceedbtn mat-btn-s" (click)="openleaveForm()">
-        {{ userRole === 'Admin' ? 'Add WFH Request' : 'Apply for WFH' }}
+        <button mat-raised-button class="proceedbtn mat-btn-s" *ngIf="canCreateWfh" (click)="openleaveForm()">
+          {{ userRole === 'Admin' ? 'Add WFH Request' : 'Apply for WFH' }}
         </button>
       </div>
     </div>
@@ -118,8 +118,8 @@
                   </app-generic-table-filter>
                 </mat-menu>
               </th>
-              <th scope="col">View</th>
-              <th scope="col" *ngIf="userRole==='Admin'">Management Approval</th>
+              <th scope="col" *ngIf="canViewWfh">View</th>
+              <th scope="col" *ngIf="userRole==='Director' || userRole==='Admin'">Management Approval</th>
             </tr>
           </thead>
           <tbody>
@@ -142,8 +142,7 @@
                     class="p-2 rounded">APPROVED</span></td>
                 <td *ngIf="item.status === 'Rejected'"><span style="background:#fee2e2; color: #b91c1c;"
                     class="p-2 rounded">REJECTED</span></td>
-                <td>
-                  <!-- <i class="bi bi-eye fw-bold fs-4"></i> -->
+                <td *ngIf="canViewWfh">
                   <span>
                     <img src="../../../../assets/images/view.svg" class="icon-image" container="body" ngbTooltip="View"
                       (click)="viewDetails(item)" />
@@ -151,14 +150,14 @@
                 </td>
 
                 <td
-                  *ngIf="userRole==='Admin'&&item.is_confirmed_by_director===false&&item.wfh_type_name==='prolonged_health_issue'">
+                  *ngIf="(userRole==='Director'||userRole==='Admin')&&item.is_confirmed_by_director===false&&item.wfh_type_name==='prolonged_health_issue'&&(item.status==='Approved'||item.status==='Pending')">
                   <span style="background: #ffface; color: #978419;" class="p-2 rounded">PENDING</span></td>
 
                 <td
-                  *ngIf="userRole==='Admin'&&item.is_confirmed_by_director===true&&item.wfh_type_name==='prolonged_health_issue'">
+                  *ngIf="(userRole==='Director'||userRole==='Admin')&&item.is_confirmed_by_director===true&&item.wfh_type_name==='prolonged_health_issue'&&item.status==='Approved'">
                   <span style="background: #dcfce7; color: #15803d;" class="p-2 rounded">APPROVED</span></td>
                 <td
-                  *ngIf="userRole==='Admin'&&item.is_confirmed_by_director===false&&item.wfh_type_name==='limited_flexibility'">
+                  *ngIf="userRole==='Director' || userRole==='Admin' &&item.is_confirmed_by_director===false&&item.wfh_type_name==='limited_flexibility'">
                   NA</td>
               </tr>
             </ng-container>

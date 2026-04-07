@@ -20,12 +20,16 @@ import { FullCalendarModule } from '@fullcalendar/angular';
     WfhRequestsComponent,
     ViewWfhRequestComponent,
   ],
-  imports: [CommonModule, WorkFromHomeRoutingModule,  ReactiveFormsModule,
-      FormsModule,
-      SharedModule,
-      HttpClientModule,
-      RouterModule,
-      NgMultiSelectDropDownModule,
-      FullCalendarModule,],
+  imports: [
+    CommonModule,
+    WorkFromHomeRoutingModule,
+    ReactiveFormsModule,
+    FormsModule,
+    SharedModule,
+    HttpClientModule,
+    RouterModule,
+    NgMultiSelectDropDownModule,
+    FullCalendarModule,
+  ],
 })
 export class WorkFromHomeModule {}

@@ -52,6 +52,11 @@ export class WfhRequestsComponent implements OnInit {
   searchLeave: any;
   user_id: any;
   userRole: any;
+  accessPermissions: any = [];
+  canCreateWfh = false;
+  canViewWfh = false;
+  canUpdateWfh = false;
+  canDeleteWfh = false;
   BreadCrumbsTitle: any = 'WFH Request';
   constructor(
     private accessControlService: SubModuleService,
@@ -73,6 +78,7 @@ export class WfhRequestsComponent implements OnInit {
     this.getPeriodData();
     this.getallLeaveTypes();
     this.getleaverequest();
+    this.getModuleAccess();
   }
 
   filters: {
@@ -146,6 +152,26 @@ export class WfhRequestsComponent implements OnInit {
           this.apiService.showError(error?.error?.detail);
         },
       );
+  }
+
+  getModuleAccess() {
+    this.accessControlService
+      .getAccessForActiveUrl(this.user_id)
+      .subscribe((access: any) => {
+        if (access?.length) {
+          this.accessPermissions = access[0].operations || access[0];
+          const ops = Array.isArray(this.accessPermissions)
+            ? this.accessPermissions[0]
+            : this.accessPermissions;
+
+          this.canCreateWfh = !!ops?.create && this.userRole !== 'Admin';
+          this.canViewWfh = !!ops?.view;
+          this.canUpdateWfh = !!ops?.update;
+          this.canDeleteWfh = !!ops?.delete;
+        } else {
+          console.log('No matching access found.');
+        }
+      });
   }
 
   getContinuousIndex(index: number): number {
@@ -256,7 +282,8 @@ export class WfhRequestsComponent implements OnInit {
     this.filterQuery = this.getFilterBaseUrl();
     if (this.userRole === 'Manager') {
       this.filterQuery += `&manager_id=${this.user_id}`;
-    }  if (this.userRole === 'Accountant') {
+    }
+    if (this.userRole === 'Accountant') {
       this.filterQuery += `&employee_id=${this.user_id}`;
     }
     if (this.filters.leave_type.length) {
@@ -312,7 +339,7 @@ export class WfhRequestsComponent implements OnInit {
     if (this.userRole === 'Manager') {
       extraParams['reporting_manager_id'] = this.user_id;
     }
-     if (this.userRole === 'Accountant') {
+    if (this.userRole === 'Accountant') {
       extraParams['employee_id'] = this.user_id;
     }
     return this.dropdownService.fetchDropdownData$(

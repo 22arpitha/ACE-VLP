@@ -58,12 +58,13 @@ export class UserCompOffListComponent implements OnInit {
       .getData(`${environment.live_url}/${environment.leave_status}/`)
       .subscribe(
         (res: any) => {
-          this.leaveStatus = res?.data
-            ?.filter((item: any) => item.value !== 'Pending')
-            .map((item: any) => ({
-              id: item.key,
-              name: item.value,
-            }));
+          console.log(res);
+          
+         this.leaveStatus = res?.data?.map((item: any) => ({
+          id: item.key,
+          name: item.value
+        }));
+      
         },
         (error) => {
           console.log(error);

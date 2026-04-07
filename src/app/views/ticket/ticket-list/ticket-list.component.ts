@@ -2,19 +2,16 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import {
-  Ticket,
-  TicketFilter,
-  TicketStatus,
-} from 'src/app/models/ticket.models';
-import { CommonServiceService } from 'src/app/service/common-service.service';
+import { Ticket, TicketFilter, TicketStatus } from '../../../models/ticket.models';
+import { CommonServiceService } from '../../../service/common-service.service';
+import { TicketService } from '../../../service/ticket.service';
 
-import { TicketService } from 'src/app/service/ticket.service';
 
 @Component({
   selector: 'app-ticket-list',
   templateUrl: './ticket-list.component.html',
   styleUrls: ['./ticket-list.component.scss'],
+  standalone:false
 })
 export class TicketListComponent implements OnInit, OnDestroy {
   tickets: Ticket[] = [];

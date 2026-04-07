@@ -3,14 +3,16 @@ import { Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { TicketService } from 'src/app/service/ticket.service';
-import { CommonServiceService } from 'src/app/service/common-service.service';
+import { CommonServiceService } from '../../../service/common-service.service';
+import { TicketService } from '../../../service/ticket.service';
+
 
 
 @Component({
   selector: 'app-new-ticket',
   templateUrl: './new-ticket.component.html',
-  styleUrls: ['./new-ticket.component.scss']
+  styleUrls: ['./new-ticket.component.scss'],
+  standalone:false
 })
 export class NewTicketComponent implements OnInit, OnDestroy {
   ticketForm!: FormGroup;

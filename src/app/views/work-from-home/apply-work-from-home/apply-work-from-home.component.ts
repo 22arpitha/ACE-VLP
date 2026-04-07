@@ -1,5 +1,5 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { environment } from 'src/environments/environment';
+
 import { CompOffGrantComponent } from '../../leave/comp-off-grant/comp-off-grant.component';
 import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { MatChipInputEvent } from '@angular/material/chips';
@@ -11,11 +11,13 @@ import {
   Validators,
 } from '@angular/forms';
 import { map, Observable, startWith } from 'rxjs';
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { ApiserviceService } from '../../../service/apiservice.service';
 import { CommonServiceService } from '../../../service/common-service.service';
+import { SubModuleService } from '../../../service/sub-module.service';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-apply-work-from-home',
@@ -65,6 +67,9 @@ export class ApplyWorkFromHomeComponent implements OnInit {
   @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
 
   @ViewChild('emailInput') emailInput!: ElementRef<HTMLInputElement>;
+  accessPermissions: any = [];
+  canCreateWfh = false;
+  userRole: any;
 
   openFileDialog(): void {
     this.fileInput.nativeElement.click();
@@ -79,7 +84,9 @@ export class ApplyWorkFromHomeComponent implements OnInit {
     private apiService: ApiserviceService,
     private common_service: CommonServiceService,
     private dialog: MatDialog,
+    private dialogRef: MatDialogRef<ApplyWorkFromHomeComponent>,
     private fb: FormBuilder,
+    private accessControlService: SubModuleService,
   ) {
     this.filteredEmails = this.emailCtrl.valueChanges.pipe(
       startWith(null),
@@ -90,6 +97,7 @@ export class ApplyWorkFromHomeComponent implements OnInit {
 
     this.common_service.setTitle(this.BreadCrumbsTitle);
     this.user_id = sessionStorage.getItem('user_id');
+    this.userRole = sessionStorage.getItem('user_role_name');
   }
 
   ngOnInit(): void {
@@ -99,6 +107,7 @@ export class ApplyWorkFromHomeComponent implements OnInit {
     this.getAllLeaveTypes();
     this.workCalendarlist();
     this.holidaylistsss();
+    this.getModuleAccess();
     // this.getWfhCategories();
     this.getWfhBalance();
     this.leaveApplyForm
@@ -186,6 +195,29 @@ export class ApplyWorkFromHomeComponent implements OnInit {
     this.apiService.getAllEmployees2().subscribe((res: any) => {
       this.ccEmailsList = res;
     });
+  }
+
+  getModuleAccess() {
+    this.accessControlService
+      .getAccessForActiveUrl(this.user_id)
+      .subscribe((access: any) => {
+        if (access?.length) {
+          this.accessPermissions = access[0].operations || access[0];
+          const ops = Array.isArray(this.accessPermissions)
+            ? this.accessPermissions[0]
+            : this.accessPermissions;
+
+          this.canCreateWfh = !!ops?.create && this.userRole !== 'Admin';
+          if (!this.canCreateWfh) {
+            this.apiService.showError('You do not have permission to apply for WFH.');
+            this.dialogRef.close();
+          }
+        } else {
+          console.log('No matching access found.');
+          this.apiService.showError('You do not have permission to apply for WFH.');
+          this.dialogRef.close();
+        }
+      });
   }
 
   onLeaveTypeChange(event: any) {
@@ -789,7 +821,7 @@ export class ApplyWorkFromHomeComponent implements OnInit {
             res?.message || 'WFH request submitted successfully';
           this.apiService.showSuccess(successMsg);
           this.resetFormState();
-          this.dialog.closeAll();
+          this.dialogRef.close({ data: 'refresh' });
         },
         (err: any) => {
           const errorMsg =
@@ -1093,5 +1125,133 @@ export class ApplyWorkFromHomeComponent implements OnInit {
           console.error(error);
         },
       );
+  }
+
+  // ===================== FRONTEND ENHANCEMENTS =====================
+
+  /**
+   * Get day of week name from date
+   * @param date Date object
+   * @returns Day name (Monday, Tuesday, etc.)
+   */
+  getDayOfWeek(date: any): string {
+    if (!date) return '';
+    try {
+      const d = new Date(date);
+      const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+      return days[d.getDay()];
+    } catch (e) {
+      return '';
+    }
+  }
+
+  /**
+   * Get CSS class for balance display based on warning level
+   * @param balance Current WFH balance
+   * @returns CSS class (text-danger, text-warning, text-success)
+   */
+  getBalanceClass(balance: number): string {
+    if (balance <= 1) return 'text-danger fw-bold';
+    if (balance <= 2) return 'text-warning fw-bold';
+    return 'text-success fw-bold';
+  }
+
+  /**
+   * Get warning message based on balance
+   * @param balance Current WFH balance
+   * @returns Warning message
+   */
+  getBalanceWarningMessage(balance: number): string {
+    if (balance <= 0) return '⛔ No balance available';
+    if (balance <= 1) return '⚠️ Almost exhausted - only ' + balance + ' day left';
+    if (balance <= 2) return '⚠️ Low balance - only ' + balance + ' days left';
+    if (balance < 5) return '✓ ' + balance + ' days available this quarter';
+    return '✓ Healthy balance - ' + balance + ' days available';
+  }
+
+  /**
+   * Get CSS class for progress bar
+   * @param balance Current balance
+   * @returns Bootstrap class name
+   */
+  getProgressBarClass(balance: number): string {
+    if (balance <= 1) return 'bg-danger';
+    if (balance <= 2) return 'bg-warning';
+    if (balance <= 3) return 'bg-info';
+    return 'bg-success';
+  }
+
+  /**
+   * Get the end date of current quarter
+   * @returns Quarter end date
+   */
+  getQuarterEndDate(): Date {
+    const currentDate = new Date();
+    const quarter = Math.floor(currentDate.getMonth() / 3);
+    const quarterEndDates = [
+      new Date(currentDate.getFullYear(), 2, 31), // Q1: March 31
+      new Date(currentDate.getFullYear(), 5, 30), // Q2: June 30
+      new Date(currentDate.getFullYear(), 8, 30), // Q3: September 30
+      new Date(currentDate.getFullYear(), 11, 31) // Q4: December 31
+    ];
+    return quarterEndDates[quarter];
+  }
+
+  /**
+   * Get current quarter string (Q1 2026, Q2 2026, etc.)
+   * @returns Quarter string
+   */
+  getCurrentQuarter(): string {
+    const currentDate = new Date();
+    const quarter = Math.floor(currentDate.getMonth() / 3) + 1;
+    const year = currentDate.getFullYear();
+    return `Q${quarter} ${year}`;
+  }
+
+  /**
+   * Calculate days until quarter end
+   * @returns Number of days remaining
+   */
+  getDaysUntilExpiry(): number {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const quarterEnd = this.getQuarterEndDate();
+    quarterEnd.setHours(23, 59, 59, 999);
+    const diffTime = quarterEnd.getTime() - today.getTime();
+    return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  }
+
+  /**
+   * Extract filename from URL
+   * @param url File URL
+   * @returns Filename
+   */
+  getFileNameFromUrl(url: string): string {
+    if (!url) return 'Download';
+    const parts = url.split('/');
+    const filename = parts[parts.length - 1];
+    return filename || 'Download';
+  }
+
+  /**
+   * Check if applying for Prolonged Health Issues category
+   * @returns True if Prolonged Health Issues is selected
+   */
+  isProlongedHealthIssue(): boolean {
+    const selectedCategory = this.wfhCategories.find(
+      (cat: any) => cat.id === this.leaveApplyForm.get('wfh_type')?.value
+    );
+    return selectedCategory?.category_name === 'prolonged_health_issue';
+  }
+
+  /**
+   * Check if applying for Limited Flexibility category
+   * @returns True if Limited Flexibility is selected
+   */
+  isLimitedFlexibility(): boolean {
+    const selectedCategory = this.wfhCategories.find(
+      (cat: any) => cat.id === this.leaveApplyForm.get('wfh_type')?.value
+    );
+    return selectedCategory?.category_name === 'limited_flexibility';
   }
 }

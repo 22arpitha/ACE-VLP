@@ -2,15 +2,17 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { Ticket, TicketStatus } from 'src/app/models/ticket.models';
-import { CommonServiceService } from 'src/app/service/common-service.service';
-import { TicketService } from 'src/app/service/ticket.service';
+import { Ticket, TicketStatus } from '../../../models/ticket.models';
+import { CommonServiceService } from '../../../service/common-service.service';
+import { TicketService } from '../../../service/ticket.service';
+
 
 
 @Component({
   selector: 'app-ticket-detail',
   templateUrl: './ticket-detail.component.html',
-  styleUrls: ['./ticket-detail.component.scss']
+  styleUrls: ['./ticket-detail.component.scss'],
+  standalone:false
 })
 export class TicketDetailComponent implements OnInit, OnDestroy {
   ticket?: Ticket;
