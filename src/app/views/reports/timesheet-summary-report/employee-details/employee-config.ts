@@ -7,11 +7,11 @@ export function getTableColumns(role: string) {
   },
   {
     label: 'Client',
-    key: 'client_name',sortable: false
+    key: 'client_name',sortable: false, leftAlign:true
   },
   {
     label: 'Job',
-    key: 'job_name',sortable: false
+    key: 'job_name',sortable: false,leftAlign:true
   },
   {
     label: 'Task',
@@ -19,7 +19,8 @@ export function getTableColumns(role: string) {
     key: 'task_name',
     // filterable: true,
     // filterType: 'multi-select',
-    sortable: true
+    sortable: true,
+    leftAlign:true
   },
 
   { label: 'Start time', sortKey: 'start_time', key: 'start_time', sortable: true },
@@ -35,7 +36,8 @@ if (role !== 'Accountant' ) {
     sortKey: 'employee_name',
     // filterable: true,
     // filterType: 'multi-select',
-    sortable: true
+    sortable: true,
+    leftAlign:true,
   });
 }
 return tableColumns;

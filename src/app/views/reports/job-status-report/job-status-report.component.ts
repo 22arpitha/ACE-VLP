@@ -33,6 +33,7 @@ export class JobStatusReportComponent implements OnInit {
      includeAllJobsValue:false,
      selectedClientId:null,
      sendEmail:true,
+     reportType:'job-status-report',
      showDownload:true,
    };
    tabStatus:any='True';
@@ -218,7 +219,7 @@ export class JobStatusReportComponent implements OnInit {
       break;
       case 'dateRange':
         // console.log(event.detail, event.key);
-      this.onApplyDateFilter(event.detail,event.detail.key);
+      this.onApplyDateFilter(event.detail,event.detail?.key || event.key);
       break;
       case 'sorting':
         this.onSorting(event);
@@ -586,7 +587,7 @@ private updateFilterColumn(key: string, cache: any) {
 
    exportCsvOrPdf(fileType) {
     const search = this.term?.trim().length >= 2? `search=${encodeURIComponent(this.term.trim())}&`: '';
-    let finalQuery = `?${search}job-status=[${this.statusList}]&report-type=job-status-report&file-type=${fileType}&download=true`;
+    let finalQuery = `?${search}job-status=[${this.statusList}]&report-type=job-status-report&non-productive-jobs=false&file-type=${fileType}&download=true`;
     finalQuery += this.client_id ? `&client=${this.client_id}` : '';
        if(this.userRole ==='Manager' && !this.client_id){
           // finalQuery += `&manager-ids=[${this.user_id}]`;
@@ -643,11 +644,11 @@ async getTableData(params?: { page?: number; pageSize?: number; searchTerm?: str
         }
       //  finalQuery += (this.userRole ==='Admin' || (this.userRole !='Admin' && this.client_id)) ? '':`&employee-ids=[${emp_ids}]`;
        finalQuery += this.client_id ? `&client=${this.client_id}` : '';
-       finalQuery += `&report-type=job-status-report`;
+       finalQuery += `&report-type=job-status-report&non-productive-jobs=false`;
         if (params?.client_ids?.length) {
             finalQuery += `&client-ids=[${params.client_ids.join(',')}]`;
           }if (params?.job_ids?.length) {
-            finalQuery += `&job-ids=[${params?.job_ids.join(',')}]`;
+            finalQuery += `&job-ids=[${params.job_ids.join(',')}]`;
           }if (params?.group_ids?.length) {
             finalQuery += `&group-ids=[${params.group_ids.join(',')}]`;
           }if (params?.job_allocation_date?.startDate && params?.job_allocation_date?.endDate) {
@@ -714,6 +715,7 @@ async getTableData(params?: { page?: number; pageSize?: number; searchTerm?: str
            includeAllJobsValue:this.isIncludeAllJobValue ? this.isIncludeAllJobValue : false,
            selectedClientId:this.client_id ? this.client_id:null,
            sendEmail:true,
+           reportType:'job-status-report',
            currentPage:page,
            totalRecords: res.total_no_of_record, // Correctly use 'response' from inner call
            showDownload:true,
@@ -751,6 +753,7 @@ async getTableData(params?: { page?: number; pageSize?: number; searchTerm?: str
                 includeAllJobsValue:this.isIncludeAllJobValue ? this.isIncludeAllJobValue : false,
                 selectedClientId:this.client_id ? this.client_id:null,
                 sendEmail:true,
+                reportType:'job-status-report',
                 currentPage:page,
                 totalRecords: 0,
                 showDownload:true,
@@ -802,6 +805,7 @@ getFilterOptions(event: { detail: any; key: string }) {
   }
   if (key === 'job-ids'){
     endpoint = environment.only_jobs
+    query += `&non-productive-jobs=false`;
     if(this.isIncludeAllJobValue){
       query += `&client-ids=[${this.selectedClientIds}]&job-status=[${this.statusList}]`
     } else{

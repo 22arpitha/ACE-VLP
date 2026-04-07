@@ -103,6 +103,9 @@ restoreSessionFromToken() {
   updateData(url: string, data: any) {
     return this.http.put(url, data);
   }
+  patchData(url: string, data: any) {
+    return this.http.patch(url, data);
+  }
   delete(id: any) {
     return this.http.delete(id);
   }

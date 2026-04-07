@@ -1,0 +1,16 @@
+<div class="row mx-0 px-0 day-end-tabs">
+    <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0">
+        <mat-tab-group  mat-stretch-tabs="false" mat-align-tabs="start" (selectedTabChange)="onTabChange($event)">
+            <mat-tab label="Job Time Daily Report">
+                <ng-template matTabContent>
+                    <app-job-time-daily-report></app-job-time-daily-report>
+                </ng-template>
+            </mat-tab>
+            <mat-tab label="Job Status Daily Report">
+                <ng-template matTabContent>
+                    <app-job-status-daily-report></app-job-status-daily-report>
+                </ng-template>
+            </mat-tab>
+        </mat-tab-group>
+    </div>
+</div>

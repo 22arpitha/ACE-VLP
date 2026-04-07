@@ -6,6 +6,9 @@
 .main-heading {
   background: #F4F4F4;
   padding: 16px 15px;
+  position: sticky;
+  top: 0;
+  z-index: 10;
 }
 
 .main-heading label {
@@ -62,6 +65,12 @@
     // display:flex !important;
   }
 }
+.menu-scroll {
+  height: 70vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
 
 .content-page {
   height: 70vh !important;
@@ -80,6 +89,8 @@
   box-shadow: 0px 0px 4px 0px #00000040;
   border-radius: 10px;
   list-style: none;
+  max-height: 70vh;
+  overflow-y: auto;
 }
 .access_given{
   color: green;

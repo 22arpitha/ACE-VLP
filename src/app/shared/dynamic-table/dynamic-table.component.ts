@@ -49,6 +49,8 @@ export class DynamicTableComponent implements OnInit, OnChanges {
   paginationId = 'pagination-' + Math.random();
   filteredData: any[] = [];
   paginatedData: any[] = [];
+  columnStartDates: { [key: string]: any } = {};
+  columnEndDates: { [key: string]: any } = {};
   startDate;
   endDate;
   mainStartDate: any;
@@ -369,7 +371,7 @@ export class DynamicTableComponent implements OnInit, OnChanges {
     // Ensure filteredData is an array.
     const dataToPaginate = Array.isArray(this.filteredData)
       ? this.filteredData
-      : [];
+      : (this.config?.data || []);
     this.paginatedData = dataToPaginate.slice(start, start + pageSize);
   }
 
@@ -513,6 +515,8 @@ export class DynamicTableComponent implements OnInit, OnChanges {
     // Parent component is expected to handle the data refresh.
   }
   clearRangeDateFilter(columnKey: string): void {
+    this.columnStartDates[columnKey] = null;
+    this.columnEndDates[columnKey] = null;
     this.startDate = '';
     this.endDate = '';
     this.columnFilters[columnKey] = null; // Clear the stored filter for this specific column
@@ -530,6 +534,10 @@ export class DynamicTableComponent implements OnInit, OnChanges {
   }
 
   navigateToEmployee(event, col: any) {
+    if(col.keyId==='is_primary' && event?.is_multiple_employee){
+    this.actionEvent.emit({ actionType: 'navigate_employee', row: event });
+    return
+  }
     if ('keyId' in event) {
       this.actionEvent.emit({
         actionType: 'navigate',
@@ -550,6 +558,8 @@ export class DynamicTableComponent implements OnInit, OnChanges {
     this.loadingFilters = {};
     this.startDate = '';
     this.endDate = '';
+    this.columnStartDates = {};
+    this.columnEndDates = {};
     this.config.columns.forEach((col) => {
       col.filterOptions = [];
     });
@@ -567,6 +577,8 @@ export class DynamicTableComponent implements OnInit, OnChanges {
     this.loadingFilters = {};
     this.startDate = '';
     this.endDate = '';
+    this.columnStartDates = {};
+    this.columnEndDates = {};
     this.config.columns.forEach((col) => {
       col.filterOptions = [];
     });
@@ -616,6 +628,12 @@ export class DynamicTableComponent implements OnInit, OnChanges {
       actionType: 'sendEmail',
       action: this.filteredData,
       client_id: this.selected_client_id,
+    });
+  }
+  sendDayEndReport(){
+    this.actionEvent.emit({
+      actionType: 'sendDayEndReport',
+      action: this.filteredData,
     });
   }
   public enableFormFields() {
@@ -707,9 +725,14 @@ export class DynamicTableComponent implements OnInit, OnChanges {
       .subscribe(
         (respData: any) => {
           if (respData) {
-            this.allow_sending_status =
-              respData?.allow_sending_status_report_to_client;
+            if(this.config?.reportType === 'job-time-report') {
+              this.allow_sending_status =
+                respData?.allow_sending_job_time_report_to_client;
+            } else if(this.config?.reportType === 'job-status-report') {
+              this.allow_sending_status =
+                respData?.allow_sending_job_status_report_to_client;
           }
+        }
         },
         (error: any) => {
           this.api.showError(error?.error?.detail);

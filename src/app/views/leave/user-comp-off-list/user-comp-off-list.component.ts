@@ -31,7 +31,12 @@ export class UserCompOffListComponent implements OnInit {
   sortValue: string = '';
   directionValue: string = '';
   arrowState: { [key: string]: boolean } = {
-    employee_name: false,
+    from_date: false,
+    number_of_leaves_applying_for: false,
+    created_datetime: false,
+    status: false,
+    message: false,
+    rejected_reason: false,
   };
   filterQuery!: string;
   leaveOptions: any = [];
@@ -58,13 +63,12 @@ export class UserCompOffListComponent implements OnInit {
       .getData(`${environment.live_url}/${environment.leave_status}/`)
       .subscribe(
         (res: any) => {
-          console.log(res);
-          
-         this.leaveStatus = res?.data?.map((item: any) => ({
-          id: item.key,
-          name: item.value
-        }));
-      
+          this.leaveStatus = res?.data
+            // ?.filter((item: any) => item.value !== 'Pending')
+            .map((item: any) => ({
+              id: item.key,
+              name: item.value,
+            }));
         },
         (error) => {
           console.log(error);
@@ -94,6 +98,15 @@ export class UserCompOffListComponent implements OnInit {
   mainDateChange(event: any) {
     // const selectedDate = event.value;
     // const formattedDate = this.datePipe.transform(selectedDate, 'yyyy-MM-dd');
+  }
+  sort(direction: string, column: string) {
+    Object.keys(this.arrowState).forEach(key => {
+      this.arrowState[key] = false;
+    });
+    this.arrowState[column] = direction === 'ascending' ? true : false;
+    this.directionValue = direction;
+    this.sortValue = column;
+    this.getCompoffMyLeaves();
   }
   mainEndDateChange(event: any) {
     if (event.value) {
@@ -131,8 +144,11 @@ export class UserCompOffListComponent implements OnInit {
       this.filterQuery += `&status_values=[${this.filters.status_name.join(',')}]`;
       this.filterQuery += `&status_values=[${this.ids(this.filters.status_name)}]`;
     }
-    if (this.filters.status_name.length === 0) {
-      this.filterQuery += `&status_values=[Approved,Rejected]`;
+    // if (this.filters.status_name.length === 0) {
+    //   this.filterQuery += `&status_values=[Approved,Rejected]`;
+    // }
+    if(this.directionValue && this.sortValue){
+      this.filterQuery += `&sort-by=${this.sortValue}&sort-type=${this.directionValue}`
     }
     if (this.mainStartDate && this.mainEndDate) {
       let start_date = this.datePipe.transform(
@@ -162,7 +178,7 @@ export class UserCompOffListComponent implements OnInit {
     return `${base}${employeeParam}`;
   }
 
-  revoke(data) {
+  revoke(data:any) {
     console.log(data);
     const modelRef = this.modalService.open(GenericRemoveComponent, {
       size: <any>'sm',
@@ -171,7 +187,7 @@ export class UserCompOffListComponent implements OnInit {
     });
     modelRef.componentInstance.title = `Are you sure you want to revoke`;
     modelRef.componentInstance.message = `Revoke`;
-    modelRef.componentInstance.status.subscribe((resp) => {
+    modelRef.componentInstance.status.subscribe((resp:any) => {
       if (resp == 'ok') {
         this.revokeContent(data?.id);
         modelRef.close();
@@ -181,7 +197,7 @@ export class UserCompOffListComponent implements OnInit {
     });
   }
 
-  revokeContent(id) {
+  revokeContent(id:any) {
     console.log(id);
     let data = {
       leave_applied_id: id,

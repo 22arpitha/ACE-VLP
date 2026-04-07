@@ -45,6 +45,8 @@ import { QuarterMonthYearPickerComponent } from './quarter-month-year-picker/qua
 import { MatOptionModule } from '@angular/material/core';
 import { DateFormaterPipe } from './date-formater.pipe';
 import { OverlayModule } from '@angular/cdk/overlay';
+// import { SingleSelectionDropdownComponent } from './single-selection-dropdown/single-selection-dropdown.component';
+import { ManagerListComponent } from './manager-list/manager-list.component';
 @NgModule({
   declarations: [
     SortPipe,
@@ -60,6 +62,8 @@ import { OverlayModule } from '@angular/cdk/overlay';
     WeekPickerComponent,
     QuarterMonthYearPickerComponent,
     DateFormaterPipe,
+    // SingleSelectionDropdownComponent,
+    ManagerListComponent,
   ],
   imports: [
     CommonModule,
@@ -140,7 +144,9 @@ import { OverlayModule } from '@angular/cdk/overlay';
     GenericTableFilterComponent,
     WeekPickerComponent,
     NgbDropdownModule,
-    DateFormaterPipe
+    DateFormaterPipe,
+    // SingleSelectionDropdownComponent,
+    ManagerListComponent
    ],
 
 })

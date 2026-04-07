@@ -39,7 +39,7 @@
   }
   
   .settings-form-bg{
-    max-height: 79vh !important;
+    max-height: 75vh !important;
   }
   
   .mat-select-search-wrapper {
@@ -125,3 +125,11 @@
 // ::ng-deep .group-field .mat-form-field-appearance-outline .mat-select-arrow-wrapper {
 //     display: none !important;
 // }
+::ng-deep .group-field .mat-form-field-appearance-outline .mat-select-arrow-wrapper {
+ display: none !important;
+}
+
+.autocomplete-panel{
+  max-height:300px;
+  overflow-y:auto;
+}

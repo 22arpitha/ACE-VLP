@@ -1,14 +1,13 @@
 import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { ApiserviceService } from 'src/app/service/apiservice.service';
-import { SubModuleService } from 'src/app/service/sub-module.service';
+import { ApiserviceService } from '../../../service/apiservice.service';
+import { SubModuleService } from '../../../service/sub-module.service';
 import { ViewLeaveRequestComponent } from '../view-leave-request/view-leave-request.component';
-import { environment } from 'src/environments/environment';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { environment } from '../../../../environments/environment';
 import { LeaveApplyAdminComponent } from '../leave-apply-admin/leave-apply-admin.component';
-import { DropDownPaginationService } from 'src/app/service/drop-down-pagination.service';
-import { GenericTableFilterComponent } from 'src/app/shared/generic-table-filter/generic-table-filter.component';
+import { DropDownPaginationService } from '../../../service/drop-down-pagination.service';
+import { GenericTableFilterComponent } from '../../../shared/generic-table-filter/generic-table-filter.component';
 import { DatePipe } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { take } from 'rxjs';
@@ -42,12 +41,12 @@ export class LeaveRequestComponent implements OnInit {
   periodValues:any = [];
   filterQuery: any
   arrowState: { [key: string]: boolean } = {
-    employee_name: false,
-    leave_type: false,
-    type: false,
-    leave_period: false,
-    date_of_request: false,
-    days_or_hours_taken: false,
+    employee__full_name: false,
+    leave_type__leave_type_name: false,
+    from_date: false,
+    number_of_leaves_applying_for: false,
+    created_datetime: false,
+    status: false,
   };
   searchLeave: any;
   user_id: any;
@@ -202,9 +201,10 @@ getAppliedLeaveData(leaveId: any) {
     Object.keys(this.arrowState).forEach((key) => {
       this.arrowState[key] = false;
     });
-    this.arrowState[column] = direction === 'asc' ? true : false;
+    this.arrowState[column] = direction === 'ascending' ? true : false;
     this.directionValue = direction;
     this.sortValue = column;
+    this.getleaverequest();
   }
 
   public filteredLeaveTypes() {
@@ -244,7 +244,7 @@ getAppliedLeaveData(leaveId: any) {
     this.getleaverequest();
   }
 
-  selectedPeriodFunc(event) {
+  selectedPeriodFunc(event: any) {
     // console.log(this.selectedPeriod)
     this.mainStartDate = '';
     this.mainEndDate = '';
@@ -334,6 +334,9 @@ private ids(filterArray: any[]): string {
       let start_date = this.datePipe.transform(this.mainStartDate, 'yyyy-MM-dd');
       let end_date = this.datePipe.transform(this.mainEndDate, 'yyyy-MM-dd');
       this.filterQuery +=`&leave-start-date=${start_date}&leave-end-date=${end_date}`;
+    }
+    if(this.directionValue && this.sortValue){
+      this.filterQuery += `&sort-by=${this.sortValue}&sort-type=${this.directionValue}`
     }
     this.apiService.getData(`${environment.live_url}/${environment.apply_leaves}/${this.filterQuery}`)
       .subscribe((res: any) => {

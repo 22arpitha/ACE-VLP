@@ -16,6 +16,7 @@ import { CanComponentDeactivate } from '../../../auth-guard/can-deactivate.guard
 import { MatMenuTrigger } from '@angular/material/menu';
 import{GenericRedirectionConfirmationComponent} from '../../../generic-components/generic-redirection-confirmation/generic-redirection-confirmation.component'
 import { MatSelect, MatSelectModule } from '@angular/material/select';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-create-update-job',
@@ -23,7 +24,7 @@ import { MatSelect, MatSelectModule } from '@angular/material/select';
   styleUrls: ['./create-update-job.component.scss']
 })
 export class CreateUpdateJobComponent implements CanComponentDeactivate, OnInit, OnDestroy {
-  BreadCrumbsTitle: any = 'Job';
+  BreadCrumbsTitle: any;
   @ViewChild(FormGroupDirective) formGroupDirective!: FormGroupDirective;
   @ViewChild(MatPaginator) paginator: MatPaginator | undefined;
   @Output() isEmployeeAdded:EventEmitter<boolean> = new EventEmitter<boolean>();
@@ -58,6 +59,8 @@ export class CreateUpdateJobComponent implements CanComponentDeactivate, OnInit,
   user_role_name: any;
   editor!: Editor;
   formData: any;
+  fromJobs: boolean;
+  client_id_for_query: any;
   selectAllEmpFlag: boolean = false;
   selectOtherEmpFlag: boolean = false;
   jobDetails: any = []
@@ -109,7 +112,8 @@ export class CreateUpdateJobComponent implements CanComponentDeactivate, OnInit,
     this.common_service.setTitle(this.BreadCrumbsTitle);
     this.user_role_name = sessionStorage.getItem('user_role_name');
     this.user_id = Number(sessionStorage.getItem('user_id'));
-    
+    this.fromJobs = this.activeRoute.snapshot.queryParamMap.get('jobs') === 'true';
+    this.client_id_for_query = this.activeRoute.snapshot.queryParamMap.get('client');
   }
 
   ngOnInit(): void {
@@ -130,7 +134,7 @@ export class CreateUpdateJobComponent implements CanComponentDeactivate, OnInit,
       this.getAllDropdownData();
       this.getJobDetails(this.job_id);
     } else {
-      this.common_service.setTitle('Create ' + this.BreadCrumbsTitle)
+      this.common_service.setTitle('Create Job')
       this.getAllDropdownData()
     }
   }
@@ -168,7 +172,7 @@ export class CreateUpdateJobComponent implements CanComponentDeactivate, OnInit,
       only_admin_can_change_job_status: [''],
       is_amendment: [false],
       amdment_number:[''],
-      customer_service:['', [Validators.pattern(/^[a-zA-Z0-9!@#$%^&*()_+{}\[\]:;"'<>,.?/\\|`~\-]+( [a-zA-Z0-9!@#$%^&*()_+{}\[\]:;"'<>,.?/\\|`~\-]+)*$/), Validators.maxLength(25)]],
+      customer_service:['', [Validators.pattern(/^[a-zA-Z0-9!@#$%^&*()_+{}\[\]:;"'<>,.?/\\|`~\-]+( [a-zA-Z0-9!@#$%^&*()_+{}\[\]:;"'<>,.?/\\|`~\-]+)*$/), Validators.maxLength(100)]],
     });
     this.initialFormValue = this.jobFormGroup?.getRawValue();
     this.filteredEmployeeLists[0] = [...this.allEmployeeList];
@@ -195,31 +199,69 @@ export class CreateUpdateJobComponent implements CanComponentDeactivate, OnInit,
   }
   shouldDisableFields: boolean = false;
   getModuleAccess() {
-    this.accessControlService.getAccessForActiveUrl(this.user_id).subscribe(
-      (res: any) => {
-        this.accessPermissions = res[0].operations;
-        if (this.user_role_name != 'Admin') {
-          if (this.job_id) {
-            if(this.accessPermissions[0]?.['update']){
+    if(!this.fromJobs){
+      this.apiService.getData(`${environment.live_url}/${environment.user_access}/${this.user_id}/`).subscribe(
+        (res: any) => {
+          let access = res?.access_list.find((item: any) => item.name === 'Clients');
+          let subAccess = access?.access?.find((sub: any) => sub.name === 'Jobs');
+          // console.log(subAccess)
+          this.commonAccessPermissions(subAccess.operations);
+        }
+      )
+    }
+    else{
+      this.accessControlService.getAccessForActiveUrl(this.user_id).subscribe(
+        (res: any) => {
+          // console.log(res)
+          this.commonAccessPermissions(res[0].operations);
+          // this.accessPermissions = res[0].operations;
+          // if (this.user_role_name != 'Admin') {
+          //   if (this.job_id) {
+          //     if(this.accessPermissions[0]?.['update']){
+          //       this.editJobDetails = false;
+          //     } else{
+          //       this.editJobDetails = true;
+          //     }
+          //   } else {
+          //     this.editJobDetails = false;
+          //     this.shouldDisableFields = this.accessPermissions[0]?.['create'];
+          //   }
+          // } else {
+          //   if (this.job_id) {
+          //     this.editJobDetails = false;
+          //     this.shouldDisableFields = false;
+          //   } else{
+          //     this.editJobDetails = true;
+          //     this.shouldDisableFields = true;
+          //   }
+          // }
+        }
+      )
+    }
+  }
+
+  commonAccessPermissions(permissions:any){
+    this.accessPermissions = permissions;
+    if (this.user_role_name != 'Admin') {
+            if (this.job_id) {
+              if(this.accessPermissions[0]?.['update']){
+                this.editJobDetails = false;
+              } else{
+                this.editJobDetails = true;
+              }
+            } else {
               this.editJobDetails = false;
-            } else{
-              this.editJobDetails = true;
+              this.shouldDisableFields = this.accessPermissions[0]?.['create'];
             }
           } else {
-             this.editJobDetails = false;
-            this.shouldDisableFields = this.accessPermissions[0]?.['create'];
+            if (this.job_id) {
+              this.editJobDetails = false;
+              this.shouldDisableFields = false;
+            } else{
+              this.editJobDetails = true;
+              this.shouldDisableFields = true;
+            }
           }
-        } else {
-          if (this.job_id) {
-            this.editJobDetails = false;
-            this.shouldDisableFields = false;
-          } else{
-            this.editJobDetails = true;
-            this.shouldDisableFields = true;
-          }
-        }
-      }
-    )
   }
   public enableEdit() {
     if (this.user_role_name === 'Admin') {
@@ -247,10 +289,23 @@ export class CreateUpdateJobComponent implements CanComponentDeactivate, OnInit,
     return this.fb.group({
       employee: ['',Validators.required],
       manager: ['',Validators.required],
-      is_primary: [this.user_role_name === 'Accountant' ? true : false],
+      // is_primary: [this.user_role_name === 'Accountant' ? true : false],
+      is_primary: [false],
     });
   }
 
+  private updatePrimaryEmployee(): void {
+    const controls = this.employeeFormArray.controls;
+    if (controls.length === 1) {
+      controls[0].get('is_primary')?.setValue(true, { emitEvent: false });
+      return;
+    }
+    // Check if already one primary exists
+    const alreadyPrimary = controls.some(control => control.get('is_primary')?.value === true);
+    if (!alreadyPrimary && controls.length > 0) {
+      controls[0].get('is_primary')?.setValue(true, { emitEvent: false });
+    }
+}
   public getJobBillingOptions() {
     this.jobBillingOption = {};
     this.apiService.getData(`${environment.live_url}/${environment.jobs}/?get-options=True`).subscribe((respData: any) => {
@@ -635,7 +690,7 @@ onManagerSelectOpened(opened: boolean, index: number): void {
     this.apiService.getData(`${environment.live_url}/${environment.jobs}/${id}/`).subscribe((respData: any) => {
         // console.log(respData)
       if (respData) {
-        this.BreadCrumbsTitle = this.BreadCrumbsTitle + ` (${respData.job_name})`
+        this.BreadCrumbsTitle = ` ${respData?.job_number}` + ` (${respData.job_name})`
         this.common_service.setTitle(this.BreadCrumbsTitle);
         this.jobDetails = respData;
         this.estimatedTime = respData?.estimated_time
@@ -781,7 +836,11 @@ onManagerSelectOpened(opened: boolean, index: number): void {
     } else {
       this.common_service.setjobStatusState(false);
     }
-    this.router.navigate(['/jobs/all-jobs']);
+    if (this.fromJobs) {
+              this.router.navigate(['/jobs/all-jobs']);
+            } else {
+              this.router.navigate(['/client/update-client/', this.client_id_for_query], { queryParams: { tab: 3 } });
+            }
       }
       
       private showConfirmationPopup(): Observable<boolean> {
@@ -828,6 +887,7 @@ onManagerSelectOpened(opened: boolean, index: number): void {
       const newIndex = this.employeeFormArray.length - 1;
       this.filteredEmployeeLists[newIndex] = this.allEmployeeList;
       this.filteredManagerLists[newIndex] = this.allManagerList;
+       this.updatePrimaryEmployee();
     } else{
       this.employeeFormArray.markAllAsTouched();
     }
@@ -857,6 +917,7 @@ onManagerSelectOpened(opened: boolean, index: number): void {
         ['employee', 'manager', 'is_primary'].forEach(field => lastItem.get(field)?.enable());
       }
     }
+     this.updatePrimaryEmployee();
     this.checkAllEmployeeCheckbox();
   }
 
@@ -893,6 +954,14 @@ onManagerSelectOpened(opened: boolean, index: number): void {
 }
 
   public saveJobDetails() {
+    if (
+      this.jobFormGroup.get('unassigned')?.value === false &&
+      this.employeeFormArray.length > 0 &&
+      !this.hasPrimaryEmployee()
+    ) {
+      this.apiService.showError('Please select one Primary Employee before saving.');
+      return;
+    }
     if (this.jobFormGroup.invalid) {
       this.jobFormGroup.markAllAsTouched();
       this.formErrorScrollService.setUnsavedChanges(true);
@@ -912,7 +981,11 @@ onManagerSelectOpened(opened: boolean, index: number): void {
             }
             this.resetFormState();
             sessionStorage.removeItem("access-name")
-            this.router.navigate(['/jobs/all-jobs']);
+             if (this.fromJobs) {
+              this.router.navigate(['/jobs/all-jobs']);
+            } else {
+              this.router.navigate(['/client/update-client/', this.client_id_for_query], { queryParams: { tab: 3 } });
+            }
           }
         }, (error: any) => {
           this.apiService.showError(error?.error?.detail);
@@ -925,7 +998,11 @@ onManagerSelectOpened(opened: boolean, index: number): void {
             this.apiService.showSuccess(respData['message']);
             this.resetFormState();
             sessionStorage.removeItem("access-name")
-            this.router.navigate(['/jobs/all-jobs']);
+            if (this.fromJobs) {
+              this.router.navigate(['/jobs/all-jobs']);
+            } else {
+              this.router.navigate(['/client/update-client/', this.client_id_for_query], { queryParams: { tab: 3 } });
+            }
           }
         }, (error: any) => {
           this.apiService.showError(error?.error?.detail);
@@ -1042,7 +1119,11 @@ onManagerSelectOpened(opened: boolean, index: number): void {
       if (data) {
         this.apiService.showSuccess(data.message);
         this.resetFormState();
-        this.router.navigate(['/jobs/all-jobs']);
+         if (this.fromJobs) {
+              this.router.navigate(['/jobs/all-jobs']);
+            } else {
+              this.router.navigate(['/client/update-client/', this.client_id_for_query], { queryParams: { tab: 3 } });
+            }
       }
     }, (error => {
       this.apiService.showError(error?.error?.detail)
@@ -1229,22 +1310,37 @@ getUnassignedTooltip(): string {
       const selectedEmp = this.allEmployeeList.find((emp: any) => emp.user_id === event.value);
       this.employeeFormArray.at(i).patchValue({ 'employee': event.value });
       this.employeeFormArray.at(i).patchValue({ 'manager': selectedEmp?.reporting_manager_id });
-      this.employeeFormArray.at(i).patchValue({ 'is_primary': this.user_role_name === 'Accountant' ? true : false });
+      // this.employeeFormArray.at(i).patchValue({ 'is_primary': this.user_role_name === 'Accountant' ? true : false });
+      if (this.employeeFormArray.length === 1) {
+        this.employeeFormArray.at(i).patchValue({ 'is_primary': true });
+      }
     }
 
   }
 
   public isPrimarySelection(event: { checked: boolean }, selectedIndex: number): void {
+    if (event.checked) {
     this.employeeFormArray.controls.forEach((control, index) => {
-      if (event.checked && index !== selectedIndex) {
-        control.get('is_primary')?.setValue(false, { emitEvent: false });
-        control.get('is_primary')?.disable();
-      } else {
-        control.get('is_primary')?.enable();
-      }
+      control.get('is_primary')?.setValue(index === selectedIndex, { emitEvent: false });
     });
   }
+    // this.employeeFormArray.controls.forEach((control, index) => {
+    //   if (event.checked && index !== selectedIndex) {
+    //     control.get('is_primary')?.setValue(false, { emitEvent: false });
+    //     control.get('is_primary')?.disable();
+    //   } else {
+    //     control.get('is_primary')?.enable();
+    //   }
+    // });
+  }
 
+   hasPrimaryEmployee(): boolean {
+    const employees = this.employeeFormArray?.getRawValue() || [];
+
+    if (!employees.length) return false;
+
+    return employees.some((emp: any) => emp?.is_primary === true);
+  }
 
   get currentPageRows() {
     const startIndex = (this.currentPage - 1) * this.pageSize;
@@ -1610,7 +1706,8 @@ fetchData(key: string, append = false) {
     }
   }
   if(key === 'end_client'){
-    query += `&client=${this.jobFormGroup.get('client')?.value}`
+    // query += `&client=${this.jobFormGroup.get('client')?.value?.id}`
+      query += `&client=${this.jobFormGroup.get('client')?.value}`
   }
 
   this.apiService.getData(`${environment.live_url}/${this.dropdownEndpoints[key]}/?${query}`)
@@ -1693,8 +1790,56 @@ onDropdownOpened(isOpen, key: string) {
     this.removeScrollListener(key);
   }
 }
+getFilteredOptions(key: string) {
+  const selected = this.selectedItemsMap[key] || [];
+  const state = this.dropdownState[key];
 
+  // if something selected and user not searching
+  if (selected.length && !state.search) {
+    return selected;
+  }
 
+  return state.list;
+}
+displayClient(item: any): string {
+  if (!item) return '';
+  return item.client_name || item;
+}
+onClientAutoSelected(item: any) {
+  if (!item) return;
+
+  this.jobFormGroup.get('client')?.setValue(item.id);
+
+  // keep only the selected item
+  this.selectedItemsMap['client'] = [item];
+
+  // IMPORTANT: clear search so only selected shows
+  this.dropdownState.client.search = '';
+
+  // optional: clear list so no old results remain
+  this.dropdownState.client.list = [];
+
+  this.onClientChange({ value: item.id });
+}
+onClientInput(value: string) {
+  this.dropdownState.client.search = value;
+  this.dropdownState.client.page = 1;
+  this.dropdownState.client.list = [];
+  this.fetchData('client', false);
+}
+
+onAutocompleteScroll(event: any, key: string) {
+  const panel = event.target;
+  const atBottom =
+    panel.scrollHeight - panel.scrollTop <= panel.clientHeight + 5;
+
+  const state = this.dropdownState[key];
+
+  if (atBottom && !state.loading && state.page < state.totalPages) {
+    state.page++;
+    this.fetchData(key, true);
+  }
+}
 commonOnchangeFun(event, key){
   this.updateSelectedItems(key, event.value);
 }
@@ -1780,5 +1925,16 @@ simpleToggleRequired(enable: boolean, controlNames: string[]) {
  });
 }
 
+get clientControl(): FormControl {
+  return this.jobFormGroup.get('client') as FormControl;
+}
+
+fetchClients = async ({ search, page, page_size }) => {
+  return await firstValueFrom(
+    this.apiService.getData(
+      `${environment.live_url}/${environment.clients}/?search=${search}&page=${page}&page_size=${page_size}`
+    )
+  );
+};
 
 }

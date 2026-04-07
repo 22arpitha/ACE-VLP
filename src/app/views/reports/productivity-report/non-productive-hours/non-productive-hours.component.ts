@@ -28,6 +28,7 @@ export class NonProductiveHoursComponent implements OnInit,OnChanges {
        tableSize: this.tableSize,
        pagination: true,
        showDownload:true,
+       total_hours:true,
      };
 
   user_id: string;
@@ -143,7 +144,7 @@ export class NonProductiveHoursComponent implements OnInit,OnChanges {
     }
    exportCsvOrPdf(fileType) {
    const search = this.term?.trim().length >= 2? `search=${encodeURIComponent(this.term.trim())}&`: '';
-    let query = `?${search}download=true&client-name=Vedalekha professionals&file-type=${fileType}`;
+    let query = `?${search}download=true&file-type=${fileType}`;
     if(this.directionValue && this.sortValue){
       query += `&sort-by=${this.sortValue}&sort-type=${this.directionValue}`;
     }
@@ -179,11 +180,12 @@ export class NonProductiveHoursComponent implements OnInit,OnChanges {
        if(this.directionValue && this.sortValue){
             finalQuery += `&sort-by=${this.sortValue}&sort-type=${this.directionValue}`;
         }
-     this.api.getData(`${environment.live_url}/${environment.timesheet_non_productivity}/${finalQuery}&client-name=Vedalekha professionals`).subscribe((res: any) => {
+     this.api.getData(`${environment.live_url}/${environment.timesheet_non_productivity}/${finalQuery}`).subscribe((res: any) => {
        const formattedData = res.results.map((item: any, i: number) => ({
          sl: (page - 1) * pageSize + i + 1,
          ...item
        }));
+       let tableFooterContent = {'total_actual_time':res?.total_actual_time}
        this.tableConfig = {
         columns: tableColumns.map(col => ({
                         ...col,
@@ -199,6 +201,8 @@ export class NonProductiveHoursComponent implements OnInit,OnChanges {
         totalRecords: res.total_no_of_record,
         hideDownload:true,
         showDownload:true,
+        total_hours:true,
+        tableFooterContent:tableFooterContent,
         showCsv:true,
         showPdf:false,
         searchPlaceholder:'Search by Client/Job',
@@ -216,7 +220,7 @@ export class NonProductiveHoursComponent implements OnInit,OnChanges {
 public viewtimesheetDetails(item:any){
       this.dialog.open(JobTimeSheetDetailsPopupComponent, {
       panelClass: 'custom-details-dialog',
-      data: { 'job_id': item?.job_id,'job_name':item?.job_name,'employee_id':item.employee_id,'download_api':`${environment.vlp_timesheets}`,'download':true,showCsv:true,
+      data: { 'job_id': item?.job_id,'job_name':item?.job_name,'employee_id':item.employee_id,'table_api':`${environment.vlp_timesheets}`,'download_api':`${environment.vlp_timesheets}`,'download':true,showCsv:true,
         'dropdwonFilterData':this.dropdwonFilterData,'report_type':'non-productive-hours','client_id':item.client_id
       },
     });

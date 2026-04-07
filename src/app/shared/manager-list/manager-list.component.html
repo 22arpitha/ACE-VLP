@@ -1,0 +1,23 @@
+<mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+  <mat-label>Select Manager</mat-label>
+  <mat-select [(ngModel)]="selectedEmployeeVal" [ngModelOptions]="{standalone: true}" [disableOptionCentering]="true" [disabled]="user_role_name==='Accountant'? true : false"
+    autocomplete="off" placeholder="Select" panelClass="custom-select-panel" [multiple]="multiple" (selectionChange)="onSelectedEmployee($event)" (openedChange)="onDropdownOpened($event, 'manager')">
+    
+    <!-- Search input field inside the panel -->
+    <div class="mat-select-search-wrapper d-flex">
+      <input matInput [(ngModel)]="dropdownState.manager.search" (ngModelChange)="onSearch('manager', $event)" [ngModelOptions]="{standalone: true}" placeholder="Search Manager" class="mat-select-search">
+      <mat-icon class="search-icon" *ngIf="!dropdownState.manager.search">search</mat-icon>
+      <mat-icon class="search-icon" *ngIf="dropdownState.manager.search" type="button" (click)="clearSearchDropD('manager')">close</mat-icon>
+    </div>
+
+    <mat-option hidden disabled></mat-option>
+    <mat-option *ngFor="let item of getOptionsWithSelectedOnTop('manager')" [value]="item?.user_id" 
+      >
+        {{item?.user__full_name}}
+    </mat-option>
+    <!-- Filtered options -->
+    <!-- <mat-option *ngFor="let emp of filteredEmployeeList()" [value]="emp?.user_id">
+      {{ emp?.user__full_name }}
+    </mat-option> -->
+  </mat-select>
+</mat-form-field>

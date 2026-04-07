@@ -1,0 +1,58 @@
+export function getTableColumns(role: string) {
+const tableColumns = [
+  { label: 'Sl No', key: 'sl', sortable: false },
+  { label: 'Date', key: 'date', sortKey:'date', type:'date', sortable: true, filterable: true, filterType: 'date', },
+   {
+    label: 'Employee',
+    key: 'employee_name',
+    sortKey:'employee_name',
+    keyId:'employee_id',
+    paramskeyId: 'timesheet-employee-ids',
+    filterable: false,
+    filterType: 'multi-select',
+    sortable: false,
+    leftAlign:true
+  },
+  {
+    label: 'Client',
+    key: 'client_name',
+    sortKey:'client_name', 
+    keyId:'client_id',
+    paramskeyId: 'client-ids',
+    filterable: true,
+    filterType: 'multi-select',
+    sortable: true,
+    leftAlign:true
+  },
+  {
+    label: 'Job',
+    key: 'job_name',
+    sortKey:'job_name',
+    keyId:'job_id',
+    paramskeyId: 'job-ids',
+    filterable: true,
+    filterType: 'multi-select',
+    sortable: true,
+    leftAlign:true
+  },
+  {
+    label: 'Task',
+    key: 'task_name',
+    sortKey:'task',
+    keyId:'task',
+    paramskeyId: 'timesheet-task-ids',
+    filterable: true,
+    filterType: 'multi-select',
+    sortable: true,
+    leftAlign:true
+  },
+ 
+  { label: 'Start Time', key: 'start_time', sortKey:'start_time', sortable: true },
+  { label: 'End Time', key: 'end_time', sortKey:'end_time', sortable: true },
+  { label: 'Time spent', key: 'time_spent', sortKey:'time_spent', sortable: true },
+  { label: 'Notes', key: 'notes', sortable: false }
+];
+
+
+return tableColumns;
+}

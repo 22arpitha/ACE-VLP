@@ -2,10 +2,8 @@ import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/cor
 import { CommonServiceService } from '../../../service/common-service.service';
 import { tableColumns } from './leave-summary-report-config';
 import { ApiserviceService } from '../../../service/apiservice.service';
-import { downloadFileFromUrl } from '../../../shared/file-download.util';
 import { buildPaginationQuery } from '../../../shared/pagination.util';
 import { environment } from '../../../../environments/environment';
-import { JobTimeSheetDetailsPopupComponent } from '../common/job-time-sheet-details-popup/job-time-sheet-details-popup.component';
 import { MatDialog } from '@angular/material/dialog';
 import { DatePipe } from '@angular/common';
 

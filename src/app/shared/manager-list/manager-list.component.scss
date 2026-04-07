@@ -1,0 +1,32 @@
+.employee-field ::ng-deep .mat-form-field-wrapper{
+  padding:15px 0 !important;
+}
+::ng-deep .employee-field .mat-form-field-infix{
+  padding: 0.5em 0 !important;
+  padding-bottom: 1em !important;
+}
+::ng-deep .employee-field .mat-form-field-wrapper{
+  padding: 15px 0 !important;
+}
+::ng-deep .employee-field .mat-form-field-appearance-outline .mat-form-field-prefix,
+::ng-deep .employee-field .mat-form-field-appearance-outline .mat-form-field-suffix {
+  top: .25em !important;
+}
+
+.mat-select-search-wrapper {
+  padding: 8px;
+  background-color: #fff;
+}
+
+.mat-select-search {
+  width: 100%;
+}
+
+.custom-select-panel {
+  max-height: 300px; /* Set a max height for the dropdown */
+  overflow-y: auto; /* Make sure dropdown scrolls if it overflows */
+}
+.search-icon{
+  font-size:x-large;
+  color: #ccc;
+}

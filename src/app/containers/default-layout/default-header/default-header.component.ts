@@ -18,8 +18,8 @@ import { NotificationService } from '../../../views/pages/notification/notificat
 // import { UserAccessWebsocketService } from '../../../service/user-access-websocket.service';
 import { FormErrorScrollUtilityService } from '../../../service/form-error-scroll-utility-service.service';
 import { LogoutConfirmationService } from '../../../service/logout-confirmation.service';
-import { NotificationsComponent } from 'src/app/views/notifications/notifications.component';
-
+import { NotificationsComponent } from '../../../views/notifications/notifications.component';
+import { BreakpointObserver } from '@angular/cdk/layout';
 @Component({
   selector: 'app-default-header',
   templateUrl: './default-header.component.html',
@@ -68,9 +68,10 @@ export class DefaultHeaderComponent extends HeaderComponent implements OnInit {
   bsModalRef?: BsModalRef;
   notification_count: number = 0;
   mySubscription: any;
+  showActions: boolean = true;
   storedNotification:any = [];
   constructor(private classToggler: ClassToggleService, private modalService: NgbModal,
-    private router: Router,
+    private router: Router, private breakpointObserver: BreakpointObserver,
     private api: ApiserviceService, private cdref: ChangeDetectorRef,
     private common_service: CommonServiceService, private userGuideModel: BsModalService,
    private location:Location, 
@@ -86,28 +87,25 @@ export class DefaultHeaderComponent extends HeaderComponent implements OnInit {
     this.user_id = sessionStorage.getItem('user_id') || '';
     this.orgId = sessionStorage.getItem('organization_id')
     this.user_role_Name = sessionStorage.getItem('user_role_name');
-    this.getNotification()
     this.permissionArr = JSON.parse(sessionStorage.getItem('permissionArr')|| '[]');
     // this.welcomeMsg();
     // this.getProfiledata()
+    // this.cdref.detectChanges();
+    this.breakpointObserver
+    .observe([`(max-width: 1023px)`])
+    .subscribe(result => {
+      this.showActions = result.matches;
+      if(this.showActions){
+        this.getNotification()
+      }
+    });
     this.common_service.title$.subscribe(title => {
       this.pageName = title;
-      // this.cdref.detectChanges();
     });
     this.common_service.subTitle$.subscribe(subtitle =>{
       this.previousPage = subtitle
     })
     this.getaccessDetails()
-    // this.common_service.subsctiptionState$.subscribe(status =>{
-    //   if(status){
-    //     // debugger;
-    //     this.getMySubscription()
-    //   }
-    // })
-    // if(this.user_role_Name !== 'SuperAdmin'){
-    //   this.getMySubscription()
-    // }
-
   }
  
   getaccessDetails(){
@@ -244,36 +242,7 @@ export class DefaultHeaderComponent extends HeaderComponent implements OnInit {
     name:'',
     last_name:''
   }
-  getProfiledata() {
-    this.api.userAccess(sessionStorage.getItem('user_id')).subscribe(
-      (res:any)=>{
-        // console.log('profile details in side bar', res);
-        if(res.user_info[0]['profile_image_path']){
-          this.profileDataForSidebar.profile_pic =environment.media_url+res.user_info[0]['profile_image_path'];
-        }
-        this.profileDataForSidebar.name = res.user_info[0].first_name;
-        this.profileDataForSidebar.last_name = res.user_info[0].last_name;
-        this.common_service.setProfilePhoto(this.profileDataForSidebar)
-        if(res?.access_list?.length!=0){
-          this.welcomeMsg();
-        }
-      },
-      (error => {
-          console.log('from default header',error);
-      }
-    ))
-    // this.api.getData(`${environment.live_url}/${environment.profile_custom_user}?id=${this.user_id}&page_number=1&data_per_page=10&pagination=TRUE&organization_id=${this.orgId}`).subscribe((res: any) => {
-    //   console.log(res,'PROFILE GET API RESPONSE')
-    //   if (res.result.data) {
-    //     this.profileImg = res?.result?.data[0]?.u_profile_path;
-    //     this.profileDataForSidebar.profile_pic = res.result.data[0]['u_profile_photo'];
-    //     this.profileDataForSidebar.name = res.result.data[0].u_first_name;
-    //     this.common_service.setProfilePhoto(this.profileDataForSidebar)
-    //   }
-    // }, (error => {
-    //   console.log('from default header',error);
-
-  }
+ 
   getNotification() {
     this.notificationServive.notificationCount.subscribe((data) => {
       if(data){

@@ -1,17 +1,22 @@
-<section class="settings-table-bg">
-  <form [formGroup]="clientFormGroup">
-    <div class="row mx-0 my-1 px-0">
-      <div class="col-12 col-sm-12 col-md-12 col-lg-12 py-1 px-0">
-        <h4>Contact Details</h4>
+<div class="container-wrapper settings-main-content px-0">
+  <section class="settings-table-bg feedback-section">
+    <div class="row mx-0 my-1 px-0 align-items-center">
+      <div class="col-6 col-sm-6 col-md-6 col-lg-6 py-1 px-0">
+        <h4 class="feedback-title mb-0">Client Feedback</h4>
+      </div>
+      <div class="col-6 col-sm-6 col-md-6 col-lg-6 py-1 px-0 text-end">
+        <button mat-raised-button class="proceedbtn mat-btn-s" type="button" (click)="sendRequest()"
+          [disabled]="!hasSelectedRows()"> Send Request
+        </button>
       </div>
     </div>
     <div class="row mx-0 my-1 px-0">
       <div
         class="col-12 col-sm-12 col-md-12 col-lg-12 px-0 table-responsive table-responsive-sm table-responsive-md px-0">
-        <table class="table table table-hover table-list contact-details-table">
+        <table class="table table-hover table-list contact-details-table feedback-table">
           <thead>
             <tr>
-              <th>
+              <th class="checkbox-col">
                 <mat-checkbox [checked]="isAllRowsSelected()" [indeterminate]="isRowsIndeterminate()"
                   (change)="selectAllRows($event.checked)">
                 </mat-checkbox>
@@ -19,92 +24,77 @@
               <th>Client ID</th>
               <th>Client Name</th>
               <th>Email</th>
-              <th>Phone Number</th>
-
-              <th>
-                Feedback
-
-              </th>
-
+              <th class="text-center">Feedback</th>
+            </tr>
           </thead>
 
-<tbody formArrayName="contact_details">
+          <tbody>
 
-  <ng-container *ngFor="let client of allClients 
-      | paginate: { itemsPerPage: tableSize, currentPage: page }">
+            <ng-container *ngFor="let client of allClients
+            |paginate : {
+                            id: 'popupPagination',
+                           itemsPerPage: tableSize,
+                           currentPage: page,
+                           totalItems: count
+                         }; let i = index">
 
-    <ng-container *ngFor="let contact of client.contact_details; let i = index">
+              <ng-container *ngFor="let contact of client.client_contacts; let i = index">
 
-      <tr [formGroup]="getFormGroup(client.client_id, contact.email)">
+                <tr [class.client-first-row]="i === 0" [class.client-row-even]="i % 2 === 0"
+                  [class.client-row-odd]="i % 2 !== 0">
 
-        <!-- Left Checkbox -->
-        <td>
-          <mat-checkbox formControlName="rowSelected"></mat-checkbox>
-        </td>
+                  <td *ngIf="i === 0" [attr.rowspan]="client.client_contacts.length"
+                    class="checkbox-col client-rowspan-cell">
+                    <mat-checkbox [checked]="isClientSelected(client.client_id)"
+                      [indeterminate]="isClientIndeterminate(client.client_id)"
+                      (change)="toggleClient(client.client_id, $event.checked)">
+                    </mat-checkbox>
+                  </td>
+                  <td *ngIf="i === 0" [attr.rowspan]="client.client_contacts.length"
+                    class="client-rowspan-cell client-id-cell">
+                    <span class="client-id-badge">{{client.client_id}}</span>
+                  </td>
 
-        <!-- Client ID (rowspan) -->
-        <td *ngIf="i === 0" [attr.rowspan]="client.contact_details.length">
-          {{client.client_id}}
-        </td>
+                  <td *ngIf="i === 0" [attr.rowspan]="client.client_contacts.length"
+                    class="client-rowspan-cell fw-semibold">
+                    {{client.client_name}}
+                  </td>
 
-        <!-- Client Name (rowspan) -->
-        <td *ngIf="i === 0" [attr.rowspan]="client.contact_details.length">
-          {{client.client_name}}
-        </td>
+                  <td class="email-cell">{{contact.client_email}}</td>
 
-        <!-- Email -->
-        <td>
-          {{contact.email}}
-        </td>
+                  <td class="text-center">
+                    <mat-checkbox [checked]="contact.is_sending_feedback_form_enabled"
+                      (change)="onFeedbackChange(client.client_id, contact, $event.checked)"></mat-checkbox>
+                  </td>
 
-        <!-- Phone -->
-        <td>
-          {{contact.phone_number}}
-        </td>
+                </tr>
 
-        <!-- Feedback -->
-        <td>
-          <mat-checkbox formControlName="isSelected"></mat-checkbox>
-        </td>
+              </ng-container>
 
-      </tr>
+            </ng-container>
 
-    </ng-container>
-
-  </ng-container>
-
-</tbody>
+          </tbody>
         </table>
       </div>
     </div>
-    <div class="text-right my-3 d-flex justify-content-end align-content-center mx-3">
-      <button mat-raised-button class="mat-btn-s feedbackBtn text-light" type="button" (click)="sendRequest()">Send
-        Request</button>
-
-
+    <div class="col-12" *ngIf="allClients.length === 0">
+      <app-generic-norecards></app-generic-norecards>
     </div>
-  </form>
 
-</section>
-<div class="row mx-0 my-2 px-2">
-  <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0" *ngIf="allClients.length > 0">
-    <div class="pagination-container">
-
-      <pagination-controls previousLabel="Prev" nextLabel="Next" (pageChange)="page = $event">
-      </pagination-controls>
-
-      <div>
-        <span>Items per page</span>
-
-        <mat-select [(ngModel)]="tableSize" (selectionChange)="tableSize = $event.value; page = 1">
-
-          <mat-option *ngFor="let size of tableSizes" [value]="size">
-            {{size}}
-          </mat-option>
-
-        </mat-select>
+  </section>
+  <div class="row mx-0 my-2 px-2">
+    <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0" *ngIf="allClients.length > 0">
+      <div class="pagination-container p-0 pt-2">
+        <pagination-controls  id="popupPagination" previousLabel="Prev" nextLabel="Next" (pageChange)="onTableDataChange($event)">
+        </pagination-controls>
+        <div class="items-per-page-container">
+          <div>Items per page</div>
+          <mat-select [(ngModel)]="tableSize" (selectionChange)="onTableSizeChange($event)" placeholder="10"
+            class="page-size">
+            <mat-option *ngFor="let size of tableSizes" [value]="size">{{size}}</mat-option>
+          </mat-select>
+        </div>
       </div>
-
     </div>
   </div>
 </div>

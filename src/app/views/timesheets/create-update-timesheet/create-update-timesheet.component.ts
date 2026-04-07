@@ -552,7 +552,7 @@ fetchData(key: string, append = false) {
     query += `&search=${encodeURIComponent(state.search)}`;
   }
   if (key === 'job_id') {
-    query += `&employee-id=${this.user_id}`;
+    query += `&employee-id=${this.user_id}&non-productive-jobs=true`;
   }
   this.apiService.getData(`${environment.live_url}/${this.dropdownEndpoints[key]}/?${query}`)
     .subscribe((res: any) => {

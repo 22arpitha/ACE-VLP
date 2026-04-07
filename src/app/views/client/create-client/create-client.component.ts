@@ -187,6 +187,8 @@ export class CreateClientComponent implements CanComponentDeactivate, OnInit, On
       employee_details: this.fb.array([]),
       allow_sending_status_report_to_client: [{value:false,disable:!this.shouldDisableFileds}],
       allow_sending_public_holiday_information:[{value:false,disable:!this.shouldDisableFileds}],
+      allow_sending_job_status_report_to_client: [{value:false,disable:!this.shouldDisableFileds}],
+      allow_sending_job_time_report_to_client: [{value:false,disable:!this.shouldDisableFileds}],
       practice_notes: [''],
     });
   }
@@ -304,6 +306,8 @@ export class CreateClientComponent implements CanComponentDeactivate, OnInit, On
         source: respData?.source_id,
         allow_sending_status_report_to_client: respData?.allow_sending_status_report_to_client,
         allow_sending_public_holiday_information:respData?.allow_sending_public_holiday_information,
+        allow_sending_job_status_report_to_client: respData?.allow_sending_job_status_report_to_client,
+        allow_sending_job_time_report_to_client: respData?.allow_sending_job_time_report_to_client,
         practice_notes: respData?.practice_notes,
       });
       this.clientFormGroup?.get('client_file')?.setErrors(null);
@@ -355,12 +359,13 @@ export class CreateClientComponent implements CanComponentDeactivate, OnInit, On
       if (respData?.contact_details && Array.isArray(respData?.contact_details) && respData.contact_details?.length >= 1) {
         const contactDetailsArray = this.clientFormGroup.get('contact_details') as FormArray;
         contactDetailsArray.clear();
-        respData?.contact_details?.forEach(({ name, email, phone_number }, index, array) => {
+        respData?.contact_details?.forEach(({ name, email, phone_number, is_sending_feedback_form_enabled }, index, array) => {
           const isLastItem = index === array?.length - 1;
           const contactForm = this.fb.group({
             name: [{ value: name, disabled: !isLastItem }],
             email: [{ value: email, disabled: !isLastItem }],
-            phone_number: [{ value: phone_number, disabled: !isLastItem }]
+            phone_number: [{ value: phone_number, disabled: !isLastItem }],
+            is_sending_feedback_form_enabled: [{ value: is_sending_feedback_form_enabled || false, disabled: !isLastItem }]
           });
           contactDetailsArray.push(contactForm);
         });
@@ -396,6 +401,7 @@ export class CreateClientComponent implements CanComponentDeactivate, OnInit, On
       name: ['', Validators.required],
       email: ['', [Validators.required, Validators.pattern('^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$')]],
       phone_number: ['', Validators.required],
+      is_sending_feedback_form_enabled: [false]
     });
   }
 
@@ -408,7 +414,7 @@ export class CreateClientComponent implements CanComponentDeactivate, OnInit, On
     // Disable the previous contact group before adding a new one
     if (this.contactDetails?.at(lastItemIndex)?.valid && this.contactDetails?.length < 5) {
       const contact = this.contactDetails?.at(lastItemIndex);
-      ['name', 'email', 'phone_number']?.forEach(field => contact?.get(field)?.disable());
+      ['name', 'email', 'phone_number', 'is_sending_feedback_form_enabled']?.forEach(field => contact?.get(field)?.disable());
       // Add the new contact group after disabling the previous one
       this.contactDetails.push(this.createContactGroup());
       this.contactDetails.markAllAsTouched();
@@ -424,7 +430,7 @@ export class CreateClientComponent implements CanComponentDeactivate, OnInit, On
       const lastItemIndex = this.contactDetails?.length - 1;
       const lastItem = this.contactDetails?.at(lastItemIndex);
       if (lastItem) {
-        ['name', 'email', 'phone_number']?.forEach(field => lastItem?.get(field)?.enable());
+        ['name', 'email', 'phone_number', 'is_sending_feedback_form_enabled']?.forEach(field => lastItem?.get(field)?.enable());
       }
     }
   }
@@ -434,6 +440,7 @@ export class CreateClientComponent implements CanComponentDeactivate, OnInit, On
     contact?.get('name')?.enable();
     contact?.get('email')?.enable();
     contact?.get('phone_number')?.enable();
+    contact?.get('is_sending_feedback_form_enabled')?.enable();
   }
 
   saveChanges(index: number) {
@@ -703,10 +710,16 @@ onClientFileDropped(event: DragEvent) {
     this.formData.set("practice_notes", this.clientFormGroup?.get('practice_notes')?.value || '');
     this.formData.set("allow_sending_status_report_to_client", this.clientFormGroup?.get('allow_sending_status_report_to_client')?.value ? 'true' : 'false');
     this.formData.set("allow_sending_public_holiday_information", this.clientFormGroup?.get('allow_sending_public_holiday_information')?.value ? 'true' : 'false');
+    this.formData.set("allow_sending_job_status_report_to_client", this.clientFormGroup?.get('allow_sending_job_status_report_to_client')?.value ? 'true' : 'false');
+    this.formData.set("allow_sending_job_time_report_to_client", this.clientFormGroup?.get('allow_sending_job_time_report_to_client')?.value ? 'true' : 'false');
     const result = this.clientFormGroup?.get('contact_details')?.getRawValue().map((item: any) => {
+    const isChecked =
+    item?.is_sending_feedback_form_enabled === true ||
+    item?.is_sending_feedback_form_enabled === 'True';
       return {
         ...item,
-        phone_number: item?.phone_number?.toString()
+        phone_number: item?.phone_number?.toString(),
+        is_sending_feedback_form_enabled: isChecked ? 'True' : 'False'
       };
     });
     this.formData.set("contact_details", JSON.stringify(result) || []);

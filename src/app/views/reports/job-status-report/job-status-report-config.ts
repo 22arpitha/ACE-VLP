@@ -12,7 +12,8 @@ export const tableColumns  = [
     paramskeyId: 'client-ids',
     filterable: true,
     filterType: 'multi-select',
-    sortable: true
+    sortable: true,
+    leftAlign:true
   },
   {
     label: 'Group',
@@ -38,7 +39,8 @@ export const tableColumns  = [
     paramskeyId: 'job-ids',
     filterable: true,
     filterType: 'multi-select',
-    sortable: true
+    sortable: true,
+    leftAlign:true
   },
   {
     label: 'Job Type',
@@ -95,6 +97,7 @@ export const tableColumns  = [
     paramskeyId: 'is-primary-ids',
     filterable: true,
     filterType: 'multi-select',
+    leftAlign:true
   }
 
 ]

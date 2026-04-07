@@ -14,7 +14,8 @@ export const tableColumns  = [
     paramskeyId: 'client-ids',
     filterable: true,
     filterType: 'multi-select',
-    sortable: true
+    sortable: true,
+    leftAlign:true
   },
   {
     label: 'Job id',
@@ -30,7 +31,8 @@ export const tableColumns  = [
     paramskeyId: 'job-ids',
     filterable: true,
     filterType: 'multi-select',
-    sortable: true
+    sortable: true,
+    leftAlign:true
   },
    {
     label: 'Employee',
@@ -41,12 +43,14 @@ export const tableColumns  = [
     paramskeyId: 'timesheet-employee-ids',
     filterType: 'multi-select',
     filterable: true,
+    leftAlign:true,
   },
   {
     label: 'Task',
     key: 'task',
     sortKey:'task',
-    sortable: false
+    sortable: false,
+    leftAlign:true
   },
   { label: 'Act. Hrs', key: 'actual_hours', sortKey:'total_actual_minutes', sortable: true ,navigation:true},
 

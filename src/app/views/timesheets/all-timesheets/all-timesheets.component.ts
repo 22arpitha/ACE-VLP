@@ -272,7 +272,8 @@ export class AllTimesheetsComponent implements OnInit {
 
   fetchJobs = (page: number, search: string) => {
      const extraParams = {
-      status: 'True'
+      status: 'True',
+      'non-productive-jobs':true
      }
     return this.dropdownService.fetchDropdownData$(
       environment.only_jobs,

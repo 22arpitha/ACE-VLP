@@ -14,6 +14,7 @@ export class EmployeeListComponent implements OnInit, OnChanges {
   searchEmployeeText: any;
   selectedEmployeeVal: any;
   @Input() resetFilterField: boolean = false;
+  @Input() multiple: boolean = false;
   @Output() selectEmployee: EventEmitter<any> = new EventEmitter<any>();
   constructor(private apiService: ApiserviceService) {
     this.user_role_name = sessionStorage.getItem('user_role_name');
@@ -21,7 +22,7 @@ export class EmployeeListComponent implements OnInit, OnChanges {
   }
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['resetFilterField'] && changes['resetFilterField'].currentValue ===true) {
-      this.resetFilterField = changes['resetFilterField'].currentValue
+    this.resetFilterField = changes['resetFilterField'].currentValue
       if (this.user_role_name === 'Accountant') {
         this.selectedEmployeeVal = this.allEmployeeList[0]?.user_id;
         this.selectEmployee.emit(this.allEmployeeList[0]?.user_id);
@@ -92,16 +93,16 @@ export class EmployeeListComponent implements OnInit, OnChanges {
   }
 
   public onSelectedEmployee(event: any) {
-    this.selectedEmployeeVal = event.value;
+     this.selectedEmployeeVal = event.value;
     this.selectEmployee.emit(event.value);
-    this.updateSelectedItems('employee',event.value)
+    this.updateSelectedItems('employee', Array.isArray(event.value) ? event.value : event.value)
   }
 
   // new code
 
   pageSizeDropdown = 10;
 
-dropdownState = {
+dropdownState:any = {
     employee: {
     page: 1,
     list: [],
@@ -112,7 +113,7 @@ dropdownState = {
   },
 };
 
-dropdownEndpoints = {
+dropdownEndpoints:any = {
   employee: environment.employee,
 };
 

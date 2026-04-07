@@ -98,7 +98,7 @@
                            <!-- (click)="viewInvoiceDetails(item)" -->
                       <td>{{(item?.created_date || '-')}}</td>
                       <td>{{item?.invoice_number || '-'}}</td>
-                      <td>{{item?.client_name || '-'}}</td>
+                      <td class="job-client-text-left">{{item?.client_name || '-'}}</td>
                       <td>{{item?.total_amount || '-'}}</td>
                       <!-- <td>
                         <ng-container *ngIf="item">

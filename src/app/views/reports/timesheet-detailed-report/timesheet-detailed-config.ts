@@ -11,7 +11,8 @@ const tableColumns = [
     paramskeyId: 'client-ids',
     filterable: true,
     filterType: 'multi-select',
-    sortable: true
+    sortable: true,
+    leftAlign:true
   },
   {
     label: 'Job',
@@ -21,7 +22,8 @@ const tableColumns = [
     paramskeyId: 'job-ids',
     filterable: true,
     filterType: 'multi-select',
-    sortable: true
+    sortable: true,
+    leftAlign:true
   },
   {
     label: 'Task',
@@ -31,7 +33,8 @@ const tableColumns = [
     paramskeyId: 'timesheet-task-ids',
     filterable: true,
     filterType: 'multi-select',
-    sortable: true
+    sortable: true,
+    leftAlign:true
   },
   { label: 'Start Time', key: 'start_time', sortKey:'start_time', sortable: true },
   { label: 'End Time', key: 'end_time', sortKey:'end_time', sortable: true },
@@ -47,7 +50,8 @@ if (role !== 'Accountant' ) {
     paramskeyId: 'timesheet-employee-ids',
     filterable: true,
     filterType: 'multi-select',
-    sortable: true
+    sortable: true,
+    leftAlign:true
   });
 }
 

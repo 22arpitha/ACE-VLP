@@ -1,0 +1,48 @@
+<div class="card mx-3 mb-4">
+  <div class="card-header" style="background: none; border-bottom: none;">
+    <h5 class="fw-bold mb-0">Qualitative Performance</h5>
+  </div>
+  <div class="card-body">
+    <div class="row">
+      <!-- Pie Chart -->
+      <div class="col-md-6" *ngIf="pieChartData.length>0">
+        <div class="chart-section">
+          <!-- <h6 class="text-center mb-3">Performance Rating Distribution</h6> -->
+          <div class="chart-container">
+            <ngx-charts-pie-chart
+              [results]="pieChartData"
+              [scheme]="pieChartColorScheme"
+              [legend]="true"
+              [legendTitle]="'Ratings'"
+              [labels]="true"
+              [doughnut]="true"
+              [gradient]="true">
+            </ngx-charts-pie-chart>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bar Chart -->
+      <div class="col-md-6" *ngIf="barChartData.length>0">
+        <div class="chart-section">
+          <!-- <h6 class="text-center mb-3">Skill-wise Score</h6> -->
+          <div class="chart-container">
+            <ngx-charts-bar-vertical
+              [results]="barChartData"
+              [scheme]="barChartColorScheme"
+              [xAxis]="true"
+              [yAxis]="true"
+              [legend]="false"
+              [showXAxisLabel]="true"
+              [showYAxisLabel]="true"
+              [yAxisLabel]="'Score'"
+              [gradient]="true"
+              [roundDomains]="true">
+            </ngx-charts-bar-vertical>
+            <!-- [xAxisLabel]="'Skill'" -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

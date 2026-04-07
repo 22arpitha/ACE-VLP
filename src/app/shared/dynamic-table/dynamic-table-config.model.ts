@@ -8,9 +8,11 @@ export interface TableColumn {
   filterType?: 'text' | 'date' | 'multi-select';
   filterOptions?: string[];
   navigation?: boolean;
+  empNavigation?:boolean;
   inputField?:boolean;
   fileInputField?:boolean;
   sortKey?:string;
+  leftAlign?:boolean;
 }
 
 export interface DynamicTableConfig {
@@ -44,8 +46,11 @@ export interface DynamicTableConfig {
   disableDownload?:boolean
   averageProductivity?:boolean;
   average_productive_hour?:boolean;
+  total_hours?:boolean,
   searchPlaceholder?:string;
   reset?:boolean;
   leaveTypes?:boolean;
-  employeeDropdown?:boolean
+  employeeDropdown?:boolean,
+  reportType?:string;
+  showSubmit?:boolean
 }

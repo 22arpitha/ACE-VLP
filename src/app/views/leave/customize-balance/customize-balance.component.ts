@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { AddCustomizeBalanceComponent } from '../add-customize-balance/add-customize-balance.component';
-import { SubModuleService } from 'src/app/service/sub-module.service';
+import { SubModuleService } from '../../../service/sub-module.service';
 import { MatDialog } from '@angular/material/dialog';
-import { ApiserviceService } from 'src/app/service/apiservice.service';
-import { DropDownPaginationService } from 'src/app/service/drop-down-pagination.service';
-import { environment } from 'src/environments/environment';
+import { ApiserviceService } from '../../../service/apiservice.service';
+import { DropDownPaginationService } from '../../../service/drop-down-pagination.service';
+import { environment } from '../../../../environments/environment';
 export interface IdNamePair {
   id: any;
   name: string;
@@ -111,8 +111,8 @@ export class CustomizeBalanceComponent implements OnInit {
         this.AllEmployeeBalanceList = res.results;
         this.leaveTypes = Array.from(
         new Set(
-          this.AllEmployeeBalanceList.flatMap(emp =>
-            emp.leave.map(l => l.name)
+          this.AllEmployeeBalanceList.flatMap((emp: any) =>
+            emp.leave.map((l: any) => l.name)
           )
         )
       );
@@ -134,7 +134,7 @@ export class CustomizeBalanceComponent implements OnInit {
   return leave ? leave.available : 0;
 }
 
-  customize(data) {
+  customize(data: string) {
     sessionStorage.setItem('access-name', this.access_name?.name)
    const dialogRef = this.dialog.open(AddCustomizeBalanceComponent, {
       data: { edit: true, item:data },

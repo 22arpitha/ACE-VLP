@@ -4,6 +4,7 @@ import { TimesheetsComponent } from './timesheets.component';
 import { AllTimesheetsComponent } from './all-timesheets/all-timesheets.component';
 import { CreateUpdateTimesheetComponent } from './create-update-timesheet/create-update-timesheet.component';
 import { CanDeactivateGuard } from '../../auth-guard/can-deactivate.guard';
+import { DayEndReportsComponent } from './day-end-reports/day-end-reports.component';
 
 const routes: Routes = [
   {
@@ -22,6 +23,11 @@ const routes: Routes = [
       {
         path: 'update-timesheet/:id',
         component: CreateUpdateTimesheetComponent,
+        canDeactivate:[CanDeactivateGuard]
+      },
+      {
+        path: 'day-end-reports',
+        component: DayEndReportsComponent,
         canDeactivate:[CanDeactivateGuard]
       },
     ]

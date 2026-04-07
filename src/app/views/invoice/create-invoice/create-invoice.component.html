@@ -59,11 +59,38 @@
                       <i (click)="sort('descending','job_name')" *ngIf="arrowState['job_name']"
                         class="bi bi-arrow-up"></i>
                     </th>
-                    <th scope="col">Job Status
+                    <th scope="col" class="name-col">Job Type
+                      <i *ngIf="!arrowState['job_type_name']" (click)="sort('ascending','job_type_name')" class="bi bi-arrow-down"></i>
+                      <i (click)="sort('descending','job_type_name')" *ngIf="arrowState['job_type_name']"
+                        class="bi bi-arrow-up"></i>
+                    </th>
+                    <th scope="col" class="name-col">Allocation Date
+                      <i *ngIf="!arrowState['job_allocation_date']" (click)="sort('ascending','job_allocation_date')" class="bi bi-arrow-down"></i>
+                      <i (click)="sort('descending','job_allocation_date')" *ngIf="arrowState['job_allocation_date']"
+                        class="bi bi-arrow-up"></i>
+                    </th>
+                    <th scope="col" class="name-col">Employee
+                      <!-- <i *ngIf="!arrowState['job_allocation_date']" (click)="sort('ascending','job_allocation_date')" class="bi bi-arrow-down"></i>
+                      <i (click)="sort('descending','job_allocation_date')" *ngIf="arrowState['job_allocation_date']"
+                        class="bi bi-arrow-up"></i> -->
+                    </th>
+                     <th scope="col" class="name-col">Manager</th>
+                     <th scope="col" class="name-col">Status Date
+                      <i *ngIf="!arrowState['job_status_date']" (click)="sort('ascending','job_status_date')" class="bi bi-arrow-down"></i>
+                      <i (click)="sort('descending','job_status_date')" *ngIf="arrowState['job_status_date']"
+                        class="bi bi-arrow-up"></i>
+                     </th>
+                     
+                     <th scope="col" class="name-col">Billable
+                      <i *ngIf="!arrowState['option_value']" (click)="sort('ascending','option_value')" class="bi bi-arrow-down"></i>
+                      <i (click)="sort('descending','option_value')" *ngIf="arrowState['option_value']"
+                        class="bi bi-arrow-up"></i>
+                    </th>
+                    <!-- <th scope="col">Job Status
                       <i *ngIf="!arrowState['job_status_name']" (click)="sort('ascending','job_status_name')" class="bi bi-arrow-down"></i>
                       <i (click)="sort('descending','job_status_name')" *ngIf="arrowState['job_status_name']"
                         class="bi bi-arrow-up"></i>
-                    </th>
+                    </th> -->
                     <th scope="col">Budget Time (hrs)
                       <i *ngIf="!arrowState['budget_time']" (click)="sort('ascending','budget_time')" class="bi bi-arrow-down"></i>
                       <i (click)="sort('descending','budget_time')" *ngIf="arrowState['budget_time']"
@@ -101,8 +128,14 @@
 
                     </td>
                       <td>{{item?.job_number || '-'}}</td>
-                      <td>{{item?.job_name || '-'}}</td>
-                      <td>{{item?.job_status_name || '-'}}</td>
+                      <td class="job-client-text-left">{{item?.job_name || '-'}}</td>
+                      <td>{{item?.job_type_name || '-'}}</td>
+                      <td>{{item?.job_allocation_date | dateFormater}}</td>
+                      <td class="job-client-text-left">{{getEmployeeName(item?.employees) || '-'}}</td>
+                      <td>{{getManagerName(item?.employees) || '-'}}</td>
+                      <td>{{item?.job_status_date | dateFormater}}</td>
+                      <td>{{item?.option_value || '-'}}</td>
+                      <!-- <td>{{item?.job_status_name || '-'}}</td> -->
                       <td>{{item?.budget_time || '-'}}</td>
                       <td>{{item?.job_price || '-'}}</td>
                       <td>{{item?.total_amount || '-'}}</td>

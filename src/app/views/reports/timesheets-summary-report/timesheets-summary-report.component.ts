@@ -395,7 +395,7 @@ export class TimesheetsSummaryReportComponent implements OnInit {
   public viewtimesheetDetails(item:any){
         this.dialog.open(JobTimeSheetDetailsPopupComponent, {
         panelClass: 'custom-details-dialog',
-        data: { 'job_id': item?.id,'job_name':item?.job_name,'report_type':'timesheet-summary-report',
+        data: { 'job_id': item?.id,'job_name':item?.job_name,'report_type':'timesheet-summary-report','table_api':`${environment.vlp_timesheets}`,
           'download_api':environment.vlp_timesheets,'download':true,'showCsv':true, 
           dates: { start_date: this.time?.start_date,end_date: this.time?.end_date }
         }
@@ -617,6 +617,7 @@ export class TimesheetsSummaryReportComponent implements OnInit {
         }
         if (key === 'job-ids'){
           endpoint = environment.only_jobs
+          query += `&non-productive-jobs=true`;
           query +=  this.userRole ==='Admin' ? '': `&employee-id=${this.user_id}`;
         } ;
         if (key === 'job-status-ids'){

@@ -134,12 +134,13 @@ export class CreateInvoiceComponent
 
   public getClientBasedJobsList() {
     let query = this.getFilterBaseUrl();
+    query += this.term?.trim().length >= 2 ? `&search=${encodeURIComponent(this.term.trim())}` : '';
     if (this.directionValue && this.sortValue) {
       query += `&sort-by=${this.sortValue}&sort-type=${this.directionValue}`;
     }
 
     this.allClientBasedJobsLists = [];
-    this.apiService.getData(`${environment.live_url}/${environment.jobs}/${query}`).subscribe(
+    this.apiService.getData(`${environment.live_url}/${environment.all_job1}/${query}`).subscribe(
       (res:any)=>{
         this.allClientBasedJobsLists = res?.results;
         this.count = res?.total_no_of_record;
@@ -252,6 +253,17 @@ export class CreateInvoiceComponent
   //     this.selectedClientId || this.jobSelection.length >= 1 ? true : false;
   //   this.formErrorScrollService.setUnsavedChanges(isdirty);
   // }
+  getEmployeeName(employees: any): string {
+    if (!employees || employees.length === 0) {
+    return '-';
+    }
+    const employee = employees.find((emp: any) => emp?.is_primary === true);
+    return employee ? employee?.employee_name : '';
+  }
+  getManagerName(employees: any): string {
+    const manager = employees.find((man: any) => man?.is_primary === true);
+    return manager ? manager?.manager_name : '';
+  }
   toggleJobSelection(item: any) {
   const index = this.jobSelection.findIndex((job) => job.id === item.id);
   if (index === -1) {
@@ -352,9 +364,9 @@ isSomeJobsSelected() {
 
   public getFilterBaseUrl(): string {
     if (this.selectedClientId && this.selectedClientId != null) {
-      return `?page=${this.page}&page_size=${this.tableSize}&search=${this.term}&job-status=Completed&approved-invoice=True&client=${this.selectedClientId}`;
+      return `?page=${this.page}&page_size=${this.tableSize}&job-status=Completed&approved-invoice=True&client=${this.selectedClientId}`;
     } else {
-      return `?page=${this.page}&page_size=${this.tableSize}&search=${this.term}&job-status=Completed&approved-invoice=True&client=0`;
+      return `?page=${this.page}&page_size=${this.tableSize}&job-status=Completed&approved-invoice=True&client=0`;
     }
   }
 

@@ -1,8 +1,8 @@
 export const tableColumns = [
   { label: 'Sl No',key: 'sl' },
-  { label: 'Client',key: 'client_name', sortKey:'client__client_name', sortable: true},
+  { label: 'Client',key: 'client_name', sortKey:'client__client_name', sortable: true, leftAlign:true},
   { label: 'Job Id', key: 'job_number', sortKey:'job_number', sortable: true },
-  { label: 'Job',key: 'job_name', sortKey:'job_name', sortable: true },
-  { label: 'Task', key: 'task', sortKey:'task', sortable: false },
+  { label: 'Job',key: 'job_name', sortKey:'job_name', sortable: true, leftAlign:true },
+  { label: 'Task', key: 'task', sortKey:'task', sortable: false, leftAlign:true },
   { label: 'Act. Hrs', key: 'actual_hours', sortKey:'total_actual_minutes', sortable: true},
 ]

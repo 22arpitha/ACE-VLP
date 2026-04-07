@@ -2,7 +2,6 @@
   <div class="new-ticket-wrapper">
     <!-- Header -->
     <header class="form-header">
-      <h1 class="form-title">Raise New Ticket</h1>
       <p class="form-subtitle">Please provide details about your IT issue</p>
     </header>
 
@@ -10,13 +9,36 @@
     <form [formGroup]="ticketForm" (ngSubmit)="onSubmit()" class="ticket-form">
       <!-- Employee Name (Read-only) -->
       <div class="form-group">
-        <label class="form-label">Employee Name</label>
+        <mat-form-field appearance="outline" class=" custom-mat-form-field">
+          <mat-label>Employee <b class="r-star">*</b></mat-label>
+          <mat-select formControlName="employee_id" autocomplete="off" placeholder="select"
+            panelClass="custom-select-panel" (selectionChange)="onEmployeeChange($event)"
+            (openedChange)="onDropdownOpened($event, 'employee')">
+            <!-- [(ngModel)]="searchemployeeText" -->
+            <div class="mat-select-search-wrapper d-flex">
+              <input matInput [(ngModel)]="dropdownState.employee.search" (ngModelChange)="onSearch('employee', $event)"
+                autofocus [ngModelOptions]="{standalone: true}" placeholder="Search employee" class="mat-select-search">
+              <mat-icon class="search-icon" *ngIf="!dropdownState.employee.search">search</mat-icon>
+              <mat-icon class="search-icon" *ngIf="dropdownState.employee.search" type="button"
+                (click)="clearSearchDropD('employee')">close</mat-icon>
+            </div>
+            <mat-option hidden disabled></mat-option>
+            <mat-option *ngFor="let item of getOptionsWithSelectedOnTop('employee')" [value]="item?.user_id">
+              {{item?.user__full_name}}
+            </mat-option>
+          </mat-select>
+
+        </mat-form-field>
+        <div class="error-message" *ngIf="hasError('employee_id', 'required')">
+          Employee is required
+        </div>
+        <!-- <label class="form-label">Employee Name</label>
         <input
           type="text"
           class="form-input"
-          formControlName="employeeName"
+          formControlName="employee_id"
           readonly>
-        <div class="field-hint">This is your registered name</div>
+        <div class="field-hint">This is your registered name</div> -->
       </div>
 
       <!-- Ticket Raised Date Info -->
@@ -31,25 +53,22 @@
       <!-- Issue -->
       <div class="form-group">
         <label class="form-label required">Issue</label>
-        <input
-          type="text"
-          class="form-input"
-          formControlName="issue"
+        <input type="text" class="form-input" formControlName="issue_input"
           placeholder="Brief description of the issue (e.g., Unable to access email)"
-          [class.error]="hasError('issue', 'required') || hasError('issue', 'minlength') || hasError('issue', 'maxlength')">
-        
+          [class.error]="hasError('issue_input', 'required') || hasError('issue_input', 'minlength') || hasError('issue_input', 'maxlength')">
+
         <div class="field-footer">
-          <div class="error-message" *ngIf="hasError('issue', 'required')">
+          <div class="error-message" *ngIf="hasError('issue_input', 'required')">
             Issue is required
           </div>
-          <div class="error-message" *ngIf="hasError('issue', 'minlength')">
+          <div class="error-message" *ngIf="hasError('issue_input', 'minlength')">
             Issue must be at least 5 characters
           </div>
-          <div class="error-message" *ngIf="hasError('issue', 'maxlength')">
+          <div class="error-message" *ngIf="hasError('issue_input', 'maxlength')">
             Issue must not exceed 200 characters
           </div>
-          <div class="char-count" [class.limit-warning]="getCharacterCount('issue') > 180">
-            {{ getCharacterCount('issue') }} / 200
+          <div class="char-count" [class.limit-warning]="getCharacterCount('issue_input') > 180">
+            {{ getCharacterCount('issue_input') }} / 200
           </div>
         </div>
       </div>
@@ -57,13 +76,10 @@
       <!-- Details -->
       <div class="form-group">
         <label class="form-label required">Details</label>
-        <textarea
-          class="form-textarea"
-          formControlName="details"
-          rows="6"
+        <textarea class="form-textarea" formControlName="details" rows="6"
           placeholder="Provide detailed information about the issue, including when it started, what you were trying to do, error messages, etc."
           [class.error]="hasError('details', 'required') || hasError('details', 'minlength') || hasError('details', 'maxlength')"></textarea>
-        
+
         <div class="field-footer">
           <div class="error-message" *ngIf="hasError('details', 'required')">
             Details are required
@@ -83,17 +99,14 @@
       <!-- Attachment -->
       <div class="form-group">
         <label class="form-label">Attachment (Optional)</label>
-        
+
         <!-- File Upload Area -->
         <div class="file-upload-area" *ngIf="!selectedFile">
-          <input
-            type="file"
-            id="fileInput"
-            class="file-input"
-            (change)="onFileSelected($event)"
+          <input type="file" id="fileInput" class="file-input" (change)="onFileSelected($event)"
             accept="image/*,.pdf,.doc,.docx,.txt">
           <label for="fileInput" class="file-upload-label">
-            <span class="upload-icon">📎</span>
+            <mat-icon> attach_file</mat-icon>
+            <!-- <span class="upload-icon">📎</span> -->
             <span class="upload-text">
               <strong>Click to upload</strong> or drag and drop
             </span>
@@ -133,9 +146,14 @@
           <span class="info-text">Will be automatically updated when status changes</span>
         </div>
       </div>
+      <div class="form-actions">
+        <button mat-raised-button class="cancel-button mat-btn-s" type="button" (click)="cancel()">
+          Back</button>
+        <button mat-raised-button class="proceedbtn mat-btn-s" type="submit">Raise Ticket</button>
+      </div>
 
       <!-- Form Actions -->
-      <div class="form-actions">
+      <!-- <div class="form-actions">
         <button
           type="button"
           class="btn-cancel"
@@ -152,7 +170,7 @@
           <span *ngIf="submitting && !uploadingFile">Submitting...</span>
           <div class="btn-loader" *ngIf="submitting || uploadingFile"></div>
         </button>
-      </div>
+      </div> -->
     </form>
   </div>
 </div>

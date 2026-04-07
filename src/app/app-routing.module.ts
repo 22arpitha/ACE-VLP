@@ -26,8 +26,8 @@ const routes: Routes = [
     data: {
       title: 'Home',
     },
-    // canActivateChild: [ActivateChildGuard],
-    // canActivate: [AuthGuard],
+    canActivateChild: [ActivateChildGuard],
+    canActivate: [AuthGuard],
     children: [
       // {
       //   path: 'dashboards',
@@ -155,6 +155,20 @@ const routes: Routes = [
         path: 'it-support/tickets',
         loadChildren: () =>
           import('./views/ticket/ticket.module').then((m) => m.TicketModule),
+      },
+      {
+        path: 'performance',
+        loadChildren: () =>
+          import('./views/performance-dashboard/performance-dashboard.module').then(
+            (m) => m.PerformanceDashboardModule,
+          ),
+      },
+      {
+        path: 'approvals',
+        loadChildren: () =>
+          import('./views/approvals/approvals.module').then(
+            (m) => m.ApprovalsModule,
+          ),
       },
     ],
   },

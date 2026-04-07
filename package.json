@@ -43,6 +43,7 @@
     "@fullcalendar/scrollgrid": "^6.1.19",
     "@fullcalendar/timegrid": "^6.1.19",
     "@ng-bootstrap/ng-bootstrap": "^11.0.1",
+    "@swimlane/ngx-charts": "^20.5.0",
     "amazing-time-picker": "^1.5.3",
     "angular-calendar": "^0.29.0",
     "bootstrap": "^5.3.8",

@@ -1,11 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import dayGridPlugin from '@fullcalendar/daygrid';
-import interactionPlugin from '@fullcalendar/interaction';
-import resourceTimelinePlugin from '@fullcalendar/resource-timeline';
 import { ApiserviceService } from '../../../service/apiservice.service';
 import { environment } from '../../../../environments/environment';
 import { DatePipe } from '@angular/common';
-import { DropDownPaginationService } from 'src/app/service/drop-down-pagination.service';
+import { DropDownPaginationService } from '../../../service/drop-down-pagination.service';
 
 export interface IdNamePair {
   id: any;
@@ -53,7 +50,7 @@ export class ResourceAvailabilityComponent implements OnInit {
 
   // Fix: generate string keys for columns
   get displayedColumns(): string[] {
-    return ['employee', ...this.weekDates.map(d => this.getDateKey(d))];
+    return ['employee', ...this.weekDates.map((d:any) => this.getDateKey(d))];
   }
 
   getDateKey(date: Date): string {
@@ -89,7 +86,7 @@ export class ResourceAvailabilityComponent implements OnInit {
     }
   }
   fetchEmployees = (page: number, search: string) => {
-    const extraParams = {
+    const extraParams: any = {
       is_active: 'True',
       employee: 'True',
       // ...(this.userRole !== 'Admin' && { 'employee-id': this.user_id })
