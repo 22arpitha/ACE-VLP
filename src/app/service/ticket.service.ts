@@ -91,6 +91,18 @@ export class TicketService {
       status: TicketStatus.OPEN,
       ticketRaisedDate: new Date('2026-02-12T07:45:00'),
       statusDate: new Date('2026-02-12T07:45:00')
+    },
+     {
+      id: '6',
+      ticketNumber: 'TKT-MN22P-005',
+      employeeId: 'user123',
+      employeeName: 'Emily Brown',
+      issue: 'VPN access issue',
+      details: 'Unable to connect to company VPN while working from home.',
+      attachment: null,
+      status: TicketStatus.OPEN,
+      ticketRaisedDate: new Date('2026-02-12T07:45:00'),
+      statusDate: new Date('2026-02-12T07:45:00')
     }
   ];
 

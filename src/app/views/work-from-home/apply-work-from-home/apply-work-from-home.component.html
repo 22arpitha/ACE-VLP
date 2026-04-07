@@ -34,11 +34,34 @@
       </div>
 
 
-      <div class="row" *ngIf="showWfhBalance">
-        <div class="col-4 col-sm-4 col-md-3 col-lg-3 no-padding pl-5 pr-0 align-self-center">
-          <div class="balance-info-content" *ngIf="wfhBalance">
-            <mat-label>WFH Balance</mat-label>
-            <div class="text-clr">{{ wfhBalance }}</div>
+      <!-- WFH Balance Display with Warnings -->
+      <div class="row" *ngIf="showWfhBalance && isLimitedFlexibility()">
+        <div class="col-12 col-sm-12 col-md-8 col-lg-8 px-0">
+          <!-- Balance Card -->
+          <div class="alert alert-info p-3 mb-3">
+            <div class="row align-items-center">
+              <div class="col-auto">
+                <strong>{{ getCurrentQuarter() }} WFH Balance:</strong>
+                <span class="badge" [ngClass]="getBalanceClass(wfhBalance)" style="font-size: 16px; padding: 8px 12px;">{{ wfhBalance }} / 5 Days</span>
+              </div>
+              <div class="col">
+                <div class="progress" style="height: 20px;">
+                  <div class="progress-bar" role="progressbar" 
+                    [style.width.%]="(wfhBalance / 5) * 100"
+                    [ngClass]="getProgressBarClass(wfhBalance)">
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="mt-2">
+              <small [ngClass]="getBalanceClass(wfhBalance)">{{ getBalanceWarningMessage(wfhBalance) }}</small>
+            </div>
+          </div>
+          <!-- Expiry Warning -->
+          <div class="alert alert-warning p-2 mb-3" *ngIf="getDaysUntilExpiry() <= 7 && getDaysUntilExpiry() > 0">
+            <mat-icon class="me-2">schedule</mat-icon>
+            <strong>Quarter Ends Soon:</strong> Your WFH balance expires on {{ getQuarterEndDate() | date:'MMM d, yyyy' }} 
+            ({{ getDaysUntilExpiry() }} days remaining)
           </div>
         </div>
       </div>
@@ -63,6 +86,10 @@
                   <span *ngIf="f['from_date']?.errors?.['required']">From Date is required</span>
                 </mat-error>
               </mat-form-field>
+              <!-- Day of Week Display -->
+              <small class="text-muted" *ngIf="leaveApplyForm.get('from_date')?.value">
+                <strong>{{ getDayOfWeek(leaveApplyForm.get('from_date')?.value) }}</strong>
+              </small>
             </div>
             <div class="col-5 col-sm-5 col-md-3 col-lg-3 no-padding pl-5 pr-0">
               <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
@@ -94,6 +121,10 @@
                   </span>
                 </mat-error>
               </mat-form-field>
+              <!-- Day of Week Display -->
+              <small class="text-muted" *ngIf="leaveApplyForm.get('to_date')?.value">
+                <strong>{{ getDayOfWeek(leaveApplyForm.get('to_date')?.value) }}</strong>
+              </small>
             </div>
             <div class="col-6 col-sm-6 col-md-3 col-lg-3 no-padding pl-5 pr-0">
               <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
@@ -110,9 +141,11 @@
             <div class="col-6 col-sm-6 col-md-3 col-lg-3 px-0 align-self-center">
               <div class="balance-info-content">
                 <mat-label>Applying For</mat-label>
-                <div class="text-clr">{{ totalDays }} days</div>
+                <div class="text-clr" [ngClass]="totalDays > wfhBalance ? 'text-danger' : 'text-success'">{{ totalDays }} days</div>
+                <small class="text-danger fw-bold" *ngIf="isLimitedFlexibility() && totalDays > wfhBalance">
+                  ⚠️ Exceeds available balance!
+                </small>
               </div>
-
             </div>
           </div>
           <div class="row mx-0 my-0 p-0">

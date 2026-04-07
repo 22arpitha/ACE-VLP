@@ -1,14 +1,16 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { TicketFilter, TicketReport, TicketStatus } from 'src/app/models/ticket.models';
-import { TicketService } from 'src/app/service/ticket.service';
+import { TicketFilter, TicketReport, TicketStatus } from '../../../models/ticket.models';
+import { TicketService } from '../../../service/ticket.service';
+
 
 
 @Component({
   selector: 'app-ticket-reports',
   templateUrl: './ticket-reports.component.html',
-  styleUrls: ['./ticket-reports.component.scss']
+  styleUrls: ['./ticket-reports.component.scss'],
+  standalone:false
 })
 export class TicketReportsComponent implements OnInit, OnDestroy {
   reports: TicketReport[] = [];

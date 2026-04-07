@@ -178,7 +178,7 @@ export class UserCompOffListComponent implements OnInit {
     return `${base}${employeeParam}`;
   }
 
-  revoke(data) {
+  revoke(data:any) {
     console.log(data);
     const modelRef = this.modalService.open(GenericRemoveComponent, {
       size: <any>'sm',
@@ -187,7 +187,7 @@ export class UserCompOffListComponent implements OnInit {
     });
     modelRef.componentInstance.title = `Are you sure you want to revoke`;
     modelRef.componentInstance.message = `Revoke`;
-    modelRef.componentInstance.status.subscribe((resp) => {
+    modelRef.componentInstance.status.subscribe((resp:any) => {
       if (resp == 'ok') {
         this.revokeContent(data?.id);
         modelRef.close();
@@ -197,7 +197,7 @@ export class UserCompOffListComponent implements OnInit {
     });
   }
 
-  revokeContent(id) {
+  revokeContent(id:any) {
     console.log(id);
     let data = {
       leave_applied_id: id,

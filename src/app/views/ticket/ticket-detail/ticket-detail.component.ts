@@ -11,7 +11,8 @@ import { environment } from 'src/environments/environment';
 @Component({
   selector: 'app-ticket-detail',
   templateUrl: './ticket-detail.component.html',
-  styleUrls: ['./ticket-detail.component.scss']
+  styleUrls: ['./ticket-detail.component.scss'],
+  standalone:false
 })
 export class TicketDetailComponent implements OnInit, OnDestroy {
   ticket: any;

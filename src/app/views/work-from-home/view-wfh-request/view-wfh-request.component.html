@@ -7,13 +7,18 @@
             <h4>WFH Request Details</h4>
           </div>
           <div class="col-sm-4 col-md-4 col-lg-7 text-end">
-            <span style="background: #ffface; color: #978419; font-size: 14px" *ngIf="leave_data.status === 'Pending'"
-              class="rounded p-2">{{ leave_data.status | uppercase }}</span>
-            <span *ngIf="leave_data.status === 'rejected'" style="font-size: 14px;background:#fee2e2; color: #b91c1c;"
-              class="rounded p-2">{{ leave_data.status | uppercase }}</span>
-            <span *ngIf="leave_data.status === 'approved'" style="font-size: 14px ;background: #dcfce7; color: #15803d;"
-              class="rounded p-2">{{ leave_data.status | uppercase }}</span>
+            <!-- Status Badge with Color Coding -->
+            <span [ngClass]="getStatusBadgeClass(leave_data.status)" style="font-size: 14px; padding: 8px 12px;">
+              {{ leave_data.status | uppercase }}
+            </span>
           </div>
+        </div>
+        <!-- Approval Stage Message for Prolonged Health Issues -->
+        <div class="mt-2" *ngIf="getApprovalStageMessage()">
+          <small class="text-info fw-bold">
+            <mat-icon class="me-1" style="font-size: 16px; vertical-align: middle;">info</mat-icon>
+            {{ getApprovalStageMessage() }}
+          </small>
         </div>
       </div>
       <hr />
@@ -29,14 +34,20 @@
           </div>
           <div class="col-sm-12 col-md-6 col-lg-6 my-2">
             <h4 class="label-name">From</h4>
-            <p>{{ leave_data.from_date | dateFormater }}
-              <!-- ({{leave_data?.from_session}}) -->
+            <p>
+              {{ leave_data.from_date | dateFormater }}
+              <small class="text-muted ms-2" *ngIf="leave_data.from_date">
+                ({{ getDayOfWeek(leave_data.from_date) }})
+              </small>
             </p>
           </div>
           <div class="col-sm-12 col-md-6 col-lg-6 my-2">
             <h4 class="label-name">To</h4>
-            <p>{{ leave_data.to_date | dateFormater }}
-              <!-- ({{leave_data?.to_session}}) -->
+            <p>
+              {{ leave_data.to_date | dateFormater }}
+              <small class="text-muted ms-2" *ngIf="leave_data.to_date">
+                ({{ getDayOfWeek(leave_data.to_date) }})
+              </small>
             </p>
           </div>
           <div class="col-sm-12 col-md-6 col-lg-6 my-2">
@@ -61,17 +72,34 @@
           </div>
           <div class="col-sm-12 col-md-6 col-lg-6 my-2" *ngIf="leave_data?.supporting_document">
             <h4 class="label-name">Attachment</h4>
-            <img src="../../../assets/images/eye icon.svg" class="icon-image" container="body" ngbTooltip="View"
-              type="button" (click)="openInNewTab(leave_data.supporting_document)" />
-            <!-- <button class="btn"  (click)="openInNewTab(leave_data.attachment)">View</button> -->
+            <div>
+              <mat-icon class="me-2">description</mat-icon>
+              <a [href]="leave_data.supporting_document" 
+                target="_blank" 
+                download
+                class="attachment-link text-decoration-none">
+                {{ getFileNameFromUrl(leave_data.supporting_document) }}
+              </a>
+              <small class="text-muted ms-2">(Click to download)</small>
+            </div>
           </div>
 
-          <div class="col-sm-12 col-md-6 col-lg-6 my-2" *ngIf="leave_data?.rejected_reason && displayButton && (userRole==='Admin' || userRole==='Manager')">
-            <h4 class="label-name">Reason of Rejection</h4>
-            <p>{{ leave_data.rejected_reason }}</p>
+          <!-- Rejection Details - Visible to All Users -->
+          <div class="col-12 my-2" *ngIf="canSeeRejectionReason()">
+            <div class="alert alert-danger" role="alert">
+              <h6 class="alert-heading">
+                <mat-icon class="me-2">error</mat-icon>Request Rejected
+              </h6>
+              <strong>Reason for Rejection:</strong>
+              <p class="mb-0 mt-2">{{ leave_data.rejected_reason }}</p>
+              <small class="text-muted mt-2 d-block">
+                <strong>Rejected by:</strong> {{ leave_data?.reporting_to_name }}
+              </small>
+            </div>
           </div>
 
-          <div class="col-12" *ngIf="displayButton && (userRole==='Admin' || userRole==='Manager')">
+          <!-- Manager/Admin Rejection Form -->
+          <div class="col-12" *ngIf="displayButton &&  userRole==='Manager'">
             <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
               <mat-label>Reason for Rejecting<b class="r-star">*</b></mat-label>
 
@@ -93,41 +121,56 @@
               </mat-hint>
             </mat-form-field>
           </div>
-          <div *ngIf="userRole==='Admin' || userRole==='Manager'">
-  <div class="col-12 my-4 px-2 d-flex justify-content-end" *ngIf="displayButton">
-            <div>
-              <button mat-button class="cancel-button mat-btn-s me-2" type="button" mat-dialog-close>
-                Close
-              </button>
-              <button mat-raised-button class="proceedbtn mat-btn-s me-2" type="button" (click)="approve(leave_data)">
-                Approve
-              </button>
-              <button mat-button class="delete-item-button mat-btn-s" type="button" (click)="onRejectClick(leave_data)">
-                Reject
-              </button>
 
+          <div *ngIf="userRole==='Manager'">
+            <div class="col-12 my-4 px-2 d-flex justify-content-end" *ngIf="displayButton">
+              <div>
+                <button mat-button class="cancel-button mat-btn-s me-2" type="button" mat-dialog-close>
+                  Close
+                </button>
+                <button *ngIf="canUpdateWfh" mat-raised-button class="proceedbtn mat-btn-s me-2" type="button" (click)="approve(leave_data)">
+                  Approve
+                </button>
+                <button *ngIf="canUpdateWfh" mat-button class="delete-item-button mat-btn-s" type="button"
+                  (click)="onRejectClick(leave_data)">
+                  Reject
+                </button>
+              </div>
             </div>
           </div>
-          </div>
-        
-          <div class="col-12 my-4 px-2 d-flex justify-content-end" *ngIf="userRole === 'Admin'">
+
+          <div class="col-12 my-4 px-2 d-flex justify-content-end"
+            *ngIf="canUpdateWfh && userRole === 'Director'">
+
+            <!-- Director Approval Messages -->
+            <div class="w-100" *ngIf="isProlongedHealthIssue()">
+              <!-- Awaiting Director Approval Message -->
+              <div class="alert alert-info mb-3" 
+                *ngIf="leave_data?.status === 'Approved' && !leave_data?.is_confirmed_by_director && userRole === 'Director'">
+                <mat-icon class="me-2">info</mat-icon>
+                <strong>Awaiting Your Approval</strong> - This Prolonged Health Issues request has been approved by the manager 
+                and is waiting for your final confirmation.
+              </div>
+
+              <!-- Rejected by Manager Message -->
+              <div class="alert alert-warning mb-3"
+                *ngIf="isDirectorRejectedMessageVisible">
+                <mat-icon class="me-2">warning</mat-icon>
+                <strong>Rejected by Manager:</strong> {{ leave_data?.rejected_reason }}
+              </div>
+            </div>
 
             <!-- Director Approve -->
             <button *ngIf="isDirectorApprovalVisible" mat-raised-button class="proceedbtn mat-btn-s me-2 mx-2"
               type="button" (click)="approveByDirector(leave_data)">
-              Approve by Director
+              <mat-icon class="me-1">check_circle</mat-icon>Approve by Director
             </button>
 
             <!-- Director Reject -->
             <button *ngIf="isDirectorApprovalVisible" mat-button class="delete-item-button mat-btn-s" type="button"
               (click)="rejectByDirector(leave_data)">
-              Reject by Director
+              <mat-icon class="me-1">cancel</mat-icon>Reject by Director
             </button>
-
-            <!-- Rejected Message -->
-            <p class="text-danger" *ngIf="isDirectorRejectedMessageVisible">
-              Work From Home Request is rejected by {{ leave_data?.reporting_to_name }}
-            </p>
 
           </div>
 

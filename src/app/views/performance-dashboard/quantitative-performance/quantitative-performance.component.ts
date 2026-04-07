@@ -6,6 +6,7 @@ import { environment } from '../../../../environments/environment';
   selector: 'app-quantitative-performance',
   templateUrl: './quantitative-performance.component.html',
   styleUrls: ['./quantitative-performance.component.scss'],
+  standalone:false
 })
 export class QuantitativePerformanceComponent implements OnInit, OnChanges {
   @Input() dropdwonFilterData: any;

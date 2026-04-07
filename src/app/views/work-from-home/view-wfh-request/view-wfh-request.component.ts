@@ -2,9 +2,10 @@ import { Component, Inject, OnInit } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { GenericDeleteComponent } from 'src/app/generic-components/generic-delete/generic-delete.component';
-import { ApiserviceService } from 'src/app/service/apiservice.service';
-import { environment } from 'src/environments/environment';
+import { environment } from '../../../../environments/environment';
+import { GenericDeleteComponent } from '../../../generic-components/generic-delete/generic-delete.component';
+import { ApiserviceService } from '../../../service/apiservice.service';
+import { SubModuleService } from '../../../service/sub-module.service';
 
 @Component({
   selector: 'app-view-wfh-request',
@@ -16,32 +17,26 @@ export class ViewWfhRequestComponent implements OnInit {
   leave_data: any;
   displayButton: boolean = true;
   userRole: any;
-  // constructor(
-  //   private apiService: ApiserviceService,
-  //   private modalService: NgbModal,
-  //   public dialogRef: MatDialogRef<ViewWfhRequestComponent>,
-  //   @Inject(MAT_DIALOG_DATA) public data: any
-  // ) {
-  //   console.log(data);
+  user_id: any;
+  access_name: any;
+  accessPermissions: any = [];
+  canCreateWfh = false;
+  canViewWfh = false;
+  canUpdateWfh = false;
+  canDeleteWfh = false;
 
-  //   this.leave_data = data.data;
-  //   this.leave_data.cc = JSON?.parse(this.leave_data?.cc);
-  //   if (this.leave_data?.status != 'Pending') {
-  //     this.displayButton = false;
-  //   } else {
-  //     this.displayButton = true;
-  //   }
-  // }
   constructor(
     private apiService: ApiserviceService,
     private modalService: NgbModal,
     public dialogRef: MatDialogRef<ViewWfhRequestComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any,
+    private accessControlService: SubModuleService,
   ) {
     console.log(data);
 
     this.leave_data = data?.data || {};
     this.userRole = sessionStorage.getItem('user_role_name');
+    this.user_id = sessionStorage.getItem('user_id');
 
     // Safe JSON parse
     if (this.leave_data?.cc) {
@@ -67,8 +62,30 @@ export class ViewWfhRequestComponent implements OnInit {
     Validators.required,
   );
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.getModuleAccess();
+  }
 
+  getModuleAccess() {
+    this.accessControlService
+      .getAccessForActiveUrl(this.user_id)
+      .subscribe((access: any) => {
+        if (access?.length) {
+          this.access_name = access[0];
+          this.accessPermissions = access[0].operations || access[0];
+          const ops = Array.isArray(this.accessPermissions)
+            ? this.accessPermissions[0]
+            : this.accessPermissions;
+
+          this.canCreateWfh = !!ops?.create && this.userRole !== 'Admin';
+          this.canViewWfh = !!ops?.view;
+          this.canUpdateWfh = !!ops?.update;
+          this.canDeleteWfh = !!ops?.delete;
+        } else {
+          console.log('No matching access found.');
+        }
+      });
+  }
   approve(data: any) {
     this.reasonControl.clearValidators();
     this.reasonControl.updateValueAndValidity();
@@ -223,7 +240,8 @@ export class ViewWfhRequestComponent implements OnInit {
 
   get isDirectorApprovalVisible(): boolean {
     return (
-      this.userRole === 'Admin' &&
+      this.userRole === 'Director' &&
+      this.canUpdateWfh &&
       this.leave_data?.status === 'Approved' &&
       this.leave_data?.wfh_type_name === 'prolonged_health_issue' &&
       this.leave_data?.is_confirmed_by_director === false
@@ -232,10 +250,91 @@ export class ViewWfhRequestComponent implements OnInit {
 
   get isDirectorRejectedMessageVisible(): boolean {
     return (
+      this.userRole === 'Director' &&
       this.leave_data?.status === 'Rejected' &&
       this.leave_data?.wfh_type_name === 'prolonged_health_issue' &&
       this.leave_data?.is_confirmed_by_director === false &&
       this.leave_data?.rejected_by !== 'null'
     );
+  }
+
+  // ===================== FRONTEND ENHANCEMENTS =====================
+
+  /**
+   * Get day of week name from date
+   */
+  getDayOfWeek(date: any): string {
+    if (!date) return '';
+    try {
+      const d = new Date(date);
+      const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+      return days[d.getDay()];
+    } catch (e) {
+      return '';
+    }
+  }
+
+  /**
+   * Get CSS class for status badge
+   */
+  getStatusBadgeClass(status: string): string {
+    const normalizedStatus = status?.toLowerCase();
+    return {
+      'pending': 'badge bg-warning text-dark',
+      'approved': 'badge bg-success',
+      'rejected': 'badge bg-danger',
+      'draft': 'badge bg-secondary'
+    }[normalizedStatus] || 'badge bg-secondary';
+  }
+
+  /**
+   * Check if employee can see rejection reason (employees should see it)
+   */
+  canSeeRejectionReason(): boolean {
+    return this.leave_data?.rejected_reason && 
+           (this.leave_data?.status === 'Rejected' || this.leave_data?.status === 'rejected');
+  }
+
+  /**
+   * Check if this is a Prolonged Health Issues request
+   */
+  isProlongedHealthIssue(): boolean {
+    const wfhType = this.leave_data?.wfh_type_name?.toLowerCase();
+    return wfhType === 'prolonged_health_issue' || wfhType === 'prolonged health issues';
+  }
+
+  /**
+   * Check if this is a Limited Flexibility request
+   */
+  isLimitedFlexibility(): boolean {
+    const wfhType = this.leave_data?.wfh_type_name?.toLowerCase();
+    return wfhType === 'limited_flexibility' || wfhType === 'limited flexibility';
+  }
+
+  /**
+   * Get approval stage message for Prolonged Health Issues
+   */
+  getApprovalStageMessage(): string {
+    if (this.isProlongedHealthIssue()) {
+      if (this.leave_data?.status === 'Pending' || this.leave_data?.status === 'PENDING') {
+        return 'Awaiting Manager Approval (Stage 1 of 2)';
+      }
+      if (this.leave_data?.status === 'Approved' || this.leave_data?.status === 'approved') {
+        if (this.leave_data?.is_confirmed_by_director === false) {
+          return 'Awaiting Director Approval (Stage 2 of 2)';
+        }
+      }
+    }
+    return '';
+  }
+
+  /**
+   * Extract filename from URL
+   */
+  getFileNameFromUrl(url: string): string {
+    if (!url) return 'Download';
+    const parts = url.split('/');
+    const filename = parts[parts.length - 1];
+    return filename || 'Download';
   }
 }

@@ -15,7 +15,8 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 @Component({
   selector: 'app-new-ticket',
   templateUrl: './new-ticket.component.html',
-  styleUrls: ['./new-ticket.component.scss']
+  styleUrls: ['./new-ticket.component.scss'],
+  standalone:false
 })
 export class NewTicketComponent implements OnInit, OnDestroy {
   @ViewChild(FormGroupDirective) formGroupDirective!: FormGroupDirective;

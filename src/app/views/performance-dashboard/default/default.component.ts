@@ -5,7 +5,8 @@ import { environment } from '../../../../environments/environment';
 @Component({
   selector: 'app-default',
   templateUrl: './default.component.html',
-  styleUrls: ['./default.component.scss']
+  styleUrls: ['./default.component.scss'],
+  standalone:false
 })
 export class DefaultComponent implements OnInit {
     periodicityId: number | null = null;
