@@ -1,18 +1,15 @@
 import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
-import { environment } from 'src/environments/environment';
-
-import { DropDownPaginationService } from 'src/app/service/drop-down-pagination.service';
 import { DatePipe } from '@angular/common';
-import { ApiserviceService } from 'src/app/service/apiservice.service';
 import { MatDialog } from '@angular/material/dialog';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { SubModuleService } from 'src/app/service/sub-module.service';
-import { GenericTableFilterComponent } from 'src/app/shared/generic-table-filter/generic-table-filter.component';
-
 import { ViewWfhRequestComponent } from '../view-wfh-request/view-wfh-request.component';
 import { ViewLeaveRequestComponent } from '../../leave/view-leave-request/view-leave-request.component';
 import { ApplyWorkFromHomeComponent } from '../apply-work-from-home/apply-work-from-home.component';
 import { CommonServiceService } from '../../../service/common-service.service';
+import { environment } from '../../../../environments/environment';
+import { ApiserviceService } from '../../../service/apiservice.service';
+import { SubModuleService } from '../../../service/sub-module.service';
+import { GenericTableFilterComponent } from '../../../shared/generic-table-filter/generic-table-filter.component';
+import { DropDownPaginationService } from 'src/app/service/drop-down-pagination.service';
 export interface IdNamePair {
   id: any;
   name: string;
@@ -54,13 +51,14 @@ export class WfhRequestsComponent implements OnInit {
   userRole: any;
   accessPermissions: any = [];
   canCreateWfh = false;
+  canApplyForWfh = false;
   canViewWfh = false;
   canUpdateWfh = false;
   canDeleteWfh = false;
+  showManagementApprovalColumn = false;
   BreadCrumbsTitle: any = 'WFH Request';
   constructor(
     private accessControlService: SubModuleService,
-    modalService: NgbModal,
     private dialog: MatDialog,
     private apiService: ApiserviceService,
     private cdr: ChangeDetectorRef,
@@ -164,10 +162,22 @@ export class WfhRequestsComponent implements OnInit {
             ? this.accessPermissions[0]
             : this.accessPermissions;
 
-          this.canCreateWfh = !!ops?.create && this.userRole !== 'Admin';
-          this.canViewWfh = !!ops?.view;
-          this.canUpdateWfh = !!ops?.update;
-          this.canDeleteWfh = !!ops?.delete;
+          if (this.userRole === 'Admin') {
+            this.canCreateWfh = false;
+            this.canApplyForWfh = false;
+            this.canViewWfh = true;
+            this.canUpdateWfh = false;
+            this.canDeleteWfh = false;
+            this.showManagementApprovalColumn = true;
+          } else {
+            this.canCreateWfh = !!ops?.create;
+            this.canApplyForWfh = !!ops?.create;
+            this.canViewWfh = !!ops?.view;
+            this.canUpdateWfh = !!ops?.update;
+            this.canDeleteWfh = !!ops?.delete;
+            this.showManagementApprovalColumn =
+              this.userRole === 'Director' && !!ops?.update;
+          }
         } else {
           console.log('No matching access found.');
         }
@@ -177,6 +187,30 @@ export class WfhRequestsComponent implements OnInit {
   getContinuousIndex(index: number): number {
     return (this.page - 1) * this.tableSize + index + 1;
   }
+
+  getWfhDisplayStatus(item: any): string {
+    if (
+      item?.wfh_type_name === 'prolonged_health_issue' &&
+      item?.status === 'Approved' &&
+      item?.is_confirmed_by_director === false
+    ) {
+      return 'Pending';
+    }
+    return item?.status;
+  }
+
+  isWfhStatusPending(item: any): boolean {
+    return this.getWfhDisplayStatus(item) === 'Pending';
+  }
+
+  isWfhStatusApproved(item: any): boolean {
+    return this.getWfhDisplayStatus(item) === 'Approved';
+  }
+
+  isWfhStatusRejected(item: any): boolean {
+    return this.getWfhDisplayStatus(item) === 'Rejected';
+  }
+
   sort(direction: string, column: string) {
     Object.keys(this.arrowState).forEach((key) => {
       this.arrowState[key] = false;
@@ -321,8 +355,7 @@ export class WfhRequestsComponent implements OnInit {
   }
   getFilterBaseUrl(): string {
     const base = `?page=${this.page}&page_size=${this.tableSize}`;
-    // const searchParam = this.term?.trim().length >= 2 ? `&search=${encodeURIComponent(this.term.trim())}` : '';
-    // const employeeParam = this.userRole !== 'Admin' ? `&employee-id=${this.user_id}` : '';
+
     return `${base}`;
   }
 

@@ -38,7 +38,8 @@
         <button mat-raised-button class="cancel-button mat-btn-s" type="button" (click)="reset()">
           Reset
         </button>
-        <button mat-raised-button class="proceedbtn mat-btn-s" *ngIf="canCreateWfh" (click)="openleaveForm()">
+        <button mat-raised-button class="proceedbtn mat-btn-s" *ngIf="canCreateWfh && canApplyForWfh"
+          (click)="openleaveForm()">
           {{ userRole === 'Admin' ? 'Add WFH Request' : 'Apply for WFH' }}
         </button>
       </div>
@@ -119,7 +120,7 @@
                 </mat-menu>
               </th>
               <th scope="col" *ngIf="canViewWfh">View</th>
-              <th scope="col" *ngIf="userRole==='Director' || userRole==='Admin'">Management Approval</th>
+              <th scope="col" *ngIf="showManagementApprovalColumn">Management Approval</th>
             </tr>
           </thead>
           <tbody>
@@ -136,11 +137,11 @@
                 <td>{{ item.from_date | dateFormater }} - {{ item.to_date | dateFormater }}</td>
                 <td>{{ item.number_of_wfh_applying_for }}</td>
                 <td>{{ item.created_datetime | dateFormater }}</td>
-                <td *ngIf="item.status === 'Pending'"><span style="background: #ffface; color: #978419;"
+                <td *ngIf="isWfhStatusPending(item)"><span style="background: #ffface; color: #978419;"
                     class="p-2 rounded">PENDING</span></td>
-                <td *ngIf="item.status === 'Approved'"><span style="background: #dcfce7; color: #15803d;"
+                <td *ngIf="isWfhStatusApproved(item)"><span style="background: #dcfce7; color: #15803d;"
                     class="p-2 rounded">APPROVED</span></td>
-                <td *ngIf="item.status === 'Rejected'"><span style="background:#fee2e2; color: #b91c1c;"
+                <td *ngIf="isWfhStatusRejected(item)"><span style="background:#fee2e2; color: #b91c1c;"
                     class="p-2 rounded">REJECTED</span></td>
                 <td *ngIf="canViewWfh">
                   <span>
@@ -149,15 +150,16 @@
                   </span>
                 </td>
 
-                <td
-                  *ngIf="(userRole==='Director'||userRole==='Admin')&&item.is_confirmed_by_director===false&&item.wfh_type_name==='prolonged_health_issue'&&(item.status==='Approved'||item.status==='Pending')">
-                  <span style="background: #ffface; color: #978419;" class="p-2 rounded">PENDING</span></td>
+                <td *ngIf="showManagementApprovalColumn && (userRole==='Director'||userRole==='Admin')&&item.is_confirmed_by_director===false&&item.wfh_type_name==='prolonged_health_issue'&&(item.status==='Approved'||item.status==='Pending')">
+                  <span style="background: #ffface; color: #978419;" class="p-2 rounded">PENDING</span>
+                </td>
 
                 <td
-                  *ngIf="(userRole==='Director'||userRole==='Admin')&&item.is_confirmed_by_director===true&&item.wfh_type_name==='prolonged_health_issue'&&item.status==='Approved'">
-                  <span style="background: #dcfce7; color: #15803d;" class="p-2 rounded">APPROVED</span></td>
+                  *ngIf="showManagementApprovalColumn && (userRole==='Director'||userRole==='Admin')&&item.is_confirmed_by_director===true&&item.wfh_type_name==='prolonged_health_issue'&&item.status==='Approved'">
+                  <span style="background: #dcfce7; color: #15803d;" class="p-2 rounded">APPROVED</span>
+                </td>
                 <td
-                  *ngIf="userRole==='Director' || userRole==='Admin' &&item.is_confirmed_by_director===false&&item.wfh_type_name==='limited_flexibility'">
+                  *ngIf="showManagementApprovalColumn && (userRole==='Director' || userRole==='Admin')&&item.is_confirmed_by_director===false&&item.wfh_type_name==='limited_flexibility'">
                   NA</td>
               </tr>
             </ng-container>

@@ -241,6 +241,7 @@ export class ViewWfhRequestComponent implements OnInit {
   get isDirectorApprovalVisible(): boolean {
     return (
       this.userRole === 'Director' &&
+      this.canUpdateWfh &&
       this.leave_data?.status === 'Approved' &&
       this.leave_data?.wfh_type_name === 'prolonged_health_issue' &&
       this.leave_data?.is_confirmed_by_director === false
