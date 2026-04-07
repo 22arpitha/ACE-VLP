@@ -133,7 +133,7 @@ export class AddCustomizeBalanceComponent implements OnInit {
         }))
       };
       // console.log(payload)
-       this.apiService.postData(`${environment.live_url}/${environment.all_emp_custom_balance}/`, payload).subscribe(
+       this.apiService.updateData(`${environment.live_url}/${environment.all_emp_custom_balance}/`, payload).subscribe(
           (res: any) => {
             // console.log(res);
             this.apiService.showSuccess(res['message']);

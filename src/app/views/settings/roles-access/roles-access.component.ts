@@ -42,7 +42,6 @@ export class RolesAccessComponent implements OnInit {
     this.selectedLabelNames = [];
     this.common_service.setTitle(this.BreadCrumbsTitle);
     this.getDesignationNameFromDesignationId();
-    this.allrolesList();
     this.checkScreenSize(); 
   }
 
@@ -59,6 +58,7 @@ export class RolesAccessComponent implements OnInit {
   getDesignationNameFromDesignationId() {
     this.api.getData(`${environment.live_url}/${environment.settings_roles}/${this.designation_id}/`).subscribe((res: any) => {
       this.role = res.designation_name;
+       this.allrolesList();
     })
   }
 
@@ -67,7 +67,7 @@ export class RolesAccessComponent implements OnInit {
     this.api.getData(`${environment.live_url}/${environment.user_access}/${this.user_id}/`).subscribe(
       (data: any) => {
         // console.log('all list', data,)
-        let role = this.role.toLowerCase();
+        let role = this.role?.toLowerCase();
         this.mainMenu = data.access_list;
         if (role !== 'invoicing executive' && role !== 'director') {
           this.mainMenu = data.access_list.filter((module_name:any) => module_name.name !== 'Invoicing');

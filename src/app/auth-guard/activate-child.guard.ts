@@ -55,9 +55,9 @@ export class ActivateChildGuard implements CanActivateChild {
     if (state.url.includes('/performance/dashboard')) {
         return true;
       }
-    if(state.url.includes('/approvals/leave-requests')) {
-      return true;
-    }
+    // if(state.url.includes('/approvals/leave-requests')) {
+    //   return true;
+    // }
     if (roleName === 'admin') {
       return true;
     }
