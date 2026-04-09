@@ -63,7 +63,7 @@ const routes: Routes = [
           import('./views/leave/leave.module').then((m) => m.LeaveModule),
       },
       {
-        path: 'wfh',
+        path: 'tabs/wfh',
         loadChildren: () =>
           import('./views/work-from-home/work-from-home.module').then(
             (m) => m.WorkFromHomeModule,

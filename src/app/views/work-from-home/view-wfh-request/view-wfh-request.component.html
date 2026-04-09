@@ -74,9 +74,7 @@
             <h4 class="label-name">Attachment</h4>
             <div>
               <mat-icon class="me-2">description</mat-icon>
-              <a [href]="leave_data.supporting_document" 
-                target="_blank" 
-                download
+              <a [href]="leave_data.supporting_document" target="_blank" download
                 class="attachment-link text-decoration-none">
                 {{ getFileNameFromUrl(leave_data.supporting_document) }}
               </a>
@@ -91,32 +89,34 @@
                 <mat-icon class="me-2">error</mat-icon>Request Rejected
               </h6>
               <strong>Reason for Rejection:</strong>
-              <p class="mb-0 mt-2">{{ leave_data.rejected_reason }}</p>
+              <p class="mb-0 mt-2" *ngIf="leave_data.rejected_reason; else rejectedNoReason">
+                {{ leave_data.rejected_reason }}
+              </p>
+              <ng-template #rejectedNoReason>
+                <p class="mb-0 mt-2">This request has been rejected.</p>
+              </ng-template>
               <small class="text-muted mt-2 d-block">
-                <strong>Rejected by:</strong> {{ leave_data?.reporting_to_name }}
+                <strong>Rejected by:</strong> {{ getRejectedByLabel() }}
               </small>
             </div>
           </div>
 
           <!-- Manager/Admin Rejection Form -->
-          <div class="col-12" *ngIf="displayButton &&  userRole==='Manager'">
+          <div class="col-12" *ngIf="(displayButton && userRole === 'Manager' && canApproveOrReject) || (userRole === 'Director' && isDirectorApprovalVisible)">
             <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
               <mat-label>Reason for Rejecting<b class="r-star">*</b></mat-label>
 
               <textarea matInput placeholder="Enter reason" autocomplete="off" style="height: 50px !important"
                 [formControl]="reasonControl" maxlength="200" rows="3"></textarea>
 
-              <mat-error *ngIf="
-                  reasonControl.invalid &&
-                  (reasonControl.dirty || reasonControl.touched)
-                ">
+              <mat-error *ngIf="reasonControl.invalid && (reasonControl.dirty || reasonControl.touched)">
                 Reason is required
               </mat-error>
 
               <mat-hint align="end" class="mt-2">
                 {{ reasonControl.value?.length || 0 }}/200 ({{
                 200 - (reasonControl.value?.length || 0)
-                }}
+                }})
                 left)
               </mat-hint>
             </mat-form-field>
@@ -128,10 +128,11 @@
                 <button mat-button class="cancel-button mat-btn-s me-2" type="button" mat-dialog-close>
                   Close
                 </button>
-                <button *ngIf="canUpdateWfh" mat-raised-button class="proceedbtn mat-btn-s me-2" type="button" (click)="approve(leave_data)">
+                <button *ngIf="canApproveOrReject" mat-raised-button class="proceedbtn mat-btn-s me-2" type="button"
+                  (click)="approve(leave_data)">
                   Approve
                 </button>
-                <button *ngIf="canUpdateWfh" mat-button class="delete-item-button mat-btn-s" type="button"
+                <button *ngIf="canApproveOrReject" mat-button class="delete-item-button mat-btn-s" type="button"
                   (click)="onRejectClick(leave_data)">
                   Reject
                 </button>
@@ -139,25 +140,20 @@
             </div>
           </div>
 
-          <div class="col-12 my-4 px-2 d-flex justify-content-end"
-            *ngIf="canUpdateWfh && userRole === 'Director'">
+          <div class="col-12 my-4 px-2 d-flex justify-content-end" *ngIf="canUpdateWfh && userRole === 'Director'">
 
             <!-- Director Approval Messages -->
             <div class="w-100" *ngIf="isProlongedHealthIssue()">
               <!-- Awaiting Director Approval Message -->
-              <div class="alert alert-info mb-3" 
+              <div class="alert alert-info mb-3"
                 *ngIf="leave_data?.status === 'Approved' && !leave_data?.is_confirmed_by_director && userRole === 'Director'">
                 <mat-icon class="me-2">info</mat-icon>
-                <strong>Awaiting Your Approval</strong> - This Prolonged Health Issues request has been approved by the manager 
+                <strong>Awaiting Your Approval</strong> - This Prolonged Health Issues request has been approved by the
+                manager
                 and is waiting for your final confirmation.
               </div>
 
-              <!-- Rejected by Manager Message -->
-              <div class="alert alert-warning mb-3"
-                *ngIf="isDirectorRejectedMessageVisible">
-                <mat-icon class="me-2">warning</mat-icon>
-                <strong>Rejected by Manager:</strong> {{ leave_data?.rejected_reason }}
-              </div>
+            
             </div>
 
             <!-- Director Approve -->

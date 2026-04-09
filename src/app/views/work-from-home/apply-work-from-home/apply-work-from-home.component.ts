@@ -78,6 +78,8 @@ export class ApplyWorkFromHomeComponent implements OnInit {
     this.selectedFile = null;
     this.fileName = '';
     this.fileDataUrl = '';
+    this.leaveApplyForm.patchValue({ supporting_document: '' });
+    this.leaveApplyForm.get('supporting_document')?.updateValueAndValidity();
   }
 
   constructor(
@@ -344,173 +346,7 @@ export class ApplyWorkFromHomeComponent implements OnInit {
     );
   }
 
-  startDate: Date | null = null;
-  endDate: Date | null = null;
-  session1: string | null = null; // "first" or "second"
-  session2: string | null = null; // "first" or "second"
-  totalDays: number = 0;
-  DateError: any;
 
-  calculateDays() {
-    if (!this.startDate || !this.endDate) {
-      return;
-    }
-
-    if (this.endDate < this.startDate) {
-      this.DateError = 'End date must be greater than or equal to start date';
-      return;
-    }
-
-    // Base difference in full days (inclusive)
-    let diffTime = this.endDate.getTime() - this.startDate.getTime();
-    let diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24)) + 1;
-
-    let total = diffDays;
-    // Adjust for sessions
-    if (this.startDate.getTime() === this.endDate.getTime()) {
-      // Same day case
-      if (this.session1 === 'session 1' && this.session2 === 'session 1')
-        total = 0.5;
-      else if (this.session1 === 'session 2' && this.session2 === 'session 2')
-        total = 0.5;
-      else total = 1; // first–second or second–first → full day
-    } else {
-      // Multi-day case
-      if (this.session1 === 'session 2') {
-        total -= 0.5; // start at 2nd half → reduce half
-      }
-      if (this.session2 === 'session 1') {
-        total -= 0.5; // end at 1st half → reduce half
-      }
-    }
-
-    console.log(total);
-    this.totalDays = total;
-  }
-
-  convertDateTime(dateVal: any) {
-    const date: Date = dateVal;
-    if (!dateVal) return null;
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0'); // month is 0-based
-    const day = String(date.getDate()).padStart(2, '0');
-
-    const formattedDate = `${year}-${month}-${day}`;
-
-    return formattedDate;
-  }
-
-  working_day_data: any;
-  my_calendar: any;
-  allowDaysCounting: boolean = false;
-  getWorkingDays(date: Date) {
-    this.apiService
-      .getData(`${environment.live_url}/${environment.work_calendar}/`)
-      .subscribe((res: any) => {
-        this.working_day_data = res[0]['working_days'];
-        this.my_calendar = res[0];
-        this.checkHoliday(date);
-      });
-  }
-
-  countFixedHolidays(
-    startDate: Date,
-    endDate: Date,
-    fixedHolidays: any[],
-  ): number {
-    let holidayCount = 0;
-
-    fixedHolidays.forEach((holiday) => {
-      const holidayDate = new Date(holiday.date);
-      if (holidayDate >= startDate && holidayDate <= endDate) {
-        holidayCount++;
-      }
-    });
-
-    return holidayCount;
-  }
-
-  getHolidayCalender(
-    startDate: Date,
-    endDate: Date,
-    callback: (count: number) => void,
-  ) {
-    this.apiService
-      .getData(`${environment.live_url}/${environment.holiday_calendar}/`)
-      .subscribe((res: any) => {
-        const count = this.countFixedHolidays(
-          startDate,
-          endDate,
-          res.results || res,
-        );
-        callback(count); // ✅ Pass result back
-      });
-  }
-
-  countHolidays(startDate: Date, endDate: Date): number {
-    if (!this.working_day_data) {
-      // console.warn("working_day_data not loaded yet!");
-      return 0;
-    }
-
-    let holidayCount = 0;
-    let currentDate = new Date(startDate);
-
-    while (currentDate <= endDate) {
-      const dayName = currentDate.toLocaleDateString('en-US', {
-        weekday: 'long',
-      });
-      const dayOfMonth = currentDate.getDate();
-      const weekNumber = Math.ceil(dayOfMonth / 7);
-      const weekKey = ['1st', '2nd', '3rd', '4th', '5th'][weekNumber - 1];
-
-      const dayData = this.working_day_data.find((d: any) => d.day === dayName);
-
-      if (dayData) {
-        const allHoliday = dayData.data.find(
-          (d: any) => d.key === 'all',
-        )?.is_holiday;
-        const weekHoliday = dayData.data.find(
-          (d: any) => d.key === weekKey,
-        )?.is_holiday;
-
-        if (allHoliday || weekHoliday) {
-          holidayCount++;
-        }
-      }
-
-      // Move to next day
-      currentDate.setDate(currentDate.getDate() + 1);
-    }
-
-    return holidayCount;
-  }
-
-  checkHoliday(date: Date) {
-    const dayName = date.toLocaleDateString('en-US', { weekday: 'long' });
-    const dayOfMonth = date.getDate();
-    const weekNumber = Math.ceil(dayOfMonth / 7);
-    const weekKey = ['1st', '2nd', '3rd', '4th', '5th'][weekNumber - 1];
-
-    const dayData = this.working_day_data.find((d: any) => d.day === dayName);
-
-    if (!dayData) {
-      return;
-    }
-
-    const allHoliday = dayData.data.find(
-      (d: any) => d.key === 'all',
-    )?.is_holiday;
-    const weekHoliday = dayData.data.find(
-      (d: any) => d.key === weekKey,
-    )?.is_holiday;
-
-    if (allHoliday || weekHoliday) {
-      // console.log('Its holiday');
-    } else {
-      // console.log('Not holiday');
-    }
-  }
 
   startDateFun(event: any) {
     // let new_date: any = this.convertDateTime(event.value);
@@ -614,11 +450,7 @@ export class ApplyWorkFromHomeComponent implements OnInit {
     this.fileInput?.nativeElement?.click();
   }
 
-  private _excludeSelected(): string[] {
-    return this.ccEmailsList.filter(
-      (email: any) => !this.selectedEmails.includes(email),
-    );
-  }
+  
 
   add(event: MatChipInputEvent): void {
     const value = (event.value || '').trim();
@@ -684,7 +516,8 @@ export class ApplyWorkFromHomeComponent implements OnInit {
   handleDroppedImage(file: File) {
     this.selectedFile = file;
     this.fileName = file.name;
-    this.leaveApplyForm.get('file')?.updateValueAndValidity();
+    this.leaveApplyForm.patchValue({ supporting_document: file });
+    this.leaveApplyForm.get('supporting_document')?.updateValueAndValidity();
 
     const reader = new FileReader();
     reader.onload = () => (this.fileDataUrl = reader.result);
@@ -699,8 +532,8 @@ export class ApplyWorkFromHomeComponent implements OnInit {
     if (file) {
       this.selectedFile = file;
       this.fileName = file.name;
-      // this.leaveApplyForm.patchValue({ attachment: file });
-      this.leaveApplyForm.get('file')?.updateValueAndValidity();
+      this.leaveApplyForm.patchValue({ supporting_document: file });
+      this.leaveApplyForm.get('supporting_document')?.updateValueAndValidity();
 
       // Preview image
       const reader = new FileReader();
@@ -711,10 +544,7 @@ export class ApplyWorkFromHomeComponent implements OnInit {
     }
   }
 
-  private _isValidEmail(email: string): boolean {
-    const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return EMAIL_REGEX.test(email);
-  }
+ 
 
   onSubmit(): void {
     let new_start_date: any = this.convertDateTime(
@@ -847,254 +677,10 @@ export class ApplyWorkFromHomeComponent implements OnInit {
     this.initialForm();
   }
 
-  openGrantCompOff() {
-    this.dialog.open(CompOffGrantComponent, {
-      data: { employee: false },
-      panelClass: 'custom-details-dialog',
-      disableClose: true,
-    });
-    this.dialog.afterAllClosed.subscribe((resp: any) => {
-      // console.log('resp',resp);
-      //  this.initalCall();
-    });
-  }
+ 
 
-  isApplyDisabled(): boolean {
-    if (!this.employeeActive) {
-      return true;
-    }
-    if (this.selectedLeaveTypeName === 'loss of pay') {
-      return false;
-    }
-    if (this.leave_balance === 0) {
-      return true;
-    }
-    return false;
-  }
+ 
 
-  // day calculations
-  computeTotalDays(): void {
-    const from: Date | null = this.getDateFromControl('from_date');
-    this.minDate = from;
-    const to: Date | null = this.getDateFromControl('to_date');
-    const fromSession = this.leaveApplyForm.get('from_session')?.value;
-    const toSession = this.leaveApplyForm.get('to_session')?.value;
-
-    if (!from || !to || !fromSession || !toSession) {
-      this.totalDays = 0;
-      return;
-    }
-
-    const start = this.startOfDay(from);
-    const end = this.startOfDay(to);
-    if (end < start) {
-      this.totalDays = 0;
-      return;
-    }
-
-    const dates = this.enumerateDates(start, end);
-    const wc = this.workCalendar;
-    const holidayDatesSet = new Set(this.holidayList.map((h: any) => h.date)); // 'YYYY-MM-DD'
-
-    const shouldSkipDate = (d: Date): boolean => {
-      const iso = this.toISODate(d);
-      if (holidayDatesSet.has(iso)) return true;
-
-      if (!wc) return false;
-
-      // CASE 1 — custom_year = false
-      if (wc.custom_year === false) {
-        if (wc.year === d.getFullYear()) {
-          return this.isWorkCalendarHoliday(wc, d);
-        } else {
-          // Year mismatch → ignore work calendar
-          return false;
-        }
-      }
-
-      // CASE 2 — custom_year = true
-      if (wc.custom_year === true) {
-        if (wc.custom_year_start_date && wc.custom_year_end_date) {
-          const startRange = this.startOfDay(
-            new Date(wc.custom_year_start_date),
-          );
-          const endRange = this.startOfDay(new Date(wc.custom_year_end_date));
-          if (d >= startRange && d <= endRange) {
-            return this.isWorkCalendarHoliday(wc, d);
-          } else {
-            // Outside custom-year range → ignore
-            return false;
-          }
-        } else {
-          // If dates not defined → ignore
-          return false;
-        }
-      }
-
-      return false;
-    };
-
-    // ==== Day Count Logic ====
-    let total = 0;
-
-    if (dates.length === 1) {
-      const d = dates[0];
-      if (shouldSkipDate(d)) {
-        this.totalDays = 0;
-        return;
-      }
-
-      total = fromSession === toSession ? 0.5 : 1;
-      this.totalDays = total;
-      return;
-    }
-
-    const firstDate = dates[0];
-    if (!shouldSkipDate(firstDate)) {
-      total += this.isSessionMorning(fromSession) ? 1 : 0.5;
-    }
-
-    const lastDate = dates[dates.length - 1];
-    if (!shouldSkipDate(lastDate)) {
-      total += this.isSessionAfternoon(toSession) ? 1 : 0.5;
-    }
-
-    for (let i = 1; i < dates.length - 1; i++) {
-      const d = dates[i];
-      if (!shouldSkipDate(d)) total += 1;
-    }
-
-    this.totalDays = total;
-  }
-
-  private isWorkCalendarHoliday(wc: any, d: Date): boolean {
-    if (!wc || !Array.isArray(wc.working_days)) return false;
-
-    const dayName = this.weekdayNameFromCalendar(wc, d);
-    const weekKey = this.getWeekNumberOfMonthKey(d);
-
-    const weekdayEntry = wc.working_days.find(
-      (entry: any) => entry.day.toLowerCase() === dayName.toLowerCase(),
-    );
-
-    if (!weekdayEntry || !Array.isArray(weekdayEntry.data)) return false;
-
-    const allHoliday = weekdayEntry.data.find(
-      (x: any) => x.key.toLowerCase() === 'all' && x.is_holiday,
-    );
-    if (allHoliday) return true;
-
-    const specificHoliday = weekdayEntry.data.find(
-      (x: any) => x.key.toLowerCase() === weekKey && x.is_holiday,
-    );
-    return !!specificHoliday;
-  }
-
-  private weekdayNameFromCalendar(wc: any, date: Date): string {
-    const daysFromCalendar = wc.working_days.map((d: any) => d.day);
-
-    if (!daysFromCalendar || daysFromCalendar.length < 7) {
-      const fallback = [
-        'Sunday',
-        'Monday',
-        'Tuesday',
-        'Wednesday',
-        'Thursday',
-        'Friday',
-        'Saturday',
-      ];
-      return fallback[date.getDay()];
-    }
-
-    const actualIndex = date.getDay();
-    const startDay = wc.work_week_starts_on;
-    const startIndex = daysFromCalendar.findIndex(
-      (d: string) => d.toLowerCase() === startDay.toLowerCase(),
-    );
-
-    if (startIndex === -1)
-      return daysFromCalendar[actualIndex] || daysFromCalendar[0];
-
-    const rotatedDays = [
-      ...daysFromCalendar.slice(startIndex),
-      ...daysFromCalendar.slice(0, startIndex),
-    ];
-
-    return rotatedDays[actualIndex] || rotatedDays[0];
-  }
-
-  private getWeekNumberOfMonthKey(d: Date): string {
-    const date = d.getDate();
-    const firstOfMonth = new Date(d.getFullYear(), d.getMonth(), 1);
-    const firstDayOfWeek = firstOfMonth.getDay();
-    const adjustedDate = date + firstDayOfWeek;
-    const weekNumber = Math.ceil(adjustedDate / 7);
-    return ['1st', '2nd', '3rd', '4th', '5th'][Math.min(weekNumber - 1, 4)];
-  }
-
-  private getDateFromControl(controlName: string): Date | null {
-    const val = this.leaveApplyForm.get(controlName)?.value;
-    if (!val) return null;
-    // if it's already a Date
-    if (val instanceof Date) return val;
-    // if it's ISO string
-    const parsed = new Date(val);
-    if (!isNaN(parsed.getTime())) return parsed;
-    return null;
-  }
-
-  // return yyyy-mm-dd
-  private toISODate(d: Date): string {
-    const y = d.getFullYear();
-    const m = d.getMonth() + 1;
-    const dd = d.getDate();
-    // digit-by-digit formatting to be safe
-    const mmS = m < 10 ? '0' + m : String(m);
-    const ddS = dd < 10 ? '0' + dd : String(dd);
-    return `${y}-${mmS}-${ddS}`;
-  }
-
-  // strip time part
-  private startOfDay(d: Date): Date {
-    return new Date(d.getFullYear(), d.getMonth(), d.getDate());
-  }
-
-  // enumerate inclusive dates between start and end (both Date objects)
-  private enumerateDates(start: Date, end: Date): Date[] {
-    const list: Date[] = [];
-    let cur = this.startOfDay(start);
-    const last = this.startOfDay(end);
-    while (cur <= last) {
-      list.push(new Date(cur));
-      cur.setDate(cur.getDate() + 1);
-    }
-    return list;
-  }
-
-  // Determine if session is morning (session1)
-  private isSessionMorning(sessionValue: any): boolean {
-    // adapt mapping if your session labels differ
-    if (!sessionValue) return true;
-    const s = String(sessionValue).toLowerCase();
-    return (
-      s.includes('1') ||
-      s.includes('am') ||
-      s.includes('morning') ||
-      s.includes('session1')
-    );
-  }
-
-  // Determine if session is afternoon (session2)
-  private isSessionAfternoon(sessionValue: any): boolean {
-    if (!sessionValue) return false;
-    const s = String(sessionValue).toLowerCase();
-    return (
-      s.includes('2') ||
-      s.includes('pm') ||
-      s.includes('afternoon') ||
-      s.includes('session2')
-    );
-  }
 
   getWfhCategories() {
     this.apiService
@@ -1114,7 +700,7 @@ export class ApplyWorkFromHomeComponent implements OnInit {
   getWfhBalance() {
     this.apiService
       .getData(
-        `${environment.live_url}/${environment.employee_wfh_details}/?employee-id=${this.user_id}`,
+        `${environment.live_url}/${environment.employee_wfh_details}/?employee_id=${this.user_id}`,
       )
       .subscribe(
         (res: any) => {
@@ -1254,4 +840,368 @@ export class ApplyWorkFromHomeComponent implements OnInit {
     );
     return selectedCategory?.category_name === 'limited_flexibility';
   }
+
+
+
+
+
+
+
+
+
+   startDate: Date | null = null;
+    endDate: Date | null = null;
+    session1: string | null = null; // "first" or "second"
+    session2: string | null = null; // "first" or "second"
+    totalDays: number = 0;
+    DateError: any;
+  
+    calculateDays() {
+      if (!this.startDate || !this.endDate) {
+        return;
+      }
+  
+      if (this.endDate < this.startDate) {
+        this.DateError = 'End date must be greater than or equal to start date';
+        return;
+      }
+  
+      // Base difference in full days (inclusive)
+      let diffTime = this.endDate.getTime() - this.startDate.getTime();
+      let diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24)) + 1;
+  
+      let total = diffDays;
+      // Adjust for sessions
+      if (this.startDate.getTime() === this.endDate.getTime()) {
+        // Same day case
+        if (this.session1 === 'session 1' && this.session2 === 'session 1')
+          total = 0.5;
+        else if (this.session1 === 'session 2' && this.session2 === 'session 2')
+          total = 0.5;
+        else total = 1; // first–second or second–first → full day
+      } else {
+        // Multi-day case
+        if (this.session1 === 'session 2') {
+          total -= 0.5; // start at 2nd half → reduce half
+        }
+        if (this.session2 === 'session 1') {
+          total -= 0.5; // end at 1st half → reduce half
+        }
+      }
+  
+      // console.log(total)
+      this.totalDays = total;
+    }
+  
+    convertDateTime(dateVal: Date) {
+      const date: Date = dateVal;
+      if (!dateVal) return null;
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0'); // month is 0-based
+      const day = String(date.getDate()).padStart(2, '0');
+  
+      const formattedDate = `${year}-${month}-${day}`;
+  
+      return formattedDate;
+    }
+  
+    working_day_data: any;
+    my_calendar:any;
+    getWorkingDays(date: Date) {
+      this.apiService
+        .getData(`${environment.live_url}/${environment.work_calendar}/`)
+        .subscribe((res: any) => {
+          this.working_day_data = res[0]['working_days'];
+          this.my_calendar = res[0]
+          this.checkHoliday(date);
+        });
+    }
+  
+    countFixedHolidays(
+      startDate: Date,
+      endDate: Date,
+      fixedHolidays: any[]
+    ): number {
+      let holidayCount = 0;
+  
+      fixedHolidays.forEach((holiday) => {
+        const holidayDate = new Date(holiday.date);
+        if (holidayDate >= startDate && holidayDate <= endDate) {
+          holidayCount++;
+        }
+      });
+  
+      return holidayCount;
+    }
+  
+    getHolidayCalender(
+      startDate: Date,
+      endDate: Date,
+      callback: (count: number) => void
+    ) {
+      this.apiService
+        .getData(`${environment.live_url}/${environment.holiday_calendar}/`)
+        .subscribe((res: any) => {
+          const count = this.countFixedHolidays(
+            startDate,
+            endDate,
+            res.results || res
+          );
+          callback(count); // ✅ Pass result back
+        });
+    }
+  
+    countHolidays(startDate: Date, endDate: Date): number {
+      if (!this.working_day_data) {
+        // console.warn("working_day_data not loaded yet!");
+        return 0;
+      }
+  
+      let holidayCount = 0;
+      let currentDate = new Date(startDate);
+  
+      while (currentDate <= endDate) {
+        const dayName = currentDate.toLocaleDateString('en-US', {
+          weekday: 'long',
+        });
+        const dayOfMonth = currentDate.getDate();
+        const weekNumber = Math.ceil(dayOfMonth / 7);
+        const weekKey = ['1st', '2nd', '3rd', '4th', '5th'][weekNumber - 1];
+  
+        const dayData = this.working_day_data.find((d: any) => d.day === dayName);
+  
+        if (dayData) {
+          const allHoliday = dayData.data.find(
+            (d: any) => d.key === 'all'
+          )?.is_holiday;
+          const weekHoliday = dayData.data.find(
+            (d: any) => d.key === weekKey
+          )?.is_holiday;
+  
+          if (allHoliday || weekHoliday) {
+            holidayCount++;
+          }
+        }
+  
+        // Move to next day
+        currentDate.setDate(currentDate.getDate() + 1);
+      }
+  
+      return holidayCount;
+    }
+  
+    checkHoliday(date: Date) {
+      const dayName = date.toLocaleDateString('en-US', { weekday: 'long' });
+      const dayOfMonth = date.getDate();
+      const weekNumber = Math.ceil(dayOfMonth / 7);
+      const weekKey = ['1st', '2nd', '3rd', '4th', '5th'][weekNumber - 1];
+  
+      const dayData = this.working_day_data.find((d: any) => d.day === dayName);
+  
+      if (!dayData) {
+        return;
+      }
+  
+      const allHoliday = dayData.data.find(
+        (d: any) => d.key === 'all'
+      )?.is_holiday;
+      const weekHoliday = dayData.data.find(
+        (d: any) => d.key === weekKey
+      )?.is_holiday;
+  
+      if (allHoliday || weekHoliday) {
+        // console.log('Its holiday');
+      } else {
+        // console.log('Not holiday');
+      }
+    }
+
+
+
+   
+computeTotalDays(): void {
+  const from: Date | null = this.getDateFromControl('from_date');
+  this.minDate = from;
+  const to: Date | null = this.getDateFromControl('to_date');
+  const fromSession = this.leaveApplyForm.get('from_session')?.value;
+  const toSession = this.leaveApplyForm.get('to_session')?.value;
+
+  if (!from || !to || !fromSession || !toSession) {
+    this.totalDays = 0;
+    return;
+  }
+
+  const start = this.startOfDay(from);
+  const end = this.startOfDay(to);
+  if (end < start) {
+    this.totalDays = 0;
+    return;
+  }
+
+  const dates = this.enumerateDates(start, end);
+  const wc = this.workCalendar;
+  const holidayDatesSet = new Set(this.holidayList.map((h:any) => h.date)); // 'YYYY-MM-DD'
+
+  const shouldSkipDate = (d: Date): boolean => {
+    const iso = this.toISODate(d);
+    if (holidayDatesSet.has(iso)) return true;
+
+    if (!wc) return false;
+
+    // CASE 1 — custom_year = false
+    if (wc.custom_year === false) {
+      if (wc.year === d.getFullYear()) {
+        return this.isWorkCalendarHoliday(wc, d);
+      } else {
+        // Year mismatch → ignore work calendar
+        return false;
+      }
+    }
+
+    // CASE 2 — custom_year = true
+    if (wc.custom_year === true) {
+      if (wc.custom_year_start_date && wc.custom_year_end_date) {
+        const startRange = this.startOfDay(new Date(wc.custom_year_start_date));
+        const endRange = this.startOfDay(new Date(wc.custom_year_end_date));
+        if (d >= startRange && d <= endRange) {
+          return this.isWorkCalendarHoliday(wc, d);
+        } else {
+          // Outside custom-year range → ignore
+          return false;
+        }
+      } else {
+        // If dates not defined → ignore
+        return false;
+      }
+    }
+
+    return false;
+  };
+
+  // ==== Day Count Logic ====
+  let total = 0;
+
+  if (dates.length === 1) {
+    const d = dates[0];
+    if (shouldSkipDate(d)) {
+      this.totalDays = 0;
+      return;
+    }
+  
+    total = (fromSession === toSession) ? 0.5 : 1;
+    this.totalDays = total;
+    return;
+  }
+
+  const firstDate = dates[0];
+  if (!shouldSkipDate(firstDate)) {
+    total += this.isSessionMorning(fromSession) ? 1 : 0.5;
+  }
+
+  const lastDate = dates[dates.length - 1];
+  if (!shouldSkipDate(lastDate)) {
+    total += this.isSessionAfternoon(toSession) ? 1 : 0.5;
+  }
+
+  for (let i = 1; i < dates.length - 1; i++) {
+    const d = dates[i];
+    if (!shouldSkipDate(d)) total += 1;
+  }
+
+  this.totalDays = total;
+ 
+}
+
+private isWorkCalendarHoliday(wc: any, d: Date): boolean {
+  if (!wc || !Array.isArray(wc.working_days)) return false;
+
+  const dayName = this.weekdayNameFromCalendar(wc, d);
+  const weekKey = this.getWeekNumberOfMonthKey(d);
+
+  const weekdayEntry = wc.working_days.find(
+    (entry: any) => entry.day.toLowerCase() === dayName.toLowerCase()
+  );
+
+  if (!weekdayEntry || !Array.isArray(weekdayEntry.data)) return false;
+
+  const allHoliday = weekdayEntry.data.find(
+    (x: any) => x.key.toLowerCase() === 'all' && x.is_holiday
+  );
+  if (allHoliday) return true;
+
+  const specificHoliday = weekdayEntry.data.find(
+    (x: any) => x.key.toLowerCase() === weekKey && x.is_holiday
+  );
+  return !!specificHoliday;
+}
+private weekdayNameFromCalendar(wc: any, date: Date): string {
+  return date.toLocaleDateString('en-US', { weekday: 'long' });
+}
+
+
+
+private getWeekNumberOfMonthKey(d: Date): string {
+  const date = d.getDate();
+  const firstOfMonth = new Date(d.getFullYear(), d.getMonth(), 1);
+  const firstDayOfWeek = firstOfMonth.getDay();
+  const adjustedDate = date + firstDayOfWeek;
+  const weekNumber = Math.ceil(adjustedDate / 7);
+  return ['1st', '2nd', '3rd', '4th', '5th'][Math.min(weekNumber - 1, 4)];
+}
+
+  
+private getDateFromControl(controlName: string): Date | null {
+    const val = this.leaveApplyForm.get(controlName)?.value;
+    if (!val) return null;
+    // if it's already a Date
+    if (val instanceof Date) return val;
+    // if it's ISO string
+    const parsed = new Date(val);
+    if (!isNaN(parsed.getTime())) return parsed;
+    return null;
+  }
+
+  // return yyyy-mm-dd
+  private toISODate(d: Date): string {
+    const y = d.getFullYear();
+    const m = d.getMonth() + 1;
+    const dd = d.getDate();
+    // digit-by-digit formatting to be safe
+    const mmS = m < 10 ? '0' + m : String(m);
+    const ddS = dd < 10 ? '0' + dd : String(dd);
+    return `${y}-${mmS}-${ddS}`;
+  }
+
+  // strip time part
+  private startOfDay(d: Date): Date {
+    return new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  }
+
+  // enumerate inclusive dates between start and end (both Date objects)
+  private enumerateDates(start: Date, end: Date): Date[] {
+    const list: Date[] = [];
+    let cur = this.startOfDay(start);
+    const last = this.startOfDay(end);
+    while (cur <= last) {
+      list.push(new Date(cur));
+      cur.setDate(cur.getDate() + 1);
+    }
+    return list;
+  }
+
+  // Determine if session is morning (session1)
+  private isSessionMorning(sessionValue: any): boolean {
+    // adapt mapping if your session labels differ
+    if (!sessionValue) return true;
+    const s = String(sessionValue).toLowerCase();
+    return s.includes('1') || s.includes('am') || s.includes('morning') || s.includes('session1');
+  }
+
+  // Determine if session is afternoon (session2)
+  private isSessionAfternoon(sessionValue: any): boolean {
+    if (!sessionValue) return false;
+    const s = String(sessionValue).toLowerCase();
+    return s.includes('2') || s.includes('pm') || s.includes('afternoon') || s.includes('session2');
+  }
+  
 }

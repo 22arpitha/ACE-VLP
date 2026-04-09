@@ -49,13 +49,12 @@ import { SharedModule } from '../../shared/shared.module';
     MatNativeDateModule,
     MatPaginatorModule,
     MatPaginatorModule,
-
     MatSortModule,
     SharedModule
   ],
 })
 export class TicketModule {
   constructor() {
-    console.log('🔥 TicketModule LOADED');
+   
   }
 }

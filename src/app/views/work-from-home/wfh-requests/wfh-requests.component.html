@@ -155,6 +155,11 @@
                 </td>
 
                 <td
+                  *ngIf="showManagementApprovalColumn && (userRole==='Director'||userRole==='Admin')&&item.is_confirmed_by_director===false&&item.wfh_type_name==='prolonged_health_issue'&&item.status==='Rejected'">
+                  <span style="background: #fee2e2; color: #b91c1c;" class="p-2 rounded">REJECTED</span>
+                </td>
+
+                 <td
                   *ngIf="showManagementApprovalColumn && (userRole==='Director'||userRole==='Admin')&&item.is_confirmed_by_director===true&&item.wfh_type_name==='prolonged_health_issue'&&item.status==='Approved'">
                   <span style="background: #dcfce7; color: #15803d;" class="p-2 rounded">APPROVED</span>
                 </td>
