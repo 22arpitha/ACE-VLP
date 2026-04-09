@@ -13,7 +13,7 @@ import { DropDownPaginationService } from 'src/app/service/drop-down-pagination.
 export interface IdNamePair {
   id: any;
   name: string;
-}
+} 
 @Component({
   selector: 'app-wfh-requests',
   templateUrl: './wfh-requests.component.html',
@@ -193,7 +193,7 @@ export class WfhRequestsComponent implements OnInit {
       item?.wfh_type_name === 'prolonged_health_issue' &&
       item?.status === 'Approved' &&
       item?.is_confirmed_by_director === false
-    ) {
+    ) { 
       return 'Pending';
     }
     return item?.status;
@@ -315,7 +315,8 @@ export class WfhRequestsComponent implements OnInit {
     this.count = 0;
     this.filterQuery = this.getFilterBaseUrl();
     if (this.userRole === 'Manager') {
-      this.filterQuery += `&manager_id=${this.user_id}`;
+      this.filterQuery += `&employee_id=${this.user_id}`;
+        //  this.filterQuery += `&manager-id=${this.user_id}`;
     }
     if (this.userRole === 'Accountant') {
       this.filterQuery += `&employee_id=${this.user_id}`;
