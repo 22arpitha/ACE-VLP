@@ -56,6 +56,26 @@ export class ViewWfhRequestComponent implements OnInit {
     this.displayButton = this.leave_data?.status === 'Pending';
   }
 
+  get canApproveOrReject(): boolean {
+    // Manager cannot approve/reject their own WFH requests
+    const isManager = this.userRole === 'Manager';
+    const hasPermission = this.canUpdateWfh;
+    const employeeId =
+      this.leave_data?.employee_id || this.leave_data?.employee;
+    const isNotOwnRequest = String(this.user_id) !== String(employeeId);
+    const result = isManager && hasPermission && isNotOwnRequest;
+    console.log('canApproveOrReject:', result, {
+      isManager,
+      hasPermission,
+      isNotOwnRequest,
+      userRole: this.userRole,
+      user_id: this.user_id,
+      employee: this.leave_data?.employee,
+      employee_id: this.leave_data?.employee_id,
+    });
+    return result;
+  }
+
   isRejectClicked = false;
   reasonControl = new FormControl(
     { value: '', disabled: false },
@@ -64,6 +84,7 @@ export class ViewWfhRequestComponent implements OnInit {
 
   ngOnInit(): void {
     this.getModuleAccess();
+    this.getLeaveStatus();
   }
 
   getModuleAccess() {
@@ -187,13 +208,34 @@ export class ViewWfhRequestComponent implements OnInit {
     window.open(url, '_blank');
   }
 
+
+
+
+leaveStatuses:any;
+    getLeaveStatus() {
+    this.apiService.getData(`${environment.live_url}/${environment.leave_status}/`).subscribe(
+      (res: any) => {
+    
+        this.leaveStatuses=res.data;
+        console.log(res);
+        
+      },
+      (error:any) => {
+        console.log(error)
+      }
+    )
+  }
   approveByDirector(data: any) {
     this.reasonControl.clearValidators();
     this.reasonControl.updateValueAndValidity();
     console.log('data=>', data);
+    const approvedStatus = this.leaveStatuses?.find((status: any) => status.key === 'approved')?.value || 'Approved';
     let data_to_send = {
-      wfh_id: this.leave_data?.id,
+      wfh_id: data?.id,
       is_confirmed: true,
+      status: approvedStatus,
+      approved_by: Number(sessionStorage.getItem('user_id')),
+      rejected_by: null,
     };
     this.apiService
       .postData(
@@ -212,9 +254,9 @@ export class ViewWfhRequestComponent implements OnInit {
   }
 
   rejectByDirector(data: any) {
-    this.isRejectClicked = true;
+    console.log(data);
 
-    // Add required validator dynamically
+    this.isRejectClicked = true;
     this.reasonControl.setValidators([Validators.required]);
     this.reasonControl.updateValueAndValidity();
 
@@ -222,9 +264,15 @@ export class ViewWfhRequestComponent implements OnInit {
       this.reasonControl.markAsTouched();
       return;
     }
+
+    const rejectedStatus = this.leaveStatuses?.find((status: any) => status.key === 'rejected')?.value || 'Rejected';
     const data_to_send = {
-      wfh_id: this.leave_data?.id,
+      wfh_id: data?.id,
       is_confirmed: false,
+      status: rejectedStatus,
+      approved_by: null,
+      rejected_by: Number(sessionStorage.getItem('user_id')),
+      rejected_reason: this.reasonControl?.value,
     };
 
     this.apiService
@@ -248,15 +296,15 @@ export class ViewWfhRequestComponent implements OnInit {
     );
   }
 
-  get isDirectorRejectedMessageVisible(): boolean {
-    return (
-      this.userRole === 'Director' &&
-      this.leave_data?.status === 'Rejected' &&
-      this.leave_data?.wfh_type_name === 'prolonged_health_issue' &&
-      this.leave_data?.is_confirmed_by_director === false &&
-      this.leave_data?.rejected_by !== 'null'
-    );
-  }
+  // get isDirectorRejectedMessageVisible(): boolean {
+  //   return (
+  //     this.userRole === 'Director' &&
+  //     this.leave_data?.status === 'Rejected' &&
+  //     this.leave_data?.wfh_type_name === 'prolonged_health_issue' &&
+  //     this.leave_data?.is_confirmed_by_director === false &&
+  //     this.leave_data?.rejected_by !== 'null'
+  //   );
+  // }
 
   // ===================== FRONTEND ENHANCEMENTS =====================
 
@@ -267,7 +315,15 @@ export class ViewWfhRequestComponent implements OnInit {
     if (!date) return '';
     try {
       const d = new Date(date);
-      const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+      const days = [
+        'Sunday',
+        'Monday',
+        'Tuesday',
+        'Wednesday',
+        'Thursday',
+        'Friday',
+        'Saturday',
+      ];
       return days[d.getDay()];
     } catch (e) {
       return '';
@@ -279,20 +335,59 @@ export class ViewWfhRequestComponent implements OnInit {
    */
   getStatusBadgeClass(status: string): string {
     const normalizedStatus = status?.toLowerCase();
-    return {
-      'pending': 'badge bg-warning text-dark',
-      'approved': 'badge bg-success',
-      'rejected': 'badge bg-danger',
-      'draft': 'badge bg-secondary'
-    }[normalizedStatus] || 'badge bg-secondary';
+    return (
+      {
+        pending: 'badge bg-warning text-dark',
+        approved: 'badge bg-success',
+        rejected: 'badge bg-danger',
+        draft: 'badge bg-secondary',
+      }[normalizedStatus] || 'badge bg-secondary'
+    );
   }
 
   /**
    * Check if employee can see rejection reason (employees should see it)
    */
   canSeeRejectionReason(): boolean {
-    return this.leave_data?.rejected_reason && 
-           (this.leave_data?.status === 'Rejected' || this.leave_data?.status === 'rejected');
+    return (
+      (this.leave_data?.rejected_reason || this.leave_data?.rejected_by) &&
+      (this.leave_data?.status === 'Rejected' ||
+        this.leave_data?.status === 'rejected')
+    );
+  }
+
+  /**
+   * Get display text for who rejected the request
+   */
+  getRejectedByLabel(): string {
+    const rejectedBy = this.leave_data?.rejected_by;
+    if (!rejectedBy || rejectedBy === 'null') {
+      return 'Unknown';
+    }
+
+    const reportingToId = this.leave_data?.reporting_to;
+    const reportingToName = this.leave_data?.reporting_to_name;
+
+    if (reportingToId && String(rejectedBy) === String(reportingToId)) {
+      return reportingToName || 'Manager';
+    }
+
+    return this.leave_data?.rejected_by_name || 'Director';
+  }
+
+  /**
+   * Check if director rejection notice should be shown for director users
+   */
+  get isDirectorRejectedMessageVisible(): boolean {
+    return (
+      this.userRole === 'Director' &&
+      this.leave_data?.status === 'Rejected' &&
+      this.leave_data?.wfh_type_name === 'prolonged_health_issue' &&
+      this.leave_data?.is_confirmed_by_director === false &&
+      this.leave_data?.rejected_by &&
+      this.leave_data?.rejected_by !== 'null' &&
+      this.leave_data?.rejected_by !== this.leave_data?.reporting_to
+    );
   }
 
   /**
@@ -300,7 +395,10 @@ export class ViewWfhRequestComponent implements OnInit {
    */
   isProlongedHealthIssue(): boolean {
     const wfhType = this.leave_data?.wfh_type_name?.toLowerCase();
-    return wfhType === 'prolonged_health_issue' || wfhType === 'prolonged health issues';
+    return (
+      wfhType === 'prolonged_health_issue' ||
+      wfhType === 'prolonged health issues'
+    );
   }
 
   /**
@@ -308,7 +406,9 @@ export class ViewWfhRequestComponent implements OnInit {
    */
   isLimitedFlexibility(): boolean {
     const wfhType = this.leave_data?.wfh_type_name?.toLowerCase();
-    return wfhType === 'limited_flexibility' || wfhType === 'limited flexibility';
+    return (
+      wfhType === 'limited_flexibility' || wfhType === 'limited flexibility'
+    );
   }
 
   /**
@@ -316,10 +416,16 @@ export class ViewWfhRequestComponent implements OnInit {
    */
   getApprovalStageMessage(): string {
     if (this.isProlongedHealthIssue()) {
-      if (this.leave_data?.status === 'Pending' || this.leave_data?.status === 'PENDING') {
+      if (
+        this.leave_data?.status === 'Pending' ||
+        this.leave_data?.status === 'PENDING'
+      ) {
         return 'Awaiting Manager Approval (Stage 1 of 2)';
       }
-      if (this.leave_data?.status === 'Approved' || this.leave_data?.status === 'approved') {
+      if (
+        this.leave_data?.status === 'Approved' ||
+        this.leave_data?.status === 'approved'
+      ) {
         if (this.leave_data?.is_confirmed_by_director === false) {
           return 'Awaiting Director Approval (Stage 2 of 2)';
         }
