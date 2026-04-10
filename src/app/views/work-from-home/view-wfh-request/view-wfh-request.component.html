@@ -140,7 +140,7 @@
             </div>
           </div>
 
-          <div class="col-12 my-4 px-2 d-flex justify-content-end" *ngIf="canUpdateWfh && userRole === 'Director'">
+          <div class="col-12 my-4 px-2" *ngIf="canUpdateWfh && userRole === 'Director'">
 
             <!-- Director Approval Messages -->
             <div class="w-100" *ngIf="isProlongedHealthIssue()">
@@ -157,15 +157,15 @@
             </div>
 
             <!-- Director Approve -->
-            <button *ngIf="isDirectorApprovalVisible" mat-raised-button class="proceedbtn mat-btn-s me-2 mx-2"
+            <button *ngIf="isDirectorApprovalVisible" mat-raised-button class="proceedbtn mx-2"
               type="button" (click)="approveByDirector(leave_data)">
-              <mat-icon class="me-1">check_circle</mat-icon>Approve by Director
+              <mat-icon class="me-1">check_circle</mat-icon>Approve 
             </button>
 
             <!-- Director Reject -->
-            <button *ngIf="isDirectorApprovalVisible" mat-button class="delete-item-button mat-btn-s" type="button"
+            <button *ngIf="isDirectorApprovalVisible" mat-button class="delete-item-button " type="button"
               (click)="rejectByDirector(leave_data)">
-              <mat-icon class="me-1">cancel</mat-icon>Reject by Director
+              <mat-icon class="me-1">cancel</mat-icon>Reject 
             </button>
 
           </div>
