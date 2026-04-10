@@ -13,7 +13,7 @@ import { DropDownPaginationService } from 'src/app/service/drop-down-pagination.
 export interface IdNamePair {
   id: any;
   name: string;
-} 
+}
 @Component({
   selector: 'app-wfh-requests',
   templateUrl: './wfh-requests.component.html',
@@ -39,13 +39,14 @@ export class WfhRequestsComponent implements OnInit {
   periodValues: any = [];
   filterQuery: any;
   arrowState: { [key: string]: boolean } = {
-    employee_name: false,
-    leave_type: false,
-    type: false,
-    leave_period: false,
-    date_of_request: false,
-    days_or_hours_taken: false,
+    employee__full_name: false,
+    leave_type__leave_type_name: false,
+    from_date: false,
+    number_of_leaves_applying_for: false,
+    created_datetime: false,
+    status: false,
   };
+  
   searchLeave: any;
   user_id: any;
   userRole: any;
@@ -193,7 +194,7 @@ export class WfhRequestsComponent implements OnInit {
       item?.wfh_type_name === 'prolonged_health_issue' &&
       item?.status === 'Approved' &&
       item?.is_confirmed_by_director === false
-    ) { 
+    ) {
       return 'Pending';
     }
     return item?.status;
@@ -215,9 +216,10 @@ export class WfhRequestsComponent implements OnInit {
     Object.keys(this.arrowState).forEach((key) => {
       this.arrowState[key] = false;
     });
-    this.arrowState[column] = direction === 'asc' ? true : false;
+    this.arrowState[column] = direction === 'ascending' ? true : false;
     this.directionValue = direction;
     this.sortValue = column;
+    this.getleaverequest();
   }
 
   public filteredLeaveTypes() {
@@ -316,7 +318,7 @@ export class WfhRequestsComponent implements OnInit {
     this.filterQuery = this.getFilterBaseUrl();
     if (this.userRole === 'Manager') {
       this.filterQuery += `&employee_id=${this.user_id}`;
-        //  this.filterQuery += `&manager-id=${this.user_id}`;
+      //  this.filterQuery += `&manager-id=${this.user_id}`;
     }
     if (this.userRole === 'Accountant') {
       this.filterQuery += `&employee_id=${this.user_id}`;
@@ -340,6 +342,10 @@ export class WfhRequestsComponent implements OnInit {
       );
       let end_date = this.datePipe.transform(this.mainEndDate, 'yyyy-MM-dd');
       this.filterQuery += `&leave-start-date=${start_date}&leave-end-date=${end_date}`;
+    }
+
+    if (this.directionValue && this.sortValue) {
+      this.filterQuery += `&sort-by=${this.sortValue}&sort-type=${this.directionValue}`;
     }
     this.apiService
       .getData(
