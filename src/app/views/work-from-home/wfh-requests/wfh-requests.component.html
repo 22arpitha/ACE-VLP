@@ -53,10 +53,10 @@
             <tr>
               <th scope="col">SL NO</th>
               <th scope="col">Employee Name
-                <i *ngIf="!arrowState['employee_name']" class="bi bi-arrow-down"
-                  (click)="sort('asc', 'employee_name')"></i>
-                <i *ngIf="arrowState['employee_name']" class="bi bi-arrow-up"
-                  (click)="sort('desc', 'employee_name')"></i>
+                 <i *ngIf="!arrowState['employee__full_name']" class="bi bi-arrow-down"
+                  (click)="sort('ascending', 'employee__full_name')"></i>
+                <i *ngIf="arrowState['employee__full_name']" class="bi bi-arrow-up"
+                  (click)="sort('descending', 'employee__full_name')"></i>
                 <button mat-icon-button [matMenuTriggerFor]="employeesFilterMenu"
                   (menuOpened)="openFilter(employeeFilter)"
                   [ngClass]="filters.employees.length>=1 ? 'filterdColumn':''">
@@ -73,8 +73,11 @@
 
 
               </th>
-              <th scope="col">WFH Category</th>
-
+              <th scope="col">WFH Category  <i *ngIf="!arrowState['leave_type__leave_type_name']" class="bi bi-arrow-down"
+                  (click)="sort('ascending', 'leave_type__leave_type_name')"></i>
+                <i *ngIf="arrowState['leave_type__leave_type_name']" class="bi bi-arrow-up"
+                  (click)="sort('descending', 'leave_type__leave_type_name')"></i></th>
+              
               <!-- <th scope="col">LEAVE TYPE
                 <button mat-icon-button [matMenuTriggerFor]="leaveTypeFilterMenu"
                     [ngClass]="filters.leave_type.length>=1 ? 'filterdColumn':''">
@@ -90,23 +93,28 @@
                 </mat-menu>
               </th> -->
               <th scope="col">WFH PERIOD
-                <i *ngIf="!arrowState['leave_period']" class="bi bi-arrow-down"
-                  (click)="sort('asc', 'leave_period')"></i>
-                <i *ngIf="arrowState['leave_period']" class="bi bi-arrow-up" (click)="sort('desc', 'leave_period')"></i>
+                 <i *ngIf="!arrowState['from_date']" class="bi bi-arrow-down"
+                  (click)="sort('ascending', 'from_date')"></i>
+                <i *ngIf="arrowState['from_date']" class="bi bi-arrow-up" (click)="sort('descending', 'from_date')"></i>
               </th>
               <th scope="col">DAYS
-                <i *ngIf="!arrowState['number_of_leaves_applying_for']" class="bi bi-arrow-down"
-                  (click)="sort('asc', 'number_of_leaves_applying_for')"></i>
+                 <i *ngIf="!arrowState['number_of_leaves_applying_for']" class="bi bi-arrow-down"
+                  (click)="sort('ascending', 'number_of_leaves_applying_for')"></i>
                 <i *ngIf="arrowState['number_of_leaves_applying_for']" class="bi bi-arrow-up"
-                  (click)="sort('desc', 'number_of_leaves_applying_for')"></i>
+                  (click)="sort('descending', 'number_of_leaves_applying_for')"></i>
               </th>
               <th scope="col">DATE OF REQUEST
                 <i *ngIf="!arrowState['created_datetime']" class="bi bi-arrow-down"
-                  (click)="sort('asc', 'created_datetime')"></i>
+                  (click)="sort('ascending', 'created_datetime')"></i>
                 <i *ngIf="arrowState['created_datetime']" class="bi bi-arrow-up"
-                  (click)="sort('desc', 'created_datetime')"></i>
+                  (click)="sort('descending', 'created_datetime')"></i>
               </th>
               <th scope="col">STATUS
+
+                   <i *ngIf="!arrowState['status']" class="bi bi-arrow-down"
+                  (click)="sort('ascending', 'status')"></i>
+                <i *ngIf="arrowState['status']" class="bi bi-arrow-up"
+                  (click)="sort('descending', 'status')"></i>
                 <button mat-icon-button [matMenuTriggerFor]="statusFilterMenu"
                   [ngClass]="filters.status_name.length>=1 ? 'filterdColumn':''">
                   <span *ngIf="filters.status_name.length>=1">{{filters.status_name.length}}</span>
