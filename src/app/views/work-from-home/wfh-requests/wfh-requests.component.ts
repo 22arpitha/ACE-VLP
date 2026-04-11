@@ -9,7 +9,8 @@ import { environment } from '../../../../environments/environment';
 import { ApiserviceService } from '../../../service/apiservice.service';
 import { SubModuleService } from '../../../service/sub-module.service';
 import { GenericTableFilterComponent } from '../../../shared/generic-table-filter/generic-table-filter.component';
-import { DropDownPaginationService } from 'src/app/service/drop-down-pagination.service';
+import { DropDownPaginationService } from '../../../service/drop-down-pagination.service';
+
 export interface IdNamePair {
   id: any;
   name: string;
@@ -46,7 +47,7 @@ export class WfhRequestsComponent implements OnInit {
     created_datetime: false,
     status: false,
   };
-  
+
   searchLeave: any;
   user_id: any;
   userRole: any;
@@ -316,9 +317,8 @@ export class WfhRequestsComponent implements OnInit {
   getleaverequest() {
     this.count = 0;
     this.filterQuery = this.getFilterBaseUrl();
-    if (this.userRole === 'Manager') {
+    if (this.userRole === 'Manager' && !this.filters.employees.length) {
       this.filterQuery += `&employee_id=${this.user_id}`;
-      //  this.filterQuery += `&manager-id=${this.user_id}`;
     }
     if (this.userRole === 'Accountant') {
       this.filterQuery += `&employee_id=${this.user_id}`;
