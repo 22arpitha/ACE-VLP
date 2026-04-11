@@ -700,7 +700,7 @@ export class ApplyWorkFromHomeComponent implements OnInit {
   getWfhBalance() {
     this.apiService
       .getData(
-        `${environment.live_url}/${environment.employee_wfh_details}/?employee_id=${this.user_id}`,
+        `${environment.live_url}/${environment.employee_wfh_details}/?employee-id=${this.user_id}`,
       )
       .subscribe(
         (res: any) => {
