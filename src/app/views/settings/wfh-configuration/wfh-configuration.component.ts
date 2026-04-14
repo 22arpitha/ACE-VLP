@@ -420,6 +420,7 @@ export class WfhConfigurationComponent implements OnInit {
               this.router.navigate(['/settings/wfh-config']);
             },
             (error: any) => {
+          
               this.apiService.showError(error?.message);
             },
           );
@@ -436,7 +437,9 @@ export class WfhConfigurationComponent implements OnInit {
               this.router.navigate(['/settings/wfh-config']);
             },
             (error: any) => {
-              this.apiService.showError(error?.message);
+              // console.log(error);
+              
+              this.apiService.showError(error?.error?.message);
             },
           );
       }

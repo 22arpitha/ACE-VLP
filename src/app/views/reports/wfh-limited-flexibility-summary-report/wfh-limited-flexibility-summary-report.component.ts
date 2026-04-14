@@ -283,9 +283,9 @@ BreadCrumbsTitle: any = 'WFH Limited Flexibility Summary Report';
     if (this.selectedEmployeeIds?.length) {
       query += `&employee-ids=[${this.selectedEmployeeIds.join(',')}]`;
     }
-    if (this.selectedLeaveType) {
-      query += `&leave-type-id=${this.selectedLeaveType}`;
-    }
+    // if (this.selectedLeaveType) {
+    //   query += `&leave-type-id=${this.selectedLeaveType}`;
+    // }
     if (this.directionValue && this.sortValue) {
       query += `&sort-by=${this.sortValue}&sort-type=${this.directionValue}`;
     }
@@ -427,6 +427,8 @@ BreadCrumbsTitle: any = 'WFH Limited Flexibility Summary Report';
   employee_ids?: any; 
   leave_type?: any 
 }) {
+  console.log(params?.employee_ids);
+  
 
   let finalQuery;
   this.formattedData = [];
@@ -437,14 +439,15 @@ BreadCrumbsTitle: any = 'WFH Limited Flexibility Summary Report';
 
   const query = buildPaginationQuery({ page, pageSize, searchTerm });
   finalQuery = query;
+  finalQuery += this.userRole === 'Manager' ? `&manager-id=${this.user_id}` : '';
 
   if (params?.employee_ids?.length) {
     finalQuery += `&employee-ids=[${params.employee_ids.join(',')}]`;
   }
 
-  if (params?.leave_type) {
-    finalQuery += `&leave-type-id=${params.leave_type}`;
-  }
+  // if (params?.leave_type) {
+  //   finalQuery += `&leave-type-id=${params.leave_type}`;
+  // }
 
   if (this.directionValue && this.sortValue) {
     finalQuery += `&sort-by=${this.sortValue}&sort-type=${this.directionValue}`;
@@ -453,6 +456,7 @@ BreadCrumbsTitle: any = 'WFH Limited Flexibility Summary Report';
   if (this.time?.start_date && this.time?.end_date) {
     finalQuery += `&start-date=${this.time?.start_date}&end-date=${this.time?.end_date}`;
   }
+  
 
   this.api.getData(
     `${environment.live_url}/${environment.wfh_limited_flexibility_summary_report}/${finalQuery}`
@@ -569,6 +573,9 @@ BreadCrumbsTitle: any = 'WFH Limited Flexibility Summary Report';
       endpoint = environment.employee;
       query += `&is_active=True&employee=True`
     }
+    if (this.userRole === 'Manager') {
+        query += `&reporting_manager_id=${this.user_id}`;
+      }
     // if (key === 'timesheet-task-ids') {
     //   // Task filter static
     //   this.updateFilterColumn(key, { data: this.taskName, page: 1, total: this.taskName.length, searchTerm: '' });

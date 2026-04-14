@@ -33,7 +33,7 @@ BreadCrumbsTitle: any = 'WFH Limited Flexibility Transaction Report';
     showDownload: false,
     leaveTypes: true,
     reset: true,
-    employeeDropdown: sessionStorage.getItem('user_role_name') === 'Admin'
+    employeeDropdown: sessionStorage.getItem('user_role_name') === 'Admin' || sessionStorage.getItem('user_role_name') === 'Manager'
   };
   tabStatus: any = 'True';
   allJobStatus: any = [];
@@ -76,7 +76,10 @@ BreadCrumbsTitle: any = 'WFH Limited Flexibility Transaction Report';
   ngOnInit(): void {
     this.common_service.setTitle(this.BreadCrumbsTitle)
     // this.tableConfig = tableColumns;
-    this.selectedEmployeeIds =  this.userRole === 'Accountant' ? this.user_id : '';
+    this.selectedEmployeeIds =
+      this.userRole === 'Accountant'
+        ? this.user_id
+        : '';
     // setTimeout(() => {
     //   this.getTableData({
     //     page: this.page,
@@ -198,6 +201,10 @@ BreadCrumbsTitle: any = 'WFH Limited Flexibility Transaction Report';
     this.time.end_date = '';
     this.directionValue = '';
     this.sortValue = '';
+    this.selectedEmployeeIds =
+      this.userRole === 'Accountant'
+        ? this.user_id
+        : '';
     this.tableConfig = {
       columns: [],
       data: this.formattedData,
@@ -208,16 +215,16 @@ BreadCrumbsTitle: any = 'WFH Limited Flexibility Transaction Report';
       pagination: true,
       searchable: false,
       startAndEndDateFilter: true,
-      leaveTypes: true,
+      leaveTypes: false,
       showDownload: false,
       reset: true,
       searchPlaceholder: 'Search',
-      employeeDropdown: this.userRole === 'Admin'
+      employeeDropdown: this.userRole === 'Admin' 
     };
   } else{
     this.page = 1
+    this.selectedEmployeeIds = this.userRole === 'Manager' ? '' : (detail?.user_id ?? '');
   }
-    this.selectedEmployeeIds = detail?.user_id;
     this.selectedLeaveType = detail?.leave_type;
     this.getTableData({
       page: this.page,
@@ -247,7 +254,10 @@ BreadCrumbsTitle: any = 'WFH Limited Flexibility Transaction Report';
     this.selectedClientIds = [];
     this.selectedJobIds = [];
     this.selectedStatusIds = [];
-    this.selectedEmployeeIds =  this.userRole === 'Accountant' ? this.user_id : '';
+    this.selectedEmployeeIds =
+      this.userRole === 'Accountant'
+        ? this.user_id
+        : '';
     this.time.start_date = '';
     this.time.end_date = '';
     this.directionValue = '';
@@ -262,10 +272,10 @@ BreadCrumbsTitle: any = 'WFH Limited Flexibility Transaction Report';
       pagination: true,
       searchable: false,
       startAndEndDateFilter: true,
-      leaveTypes: true,
+      leaveTypes: false,
       showDownload: false,
       reset: true,
-      employeeDropdown: this.userRole === 'Admin',
+      employeeDropdown: this.userRole === 'Admin' ,
       searchPlaceholder: 'Search by Client/Job/Employee',
     };
     this.getTableData({
@@ -277,7 +287,7 @@ BreadCrumbsTitle: any = 'WFH Limited Flexibility Transaction Report';
   }
 
   onApplyFilter(filteredData: any[], filteredKey: string): void {
-    if (filteredKey === 'employee_id') {
+    if (filteredKey === 'timesheet-employee-ids') {
       this.selectedEmployeeIds = filteredData;
     }
     this.formattedData = [];
@@ -294,9 +304,9 @@ BreadCrumbsTitle: any = 'WFH Limited Flexibility Transaction Report';
     if (this.selectedEmployeeIds) {
       query += `&employee_id=${this.selectedEmployeeIds}`;
     }
-    if (this.selectedLeaveType) {
-      query += `&leave_type_id=${this.selectedLeaveType}`;
-    }
+    // if (this.selectedLeaveType) {
+    //   query += `&leave_type_id=${this.selectedLeaveType}`;
+    // }
     if (this.directionValue && this.sortValue) {
       query += `&sort-by=${this.sortValue}&sort-type=${this.directionValue}`;
     }
@@ -445,13 +455,26 @@ async getTableData(params?: {
   const query = buildPaginationQuery({ page, pageSize, searchTerm });
   finalQuery = query;
 
-  if (params?.employee_ids) {
-    finalQuery += `&employee_id=${params.employee_ids}`;
+  const hasEmployeeFilter = Array.isArray(params?.employee_ids)
+    ? params.employee_ids.length > 0
+    : (params?.employee_ids !== '' && params?.employee_ids != null);
+
+  if (this.userRole === 'Manager' && !hasEmployeeFilter) {
+    finalQuery += `&manager-id=${this.user_id}`;
   }
 
-  if (params?.leave_type) {
-    finalQuery += `&leave_type_id=${params.leave_type}`;
+  if (hasEmployeeFilter) {
+    if (Array.isArray(params.employee_ids) && params.employee_ids.length) {
+      const ids = params.employee_ids.map((e: any) => e.id ?? e).join(',');
+      finalQuery += `&employee-ids=[${ids}]`;
+    } else if (!Array.isArray(params.employee_ids) && params.employee_ids !== '') {
+      finalQuery += `&employee-ids=[${params.employee_ids}]`;
+    }
   }
+
+  // if (params?.leave_type) {
+  //   finalQuery += `&leave_type_id=${params.leave_type}`;
+  // }
 
   if (this.directionValue && this.sortValue) {
     finalQuery += `&sort-by=${this.sortValue}&sort-type=${this.directionValue}`;
@@ -461,6 +484,7 @@ async getTableData(params?: {
     finalQuery += `&start-date=${this.time?.start_date}&end-date=${this.time?.end_date}`;
   }
 
+ 
   this.api.getData(
     `${environment.live_url}/${environment.wfh_limited_flexibility_transaction_report}/${finalQuery}`
   ).subscribe((res: any) => {
@@ -489,7 +513,8 @@ async getTableData(params?: {
 
           return {
             ...col,
-            filterOptions
+            filterOptions,
+            ...(col.key === 'employee' && this.userRole === 'Accountant' ? { filterable: false } : {}),
           };
         }),
         data: this.formattedData,
@@ -514,7 +539,10 @@ async getTableData(params?: {
     } else {
 
       this.tableConfig = {
-        columns: tableColumns,
+        columns: tableColumns.map((col: any) => ({
+          ...col,
+          ...(col.key === 'employee' && this.userRole === 'Accountant' ? { filterable: false } : {}),
+        })),
         data: [],
         searchTerm: this.term,
         actions: [],
@@ -526,7 +554,7 @@ async getTableData(params?: {
         totalRecords: 0,
         showDownload: false,
         searchPlaceholder: 'Search by Employee/WFH Type',
-        employeeDropdown: this.userRole === 'Admin',
+        employeeDropdown: this.userRole === 'Admin' ,
       };
     }
 
@@ -581,6 +609,9 @@ async getTableData(params?: {
       endpoint = environment.employee;
       query += `&is_active=True&employee=True`
     }
+    if (this.userRole === 'Manager') {
+        query += `&reporting_manager_id=${this.user_id}`;
+      }
     // if (key === 'timesheet-task-ids') {
     //   // Task filter static
     //   this.updateFilterColumn(key, { data: this.taskName, page: 1, total: this.taskName.length, searchTerm: '' });
