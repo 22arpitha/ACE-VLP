@@ -1,4 +1,4 @@
-<section class="settings-table-bg px-3">
+<section class="settings-table-bg px-3 ">
     <div class="row mx-0 my-3 px-0 align-items-center">
       <!-- Search Field -->
         <!-- (input)="onSearch(config.searchTerm)" -->
@@ -503,7 +503,9 @@
   </div>
   </section>
   <!-- Pagination -->
-  <div class="pagination-container pt-1" *ngIf="paginatedData?.length > 0 && config?.pagination">
+  <div class="pagination-container pt-2 pb-2 px-3 mt-1"
+       style="background:#EFF8FF; border-radius:0 0 8px 8px; margin:0 10px 5px 10px;"
+       *ngIf="paginatedData?.length > 0 && config?.pagination">
     <!-- Pagination Controls (Center-Aligned) -->
     <pagination-controls
      [id]="paginationId"

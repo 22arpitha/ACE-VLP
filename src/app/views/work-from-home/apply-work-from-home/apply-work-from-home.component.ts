@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild, inject } from '@angular/core';
 
 import { CompOffGrantComponent } from '../../leave/comp-off-grant/comp-off-grant.component';
 import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
@@ -11,7 +11,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { map, Observable, startWith } from 'rxjs';
-import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dialog';
 
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { ApiserviceService } from '../../../service/apiservice.service';
@@ -70,6 +70,9 @@ export class ApplyWorkFromHomeComponent implements OnInit {
   accessPermissions: any = [];
   canCreateWfh = false;
   userRole: any;
+  mode: 'create' | 'edit' = 'create';
+  wfhEditId: any;
+  readonly dialogData = inject(MAT_DIALOG_DATA, { optional: true });
 
   openFileDialog(): void {
     this.fileInput.nativeElement.click();
@@ -90,6 +93,12 @@ export class ApplyWorkFromHomeComponent implements OnInit {
     private fb: FormBuilder,
     private accessControlService: SubModuleService,
   ) {
+    if (this.dialogData?.mode === 'edit') {
+      this.mode = 'edit';
+      console.log(this.dialogData.id);
+      
+      this.wfhEditId = this.dialogData?.id;
+    }
     this.filteredEmails = this.emailCtrl.valueChanges.pipe(
       startWith(null),
       map((value: string | null) =>
@@ -97,6 +106,7 @@ export class ApplyWorkFromHomeComponent implements OnInit {
       ),
     );
 
+    this.BreadCrumbsTitle = this.mode === 'edit' ? 'Edit WFH Request' : 'Apply for Work From Home';
     this.common_service.setTitle(this.BreadCrumbsTitle);
     this.user_id = sessionStorage.getItem('user_id');
     this.userRole = sessionStorage.getItem('user_role_name');
@@ -112,6 +122,9 @@ export class ApplyWorkFromHomeComponent implements OnInit {
     this.getModuleAccess();
     // this.getWfhCategories();
     this.getWfhBalance();
+    if (this.mode === 'edit' && this.wfhEditId) {
+      setTimeout(() => this.loadEditData(), 600);
+    }
     this.leaveApplyForm
       .get('from_date')
       ?.valueChanges.subscribe(() => this.computeTotalDays());
@@ -210,16 +223,55 @@ export class ApplyWorkFromHomeComponent implements OnInit {
             : this.accessPermissions;
 
           this.canCreateWfh = !!ops?.create && this.userRole !== 'Admin';
+          if (this.mode === 'edit') return;
           if (!this.canCreateWfh) {
             this.apiService.showError('You do not have permission to apply for WFH.');
             this.dialogRef.close();
           }
         } else {
           console.log('No matching access found.');
+          if (this.mode === 'edit') return;
           this.apiService.showError('You do not have permission to apply for WFH.');
           this.dialogRef.close();
         }
       });
+  }
+
+  loadEditData() {
+    this.apiService
+      .getData(`${environment.live_url}/${environment.apply_wfh}/?id=${this.wfhEditId}`)
+      .subscribe(
+        (res: any) => {
+          let parsedCc: string[] = [];
+          try {
+            const raw = res.cc;
+            parsedCc = Array.isArray(raw)
+              ? raw.map((e: string) => e.trim())
+              : JSON.parse(raw || '[]');
+          } catch {
+            parsedCc = [];
+          }
+          this.selectedEmails = parsedCc;
+
+          this.leaveApplyForm.patchValue({
+            wfh_type: res.wfh_type,
+            from_date: res.from_date,
+            to_date: res.to_date,
+            from_session: res.from_session,
+            to_session: res.to_session,
+            reporting_to: res.reporting_to,
+            message: res.message,
+            employee: res.employee,
+          });
+          if (res.supporting_document) {
+            this.fileDataUrl = res.supporting_document;
+            this.fileName = this.getFileNameFromUrl(res.supporting_document);
+          }
+        },
+        (error: any) => {
+          this.apiService.showError('Failed to load WFH request details.');
+        },
+      );
   }
 
   onLeaveTypeChange(event: any) {
@@ -555,7 +607,7 @@ export class ApplyWorkFromHomeComponent implements OnInit {
     );
     // prepare cc and file
     this.leaveApplyForm.patchValue({
-      // cc: JSON.stringify(this.selectedEmails),
+      cc: JSON.stringify(this.selectedEmails),
       number_of_wfh_applying_for: this.totalDays,
       from_date: new_start_date,
       to_date: new_end_date,
@@ -643,6 +695,30 @@ export class ApplyWorkFromHomeComponent implements OnInit {
       const value = this.leaveApplyForm.value[key];
       formData.append(key, value);
     });
+
+    if (this.mode === 'edit') {
+      console.log('Editing WFH request with ID:', this.wfhEditId);
+      
+      this.apiService
+        .updateData(`${environment.live_url}/${environment.update_applied_wfh}/?id=${this.wfhEditId}`, formData)
+        .subscribe(
+          (res: any) => {
+            const successMsg = res?.message || 'WFH request updated successfully';
+            this.apiService.showSuccess(successMsg);
+            this.dialogRef.close({ data: 'refresh' });
+          },
+          (err: any) => {
+            const errorMsg =
+              err?.error?.error ||
+              err?.error?.message ||
+              err?.message ||
+              'Something went wrong';
+            this.apiService.showError(errorMsg);
+          },
+        );
+      return;
+    }
+
     this.apiService
       .postData(`${environment.live_url}/${environment.apply_wfh}/`, formData)
       .subscribe(

@@ -190,5 +190,6 @@ performance_dashboard:`dashboard`,
   wfh_type_conf:`wfh-type-conf`,
   employee_wfh_details:`employee-wfh-details`,
   apply_wfh:`apply-wfh`,
-  confirm_prolonged_leave:`confirm-prolonged-leave`
+  confirm_prolonged_leave:`confirm-prolonged-leave`,
+  update_applied_wfh:`update-applied-wfh`,
 };

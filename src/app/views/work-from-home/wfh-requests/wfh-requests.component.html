@@ -26,7 +26,8 @@
               </mat-date-range-input>
               <mat-datepicker-toggle matSuffix [for]="gobalPicker1"></mat-datepicker-toggle>
               <mat-date-range-picker #gobalPicker1 [dateClass]="dateClass"></mat-date-range-picker>
-              <button matSuffix mat-icon-button *ngIf="mainStartDate || mainEndDate">
+              <button matSuffix mat-icon-button *ngIf="mainStartDate || mainEndDate"
+                (click)="mainStartDate = null; mainEndDate = null; selectedPeriod = ''; getleaverequest()">
                 <mat-icon>close</mat-icon>
               </button>
             </mat-form-field>
@@ -59,6 +60,7 @@
                   (click)="sort('descending', 'employee__full_name')"></i>
                 <button mat-icon-button [matMenuTriggerFor]="employeesFilterMenu"
                   (menuOpened)="openFilter(employeeFilter)"
+                  *ngIf="userRole !== 'Accountant'"
                   [ngClass]="filters.employees.length>=1 ? 'filterdColumn':''">
                   <span *ngIf="filters.employees.length>=1">{{filters.employees.length.toString().padStart(2,
                     '0')}}</span>
@@ -127,7 +129,7 @@
                   </app-generic-table-filter>
                 </mat-menu>
               </th>
-              <th scope="col" *ngIf="canViewWfh">View</th>
+              <th scope="col" *ngIf="canViewWfh || canUpdateWfh || canDeleteWfh">Action</th>
               <th scope="col" *ngIf="showManagementApprovalColumn">Management Approval</th>
             </tr>
           </thead>
@@ -151,11 +153,35 @@
                     class="p-2 rounded">APPROVED</span></td>
                 <td *ngIf="isWfhStatusRejected(item)"><span style="background:#fee2e2; color: #b91c1c;"
                     class="p-2 rounded">REJECTED</span></td>
-                <td *ngIf="canViewWfh">
-                  <span>
-                    <img src="../../../../assets/images/view.svg" class="icon-image" container="body" ngbTooltip="View"
-                      (click)="viewDetails(item)" />
-                  </span>
+                <td *ngIf="canViewWfh || canUpdateWfh || canDeleteWfh">
+                  <button mat-icon-button [matMenuTriggerFor]="actionMenu" container="body" ngbTooltip="More actions">
+                    <mat-icon>more_vert</mat-icon>
+                  </button>
+
+                  <mat-menu #actionMenu="matMenu">
+                    <button mat-menu-item *ngIf="canViewWfh" (click)="viewDetails(item)">
+                      <img src="../../../../assets/images/view.svg" class="icon-image me-2" />
+                      <span>View</span>
+                    </button>
+                    <button mat-menu-item
+                      *ngIf="canUpdateWfh && isOwnRequest(item) && isWfhStatusPending(item)"
+                      (click)="editWfhRequest(item)">
+                      <img src="../../../../assets/images/Edit.svg" class="icon-image me-2" />
+                      <span>Edit</span>
+                    </button>
+                    <!-- <button mat-menu-item
+                      *ngIf="canUpdateWfh && isOwnRequest(item) && isWfhStatusPending(item)"
+                      (click)="cancelWfhRequest(item)">
+                      <img src="../../../../assets/images/Close.svg" class="icon-image me-2" />
+                      <span>Cancel</span>
+                    </button> -->
+                    <button mat-menu-item
+                      *ngIf="canDeleteWfh && isOwnRequest(item)"
+                      (click)="deleteWfhRequest(item)">
+                      <img src="../../../../assets/images/Delete.svg" class="icon-image me-2" />
+                      <span>Delete</span>
+                    </button>
+                  </mat-menu>
                 </td>
 
                 <td *ngIf="showManagementApprovalColumn && (userRole==='Director'||userRole==='Admin')&&item.is_confirmed_by_director===false&&item.wfh_type_name==='prolonged_health_issue'&&(item.status==='Approved'||item.status==='Pending')">

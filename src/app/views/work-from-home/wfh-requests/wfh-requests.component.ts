@@ -1,9 +1,11 @@
 import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { MatDialog } from '@angular/material/dialog';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ViewWfhRequestComponent } from '../view-wfh-request/view-wfh-request.component';
 import { ViewLeaveRequestComponent } from '../../leave/view-leave-request/view-leave-request.component';
 import { ApplyWorkFromHomeComponent } from '../apply-work-from-home/apply-work-from-home.component';
+import { GenericDeleteComponent } from '../../../generic-components/generic-delete/generic-delete.component';
 import { CommonServiceService } from '../../../service/common-service.service';
 import { environment } from '../../../../environments/environment';
 import { ApiserviceService } from '../../../service/apiservice.service';
@@ -62,6 +64,7 @@ export class WfhRequestsComponent implements OnInit {
   constructor(
     private accessControlService: SubModuleService,
     private dialog: MatDialog,
+    private modalService: NgbModal,
     private apiService: ApiserviceService,
     private cdr: ChangeDetectorRef,
     private datePipe: DatePipe,
@@ -399,6 +402,81 @@ export class WfhRequestsComponent implements OnInit {
     this.mainEndDate = '';
     this.filters = { leave_type: [], employees: [], status_name: [] };
     this.getleaverequest();
+  }
+
+  isOwnRequest(item: any): boolean {
+    return (
+      String(item?.employee) === String(this.user_id) ||
+      String(item?.employee_id) === String(this.user_id)
+    );
+  }
+
+  editWfhRequest(item: any) {
+    const dialogRef = this.dialog.open(ApplyWorkFromHomeComponent, {
+      data: { mode: 'edit', id: item.id },
+      panelClass: 'leave-or-compoff-form-dialog',
+      disableClose: true,
+    });
+    dialogRef.afterClosed().subscribe((resp: any) => {
+      if (resp?.data === 'refresh') {
+        this.getleaverequest();
+      }
+    });
+    this.cdr.detectChanges();
+  }
+
+  deleteWfhRequest(item: any) {
+    const modelRef = this.modalService.open(GenericDeleteComponent, {
+      size: 'sm' as any,
+      backdrop: true,
+      centered: true,
+    });
+    modelRef.componentInstance.status.subscribe((resp: any) => {
+      if (resp === 'ok') {
+        this.apiService
+          .delete(`${environment.live_url}/${environment.apply_wfh}/?id=${item.id}`)
+          .subscribe(
+            (res: any) => {
+              this.apiService.showSuccess(res?.message || 'WFH request deleted successfully');
+              this.getleaverequest();
+            },
+            (error: any) => {
+              this.apiService.showError(error?.error?.detail || error?.error?.message || 'Delete failed');
+            },
+          );
+        modelRef.close();
+      } else {
+        modelRef.close();
+      }
+    });
+  }
+
+  cancelWfhRequest(item: any) {
+    const modelRef = this.modalService.open(GenericDeleteComponent, {
+      size: 'sm' as any,
+      backdrop: true,
+      centered: true,
+    });
+    modelRef.componentInstance.title = 'Cancel WFH Request';
+    modelRef.componentInstance.message = 'Cancel';
+    modelRef.componentInstance.status.subscribe((resp: any) => {
+      if (resp === 'ok') {
+        this.apiService
+          .patchData(`${environment.live_url}/${environment.apply_wfh}/?id=${item.id}`, { status: 'Cancelled' })
+          .subscribe(
+            (res: any) => {
+              this.apiService.showSuccess(res?.message || 'WFH request cancelled successfully');
+              this.getleaverequest();
+            },
+            (error: any) => {
+              this.apiService.showError(error?.error?.detail || error?.error?.message || 'Cancel failed');
+            },
+          );
+        modelRef.close();
+      } else {
+        modelRef.close();
+      }
+    });
   }
 
   formatCategoryName(name: string): string {
