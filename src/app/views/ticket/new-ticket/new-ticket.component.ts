@@ -34,6 +34,7 @@ export class NewTicketComponent implements OnInit, OnDestroy {
   initialFormValue: any;
   userRole: any;
   departmentName: any = '';
+  today = new Date();
   constructor(
     private fb: FormBuilder,
     private router: Router,
@@ -150,6 +151,37 @@ export class NewTicketComponent implements OnInit, OnDestroy {
     if (fileInput) {
       fileInput.value = '';
     }
+  }
+
+  // Drag & Drop
+  isDragOver = false;
+
+  onDragOver(event: DragEvent) {
+    event.preventDefault();
+    this.isDragOver = true;
+  }
+
+  onDragLeave(event: DragEvent) {
+    this.isDragOver = false;
+  }
+
+  onDrop(event: DragEvent) {
+    event.preventDefault();
+    this.isDragOver = false;
+    const file = event.dataTransfer?.files?.[0];
+    if (!file) return;
+    this.handleDroppedFile(file);
+  }
+
+  handleDroppedFile(file: File) {
+    const maxSize = 10 * 1024 * 1024;
+    if (file.size > maxSize) {
+      this.apiService.showError('File size must be less than 10MB');
+      return;
+    }
+    this.selectedFile = file;
+    this.selectedFileName = file.name;
+    this.ticketForm.patchValue({ attachment: file });
   }
 
   async onSubmit(): Promise<void> {

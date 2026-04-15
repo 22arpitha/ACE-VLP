@@ -42,7 +42,7 @@
                                     <td>{{ leave.get('existing_balance')?.value }}</td>
                                     <td class="days-field">
                                         <mat-form-field appearance="outline" class="custom-mat-form-field">
-                                        <input matInput type="number" formControlName="new_balance">
+                                        <input matInput type="number" formControlName="new_balance" placeholder="0">
                                         </mat-form-field>
                                         <div *ngIf="leave.get('new_balance')?.invalid && leave.get('new_balance')?.touched">
                                         <span class="text-errors">New Balance is required</span>

@@ -80,7 +80,7 @@ export class AddCustomizeBalanceComponent implements OnInit {
               leave_type: [leave.name || leave.leave_type],
               date: [new Date(), Validators.required],
               existing_balance: [leave.available || 0],
-              new_balance: [leave.new_leave_value || 0, Validators.required],
+              new_balance: [leave.new_leave_value ],
               reason: [leave.reason]
             });
 
@@ -124,13 +124,20 @@ export class AddCustomizeBalanceComponent implements OnInit {
     if (this.customizeBalanceForm.invalid) {
       this.customizeBalanceForm.markAllAsTouched();
     } else {
+      const leave = this.leavesFormArray.controls
+        .filter(c => c.get('new_balance')?.value !== null && c.get('new_balance')?.value !== undefined && c.get('new_balance')?.value !== '')
+        .map(c => ({
+          leave_type_id: c.get('leave_type_id')?.value,
+          new_leave_value: c.get('new_balance')?.value,
+          reason: c.get('reason')?.value || ''
+        }));
+      if (!leave.length) {
+        this.apiService.showError('Please add at least one leave balance');
+        return;
+      }
       const payload = {
-      employee: this.data?.item?.employee,
-      leave: this.leavesFormArray.controls.map(c => ({
-        leave_type_id: c.get('leave_type_id')?.value,
-        new_leave_value: c.get('new_balance')?.value,
-        reason: c.get('reason')?.value || ''
-        }))
+        employee: this.data?.item?.employee,
+        leave
       };
       // console.log(payload)
        this.apiService.updateData(`${environment.live_url}/${environment.all_emp_custom_balance}/`, payload).subscribe(

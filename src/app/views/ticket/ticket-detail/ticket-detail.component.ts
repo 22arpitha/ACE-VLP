@@ -96,8 +96,9 @@ export class TicketDetailComponent implements OnInit, OnDestroy {
   }
 
   downloadAttachment(): void {
-    if (this.ticket?.attachmentUrl) {
-      window.open(this.ticket.attachmentUrl, '_blank');
+    console.log(this.ticket.attachment)
+    if (this.ticket?.attachment) {
+      window.open(this.ticket.attachment, '_blank');
     }
   }
 

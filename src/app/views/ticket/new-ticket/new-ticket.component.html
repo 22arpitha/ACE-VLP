@@ -1,176 +1,128 @@
-<div class="new-ticket-container">
-  <div class="new-ticket-wrapper">
-    <!-- Header -->
-    <header class="form-header">
-      <p class="form-subtitle">Please provide details about your IT issue</p>
-    </header>
+<div class="container-wrapper settings-main-content px-0">
+  <section class="settings-form-bg new-ticket p-0">
+    <form [formGroup]="ticketForm" (ngSubmit)="onSubmit()" class="bg-ticket-details">
+      <div class="row mx-0 my-0 p-0 mb-3">
+        <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0">
 
-    <!-- Form -->
-    <form [formGroup]="ticketForm" (ngSubmit)="onSubmit()" class="ticket-form">
-      <!-- Employee Name (Read-only) -->
-      <div class="form-group">
-        <mat-form-field appearance="outline" class=" custom-mat-form-field">
-          <mat-label>Employee <b class="r-star">*</b></mat-label>
-          <mat-select formControlName="employee_id" autocomplete="off" placeholder="select"
-            panelClass="custom-select-panel" (selectionChange)="onEmployeeChange($event)"
-            (openedChange)="onDropdownOpened($event, 'employee')">
-            <!-- [(ngModel)]="searchemployeeText" -->
-            <div class="mat-select-search-wrapper d-flex">
-              <input matInput [(ngModel)]="dropdownState.employee.search" (ngModelChange)="onSearch('employee', $event)"
-                autofocus [ngModelOptions]="{standalone: true}" placeholder="Search employee" class="mat-select-search">
-              <mat-icon class="search-icon" *ngIf="!dropdownState.employee.search">search</mat-icon>
-              <mat-icon class="search-icon" *ngIf="dropdownState.employee.search" type="button"
-                (click)="clearSearchDropD('employee')">close</mat-icon>
+          <div class="row mx-0 my-0 p-0">
+            <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0">
+              <p><b>Employee Details</b></p>
             </div>
-            <mat-option hidden disabled></mat-option>
-            <mat-option *ngFor="let item of getOptionsWithSelectedOnTop('employee')" [value]="item?.user_id">
-              {{item?.user__full_name}}
-            </mat-option>
-          </mat-select>
-
-        </mat-form-field>
-        <div class="error-message" *ngIf="hasError('employee_id', 'required')">
-          Employee is required
-        </div>
-        <!-- <label class="form-label">Employee Name</label>
-        <input
-          type="text"
-          class="form-input"
-          formControlName="employee_id"
-          readonly>
-        <div class="field-hint">This is your registered name</div> -->
-      </div>
-
-      <!-- Ticket Raised Date Info -->
-      <div class="form-group">
-        <label class="form-label">Ticket Raised Date</label>
-        <div class="info-box">
-          <span class="info-icon">ℹ️</span>
-          <span class="info-text">Will be automatically set when you submit the ticket</span>
-        </div>
-      </div>
-
-      <!-- Issue -->
-      <div class="form-group">
-        <label class="form-label required">Issue</label>
-        <input type="text" class="form-input" formControlName="issue_input"
-          placeholder="Brief description of the issue (e.g., Unable to access email)"
-          [class.error]="hasError('issue_input', 'required') || hasError('issue_input', 'minlength') || hasError('issue_input', 'maxlength')">
-
-        <div class="field-footer">
-          <div class="error-message" *ngIf="hasError('issue_input', 'required')">
-            Issue is required
-          </div>
-          <div class="error-message" *ngIf="hasError('issue_input', 'minlength')">
-            Issue must be at least 5 characters
-          </div>
-          <div class="error-message" *ngIf="hasError('issue_input', 'maxlength')">
-            Issue must not exceed 200 characters
-          </div>
-          <div class="char-count" [class.limit-warning]="getCharacterCount('issue_input') > 180">
-            {{ getCharacterCount('issue_input') }} / 200
-          </div>
-        </div>
-      </div>
-
-      <!-- Details -->
-      <div class="form-group">
-        <label class="form-label required">Details</label>
-        <textarea class="form-textarea" formControlName="details" rows="6"
-          placeholder="Provide detailed information about the issue, including when it started, what you were trying to do, error messages, etc."
-          [class.error]="hasError('details', 'required') || hasError('details', 'minlength') || hasError('details', 'maxlength')"></textarea>
-
-        <div class="field-footer">
-          <div class="error-message" *ngIf="hasError('details', 'required')">
-            Details are required
-          </div>
-          <div class="error-message" *ngIf="hasError('details', 'minlength')">
-            Details must be at least 10 characters
-          </div>
-          <div class="error-message" *ngIf="hasError('details', 'maxlength')">
-            Details must not exceed 2000 characters
-          </div>
-          <div class="char-count" [class.limit-warning]="getCharacterCount('details') > 1900">
-            {{ getCharacterCount('details') }} / 2000
-          </div>
-        </div>
-      </div>
-
-      <!-- Attachment -->
-      <div class="form-group">
-        <label class="form-label">Attachment (Optional)</label>
-
-        <!-- File Upload Area -->
-        <div class="file-upload-area" *ngIf="!selectedFile">
-          <input type="file" id="fileInput" class="file-input" (change)="onFileSelected($event)"
-            accept="image/*,.pdf,.doc,.docx,.txt">
-          <label for="fileInput" class="file-upload-label">
-            <mat-icon> attach_file</mat-icon>
-            <!-- <span class="upload-icon">📎</span> -->
-            <span class="upload-text">
-              <strong>Click to upload</strong> or drag and drop
-            </span>
-            <span class="upload-hint">PNG, JPG, PDF, DOC (max 10MB)</span>
-          </label>
-        </div>
-
-        <!-- Selected File Display -->
-        <div class="selected-file" *ngIf="selectedFile">
-          <div class="file-info">
-            <span class="file-icon">📄</span>
-            <div class="file-details">
-              <div class="file-name">{{ selectedFileName }}</div>
-              <div class="file-size">{{ (selectedFile.size / 1024 / 1024).toFixed(2) }} MB</div>
+            <div class="col-sm-12 col-md-6 col-lg-4 px-1">
+              <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+                <mat-label>Employee <b class="r-star">*</b></mat-label>
+                <mat-select formControlName="employee_id" autocomplete="off" placeholder="select"
+                  panelClass="custom-select-panel" [disableOptionCentering]="true"
+                  (selectionChange)="onEmployeeChange($event)" (openedChange)="onDropdownOpened($event, 'employee')">
+                  <div class="mat-select-search-wrapper d-flex">
+                    <input matInput [(ngModel)]="dropdownState.employee.search"
+                      (ngModelChange)="onSearch('employee', $event)" autofocus [ngModelOptions]="{standalone: true}"
+                      placeholder="Search employee" class="mat-select-search">
+                    <mat-icon class="search-icon" *ngIf="!dropdownState.employee.search">search</mat-icon>
+                    <mat-icon class="search-icon" *ngIf="dropdownState.employee.search" type="button"
+                      (click)="clearSearchDropD('employee')">close</mat-icon>
+                  </div>
+                  <mat-option hidden disabled></mat-option>
+                  <mat-option *ngFor="let item of getOptionsWithSelectedOnTop('employee')" [value]="item?.user_id">
+                    {{ item?.user__full_name }}
+                  </mat-option>
+                </mat-select>
+                <mat-error *ngIf="hasError('employee_id', 'required')">
+                  Employee is required
+                </mat-error>
+              </mat-form-field>
+            </div>
+            <div class="col-sm-12 col-md-6 col-lg-4 px-1">
+               <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+                <mat-label>Status</mat-label>
+                <input matInput value="Open" disabled />
+                <mat-hint>This ticket will be created as <b>Open</b> by default.</mat-hint>
+              </mat-form-field>
+            </div>
+            <div class="col-sm-12 col-md-6 col-lg-4 px-1">
+              <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+                <mat-label>Date</mat-label>
+                <input matInput [value]="today | date:'yyyy-MM-dd'" disabled />
+                <mat-hint>The current date will be used.</mat-hint>
+              </mat-form-field>
             </div>
           </div>
-          <button type="button" class="btn-remove-file" (click)="removeFile()">
-            <span>✕</span>
-          </button>
+
+
+          <div class="row mx-0 my-0 p-0">
+            <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0">
+              <p><b>Issue Details</b></p>
+            </div>
+          </div>
+          <div class="row mx-0 my-0 p-0">
+            <div class="col-sm-12 col-md-6 col-lg-6 px-0">
+              <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+                <mat-label>Issue <b class="r-star">*</b></mat-label>
+                <input matInput formControlName="issue_input" placeholder="Brief description of the issue"
+                  autocomplete="off" maxlength="200" />
+                <mat-error *ngIf="hasError('issue_input', 'required')">Issue is required</mat-error>
+                <mat-error *ngIf="hasError('issue_input', 'minlength')">Issue must be at least 5 characters</mat-error>
+                <mat-hint align="end" class="mt-2">
+                  {{ getCharacterCount('issue_input') }}/200
+                </mat-hint>
+              </mat-form-field>
+            </div>
+          </div>
+
+
+          <div class="row mx-0 my-0 p-0">
+            <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0">
+              <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+                <mat-label>Details <b class="r-star">*</b></mat-label>
+                <textarea matInput formControlName="details" placeholder="Provide detailed information about the issue"
+                  autocomplete="off" maxlength="2000" rows="4"></textarea>
+                <mat-error *ngIf="hasError('details', 'required')">Details are required</mat-error>
+                <mat-error *ngIf="hasError('details', 'minlength')">Details must be at least 10 characters</mat-error>
+                <mat-hint align="end" class="mt-2">
+                  {{ getCharacterCount('details') }}/2000
+                </mat-hint>
+              </mat-form-field>
+            </div>
+          </div>
+
+          <!-- Attachment -->
+          <div class="row mt-2 mx-0 my-0 p-0">
+            <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0">
+              <p><b>Attachment</b></p>
+            </div>
+          </div>
+          <div class="row mx-0 my-0 p-0">
+            <div class="col-12 col-sm-12 col-md-4 col-lg-4 px-0">
+              <input type="file" #fileInput hidden (change)="onFileSelected($event)"
+                accept="image/*,.pdf,.doc,.docx,.txt" />
+              <div class="image-container-ticket w-100 d-flex justify-content-between align-items-center"
+                style="padding: 3px 15px" (dragover)="onDragOver($event)" (dragleave)="onDragLeave($event)"
+                (drop)="onDrop($event)" [class.drag-active]="isDragOver">
+                <span *ngIf="selectedFileName" class="ms-2">{{ selectedFileName }}</span>
+                <mat-label *ngIf="!selectedFile">File Attachment (Optional)</mat-label>
+                <div>
+                  <button type="button" (click)="fileInput.click()" mat-icon-button>
+                    <mat-icon [matTooltip]="selectedFile ? 'Edit' : 'Upload'" class="edit-or-upload-icon">
+                      {{ selectedFile ? "edit" : "attach_file" }}
+                    </mat-icon>
+                  </button>
+                  <button type="button" mat-icon-button *ngIf="selectedFile" (click)="removeFile()">
+                    <mat-icon>close</mat-icon>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
-      <!-- Status Info -->
-      <div class="form-group">
-        <label class="form-label">Status</label>
-        <div class="info-box">
-          <span class="info-icon">📊</span>
-          <span class="info-text">Will be set to <strong>"Open"</strong> when ticket is created</span>
+      <!-- Actions -->
+      <div class="row mx-0 my-2 p-2">
+        <div class="action-btn d-flex gap-1 my-1 px-0">
+          <button mat-button class="cancel-button mat-btn-s" type="button" (click)="cancel()">Back</button>
+          <button mat-raised-button class="proceedbtn mat-btn-s" type="submit">Raise Ticket</button>
         </div>
       </div>
-
-      <!-- Status Date Info -->
-      <div class="form-group">
-        <label class="form-label">Status Date</label>
-        <div class="info-box">
-          <span class="info-icon">📅</span>
-          <span class="info-text">Will be automatically updated when status changes</span>
-        </div>
-      </div>
-      <div class="form-actions">
-        <button mat-raised-button class="cancel-button mat-btn-s" type="button" (click)="cancel()">
-          Back</button>
-        <button mat-raised-button class="proceedbtn mat-btn-s" type="submit">Raise Ticket</button>
-      </div>
-
-      <!-- Form Actions -->
-      <!-- <div class="form-actions">
-        <button
-          type="button"
-          class="btn-cancel"
-          (click)="cancel()"
-          [disabled]="submitting">
-          Cancel
-        </button>
-        <button
-          type="submit"
-          class="btn-submit"
-          [disabled]="ticketForm.invalid || submitting">
-          <span *ngIf="!submitting && !uploadingFile">Raise Ticket</span>
-          <span *ngIf="uploadingFile">Uploading attachment...</span>
-          <span *ngIf="submitting && !uploadingFile">Submitting...</span>
-          <div class="btn-loader" *ngIf="submitting || uploadingFile"></div>
-        </button>
-      </div> -->
     </form>
-  </div>
+  </section>
 </div>
