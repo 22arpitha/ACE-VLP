@@ -315,6 +315,7 @@ export class WfhLimitedFlexibilityTransactionReportComponent implements OnInit {
     if (this.selectedEmployeeIds) {
       query += `&employee_id=${this.selectedEmployeeIds}`;
     }
+    query += this.userRole === 'Manager' ? `&manager-id=${this.user_id}` : '';
     // if (this.selectedLeaveType) {
     //   query += `&leave_type_id=${this.selectedLeaveType}`;
     // }
