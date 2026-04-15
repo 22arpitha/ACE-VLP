@@ -1,5 +1,6 @@
 // dynamic-table.component.ts
 import {
+  ChangeDetectorRef,
   Component,
   ElementRef,
   EventEmitter,
@@ -100,7 +101,8 @@ export class DynamicTableComponent implements OnInit, OnChanges {
     private fb: FormBuilder,
     private datePipe: DatePipe,
     private api: ApiserviceService,
-    private ngbConfig: NgbDropdownConfig
+    private ngbConfig: NgbDropdownConfig,
+    private cdr: ChangeDetectorRef
   ) {
     this.ngbConfig.autoClose = 'outside'; // Changed from false to 'outside'
     this.user_id = sessionStorage.getItem('user_id');
@@ -136,8 +138,16 @@ export class DynamicTableComponent implements OnInit, OnChanges {
           this.dropdownState['employee']['totalPages'] = Math.ceil(
             respData.total_no_of_record / 50
           );
-          this.updateSelectedItems('employee', respData?.results[0].user_id);
-          this.selectedEmployeeId = respData?.results[0].user_id;
+         
+          if (reset && this.userRole === 'Manager') {
+            this.selectedDropdownItems['employee'] = [];
+            this.selectedEmployeeId = undefined;
+            this.cdr.detectChanges();
+          } else {
+            this.updateSelectedItems('employee', respData?.results[0].user_id);
+            this.selectedEmployeeId = respData?.results[0].user_id;
+          }
+          
           this.actionEvent.emit({
             actionType: 'leaveType',
             detail: {
@@ -398,6 +408,13 @@ export class DynamicTableComponent implements OnInit, OnChanges {
     this.arrowState = {};
     this.sortValue = '';
     this.directionValue = '';
+    if (this.is_employeeDropdown) {
+      if (this.userRole === 'Manager') {
+        this.selectedDropdownItems['employee'] = [];
+        this.selectedEmployeeId = undefined;
+        this.cdr.detectChanges();
+      }
+    }
     if (this.is_employeeDropdown && this.is_leaveTypes) {
       this.selectedLeaveType = this.leaveTypes[0].id;
       this.getEmployeesList(true);
@@ -411,6 +428,8 @@ export class DynamicTableComponent implements OnInit, OnChanges {
           user_id: this.user_id,
         },
       });
+    } else if (this.is_employeeDropdown && !this.is_leaveTypes) {
+      this.getEmployeesList(true);
     } else {
       this.actionEvent.emit({ actionType: 'reset', detail: '' });
     }

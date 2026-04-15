@@ -19,7 +19,7 @@ export const tableColumns = [
       sortable: false,
       paramskeyId: 'timesheet-employee-ids',
       filterType: 'multi-select',
-      filterable: true,
+      filterable: false,
     },
   {
     label: 'Description',
