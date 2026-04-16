@@ -147,7 +147,7 @@ const routes: Routes = [
           import('./views/pages/pages.module').then((m) => m.PagesModule),
       },
       {
-        path: 'reports',
+        path: 'tabs/reports',
         loadChildren: () =>
           import('./views/reports/reports.module').then((m) => m.ReportsModule),
       },
