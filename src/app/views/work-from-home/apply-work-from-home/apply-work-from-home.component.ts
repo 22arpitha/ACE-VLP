@@ -596,6 +596,15 @@ export class ApplyWorkFromHomeComponent implements OnInit {
     }
   }
 
+
+    isApplyDisabled(): boolean {
+ 
+  
+    if (this.totalDays === 0) {
+      return true;
+    }
+    return false;
+  }
  
 
   onSubmit(): void {
