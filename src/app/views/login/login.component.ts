@@ -118,16 +118,17 @@ export class LoginComponent implements OnInit {
               this.api.showSuccess('Login successful!');
               return;
             }
-            let access = data.access_list.find((data: { name: string; })=>data.name==='Jobs')
-            // console.log(access)
-            if(data.access_list.length!=0){
-              if(access){
-              this.router.navigate([access.url])
-            } else{
-              this.router.navigate([data.access_list[0].url || data.access_list[0].children[0].url])
-            }
-            this.api.showSuccess('Login successful!');
-            }
+              this.router.navigate(['./performance/dashboard'])
+            // let access = data.access_list.find((data: { name: string; })=>data.name==='Jobs')
+            // // console.log(access)
+            // if(data.access_list.length!=0){
+            //   if(access){
+            //   this.router.navigate([access.url])
+            // } else{
+            //   this.router.navigate([data.access_list[0].url || data.access_list[0].children[0].url])
+            // }
+            // this.api.showSuccess('Login successful!');
+            // }
           },
           (error:any)=>{
            console.log('error',error.error.detail)

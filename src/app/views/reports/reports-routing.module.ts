@@ -42,7 +42,7 @@ const routes: Routes = [
       },
       { path: 'job-time-report', component: JobTimeReportsComponent },
       { path: 'job-status-report', component: JobStatusReportComponent },
-      { path: 'non-productive-hours', component: NonProductiveHoursComponent },
+      { path: 'non-productive-summary-report', component: NonProductiveHoursComponent },
       { path: 'leave-summary-report', component: LeaveSummaryReportComponent },
       {
         path: 'leave-transaction-report',

@@ -12,7 +12,7 @@ import { MatDialog } from '@angular/material/dialog';
 })
 export class NonProdSummaryComponent implements OnInit, OnChanges, OnDestroy {
   @Input() dropdwonFilterData: any;
-  BreadCrumbsTitle: any = 'Non Productive Hours';
+  BreadCrumbsTitle: any = 'Non Productive Summary Report';
   term: string = '';
   tableSize: number = 50;
   page: any = 1;

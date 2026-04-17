@@ -15,10 +15,10 @@
     <button mat-raised-button class="proceedbtn mat-btn-s mr-2" type="button" (click)="applySearch()" [disabled]=" !periodicityId || !period || !period.year || !period.month_list">Search</button>
     <button mat-raised-button class="cancel-button mat-btn-s" type="button" (click)="resetSearch()" [disabled]="resetBtnDisable">
       Reset</button>
-    <button *ngIf="url!='/reports/non-productive-hours'" mat-raised-button class="proceedbtn mat-btn-s" type="button" (click)="downloadExcel()">Export to Excel</button>
+    <button *ngIf="url!='/tabs/reports/non-productive-summary-report'" mat-raised-button class="proceedbtn mat-btn-s" type="button" (click)="downloadExcel()">Export to Excel</button>
   </div>
 </div>
-<div class="row ms-2 d-flex align-items-center mb-2" *ngIf="url!='/reports/non-productive-hours'">
+<div class="row ms-2 d-flex align-items-center mb-2" *ngIf="url!='/tabs/reports/non-productive-summary-report'">
   <div class="tab-buttons">
     <button
     class=""
@@ -30,7 +30,7 @@
     </button>
   </div>
 </div>
-<div class="container-wrapper settings-main-content px-0" *ngIf="url!='/reports/non-productive-hours'">
+<div class="container-wrapper settings-main-content px-0" *ngIf="url!='/tabs/reports/non-productive-summary-report'">
   <div class="tabs">
     <div class="tab-content">
       <ng-container *ngIf="selectedTab === 0">
@@ -58,6 +58,6 @@
   </div>
 </div>
 
-<div *ngIf="url==='/reports/non-productive-hours'">
+<div *ngIf="url==='/tabs/reports/non-productive-summary-report'">
    <app-non-prod-summary [dropdwonFilterData]="commonFilterData" ></app-non-prod-summary>
 </div>

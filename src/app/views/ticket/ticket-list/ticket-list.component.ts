@@ -170,7 +170,7 @@ export class TicketListComponent implements OnInit, OnDestroy {
     modelRef.componentInstance.status.subscribe(resp => {
       if (resp == "ok") {
         let dataToSend = {
-          "status": 4,
+          "status": 'Closed', //4
           'employee_id': this.user_id,
           'issue_input': data?.issue,
         }
@@ -194,13 +194,13 @@ export class TicketListComponent implements OnInit, OnDestroy {
       backdrop: true,
       centered: true,
     });
-    modelRef.componentInstance.title = 'Are you sure you want to close this ticket?';
+    modelRef.componentInstance.title = 'Are you sure you want to send a close request?';
     modelRef.componentInstance.message = `Confirmation`;
     modelRef.componentInstance.buttonName = `Yes`;
     modelRef.componentInstance.status.subscribe(resp => {
       if (resp == "ok") {
         let dataToSend = {
-          "status": 2,
+          "status": 'Close Request sent', //2
           'employee_id': this.user_id,
           'issue_input': data?.issue,
         }
@@ -229,7 +229,7 @@ export class TicketListComponent implements OnInit, OnDestroy {
     modelRef.componentInstance.status.subscribe(resp => {
       if (resp == "ok") {
         let dataToSend = {
-          "status": 4,
+          "status": 'Closed', //4
           'employee_id': this.user_id,
           'issue_input': data?.issue,
         }

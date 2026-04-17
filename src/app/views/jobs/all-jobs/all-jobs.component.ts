@@ -388,7 +388,7 @@ private searchSubject = new Subject<string>();
   openCreateClientPage() {
     this.saveState();
     sessionStorage.setItem('access-name', this.access_name?.name)
-    this.router.navigate(['/jobs/create-job']);
+    this.router.navigate(['/jobs/create-job'], { queryParams: { 'jobs': true } });
 
   }
   saveState() {
