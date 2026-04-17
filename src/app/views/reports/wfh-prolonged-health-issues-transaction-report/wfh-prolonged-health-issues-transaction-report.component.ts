@@ -988,7 +988,7 @@ export class WfhProlongedHealthIssuesTransactionReportComponent implements OnIni
       if (this.selectedEmployeeIds) {
         query += `&employee-ids=${this.selectedEmployeeIds}`;
       }
-      query += this.userRole === 'Manager' ? `&manager-id=${this.user_id}` : '';
+      query += this.userRole === 'Manager' ? `&employee-ids=${this.user_id}` : '';
       // if (this.selectedLeaveType) {
       //   query += `&leave_type_id=${this.selectedLeaveType}`;
       // }
@@ -1034,7 +1034,7 @@ export class WfhProlongedHealthIssuesTransactionReportComponent implements OnIni
         finalQuery += `&employee_id=${this.user_id}`;
       }
       if(this.userRole==='Manager' && !params?.employee_ids){
-        finalQuery += `&manager-id=${this.user_id}`;
+        finalQuery += `&employee-ids=${this.user_id}`;
       }
       // if (params?.leave_type) {
       //   finalQuery += `&leave_type_id=${params.leave_type}`;

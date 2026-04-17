@@ -64,7 +64,7 @@ export const tableColumns = [
     sortable: true,
     paramskeyId: 'employee_id',
     filterType: 'multi-select',
-    filterable: true,
+    filterable: false,
   },
   {
     label: 'From Date',
