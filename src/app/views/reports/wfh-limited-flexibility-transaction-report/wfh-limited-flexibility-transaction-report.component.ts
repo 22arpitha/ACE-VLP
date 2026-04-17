@@ -313,9 +313,9 @@ export class WfhLimitedFlexibilityTransactionReportComponent implements OnInit {
   exportCsvOrPdf(fileType:string) {
     let query = `?file-type=${fileType}&download=true`;
     if (this.selectedEmployeeIds) {
-      query += `&employee_id=${this.selectedEmployeeIds}`;
+      query += `&employee-ids=${this.selectedEmployeeIds}`;
     }
-    query += this.userRole === 'Manager' ? `&manager-id=${this.user_id}` : '';
+    query += this.userRole === 'Manager' ? `&employee_id=${this.user_id}` : '';
     // if (this.selectedLeaveType) {
     //   query += `&leave_type_id=${this.selectedLeaveType}`;
     // }
@@ -355,7 +355,7 @@ async getTableData(params?: { page?: number; pageSize?: number; searchTerm?: str
   
     
     if (params?.employee_ids) {
-      finalQuery += `&employee_id=${params.employee_ids}`;
+      finalQuery += `&employee-ids=${params.employee_ids}`;
     }
     if(this.userRole==='Accountant'){
       finalQuery += `&employee_id=${this.user_id}`;
@@ -363,9 +363,7 @@ async getTableData(params?: { page?: number; pageSize?: number; searchTerm?: str
     if(this.userRole==='Manager' && !params?.employee_ids){
       finalQuery += `&employee_id=${this.user_id}`;
     }
-    if (params?.leave_type) {
-      finalQuery += `&leave_type_id=${params.leave_type}`;
-    }
+  
     if (this.directionValue && this.sortValue) {
       finalQuery += `&sort-by=${this.sortValue}&sort-type=${this.directionValue}`;
     }

@@ -943,9 +943,9 @@ export class WfhProlongedHealthIssuesSummaryReportComponent implements OnInit {
         query += `&employee-ids=[${this.selectedEmployeeIds.join(',')}]`;
       }
       query += this.userRole === 'Manager' ? `&manager-id=${this.user_id}` : '';
-      if (this.selectedLeaveType) {
-        query += `&leave-type-id=${this.selectedLeaveType}`;
-      }
+      // if (this.selectedLeaveType) {
+      //   query += `&leave-type-id=${this.selectedLeaveType}`;
+      // }
       if (this.directionValue && this.sortValue) {
         query += `&sort-by=${this.sortValue}&sort-type=${this.directionValue}`;
       }
@@ -983,9 +983,9 @@ export class WfhProlongedHealthIssuesSummaryReportComponent implements OnInit {
       if (params?.employee_ids?.length) {
         finalQuery += `&employee-ids=[${params.employee_ids.join(',')}]`;
       }
-      if (params?.leave_type) {
-        finalQuery += `&leave-type-id=${params.leave_type}`;
-      }
+      // if (params?.leave_type) {
+      //   finalQuery += `&leave-type-id=${params.leave_type}`;
+      // }
       if (this.directionValue && this.sortValue) {
         finalQuery += `&sort-by=${this.sortValue}&sort-type=${this.directionValue}`;
       }

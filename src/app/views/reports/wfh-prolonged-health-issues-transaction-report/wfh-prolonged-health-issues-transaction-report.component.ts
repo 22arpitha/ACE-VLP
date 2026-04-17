@@ -986,7 +986,7 @@ export class WfhProlongedHealthIssuesTransactionReportComponent implements OnIni
     exportCsvOrPdf(fileType:string) {
       let query = `?file-type=${fileType}&download=true`;
       if (this.selectedEmployeeIds) {
-        query += `&employee_id=${this.selectedEmployeeIds}`;
+        query += `&employee-ids=${this.selectedEmployeeIds}`;
       }
       query += this.userRole === 'Manager' ? `&manager-id=${this.user_id}` : '';
       // if (this.selectedLeaveType) {
@@ -1034,11 +1034,11 @@ export class WfhProlongedHealthIssuesTransactionReportComponent implements OnIni
         finalQuery += `&employee_id=${this.user_id}`;
       }
       if(this.userRole==='Manager' && !params?.employee_ids){
-        finalQuery += `&employee-ids=${this.user_id}`;
+        finalQuery += `&manager-id=${this.user_id}`;
       }
-      if (params?.leave_type) {
-        finalQuery += `&leave_type_id=${params.leave_type}`;
-      }
+      // if (params?.leave_type) {
+      //   finalQuery += `&leave_type_id=${params.leave_type}`;
+      // }
       if (this.directionValue && this.sortValue) {
         finalQuery += `&sort-by=${this.sortValue}&sort-type=${this.directionValue}`;
       }
