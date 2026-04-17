@@ -13,9 +13,9 @@ export const tableColumns = [
   },
     {
       label: 'Employee',
-      key: 'employee',
+      key: 'employee_name',
       // keyId:'employee_id',
-      sortKey:'employee',
+      sortKey:'employee_name',
       sortable: false,
       paramskeyId: 'timesheet-employee-ids',
       filterType: 'multi-select',
