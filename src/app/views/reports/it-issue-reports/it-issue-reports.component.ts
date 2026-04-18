@@ -29,7 +29,7 @@ export class ItIssueReportsComponent implements OnInit {
   };
   user_id: any;
   userRole: any;
-  it_status = [{ id: 1, name: 'Open' }, { id: 2, name: "Close Request sent" }, { id: 3, name: "Re-Open" }, { id: 4, name: "Closed" }];
+  it_status = [{ id: 'open', name: 'Open' }, { id: 'close_request_sent', name: "Close Request Sent" }, { id: 'closed', name: "Closed" }];
   selectedDate: string;
   raisedDate: any;
   selectedStatusDate: any;

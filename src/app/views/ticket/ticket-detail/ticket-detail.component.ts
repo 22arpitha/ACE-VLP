@@ -102,20 +102,6 @@ export class TicketDetailComponent implements OnInit, OnDestroy {
     }
   }
 
-  getStatusClass(status: TicketStatus): string {
-    switch (status) {
-      case TicketStatus.OPEN:
-        return 'status-open';
-      case TicketStatus.CLOSE_REQUEST_SENT:
-        return 'status-close-request';
-      case TicketStatus.REOPEN:
-        return 'status-reopen';
-      case TicketStatus.CLOSED:
-        return 'status-closed';
-      default:
-        return '';
-    }
-  }
 
   formatDate(date: Date): string {
     return new Date(date).toLocaleDateString('en-US', {
@@ -131,7 +117,7 @@ export class TicketDetailComponent implements OnInit, OnDestroy {
   rejectCloseRequest() {
     let data:any= {
     "employee_id": this.userId,
-    "status": 1,
+    "status": 'open',
     "rejection_comment": this.rejectionReason,
     'issue': this.data?.item?.issue,
   }
