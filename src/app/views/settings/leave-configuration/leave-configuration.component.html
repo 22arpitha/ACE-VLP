@@ -237,7 +237,7 @@
                     [ngClass]="{'highlight-background':!leaveTypeForm.get('is_accrual')?.value}"
                     class="w-100 custom-mat-form-field">
                     <mat-label>Credit Days<b class="r-star">*</b></mat-label>
-                    <input matInput placeholder="Enter Credit Days" autocomplete="off"
+                    <input type="number" matInput placeholder="Enter Credit Days" autocomplete="off"
                       formControlName="accrual_credits">
                     <mat-error
                       *ngIf="f['accrual_credits']?.invalid && f['accrual_credits']?.touched || f['accrual_credits']?.dirty">

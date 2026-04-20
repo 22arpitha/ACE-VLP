@@ -232,7 +232,7 @@ this.formUtilityService.resetHasUnsavedValue();
 
   public scrollToField(){
     if (this.formInputField) {
-      this.formInputField?.nativeElement?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      this.formInputField?.nativeElement?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
   }
   public getSelectedDesignation(id: any) {

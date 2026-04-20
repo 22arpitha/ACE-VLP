@@ -263,7 +263,7 @@ export class GroupComponent implements CanComponentDeactivate, OnInit {
 
   public scrollToField(){
     if (this.formInputField) {
-      this.formInputField?.nativeElement?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      this.formInputField?.nativeElement?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
   }
   delete(id: any) {

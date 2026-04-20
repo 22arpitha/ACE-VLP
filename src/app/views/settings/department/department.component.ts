@@ -235,7 +235,7 @@ this.formUtilityService.resetHasUnsavedValue();
   public scrollToField() {
   const rect = this.formInputField?.nativeElement?.getBoundingClientRect();
   if (rect && rect.top < 0) {
-    this.formInputField.nativeElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    this.formInputField.nativeElement.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }
 }
  

@@ -267,7 +267,7 @@ export class JobStatusComponent implements CanComponentDeactivate, OnInit,OnDest
 
   public scrollToField(){
     if (this.formInputField) {
-      this.formInputField?.nativeElement?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      this.formInputField?.nativeElement?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
   }
   public getSelectedJobstatus(id: any) {
