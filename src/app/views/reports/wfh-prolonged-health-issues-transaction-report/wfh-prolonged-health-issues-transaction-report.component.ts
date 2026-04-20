@@ -988,7 +988,7 @@ export class WfhProlongedHealthIssuesTransactionReportComponent implements OnIni
       if (this.selectedEmployeeIds) {
         query += `&employee-ids=${this.selectedEmployeeIds}`;
       }
-      query += this.userRole === 'Manager' ? `&employee-ids=${this.user_id}` : '';
+      // query += this.userRole === 'Manager' ? `&employee-ids=${this.user_id}` : '';
       // if (this.selectedLeaveType) {
       //   query += `&leave_type_id=${this.selectedLeaveType}`;
       // }

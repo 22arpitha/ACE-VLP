@@ -320,9 +320,9 @@ export class WfhRequestsComponent implements OnInit {
   getleaverequest() {
     this.count = 0;
     this.filterQuery = this.getFilterBaseUrl();
-    if (this.userRole === 'Manager' && !this.filters.employees.length) {
-      this.filterQuery += `&employee_id=${this.user_id}`;
-    }
+    // if (this.userRole === 'Manager' && !this.filters.employees.length) {
+    //   this.filterQuery += `&employee_id=${this.user_id}`;
+    // }
     if (this.userRole === 'Accountant') {
       this.filterQuery += `&employee_id=${this.user_id}`;
     }
@@ -487,4 +487,20 @@ export class WfhRequestsComponent implements OnInit {
       .toLowerCase() // all lowercase
       .replace(/\b\w/g, (c) => c.toUpperCase()); // capitalize each word
   }
+
+
+
+  activeTab: 'mine' | 'team' = 'mine';
+
+get myRequests(): any[] {
+  return (this.leave_request || []).filter((item: any) => this.isOwnRequest(item));
+}
+
+get teamRequests(): any[] {
+  return (this.leave_request || []).filter((item: any) => !this.isOwnRequest(item));
+}
+
+get showTeamTab(): boolean {
+  return this.userRole === 'Manager' || this.userRole === 'Admin' || this.userRole === 'Director';
+}
 }
