@@ -69,7 +69,7 @@ export class TicketListComponent implements OnInit, OnDestroy {
   statusDate: any;
   raisedDate: any;
   user_id: any;
-  it_status = [{ id: 1, name: 'Open' }, { id: 2, name: "Close Request sent" }, { id: 3, name: "Re-Open" }, { id: 4, name: "Closed" }];
+  it_status = [{ id: 'open', name: 'Open' }, { id: 'close_request_sent', name: "Close Request Sent" }, { id: 'closed', name: "Closed" }];
   userRole: any;
   accessPermissions = []
   dateRange = {
@@ -170,7 +170,7 @@ export class TicketListComponent implements OnInit, OnDestroy {
     modelRef.componentInstance.status.subscribe(resp => {
       if (resp == "ok") {
         let dataToSend = {
-          "status": 'Closed', //4
+          "status": 'closed', //4
           'employee_id': this.user_id,
           'issue_input': data?.issue,
         }
@@ -200,7 +200,7 @@ export class TicketListComponent implements OnInit, OnDestroy {
     modelRef.componentInstance.status.subscribe(resp => {
       if (resp == "ok") {
         let dataToSend = {
-          "status": 'Close Request sent', //2
+          "status": 'close_request_sent', //2
           'employee_id': this.user_id,
           'issue_input': data?.issue,
         }
@@ -229,7 +229,7 @@ export class TicketListComponent implements OnInit, OnDestroy {
     modelRef.componentInstance.status.subscribe(resp => {
       if (resp == "ok") {
         let dataToSend = {
-          "status": 'Closed', //4
+          "status": 'closed', //4
           'employee_id': this.user_id,
           'issue_input': data?.issue,
         }
@@ -251,10 +251,6 @@ export class TicketListComponent implements OnInit, OnDestroy {
 
   }
 
-  shouldShowButton(item: any): boolean {
-    return item.status_display !== 'Closed';
-  }
-
   getActions(item: any): string[] {
     if(this.userRole !='admin' && !this.accessPermissions[0]?.update){
       return [];
@@ -269,11 +265,11 @@ export class TicketListComponent implements OnInit, OnDestroy {
     // 👇 key condition
     const isAccountantLike = isAccountant || (isManager && item.logged_data);
 
-    if (item.status_display === 'Closed') {
+    if (item.status === 'closed') {
       return actions;
     }
 
-    if (item.status_display === 'Open') {
+    if (item.status === 'open') {
       // Admin or Accountant-like (NOT IT) → Close
       if (isAdmin || (!isIT && item.logged_data)) {
         actions.push('close');
@@ -288,7 +284,7 @@ export class TicketListComponent implements OnInit, OnDestroy {
       }
     }
 
-    if (item.status_display === 'Close Request sent') {
+    if (item.status === 'close_request_sent') {
       if (!isAdmin && !isIT && item.logged_data) {
         actions.push('approve', 'reject');
       }
@@ -299,35 +295,6 @@ export class TicketListComponent implements OnInit, OnDestroy {
 
     return actions;
   }
-  // getActions(item: any): string[] {
-  //   const actions: string[] = [];
-
-  //   const isAdmin = this.userRole === 'admin';
-  //   const isAccountant = this.userRole === 'accountant';
-  //   const isManager = this.userRole === 'manager';
-  //   const isIT = this.departmentName?.toLowerCase() === 'it';
-  //    const isAccountantLike = isAccountant || (isManager && item.logged_data);
-  //   if (item.status_display === 'Closed') {
-  //     return actions;
-  //   }
-  //   if (item.status_display === 'Open') {
-  //     // Admin or Accountant (NOT IT) → Close
-  //     if ((isAdmin || isAccountant) && !isIT) {
-  //       actions.push('close');
-  //     }
-  //     // IT users (not admin/accountant) → Close Request
-  //     if (!isAdmin && !isAccountant && isIT) {
-  //       actions.push('closeRequest');
-  //     }
-  //   }
-
-  //   if (item.status_display === 'Close Request sent') {
-  //     if (isAccountant && !isIT) {
-  //       actions.push('approve', 'reject');
-  //     }
-  //   }
-  //   return actions;
-  // }
   public getEmployees() {
     let queryparams = `?is_active=True&employee=True`;
     this.allEmployeeNames = [];

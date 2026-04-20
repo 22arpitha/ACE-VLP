@@ -819,7 +819,7 @@ onManagerSelectOpened(opened: boolean, index: number): void {
             }
           });
         } else {
-          this.cleanupAndNavigate();
+           this.router.navigate(['/jobs/all-jobs']);
         }
       }
       

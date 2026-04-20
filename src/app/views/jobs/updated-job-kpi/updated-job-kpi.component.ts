@@ -26,7 +26,7 @@ export class UpdatedJobKpiComponent implements CanComponentDeactivate, OnInit, O
   isEditItem: boolean = false;
   allEmployeeList: any = [];
   accessPermissions: any = [];
-    editKpiDetails: boolean = false;
+    editKpiDetails: boolean = true;
   @ViewChild(FormGroupDirective) formGroupDirective!: FormGroupDirective;
   jobKPIFormGroup: FormGroup;
   pageSize = 10;
@@ -109,10 +109,10 @@ export class UpdatedJobKpiComponent implements CanComponentDeactivate, OnInit, O
 
   private createMrpCrpGroup(): FormGroup {
     const group = this.fb.group({
-      mrp: [null],
+      mrp: ['-'],
       mrpFile: [null],
       mrp_file_name: [null],
-      crp: [null],
+      crp: ['-'],
       crpFile: [null],
       crp_file_name: [null],
       'unique-id': [null],
@@ -131,11 +131,15 @@ export class UpdatedJobKpiComponent implements CanComponentDeactivate, OnInit, O
 
       if (matchedAccess) {
         this.accessPermissions = matchedAccess.operations || [];
-
-        this.editKpiDetails =
-          this.user_role_name === 'Admin'
-            ? !this.job_id
-            : !(this.job_id && this.accessPermissions[0]?.['update']);
+        if(this.user_role_name!=='Admin' && this.job_id){
+          this.editKpiDetails = this.accessPermissions[0]?.['update']
+        } else{
+          this.editKpiDetails = true;
+        }
+        // this.editKpiDetails =
+        //   this.user_role_name === 'Admin'
+        //     ? !this.job_id
+        //     : !(this.job_id && this.accessPermissions[0]?.['update']);
       } else {
         this.accessPermissions = [];
         this.editKpiDetails = true;
@@ -320,6 +324,7 @@ export class UpdatedJobKpiComponent implements CanComponentDeactivate, OnInit, O
   }
   public editJobKPIDetails() {
     console.log(this.isEditItem)
+    this.editKpiDetails = false;
     this.isEditItem = !this.isEditItem;
     const employeesDetailsArray = this.jobKPIFormGroup.get('data') as FormArray;
     employeesDetailsArray.controls?.forEach((controls, index) => {

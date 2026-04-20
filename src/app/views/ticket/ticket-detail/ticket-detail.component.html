@@ -11,10 +11,10 @@
           <span *ngIf="ticket" class="ticket-number-badge"># {{ ticket.ticket_number }}</span>
         </div>
         <div *ngIf="ticket" class="td-header-right">
-          <span class="status-badge status-open" *ngIf="ticket.status_display === 'Open'">{{ ticket.status_display }}</span>
-          <span class="status-badge status-reopen" *ngIf="ticket.status_display === 'Re-Open'">{{ ticket.status_display }}</span>
-          <span class="status-badge status-close-request" *ngIf="ticket.status_display === 'Close Request sent'">{{ ticket.status_display }}</span>
-          <span class="status-badge status-closed" *ngIf="ticket.status_display === 'Closed'">{{ ticket.status_display }}</span>
+          <span class="status-badge status-open" *ngIf="ticket.status === 'open'">{{ ticket.status_display }}</span>
+          <span class="status-badge status-reopen" *ngIf="ticket.status === 're-open'">{{ ticket.status_display }}</span>
+          <span class="status-badge status-close-request" *ngIf="ticket.status === 'close_request_sent'">{{ ticket.status_display }}</span>
+          <span class="status-badge status-closed" *ngIf="ticket.status === 'closed'">{{ ticket.status_display }}</span>
         </div>
       </div>
 
@@ -69,7 +69,7 @@
         </div>
 
         <!-- Close Request Notice -->
-        <div class="notice-banner" *ngIf="ticket.status === 'Close Request sent' && canApproveReject">
+        <div class="notice-banner" *ngIf="ticket.status === 'close_request_sent' && canApproveReject">
           <span class="notice-icon">&#9432;</span>
           Technical Support has requested to close this ticket. Please review and approve or reject.
         </div>
