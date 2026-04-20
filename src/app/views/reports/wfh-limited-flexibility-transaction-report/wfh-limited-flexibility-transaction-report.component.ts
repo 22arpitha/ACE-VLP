@@ -11,11 +11,10 @@ import { tableColumns } from '../wfh-limited-flexibility-transaction-report/wfh-
   selector: 'app-wfh-limited-flexibility-transaction-report',
   templateUrl: './wfh-limited-flexibility-transaction-report.component.html',
   styleUrls: ['./wfh-limited-flexibility-transaction-report.component.scss'],
-  standalone:false
+  standalone: false,
 })
 export class WfhLimitedFlexibilityTransactionReportComponent implements OnInit {
-
- BreadCrumbsTitle: any = 'WFH Limited Flexibility Transaction Report';
+  BreadCrumbsTitle: any = 'WFH Limited Flexibility Transaction Report';
   term: string = '';
   user_id: any;
   userRole: any;
@@ -33,7 +32,7 @@ export class WfhLimitedFlexibilityTransactionReportComponent implements OnInit {
     showDownload: false,
     leaveTypes: true,
     reset: true,
-    employeeDropdown: sessionStorage.getItem('user_role_name') === 'Admin'
+    employeeDropdown: sessionStorage.getItem('user_role_name') === 'Admin',
   };
   tabStatus: any = 'True';
   allJobStatus: any = [];
@@ -42,16 +41,16 @@ export class WfhLimitedFlexibilityTransactionReportComponent implements OnInit {
   selectedDate: any;
   time = {
     start_date: '',
-    end_date: ''
+    end_date: '',
   };
   client_id: any;
   isIncludeAllJobEnable: boolean = true;
   isIncludeAllJobValue: boolean = false;
   jobFilterList: any = [];
-  clientName: { id: any; name: string; }[];
-  jobName: { id: any; name: string; }[];
-  statusName: { id: any; name: string; }[];
-  leaveTypes: { id: any; name: string; }[];
+  clientName!: { id: any; name: string }[];
+  jobName!: { id: any; name: string }[];
+  statusName!: { id: any; name: string }[];
+  leaveTypes!: { id: any; name: string }[];
   selectedClientIds: any = [];
   selectedJobIds: any = [];
   selectedEmployeeIds: any;
@@ -65,7 +64,7 @@ export class WfhLimitedFlexibilityTransactionReportComponent implements OnInit {
     private common_service: CommonServiceService,
     private api: ApiserviceService,
     private dialog: MatDialog,
-    private datePipe: DatePipe
+    private datePipe: DatePipe,
   ) {
     this.user_id = sessionStorage.getItem('user_id');
     this.userRole = sessionStorage.getItem('user_role_name');
@@ -75,15 +74,19 @@ export class WfhLimitedFlexibilityTransactionReportComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.common_service.setTitle(this.BreadCrumbsTitle)
+    this.common_service.setTitle(this.BreadCrumbsTitle);
     if (this.userRole === 'Admin') {
-      this.api.getData(`${environment.live_url}/${environment.employee}/?page=1&page_size=1&is_active=True&employee=True`)
+      this.api
+        .getData(
+          `${environment.live_url}/${environment.employee}/?page=1&page_size=1&is_active=True&employee=True`,
+        )
         .subscribe((res: any) => {
           this.defaultEmployeeId = res?.results?.[0]?.user_id ?? '';
           this.selectedEmployeeIds = this.defaultEmployeeId;
         });
     } else {
-      this.selectedEmployeeIds = this.userRole === 'Accountant' ? this.user_id : '';
+      this.selectedEmployeeIds =
+        this.userRole === 'Accountant' ? this.user_id : '';
     }
     // setTimeout(() => {
     //   this.getTableData({
@@ -94,17 +97,21 @@ export class WfhLimitedFlexibilityTransactionReportComponent implements OnInit {
     // }, 500);
   }
 
-  getLeaveTypes() {
-    this.api.getData(`${environment.live_url}/${environment.settings_leave_type}/`).subscribe((respData: any) => {
-      this.leaveTypes = respData?.map((item: any) => ({
-        id: item.id,
-        name: item.leave_type_name
-      }));
-    }, (error: any) => {
-      this.api.showError(error?.error?.detail);
-    })
-  }
-
+  // getLeaveTypes() {
+  //   this.api
+  //     .getData(`${environment.live_url}/${environment.settings_leave_type}/`)
+  //     .subscribe(
+  //       (respData: any) => {
+  //         this.leaveTypes = respData?.map((item: any) => ({
+  //           id: item.id,
+  //           name: item.leave_type_name,
+  //         }));
+  //       },
+  //       (error: any) => {
+  //         this.api.showError(error?.error?.detail);
+  //       },
+  //     );
+  // }
 
   // Called when user changes page number from the dynamic table
   onTableDataChange(event: any) {
@@ -115,7 +122,7 @@ export class WfhLimitedFlexibilityTransactionReportComponent implements OnInit {
       page: page,
       pageSize: this.tableSize,
       searchTerm: this.term,
-      leave_type: this.selectedLeaveType,
+      // leave_type: this.selectedLeaveType,
       employee_ids: this.selectedEmployeeIds,
     });
   }
@@ -130,15 +137,14 @@ export class WfhLimitedFlexibilityTransactionReportComponent implements OnInit {
         page: this.page,
         pageSize: this.tableSize,
         searchTerm: this.term,
-        leave_type: this.selectedLeaveType,
+        // leave_type: this.selectedLeaveType,
         employee_ids: this.selectedEmployeeIds,
       });
     }
-
   }
 
   // Called from <app-dynamic-table> via @Output actionEvent
-  handleAction(event: { actionType: string; detail: any, key: any }) {
+  handleAction(event: { actionType: string; detail: any; key: any }) {
     switch (event.actionType) {
       case 'tableDataChange':
         this.onTableDataChange(event.detail);
@@ -166,14 +172,14 @@ export class WfhLimitedFlexibilityTransactionReportComponent implements OnInit {
         break;
       case 'mainDateRangeFilter':
         this.time.start_date = event.detail?.startDate;
-        this.time.end_date = event.detail?.endDate
+        this.time.end_date = event.detail?.endDate;
         this.getTableData({
           page: 1,
           pageSize: this.tableSize,
           searchTerm: this.term,
-          leave_type: this.selectedLeaveType,
+          // leave_type: this.selectedLeaveType,
           employee_ids: this.selectedEmployeeIds,
-        })
+        });
         break;
       case 'weekDate':
         this.fromDate = event.detail;
@@ -181,88 +187,92 @@ export class WfhLimitedFlexibilityTransactionReportComponent implements OnInit {
           page: 1,
           pageSize: this.tableSize,
           searchTerm: this.term,
-          leave_type: this.selectedLeaveType,
+          // leave_type: this.selectedLeaveType,
           employee_ids: this.selectedEmployeeIds,
-        })
+        });
         break;
       default:
         this.getTableData({
           page: 1,
           pageSize: this.tableSize,
           searchTerm: this.term,
-          leave_type: this.selectedLeaveType,
+          // leave_type: this.selectedLeaveType,
           employee_ids: this.selectedEmployeeIds,
         });
     }
   }
 
-  onLeaveType(detail) {
-    if(detail.reset===true){
+  onLeaveType(detail:any) {
+    if (detail.reset === true) {
       this.formattedData = [];
-    this.term = ''
-    this.page = 1;
-    this.tableSize = 50;
-    this.time.start_date = '';
-    this.time.end_date = '';
-    this.directionValue = '';
-    this.selectedEmployeeIds = this.userRole === 'Admin'
-      ? this.defaultEmployeeId
-      : this.userRole === 'Manager'
-        ? ''
-        : this.user_id;
-    this.tableConfig = {
-      columns: [],
-      data: this.formattedData,
-      searchTerm: '',
-      actions: [],
-      accessConfig: [],
-      tableSize: 50,
-      pagination: true,
-      searchable: false,
-      startAndEndDateFilter: true,
-      leaveTypes: false,
-      showDownload: false,
-      reset: true,
-      searchPlaceholder: 'Search',
-      employeeDropdown: this.userRole === 'Admin' || this.userRole === 'Manager',
-    };
-  } else {
-    this.page = 1;
-    this.selectedEmployeeIds = detail?.user_id ?? '';
-  }
-  this.selectedLeaveType = detail?.leave_type;
+      this.term = '';
+      this.page = 1;
+      this.tableSize = 50;
+      this.time.start_date = '';
+      this.time.end_date = '';
+      this.directionValue = '';
+      this.selectedEmployeeIds =
+        this.userRole === 'Admin'
+          ? this.defaultEmployeeId
+          : this.userRole === 'Manager'
+            ? ''
+            : this.user_id;
+      this.tableConfig = {
+        columns: [],
+        data: this.formattedData,
+        searchTerm: '',
+        actions: [],
+        accessConfig: [],
+        tableSize: 50,
+        pagination: true,
+        searchable: false,
+        startAndEndDateFilter: true,
+        leaveTypes: false,
+        showDownload: false,
+        reset: true,
+        searchPlaceholder: 'Search',
+        employeeDropdown:
+          this.userRole === 'Admin' || this.userRole === 'Manager',
+      };
+    } else {
+      this.page = 1;
+      this.selectedEmployeeIds = detail?.user_id ?? '';
+    }
+    this.selectedLeaveType = detail?.leave_type;
     this.getTableData({
       page: this.page,
       pageSize: this.tableSize,
       searchTerm: this.term,
-      leave_type: this.selectedLeaveType,
+      // leave_type: this.selectedLeaveType,
       employee_ids: this.selectedEmployeeIds,
     });
   }
-  onSorting(data) {
+  onSorting(data:any) {
     this.directionValue = data.detail.directionValue;
     this.sortValue = data.detail.sortValue;
     this.getTableData({
       page: this.page,
       pageSize: this.tableSize,
       searchTerm: this.term,
-      leave_type: this.selectedLeaveType,
+      // leave_type: this.selectedLeaveType,
       employee_ids: this.selectedEmployeeIds,
     });
   }
 
   resetData(data: any) {
     this.formattedData = [];
-    this.term = ''
+    this.term = '';
     this.page = 1;
     this.tableSize = 50;
     this.selectedClientIds = [];
     this.selectedJobIds = [];
     this.selectedStatusIds = [];
-    this.selectedEmployeeIds = this.userRole === 'Admin'
-      ? this.defaultEmployeeId
-      : this.userRole === 'Manager'
-        ? this.user_id:''
+    this.selectedEmployeeIds =
+      this.userRole === 'Admin'
+        ? this.defaultEmployeeId
+        : this.userRole === 'Manager'
+          ? this.user_id
+          : '';
     this.time.start_date = '';
     this.time.end_date = '';
     this.directionValue = '';
@@ -280,7 +290,8 @@ export class WfhLimitedFlexibilityTransactionReportComponent implements OnInit {
       leaveTypes: false,
       showDownload: false,
       reset: true,
-      employeeDropdown: this.userRole === 'Admin' || this.userRole === 'Manager',
+      employeeDropdown:
+        this.userRole === 'Admin' || this.userRole === 'Manager',
       searchPlaceholder: 'Search by Client/Job/Employee',
     };
     this.getTableData({
@@ -293,12 +304,19 @@ export class WfhLimitedFlexibilityTransactionReportComponent implements OnInit {
 
   onApplyFilter(filteredData: any[], filteredKey: string): void {
     if (filteredKey === 'timesheet-employee-ids') {
-      const hasSelection = Array.isArray(filteredData) ? filteredData.length > 0 : !!filteredData;
+      const hasSelection = Array.isArray(filteredData)
+        ? filteredData.length > 0
+        : !!filteredData;
       if (hasSelection) {
         this.selectedEmployeeIds = filteredData;
       } else {
         // filter cleared — restore role default
-        this.selectedEmployeeIds = this.userRole === 'Manager' ? '' : this.userRole === 'Admin' ? this.defaultEmployeeId : this.user_id;
+        this.selectedEmployeeIds =
+          this.userRole === 'Manager'
+            ? ''
+            : this.userRole === 'Admin'
+              ? this.defaultEmployeeId
+              : this.user_id;
       }
     }
     this.formattedData = [];
@@ -306,16 +324,16 @@ export class WfhLimitedFlexibilityTransactionReportComponent implements OnInit {
       page: 1,
       pageSize: this.tableSize,
       searchTerm: this.term,
-      leave_type: this.selectedLeaveType,
+      // leave_type: this.selectedLeaveType,
       employee_ids: this.selectedEmployeeIds,
     });
   }
-  exportCsvOrPdf(fileType:string) {
+  exportCsvOrPdf(fileType: string) {
     let query = `?file-type=${fileType}&download=true`;
     if (this.selectedEmployeeIds) {
       query += `&employee_id=${this.selectedEmployeeIds}`;
     }
-    query += this.userRole === 'Manager' ? `&employee_id=${this.user_id}` : '';
+    // query += this.userRole === 'Manager' ? `&employee_id=${this.user_id}` : '';
     // if (this.selectedLeaveType) {
     //   query += `&leave_type_id=${this.selectedLeaveType}`;
     // }
@@ -330,133 +348,151 @@ export class WfhLimitedFlexibilityTransactionReportComponent implements OnInit {
     window.open(url, '_blank');
   }
 
-
   // new code
   private updateFilterColumn(key: string, cache: any) {
-    this.tableConfig.columns = this.tableConfig.columns.map(col =>
+    this.tableConfig.columns = this.tableConfig.columns.map((col:any) =>
       col.paramskeyId === key
         ? {
-          ...col,
-          filterOptions: cache.data,
-          currentPage: cache.page,
-          totalPages: Math.ceil(cache.total / 20)
-        }
-        : col
+            ...col,
+            filterOptions: cache.data,
+            currentPage: cache.page,
+            totalPages: Math.ceil(cache.total / 20),
+          }
+        : col,
     );
   }
-async getTableData(params?: { page?: number; pageSize?: number; searchTerm?: string; employee_ids?: any; leave_type?: any }) {
+  async getTableData(params?: {
+    page?: number;
+    pageSize?: number;
+    searchTerm?: string;
+    employee_ids?: any;
+    // leave_type?: any;
+  }) {
     let finalQuery;
     this.formattedData = [];
     const page = params?.page ?? this.page;
     const pageSize = params?.pageSize ?? this.tableSize;
     const searchTerm = params?.searchTerm ?? this.term;
     const query = buildPaginationQuery({ page, pageSize, searchTerm });
-    finalQuery = query
-  
-    
+    finalQuery = query;
+
     if (params?.employee_ids) {
       finalQuery += `&employee_id=${params.employee_ids}`;
     }
-    if(this.userRole==='Accountant'){
+    if (this.userRole === 'Accountant') {
       finalQuery += `&employee_id=${this.user_id}`;
     }
-    if(this.userRole==='Manager' && !params?.employee_ids){
+    if (this.userRole === 'Manager' && !params?.employee_ids) {
       finalQuery += `&employee_id=${this.user_id}`;
     }
-  
+
     if (this.directionValue && this.sortValue) {
       finalQuery += `&sort-by=${this.sortValue}&sort-type=${this.directionValue}`;
     }
     if (this.time?.start_date && this.time?.end_date) {
       finalQuery += `&start-date=${this.time?.start_date}&end-date=${this.time?.end_date}`;
     }
-    await this.api.getData(`${environment.live_url}/${environment.wfh_limited_flexibility_transaction_report}/${finalQuery}`).subscribe((res: any) => {
-      if (res.results) {
-        this.formattedData = res.results?.map((item: any, i: number) => ({
-          sl: (page - 1) * pageSize + i + 1,
-          ...item,
-        }));
-        this.tableConfig = {
-          columns: tableColumns?.map((col:any) => {
-            let filterOptions: any = [];
-            const existingCol = this.tableConfig?.columns?.find(c => c.key === col.key);
-            if (existingCol?.filterOptions?.length) {
-              filterOptions = existingCol.filterOptions;
-            } else if (col.filterable) {
-              // Fallback to initial options if none present
-              if (col.key === 'client_name') {
-                filterOptions = this.clientName;
-              } else if (col.key === 'job_name') {
-                filterOptions = this.jobName;
-              } else if (col.key === 'job_status_name') {
-                filterOptions = this.statusName;
-              }
-            }
-            return {
-              ...col,
-              filterOptions
+    await this.api
+      .getData(
+        `${environment.live_url}/${environment.wfh_limited_flexibility_transaction_report}/${finalQuery}`,
+      )
+      .subscribe(
+        (res: any) => {
+          if (res.results) {
+            this.formattedData = res.results?.map((item: any, i: number) => ({
+              sl: (page - 1) * pageSize + i + 1,
+              ...item,
+            }));
+            this.tableConfig = {
+              columns: tableColumns?.map((col: any) => {
+                let filterOptions: any = [];
+                const existingCol = this.tableConfig?.columns?.find(
+                  (c:any) => c.key === col.key,
+                );
+                if (existingCol?.filterOptions?.length) {
+                  filterOptions = existingCol.filterOptions;
+                } else if (col.filterable) {
+                  // Fallback to initial options if none present
+                  if (col.key === 'client_name') {
+                    filterOptions = this.clientName;
+                  } else if (col.key === 'job_name') {
+                    filterOptions = this.jobName;
+                  } else if (col.key === 'job_status_name') {
+                    filterOptions = this.statusName;
+                  }
+                }
+                return {
+                  ...col,
+                  filterOptions,
+                };
+              }),
+              data: this.formattedData,
+              searchTerm: this.term,
+              actions: [],
+              accessConfig: [],
+              tableSize: pageSize,
+              pagination: true,
+              searchable: false,
+              startAndEndDateFilter: true,
+              leaveTypes: false,
+              reset: true,
+              currentPage: page,
+              totalRecords: res.total_no_of_record,
+              showDownload: true,
+              showCsv: true,
+              showPdf: false,
+              searchPlaceholder: 'Search by Client/Job/Employee',
+              employeeDropdown:
+                this.userRole === 'Admin' || this.userRole === 'Manager',
             };
-          }),
-          data: this.formattedData,
-          searchTerm: this.term,
-          actions: [],
-          accessConfig: [],
-          tableSize: pageSize,
-          pagination: true,
-          searchable: false,
-          startAndEndDateFilter: true,
-          leaveTypes: false,
-          reset: true,
-          currentPage: page,
-          totalRecords: res.total_no_of_record,
-          showDownload: true,
-          showCsv:true,
-          showPdf:false,
-          searchPlaceholder: 'Search by Client/Job/Employee',
-          employeeDropdown: this.userRole === 'Admin' || this.userRole === 'Manager',
-        };
-      }
-      else {
-        this.tableConfig = {
-          columns: tableColumns?.map((col:any) => {
-            let filterOptions: any = [];
-            if (col.filterable) {
-              if (col.key === 'client_name') { filterOptions = this.clientName; }
-              else if (col.key === 'job_name') { filterOptions = this.jobName; }
-              else if (col.key === 'employee_name') {
-                filterOptions = [];
-              }
-            }
-            return { ...col, filterOptions };
-          }),
-          data: [],
-          searchTerm: this.term,
-          actions: [],
-          accessConfig: [],
-          tableSize: pageSize,
-          pagination: true,
-          searchable: false,
-          // headerTabs:true,
-          // showIncludeAllJobs:true,
-          // includeAllJobsEnable:this.isIncludeAllJobEnable ? this.isIncludeAllJobEnable : false,
-          // includeAllJobsValue:this.isIncludeAllJobValue ? this.isIncludeAllJobValue : false,
-          // selectedClientId:this.client_id ? this.client_id:null,
-          // sendEmail:true,
-          currentPage: page,
-          totalRecords: 0,
-          showDownload: false,
-          searchPlaceholder: 'Search by Client/Job/Status',
-        };
-      }
-
-    }, (error: any) => {
-      this.api.showError(error?.error?.detail);
-    });
+          } else {
+            this.tableConfig = {
+              columns: tableColumns?.map((col: any) => {
+                let filterOptions: any = [];
+                if (col.filterable) {
+                  if (col.key === 'client_name') {
+                    filterOptions = this.clientName;
+                  } else if (col.key === 'job_name') {
+                    filterOptions = this.jobName;
+                  } else if (col.key === 'employee_name') {
+                    filterOptions = [];
+                  }
+                }
+                return { ...col, filterOptions };
+              }),
+              data: [],
+              searchTerm: this.term,
+              actions: [],
+              accessConfig: [],
+              tableSize: pageSize,
+              pagination: true,
+              searchable: false,
+              // headerTabs:true,
+              // showIncludeAllJobs:true,
+              // includeAllJobsEnable:this.isIncludeAllJobEnable ? this.isIncludeAllJobEnable : false,
+              // includeAllJobsValue:this.isIncludeAllJobValue ? this.isIncludeAllJobValue : false,
+              // selectedClientId:this.client_id ? this.client_id:null,
+              // sendEmail:true,
+              currentPage: page,
+              totalRecords: 0,
+              showDownload: false,
+              searchPlaceholder: 'Search by Client/Job/Status',
+            };
+          }
+        },
+        (error: any) => {
+          this.api.showError(error?.error?.detail);
+        },
+      );
   }
 
-
   filterDataCache: {
-    [key: string]: { data: any[], page: number, total: number, searchTerm: string }
+    [key: string]: {
+      data: any[];
+      page: number;
+      total: number;
+      searchTerm: string;
+    };
   } = {};
 
   getFilterOptions(event: { detail: any; key: string }) {
@@ -469,7 +505,7 @@ async getTableData(params?: { page?: number; pageSize?: number; searchTerm?: str
         data: [],
         page: 0,
         total: 0,
-        searchTerm
+        searchTerm,
       };
     }
 
@@ -490,17 +526,17 @@ async getTableData(params?: { page?: number; pageSize?: number; searchTerm?: str
       query += this.userRole === 'Admin' ? '' : `&employee-id=${this.user_id}`;
     }
     if (key === 'job-ids') {
-      endpoint = environment.jobs
+      endpoint = environment.jobs;
       query += this.userRole === 'Admin' ? '' : `&employee-id=${this.user_id}`;
-    };
+    }
     if (key === 'job-status-ids') {
       endpoint = environment.settings_job_status;
     }
     if (key === 'timesheet-employee-ids') {
       endpoint = environment.employee;
-      query += `&is_active=True&employee=True`
+      query += `&is_active=True&employee=True`;
     }
-    if(this.userRole==='Manager'){
+    if (this.userRole === 'Manager') {
       query += `&employee_id=${this.user_id}`;
     }
     // if (key === 'timesheet-task-ids') {
@@ -509,7 +545,8 @@ async getTableData(params?: { page?: number; pageSize?: number; searchTerm?: str
     //   return;
     // }
 
-    this.api.getData(`${environment.live_url}/${endpoint}/${query}`)
+    this.api
+      .getData(`${environment.live_url}/${endpoint}/${query}`)
       .subscribe((res: any) => {
         if (!res) return;
 
@@ -522,12 +559,14 @@ async getTableData(params?: { page?: number; pageSize?: number; searchTerm?: str
 
         const newData = res.results?.map((item: any) => ({
           id: item[fieldMap[key]?.id] || '',
-          name: item[fieldMap[key]?.name] || ''
+          name: item[fieldMap[key]?.name] || '',
         }));
 
         cache.data = [
           ...cache.data,
-          ...newData.filter(opt => !cache.data.some(existing => existing.id === opt.id))
+          ...newData.filter(
+            (opt:any) => !cache.data.some((existing) => existing.id === opt.id),
+          ),
         ];
         cache.page = nextPage;
         cache.total = res.total_no_of_record || cache.total;
@@ -538,17 +577,33 @@ async getTableData(params?: { page?: number; pageSize?: number; searchTerm?: str
 
   // when filter opens or checkboxes selected
   onFilterOpened(event: any) {
-    this.getFilterOptions({ detail: { page: 1, pageSize: 10, search: event.search, reset: event.reset }, key: event.column.paramskeyId });
+    this.getFilterOptions({
+      detail: {
+        page: 1,
+        pageSize: 10,
+        search: event.search,
+        reset: event.reset,
+      },
+      key: event.column.paramskeyId,
+    });
   }
 
   // when user scrolls
   onFilterScrolled(event: any) {
-    this.getFilterOptions({ detail: { page: event.page, pageSize: 10, search: event.search }, key: event.column.paramskeyId });
+    this.getFilterOptions({
+      detail: { page: event.page, pageSize: 10, search: event.search },
+      key: event.column.paramskeyId,
+    });
   }
   onFilterSearched(event: any) {
     this.getFilterOptions({
-      detail: { page: 1, pageSize: 10, search: event.search, reset: event.reset },
-      key: event.column.paramskeyId
+      detail: {
+        page: 1,
+        pageSize: 10,
+        search: event.search,
+        reset: event.reset,
+      },
+      key: event.column.paramskeyId,
     });
   }
 }

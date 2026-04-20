@@ -296,7 +296,7 @@ export class WfhConfigurationComponent implements OnInit {
       is_accrual: [false],
       accrual_cycle: [''],
       accrual_day: [''],
-      // accrual_month: [''],
+      accrual_month: [''],
       accrual_credits: [''],
       // policy_date: [''],
       // policy_month: [''],
@@ -304,7 +304,7 @@ export class WfhConfigurationComponent implements OnInit {
       is_reset: [true],
       reset_cycle: ['', Validators.required],
       reset_day: ['', Validators.required],
-      // reset_month: ['', Validators.required],
+      reset_month: ['', Validators.required],
       // is_carry_forward: [false],
       // carry_forward_cycle: ['carry_forward'],
       // carry_forward_days: [0],
@@ -420,7 +420,6 @@ export class WfhConfigurationComponent implements OnInit {
               this.router.navigate(['/settings/wfh-config']);
             },
             (error: any) => {
-          
               this.apiService.showError(error?.message);
             },
           );
@@ -438,7 +437,7 @@ export class WfhConfigurationComponent implements OnInit {
             },
             (error: any) => {
               // console.log(error);
-              
+
               this.apiService.showError(error?.error?.message);
             },
           );
