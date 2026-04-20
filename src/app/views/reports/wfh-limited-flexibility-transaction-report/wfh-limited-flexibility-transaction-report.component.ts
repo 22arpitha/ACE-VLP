@@ -402,6 +402,7 @@ export class WfhLimitedFlexibilityTransactionReportComponent implements OnInit {
             this.formattedData = res.results?.map((item: any, i: number) => ({
               sl: (page - 1) * pageSize + i + 1,
               ...item,
+              date: item.date ? this.datePipe.transform(item.date, 'dd-MM-yyyy') : '',
             }));
             this.tableConfig = {
               columns: tableColumns?.map((col: any) => {

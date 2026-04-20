@@ -1,10 +1,10 @@
-<div class="container-wrapper settings-main-content px-0">
+<!-- <div class="container-wrapper settings-main-content px-0">
   <section class="settings-table-bg px-3 leave-requests">
-    <!-- Filters Row -->
+
     <div class="row mx-0 px-0">
       <div class="col-sm-12 col-md-6 col-lg-6">
         <div class="row mx-0 gx-0 align-content-center">
-          <!-- period -->
+
           <div class="col-sm-12 col-md-6 col-lg-4 mb-1 pe-2">
             <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
               <mat-label>Period</mat-label>
@@ -15,7 +15,7 @@
               </mat-select>
             </mat-form-field>
           </div>
-          <!-- date range picker -->
+
           <div class="col-sm-12 col-md-6 col-lg-4" *ngIf="selectedPeriod==='custom'">
             <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
               <mat-date-range-input [rangePicker]="gobalPicker1">
@@ -46,7 +46,7 @@
       </div>
     </div>
 
-    <!-- Table -->
+
     <div class="row mx-1 my-2 px-0 table-wrapper">
       <div class="col-12 px-0">
         <table class="table table table-hover table-list">
@@ -54,13 +54,12 @@
             <tr>
               <th scope="col">SL NO</th>
               <th scope="col">Employee Name
-                 <i *ngIf="!arrowState['employee__full_name']" class="bi bi-arrow-down"
+                <i *ngIf="!arrowState['employee__full_name']" class="bi bi-arrow-down"
                   (click)="sort('ascending', 'employee__full_name')"></i>
                 <i *ngIf="arrowState['employee__full_name']" class="bi bi-arrow-up"
                   (click)="sort('descending', 'employee__full_name')"></i>
                 <button mat-icon-button [matMenuTriggerFor]="employeesFilterMenu"
-                  (menuOpened)="openFilter(employeeFilter)"
-                  *ngIf="userRole !== 'Accountant'"
+                  (menuOpened)="openFilter(employeeFilter)" *ngIf="userRole !== 'Accountant'"
                   [ngClass]="filters.employees.length>=1 ? 'filterdColumn':''">
                   <span *ngIf="filters.employees.length>=1">{{filters.employees.length.toString().padStart(2,
                     '0')}}</span>
@@ -75,32 +74,20 @@
 
 
               </th>
-              <th scope="col">WFH Category  <i *ngIf="!arrowState['leave_type__leave_type_name']" class="bi bi-arrow-down"
-                  (click)="sort('ascending', 'leave_type__leave_type_name')"></i>
+              <th scope="col">WFH Category <i *ngIf="!arrowState['leave_type__leave_type_name']"
+                  class="bi bi-arrow-down" (click)="sort('ascending', 'leave_type__leave_type_name')"></i>
                 <i *ngIf="arrowState['leave_type__leave_type_name']" class="bi bi-arrow-up"
-                  (click)="sort('descending', 'leave_type__leave_type_name')"></i></th>
-              
-              <!-- <th scope="col">LEAVE TYPE
-                <button mat-icon-button [matMenuTriggerFor]="leaveTypeFilterMenu"
-                    [ngClass]="filters.leave_type.length>=1 ? 'filterdColumn':''">
-                    <span *ngIf="filters.leave_type.length>=1">{{filters.leave_type.length}}</span>
-                    <i class="bi-funnel" *ngIf="filters.leave_type.length===0"></i>
-                </button>
+                  (click)="sort('descending', 'leave_type__leave_type_name')"></i>
+              </th>
 
-                <mat-menu #leaveTypeFilterMenu="matMenu">
-                    <app-generic-table-filter [options]="leaveOptions"
-                        [(selectedOptions)]="filters.leave_type"
-                        (selectedOptionsChange)="onFilterChange($event, 'leave_type')">
-                    </app-generic-table-filter>
-                </mat-menu>
-              </th> -->
+
               <th scope="col">WFH PERIOD
-                 <i *ngIf="!arrowState['from_date']" class="bi bi-arrow-down"
+                <i *ngIf="!arrowState['from_date']" class="bi bi-arrow-down"
                   (click)="sort('ascending', 'from_date')"></i>
                 <i *ngIf="arrowState['from_date']" class="bi bi-arrow-up" (click)="sort('descending', 'from_date')"></i>
               </th>
               <th scope="col">DAYS
-                 <i *ngIf="!arrowState['number_of_leaves_applying_for']" class="bi bi-arrow-down"
+                <i *ngIf="!arrowState['number_of_leaves_applying_for']" class="bi bi-arrow-down"
                   (click)="sort('ascending', 'number_of_leaves_applying_for')"></i>
                 <i *ngIf="arrowState['number_of_leaves_applying_for']" class="bi bi-arrow-up"
                   (click)="sort('descending', 'number_of_leaves_applying_for')"></i>
@@ -113,10 +100,8 @@
               </th>
               <th scope="col">STATUS
 
-                   <i *ngIf="!arrowState['status']" class="bi bi-arrow-down"
-                  (click)="sort('ascending', 'status')"></i>
-                <i *ngIf="arrowState['status']" class="bi bi-arrow-up"
-                  (click)="sort('descending', 'status')"></i>
+                <i *ngIf="!arrowState['status']" class="bi bi-arrow-down" (click)="sort('ascending', 'status')"></i>
+                <i *ngIf="arrowState['status']" class="bi bi-arrow-up" (click)="sort('descending', 'status')"></i>
                 <button mat-icon-button [matMenuTriggerFor]="statusFilterMenu"
                   [ngClass]="filters.status_name.length>=1 ? 'filterdColumn':''">
                   <span *ngIf="filters.status_name.length>=1">{{filters.status_name.length}}</span>
@@ -163,28 +148,21 @@
                       <img src="../../../../assets/images/view.svg" class="icon-image me-2" />
                       <span>View</span>
                     </button>
-                    <button mat-menu-item
-                      *ngIf="canUpdateWfh && isOwnRequest(item) && isWfhStatusPending(item)"
+                    <button mat-menu-item *ngIf="canUpdateWfh && isOwnRequest(item) && isWfhStatusPending(item)"
                       (click)="editWfhRequest(item)">
                       <img src="../../../../assets/images/Edit.svg" class="icon-image me-2" />
                       <span>Edit</span>
                     </button>
-                    <!-- <button mat-menu-item
-                      *ngIf="canUpdateWfh && isOwnRequest(item) && isWfhStatusPending(item)"
-                      (click)="cancelWfhRequest(item)">
-                      <img src="../../../../assets/images/Close.svg" class="icon-image me-2" />
-                      <span>Cancel</span>
-                    </button> -->
-                    <button mat-menu-item
-                      *ngIf="canDeleteWfh && isOwnRequest(item)"
-                      (click)="deleteWfhRequest(item)">
+
+                    <button mat-menu-item *ngIf="canDeleteWfh && isOwnRequest(item)" (click)="deleteWfhRequest(item)">
                       <img src="../../../../assets/images/Delete.svg" class="icon-image me-2" />
                       <span>Delete</span>
                     </button>
                   </mat-menu>
                 </td>
 
-                <td *ngIf="showManagementApprovalColumn && (userRole==='Director'||userRole==='Admin')&&item.is_confirmed_by_director===false&&item.wfh_type_name==='prolonged_health_issue'&&(item.status==='Approved'||item.status==='Pending')">
+                <td
+                  *ngIf="showManagementApprovalColumn && (userRole==='Director'||userRole==='Admin')&&item.is_confirmed_by_director===false&&item.wfh_type_name==='prolonged_health_issue'&&(item.status==='Approved'||item.status==='Pending')">
                   <span style="background: #ffface; color: #978419;" class="p-2 rounded">PENDING</span>
                 </td>
 
@@ -193,7 +171,7 @@
                   <span style="background: #fee2e2; color: #b91c1c;" class="p-2 rounded">REJECTED</span>
                 </td>
 
-                 <td
+                <td
                   *ngIf="showManagementApprovalColumn && (userRole==='Director'||userRole==='Admin')&&item.is_confirmed_by_director===true&&item.wfh_type_name==='prolonged_health_issue'&&item.status==='Approved'">
                   <span style="background: #dcfce7; color: #15803d;" class="p-2 rounded">APPROVED</span>
                 </td>
@@ -207,12 +185,11 @@
       </div>
     </div>
 
-    <!-- No Records -->
     <div class="row mx-1 my-2 px-0" *ngIf="leave_request?.length === 0">
       <app-generic-norecards></app-generic-norecards>
     </div>
 
-    <!-- Pagination -->
+
     <div class="row mx-0 px-3" *ngIf="leave_request?.length > 0">
       <div class="col-12 px-0">
         <div class="pagination-container p-0">
@@ -231,4 +208,242 @@
       </div>
     </div>
   </section>
+</div> -->
+
+
+
+<div class="container-wrapper settings-main-content px-0">
+  <section class="settings-table-bg px-3 leave-requests">
+
+    <!-- Tabs -->
+    <mat-tab-group animationDuration="200ms" class="wfh-tab-group" (selectedIndexChange)="activeTab = $event === 0 ? 'mine' : 'team'">
+
+      <!-- ── MY REQUESTS TAB ── -->
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <span class="tab-label">
+            My WFH Requests
+            <!-- <span class="tab-badge" *ngIf="myRequests.length > 0">{{ myRequests.length }}</span> -->
+          </span>
+        </ng-template>
+
+        <!-- Filters Row -->
+        <div class="row mx-0 px-0 pt-3">
+          <div class="col-sm-12 col-md-6 col-lg-6">
+            <div class="row mx-0 gx-0 align-content-center">
+              <div class="col-sm-12 col-md-6 col-lg-4 mb-1 pe-2">
+                <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+                  <mat-label>Period</mat-label>
+                  <mat-select autocomplete="off" placeholder="Select Period" panelClass="custom-select-panel"
+                    [(ngModel)]="selectedPeriod" (selectionChange)="selectedPeriodFunc($event)">
+                    <mat-option *ngFor="let item of periodValues" [value]="item.key">{{ item.value }}</mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
+              <div class="col-sm-12 col-md-6 col-lg-4" *ngIf="selectedPeriod === 'custom'">
+                <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+                  <mat-date-range-input [rangePicker]="myPicker">
+                    <input matStartDate placeholder="Start date" [(ngModel)]="mainStartDate" (dateChange)="mainDateChange($event)">
+                    <input matEndDate placeholder="End date" [(ngModel)]="mainEndDate" (dateChange)="mainEndDateChange($event)">
+                  </mat-date-range-input>
+                  <mat-datepicker-toggle matSuffix [for]="myPicker"></mat-datepicker-toggle>
+                  <mat-date-range-picker #myPicker [dateClass]="dateClass"></mat-date-range-picker>
+                  <button matSuffix mat-icon-button *ngIf="mainStartDate || mainEndDate"
+                    (click)="mainStartDate = null; mainEndDate = null; selectedPeriod = ''; getleaverequest()">
+                    <mat-icon>close</mat-icon>
+                  </button>
+                </mat-form-field>
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-12 col-md-6 col-lg-6 text-end align-content-center">
+            <button mat-raised-button class="cancel-button mat-btn-s" type="button" (click)="reset()">Reset</button>
+            <button mat-raised-button class="proceedbtn mat-btn-s" *ngIf="canCreateWfh && canApplyForWfh" (click)="openleaveForm()">
+              {{ userRole === 'Admin' ? 'Add WFH Request' : 'Apply for WFH' }}
+            </button>
+          </div>
+        </div>
+
+        <ng-container *ngTemplateOutlet="wfhTable; context: { $implicit: myRequests, showEmpFilter: false }"></ng-container>
+        <div class="row mx-1 my-2 px-0" *ngIf="myRequests.length === 0">
+          <app-generic-norecards></app-generic-norecards>
+        </div>
+        <ng-container *ngTemplateOutlet="paginationBlock; context: { $implicit: myRequests }"></ng-container>
+      </mat-tab>
+
+      <!-- ── TEAM REQUESTS TAB ── -->
+      <mat-tab *ngIf="showTeamTab">
+        <ng-template mat-tab-label>
+          <span class="tab-label">
+            Team's WFH Requests
+            <!-- <span class="tab-badge team" *ngIf="teamRequests.length > 0">{{ teamRequests.length }}</span> -->
+          </span>
+        </ng-template>
+
+        <!-- Filters Row -->
+        <div class="row mx-0 px-0 pt-3">
+          <div class="col-sm-12 col-md-6 col-lg-6">
+            <div class="row mx-0 gx-0 align-content-center">
+              <div class="col-sm-12 col-md-6 col-lg-4 mb-1 pe-2">
+                <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+                  <mat-label>Period</mat-label>
+                  <mat-select autocomplete="off" placeholder="Select Period" panelClass="custom-select-panel"
+                    [(ngModel)]="selectedPeriod" (selectionChange)="selectedPeriodFunc($event)">
+                    <mat-option *ngFor="let item of periodValues" [value]="item.key">{{ item.value }}</mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
+              <div class="col-sm-12 col-md-6 col-lg-4" *ngIf="selectedPeriod === 'custom'">
+                <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+                  <mat-date-range-input [rangePicker]="teamPicker">
+                    <input matStartDate placeholder="Start date" [(ngModel)]="mainStartDate" (dateChange)="mainDateChange($event)">
+                    <input matEndDate placeholder="End date" [(ngModel)]="mainEndDate" (dateChange)="mainEndDateChange($event)">
+                  </mat-date-range-input>
+                  <mat-datepicker-toggle matSuffix [for]="teamPicker"></mat-datepicker-toggle>
+                  <mat-date-range-picker #teamPicker [dateClass]="dateClass"></mat-date-range-picker>
+                  <button matSuffix mat-icon-button *ngIf="mainStartDate || mainEndDate"
+                    (click)="mainStartDate = null; mainEndDate = null; selectedPeriod = ''; getleaverequest()">
+                    <mat-icon>close</mat-icon>
+                  </button>
+                </mat-form-field>
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-12 col-md-6 col-lg-6 text-end align-content-center">
+            <button mat-raised-button class="cancel-button mat-btn-s" type="button" (click)="reset()">Reset</button>
+          </div>
+        </div>
+
+        <ng-container *ngTemplateOutlet="wfhTable; context: { $implicit: teamRequests, showEmpFilter: true }"></ng-container>
+        <div class="row mx-1 my-2 px-0" *ngIf="teamRequests.length === 0">
+          <app-generic-norecards></app-generic-norecards>
+        </div>
+        <ng-container *ngTemplateOutlet="paginationBlock; context: { $implicit: teamRequests }"></ng-container>
+      </mat-tab>
+
+    </mat-tab-group>
+
+  </section>
 </div>
+
+<!-- ─────────── SHARED TABLE TEMPLATE ─────────── -->
+<ng-template #wfhTable let-rows  let-showEmpFilter="showEmpFilter">
+  <div class="row mx-1 my-2 px-0 table-wrapper">
+    <div class="col-12 px-0">
+      <table class="table table-hover table-list">
+        <thead>
+          <tr>
+            <th>SL NO</th>
+            <th>Employee Name
+              <i *ngIf="!arrowState['employee__full_name']" class="bi bi-arrow-down" (click)="sort('ascending', 'employee__full_name')"></i>
+              <i *ngIf="arrowState['employee__full_name']" class="bi bi-arrow-up" (click)="sort('descending', 'employee__full_name')"></i>
+              <button *ngIf="showEmpFilter && userRole !== 'Accountant'" mat-icon-button [matMenuTriggerFor]="empMenu" (menuOpened)="openFilter(employeeFilter)"
+                [ngClass]="filters.employees.length >= 1 ? 'filterdColumn' : ''">
+                <span *ngIf="filters.employees.length >= 1">{{ filters.employees.length.toString().padStart(2,'0') }}</span>
+                <i class="bi-funnel" *ngIf="filters.employees.length === 0"></i>
+              </button>
+              <mat-menu #empMenu="matMenu">
+                <app-generic-table-filter #employeeFilter [fetchOptions]="fetchEmployees"
+                  [(selectedOptions)]="filters.employees" (selectedOptionsChange)="getleaverequest()">
+                </app-generic-table-filter>
+              </mat-menu>
+            </th>
+            <th>WFH Category
+              <i *ngIf="!arrowState['leave_type__leave_type_name']" class="bi bi-arrow-down" (click)="sort('ascending', 'leave_type__leave_type_name')"></i>
+              <i *ngIf="arrowState['leave_type__leave_type_name']" class="bi bi-arrow-up" (click)="sort('descending', 'leave_type__leave_type_name')"></i>
+            </th>
+            <th>WFH Period
+              <i *ngIf="!arrowState['from_date']" class="bi bi-arrow-down" (click)="sort('ascending', 'from_date')"></i>
+              <i *ngIf="arrowState['from_date']" class="bi bi-arrow-up" (click)="sort('descending', 'from_date')"></i>
+            </th>
+            <th>Days
+              <i *ngIf="!arrowState['number_of_leaves_applying_for']" class="bi bi-arrow-down" (click)="sort('ascending', 'number_of_leaves_applying_for')"></i>
+              <i *ngIf="arrowState['number_of_leaves_applying_for']" class="bi bi-arrow-up" (click)="sort('descending', 'number_of_leaves_applying_for')"></i>
+            </th>
+            <th>Date of Request
+              <i *ngIf="!arrowState['created_datetime']" class="bi bi-arrow-down" (click)="sort('ascending', 'created_datetime')"></i>
+              <i *ngIf="arrowState['created_datetime']" class="bi bi-arrow-up" (click)="sort('descending', 'created_datetime')"></i>
+            </th>
+            <th>Status
+              <i *ngIf="!arrowState['status']" class="bi bi-arrow-down" (click)="sort('ascending', 'status')"></i>
+              <i *ngIf="arrowState['status']" class="bi bi-arrow-up" (click)="sort('descending', 'status')"></i>
+              <button mat-icon-button [matMenuTriggerFor]="statusMenu" [ngClass]="filters.status_name.length >= 1 ? 'filterdColumn' : ''">
+                <span *ngIf="filters.status_name.length >= 1">{{ filters.status_name.length }}</span>
+                <i class="bi-funnel" *ngIf="filters.status_name.length === 0"></i>
+              </button>
+              <mat-menu #statusMenu="matMenu">
+                <app-generic-table-filter [options]="leaveStatus" [(selectedOptions)]="filters.status_name"
+                  (selectedOptionsChange)="onFilterChange($event, 'status_name')">
+                </app-generic-table-filter>
+              </mat-menu>
+            </th>
+            <th *ngIf="canViewWfh || canUpdateWfh || canDeleteWfh">Action</th>
+            <th *ngIf="showManagementApprovalColumn">Management Approval</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of rows | paginate: { itemsPerPage: tableSize, currentPage: page, totalItems: count }; let i = index">
+            <td>{{ getContinuousIndex(i) }}</td>
+            <td>{{ item.employee_name }}</td>
+            <td>{{ formatCategoryName(item?.wfh_type_name) }}</td>
+            <td>{{ item.from_date | dateFormater }} – {{ item.to_date | dateFormater }}</td>
+            <td>{{ item.number_of_wfh_applying_for }}</td>
+            <td>{{ item.created_datetime | dateFormater }}</td>
+            <td>
+              <span *ngIf="isWfhStatusPending(item)" class="status-pill pending">PENDING</span>
+              <span *ngIf="isWfhStatusApproved(item)" class="status-pill approved">APPROVED</span>
+              <span *ngIf="isWfhStatusRejected(item)" class="status-pill rejected">REJECTED</span>
+            </td>
+            <td *ngIf="canViewWfh || canUpdateWfh || canDeleteWfh">
+              <button mat-icon-button [matMenuTriggerFor]="actionMenu" ngbTooltip="More actions">
+                <mat-icon>more_vert</mat-icon>
+              </button>
+              <mat-menu #actionMenu="matMenu">
+                <button mat-menu-item *ngIf="canViewWfh" (click)="viewDetails(item)">
+                  <img src="../../../../assets/images/view.svg" class="icon-image me-2" /><span>View</span>
+                </button>
+                <button mat-menu-item *ngIf="canUpdateWfh && isOwnRequest(item) && isWfhStatusPending(item)" (click)="editWfhRequest(item)">
+                  <img src="../../../../assets/images/Edit.svg" class="icon-image me-2" /><span>Edit</span>
+                </button>
+                <button mat-menu-item *ngIf="canDeleteWfh && isOwnRequest(item)" (click)="deleteWfhRequest(item)">
+                  <img src="../../../../assets/images/Delete.svg" class="icon-image me-2" /><span>Delete</span>
+                </button>
+              </mat-menu>
+            </td>
+            <td *ngIf="showManagementApprovalColumn && (userRole==='Director'||userRole==='Admin') && item.is_confirmed_by_director===false && item.wfh_type_name==='prolonged_health_issue' && (item.status==='Approved'||item.status==='Pending')">
+              <span class="status-pill pending">PENDING</span>
+            </td>
+            <td *ngIf="showManagementApprovalColumn && (userRole==='Director'||userRole==='Admin') && item.is_confirmed_by_director===false && item.wfh_type_name==='prolonged_health_issue' && item.status==='Rejected'">
+              <span class="status-pill rejected">REJECTED</span>
+            </td>
+            <td *ngIf="showManagementApprovalColumn && (userRole==='Director'||userRole==='Admin') && item.is_confirmed_by_director===true && item.wfh_type_name==='prolonged_health_issue' && item.status==='Approved'">
+              <span class="status-pill approved">APPROVED</span>
+            </td>
+            <td *ngIf="showManagementApprovalColumn && (userRole==='Director'||userRole==='Admin') && item.is_confirmed_by_director===false && item.wfh_type_name==='limited_flexibility'">
+              NA
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</ng-template>
+
+<!-- ─────────── PAGINATION TEMPLATE ─────────── -->
+<ng-template #paginationBlock let-rows>
+  <div class="row mx-0 px-3" *ngIf="rows.length > 0">
+    <div class="col-12 px-0">
+      <div class="pagination-container p-0">
+        <pagination-controls previousLabel="Prev" nextLabel="Next" (pageChange)="onTableDataChange($event)">
+        </pagination-controls>
+        <div class="items-per-page-container">
+          <div>Items per page</div>
+          <mat-select [(ngModel)]="tableSize" (selectionChange)="onTableSizeChange($event)"
+            panelClass="paginationPanelClass" class="page-size">
+            <mat-option *ngFor="let size of tableSizes" [value]="size">{{ size }}</mat-option>
+          </mat-select>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-template>
