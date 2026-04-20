@@ -79,7 +79,7 @@ export class AddCustomizeBalanceComponent implements OnInit {
               leave_type_id: [leave.leave_type_id || leave.id || ''],
               leave_type: [leave.name || leave.leave_type],
               date: [new Date(), Validators.required],
-              existing_balance: [leave.available || 0],
+              existing_balance: [leave.closing_balance_leaves || 0],
               new_balance: [leave.new_leave_value ],
               reason: [leave.reason]
             });

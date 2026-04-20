@@ -30,14 +30,14 @@ export const tableColumns  = [
   },
   {
     label: 'Utilized',
-    key: 'daily_consumed_leaves',
-    sortKey:'consumed',
+    key: 'total_consumed_leaves',
+    sortKey:'total_consumed_leaves',
     sortable: true
   },
   {
     label: 'Closing Balance',
-    key: 'closing_balance_leaves',
-    sortKey:'closing_balance_leaves',
+    key: 'closing_balance',
+    sortKey:'closing_balance',
     sortable: true
   },
   

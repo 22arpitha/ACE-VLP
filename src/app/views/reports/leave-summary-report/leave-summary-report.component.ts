@@ -336,11 +336,11 @@ export class LeaveSummaryReportComponent implements OnInit {
         this.formattedData = res.results?.map((item: any, i: number) => ({
           sl: (page - 1) * pageSize + i + 1,
           ...item,
-          daily_consumed_leaves: item?.leave[0]?.daily_consumed_leaves ?? 0,
-          accrued_leaves: item?.leave[0]?.accrued_leaves ?? 0,
-          closing_balance_leaves: item?.leave[0]?.closing_balance_leaves ?? 0,
-          available: item?.leave[0]?.available ?? 0,
-          opening_balance: item?.leave[0]?.opening_balance ?? 0,
+          // daily_consumed_leaves: item?.leave[0]?.daily_consumed_leaves ?? 0,
+          // accrued_leaves: item?.leave[0]?.accrued_leaves ?? 0,
+          // closing_balance_leaves: item?.leave[0]?.closing_balance_leaves ?? 0,
+          // available: item?.leave[0]?.available ?? 0,
+          // opening_balance: item?.leave[0]?.opening_balance ?? 0,
         }));
         this.tableConfig = {
           columns: tableColumns?.map(col => {
