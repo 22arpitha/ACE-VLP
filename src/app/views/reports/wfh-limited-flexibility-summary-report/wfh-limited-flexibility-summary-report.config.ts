@@ -25,7 +25,7 @@ export const tableColumns  = [
   },
   {
     label: 'Accrued',
-    key: 'accrued_wfh',
+    key: 'accrued',
     sortKey:'accrued_wfh',
     sortable: false
   },
@@ -37,8 +37,8 @@ export const tableColumns  = [
   },
   {
     label: 'Closing Balance',
-    key: 'closing_balance_wfh',
-    sortKey:'closing_balance_wfh',
+    key: 'closing_balance',
+    sortKey:'closing_balance',
     sortable: false
   },
   

@@ -11,10 +11,10 @@ import { DatePipe } from '@angular/common';
   selector: 'app-wfh-limited-flexibility-summary-report',
   templateUrl: './wfh-limited-flexibility-summary-report.component.html',
   styleUrls: ['./wfh-limited-flexibility-summary-report.component.scss'],
-  standalone:false
+  standalone: false,
 })
 export class WfhLimitedFlexibilitySummaryReportComponent implements OnInit {
-BreadCrumbsTitle: any = 'WFH Limited Flexibility Summary Report';
+  BreadCrumbsTitle: any = 'WFH Limited Flexibility Summary Report';
   term: string = '';
   tableSize: number = 50;
   page: any = 1;
@@ -38,7 +38,7 @@ BreadCrumbsTitle: any = 'WFH Limited Flexibility Summary Report';
   selectedDate: any;
   time = {
     start_date: '',
-    end_date: ''
+    end_date: '',
   };
   user_id: any;
   userRole: any;
@@ -46,14 +46,14 @@ BreadCrumbsTitle: any = 'WFH Limited Flexibility Summary Report';
   isIncludeAllJobEnable: boolean = true;
   isIncludeAllJobValue: boolean = false;
   jobFilterList: any = [];
-  clientName!: { id: any; name: string; }[];
-  jobName!: { id: any; name: string; }[];
-  statusName!: { id: any; name: string; }[];
-  leaveTypes!: { id: any; name: string; }[];
+  clientName!: { id: any; name: string }[];
+  jobName!: { id: any; name: string }[];
+  statusName!: { id: any; name: string }[];
+  leaveTypes!: { id: any; name: string }[];
   selectedClientIds: any = [];
   selectedJobIds: any = [];
   selectedEmployeeIds: any = [];
-  selectedLeaveType: any
+  selectedLeaveType: any;
   selectedStatusIds: any = [];
   formattedData: any = [];
   sortValue: string = '';
@@ -62,7 +62,7 @@ BreadCrumbsTitle: any = 'WFH Limited Flexibility Summary Report';
     private common_service: CommonServiceService,
     private api: ApiserviceService,
     private dialog: MatDialog,
-    private datePipe: DatePipe
+    private datePipe: DatePipe,
   ) {
     this.user_id = sessionStorage.getItem('user_id');
     this.userRole = sessionStorage.getItem('user_role_name');
@@ -72,7 +72,7 @@ BreadCrumbsTitle: any = 'WFH Limited Flexibility Summary Report';
   }
 
   ngOnInit(): void {
-    this.common_service.setTitle(this.BreadCrumbsTitle)
+    this.common_service.setTitle(this.BreadCrumbsTitle);
     // this.tableConfig = tableColumns;
     // this.getTableData({
     //   page: this.page,
@@ -82,16 +82,20 @@ BreadCrumbsTitle: any = 'WFH Limited Flexibility Summary Report';
   }
 
   getLeaveTypes() {
-    this.api.getData(`${environment.live_url}/${environment.settings_leave_type}/`).subscribe((respData: any) => {
-      this.leaveTypes = respData?.map((item: any) => ({
-        id: item.id,
-        name: item.leave_type_name
-      }));
-    }, (error: any) => {
-      this.api.showError(error?.error?.detail);
-    })
+    this.api
+      .getData(`${environment.live_url}/${environment.settings_leave_type}/`)
+      .subscribe(
+        (respData: any) => {
+          this.leaveTypes = respData?.map((item: any) => ({
+            id: item.id,
+            name: item.leave_type_name,
+          }));
+        },
+        (error: any) => {
+          this.api.showError(error?.error?.detail);
+        },
+      );
   }
-
 
   // Called when user changes page number from the dynamic table
   onTableDataChange(event: any) {
@@ -102,7 +106,7 @@ BreadCrumbsTitle: any = 'WFH Limited Flexibility Summary Report';
       page: page,
       pageSize: this.tableSize,
       searchTerm: this.term,
-      leave_type: this.selectedLeaveType,
+      // leave_type: this.selectedLeaveType,
       employee_ids: this.selectedEmployeeIds,
     });
   }
@@ -117,15 +121,14 @@ BreadCrumbsTitle: any = 'WFH Limited Flexibility Summary Report';
         page: this.page,
         pageSize: this.tableSize,
         searchTerm: this.term,
-        leave_type: this.selectedLeaveType,
+        // leave_type: this.selectedLeaveType,
         employee_ids: this.selectedEmployeeIds,
       });
     }
-
   }
 
   // Called from <app-dynamic-table> via @Output actionEvent
-  handleAction(event: { actionType: string; detail: any, key: any }) {
+  handleAction(event: { actionType: string; detail: any; key: any }) {
     switch (event.actionType) {
       case 'tableDataChange':
         this.onTableDataChange(event.detail);
@@ -153,14 +156,14 @@ BreadCrumbsTitle: any = 'WFH Limited Flexibility Summary Report';
         break;
       case 'mainDateRangeFilter':
         this.time.start_date = event.detail?.startDate;
-        this.time.end_date = event.detail?.endDate
+        this.time.end_date = event.detail?.endDate;
         this.getTableData({
           page: 1,
           pageSize: this.tableSize,
           searchTerm: this.term,
-          leave_type: this.selectedLeaveType,
+          // leave_type: this.selectedLeaveType,
           employee_ids: this.selectedEmployeeIds,
-        })
+        });
         break;
       case 'weekDate':
         this.fromDate = event.detail;
@@ -168,74 +171,74 @@ BreadCrumbsTitle: any = 'WFH Limited Flexibility Summary Report';
           page: 1,
           pageSize: this.tableSize,
           searchTerm: this.term,
-          leave_type: this.selectedLeaveType,
+          // leave_type: this.selectedLeaveType,
           employee_ids: this.selectedEmployeeIds,
-        })
+        });
         break;
       default:
         this.getTableData({
           page: 1,
           pageSize: this.tableSize,
           searchTerm: this.term,
-          leave_type: this.selectedLeaveType,
+          // leave_type: this.selectedLeaveType,
           employee_ids: this.selectedEmployeeIds,
         });
     }
   }
 
-  onLeaveType(detail:any) {
-    if(detail.reset===true){
+  onLeaveType(detail: any) {
+    if (detail.reset === true) {
       this.formattedData = [];
-    this.term = ''
-    this.page = 1;
-    this.tableSize = 50;
-    this.selectedEmployeeIds = [];
-    this.time.start_date = '';
-    this.time.end_date = '';
-    this.directionValue = '';
-    this.sortValue = '';
-    this.tableConfig = {
-      columns: [],
-      data: this.formattedData,
-      searchTerm: '',
-      actions: [],
-      accessConfig: [],
-      tableSize: 50,
-      pagination: true,
-      searchable: false,
-      startAndEndDateFilter: true,
-      leaveTypes: true,
-      showDownload: false,
-      reset: true,
-      searchPlaceholder: 'Search',
-    };
-    } else{
-      this.page = 1
+      this.term = '';
+      this.page = 1;
+      this.tableSize = 50;
+      this.selectedEmployeeIds = [];
+      this.time.start_date = '';
+      this.time.end_date = '';
+      this.directionValue = '';
+      this.sortValue = '';
+      this.tableConfig = {
+        columns: [],
+        data: this.formattedData,
+        searchTerm: '',
+        actions: [],
+        accessConfig: [],
+        tableSize: 50,
+        pagination: true,
+        searchable: false,
+        startAndEndDateFilter: true,
+        leaveTypes: true,
+        showDownload: false,
+        reset: true,
+        searchPlaceholder: 'Search',
+      };
+    } else {
+      this.page = 1;
     }
     this.selectedLeaveType = detail?.leave_type;
     this.getTableData({
       page: this.page,
       pageSize: this.tableSize,
       searchTerm: this.term,
-      leave_type: this.selectedLeaveType,
+      // leave_type: this.selectedLeaveType,
       employee_ids: this.selectedEmployeeIds,
     });
   }
-  onSorting(data:any) {
+  onSorting(data: any) {
     this.directionValue = data.detail.directionValue;
     this.sortValue = data.detail.sortValue;
     this.getTableData({
       page: this.page,
       pageSize: this.tableSize,
       searchTerm: this.term,
-      leave_type: this.selectedLeaveType,
+      // leave_type: this.selectedLeaveType,
       employee_ids: this.selectedEmployeeIds,
     });
   }
 
   resetData(data: any) {
     this.formattedData = [];
-    this.term = ''
+    this.term = '';
     this.page = 1;
     this.tableSize = 50;
     this.selectedEmployeeIds = [];
@@ -261,7 +264,7 @@ BreadCrumbsTitle: any = 'WFH Limited Flexibility Summary Report';
     this.getTableData({
       page: this.page,
       pageSize: this.tableSize,
-      searchTerm: this.term
+      searchTerm: this.term,
     });
   }
 
@@ -274,16 +277,16 @@ BreadCrumbsTitle: any = 'WFH Limited Flexibility Summary Report';
       page: 1,
       pageSize: this.tableSize,
       searchTerm: this.term,
-      leave_type: this.selectedLeaveType,
+      // leave_type: this.selectedLeaveType,
       employee_ids: this.selectedEmployeeIds,
     });
   }
-  exportCsvOrPdf(fileType:string) {
-     let query = `?file-type=${fileType}&download=true`;
+  exportCsvOrPdf(fileType: string) {
+    let query = `?file-type=${fileType}&download=true`;
     if (this.selectedEmployeeIds?.length) {
       query += `&employee-ids=[${this.selectedEmployeeIds.join(',')}]`;
     }
-    query += this.userRole === 'Manager' ? `&manager-id=${this.user_id}` : '';
+    // query += this.userRole === 'Manager' ? `&manager-id=${this.user_id}` : '';
     // if (this.selectedLeaveType) {
     //   query += `&leave-type-id=${this.selectedLeaveType}`;
     // }
@@ -300,15 +303,15 @@ BreadCrumbsTitle: any = 'WFH Limited Flexibility Summary Report';
 
   // new code
   private updateFilterColumn(key: string, cache: any) {
-    this.tableConfig.columns = this.tableConfig.columns.map((col:any) =>
+    this.tableConfig.columns = this.tableConfig.columns.map((col: any) =>
       col.paramskeyId === key
         ? {
-          ...col,
-          filterOptions: cache.data,
-          currentPage: cache.page,
-          totalPages: Math.ceil(cache.total / 20)
-        }
-        : col
+            ...col,
+            filterOptions: cache.data,
+            currentPage: cache.page,
+            totalPages: Math.ceil(cache.total / 20),
+          }
+        : col,
     );
   }
 
@@ -420,117 +423,119 @@ BreadCrumbsTitle: any = 'WFH Limited Flexibility Summary Report';
   //   });
   // }
 
+  async getTableData(params?: {
+    page?: number;
+    pageSize?: number;
+    searchTerm?: string;
+    employee_ids?: any;
+    // leave_type?: any;
+  }) {
+    console.log(params?.employee_ids);
 
-  async getTableData(params?: { 
-  page?: number; 
-  pageSize?: number; 
-  searchTerm?: string; 
-  employee_ids?: any; 
-  leave_type?: any 
-}) {
-  console.log(params?.employee_ids);
-  
+    let finalQuery;
+    this.formattedData = [];
 
-  let finalQuery;
-  this.formattedData = [];
+    const page = params?.page ?? this.page;
+    const pageSize = params?.pageSize ?? this.tableSize;
+    const searchTerm = params?.searchTerm ?? this.term;
 
-  const page = params?.page ?? this.page;
-  const pageSize = params?.pageSize ?? this.tableSize;
-  const searchTerm = params?.searchTerm ?? this.term;
+    const query = buildPaginationQuery({ page, pageSize, searchTerm });
+    finalQuery = query;
+    finalQuery +=
+      this.userRole === 'Manager' ? `&manager-id=${this.user_id}` : '';
 
-  const query = buildPaginationQuery({ page, pageSize, searchTerm });
-  finalQuery = query;
-  finalQuery += this.userRole === 'Manager' ? `&manager-id=${this.user_id}` : '';
-
-  if (params?.employee_ids?.length) {
-    finalQuery += `&employee-ids=[${params.employee_ids.join(',')}]`;
-  }
-
-  // if (params?.leave_type) {
-  //   finalQuery += `&leave-type-id=${params.leave_type}`;
-  // }
-
-  if (this.directionValue && this.sortValue) {
-    finalQuery += `&sort-by=${this.sortValue}&sort-type=${this.directionValue}`;
-  }
-
-  if (this.time?.start_date && this.time?.end_date) {
-    finalQuery += `&start-date=${this.time?.start_date}&end-date=${this.time?.end_date}`;
-  }
-  
-
-  this.api.getData(
-    `${environment.live_url}/${environment.wfh_limited_flexibility_summary_report}/${finalQuery}`
-  ).subscribe((res: any) => {
-
-    if (res.results?.length) {
-
-      this.formattedData = res.results.map((item: any, i: number) => {
-
-        const wfhData = item?.wfh?.[0] ?? {};
-
-        return {
-          sl: (page - 1) * pageSize + i + 1,
-          employee_id: item.employee_id,
-          employee_name: item.employee_name,
-
-          // Updated fields from new API
-          opening_balance: wfhData.opening_balance ?? 0,
-          accrued_wfh: wfhData.accrued_wfh ?? 0,
-          consumed_wfh: wfhData.consumed_wfh ?? 0,
-          closing_balance_wfh: wfhData.closing_balance_wfh ?? 0,
-        };
-      });
-
-      this.tableConfig = {
-        columns: tableColumns?.map(col => ({
-          ...col,
-          filterOptions: this.tableConfig?.columns?.find((c: any) => c.key === col.key)?.filterOptions ?? []
-        })),
-        data: this.formattedData,
-        searchTerm: this.term,
-        actions: [],
-        accessConfig: [],
-        tableSize: pageSize,
-        pagination: true,
-        searchable: false,
-        startAndEndDateFilter: true,
-        leaveTypes: false,
-        reset: true,
-        currentPage: res.current_page ?? page,
-        totalRecords: res.total_no_of_record,
-        showDownload: true,
-        showCsv: true,
-        showPdf: true,
-        searchPlaceholder: 'Search by Employee',
-      };
-
-    } else {
-
-      this.tableConfig = {
-        columns: tableColumns,
-        data: [],
-        searchTerm: this.term,
-        actions: [],
-        accessConfig: [],
-        tableSize: pageSize,
-        pagination: true,
-        searchable: false,
-        currentPage: page,
-        totalRecords: 0,
-        showDownload: false,
-        searchPlaceholder: 'Search by Employee',
-      };
+    if (params?.employee_ids?.length) {
+      finalQuery += `&employee-ids=[${params.employee_ids.join(',')}]`;
     }
 
-  }, (error: any) => {
-    this.api.showError(error?.error?.detail);
-  });
-}
+    // if (params?.leave_type) {
+    //   finalQuery += `&leave-type-id=${params.leave_type}`;
+    // }
 
+    if (this.directionValue && this.sortValue) {
+      finalQuery += `&sort-by=${this.sortValue}&sort-type=${this.directionValue}`;
+    }
+
+    if (this.time?.start_date && this.time?.end_date) {
+      finalQuery += `&start-date=${this.time?.start_date}&end-date=${this.time?.end_date}`;
+    }
+
+    this.api
+      .getData(
+        `${environment.live_url}/${environment.wfh_limited_flexibility_summary_report}/${finalQuery}`,
+      )
+      .subscribe(
+        (res: any) => {
+          if (res.results?.length) {
+            this.formattedData = res.results?.map((item: any, i: number) => ({
+              sl: (page - 1) * pageSize + i + 1,
+              ...item,
+              employee_id: item.employee_id,
+              employee_name: item.employee_name,
+
+              // Updated fields from new API
+              opening_balance: item.opening_balance ?? 0,
+              accrued: item.accrued_wfh ?? 0,
+              consumed_wfh: item.consumed_wfh ?? 0,
+              closing_balance: item.closing_balance ?? 0,
+            }));
+
+            this.tableConfig = {
+              columns: tableColumns?.map((col) => ({
+                ...col,
+                filterOptions:
+                  this.tableConfig?.columns?.find((c: any) => c.key === col.key)
+                    ?.filterOptions ?? [],
+              })),
+              data: this.formattedData,
+              searchTerm: this.term,
+              actions: [],
+              accessConfig: [],
+              tableSize: pageSize,
+              pagination: true,
+              searchable: false,
+              startAndEndDateFilter: true,
+              leaveTypes: false,
+              reset: true,
+              currentPage: res.current_page ?? page,
+              totalRecords: res.total_no_of_record,
+              showDownload: true,
+              showCsv: true,
+              showPdf: true,
+              searchPlaceholder: 'Search by Employee',
+            };
+          } else {
+            this.tableConfig = {
+              columns: tableColumns,
+              data: [],
+              searchTerm: this.term,
+              actions: [],
+              accessConfig: [],
+              tableSize: pageSize,
+              pagination: true,
+              searchable: false,
+              startAndEndDateFilter: true,
+              reset: true,
+              currentPage: page,
+              totalRecords: 0,
+              showDownload: false,
+              searchPlaceholder: 'Search by Employee',
+            };
+          }
+        },
+        (error: any) => {
+          this.api.showError(error?.error?.detail);
+        },
+      );
+  }
 
   filterDataCache: {
-    [key: string]: { data: any[], page: number, total: number, searchTerm: string }
+    [key: string]: {
+      data: any[];
+      page: number;
+      total: number;
+      searchTerm: string;
+    };
   } = {};
 
   getFilterOptions(event: { detail: any; key: string }) {
@@ -543,7 +548,7 @@ BreadCrumbsTitle: any = 'WFH Limited Flexibility Summary Report';
         data: [],
         page: 0,
         total: 0,
-        searchTerm
+        searchTerm,
       };
     }
 
@@ -564,26 +569,27 @@ BreadCrumbsTitle: any = 'WFH Limited Flexibility Summary Report';
       query += this.userRole === 'Admin' ? '' : `&employee-id=${this.user_id}`;
     }
     if (key === 'job-ids') {
-      endpoint = environment.jobs
+      endpoint = environment.jobs;
       query += this.userRole === 'Admin' ? '' : `&employee-id=${this.user_id}`;
-    };
+    }
     if (key === 'job-status-ids') {
       endpoint = environment.settings_job_status;
     }
     if (key === 'timesheet-employee-ids') {
       endpoint = environment.employee;
-      query += `&is_active=True&employee=True`
+      query += `&is_active=True&employee=True`;
     }
     if (this.userRole === 'Manager') {
-        query += `&reporting_manager_id=${this.user_id}`;
-      }
+      query += `&reporting_manager_id=${this.user_id}`;
+    }
     // if (key === 'timesheet-task-ids') {
     //   // Task filter static
     //   this.updateFilterColumn(key, { data: this.taskName, page: 1, total: this.taskName.length, searchTerm: '' });
     //   return;
     // }
 
-    this.api.getData(`${environment.live_url}/${endpoint}/${query}`)
+    this.api
+      .getData(`${environment.live_url}/${endpoint}/${query}`)
       .subscribe((res: any) => {
         if (!res) return;
 
@@ -596,12 +602,15 @@ BreadCrumbsTitle: any = 'WFH Limited Flexibility Summary Report';
 
         const newData = res.results?.map((item: any) => ({
           id: item[fieldMap[key]?.id] || '',
-          name: item[fieldMap[key]?.name] || ''
+          name: item[fieldMap[key]?.name] || '',
         }));
 
         cache.data = [
           ...cache.data,
-          ...newData.filter((opt:any) => !cache.data.some(existing => existing.id === opt.id))
+          ...newData.filter(
+            (opt: any) =>
+              !cache.data.some((existing) => existing.id === opt.id),
+          ),
         ];
         cache.page = nextPage;
         cache.total = res.total_no_of_record || cache.total;
@@ -612,18 +621,33 @@ BreadCrumbsTitle: any = 'WFH Limited Flexibility Summary Report';
 
   // when filter opens or checkboxes selected
   onFilterOpened(event: any) {
-    this.getFilterOptions({ detail: { page: 1, pageSize: 10, search: event.search, reset: event.reset }, key: event.column.paramskeyId });
+    this.getFilterOptions({
+      detail: {
+        page: 1,
+        pageSize: 10,
+        search: event.search,
+        reset: event.reset,
+      },
+      key: event.column.paramskeyId,
+    });
   }
 
   // when user scrolls
   onFilterScrolled(event: any) {
-    this.getFilterOptions({ detail: { page: event.page, pageSize: 10, search: event.search }, key: event.column.paramskeyId });
+    this.getFilterOptions({
+      detail: { page: event.page, pageSize: 10, search: event.search },
+      key: event.column.paramskeyId,
+    });
   }
   onFilterSearched(event: any) {
     this.getFilterOptions({
-      detail: { page: 1, pageSize: 10, search: event.search, reset: event.reset },
-      key: event.column.paramskeyId
+      detail: {
+        page: 1,
+        pageSize: 10,
+        search: event.search,
+        reset: event.reset,
+      },
+      key: event.column.paramskeyId,
     });
   }
-
 }

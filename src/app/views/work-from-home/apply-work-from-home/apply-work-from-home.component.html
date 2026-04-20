@@ -39,16 +39,16 @@
       <div class="row" *ngIf="showWfhBalance && isLimitedFlexibility()">
         <div class="col-12 col-sm-12 col-md-8 col-lg-8 px-0">
           <!-- Balance Card -->
-          <div class="alert alert-info p-3 mb-3">
+          <!-- <div class="alert alert-info p-3 mb-3">
             <div class="row align-items-center">
               <div class="col-auto">
                 <strong>{{ getCurrentQuarter() }} WFH Balance:</strong>
-                <span class="badge" [ngClass]="getBalanceClass(wfhBalance)" style="font-size: 16px; padding: 8px 12px;">{{ wfhBalance }} / 5 Days</span>
+                <span class="badge" [ngClass]="getBalanceClass(wfhBalance)" style="font-size: 16px; padding: 8px 12px;">{{ wfhBalance }} Days</span>
               </div>
               <div class="col">
                 <div class="progress" style="height: 20px;">
                   <div class="progress-bar" role="progressbar" 
-                    [style.width.%]="(wfhBalance / 5) * 100"
+                    [style.width.%]="wfhMaxBalance ? (wfhBalance / wfhMaxBalance) * 100 : 0"
                     [ngClass]="getProgressBarClass(wfhBalance)">
                   </div>
                 </div>
@@ -57,7 +57,7 @@
             <div class="mt-2">
               <small [ngClass]="getBalanceClass(wfhBalance)">{{ getBalanceWarningMessage(wfhBalance) }}</small>
             </div>
-          </div>
+          </div> -->
           <!-- Expiry Warning -->
           <div class="alert alert-warning p-2 mb-3" *ngIf="getDaysUntilExpiry() <= 7 && getDaysUntilExpiry() > 0">
             <mat-icon class="me-2">schedule</mat-icon>
@@ -215,7 +215,7 @@
           </div>
           <div class="row mx-0 my-0 p-0">
             <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0">
-              <p><b>Attachments</b></p>
+              <p><b>Attachments<b class="text-danger" *ngIf="isProlongedHealthIssue()">*</b></b></p>
             </div>
           </div>
 
