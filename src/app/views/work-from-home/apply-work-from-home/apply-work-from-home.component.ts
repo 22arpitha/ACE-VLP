@@ -290,6 +290,7 @@ export class ApplyWorkFromHomeComponent implements OnInit {
           if (res.supporting_document) {
             this.fileDataUrl = res.supporting_document;
             this.fileName = this.getFileNameFromUrl(res.supporting_document);
+            this.leaveApplyForm.patchValue({ supporting_document: res.supporting_document });
           }
         },
         (error: any) => {
@@ -718,6 +719,9 @@ export class ApplyWorkFromHomeComponent implements OnInit {
     const formData = new FormData();
     Object.keys(this.leaveApplyForm.value).forEach((key) => {
       const value = this.leaveApplyForm.value[key];
+      if (key === 'supporting_document' && !(value instanceof File)) {
+        return; // skip URL strings; new files are already patched via selectedFile
+      }
       formData.append(key, value);
     });
 
