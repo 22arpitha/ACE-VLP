@@ -322,13 +322,13 @@ export class WfhRequestsComponent implements OnInit {
     this.filterQuery = this.getFilterBaseUrl();
     if (this.userRole === 'Manager') {
       if (this.activeTab === 'mine') {
-        this.filterQuery += `&employee_id=${this.user_id}`;
+        this.filterQuery += `&employee-id=${this.user_id}`;
       } else if (!this.filters.employees.length) {
         this.filterQuery += `&manager-id=${this.user_id}`;
       }
     }
     if (this.userRole === 'Accountant') {
-      this.filterQuery += `&employee_id=${this.user_id}`;
+      this.filterQuery += `&employee-id=${this.user_id}`;
     }
     if (this.filters.leave_type.length) {
       this.filterQuery += `&leave_type_ids=[${this.ids(this.filters.leave_type)}]`;
