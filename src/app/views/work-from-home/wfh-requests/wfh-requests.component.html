@@ -216,7 +216,7 @@
   <section class="settings-table-bg px-3 leave-requests">
 
     <!-- Tabs -->
-    <mat-tab-group animationDuration="200ms" class="wfh-tab-group" (selectedIndexChange)="activeTab = $event === 0 ? 'mine' : 'team'">
+    <mat-tab-group animationDuration="200ms" class="wfh-tab-group" (selectedIndexChange)="activeTab = $event === 0 ? 'mine' : 'team'; getleaverequest()">
 
       <!-- ── MY REQUESTS TAB ── -->
       <mat-tab>
