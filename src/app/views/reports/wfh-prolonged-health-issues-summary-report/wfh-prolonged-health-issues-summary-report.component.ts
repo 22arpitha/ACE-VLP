@@ -288,6 +288,9 @@ export class WfhProlongedHealthIssuesSummaryReportComponent implements OnInit {
     if (this.selectedEmployeeIds?.length) {
       query += `&employee-ids=[${this.selectedEmployeeIds.join(',')}]`;
     }
+    if(this.userRole === 'Manager'&&!this.selectedEmployeeIds?.length){
+      query += `&manager-id=${this.user_id}`;
+    }
     // query += this.userRole === 'Manager' ? `&manager-id=${this.user_id}` : '';
     // if (this.selectedLeaveType) {
     //   query += `&leave-type-id=${this.selectedLeaveType}`;
@@ -357,7 +360,7 @@ export class WfhProlongedHealthIssuesSummaryReportComponent implements OnInit {
               ...item,
               employee_id: item.employee_id,
               employee_name: item.employee_name,
-              total_wfh_days: item.total_wfh_days ?? 0,
+              total_wfh_days: "-" + (item.total_wfh_days ?? 0),
             }));
             this.tableConfig = {
               columns: tableColumns?.map((col) => {

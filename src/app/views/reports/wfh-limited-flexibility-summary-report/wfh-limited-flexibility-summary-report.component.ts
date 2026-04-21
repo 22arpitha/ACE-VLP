@@ -286,6 +286,11 @@ export class WfhLimitedFlexibilitySummaryReportComponent implements OnInit {
     if (this.selectedEmployeeIds?.length) {
       query += `&employee-ids=[${this.selectedEmployeeIds.join(',')}]`;
     }
+
+    if (this.userRole === 'Manager'&&!this.selectedEmployeeIds?.length) {
+      query += `&manager-id=${this.user_id}`;
+    }
+
     // query += this.userRole === 'Manager' ? `&manager-id=${this.user_id}` : '';
     // if (this.selectedLeaveType) {
     //   query += `&leave-type-id=${this.selectedLeaveType}`;
@@ -476,7 +481,7 @@ export class WfhLimitedFlexibilitySummaryReportComponent implements OnInit {
               // Updated fields from new API
               opening_balance: item.opening_balance ?? 0,
               accrued: item.accrued_wfh ?? 0,
-              consumed_wfh: item.consumed_wfh ?? 0,
+              total_consumed_wfh: item.total_consumed_wfh ?? 0,
               closing_balance: item.closing_balance ?? 0,
             }));
 

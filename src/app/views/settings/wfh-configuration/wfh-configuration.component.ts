@@ -304,7 +304,7 @@ export class WfhConfigurationComponent implements OnInit {
       is_reset: [true],
       reset_cycle: ['', Validators.required],
       reset_day: ['', Validators.required],
-      reset_month: ['', Validators.required],
+      reset_month: [''],
       // is_carry_forward: [false],
       // carry_forward_cycle: ['carry_forward'],
       // carry_forward_days: [0],

@@ -202,7 +202,7 @@ export class WfhLimitedFlexibilityTransactionReportComponent implements OnInit {
     }
   }
 
-  onLeaveType(detail:any) {
+  onLeaveType(detail: any) {
     if (detail.reset === true) {
       this.formattedData = [];
       this.term = '';
@@ -247,7 +247,7 @@ export class WfhLimitedFlexibilityTransactionReportComponent implements OnInit {
       employee_ids: this.selectedEmployeeIds,
     });
   }
-  onSorting(data:any) {
+  onSorting(data: any) {
     this.directionValue = data.detail.directionValue;
     this.sortValue = data.detail.sortValue;
     this.getTableData({
@@ -272,7 +272,9 @@ export class WfhLimitedFlexibilityTransactionReportComponent implements OnInit {
         ? this.defaultEmployeeId
         : this.userRole === 'Manager'
           ? this.user_id
-          : '';
+          : this.userRole === 'Accountant'
+            ? this.user_id
+            : '';
     this.time.start_date = '';
     this.time.end_date = '';
     this.directionValue = '';
@@ -333,7 +335,11 @@ export class WfhLimitedFlexibilityTransactionReportComponent implements OnInit {
     if (this.selectedEmployeeIds) {
       query += `&employee_id=${this.selectedEmployeeIds}`;
     }
-    // query += this.userRole === 'Manager' ? `&employee_id=${this.user_id}` : '';
+
+    if(this.userRole === 'Manager'&&!this.selectedEmployeeIds){
+      query += `&employee_id=${this.user_id}`;
+    }
+    
     // if (this.selectedLeaveType) {
     //   query += `&leave_type_id=${this.selectedLeaveType}`;
     // }
@@ -350,7 +356,7 @@ export class WfhLimitedFlexibilityTransactionReportComponent implements OnInit {
 
   // new code
   private updateFilterColumn(key: string, cache: any) {
-    this.tableConfig.columns = this.tableConfig.columns.map((col:any) =>
+    this.tableConfig.columns = this.tableConfig.columns.map((col: any) =>
       col.paramskeyId === key
         ? {
             ...col,
@@ -402,13 +408,15 @@ export class WfhLimitedFlexibilityTransactionReportComponent implements OnInit {
             this.formattedData = res.results?.map((item: any, i: number) => ({
               sl: (page - 1) * pageSize + i + 1,
               ...item,
-              date: item.date ? this.datePipe.transform(item.date, 'dd-MM-yyyy') : '',
+              date: item.date
+                ? this.datePipe.transform(item.date, 'dd-MM-yyyy')
+                : '',
             }));
             this.tableConfig = {
               columns: tableColumns?.map((col: any) => {
                 let filterOptions: any = [];
                 const existingCol = this.tableConfig?.columns?.find(
-                  (c:any) => c.key === col.key,
+                  (c: any) => c.key === col.key,
                 );
                 if (existingCol?.filterOptions?.length) {
                   filterOptions = existingCol.filterOptions;
@@ -566,7 +574,8 @@ export class WfhLimitedFlexibilityTransactionReportComponent implements OnInit {
         cache.data = [
           ...cache.data,
           ...newData.filter(
-            (opt:any) => !cache.data.some((existing) => existing.id === opt.id),
+            (opt: any) =>
+              !cache.data.some((existing) => existing.id === opt.id),
           ),
         ];
         cache.page = nextPage;
