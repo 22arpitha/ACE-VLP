@@ -131,7 +131,7 @@ export class CustomizeBalanceComponent implements OnInit {
 
   getLeaveBalance(emp: any, leaveName: string): number {
   const leave = emp.leave.find((l: any) => l.name === leaveName);
-  return leave ? leave.available : 0;
+  return leave ? leave.closing_balance_leaves : 0;
 }
 
   customize(data: string) {
