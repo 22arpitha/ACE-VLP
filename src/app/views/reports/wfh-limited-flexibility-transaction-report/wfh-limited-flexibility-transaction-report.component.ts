@@ -409,7 +409,7 @@ export class WfhLimitedFlexibilityTransactionReportComponent implements OnInit {
               sl: (page - 1) * pageSize + i + 1,
               ...item,
               date: item.date
-                ? this.datePipe.transform(item.date, 'dd-MM-yyyy')
+                ? this.datePipe.transform(item.date, 'dd/MM/yyyy')
                 : '',
             }));
             this.tableConfig = {
