@@ -113,7 +113,7 @@ export class WfhConfigurationComponent implements OnInit {
       // 'accrual_month',
       'accrual_day',
       'reset_cycle',
-      'reset_month',
+      // reset_month is only required when reset_cycle === 'yearly' (handled by accrualAndResetLeaveCycle)
       'reset_day',
       'is_reset',
     ];
@@ -197,7 +197,7 @@ export class WfhConfigurationComponent implements OnInit {
           is_reset: res.is_reset,
           reset_cycle: res.reset_cycle,
           reset_day: this.addDaySuffix(res.reset_day),
-          // reset_month: res.reset_month,
+          reset_month: res.reset_month,
           // is_carry_forward: res.is_carry_forward,
           // carry_forward_cycle: 'carry_forward',
           // carry_forward_days: res.carry_forward_days,
@@ -214,6 +214,9 @@ export class WfhConfigurationComponent implements OnInit {
             // accrual_month: '',
           });
         }
+        // Set reset_month validator based on the loaded reset_cycle value
+        this.simpleToggleRequired(res.reset_cycle === 'yearly', ['reset_month']);
+        this.simpleToggleRequired(res.accrual_cycle === 'yearly', ['accrual_month']);
       });
   }
 
@@ -384,34 +387,26 @@ export class WfhConfigurationComponent implements OnInit {
 
   public isEncashEnabled(event: any) {}
   addOrUpdate() {
-    this.leaveTypeForm.patchValue({
-      accrual_day: this.removeDaySuffix(this.leaveTypeForm.value.accrual_day),
-    });
-    this.leaveTypeForm.patchValue({
-      reset_day: this.removeDaySuffix(this.leaveTypeForm.value.reset_day),
-    });
-
-    //  this.removeDaySuffix(this.leaveTypeForm.value.reset_day),
-    console.log(this.leaveTypeForm.value);
-
-    // if (this.leaveTypeForm.value.encash_leaves_above_limit === true) {
-    //   this.leaveTypeForm.value.encash_leaves_with_expiry = false;
-    // } else if (this.leaveTypeForm.value.encash_leaves_above_limit === false) {
-    //   this.leaveTypeForm.value.encash_leaves_with_expiry = true;
-    // }
-
     if (this.leaveTypeForm.invalid) {
       this.leaveTypeForm.markAllAsTouched();
       console.log('error', this.leaveTypeForm.controls);
     } else {
+      // Build payload with stripped suffixes without mutating the form controls
+      const payload = {
+        ...this.leaveTypeForm.value,
+        accrual_day: this.removeDaySuffix(this.leaveTypeForm.value.accrual_day),
+        reset_day: this.removeDaySuffix(this.leaveTypeForm.value.reset_day),
+      };
       if (this.leaveTypeForm.get('is_accrual')?.value == false) {
-        this.leaveTypeForm.patchValue({ accrual_credits: 0, accrual_month: 0 });
+        payload.accrual_credits = 0;
+        payload.accrual_month = 0;
       }
+      console.log(payload);
       if (this.item_id) {
         this.apiService
           .updateData(
             `${environment.live_url}/${environment.wfh_type_conf}/?conf_id=${this.item_id}`,
-            this.leaveTypeForm.value,
+            payload,
           )
           .subscribe(
             (res: any) => {
@@ -427,7 +422,7 @@ export class WfhConfigurationComponent implements OnInit {
         this.apiService
           .postData(
             `${environment.live_url}/${environment.wfh_type_conf}/`,
-            this.leaveTypeForm.value,
+            payload,
           )
           .subscribe(
             (res: any) => {
