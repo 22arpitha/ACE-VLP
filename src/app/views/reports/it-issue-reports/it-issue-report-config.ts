@@ -8,7 +8,17 @@ export const tableColumns  = [
     label: 'Ticket Number',
     key: 'ticket_number',
     sortable: true,
-    sortkey: 'ticket_number'
+    sortKey: 'ticket_number'
+  },
+  {
+    label: 'Issue',
+    key: 'issue',
+    sortKey:'issue',
+    keyId: 'id',
+    filterable: true,
+    filterType: 'multi-select',
+    paramskeyId: 'issue-ids',
+    sortable: true,
   },
   {
     label: 'Employee Name',
@@ -29,16 +39,6 @@ export const tableColumns  = [
     filterType: 'daterange',
     sortable: true,
     type:'date',
-  },
-  {
-    label: 'Issue',
-    key: 'issue',
-    sortKey:'issue',
-    keyId: 'id',
-    filterable: true,
-    filterType: 'multi-select',
-    paramskeyId: 'issue-ids',
-    sortable: true,
   },
   {
     label: 'Details',
@@ -62,7 +62,7 @@ export const tableColumns  = [
   {
       label: 'Status Date',
     key: 'status_date',
-    sortKey:'status',
+    sortKey:'status_date',
     filterable: true,
     filterType: 'daterange',
     type:'date',

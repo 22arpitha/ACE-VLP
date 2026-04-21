@@ -23,6 +23,10 @@
                 <i *ngIf="arrowState['ticket_number']" (click)="sort('descending', 'ticket_number')"
                   class="bi bi-arrow-up"></i>
               </th>
+              <th scope="col">Issue
+                <i *ngIf="!arrowState['issue']" (click)="sort('ascending', 'issue')" class="bi bi-arrow-down"></i>
+                <i *ngIf="arrowState['issue']" (click)="sort('descending', 'issue')" class="bi bi-arrow-up"></i>
+              </th>
               <th scope="col">Employee
                 <i *ngIf="!arrowState['employee__user__full_name']" (click)="sort('ascending', 'employee__user__full_name')"
                   class="bi bi-arrow-down"></i>
@@ -66,10 +70,6 @@
                   <mat-datepicker-toggle matSuffix [for]="raisedRangePicker"></mat-datepicker-toggle>
                   <mat-date-range-picker #raisedRangePicker [dateClass]="dateClass"></mat-date-range-picker>
                 </mat-form-field>
-              </th>
-              <th scope="col">Issue
-                <i *ngIf="!arrowState['issue']" (click)="sort('ascending', 'issue')" class="bi bi-arrow-down"></i>
-                <i *ngIf="arrowState['issue']" (click)="sort('descending', 'issue')" class="bi bi-arrow-up"></i>
               </th>
               <th scope="col">Status
                 <i *ngIf="!arrowState['status']" (click)="sort('ascending', 'status')"
@@ -133,9 +133,9 @@
 
                 <td (click)="openTicket(item,true)">{{getContinuousIndex(i)}}</td>
                 <td (click)="openTicket(item,true)">{{item.ticket_number}}</td>
+                <td (click)="openTicket(item,true)">{{item.issue}}</td>
                 <td (click)="openTicket(item,true)">{{item.employee_name}}</td>
                 <td (click)="openTicket(item,true)">{{item.ticket_raised_date | dateFormater}}</td>
-                <td (click)="openTicket(item,true)">{{item.issue}}</td>
                 <td (click)="openTicket(item,true)">{{item.status_display}}</td>
                 <td (click)="openTicket(item,true)">{{item.status_date | dateFormater}}</td>
                 <td (click)="openTicket(item,true)">{{item.tat_hours }}</td>
