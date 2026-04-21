@@ -320,9 +320,9 @@ export class WfhRequestsComponent implements OnInit {
   getleaverequest() {
     this.count = 0;
     this.filterQuery = this.getFilterBaseUrl();
-    // if (this.userRole === 'Manager' && !this.filters.employees.length) {
-    //   this.filterQuery += `&employee_id=${this.user_id}`;
-    // }
+    if (this.userRole === 'Manager' && !this.filters.employees.length) {
+      this.filterQuery += `&employee_id=${this.user_id}`;
+    }
     if (this.userRole === 'Accountant') {
       this.filterQuery += `&employee_id=${this.user_id}`;
     }

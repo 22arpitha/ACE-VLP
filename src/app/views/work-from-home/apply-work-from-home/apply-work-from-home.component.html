@@ -36,8 +36,8 @@
 
 
       <!-- WFH Balance Display with Warnings -->
-      <div class="row" *ngIf="showWfhBalance && isLimitedFlexibility()">
-        <div class="col-12 col-sm-12 col-md-8 col-lg-8 px-0">
+      <!-- <div class="row" *ngIf="showWfhBalance && isLimitedFlexibility()">
+        <div class="col-12 col-sm-12 col-md-8 col-lg-8 px-0"> -->
           <!-- Balance Card -->
           <!-- <div class="alert alert-info p-3 mb-3">
             <div class="row align-items-center">
@@ -59,13 +59,13 @@
             </div>
           </div> -->
           <!-- Expiry Warning -->
-          <div class="alert alert-warning p-2 mb-3" *ngIf="getDaysUntilExpiry() <= 7 && getDaysUntilExpiry() > 0">
+          <!-- <div class="alert alert-warning p-2 mb-3" *ngIf="getDaysUntilExpiry() <= 7 && getDaysUntilExpiry() > 0">
             <mat-icon class="me-2">schedule</mat-icon>
             <strong>Quarter Ends Soon:</strong> Your WFH balance expires on {{ getQuarterEndDate() | date:'MMM d, yyyy' }} 
             ({{ getDaysUntilExpiry() }} days remaining)
           </div>
-        </div>
-      </div>
+        </div> -->
+      <!-- </div> -->
 
       <div class="row mx-0 my-0 px-0">
         <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0">

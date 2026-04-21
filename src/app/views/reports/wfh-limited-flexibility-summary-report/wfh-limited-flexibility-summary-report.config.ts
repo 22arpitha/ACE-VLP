@@ -31,8 +31,8 @@ export const tableColumns  = [
   },
   {
     label: 'Utilized',
-    key: 'consumed_wfh',
-    sortKey:'consumed_wfh',
+    key: 'total_consumed_wfh',
+    sortKey:'total_consumed_wfh',
     sortable: false
   },
   {
