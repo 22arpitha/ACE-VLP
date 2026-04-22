@@ -1,3 +1,13 @@
 .position-absolute.date-picker-input{
 width: 0px !important;
 }
+.text-alignment{
+    max-width: 200px !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+}
+.it-tickets-table td:not(:first-child):not(:last-child) {
+    min-width: 0px !important; 
+     max-width: 200px !important; 
+}

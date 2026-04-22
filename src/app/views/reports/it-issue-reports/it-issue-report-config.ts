@@ -19,6 +19,7 @@ export const tableColumns  = [
     filterType: 'multi-select',
     paramskeyId: 'issue-ids',
     sortable: true,
+    width:true
   },
   {
     label: 'Employee Name',
@@ -45,7 +46,8 @@ export const tableColumns  = [
     key: 'details',
     sortKey:'details',
     keyId: 'details',
-    sortable: true
+    sortable: true,
+    width:true
   },
   
   {

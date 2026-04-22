@@ -9,6 +9,7 @@ export const tableColumns  = [
   {
     label: 'Date',
     key: 'date',
+    type:'date',
     sortKey:'date',
     sortable: false
   },

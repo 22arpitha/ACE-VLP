@@ -178,4 +178,18 @@
 .mat-raised-button.mat-button-disabled.mat-button-disabled {
   background-color: rgba(0, 0, 0, 0.12) !important;
 }
+.scrollable-text {
+  max-height: 80px; 
+  overflow-y: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+  padding-right: 4px; 
+}
+.scrollable-text::-webkit-scrollbar {
+  width: 4px;
+}
 
+.scrollable-text::-webkit-scrollbar-thumb {
+  background: #cbd5f5;
+  border-radius: 4px;
+}

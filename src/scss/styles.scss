@@ -638,3 +638,8 @@ input[type='search']::-webkit-search-cancel-button {
 .job-client-text-left{
   text-align: left !important;
 }
+.width-class{
+   white-space: pre-wrap !important;
+  word-break: break-word !important;
+  width: 150px !important;
+}
