@@ -73,6 +73,7 @@ export class WfhRequestsComponent implements OnInit {
   ) {
     this.userRole = sessionStorage.getItem('user_role_name');
     this.user_id = sessionStorage.getItem('user_id');
+    this.activeTab = this.userRole === 'Admin' ? 'team' : 'mine';
     this.common_service.setTitle(this.BreadCrumbsTitle);
   }
 
