@@ -17,7 +17,7 @@ import { DatePipe } from '@angular/common';
   standalone: false,
 })
 export class WfhProlongedHealthIssuesTransactionReportComponent implements OnInit {
-  // BreadCrumbsTitle: any = 'WFH Prolonged Health Issues Transaction Report';
+  BreadCrumbsTitle: any = 'WFH Prolonged Health Issues Transaction Report';
   // term: string = '';
   // user_id: any;
   // userRole: any;
@@ -681,7 +681,6 @@ export class WfhProlongedHealthIssuesTransactionReportComponent implements OnIni
   //   });
   // }
 
-  BreadCrumbsTitle: any = 'WFH Limited Flexibility Transaction Report';
   term: string = '';
   user_id: any;
   userRole: any;
@@ -934,13 +933,13 @@ export class WfhProlongedHealthIssuesTransactionReportComponent implements OnIni
     this.selectedClientIds = [];
     this.selectedJobIds = [];
     this.selectedStatusIds = [];
-     this.userRole === 'Admin'
-        ? this.defaultEmployeeId
-        : this.userRole === 'Manager'
+    this.userRole === 'Admin'
+      ? this.defaultEmployeeId
+      : this.userRole === 'Manager'
+        ? this.user_id
+        : this.userRole === 'Accountant'
           ? this.user_id
-          : this.userRole === 'Accountant'
-            ? this.user_id
-            : '';
+          : '';
     this.time.start_date = '';
     this.time.end_date = '';
     this.directionValue = '';
@@ -1002,7 +1001,7 @@ export class WfhProlongedHealthIssuesTransactionReportComponent implements OnIni
       query += `&employee-ids=${this.selectedEmployeeIds}`;
     }
 
-     if(this.userRole === 'Manager'&&!this.selectedEmployeeIds){
+    if (this.userRole === 'Manager' && !this.selectedEmployeeIds) {
       query += `&employee-ids=${this.user_id}`;
     }
     // query += this.userRole === 'Manager' ? `&employee-ids=${this.user_id}` : '';
@@ -1076,6 +1075,30 @@ export class WfhProlongedHealthIssuesTransactionReportComponent implements OnIni
             this.formattedData = res.results?.map((item: any, i: number) => ({
               sl: (page - 1) * pageSize + i + 1,
               ...item,
+              from_date: item.from_date
+                ? this.datePipe.transform(
+                    this.parseApiDate(item.from_date),
+                    'dd/MM/yyyy',
+                  )
+                : '',
+              to_date: item.to_date
+                ? this.datePipe.transform(
+                    this.parseApiDate(item.to_date),
+                    'dd/MM/yyyy',
+                  )
+                : '',
+              approved_on: item.approved_on
+                ? this.datePipe.transform(
+                    this.parseApiDate(item.approved_on),
+                    'dd/MM/yyyy',
+                  )
+                : '',
+              created_on: item.created_on
+                ? this.datePipe.transform(
+                    this.parseApiDate(item.created_on),
+                    'dd/MM/yyyy',
+                  )
+                : '',
             }));
             this.tableConfig = {
               columns: tableColumns?.map((col: any) => {
@@ -1288,5 +1311,19 @@ export class WfhProlongedHealthIssuesTransactionReportComponent implements OnIni
       .replace(/_/g, ' ') // underscores → spaces
       .toLowerCase() // all lowercase
       .replace(/\b\w/g, (c) => c.toUpperCase()); // capitalize each word
+  }
+
+  /** Converts API date strings like "13-05-2026" (dd-MM-yyyy) into a Date object */
+  parseApiDate(dateStr: string): Date | null {
+    if (!dateStr) return null;
+    // Handle dd-MM-yyyy
+    const ddMMyyyyDash = /^(\d{2})-(\d{2})-(\d{4})$/;
+    const match = dateStr.match(ddMMyyyyDash);
+    if (match) {
+      return new Date(`${match[3]}-${match[2]}-${match[1]}`);
+    }
+    // Fallback: let the browser try to parse it
+    const d = new Date(dateStr);
+    return isNaN(d.getTime()) ? null : d;
   }
 }
