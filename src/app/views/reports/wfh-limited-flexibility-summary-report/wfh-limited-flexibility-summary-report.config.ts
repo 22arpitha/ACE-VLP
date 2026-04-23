@@ -24,13 +24,13 @@ export const tableColumns  = [
     sortable: false
   },
   {
-    label: 'Accrued',
+    label: 'Increased',
     key: 'accrued',
     sortKey:'accrued_wfh',
     sortable: false
   },
   {
-    label: 'Utilized',
+    label: 'Decreased',
     key: 'total_consumed_wfh',
     sortKey:'total_consumed_wfh',
     sortable: false

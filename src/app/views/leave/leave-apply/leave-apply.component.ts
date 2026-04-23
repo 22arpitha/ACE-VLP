@@ -27,7 +27,7 @@ export class LeaveApplyComponent implements OnInit {
   @ViewChild(FormGroupDirective) formGroupDirective!: FormGroupDirective;
   leave_balance: any = 'NA';
   selectedLeaveTypeName:any;
-  employeeActive:boolean;
+  employeeActive!:boolean; 
   user_id: any;
   allleavetypeList: any = [];
   BreadCrumbsTitle: any;
