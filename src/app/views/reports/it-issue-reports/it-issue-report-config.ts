@@ -53,7 +53,7 @@ export const tableColumns  = [
   {
     label: 'Status',
     key: 'status_display',
-    sortKey:'status_display',
+    sortKey:'status',
     keyId: 'id',
     paramskeyId: 'status-ids',
     filterable: true,

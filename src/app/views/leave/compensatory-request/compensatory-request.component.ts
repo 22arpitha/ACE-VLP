@@ -36,7 +36,7 @@ export class CompensatoryRequestComponent implements OnInit {
    leaveStatus :any = [];
   arrowState: { [key: string]: boolean } = {
     employee__full_name: false,
-    reporting_manager_name: false,
+    reporting_to__full_name: false,
     from_date: false,
     to_date: false,
     credited: false,

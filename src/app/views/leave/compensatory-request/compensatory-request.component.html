@@ -59,10 +59,10 @@
                             </th>
                             <th>
                                 Reporting To
-                                <i *ngIf="!arrowState['reporting_manager_name']" class="bi bi-arrow-down"
-                                    (click)="sort('ascending', 'reporting_manager_name')"></i>
-                                <i *ngIf="arrowState['reporting_manager_name']" class="bi bi-arrow-up"
-                                    (click)="sort('descending', 'reporting_manager_name')"></i>
+                                <i *ngIf="!arrowState['reporting_to__full_name']" class="bi bi-arrow-down"
+                                    (click)="sort('ascending', 'reporting_to__full_name')"></i>
+                                <i *ngIf="arrowState['reporting_to__full_name']" class="bi bi-arrow-up"
+                                    (click)="sort('descending', 'reporting_to__full_name')"></i>
                             </th>
                             <th>
                                 From Date

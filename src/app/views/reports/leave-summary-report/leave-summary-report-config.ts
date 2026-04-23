@@ -23,13 +23,13 @@ export const tableColumns  = [
     sortable: true
   },
   {
-    label: 'Accrued Balance',
+    label: 'Increased',
     key: 'accrued_leaves',
     sortKey:'accrued',
     sortable: true
   },
   {
-    label: 'Utilized',
+    label: 'Decreased',
     key: 'total_consumed_leaves',
     sortKey:'total_consumed_leaves',
     sortable: true

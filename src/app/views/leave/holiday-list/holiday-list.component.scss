@@ -35,6 +35,9 @@
 .year-nav .mat-icon-button {
     width: 30px !important;
 }
+.holidays th:last-child, td:last-child {
+    width: auto !important;
+}
 // .year-text {
 //   font-size: 18px;
 //   font-weight: 500;
