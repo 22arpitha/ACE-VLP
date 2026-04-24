@@ -107,7 +107,11 @@
           </div>
 
           <!-- Manager/Admin Rejection Form -->
-          <div class="col-12" *ngIf="(displayButton && userRole === 'Manager' && canApproveOrReject) || (userRole === 'Director' && isDirectorApprovalVisible)">
+          <div class="col-12" *ngIf="
+  (displayButton && userRole === 'Manager' && canApproveOrReject) ||
+  (userRole === 'Director' && isDirectorApprovalVisible) ||
+  isLimitedFlexibilityApprovalAllowed()
+">
             <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
               <mat-label>Reason for Rejecting<b class="r-star">*</b></mat-label>
 
@@ -127,18 +131,22 @@
             </mat-form-field>
           </div>
 
-          <div *ngIf="userRole==='Manager'">
+          <div *ngIf="
+  (displayButton && userRole === 'Manager' && canApproveOrReject) ||
+  (userRole === 'Director' && isDirectorApprovalVisible) ||
+  isLimitedFlexibilityApprovalAllowed()
+">
             <div class="col-12 my-4 px-2 d-flex justify-content-end" *ngIf="displayButton">
               <div>
-                <button mat-button class="cancel-button mat-btn-s me-2" type="button" mat-dialog-close>
+                <!-- <button mat-button class="cancel-button mat-btn-s me-2" type="button" mat-dialog-close>
                   Close
-                </button>
-                <button *ngIf="canApproveOrReject" mat-raised-button class="proceedbtn mat-btn-s me-2" type="button"
-                  (click)="approve(leave_data)">
+                </button> -->
+                <button *ngIf="canApproveOrReject || isLimitedFlexibilityApprovalAllowed()" mat-raised-button
+                  class="proceedbtn mat-btn-s me-2" type="button" (click)="approve(leave_data)">
                   Approve
                 </button>
-                <button *ngIf="canApproveOrReject" mat-button class="delete-item-button mat-btn-s" type="button"
-                  (click)="onRejectClick(leave_data)">
+                <button *ngIf="canApproveOrReject || isLimitedFlexibilityApprovalAllowed()" mat-button
+                  class="delete-item-button mat-btn-s" type="button" (click)="onRejectClick(leave_data)">
                   Reject
                 </button>
               </div>
@@ -158,19 +166,19 @@
                 and is waiting for your final confirmation.
               </div>
 
-            
+
             </div>
 
             <!-- Director Approve -->
-            <button *ngIf="isDirectorApprovalVisible" mat-raised-button class="proceedbtn mx-2"
-              type="button" (click)="approveByDirector(leave_data)">
-              <mat-icon class="me-1">check_circle</mat-icon>Approve 
+            <button *ngIf="isDirectorApprovalVisible" mat-raised-button class="proceedbtn mx-2" type="button"
+              (click)="approveByDirector(leave_data)">
+              <mat-icon class="me-1">check_circle</mat-icon>Approve
             </button>
 
             <!-- Director Reject -->
             <button *ngIf="isDirectorApprovalVisible" mat-button class="delete-item-button " type="button"
               (click)="rejectByDirector(leave_data)">
-              <mat-icon class="me-1">cancel</mat-icon>Reject 
+              <mat-icon class="me-1">cancel</mat-icon>Reject
             </button>
 
           </div>

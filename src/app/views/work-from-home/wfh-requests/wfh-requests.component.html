@@ -219,7 +219,7 @@
     <mat-tab-group animationDuration="200ms" class="wfh-tab-group" (selectedIndexChange)="activeTab = (userRole === 'Admin' || $event === 1) ? 'team' : 'mine'; getleaverequest()">
 
       <!-- ── MY REQUESTS TAB ── -->
-      <mat-tab *ngIf="userRole !== 'Admin'">
+      <mat-tab *ngIf="userRole !== 'Admin' && userRole !== 'Director'">
         <ng-template mat-tab-label>
           <span class="tab-label">
             My WFH Requests

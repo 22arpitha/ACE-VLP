@@ -208,93 +208,123 @@ export class ViewWfhRequestComponent implements OnInit {
     window.open(url, '_blank');
   }
 
-
-
-
-leaveStatuses:any;
-    getLeaveStatus() {
-    this.apiService.getData(`${environment.live_url}/${environment.leave_status}/`).subscribe(
-      (res: any) => {
-    
-        this.leaveStatuses=res.data;
-        console.log(res);
-        
-      },
-      (error:any) => {
-        console.log(error)
-      }
-    )
+  leaveStatuses: any;
+  getLeaveStatus() {
+    this.apiService
+      .getData(`${environment.live_url}/${environment.leave_status}/`)
+      .subscribe(
+        (res: any) => {
+          this.leaveStatuses = res.data;
+          console.log(res);
+        },
+        (error: any) => {
+          console.log(error);
+        },
+      );
   }
+  // approveByDirector(data: any) {
+  //   this.reasonControl.clearValidators();
+  //   this.reasonControl.updateValueAndValidity();
+  //   console.log('data=>', data);
+  //   const approvedStatus =
+  //     this.leaveStatuses?.find((status: any) => status.key === 'approved')
+  //       ?.value || 'Approved';
+  //   let data_to_send = {
+  //     wfh_id: data?.id,
+  //     is_confirmed: true,
+  //     status: approvedStatus,
+  //     approved_by: Number(sessionStorage.getItem('user_id')),
+  //     rejected_by: null,
+  //   };
+  //   this.apiService
+  //     .postData(
+  //       `${environment.live_url}/${environment.confirm_prolonged_leave}/`,
+  //       data_to_send,
+  //     )
+  //     .subscribe(
+  //       (res: any) => {
+  //         this.apiService.showSuccess(res?.message);
+  //         this.dialogRef.close(res);
+  //       },
+  //       (error: any) => {
+  //         console.log('error', error);
+  //       },
+  //     );
+  // }
+
   approveByDirector(data: any) {
-    this.reasonControl.clearValidators();
-    this.reasonControl.updateValueAndValidity();
-    console.log('data=>', data);
-    const approvedStatus = this.leaveStatuses?.find((status: any) => status.key === 'approved')?.value || 'Approved';
-    let data_to_send = {
+    const isDirectFlow =
+      String(this.leave_data?.reporting_to) === String(this.user_id) &&
+      this.leave_data?.status === 'Pending';
+
+    const approvedStatus =
+      this.leaveStatuses?.find((status: any) => status.key === 'approved')
+        ?.value || 'Approved';
+
+    const payload = {
       wfh_id: data?.id,
       is_confirmed: true,
       status: approvedStatus,
       approved_by: Number(sessionStorage.getItem('user_id')),
       rejected_by: null,
-    };
-    this.apiService
-      .postData(
-        `${environment.live_url}/${environment.confirm_prolonged_leave}/`,
-        data_to_send,
-      )
-      .subscribe(
-        (res: any) => {
-          this.apiService.showSuccess(res?.message);
-          this.dialogRef.close(res);
-        },
-        (error: any) => {
-          console.log('error', error);
-        },
-      );
-  }
-
-  rejectByDirector(data: any) {
-    console.log(data);
-
-    this.isRejectClicked = true;
-    this.reasonControl.setValidators([Validators.required]);
-    this.reasonControl.updateValueAndValidity();
-
-    if (this.reasonControl.invalid) {
-      this.reasonControl.markAsTouched();
-      return;
-    }
-
-    const rejectedStatus = this.leaveStatuses?.find((status: any) => status.key === 'rejected')?.value || 'Rejected';
-    const data_to_send = {
-      wfh_id: data?.id,
-      is_confirmed: false,
-      status: rejectedStatus,
-      approved_by: null,
-      rejected_by: Number(sessionStorage.getItem('user_id')),
-      rejected_reason: this.reasonControl?.value,
+      // ✅ mark directly approved if direct flow
+      ...(isDirectFlow ? { final_approval: true } : {}),
     };
 
     this.apiService
       .postData(
         `${environment.live_url}/${environment.confirm_prolonged_leave}/`,
-        data_to_send,
+        payload,
       )
       .subscribe((res: any) => {
         this.apiService.showSuccess(res?.message);
         this.dialogRef.close(res);
       });
   }
+  // rejectByDirector(data: any) {
+  //   console.log(data);
 
-  get isDirectorApprovalVisible(): boolean {
-    return (
-      this.userRole === 'Director' &&
-      this.canUpdateWfh &&
-      this.leave_data?.status === 'Approved' &&
-      this.leave_data?.wfh_type_name === 'prolonged_health_issue' &&
-      this.leave_data?.is_confirmed_by_director === false
-    );
-  }
+  //   this.isRejectClicked = true;
+  //   this.reasonControl.setValidators([Validators.required]);
+  //   this.reasonControl.updateValueAndValidity();
+
+  //   if (this.reasonControl.invalid) {
+  //     this.reasonControl.markAsTouched();
+  //     return;
+  //   }
+
+  //   const rejectedStatus =
+  //     this.leaveStatuses?.find((status: any) => status.key === 'rejected')
+  //       ?.value || 'Rejected';
+  //   const data_to_send = {
+  //     wfh_id: data?.id,
+  //     is_confirmed: false,
+  //     status: rejectedStatus,
+  //     approved_by: null,
+  //     rejected_by: Number(sessionStorage.getItem('user_id')),
+  //     rejected_reason: this.reasonControl?.value,
+  //   };
+
+  //   this.apiService
+  //     .postData(
+  //       `${environment.live_url}/${environment.confirm_prolonged_leave}/`,
+  //       data_to_send,
+  //     )
+  //     .subscribe((res: any) => {
+  //       this.apiService.showSuccess(res?.message);
+  //       this.dialogRef.close(res);
+  //     });
+  // }
+
+  // get isDirectorApprovalVisible(): boolean {
+  //   return (
+  //     this.userRole === 'Director' &&
+  //     this.canUpdateWfh &&
+  //     this.leave_data?.status === 'Approved' &&
+  //     this.leave_data?.wfh_type_name === 'prolonged_health_issue' &&
+  //     this.leave_data?.is_confirmed_by_director === false
+  //   );
+  // }
 
   // get isDirectorRejectedMessageVisible(): boolean {
   //   return (
@@ -308,6 +338,49 @@ leaveStatuses:any;
 
   // ===================== FRONTEND ENHANCEMENTS =====================
 
+  rejectByDirector(data: any) {
+  console.log(data);
+
+  this.isRejectClicked = true;
+  this.reasonControl.setValidators([Validators.required]);
+  this.reasonControl.updateValueAndValidity();
+
+  if (this.reasonControl.invalid) {
+    this.reasonControl.markAsTouched();
+    return;
+  }
+
+  // ✅ SAME direct flow check as approve
+  const isDirectFlow =
+    String(this.leave_data?.reporting_to) === String(this.user_id) &&
+    this.leave_data?.status === 'Pending';
+
+  const rejectedStatus =
+    this.leaveStatuses?.find((status: any) => status.key === 'rejected')
+      ?.value || 'Rejected';
+
+  const payload = {
+    wfh_id: data?.id,
+    is_confirmed: false,
+    status: rejectedStatus,
+    approved_by: null,
+    rejected_by: Number(sessionStorage.getItem('user_id')),
+    rejected_reason: this.reasonControl?.value,
+
+    // ✅ IMPORTANT: mark final rejection if direct flow
+    ...(isDirectFlow ? { final_approval: true } : {}),
+  };
+
+  this.apiService
+    .postData(
+      `${environment.live_url}/${environment.confirm_prolonged_leave}/`,
+      payload
+    )
+    .subscribe((res: any) => {
+      this.apiService.showSuccess(res?.message);
+      this.dialogRef.close(res);
+    });
+}
   /**
    * Get day of week name from date
    */
@@ -414,25 +487,57 @@ leaveStatuses:any;
   /**
    * Get approval stage message for Prolonged Health Issues
    */
-  getApprovalStageMessage(): string {
-    if (this.isProlongedHealthIssue()) {
-      if (
-        this.leave_data?.status === 'Pending' ||
-        this.leave_data?.status === 'PENDING'
-      ) {
-        return 'Awaiting Manager Approval (Stage 1 of 2)';
-      }
-      if (
-        this.leave_data?.status === 'Approved' ||
-        this.leave_data?.status === 'approved'
-      ) {
-        if (this.leave_data?.is_confirmed_by_director === false) {
-          return 'Awaiting Director Approval (Stage 2 of 2)';
-        }
-      }
-    }
-    return '';
-  }
+  // getApprovalStageMessage(): string {
+  //   if (this.isProlongedHealthIssue()) {
+  //     if (
+  //       this.leave_data?.status === 'Pending' ||
+  //       this.leave_data?.status === 'PENDING'
+  //     ) {
+  //       return 'Awaiting Manager Approval (Stage 1 of 2)';
+  //     }
+  //     if (
+  //       this.leave_data?.status === 'Approved' ||
+  //       this.leave_data?.status === 'approved'
+  //     ) {
+  //       if (this.leave_data?.is_confirmed_by_director === false) {
+  //         return 'Awaiting Director Approval (Stage 2 of 2)';
+  //       }
+  //     }
+  //   }
+  //   return '';
+  // }
+
+  //   getApprovalStageMessage(): string {
+  //   if (this.isProlongedHealthIssue()) {
+
+  //     const status = this.leave_data?.status?.toLowerCase();
+
+  //     // ✅ Detect direct reporting to Director
+  //     const isDirectDirectorFlow =
+  //       this.userRole === 'Director' &&
+  //       String(this.leave_data?.reporting_to) === String(this.user_id);
+
+  //     // 🔥 CASE 1: Direct flow (Manager → Director)
+  //     if (isDirectDirectorFlow) {
+  //       if (status === 'pending') {
+  //         return 'Awaiting Director Approval (Single Stage)';
+  //       }
+  //     }
+
+  //     // 🔥 CASE 2: Normal 2-stage flow (existing)
+  //     if (status === 'pending') {
+  //       return 'Awaiting Manager Approval (Stage 1 of 2)';
+  //     }
+
+  //     if (status === 'approved') {
+  //       if (this.leave_data?.is_confirmed_by_director === false) {
+  //         return 'Awaiting Director Approval (Stage 2 of 2)';
+  //       }
+  //     }
+  //   }
+
+  //   return '';
+  // }
 
   /**
    * Extract filename from URL
@@ -442,5 +547,133 @@ leaveStatuses:any;
     const parts = url.split('/');
     const filename = parts[parts.length - 1];
     return filename || 'Download';
+  }
+
+  // isLimitedFlexibilityApprovalAllowed(): boolean {
+  //   const isAdminOrDirector =
+  //     this.userRole === 'Admin' || this.userRole === 'Director';
+
+  //   const hasPermission = this.canUpdateWfh;
+
+  //   const isLimitedFlex =
+  //     this.leave_data?.wfh_type_name?.toLowerCase() === 'limited_flexibility' ||
+  //     this.leave_data?.wfh_type_name?.toLowerCase() === 'limited flexibility';
+
+  //   const isPending =
+  //     this.leave_data?.status === 'Pending' ||
+  //     this.leave_data?.status === 'PENDING';
+
+  //   // 🔥 NEW CONDITION (IMPORTANT)
+  //   const isReportingManager =
+  //     String(this.leave_data?.reporting_to) === String(this.user_id);
+
+  //   return (
+  //     isAdminOrDirector &&
+  //     hasPermission &&
+  //     isLimitedFlex &&
+  //     isPending &&
+  //     isReportingManager
+  //   );
+  // }
+
+  isLimitedFlexibilityApprovalAllowed(): boolean {
+    const role = this.userRole?.toLowerCase();
+
+    const isAdminOrDirector = role === 'admin' || role === 'director';
+
+    const hasPermission = this.canUpdateWfh;
+
+    const type = this.leave_data?.wfh_type_name?.toLowerCase();
+
+    const isLimitedFlex =
+      type === 'limited_flexibility' || type === 'limited flexibility';
+
+    const status = this.leave_data?.status?.toLowerCase();
+
+    const isPending = status === 'pending';
+
+    const isReportingManager =
+      String(this.leave_data?.reporting_to) === String(this.user_id);
+
+    return (
+      isAdminOrDirector &&
+      hasPermission &&
+      isLimitedFlex &&
+      isPending &&
+      isReportingManager
+    );
+  }
+
+  isDirectDirectorFlow(): boolean {
+    return (
+      this.userRole === 'Director' &&
+      String(this.leave_data?.reporting_to) === String(this.user_id)
+    );
+  }
+
+  get isDirectorApprovalVisible(): boolean {
+    const isReportingManager =
+      String(this.leave_data?.reporting_to) === String(this.user_id);
+
+    const isProlonged =
+      this.leave_data?.wfh_type_name === 'prolonged_health_issue';
+
+    const isDirectFlow = isReportingManager && this.userRole === 'Director';
+
+    // ✅ CASE 1: Normal 2-stage flow (existing)
+    const normalFlow =
+      this.userRole === 'Director' &&
+      this.canUpdateWfh &&
+      isReportingManager &&
+      this.leave_data?.status === 'Approved' &&
+      isProlonged &&
+      this.leave_data?.is_confirmed_by_director === false;
+
+    // ✅ CASE 2: DIRECT FLOW (skip manager stage)
+    const directFlow =
+      isDirectFlow &&
+      this.canUpdateWfh &&
+      this.leave_data?.status === 'Pending' &&
+      isProlonged;
+
+    return normalFlow || directFlow;
+  }
+
+  isProlongedHealthIssueFlow(): boolean {
+    return (
+      this.leave_data?.wfh_type_name?.toLowerCase() === 'prolonged_health_issue'
+    );
+  }
+
+  getApprovalStageMessage(): string {
+    if (!this.isProlongedHealthIssueFlow()) return '';
+
+    const status = this.leave_data?.status?.toLowerCase();
+
+    const isReportingManager =
+      String(this.leave_data?.reporting_to) === String(this.user_id);
+
+    const role = this.userRole;
+
+    // 🔥 CASE 1: Manager → Director (direct)
+    if (role === 'Director' && isReportingManager) {
+      if (status === 'pending') {
+        return 'Awaiting Director Approval (Single Stage)';
+      }
+    }
+
+    // 🔥 CASE 2: Manager → Admin → Director
+    if (status === 'pending') {
+      return 'Awaiting Reporting Manager Approval (Stage 1 of 2)';
+    }
+
+    if (
+      status === 'approved' &&
+      this.leave_data?.is_confirmed_by_director === false
+    ) {
+      return 'Awaiting Director Approval (Stage 2 of 2)';
+    }
+
+    return '';
   }
 }
