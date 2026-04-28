@@ -339,48 +339,48 @@ export class ViewWfhRequestComponent implements OnInit {
   // ===================== FRONTEND ENHANCEMENTS =====================
 
   rejectByDirector(data: any) {
-  console.log(data);
+    console.log(data);
 
-  this.isRejectClicked = true;
-  this.reasonControl.setValidators([Validators.required]);
-  this.reasonControl.updateValueAndValidity();
+    this.isRejectClicked = true;
+    this.reasonControl.setValidators([Validators.required]);
+    this.reasonControl.updateValueAndValidity();
 
-  if (this.reasonControl.invalid) {
-    this.reasonControl.markAsTouched();
-    return;
+    if (this.reasonControl.invalid) {
+      this.reasonControl.markAsTouched();
+      return;
+    }
+
+    // ✅ SAME direct flow check as approve
+    const isDirectFlow =
+      String(this.leave_data?.reporting_to) === String(this.user_id) &&
+      this.leave_data?.status === 'Pending';
+
+    const rejectedStatus =
+      this.leaveStatuses?.find((status: any) => status.key === 'rejected')
+        ?.value || 'Rejected';
+
+    const payload = {
+      wfh_id: data?.id,
+      is_confirmed: false,
+      status: rejectedStatus,
+      approved_by: null,
+      rejected_by: Number(sessionStorage.getItem('user_id')),
+      rejected_reason: this.reasonControl?.value,
+
+      // ✅ IMPORTANT: mark final rejection if direct flow
+      ...(isDirectFlow ? { final_approval: true } : {}),
+    };
+
+    this.apiService
+      .postData(
+        `${environment.live_url}/${environment.confirm_prolonged_leave}/`,
+        payload,
+      )
+      .subscribe((res: any) => {
+        this.apiService.showSuccess(res?.message);
+        this.dialogRef.close(res);
+      });
   }
-
-  // ✅ SAME direct flow check as approve
-  const isDirectFlow =
-    String(this.leave_data?.reporting_to) === String(this.user_id) &&
-    this.leave_data?.status === 'Pending';
-
-  const rejectedStatus =
-    this.leaveStatuses?.find((status: any) => status.key === 'rejected')
-      ?.value || 'Rejected';
-
-  const payload = {
-    wfh_id: data?.id,
-    is_confirmed: false,
-    status: rejectedStatus,
-    approved_by: null,
-    rejected_by: Number(sessionStorage.getItem('user_id')),
-    rejected_reason: this.reasonControl?.value,
-
-    // ✅ IMPORTANT: mark final rejection if direct flow
-    ...(isDirectFlow ? { final_approval: true } : {}),
-  };
-
-  this.apiService
-    .postData(
-      `${environment.live_url}/${environment.confirm_prolonged_leave}/`,
-      payload
-    )
-    .subscribe((res: any) => {
-      this.apiService.showSuccess(res?.message);
-      this.dialogRef.close(res);
-    });
-}
   /**
    * Get day of week name from date
    */
@@ -611,6 +611,43 @@ export class ViewWfhRequestComponent implements OnInit {
     );
   }
 
+  // get isDirectorApprovalVisible(): boolean {
+  //   const isReportingManager =
+  //     String(this.leave_data?.reporting_to) === String(this.user_id);
+
+  //   const isProlonged =
+  //     this.leave_data?.wfh_type_name === 'prolonged_health_issue';
+
+  //   const isDirectFlow = isReportingManager && this.userRole === 'Director';
+
+  //   // admin as reporting manager flow
+  //     const adminAsReportingManagerFlow =
+  //     this.userRole === 'Admin' &&
+  //     this.canUpdateWfh &&
+  //     isReportingManager &&
+  //     this.leave_data?.status === 'Pending' &&
+  //     isProlonged &&
+  //     this.leave_data?.is_confirmed_by_director === false;
+
+  //   // ✅ CASE 1: Normal 2-stage flow (existing)
+  //   const normalFlow =
+  //     this.userRole === 'Director' &&
+  //     this.canUpdateWfh &&
+  //     isReportingManager &&
+  //     this.leave_data?.status === 'Approved' &&
+  //     isProlonged &&
+  //     this.leave_data?.is_confirmed_by_director === false;
+
+  //   // ✅ CASE 2: DIRECT FLOW (skip manager stage)
+  //   const directFlow =
+  //     isDirectFlow &&
+  //     this.canUpdateWfh &&
+  //     this.leave_data?.status === 'Pending' &&
+  //     isProlonged;
+
+  //   return normalFlow || directFlow ||adminAsReportingManagerFlow;
+  // }
+
   get isDirectorApprovalVisible(): boolean {
     const isReportingManager =
       String(this.leave_data?.reporting_to) === String(this.user_id);
@@ -618,25 +655,33 @@ export class ViewWfhRequestComponent implements OnInit {
     const isProlonged =
       this.leave_data?.wfh_type_name === 'prolonged_health_issue';
 
-    const isDirectFlow = isReportingManager && this.userRole === 'Director';
-
-    // ✅ CASE 1: Normal 2-stage flow (existing)
-    const normalFlow =
-      this.userRole === 'Director' &&
+    // ✅ ADMIN acting as reporting manager (NEW FIX)
+    const adminFlow =
+      this.userRole === 'Admin' &&
       this.canUpdateWfh &&
       isReportingManager &&
+      this.leave_data?.status === 'Pending' &&
+      isProlonged &&
+      this.leave_data?.is_confirmed_by_director === false;
+
+    // ✅ NORMAL FLOW (Manager → Director)
+    const normalDirectorFlow =
+      this.userRole === 'Director' &&
+      this.canUpdateWfh &&
+      // isReportingManager &&
       this.leave_data?.status === 'Approved' &&
       isProlonged &&
       this.leave_data?.is_confirmed_by_director === false;
 
-    // ✅ CASE 2: DIRECT FLOW (skip manager stage)
-    const directFlow =
-      isDirectFlow &&
+    // ✅ DIRECT FLOW (Director is reporting manager)
+    const directDirectorFlow =
+      this.userRole === 'Director' &&
       this.canUpdateWfh &&
+      isReportingManager &&
       this.leave_data?.status === 'Pending' &&
       isProlonged;
 
-    return normalFlow || directFlow;
+    return adminFlow || normalDirectorFlow || directDirectorFlow;
   }
 
   isProlongedHealthIssueFlow(): boolean {
@@ -675,5 +720,23 @@ export class ViewWfhRequestComponent implements OnInit {
     }
 
     return '';
+  }
+
+  get canAdminApproveProlonged(): boolean {
+    const role = this.userRole?.toLowerCase();
+
+    const isReportingManager =
+      String(this.leave_data?.reporting_to) === String(this.user_id);
+
+    const status = this.leave_data?.status?.toLowerCase();
+
+    const type = this.leave_data?.wfh_type_name?.toLowerCase();
+
+    return (
+      role === 'admin' && // ✅ allow admin directly
+      isReportingManager &&
+      status === 'pending' &&
+      (type === 'prolonged_health_issue' || type === 'prolonged health issues')
+    );
   }
 }

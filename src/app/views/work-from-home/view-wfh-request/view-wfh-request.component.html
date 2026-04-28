@@ -110,7 +110,7 @@
           <div class="col-12" *ngIf="
   (displayButton && userRole === 'Manager' && canApproveOrReject) ||
   (userRole === 'Director' && isDirectorApprovalVisible) ||
-  isLimitedFlexibilityApprovalAllowed()
+  isLimitedFlexibilityApprovalAllowed() || (userRole==='Admin' && isDirectorApprovalVisible)
 ">
             <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
               <mat-label>Reason for Rejecting<b class="r-star">*</b></mat-label>
@@ -134,18 +134,18 @@
           <div *ngIf="
   (displayButton && userRole === 'Manager' && canApproveOrReject) ||
   (userRole === 'Director' && isDirectorApprovalVisible) ||
-  isLimitedFlexibilityApprovalAllowed()
+  isLimitedFlexibilityApprovalAllowed() || canAdminApproveProlonged
 ">
             <div class="col-12 my-4 px-2 d-flex justify-content-end" *ngIf="displayButton">
               <div>
                 <!-- <button mat-button class="cancel-button mat-btn-s me-2" type="button" mat-dialog-close>
                   Close
                 </button> -->
-                <button *ngIf="canApproveOrReject || isLimitedFlexibilityApprovalAllowed()" mat-raised-button
+                <button *ngIf="canApproveOrReject || isLimitedFlexibilityApprovalAllowed() || canAdminApproveProlonged" mat-raised-button
                   class="proceedbtn mat-btn-s me-2" type="button" (click)="approve(leave_data)">
                   Approve
                 </button>
-                <button *ngIf="canApproveOrReject || isLimitedFlexibilityApprovalAllowed()" mat-button
+                <button *ngIf="canApproveOrReject || isLimitedFlexibilityApprovalAllowed() || canAdminApproveProlonged" mat-button
                   class="delete-item-button mat-btn-s" type="button" (click)="onRejectClick(leave_data)">
                   Reject
                 </button>
