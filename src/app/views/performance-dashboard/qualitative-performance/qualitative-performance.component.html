@@ -27,7 +27,17 @@
         <div class="chart-section">
           <!-- <h6 class="text-center mb-3">Skill-wise Score</h6> -->
           <div class="chart-container">
-            <ngx-charts-bar-vertical
+            <ngx-charts-bar-vertical-2d
+  [results]="barChartData"
+  [scheme]="barChartColorScheme"
+  [xAxis]="true"
+  [yAxis]="true"
+  [legend]="true"
+  [showXAxisLabel]="true"
+  [showYAxisLabel]="true"
+  [yAxisLabel]="'Score'">
+</ngx-charts-bar-vertical-2d>
+            <!-- <ngx-charts-bar-vertical-2d
               [results]="barChartData"
               [scheme]="barChartColorScheme"
               [xAxis]="true"
@@ -38,7 +48,7 @@
               [yAxisLabel]="'Score'"
               [gradient]="true"
               [roundDomains]="true">
-            </ngx-charts-bar-vertical>
+            </ngx-charts-bar-vertical-2d> -->
             <!-- [xAxisLabel]="'Skill'" -->
           </div>
         </div>

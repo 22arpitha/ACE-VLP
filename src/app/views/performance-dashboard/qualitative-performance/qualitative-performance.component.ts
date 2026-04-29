@@ -16,7 +16,10 @@ export class QualitativePerformanceComponent implements OnInit, OnChanges {
 
   // Bar Chart
   barChartData: any[] = [];
-  barChartColorScheme: any = { domain: ['#7aa3e5', '#a8385d', '#5AA454', '#C7B42C', '#E44D25'] };
+  // barChartColorScheme: any = { domain: ['#7aa3e5', '#a8385d', '#5AA454', '#C7B42C', '#E44D25'] };
+  barChartColorScheme:any = {
+  domain: ['#5AA454', '#E44D25'] // Qualitative = green, Deficiency = red
+};
   user_id: any;
   userRole: any;
   constructor(private apiService: ApiserviceService) {
@@ -78,7 +81,13 @@ export class QualitativePerformanceComponent implements OnInit, OnChanges {
     }
     this.apiService.getData(`${environment.live_url}/${environment.performance_dashboard}/${query}`).subscribe((res: any) => {
       if (res) {
-        this.pieChartData = res?.qualitative?.pieChartData || [];
+        // this.pieChartData = res?.qualitative?.pieChartData || [];
+        this.pieChartData = (res?.qualitative?.pieChartData || [])
+        .filter((item:any) => item && item.name)
+        .map((item:any) => ({
+          name: item.name,
+          value: Number(item.value ?? 0)
+        }));
         this.barChartData = res?.qualitative?.barGraphData || [];
       }
     }, (error) => {

@@ -59,7 +59,13 @@ export class QuantitativePerformanceComponent implements OnInit, OnChanges {
     }
     this.apiService.getData(`${environment.live_url}/${environment.performance_dashboard}/${query}`).subscribe((res: any) => {
       if (res) {
-        this.pieChartData = res?.quantitative?.pieChartData || [];
+        // this.pieChartData = res?.quantitative?.pieChartData || [];
+        this.pieChartData = (res?.qualitative?.pieChartData || [])
+        .filter((item:any) => item && item.name)
+        .map((item:any) => ({
+          name: item.name,
+          value: Number(item.value ?? 0)
+        }));
         this.barChartData = res?.quantitative?.barGraphData || [];
       }
       // Process the response to fit the chart data structure
