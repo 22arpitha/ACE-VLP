@@ -17,13 +17,19 @@ export class QualitativePerformanceComponent implements OnInit, OnChanges {
   // Bar Chart
   barChartData: any[] = [];
   // barChartColorScheme: any = { domain: ['#7aa3e5', '#a8385d', '#5AA454', '#C7B42C', '#E44D25'] };
-  barChartColorScheme:any = {
-  domain: ['#5AA454', '#E44D25'] // Qualitative = green, Deficiency = red
-};
+  barChartColorScheme: any = {
+    domain: ['#5AA454', '#E44D25'] // Qualitative = green, Deficiency = red
+  };
+  noDataPieChart: boolean = false;
+  noDataBarChart: boolean = false;
+
+  greyColorScheme = {
+    domain: ['#d3d3d3']
+  };
   user_id: any;
   userRole: any;
   constructor(private apiService: ApiserviceService) {
- this.user_id = sessionStorage.getItem('user_id');
+    this.user_id = sessionStorage.getItem('user_id');
     this.userRole = sessionStorage.getItem('user_role_name');
   }
 
@@ -77,18 +83,69 @@ export class QualitativePerformanceComponent implements OnInit, OnChanges {
       query += this.dropdwonFilterData.employee_id ? `&employee-id=${this.dropdwonFilterData.employee_id}` : this.userRole === 'Admin' ? '' : `&employee-id=${this.user_id}`;
       query += this.dropdwonFilterData.periodicity ? `&periodicity=${this.dropdwonFilterData.periodicity}` : '';
       query += this.dropdwonFilterData.period ? `&period=${encodeURIComponent(JSON.stringify(this.dropdwonFilterData.period))}` : '';
-      query += !this.dropdwonFilterData.employee_id && this.userRole==='Manager'? `&show_team=true` :'';
+      query += !this.dropdwonFilterData.employee_id && this.userRole === 'Manager' ? `&show_team=true` : '';
     }
     this.apiService.getData(`${environment.live_url}/${environment.performance_dashboard}/${query}`).subscribe((res: any) => {
       if (res) {
+        //     this.pieChartData = (res?.qualitative?.pieChartData || []).map((item:any) => ({
+        //     name: item.name,
+        //     value: Number(item.value ?? 0)
+        //   }));
+
+        //  this.barChartData = (res?.qualitative?.barGraphData || []).map((item: any) => ({
+        //     name: item.name,
+        //     series: (item.series || []).map((s: any) => ({
+        //       name: s.name,
+        //       value: Number(s.value) || 0
+        //     }))
+        //   }));
         // this.pieChartData = res?.qualitative?.pieChartData || [];
-        this.pieChartData = (res?.qualitative?.pieChartData || [])
-        .filter((item:any) => item && item.name)
-        .map((item:any) => ({
+        // this.barChartData = res?.qualitative?.barGraphData || [];
+
+        const pieData = (res?.qualitative?.pieChartData || []).map((item: any) => ({
           name: item.name,
-          value: Number(item.value ?? 0)
+          value: Number(item.value) || 0
         }));
-        this.barChartData = res?.qualitative?.barGraphData || [];
+
+        this.noDataPieChart = pieData.every((item: any) => item.value === 0);
+
+        // assign data
+        this.pieChartData = this.noDataPieChart
+          ? [
+            { name: 'Qualitative', value: 1 },
+            { name: 'Deficiency', value: 1 }
+          ]
+          : pieData;
+
+        this.pieChartColorScheme = this.noDataPieChart
+          ? this.greyColorScheme
+          : { domain: ['#5AA454', '#E44D25'] };
+
+        const barData = (res?.qualitative?.barGraphData || []).map((item: any) => ({
+          name: item.name,
+          series: (item.series || []).map((s: any) => ({
+            name: s.name,
+            value: Number(s.value) || 0
+          }))
+        }));
+
+        this.noDataBarChart = barData.every((item: any) =>
+          item.series.every((s: any) => s.value === 0)
+        );
+
+        // assign data
+        this.barChartData = this.noDataBarChart
+          ? barData.map((item: any) => ({
+            name: item.name,
+            series: item.series.map((s: any) => ({
+              name: s.name,
+              value: 1
+            }))
+          }))
+          : barData;
+        this.barChartColorScheme = this.noDataBarChart
+          ? this.greyColorScheme
+          : { domain: ['#5AA454', '#E44D25'] };
       }
     }, (error) => {
       console.error('Error fetching qualitative performance data:', error);

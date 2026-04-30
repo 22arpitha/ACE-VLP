@@ -12,3 +12,14 @@
 :host {
   display: block;
 }
+.disabled-chart {
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+.no-data-text {
+  text-align: center;
+  margin-top: 10px;
+  font-weight: 600;
+  color: #666;
+}

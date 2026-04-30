@@ -8,7 +8,7 @@
       <div class="col-md-6" *ngIf="pieChartData.length>0">
         <div class="chart-section">
           <!-- <h6 class="text-center mb-3">Performance Rating Distribution</h6> -->
-          <div class="chart-container">
+          <div class="chart-container"  [class.disabled-chart]="noDataPieChart">
             <ngx-charts-pie-chart
               [results]="pieChartData"
               [scheme]="pieChartColorScheme"
@@ -16,9 +16,11 @@
               [legendTitle]="'Ratings'"
               [labels]="true"
               [doughnut]="true"
+              [tooltipDisabled]="noDataPieChart"
               [gradient]="true">
             </ngx-charts-pie-chart>
           </div>
+          <div *ngIf="noDataPieChart" class="no-data-text">No data available</div>
         </div>
       </div>
 
@@ -26,18 +28,8 @@
       <div class="col-md-6" *ngIf="barChartData.length>0">
         <div class="chart-section">
           <!-- <h6 class="text-center mb-3">Skill-wise Score</h6> -->
-          <div class="chart-container">
+          <div class="chart-container" [class.disabled-chart]="noDataBarChart">
             <ngx-charts-bar-vertical-2d
-  [results]="barChartData"
-  [scheme]="barChartColorScheme"
-  [xAxis]="true"
-  [yAxis]="true"
-  [legend]="true"
-  [showXAxisLabel]="true"
-  [showYAxisLabel]="true"
-  [yAxisLabel]="'Score'">
-</ngx-charts-bar-vertical-2d>
-            <!-- <ngx-charts-bar-vertical-2d
               [results]="barChartData"
               [scheme]="barChartColorScheme"
               [xAxis]="true"
@@ -47,10 +39,12 @@
               [showYAxisLabel]="true"
               [yAxisLabel]="'Score'"
               [gradient]="true"
+              [tooltipDisabled]="noDataBarChart"
               [roundDomains]="true">
-            </ngx-charts-bar-vertical-2d> -->
+            </ngx-charts-bar-vertical-2d>
             <!-- [xAxisLabel]="'Skill'" -->
           </div>
+          <div *ngIf="noDataBarChart" class="no-data-text">No data available</div>
         </div>
       </div>
     </div>

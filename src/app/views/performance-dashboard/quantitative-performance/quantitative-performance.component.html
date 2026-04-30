@@ -8,7 +8,7 @@
       <div class="col-md-6" *ngIf="pieChartData.length>0">
         <div class="chart-section">
           <!-- <h6 class="text-center mb-3">Task Distribution</h6> -->
-          <div class="chart-container">
+          <div class="chart-container" [class.disabled-chart]="noDataPieChart">
             <ngx-charts-pie-chart
               [results]="pieChartData"
               [scheme]="pieChartColorScheme"
@@ -16,9 +16,13 @@
               [legendTitle]="'Tasks'"
               [labels]="true"
               [doughnut]="false"
-              [gradient]="true">
+              [gradient]="true"
+              [tooltipDisabled]="noDataPieChart">
             </ngx-charts-pie-chart>
           </div>
+        </div>
+        <div *ngIf="noDataPieChart" class="overlay-text">
+          No Data Available
         </div>
       </div>
 
@@ -26,7 +30,7 @@
       <div class="col-md-6" *ngIf="barChartData.length>0">
         <div class="chart-section">
           <!-- <h6 class="text-center mb-3">Monthly Performance Score</h6> -->
-          <div class="chart-container">
+          <div class="chart-container" [class.disabled-chart]="noDataBarChart">
             <ngx-charts-bar-vertical
               [results]="barChartData"
               [scheme]="barChartColorScheme"
@@ -37,10 +41,15 @@
               [showYAxisLabel]="true"
               [yAxisLabel]="'Score'"
               [gradient]="true"
-              [roundDomains]="true">
+              [roundDomains]="true"
+              [noBarWhenZero]="true"
+              [tooltipDisabled]="noDataBarChart">
             </ngx-charts-bar-vertical>
             <!-- [xAxisLabel]="'Month'" -->
           </div>
+        </div>
+        <div *ngIf="noDataBarChart" class="overlay-text">
+          No Data Available
         </div>
       </div>
     </div>

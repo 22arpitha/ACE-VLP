@@ -6,7 +6,7 @@ import { environment } from '../../../../environments/environment';
   selector: 'app-quantitative-performance',
   templateUrl: './quantitative-performance.component.html',
   styleUrls: ['./quantitative-performance.component.scss'],
-  standalone:false
+  standalone: false
 })
 export class QuantitativePerformanceComponent implements OnInit, OnChanges {
   @Input() dropdwonFilterData: any;
@@ -14,13 +14,31 @@ export class QuantitativePerformanceComponent implements OnInit, OnChanges {
   // Pie Chart
   pieChartData: any[] = [];
   pieChartColorScheme: any = { domain: ['#5AA454', '#E44D25', '#CFC0BB', '#7aa3e5', '#a8385d'] };
-
+  greyColorScheme = {
+    domain: ['#d3d3d3', '#c0c0c0', '#b0b0b0', '#a0a0a0']
+  };
   // Bar Chart
   barChartData: any[] = [];
   barChartColorScheme: any = { domain: ['#5AA454', '#C7B42C', '#E44D25', '#7aa3e5', '#a8385d'] };
   user_id: any;
   userRole: any;
-
+  noDataPieChart: boolean = false;
+  noDataBarChart: boolean = false;
+  dummyPieChartData = {
+    "quantitative": {
+      "pieChartData": [
+        { "name": "Productivity Hours", "value": "50" },
+        { "name": "Inefficient Hours", "value": "80" },
+        { "name": "Non-Billable", "value": "60" },
+        { "name": "Non Productive", "value": "20" }],
+      "barGraphData": [
+        { "name": "Productivity Hours", "value": "50" },
+        { "name": "Inefficient Hours", "value": "80" },
+        { "name": "Non-Billable", "value": "60" },
+        { "name": "Non Productive", "value": "20" }
+      ]
+    }
+  }
   constructor(private apiService: ApiserviceService) {
     this.user_id = sessionStorage.getItem('user_id');
     this.userRole = sessionStorage.getItem('user_role_name');
@@ -53,21 +71,54 @@ export class QuantitativePerformanceComponent implements OnInit, OnChanges {
       query += this.dropdwonFilterData.employee_id ? `&employee-id=${this.dropdwonFilterData.employee_id}` : this.userRole === 'Admin' ? '' : `&employee-id=${this.user_id}`;
       query += this.dropdwonFilterData.periodicity ? `&periodicity=${this.dropdwonFilterData.periodicity}` : '';
       query += this.dropdwonFilterData.period ? `&period=${encodeURIComponent(JSON.stringify(this.dropdwonFilterData.period))}` : '';
-      query += !this.dropdwonFilterData.employee_id && this.userRole==='Manager'? `&show_team=true` :'';
+      query += !this.dropdwonFilterData.employee_id && this.userRole === 'Manager' ? `&show_team=true` : '';
       // query+= this.dropdwonFilterData.employee_id && this.dropdwonFilterData.periodicity && this.dropdwonFilterData.period ? '&is_dropdown_selected=True' :'&is_dropdown_selected=False';
       // finalQuery+= this.dropdwonFilterData.employee_id || this.dropdwonFilterData.periodicity || this.dropdwonFilterData.period ? '&is_dropdown_selected=True' :'';
     }
     this.apiService.getData(`${environment.live_url}/${environment.performance_dashboard}/${query}`).subscribe((res: any) => {
       if (res) {
+        // this.pieChartData = (res?.quantitative?.pieChartData || []).map((item: any) => ({
+        //   name: item.name,
+        //   value: Number(item.value)
+        // }));
+
+        // this.barChartData = (res?.quantitative?.barGraphData || []).map((item: any) => ({
+        //   name: item.name,
+        //   value: Number(item.value ?? 0)
+        // }));
         // this.pieChartData = res?.quantitative?.pieChartData || [];
-        this.pieChartData = (res?.qualitative?.pieChartData || [])
-        .filter((item:any) => item && item.name)
-        .map((item:any) => ({
+        // this.barChartData = res?.quantitative?.barGraphData || [];
+
+        const pieData = (res?.quantitative?.pieChartData || []).map((item: any) => ({
           name: item.name,
-          value: Number(item.value ?? 0)
+          value: Number(item.value) || 0
         }));
-        this.barChartData = res?.quantitative?.barGraphData || [];
+        this.noDataPieChart = pieData.every((item: any) => item.value === 0 || item.value === 0.00);
+        this.pieChartData = this.noDataPieChart
+          ? this.dummyPieChartData.quantitative.pieChartData.map(item => ({
+            name: item.name,
+            value: Number(item.value)
+          }))
+          : pieData;
+
+        const barData = (res?.quantitative?.barGraphData || []).map((item: any) => ({
+          name: item.name,
+          value: Number(item.value) || 0
+        }));
+        this.noDataBarChart = barData.every((item: any) => item.value === 0 || item.value === 0.00);
+        this.barChartData = this.noDataBarChart
+          ? this.dummyPieChartData.quantitative.barGraphData.map(item => ({
+            name: item.name,
+            value: Number(item.value)
+          }))
+          : barData;
       }
+      this.pieChartColorScheme = this.noDataPieChart
+        ? this.greyColorScheme
+        : { domain: ['#5AA454', '#E44D25', '#CFC0BB', '#7aa3e5', '#a8385d'] };
+      this.barChartColorScheme = this.noDataBarChart
+        ? this.greyColorScheme
+        : { domain: ['#5AA454', '#E44D25', '#CFC0BB', '#7aa3e5', '#a8385d'] };
       // Process the response to fit the chart data structure
     }, (error) => {
       console.error('Error fetching quantitative performance data:', error);
