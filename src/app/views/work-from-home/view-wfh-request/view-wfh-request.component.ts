@@ -695,7 +695,7 @@ export class ViewWfhRequestComponent implements OnInit {
 
     const status = this.leave_data?.status?.toLowerCase();
 
-    const isReportingManager =
+    const isReportingManager =  
       String(this.leave_data?.reporting_to) === String(this.user_id);
 
     const role = this.userRole;

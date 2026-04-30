@@ -216,7 +216,7 @@
   <section class="settings-table-bg px-3 leave-requests">
 
     <!-- Tabs -->
-    <mat-tab-group animationDuration="200ms" class="wfh-tab-group" (selectedIndexChange)="activeTab = (userRole === 'Admin' || $event === 1) ? 'team' : 'mine'; getleaverequest()">
+    <mat-tab-group animationDuration="200ms" class="wfh-tab-group" [selectedIndex]="selectedTabIndex" (selectedIndexChange)="onTabChange($event)">
 
       <!-- ── MY REQUESTS TAB ── -->
       <mat-tab *ngIf="userRole !== 'Admin' && userRole !== 'Director'">
