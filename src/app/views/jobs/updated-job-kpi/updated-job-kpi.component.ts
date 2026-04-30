@@ -3,13 +3,13 @@ import { FormGroupDirective, FormGroup, FormBuilder, FormArray, AbstractControl,
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { forkJoin, map, Observable, of } from 'rxjs';
-import { CanComponentDeactivate } from 'src/app/auth-guard/can-deactivate.guard';
-import { GenericRedirectionConfirmationComponent } from 'src/app/generic-components/generic-redirection-confirmation/generic-redirection-confirmation.component';
-import { ApiserviceService } from 'src/app/service/apiservice.service';
-import { CommonServiceService } from 'src/app/service/common-service.service';
-import { FormErrorScrollUtilityService } from 'src/app/service/form-error-scroll-utility-service.service';
-import { urlToFile, fileToBase64 } from 'src/app/shared/fileUtils.utils';
-import { environment } from 'src/environments/environment';
+import { CanComponentDeactivate } from '../../../auth-guard/can-deactivate.guard';
+import { GenericRedirectionConfirmationComponent } from '../../../../app/generic-components/generic-redirection-confirmation/generic-redirection-confirmation.component';
+import { ApiserviceService } from '../../../service/apiservice.service';
+import { CommonServiceService } from '../../../service/common-service.service';
+import { FormErrorScrollUtilityService } from '../../../service/form-error-scroll-utility-service.service';
+import { urlToFile, fileToBase64 } from '../../../../app/shared/fileUtils.utils';
+import { environment } from '../../../../../src/environments/environment';
 import { GenericDeleteComponent } from '../../../generic-components/generic-delete/generic-delete.component';
 
 @Component({
@@ -964,13 +964,20 @@ handleBlur(group: any, field: 'mrp' | 'crp') {
     const key = rowIndex + '-' + newIndex;
     this.editingRows[key] = true;
     this.editingRows['budget-' + rowIndex] = true;
-    this.selectedMrpFile[rowIndex] ||= [];
-    this.selectedCrpFile[rowIndex] ||= [];
-    this.mrpFile[rowIndex] ||= [];
-    this.crpFile[rowIndex] ||= [];
-    this.mrpFileLink[rowIndex] ||= [];
-    this.crpFileLink[rowIndex] ||= [];
+    this.mrpFile[rowIndex][newIndex] = null;
+    this.selectedMrpFile[rowIndex][newIndex] = null;
+    this.mrpFileLink[rowIndex][newIndex] = null;
 
+    this.crpFile[rowIndex][newIndex] = null;
+    this.selectedCrpFile[rowIndex][newIndex] = null;
+    this.crpFileLink[rowIndex][newIndex] = null;
+    // this.selectedMrpFile[rowIndex] ||= [];
+    // this.selectedCrpFile[rowIndex] ||= [];
+    // this.mrpFile[rowIndex] ||= [];
+    // this.crpFile[rowIndex] ||= [];
+    // this.mrpFileLink[rowIndex] ||= [];
+    // this.crpFileLink[rowIndex] ||= [];
+    
     mrpCrpList.push(newGroup);
   }
 
@@ -1005,7 +1012,16 @@ handleBlur(group: any, field: 'mrp' | 'crp') {
       })
     } else if (detailsArray.length > 1) {
       detailsArray.removeAt(index);
-      this.removeFileDataForIndex(rowIndex, index);
+      detailsArray.removeAt(index);
+
+      this.mrpFile[rowIndex] = (this.mrpFile[rowIndex] || []).filter((_, i) => i !== index);
+      this.selectedMrpFile[rowIndex] = (this.selectedMrpFile[rowIndex] || []).filter((_, i) => i !== index);
+      this.mrpFileLink[rowIndex] = (this.mrpFileLink[rowIndex] || []).filter((_, i) => i !== index);
+
+      this.crpFile[rowIndex] = (this.crpFile[rowIndex] || []).filter((_, i) => i !== index);
+      this.selectedCrpFile[rowIndex] = (this.selectedCrpFile[rowIndex] || []).filter((_, i) => i !== index);
+      this.crpFileLink[rowIndex] = (this.crpFileLink[rowIndex] || []).filter((_, i) => i !== index);
+      // this.removeFileDataForIndex(rowIndex, index);
     }
   }
 
@@ -1197,8 +1213,8 @@ handleBlur(group: any, field: 'mrp' | 'crp') {
     this.apiService.postData(`${environment.live_url}/${environment.kpi_submission}/`, payLoad).subscribe((respData: any) => {
       if (respData) {
         this.apiService.showSuccess(respData['message']);
-        // this.getJobAndKPIDetails();
-        this.refreshUpdatedLineById(payLoad.employee_id, payLoad['unique-id']);
+        this.getJobAndKPIDetails();
+        // this.refreshUpdatedLineById(payLoad.employee_id, payLoad['unique-id']);
       }
     });
   }
