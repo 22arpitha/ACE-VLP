@@ -50,16 +50,21 @@
                     <thead>
                         <tr>
                         <th>Employee
-                             <button mat-icon-button [matMenuTriggerFor]="employeesFilterMenu" (menuOpened)="openFilter(employeeFilter)"
+                            <button mat-icon-button [matMenuTriggerFor]="employeesFilterMenu" (menuOpened)="openFilter(employeeFilter)"
+                                [ngClass]="filters['employees'].selectedCount>=1 ? 'filterdColumn':''">
+                                <span *ngIf="filters['employees'].selectedCount>=1">{{filters['employees'].selectedCount.toString().padStart(2, '0')}}</span>
+                                <i class="bi-funnel" *ngIf="filters['employees'].selectedCount===0"></i>
+                            </button>
+                             <!-- <button mat-icon-button [matMenuTriggerFor]="employeesFilterMenu" (menuOpened)="openFilter(employeeFilter)"
                                 [ngClass]="filters.employees.length>=1 ? 'filterdColumn':''">
                                 <span *ngIf="filters.employees.length>=1">{{filters.employees.length.toString().padStart(2,
                                     '0')}}</span>
                                 <i class="bi-funnel" *ngIf="filters.employees.length===0"></i>
-                             </button>
+                             </button> -->
 
                                 <mat-menu #employeesFilterMenu="matMenu">
                                 <app-generic-table-filter #employeeFilter [fetchOptions]="fetchEmployees" [(selectedOptions)]="filters.employees"
-                                    (selectedOptionsChange)="onFilterChange($event, 'employee')"></app-generic-table-filter>
+                                    (selectedOptionsChange)="onFilterChange($event, 'employees')"></app-generic-table-filter>
                                 </mat-menu>
                         </th>
                         <th *ngFor="let date of weekDates">{{ date.date | dateFormater}}</th>

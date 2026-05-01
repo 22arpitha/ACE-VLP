@@ -23,6 +23,7 @@ export class JobKpiComponent implements CanComponentDeactivate, OnInit,OnDestroy
   BreadCrumbsTitle: any = 'KPI';
   job_id:any;
   isEditItem:boolean=false;
+  showEditButton:boolean=false;
   allEmployeeList:any=[];
   accessPermissions:any=[];
 @ViewChild(FormGroupDirective) formGroupDirective!: FormGroupDirective;
@@ -47,7 +48,7 @@ initialFormValue:any;
           private common_service: CommonServiceService,private modalService: NgbModal,
           private apiService: ApiserviceService,private router:Router,
           private formErrorScrollService:FormErrorScrollUtilityService) {
-            this.user_role_name = sessionStorage.getItem('user_role_name');
+            this.user_role_name = sessionStorage.getItem('user_role_name')?.toLowerCase();
             if(this.activeRoute.snapshot.paramMap.get('id')){
               this.common_service.setTitle('Update ' + this.BreadCrumbsTitle)
               this.job_id= this.activeRoute.snapshot.paramMap.get('id')
@@ -112,6 +113,11 @@ initialFormValue:any;
               if(access_name.name===sessionStorage.getItem('access-name')){
                 // console.log(access_name)
                 this.accessPermissions = access_name.operations;
+                if(this.user_role_name!=='admin'){
+                  this.showEditButton = this.accessPermissions[0]?.update;
+                } else{
+                  this.showEditButton = true;
+                }
                 // console.log('this.accessPermissions', this.accessPermissions);
               }
             })
@@ -149,7 +155,7 @@ initialFormValue:any;
     return jobDetailsResponse;
   })
 ).subscribe(combinedResult => {
-  // console.log('combinedResult',combinedResult);
+  console.log('combinedResult',combinedResult);
   const [hours, minutes] = combinedResult['budget_time']?.split(":");
   const formattedbudget_time = `${hours}:${minutes}`;
   if (combinedResult['employees'] && Array.isArray(combinedResult['employees']) && combinedResult['employees']?.length >= 1) {
@@ -252,6 +258,7 @@ if(emp?.kpi){
   }
 
       public editJobKPIDetails(){
+      this.showEditButton = false;
       this.isEditItem = !this.isEditItem;
       const employeesDetailsArray = this.jobKPIFormGroup.get('data') as FormArray;
       employeesDetailsArray.controls?.forEach((controls)=>{

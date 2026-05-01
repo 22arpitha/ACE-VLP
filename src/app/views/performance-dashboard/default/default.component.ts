@@ -114,6 +114,6 @@ export class DefaultComponent implements OnInit {
 
     applySearch() {
         this.commonFilterData = { 'employee_id': this.employee, 'periodicity': this.periodicityId, 'period': this.period,'manager_id': this.manager };
-        console.log(this.commonFilterData,'commonFilterData');
+        //  console.log(this.commonFilterData,'commonFilterData');
     }
 }

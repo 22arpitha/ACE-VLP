@@ -72,14 +72,14 @@
                   class="bi bi-arrow-up"></i>
                 <!-- Filter Trigger -->
                 <button mat-icon-button [matMenuTriggerFor]="jobTypeFilterMenu"
-                  [ngClass]="filters.job_type_name.length>=1 ? 'filterdColumn':''" (menuOpened)="openFilter(jobTypeFilter)">
-                  <span *ngIf="filters.job_type_name.length>=1">{{filters.job_type_name.length.toString().padStart(2,
+                  [ngClass]="filters['job_type_name']['selectedCount']>=1 ? 'filterdColumn':''" (menuOpened)="openFilter(jobTypeFilter)">
+                  <span *ngIf="filters['job_type_name']['selectedCount']>=1">{{filters['job_type_name']['selectedCount'].toString().padStart(2,
                     '0')}}</span>
-                  <i class="bi-funnel" *ngIf="filters.job_type_name.length===0"></i>
+                  <i class="bi-funnel" *ngIf="filters['job_type_name']['selectedCount']===0"></i>
                 </button>
 
                 <mat-menu #jobTypeFilterMenu="matMenu">
-                  <app-generic-table-filter #jobTypeFilter [fetchOptions]="fetchJobTypes" [(selectedOptions)]="filters.job_type_name"
+                  <app-generic-table-filter #jobTypeFilter [fetchOptions]="fetchJobTypes" [(selectedOptions)]="filters['job_type_name']"
                     (selectedOptionsChange)="filterData()"></app-generic-table-filter>
                 </mat-menu>
               </th>
@@ -88,15 +88,15 @@
                 <i (click)="sort('descending','client__client_name')" *ngIf="arrowState['client__client_name']" class="bi bi-arrow-up"></i>
                 <!-- Filter Trigger -->
                 <button mat-icon-button [matMenuTriggerFor]="clientFilterMenu" (menuOpened)="openFilter(clientFilter)"
-                  [ngClass]="filters.client_name.length>=1 ? 'filterdColumn':''">
-                  <span *ngIf="filters.client_name.length>=1">{{filters.client_name.length.toString().padStart(2,
+                  [ngClass]="filters['client_name']['selectedCount']>=1 ? 'filterdColumn':''">
+                  <span *ngIf="filters['client_name']['selectedCount']>=1">{{filters['client_name']['selectedCount'].toString().padStart(2,
                     '0')}}</span>
-                  <i class="bi-funnel" *ngIf="filters.client_name.length===0"></i>
+                  <i class="bi-funnel" *ngIf="filters['client_name']['selectedCount']===0"></i>
                 </button>
 
 
                 <mat-menu #clientFilterMenu="matMenu">
-                  <app-generic-table-filter #clientFilter [fetchOptions]="fetchClients" [(selectedOptions)]="filters.client_name"
+                  <app-generic-table-filter #clientFilter [fetchOptions]="fetchClients" [(selectedOptions)]="filters['client_name']"
                     (selectedOptionsChange)="onFilterChange($event, 'client_name')"></app-generic-table-filter>
                 </mat-menu>
               </th>
@@ -104,15 +104,15 @@
                 <i *ngIf="!arrowState['group_name']" (click)="sort('ascending','group_name')" class="bi bi-arrow-down"></i>
                 <i (click)="sort('descending','group_name')" *ngIf="arrowState['group_name']" class="bi bi-arrow-up"></i>
                 <button mat-icon-button [matMenuTriggerFor]="groupFilterMenu" (menuOpened)="openFilter(groupClientFilter)"
-                  [ngClass]="filters.group_name.length>=1 ? 'filterdColumn':''">
-                  <span *ngIf="filters.group_name.length>=1">{{filters.group_name.length.toString().padStart(2,
+                  [ngClass]="filters['group_name']['selectedCount']>=1 ? 'filterdColumn':''">
+                  <span *ngIf="filters['group_name']['selectedCount']>=1">{{filters['group_name']['selectedCount'].toString().padStart(2,
                     '0')}}</span>
-                  <i class="bi-funnel" *ngIf="filters.group_name.length===0"></i>
+                  <i class="bi-funnel" *ngIf="filters['group_name']['selectedCount']===0"></i>
                 </button>
 
 
                 <mat-menu #groupFilterMenu="matMenu">
-                  <app-generic-table-filter #groupClientFilter [fetchOptions]="fetchGroupClients" [(selectedOptions)]="filters.group_name"
+                  <app-generic-table-filter #groupClientFilter [fetchOptions]="fetchGroupClients" [(selectedOptions)]="filters['group_name']"
                     (selectedOptionsChange)="onFilterChange($event, 'group_name')"></app-generic-table-filter>
                 </mat-menu>
               </th>
@@ -147,27 +147,27 @@
                 <i *ngIf="!arrowState['primary_employee_name']" (click)="sort('ascending','primary_employee_name')" class="bi bi-arrow-down"></i>
                 <i (click)="sort('descending','primary_employee_name')" *ngIf="arrowState['primary_employee_name']" class="bi bi-arrow-up"></i>
                 <button mat-icon-button [matMenuTriggerFor]="employeesFilterMenu" (menuOpened)="openFilter(employeeFilter)"
-                  [ngClass]="filters.employees.length>=1 ? 'filterdColumn':''">
-                  <span *ngIf="filters.employees.length>=1">{{filters.employees.length.toString().padStart(2,
+                  [ngClass]="filters['employees']['selectedCount']>=1 ? 'filterdColumn':''">
+                  <span *ngIf="filters['employees']['selectedCount']>=1">{{filters['employees']['selectedCount'].toString().padStart(2,
                     '0')}}</span>
-                  <i class="bi-funnel" *ngIf="filters.employees.length===0"></i>
+                  <i class="bi-funnel" *ngIf="filters['employees']['selectedCount']===0"></i>
                 </button>
 
                 <mat-menu #employeesFilterMenu="matMenu">
-                  <app-generic-table-filter #employeeFilter [fetchOptions]="fetchEmployees" [(selectedOptions)]="filters.employees"
+                  <app-generic-table-filter #employeeFilter [fetchOptions]="fetchEmployees" [(selectedOptions)]="filters['employees']"
                     (selectedOptionsChange)="filterData()"></app-generic-table-filter>
                 </mat-menu>
               </th>
               <th scope="col" *ngIf="isColumnVisible('manager')">
                 Manager
                 <button mat-icon-button [matMenuTriggerFor]="managerFilterMenu" (menuOpened)="openFilter(managerFilter)"
-                  [ngClass]="filters.manager.length>=1 ? 'filterdColumn':''">
-                  <span *ngIf="filters.manager.length>=1">{{filters.manager.length.toString().padStart(2, '0')}}</span>
-                  <i class="bi-funnel" *ngIf="filters.manager.length===0"></i>
+                  [ngClass]="filters['manager']['selectedCount']>=1 ? 'filterdColumn':''">
+                  <span *ngIf="filters['manager']['selectedCount']>=1">{{filters['manager']['selectedCount'].toString().padStart(2, '0')}}</span>
+                  <i class="bi-funnel" *ngIf="filters['manager']['selectedCount']===0"></i>
                 </button>
 
                 <mat-menu #managerFilterMenu="matMenu">
-                  <app-generic-table-filter #managerFilter [fetchOptions]="fetchManagers" [(selectedOptions)]="filters.manager"
+                  <app-generic-table-filter #managerFilter [fetchOptions]="fetchManagers" [(selectedOptions)]="filters['manager']"
                     (selectedOptionsChange)="filterData()"></app-generic-table-filter>
                 </mat-menu>
               </th>
@@ -176,14 +176,14 @@
                 <i *ngIf="!arrowState['job_status__status_name']" (click)="sort('ascending','job_status__status_name')" class="bi bi-arrow-down"></i>
                 <i (click)="sort('descending','job_status__status_name')" *ngIf="arrowState['job_status__status_name']" class="bi bi-arrow-up"></i>
                 <button mat-icon-button [matMenuTriggerFor]="statusFilterMenu" (menuOpened)="openFilter(satusGroupFilter)"
-                  [ngClass]="filters.status_group_name.length>=1 ? 'filterdColumn':''">
-                  <span *ngIf="filters.status_group_name.length>=1">{{filters.status_group_name.length.toString().padStart(2,
+                  [ngClass]="filters['status_group_name']['selectedCount']>=1 ? 'filterdColumn':''">
+                  <span *ngIf="filters['status_group_name']['selectedCount']>=1">{{filters['status_group_name']['selectedCount'].toString().padStart(2,
                     '0')}}</span>
-                  <i class="bi-funnel" *ngIf="filters.status_group_name.length===0"></i>
+                  <i class="bi-funnel" *ngIf="filters['status_group_name']['selectedCount']===0"></i>
                 </button>
 
                 <mat-menu #statusFilterMenu="matMenu">
-                  <app-generic-table-filter #satusGroupFilter [fetchOptions]="fetchStatusGroup" [(selectedOptions)]="filters.status_group_name"
+                  <app-generic-table-filter #satusGroupFilter [fetchOptions]="fetchStatusGroup" [(selectedOptions)]="filters['status_group_name']"
                     (selectedOptionsChange)="filterData()"></app-generic-table-filter>
                 </mat-menu>
               </th>

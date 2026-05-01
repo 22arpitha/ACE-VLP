@@ -5,9 +5,16 @@ import { MatDialog } from '@angular/material/dialog';
 import { ApiserviceService } from '../../../service/apiservice.service';
 import { DropDownPaginationService } from '../../../service/drop-down-pagination.service';
 import { environment } from '../../../../environments/environment';
+import { FilterQueryService } from '../../../service/filter-query.service';
 export interface IdNamePair {
   id: any;
   name: string;
+}
+export interface FilterState {
+  selectAllValue: boolean | null;
+  selectedOptions: IdNamePair[];
+  excludedIds: IdNamePair[];
+  selectedCount: number;
 }
 @Component({
   selector: 'app-customize-balance',
@@ -39,12 +46,12 @@ export class CustomizeBalanceComponent implements OnInit {
   filterQuery: any
   AllEmployeeBalanceList:any =[];
   leaveTypes:any = [];
-  filters: { employees: IdNamePair[] } = {
-    employees: [],
+  filters: any = {
+    employees: { selectAllValue: null, selectedOptions: [], excludedIds: [], selectedCount: 0 },
   };
   constructor(private accessControlService: SubModuleService,
     private dialog: MatDialog, private dropdownService: DropDownPaginationService,
-    private apiService: ApiserviceService,) { }
+    private apiService: ApiserviceService, private filterQueryService: FilterQueryService) { }
 
   ngOnInit(): void {
     this.getEmployeesBalance();
@@ -73,6 +80,7 @@ export class CustomizeBalanceComponent implements OnInit {
     this.arrowState[column] = direction === 'asc' ? true : false;
     this.directionValue = direction;
     this.sortValue = column;
+    this.getEmployeesBalance();
   }
 
 
@@ -83,6 +91,23 @@ export class CustomizeBalanceComponent implements OnInit {
   }
 
   selectAll = false;
+
+  onFilterChange(event: any, filterType: string) {
+    this.filters[filterType] = event;
+    this.page = 1;
+    this.getEmployeesBalance();
+  }
+
+  private getFilterParamName(filterType: string): string {
+    const mapping: { [key: string]: string } = {
+      'employees': 'customize-employee', // old employee-ids
+    };
+    return mapping[filterType] || filterType;
+  }
+
+  private buildFilterQuery(filterType: string): string {
+    return this.filterQueryService.buildFilterSegment(this.filters[filterType], this.getFilterParamName(filterType));
+  }
 
   onTableSizeChange(event: any): void {
     if (event) {
@@ -103,8 +128,9 @@ export class CustomizeBalanceComponent implements OnInit {
   getEmployeesBalance() {
      this.count = 0;
     this.filterQuery = this.getFilterBaseUrl()
-    if (this.filters.employees.length) {
-      this.filterQuery += `&employee-ids=[${this.ids(this.filters.employees)}]`;
+    this.filterQuery += this.buildFilterQuery('employees');
+    if(this.directionValue && this.sortValue){
+      this.filterQuery += `&sort-by=${this.sortValue}&sort-type=${this.directionValue}`
     }
     this.apiService.getData(`${environment.live_url}/${environment.all_emp_custom_balance}/${this.filterQuery}`)
       .subscribe((res: any) => {

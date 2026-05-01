@@ -7,10 +7,18 @@ import { environment } from '../../../../environments/environment';
 import { SubModuleService } from '../../../service/sub-module.service';
 import { GenericTableFilterComponent } from '../../../shared/generic-table-filter/generic-table-filter.component';
 import { DropDownPaginationService } from '../../../service/drop-down-pagination.service';
+import { FilterQueryService } from '../../../service/filter-query.service';
 import { debounceTime, distinctUntilChanged, filter, Subject } from 'rxjs';
 export interface IdNamePair {
   id: any;
   name: string;
+}
+
+export interface FilterState {
+  selectAllValue: boolean | null;
+  selectedOptions: IdNamePair[];
+  excludedIds: IdNamePair[];
+  selectedCount: number;
 }
 @Component({
   selector: 'app-all-employee',
@@ -42,15 +50,16 @@ designation__designation_name:false,
   accessPermissions = []
   user_id: any;
   userRole: any;
-  filters: { designation__designation_name: IdNamePair[]} = {
-    designation__designation_name:[]
+  filters: { [key: string]: FilterState } = {
+    designation__designation_name: { selectAllValue: null, selectedOptions: [], excludedIds: [], selectedCount: 0 }
   }
   allRoleNames:IdNamePair[] = [];
   filterQuery: string;
   filteredemployeeList:any =[];
   constructor(private common_service: CommonServiceService,
     private router:Router,private modalService: NgbModal,private accessControlService:SubModuleService,
-    private apiService: ApiserviceService, private dropdownService: DropDownPaginationService,) {
+    private apiService: ApiserviceService, private dropdownService: DropDownPaginationService,
+    private filterQueryService: FilterQueryService,) {
     this.common_service.setTitle(this.BreadCrumbsTitle)
     this.common_service.empolyeeStatus$.subscribe((status:boolean)=>{
       if(status){
@@ -149,20 +158,21 @@ this.apiService.getData(`${environment.live_url}/${environment.employee}/${query
     this.filteredemployeeList=[];
     this.isCurrent = false;
     this.isHistory=true;
-    let query = this.getFilterBaseUrl()
-    query += `&is_active=False`;
-    this.apiService.getData(`${environment.live_url}/${environment.employee}/${query}`).subscribe(
-      (res: any) => {
-        this.allEmployeeList = res.results;
-        this.filteredemployeeList=res?.results;
-        const noOfPages: number = res?.['total_pages']
-        this.count = noOfPages * this.tableSize;
-        this.count = res?.['total_no_of_record']
-        this.page = res?.['current_page'];
-      },(error => {
-            this.apiService.showError(error?.error?.detail)
-          })
-    )
+    this.filterData();
+    // let query = this.getFilterBaseUrl()
+    // query += `&is_active=False`;
+    // this.apiService.getData(`${environment.live_url}/${environment.employee}/${query}`).subscribe(
+    //   (res: any) => {
+    //     this.allEmployeeList = res.results;
+    //     this.filteredemployeeList=res?.results;
+    //     const noOfPages: number = res?.['total_pages']
+    //     this.count = noOfPages * this.tableSize;
+    //     this.count = res?.['total_no_of_record']
+    //     this.page = res?.['current_page'];
+    //   },(error => {
+    //         this.apiService.showError(error?.error?.detail)
+    //       })
+    // )
   }
   public onTableSizeChange(event: any): void {
     if (event) {
@@ -211,17 +221,22 @@ this.apiService.getData(`${environment.live_url}/${environment.employee}/${query
     this.filterData();
   }
 
-  private ids(filterArray: any[]): string {
-    if (!Array.isArray(filterArray)) return '';
-    return filterArray.map(x => x.id).join(',');
+  private getFilterParamName(filterType: string): string {
+    const mapping: { [key: string]: string } = {
+      'designation__designation_name': 'designation'
+    };
+    return mapping[filterType] || filterType;
+  }
+
+  private buildFilterQuery(filterType: string): string {
+    return this.filterQueryService.buildFilterSegment(this.filters[filterType], this.getFilterParamName(filterType));
   }
   filterData() {
     this.filterQuery = this.getFilterBaseUrl();
     
-    if (this.filters.designation__designation_name.length) {
-      this.page = 1;
-      this.filterQuery += `&designation-ids=[${this.ids(this.filters.designation__designation_name)}]`;
-    }
+    // Apply filter logic for designation
+    this.filterQuery += this.buildFilterQuery('designation__designation_name');
+    
     if(this.directionValue && this.sortValue){
       this.filterQuery += `&sort-by=${this.sortValue}&sort-type=${this.directionValue}`
     }

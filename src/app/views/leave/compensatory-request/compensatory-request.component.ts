@@ -8,11 +8,18 @@ import { AddCompoffRequestComponent } from '../add-compoff-request/add-compoff-r
 import { environment } from '../../../../environments/environment';
 import { CompOffGrantComponent } from '../comp-off-grant/comp-off-grant.component';
 import { DropDownPaginationService } from '../../../service/drop-down-pagination.service';
+import { FilterQueryService } from '../../../service/filter-query.service';
 import { GenericTableFilterComponent } from '../../../shared/generic-table-filter/generic-table-filter.component';
 
 export interface IdNamePair {
   id: any;
   name: string;
+}
+export interface FilterState {
+  selectAllValue: boolean | null;
+  selectedOptions: IdNamePair[];
+  excludedIds: IdNamePair[];
+  selectedCount: number;
 }
 @Component({
   selector: 'app-compensatory-request',
@@ -49,7 +56,8 @@ export class CompensatoryRequestComponent implements OnInit {
   compOffLists: any = []
   constructor(private accessControlService: SubModuleService,
     modalService: NgbModal, private dialog: MatDialog,private dropdownService: DropDownPaginationService,
-    private apiService: ApiserviceService,) {
+    private apiService: ApiserviceService,
+    private filterQueryService: FilterQueryService,) {
     this.user_id = Number(sessionStorage.getItem('user_id'));
     this.userRole = sessionStorage.getItem('user_role_name');
   }
@@ -58,9 +66,9 @@ export class CompensatoryRequestComponent implements OnInit {
     this.getLeaveStatus();
     // this.getAllCompOffData();
   }
-  filters: {status_name: IdNamePair[],employees:IdNamePair[] } = {
-    status_name: [],
-    employees:[],
+  filters: any = {
+    status_name: { selectAllValue: null, selectedOptions: [], excludedIds: [], selectedCount: 0 },
+    employees: { selectAllValue: null, selectedOptions: [], excludedIds: [], selectedCount: 0 },
   }
 
   getLeaveStatus(){
@@ -72,12 +80,12 @@ export class CompensatoryRequestComponent implements OnInit {
         }));
         const pendingStatus = this.leaveStatus.find((x: any) => x.name === 'Pending');
         if (pendingStatus) {
-          this.filters.status_name = [pendingStatus];
-          setTimeout(() => {
-            if (this.leaveStatusFilter) {
-              this.leaveStatusFilter.selectedOptions  = [pendingStatus];
-            }
-          });
+          this.filters.status_name = {
+            selectAllValue: null,
+            selectedOptions: [pendingStatus],
+            excludedIds: [],
+            selectedCount: 1
+          };
         }
         this.getAllCompOffData();
       },
@@ -116,9 +124,8 @@ export class CompensatoryRequestComponent implements OnInit {
   }
 
   onFilterChange(event: any, filterType: string) {
-    const selectedOptions = event;
-    this.filters[filterType] = selectedOptions;
-    console.log(this.filters)
+    this.filters[filterType] = event;
+    this.page = 1;
     this.getAllCompOffData();
   }
   public filteredLeaveTypes() {
@@ -168,9 +175,15 @@ export class CompensatoryRequestComponent implements OnInit {
     this.getAllCompOffData();
   }
 
-   private ids(filterArray: any[]): string {
-    if (!Array.isArray(filterArray)) return '';
-    return filterArray.map(x => x.id).join(',');
+  private getFilterParamName(filterType: string): string {
+    const mapping: { [key: string]: string } = {
+      'employees': 'leave-employee', // old key employee-ids
+    };
+    return mapping[filterType] || filterType;
+  }
+
+  private buildFilterQuery(filterType: string): string {
+    return this.filterQueryService.buildFilterSegment(this.filters[filterType], this.getFilterParamName(filterType));
   }
 
   getAllCompOffData() {
@@ -179,11 +192,17 @@ export class CompensatoryRequestComponent implements OnInit {
     if (this.userRole === 'Manager') {
       this.filterQuery += `&manager_id=${this.user_id}`
     }
-    if (this.filters.status_name.length) {
-      this.filterQuery += `&status_values=[${this.ids(this.filters.status_name)}]`;
-    }
-    if (this.filters.employees.length) {
-      this.filterQuery += `&employee-ids=[${this.ids(this.filters.employees)}]`;
+    this.filterQuery += this.buildFilterQuery('employees');
+    if(this.filters.status_name?.selectAllValue==true){
+      this.filterQuery += `&status_values=[${this.leaveStatus.map((status: any) => `${status.id}`).join(',')}]`
+    } else if(this.filters.status_name?.selectAllValue==false){
+      const excludedIds = this.filters.status_name?.excludedIds?.map((e:any) => e.id) || [];
+      let temp = this.leaveStatus.filter(
+          (status: any) => !excludedIds.includes(status.id)).map((status:any)=>status.id)
+      console.log(temp)
+      this.filterQuery += `&status_values=[${temp}]`;
+    } else if(this.filters.status_name?.selectAllValue==null && this.filters.status_name?.selectedOptions.length>0){
+      this.filterQuery += `&status_values=[${this.filters.status_name?.selectedOptions.map((option: any) => option.id).join(',')}]`;
     }
     if(this.directionValue && this.sortValue){
       this.filterQuery += `&sort-by=${this.sortValue}&sort-type=${this.directionValue}`
@@ -276,12 +295,11 @@ export class CompensatoryRequestComponent implements OnInit {
   reset(){
     this.page = 1;
     this.tableSize = 50;
-    this.filters.status_name = [];
-    this.leaveStatus = []
-    this.filters = {status_name: [],employees: []};
-    // this.employeeFilter.clearSelection();
-    // this.leaveStatusFilter.clearSelection();
+    this.leaveStatus = [];
+    this.filters = {
+      status_name: { selectAllValue: null, selectedOptions: [], excludedIds: [], selectedCount: 0 },
+      employees: { selectAllValue: null, selectedOptions: [], excludedIds: [], selectedCount: 0 }
+    };
     this.getLeaveStatus();
-    // this.getAllCompOffData();
   }
 }

@@ -16,9 +16,16 @@ import { DropDownPaginationService } from '../../../service/drop-down-pagination
 import { take } from 'rxjs';
 import { NgZone } from '@angular/core';
 
+import { FilterQueryService } from '../../../service/filter-query.service';
 export interface IdNamePair {
   id: any;
   name: string;
+}
+export interface FilterState {
+  selectAllValue: boolean | null;
+  selectedOptions: IdNamePair[];
+  excludedIds: IdNamePair[];
+  selectedCount: number;
 }
 @Component({
   selector: 'app-wfh-requests',
@@ -78,6 +85,7 @@ export class WfhRequestsComponent implements OnInit {
     private activateRoute: ActivatedRoute,
     private router: Router,
     private zone: NgZone,
+    private filterQueryService: FilterQueryService,
   ) {
     this.userRole = sessionStorage.getItem('user_role_name');
     this.user_id = sessionStorage.getItem('user_id');
@@ -167,15 +175,10 @@ export class WfhRequestsComponent implements OnInit {
     });
   }
 
-  filters: {
-    [key: string]: IdNamePair[];
-    leave_type: IdNamePair[];
-    employees: IdNamePair[];
-    status_name: IdNamePair[];
-  } = {
-    leave_type: [],
-    employees: [],
-    status_name: [],
+  filters: any = {
+    leave_type: { selectAllValue: null, selectedOptions: [], excludedIds: [], selectedCount: 0 },
+    employees: { selectAllValue: null, selectedOptions: [], excludedIds: [], selectedCount: 0 },
+    status_name: { selectAllValue: null, selectedOptions: [], excludedIds: [], selectedCount: 0 },
   };
   getLeaveStatus() {
     this.apiService
@@ -319,13 +322,21 @@ export class WfhRequestsComponent implements OnInit {
 
   selectAll = false;
   onFilterChange(event: any, filterType: string) {
-    const selectedOptions = event;
-    this.filters[filterType] = selectedOptions;
-    console.log(event);
-    if (event.value === 'custom') {
-      console.log('period is selected');
-    }
+    this.filters[filterType] = event;
+    this.page = 1;
     this.getleaverequest();
+  }
+
+  private getFilterParamName(filterType: string): string {
+    const mapping: { [key: string]: string } = {
+      'leave_type': 'leave-type', //leave_type_ids
+      'employees': 'leave-employee', //leave_employee_ids
+    };
+    return mapping[filterType] || filterType;
+  }
+
+  private buildFilterQuery(filterType: string): string {
+    return this.filterQueryService.buildFilterSegment(this.filters[filterType], this.getFilterParamName(filterType));
   }
   onTableSizeChange(event: any): void {
     if (event) {
@@ -399,21 +410,29 @@ export class WfhRequestsComponent implements OnInit {
     if (this.userRole === 'Manager') {
       if (this.activeTab === 'mine') {
         this.filterQuery += `&employee-id=${this.user_id}`;
-      } else if (!this.filters.employees.length) {
-        this.filterQuery += `&manager-id=${this.user_id}`;
+      }   
+      // else if (!this.filters.employees.length) {
+      //   this.filterQuery += `&manager-id=${this.user_id}`;
+      // }
+      else{
+         this.filterQuery += `&manager-id=${this.user_id}`;
       }
     }
     if (this.userRole === 'Accountant') {
       this.filterQuery += `&employee-id=${this.user_id}`;
     }
-    if (this.filters.leave_type.length) {
-      this.filterQuery += `&leave_type_ids=[${this.ids(this.filters.leave_type)}]`;
-    }
-    if (this.filters.employees.length) {
-      this.filterQuery += `&leave_employee_ids=[${this.ids(this.filters.employees)}]`;
-    }
-    if (this.filters.status_name.length) {
-      this.filterQuery += `&status_values=[${this.ids(this.filters.status_name)}]`;
+    this.filterQuery += this.buildFilterQuery('leave_type');
+    this.filterQuery += this.buildFilterQuery('employees');
+    if(this.filters.status_name?.selectAllValue==true){
+      this.filterQuery += `&status_values=[${this.leaveStatus.map((status: any) => `${status.id}`).join(',')}]`
+    } else if(this.filters.status_name?.selectAllValue==false){
+      const excludedIds = this.filters.status_name?.excludedIds?.map((e:any) => e.id) || [];
+      let temp = this.leaveStatus.filter(
+          (status: any) => !excludedIds.includes(status.id)).map((status:any)=>status.id)
+      console.log(temp)
+      this.filterQuery += `&status_values=[${temp}]`;
+    } else if(this.filters.status_name?.selectAllValue==null && this.filters.status_name?.selectedOptions.length>0){
+      this.filterQuery += `&status_values=[${this.filters.status_name?.selectedOptions.map((option: any) => option.id).join(',')}]`;
     }
     if (this.selectedPeriod) {
       this.filterQuery += `&leave_period=${this.selectedPeriod}`;
@@ -483,7 +502,11 @@ export class WfhRequestsComponent implements OnInit {
     this.selectedPeriod = '';
     this.mainStartDate = '';
     this.mainEndDate = '';
-    this.filters = { leave_type: [], employees: [], status_name: [] };
+    this.filters = {
+      leave_type: { selectAllValue: null, selectedOptions: [], excludedIds: [], selectedCount: 0 },
+      employees: { selectAllValue: null, selectedOptions: [], excludedIds: [], selectedCount: 0 },
+      status_name: { selectAllValue: null, selectedOptions: [], excludedIds: [], selectedCount: 0 },
+    };
     this.getleaverequest();
   }
   editWfhRequest(item: any) {

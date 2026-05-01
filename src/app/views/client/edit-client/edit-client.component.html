@@ -79,15 +79,15 @@
                   <i *ngIf="!arrowState['group__group_name']" (click)="sort('ascending', 'group__group_name')" class="bi bi-arrow-down"></i>
                   <i *ngIf="arrowState['group__group_name']" (click)="sort('descending', 'group__group_name')" class="bi bi-arrow-up"></i>
                   <button mat-icon-button [matMenuTriggerFor]="groupsFilterMenu" (menuOpened)="openFilter(groupFilter)"
-                   [ngClass]="filters.group_name.length>=1 ? 'filterdColumn':''">
-                        <span *ngIf="filters.group_name.length>=1">{{filters.group_name.length.toString().padStart(2, '0')}}</span>
-                          <i class="bi-funnel" *ngIf="filters.group_name.length===0"></i>
+                   [ngClass]="filters['group_name'].selectedCount>=1 ? 'filterdColumn':''">
+                        <span *ngIf="filters['group_name'].selectedCount>=1">{{filters['group_name'].selectedCount.toString().padStart(2, '0')}}</span>
+                          <i class="bi-funnel" *ngIf="filters['group_name'].selectedCount===0"></i>
                   </button>
 
                   <mat-menu #groupsFilterMenu="matMenu">
                     <app-generic-table-filter
                     #groupFilter [fetchOptions]="fetchGroupClients"
-                    [(selectedOptions)]="filters.group_name"
+                    [(selectedOptions)]="filters['group_name'].selectedOptions"
                     (selectedOptionsChange)="onFilterChange($event, 'group_name')"
                     ></app-generic-table-filter>
                   </mat-menu>

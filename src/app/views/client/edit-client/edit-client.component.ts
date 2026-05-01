@@ -13,10 +13,18 @@ import { debounceTime, distinctUntilChanged, filter, Observable, Subject } from 
 import { SubModuleService } from '../../../service/sub-module.service';
 import { GenericTableFilterComponent } from '../../../shared/generic-table-filter/generic-table-filter.component';
 import { DropDownPaginationService } from '../../../service/drop-down-pagination.service';
-import { GenericTimesheetConfirmationComponent } from 'src/app/generic-components/generic-timesheet-confirmation/generic-timesheet-confirmation.component';
+import { FilterQueryService } from '../../../service/filter-query.service';
+import { GenericTimesheetConfirmationComponent } from '../../../generic-components/generic-timesheet-confirmation/generic-timesheet-confirmation.component';
 export interface IdNamePair {
   id: any;
   name: string;
+}
+
+export interface FilterState {
+  selectAllValue: boolean | null;
+  selectedOptions: IdNamePair[];
+  excludedIds: IdNamePair[];
+  selectedCount: number;
 }
 @Component({
   selector: 'app-edit-client',
@@ -25,11 +33,11 @@ export interface IdNamePair {
 })
 export class EditClientComponent implements CanComponentDeactivate, OnInit {
   @ViewChild(FormGroupDirective) formGroupDirective!: FormGroupDirective;
-  @ViewChild('formInputField') formInputField: ElementRef;
+  @ViewChild('formInputField') formInputField!: ElementRef;
   @ViewChild('groupFilter') groupFilter!: GenericTableFilterComponent;
   private searchSubject = new Subject<string>();
   isEditItem: boolean = false;
-  endClientForm: FormGroup;
+  endClientForm!: FormGroup;
   selectedJobStatus: any;
   allEndClients: any = [];
   allGroupList: any = [];
@@ -45,8 +53,8 @@ export class EditClientComponent implements CanComponentDeactivate, OnInit {
     group__group_name:false,
 
   };
-  filters: { group_name: IdNamePair[]} = {
-    group_name: [],
+  filters: { [key: string]: FilterState } = {
+    group_name: { selectAllValue: null, selectedOptions: [], excludedIds: [], selectedCount: 0 }
   }
   allGroupsNames:IdNamePair[] = [];
   arrow: boolean = false;
@@ -55,7 +63,7 @@ export class EditClientComponent implements CanComponentDeactivate, OnInit {
   searchGroupText:any;
   initialFormValue:any;
   filteredList = [];
-    filterQuery: string;
+    filterQuery: string | undefined;
     endclientList:any=[];
     accessPermissions = [];
   user_role_name:any;
@@ -69,6 +77,7 @@ export class EditClientComponent implements CanComponentDeactivate, OnInit {
     private accessControlService:SubModuleService,
     private cdr: ChangeDetectorRef,
     private dropdownService: DropDownPaginationService,
+    private filterQueryService: FilterQueryService,
   ) {
     this.user_id = sessionStorage.getItem('user_id');
     this.user_role_name = sessionStorage.getItem('user_role_name');
@@ -95,7 +104,7 @@ export class EditClientComponent implements CanComponentDeactivate, OnInit {
     this.getAllEndClients(`?page=1&page_size=50&client=${this.client_id}`);
     this.getGroupList();
   }
-  shouldDisableGroupName:boolean
+  shouldDisableGroupName:boolean = false;
   getModuleAccess(){
     this.accessControlService.getAccessForActiveUrl(this.user_id).subscribe(
       (res:any)=>{
@@ -172,7 +181,7 @@ getUniqueValues(
 ): { id: any; name: string }[] {
   const seen = new Map();
 
-  this.endclientList.forEach(endClient => {
+  this.endclientList.forEach((endClient:any) => {
     const value = extractor(endClient);
     if (value && value.id && !seen.has(value.id)) {
       seen.set(value.id, value.name);
@@ -222,7 +231,7 @@ getUniqueValues(
     }
   }
 
-  Warningconfirmation(data){
+  Warningconfirmation(data:any){
     const modelRef = this.modalService.open(GenericTimesheetConfirmationComponent, {
           size: <any>'sm',
           backdrop: true,
@@ -231,7 +240,7 @@ getUniqueValues(
         modelRef.componentInstance.title = data?.warning;
         modelRef.componentInstance.message = `Confirmation`;
         modelRef.componentInstance.buttonName = `Yes`;
-        modelRef.componentInstance.status.subscribe(resp => {
+        modelRef.componentInstance.status.subscribe((resp: any) => {
           if (resp == "ok") {
             this.confirmSubmit(data);
             modelRef.close();
@@ -242,7 +251,7 @@ getUniqueValues(
         })
   }
 
-  confirmSubmit(data){
+  confirmSubmit(data:any){
     const formData = { ...this.endClientForm.value, confirm: data?.confirm_required };
     const apiCall = this.isEditItem
       ? this.apiService.updateData(`${environment.live_url}/${environment.end_clients}/${this.selectedJobStatus}/`, formData)
@@ -296,7 +305,7 @@ getUniqueValues(
         backdrop: true,
         centered: true
       });
-      modelRef.componentInstance.status.subscribe(resp => {
+      modelRef.componentInstance.status.subscribe((resp: any) => {
         if (resp == "ok") {
           this.deleteContent(content);
           modelRef.close();
@@ -309,7 +318,7 @@ getUniqueValues(
     }
   }
 
-  public deleteContent(item) {
+  public deleteContent(item: any) {
 
     this.apiService.delete(`${environment.live_url}/${environment.end_clients}/${item?.id}/`).subscribe(async (data: any) => {
       if (data) {
@@ -336,7 +345,7 @@ getUniqueValues(
         centered: true
       });
 
-      modalRef.componentInstance.status.subscribe(resp => {
+      modalRef.componentInstance.status.subscribe((resp: any) => {
         if (resp === 'ok') {
           this.selectedJobStatus = item?.id;
           this.isEditItem = true;
@@ -356,7 +365,7 @@ getUniqueValues(
 
   public scrollToField(){
     if (this.formInputField) {
-      this.formInputField?.nativeElement?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      this.formInputField?.nativeElement?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
   }
   public getSelectedEndClient(id: any) {
@@ -367,7 +376,7 @@ getUniqueValues(
       this.apiService.showError(error?.error?.detail);
     })
   }
-  public filterSearch(event) {
+  public filterSearch(event: any) {
      const value = event?.target?.value || '';
     if (value && value.length >= 2) {
       this.page = 1
@@ -398,7 +407,7 @@ getUniqueValues(
 
     return itemGroup?.group_name
   }
-  viewJobsOfEndClient(data){
+  viewJobsOfEndClient(data:{id:any,client_name:any}){
     this.router.navigate([`/client/end-client-jobs/${data?.client_name}/${this.client_id}/${data.id}`])
   }
 
@@ -413,16 +422,23 @@ getUniqueValues(
       return this.formErrorScrollService.isFormDirtyOrInvalidCheck(isFormChanged,this.endClientForm);
     }
 
-     private ids(filterArray: any[]): string {
-      if (!Array.isArray(filterArray)) return '';
-      return filterArray.map(x => x.id).join(',');
-    }
+  private getFilterParamName(filterType: string): string {
+    const mapping: { [key: string]: string } = {
+      'group_name': 'group'
+    };
+    return mapping[filterType] || filterType;
+  }
+
+  private buildFilterQuery(filterType: string): string {
+    return this.filterQueryService.buildFilterSegment(this.filters[filterType], this.getFilterParamName(filterType));
+  }
     filterData() {
       this.filterQuery = this.getFilterBaseUrl()
-      if (this.filters.group_name.length) {
-        this.filterQuery += `&group-ids=[${this.ids(this.filters.group_name)}]`;
-      }
-       if(this.directionValue && this.sortValue){
+      
+      // Apply new filter logic for group_name
+      this.filterQuery += this.buildFilterQuery('group_name');
+      
+      if(this.directionValue && this.sortValue){
         this.filterQuery += `&sort-by=${this.sortValue}&sort-type=${this.directionValue}`
        }
 
@@ -441,11 +457,15 @@ getUniqueValues(
     }
 
     fetchGroupClients = (page: number, search: string) => {
+      let extraParams: any = {
+      client: this.client_id,
+    };
     return this.dropdownService.fetchDropdownData$(
       environment.clients_group,
       page,
       search,
       (item) => ({ id: item.id, name: item.group_name }),
+      extraParams
     );
 }
 

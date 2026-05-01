@@ -1,0 +1,52 @@
+.leave-request-tabs {
+  padding: 5px 0;
+  max-height: max-content;
+}
+
+::ng-deep .leave-request-tabs .mat-tab-group {
+  margin-bottom: 48px;
+}
+
+::ng-deep .leave-request-tabs .mat-tab-group > .mat-tab-header .mat-tab-label {
+  flex: 0 1 auto !important;
+}
+
+::ng-deep .leave-request-tabs .mat-tab-label-active {
+  background: #ebebeb !important;
+  color: #000000 !important;
+  font-weight: 700 !important;
+}
+
+::ng-deep .leave-request-tabs .mat-tab-label {
+  height: 36px !important;
+  min-width: auto !important;
+  border-radius: 5px !important;
+}
+
+::ng-deep .leave-request-tabs .mat-tab-group.mat-primary .mat-ink-bar {
+  background: none !important;
+}
+
+::ng-deep .leave-request-tabs .mat-tab-label {
+  opacity: 1 !important;
+}
+
+::ng-deep .leave-request-tabs .mat-tab-labels {
+  display: flex !important;
+  padding: 0px 20px !important;
+}
+
+.settings-table-bg {
+  max-height: 75vh !important;
+}
+
+.table-wrapper {
+  max-height: 55vh !important;
+  overflow-x: auto;
+  margin-bottom: 20px;
+}
+
+::ng-deep .table-wrapper .mat-icon-button {
+  width: 27px !important;
+  height: 40px !important;
+}

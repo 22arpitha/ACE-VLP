@@ -4,7 +4,7 @@ import { CommonServiceService } from '../../../service/common-service.service';
 import { ApiserviceService } from '../../../service/apiservice.service';
 import { environment } from '../../../../environments/environment';
 import { buildPaginationQuery } from '../../../shared/pagination.util';
-import { downloadFileFromUrl } from '../../../shared/file-download.util';
+import { FilterQueryService } from '../../../service/filter-query.service';
 @Component({
   selector: 'app-timesheet-detailed-report',
   templateUrl: './timesheet-detailed-report.component.html',
@@ -44,7 +44,8 @@ export class TimesheetDetailedReportComponent implements OnInit {
   directionValue: string = '';
   constructor(
     private common_service:CommonServiceService,
-    private api:ApiserviceService
+    private api:ApiserviceService,
+    private filterQueryService: FilterQueryService
   ) {
     this.user_id = sessionStorage.getItem('user_id') || '' ;
     this.user_role_name = sessionStorage.getItem('user_role_name') || '';
@@ -54,11 +55,6 @@ export class TimesheetDetailedReportComponent implements OnInit {
     this.common_service.setTitle(this.BreadCrumbsTitle)
     this.tableData = getTableColumns(this.user_role_name);
     this.getTaskList();
-        // this.getClienList();
-        // this.getEmployeeList();
-        // this.getTableData();
-    // this.getJobList();
-    // this.getTableData();
     if (
       !this.selectedClientIds.length &&
       !this.selectedJobIds.length &&
@@ -107,6 +103,7 @@ onTableSizeChange(event: any): void {
 
 // Called from <app-dynamic-table> via @Output actionEvent
 handleAction(event: { actionType: string; detail: any,key:string,fromFilter?: boolean }) {
+  // console.log(event)
   switch (event.actionType) {
     case 'tableDataChange':
       this.onTableDataChange(event.detail);
@@ -164,7 +161,7 @@ onSorting(data){
     });
 }
 
-onApplyFilter(filteredData: any[], filteredKey: string): void {
+onApplyFilter(filteredData: any, filteredKey: string): void {
   if (filteredKey === 'client-ids') {
     this.selectedClientIds = filteredData;
   }
@@ -211,18 +208,25 @@ exportCsvOrPdf(fileType) {
   const searchParam = this.term?.trim().length >= 2 ? `&search=${encodeURIComponent(this.term.trim())}` : '';
   if(this.user_role_name !== 'Admin'){
     query +=`&timesheet-employee=${this.user_id}`
-    }if (this.selectedClientIds.length) {
-        query += `&client-ids=[${this.selectedClientIds.join(',')}]`;
-      }
-      if (this.selectedJobIds.length) {
-        query += `&job-ids=[${this.selectedJobIds.join(',')}]`;
-      }
-      if ( this.selectedTaskIds.length) {
-        query += `&timesheet-task-ids=[${this.selectedTaskIds.join(',')}]`;
-      }
-      if (this.selectedEmployeeIds?.length) {
-        query += `&timesheet-employee-ids=[${this.selectedEmployeeIds.join(',')}]`;
-      }if(this.term){
+    }
+    // Old filter query building (simple array join)
+    // if (this.selectedClientIds.length) {
+    //   query += `&client-ids=[${this.selectedClientIds.join(',')}]`;
+    // }
+    // if (this.selectedJobIds.length) {
+    //   query += `&job-ids=[${this.selectedJobIds.join(',')}]`;
+    // }
+    // if ( this.selectedTaskIds.length) {
+    //   query += `&timesheet-task-ids=[${this.selectedTaskIds.join(',')}]`;
+    // }
+    // if (this.selectedEmployeeIds?.length) {
+    //   query += `&timesheet-employee-ids=[${this.selectedEmployeeIds.join(',')}]`;
+    // }
+    // New: FilterState-aware (handles select-all three-state logic)
+    query += this.buildQueryForFilter(this.selectedClientIds, 'client');
+    query += this.buildQueryForFilter(this.selectedJobIds, 'job');
+    query += this.buildQueryForFilter(this.selectedTaskIds, 'timesheet-task');
+    query += this.buildQueryForFilter(this.selectedEmployeeIds, 'timesheet-employee');if(this.term){
         query += `&search=${searchParam}`
       }if(this.selectedDate){
          query += `&start-date=${this.selectedDate.startDate}&end-date=${this.selectedDate.endDate}`
@@ -236,35 +240,8 @@ exportCsvOrPdf(fileType) {
   //   fileType
   // });
 }
-getClienList(){
-  let query = `?status=True`
-  query += this.user_role_name ==='Admin' ? '':`&employee-id=${this.user_id}`;
-  this.api.getData(`${environment.live_url}/${environment.clients}/${query}`).subscribe((res: any) => {
-    if(res){
-      this.clientName = res?.map((item: any) => ({
-        id: item.id,
-        name: item.client_name
-      }));
-    }
-  })
-  return this.clientName;
-}
-  getJobList(){
-    let query = this.user_role_name ==='Admin' ? '':`?employee-id=${this.user_id}`;
-    this.api.getData(`${environment.live_url}/${environment.jobs}/${query}`).subscribe((res: any) => {
-      if(res){
-        this.jobName = res?.map((item: any) => ({
-          id: item.id,
-          name: item.job_name
-        }));
-        // this.getTaskList();
-        // this.getClienList();
-        // this.getEmployeeList();
-        // this.getTableData();
-      }
-    })
-    return this.jobName;
-  }
+
+ 
     getTaskList(){
       this.api.getData(`${environment.live_url}/${environment.vlp_timesheets}/?get-tasks=True`).subscribe((res: any) => {
         if(res){
@@ -362,10 +339,6 @@ getClienList(){
 // }
 
 
-
-
-
-
   onSearch(term: string): void {
     this.term = term;
     this.getTableData({
@@ -382,7 +355,17 @@ getClienList(){
 
 
   
-  // new code
+//  select all code
+  private buildQueryForFilter(filterValue: any, paramName: string): string {
+    if (!filterValue) return '';
+    // Old format: plain array of ids
+    if (Array.isArray(filterValue)) {
+      return filterValue.length ? `&${paramName}-ids=[${filterValue.join(',')}]` : '';
+    }
+    // New format: FilterState object
+    return this.filterQueryService.buildFilterSegment(filterValue, paramName);
+  }
+
   private updateFilterColumn(key: string, cache: any) {
     this.tableConfig.columns = this.tableConfig.columns.map(col =>
       col.paramskeyId === key
@@ -390,13 +373,14 @@ getClienList(){
             ...col,
             filterOptions: cache.data,
             currentPage: cache.page,
-            totalPages: Math.ceil(cache.total / 20)
+            totalPages: Math.ceil(cache.total / 20),
+            totalCount: cache.total
           }
         : col
     );
   }
 async getTableData(params?: { page?: number; pageSize?: number; searchTerm?: string;client_ids?:any;job_ids?:any;task_ids?:any;employee_ids?:any,timesheet_dates?:any }) {
-
+  // console.log(params)
    const page = params?.page ?? this.page;
     const pageSize = params?.pageSize ?? this.tableSize;
     const searchTerm = params?.searchTerm ?? this.term;
@@ -406,18 +390,25 @@ async getTableData(params?: { page?: number; pageSize?: number; searchTerm?: str
     query +=`&timesheet-report-type=detailed`;
     if(this.user_role_name !== 'Admin'){
       query +=`&timesheet-employee=${this.user_id}`
-      }if (params?.client_ids?.length) {
-        query += `&client-ids=[${params.client_ids.join(',')}]`;
       }
-      if (params?.job_ids?.length) {
-        query += `&job-ids=[${params.job_ids.join(',')}]`;
-      }
-      if (params?.task_ids?.length) {
-        query += `&timesheet-task-ids=[${params.task_ids.join(',')}]`;
-      }
-      if (params?.employee_ids?.length) {
-        query += `&timesheet-employee-ids=[${params.employee_ids.join(',')}]`;
-      }
+      // Old filter query building (simple array join)
+      // if (params?.client_ids?.length) {
+      //   query += `&client-ids=[${params.client_ids.join(',')}]`;
+      // }
+      // if (params?.job_ids?.length) {
+      //   query += `&job-ids=[${params.job_ids.join(',')}]`;
+      // }
+      // if (params?.task_ids?.length) {
+      //   query += `&timesheet-task-ids=[${params.task_ids.join(',')}]`;
+      // }
+      // if (params?.employee_ids?.length) {
+      //   query += `&timesheet-employee-ids=[${params.employee_ids.join(',')}]`;
+      // }
+      // New: FilterState-aware (handles select-all three-state logic)
+      query += this.buildQueryForFilter(params?.client_ids, 'client');
+      query += this.buildQueryForFilter(params?.job_ids, 'job');
+      query += this.buildQueryForFilter(params?.task_ids, 'timesheet-task');
+      query += this.buildQueryForFilter(params?.employee_ids, 'timesheet-employee');
       if(params?.timesheet_dates){
         // disableFlag=this.getDisableDownload(params.timesheet_dates.startDate, params.timesheet_dates.endDate);
         query += `&start-date=${params.timesheet_dates.startDate}&end-date=${params.timesheet_dates.endDate}`
@@ -437,6 +428,7 @@ async getTableData(params?: { page?: number; pageSize?: number; searchTerm?: str
 
             // Try to retain old filterOptions
             const existingCol = this.tableConfig?.columns?.find(c => c.key === col.key);
+            // console.log(existingCol)
             if (existingCol?.filterOptions?.length) {
               filterOptions = existingCol.filterOptions;
             } else if (col.filterable) {
@@ -454,7 +446,12 @@ async getTableData(params?: { page?: number; pageSize?: number; searchTerm?: str
 
             return {
               ...col,
-              filterOptions
+              filterOptions,
+              // Preserve totalCount/currentPage/totalPages set by updateFilterColumn
+              // so selectAllFun uses the correct total_no_of_record from the filter dropdown API
+              ...(existingCol?.totalCount   !== undefined && { totalCount:   existingCol.totalCount }),
+              ...(existingCol?.currentPage  !== undefined && { currentPage:  existingCol.currentPage }),
+              ...(existingCol?.totalPages   !== undefined && { totalPages:   existingCol.totalPages }),
             };
           }),
         data: formattedData,

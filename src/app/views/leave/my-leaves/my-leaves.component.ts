@@ -7,6 +7,15 @@ import { Router } from '@angular/router';
 import { GenericDeleteComponent } from '../../../generic-components/generic-delete/generic-delete.component';
 import { MatDialog } from '@angular/material/dialog';
 import {CancelLeaveRequestComponent} from '../cancel-leave-request/cancel-leave-request.component'
+import { FilterQueryService } from '../../../service/filter-query.service';
+
+export interface IdNamePair { id: any; name: string; }
+export interface FilterState {
+  selectAllValue: boolean | null;
+  selectedOptions: IdNamePair[];
+  excludedIds: IdNamePair[];
+  selectedCount: number;
+}
 
 @Component({
   selector: 'app-my-leaves',
@@ -20,6 +29,7 @@ export class MyLeavesComponent implements OnInit {
 
   constructor(private apiService: ApiserviceService, private modalService: NgbModal,private datePipe: DatePipe,
     private router: Router,private dialog: MatDialog,
+    private filterQueryService: FilterQueryService,
   ) {
     this.userRole = sessionStorage.getItem('user_role_name');
     this.user_id = sessionStorage.getItem('user_id');
@@ -48,10 +58,9 @@ export class MyLeavesComponent implements OnInit {
    leaveStatus: any = [];
    mainStartDate: any;
   mainEndDate: any;
-  filters: { leave_type: string[], employees: string[], status_name: string[] } = {
-    leave_type: [],
-    employees: [],
-    status_name: [],
+  filters: any = {
+    leave_type: { selectAllValue: null, selectedOptions: [], excludedIds: [], selectedCount: 0 },
+    status_name: { selectAllValue: null, selectedOptions: [], excludedIds: [], selectedCount: 0 },
   }
   selectedItemData:any;
   ngOnInit(): void {
@@ -107,8 +116,8 @@ export class MyLeavesComponent implements OnInit {
     this.getMyLeaves();
   }
   onFilterChange(event: any, filterType: string) {
-    const selectedOptions = event;
-    this.filters[filterType] = selectedOptions;
+    this.filters[filterType] = event;
+    this.page = 1;
      this.getMyLeaves();
   }
   onTableSizeChange(event: any): void {
@@ -131,13 +140,30 @@ export class MyLeavesComponent implements OnInit {
     return filterArray.map(x => x.id).join(',');
   }
 
+  private getFilterParamName(filterType: string): string {
+    const mapping: { [key: string]: string } = {
+      'leave_type': 'leave-type', //leave_type_ids
+    };
+    return mapping[filterType] || filterType;
+  }
+
+  private buildFilterQuery(filterType: string): string {
+    return this.filterQueryService.buildFilterSegment(this.filters[filterType], this.getFilterParamName(filterType));
+  }
+
   getMyLeaves() {
     this.filterQuery = this.getFilterBaseUrl()
-    if (this.filters.leave_type.length) {
-      this.filterQuery += `&leave_type_ids=[${this.ids(this.filters.leave_type)}]`
-    }
-    if (this.filters.status_name.length) {
-      this.filterQuery += `&status_values=[${this.ids(this.filters.status_name)}]`;
+    this.filterQuery += this.buildFilterQuery('leave_type');
+    if(this.filters.status_name?.selectAllValue==true){
+      this.filterQuery += `&status_values=[${this.leaveStatus.map((status: any) => `${status.id}`).join(',')}]`
+    } else if(this.filters.status_name?.selectAllValue==false){
+      const excludedIds = this.filters.status_name?.excludedIds?.map((e:any) => e.id) || [];
+      let temp = this.leaveStatus.filter(
+          (status: any) => !excludedIds.includes(status.id)).map((status:any)=>status.id)
+      console.log(temp)
+      this.filterQuery += `&status_values=[${temp}]`;
+    } else if(this.filters.status_name?.selectAllValue==null && this.filters.status_name?.selectedOptions.length>0){
+      this.filterQuery += `&status_values=[${this.filters.status_name?.selectedOptions.map((option: any) => option.id).join(',')}]`;
     }
     if(this.mainStartDate && this.mainEndDate){
       let start_date = this.datePipe.transform(this.mainStartDate, 'yyyy-MM-dd');
@@ -243,7 +269,10 @@ export class MyLeavesComponent implements OnInit {
     this.tableSize = 50;
     this.mainStartDate = '';
     this.mainEndDate = '';
-    this.filters = {leave_type: [],employees: [],status_name: []};
+    this.filters = {
+      leave_type: { selectAllValue: null, selectedOptions: [], excludedIds: [], selectedCount: 0 },
+      status_name: { selectAllValue: null, selectedOptions: [], excludedIds: [], selectedCount: 0 },
+    };
     this.getMyLeaves();
   }
 }

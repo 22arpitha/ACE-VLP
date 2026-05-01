@@ -6,6 +6,7 @@ import { buildPaginationQuery } from '../../../shared/pagination.util';
 import { environment } from '../../../../environments/environment';
 import { MatDialog } from '@angular/material/dialog';
 import { DatePipe } from '@angular/common';
+import { FilterQueryService } from '../../../service/filter-query.service';
 
 @Component({
   selector: 'app-leave-summary-report',
@@ -61,7 +62,8 @@ export class LeaveSummaryReportComponent implements OnInit {
     private common_service: CommonServiceService,
     private api: ApiserviceService,
     private dialog: MatDialog,
-    private datePipe: DatePipe
+    private datePipe: DatePipe,
+    private filterQueryService: FilterQueryService
   ) {
     this.user_id = sessionStorage.getItem('user_id');
     this.userRole = sessionStorage.getItem('user_role_name');
@@ -124,13 +126,13 @@ export class LeaveSummaryReportComponent implements OnInit {
   }
 
   // Called from <app-dynamic-table> via @Output actionEvent
-  handleAction(event: { actionType: string; detail: any, key: any }) {
+  handleAction(event: { actionType: string; detail: any, key: any,fromFilter?: boolean  }) {
     switch (event.actionType) {
       case 'tableDataChange':
         this.onTableDataChange(event.detail);
         break;
       case 'tableSizeChange':
-        this.onTableSizeChange(event.detail);
+         if (!event.fromFilter) this.onTableSizeChange(event.detail);
         break;
       case 'export_csv':
         this.exportCsvOrPdf(event.detail);
@@ -279,9 +281,12 @@ export class LeaveSummaryReportComponent implements OnInit {
   }
   exportCsvOrPdf(fileType:string) {
      let query = `?file-type=${fileType}&download=true`;
-    if (this.selectedEmployeeIds?.length) {
-      query += `&employee-ids=[${this.selectedEmployeeIds.join(',')}]`;
-    }
+    // Old filter query building (simple array join)
+    // if (this.selectedEmployeeIds?.length) {
+    //   query += `&employee-ids=[${this.selectedEmployeeIds.join(',')}]`;
+    // }
+    // New: FilterState-aware (handles select-all three-state logic)
+    query += this.buildQueryForFilter(this.selectedEmployeeIds, 'leave-employee');
     if (this.selectedLeaveType) {
       query += `&leave-type-id=${this.selectedLeaveType}`;
     }
@@ -296,6 +301,17 @@ export class LeaveSummaryReportComponent implements OnInit {
     window.open(url, '_blank');
   }
 
+  // select all code
+  private buildQueryForFilter(filterValue: any, paramName: string): string {
+    if (!filterValue) return '';
+    // Old format: plain array of ids
+    if (Array.isArray(filterValue)) {
+      return filterValue.length ? `&${paramName}-ids=[${filterValue.join(',')}]` : '';
+    }
+    // New format: FilterState object
+    return this.filterQueryService.buildFilterSegment(filterValue, paramName);
+  }
+
   // new code
   private updateFilterColumn(key: string, cache: any) {
     this.tableConfig.columns = this.tableConfig.columns.map((col:any) =>
@@ -304,7 +320,8 @@ export class LeaveSummaryReportComponent implements OnInit {
           ...col,
           filterOptions: cache.data,
           currentPage: cache.page,
-          totalPages: Math.ceil(cache.total / 20)
+          totalPages: Math.ceil(cache.total / 20),
+          totalCount: cache.total
         }
         : col
     );
@@ -319,9 +336,12 @@ export class LeaveSummaryReportComponent implements OnInit {
     const query = buildPaginationQuery({ page, pageSize, searchTerm });
     finalQuery = query
     finalQuery += this.userRole === 'Manager' ? `&manager-id=${this.user_id}` : '';
-    if (params?.employee_ids?.length) {
-      finalQuery += `&employee-ids=[${params.employee_ids.join(',')}]`;
-    }
+    // Old filter query building (simple array join)
+    // if (params?.employee_ids?.length) {
+    //   finalQuery += `&employee-ids=[${params.employee_ids.join(',')}]`;
+    // }
+    // New: FilterState-aware (handles select-all three-state logic)
+    finalQuery += this.buildQueryForFilter(params?.employee_ids, 'leave-employee');
     if (params?.leave_type) {
       finalQuery += `&leave-type-id=${params.leave_type}`;
     }
@@ -360,7 +380,11 @@ export class LeaveSummaryReportComponent implements OnInit {
             }
             return {
               ...col,
-              filterOptions
+              filterOptions,
+              // Preserve totalCount/currentPage/totalPages set by updateFilterColumn
+              ...(existingCol?.totalCount   !== undefined && { totalCount:   existingCol.totalCount }),
+              ...(existingCol?.currentPage  !== undefined && { currentPage:  existingCol.currentPage }),
+              ...(existingCol?.totalPages   !== undefined && { totalPages:   existingCol.totalPages }),
             };
           }),
           data: this.formattedData,
@@ -467,10 +491,7 @@ export class LeaveSummaryReportComponent implements OnInit {
         if (!res) return;
 
         const fieldMap: any = {
-          'client-ids': { id: 'id', name: 'client_name' },
-          'job-ids': { id: 'id', name: 'job_name' },
-          'job-status-ids': { id: 'id', name: 'status_name' },
-          'timesheet-employee-ids': { id: 'user_id', name: 'user__full_name' },
+         'timesheet-employee-ids': { id: 'user_id', name: 'user__full_name' },
         };
 
         const newData = res.results?.map((item: any) => ({

@@ -6,13 +6,18 @@ export interface TableColumn {
   sortWithApi?:boolean;
   filterable?: boolean;
   filterType?: 'text' | 'date' | 'multi-select';
-  filterOptions?: string[];
+  filterOptions?: any[];
   navigation?: boolean;
   empNavigation?:boolean;
   inputField?:boolean;
   fileInputField?:boolean;
   sortKey?:string;
   leftAlign?:boolean;
+  paramskeyId?: string;
+  keyId?: string;
+  totalCount?: number;
+  currentPage?: number;
+  totalPages?: number;
   width?:boolean;
 }
 
@@ -53,5 +58,6 @@ export interface DynamicTableConfig {
   leaveTypes?:boolean;
   employeeDropdown?:boolean,
   reportType?:string;
-  showSubmit?:boolean
+  showSubmit?:boolean,
+  weekLeftAndRightArrows?:boolean;
 }

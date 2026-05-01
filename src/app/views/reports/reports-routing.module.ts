@@ -18,6 +18,8 @@ import { WfhProlongedHealthIssuesTransactionReportComponent } from './wfh-prolon
 import { DashboardWfhComponent } from './dashboard-wfh/dashboard-wfh.component';
 import { ItIssueReportsComponent } from './it-issue-reports/it-issue-reports.component';
 import { NonProdSummaryComponent } from './productivity-report/non-prod-summary/non-prod-summary.component';
+import { PendingTimesheetReportsComponent } from './pending-timesheet-reports/pending-timesheet-reports.component';
+import { MissedTimesheetReportsComponent } from './missed-timesheet-reports/missed-timesheet-reports.component';
 const routes: Routes = [
   {
     path: '',
@@ -76,6 +78,14 @@ const routes: Routes = [
         path: 'it-issues',
         component: ItIssueReportsComponent,
       },
+      {
+        path:'pending-timesheet-reports',
+        component: PendingTimesheetReportsComponent
+      },
+      {
+        path:'missed-timesheet-reports',
+        component:MissedTimesheetReportsComponent
+      }
     ],
   },
 ];

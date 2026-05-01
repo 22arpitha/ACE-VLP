@@ -6,6 +6,7 @@ import { CommonServiceService } from '../../../service/common-service.service';
 import { ApiserviceService } from '../../../service/apiservice.service';
 import { MatDialog } from '@angular/material/dialog';
 import { DatePipe } from '@angular/common';
+import { FilterQueryService } from '../../../service/filter-query.service';
 
 @Component({
   selector: 'app-wfh-limited-flexibility-summary-report',
@@ -63,6 +64,7 @@ export class WfhLimitedFlexibilitySummaryReportComponent implements OnInit {
     private api: ApiserviceService,
     private dialog: MatDialog,
     private datePipe: DatePipe,
+    private filterQueryService:FilterQueryService
   ) {
     this.user_id = sessionStorage.getItem('user_id');
     this.userRole = sessionStorage.getItem('user_role_name');
@@ -128,13 +130,13 @@ export class WfhLimitedFlexibilitySummaryReportComponent implements OnInit {
   }
 
   // Called from <app-dynamic-table> via @Output actionEvent
-  handleAction(event: { actionType: string; detail: any; key: any }) {
+  handleAction(event: { actionType: string; detail: any; key: any,  fromFilter?: boolean}) {
     switch (event.actionType) {
       case 'tableDataChange':
         this.onTableDataChange(event.detail);
         break;
       case 'tableSizeChange':
-        this.onTableSizeChange(event.detail);
+        if (!event.fromFilter) this.onTableSizeChange(event.detail);
         break;
       case 'export_csv':
         this.exportCsvOrPdf(event.detail);
@@ -283,14 +285,16 @@ export class WfhLimitedFlexibilitySummaryReportComponent implements OnInit {
   }
   exportCsvOrPdf(fileType: string) {
     let query = `?file-type=${fileType}&download=true`;
-    if (this.selectedEmployeeIds?.length) {
-      query += `&employee-ids=[${this.selectedEmployeeIds.join(',')}]`;
-    }
+    // old code 
+    // if (this.selectedEmployeeIds?.length) {
+    //   query += `&employee-ids=[${this.selectedEmployeeIds.join(',')}]`;
+    // }
 
     if (this.userRole === 'Manager'&&!this.selectedEmployeeIds?.length) {
       query += `&manager-id=${this.user_id}`;
     }
-
+    // select all code
+    query += this.buildQueryForFilter(this.selectedEmployeeIds, 'wfh-report-employee');
     // query += this.userRole === 'Manager' ? `&manager-id=${this.user_id}` : '';
     // if (this.selectedLeaveType) {
     //   query += `&leave-type-id=${this.selectedLeaveType}`;
@@ -306,6 +310,17 @@ export class WfhLimitedFlexibilitySummaryReportComponent implements OnInit {
     window.open(url, '_blank');
   }
 
+  // select all code
+  private buildQueryForFilter(filterValue: any, paramName: string): string {
+    if (!filterValue) return '';
+    // Old format: plain array of ids
+    if (Array.isArray(filterValue)) {
+      return filterValue.length ? `&${paramName}-ids=[${filterValue.join(',')}]` : '';
+    }
+    // New format: FilterState object
+    return this.filterQueryService.buildFilterSegment(filterValue, paramName);
+  }
+
   // new code
   private updateFilterColumn(key: string, cache: any) {
     this.tableConfig.columns = this.tableConfig.columns.map((col: any) =>
@@ -315,6 +330,7 @@ export class WfhLimitedFlexibilitySummaryReportComponent implements OnInit {
             filterOptions: cache.data,
             currentPage: cache.page,
             totalPages: Math.ceil(cache.total / 20),
+            totalCount: cache.total
           }
         : col,
     );
@@ -435,7 +451,6 @@ export class WfhLimitedFlexibilitySummaryReportComponent implements OnInit {
     employee_ids?: any;
     // leave_type?: any;
   }) {
-    console.log(params?.employee_ids);
 
     let finalQuery;
     this.formattedData = [];
@@ -449,10 +464,12 @@ export class WfhLimitedFlexibilitySummaryReportComponent implements OnInit {
     finalQuery +=
       this.userRole === 'Manager' ? `&manager-id=${this.user_id}` : '';
 
-    if (params?.employee_ids?.length) {
-      finalQuery += `&employee-ids=[${params.employee_ids.join(',')}]`;
-    }
-
+      // old code 
+    // if (params?.employee_ids?.length) {
+    //   finalQuery += `&employee-ids=[${params.employee_ids.join(',')}]`;
+    // }
+    // select all code
+    finalQuery += this.buildQueryForFilter(params?.employee_ids, 'wfh-report-employee');
     // if (params?.leave_type) {
     //   finalQuery += `&leave-type-id=${params.leave_type}`;
     // }
@@ -486,12 +503,23 @@ export class WfhLimitedFlexibilitySummaryReportComponent implements OnInit {
             }));
 
             this.tableConfig = {
-              columns: tableColumns?.map((col) => ({
-                ...col,
-                filterOptions:
-                  this.tableConfig?.columns?.find((c: any) => c.key === col.key)
-                    ?.filterOptions ?? [],
-              })),
+              columns: tableColumns.map(col => {
+                  let filterOptions: any = [];
+      
+                  // Try to retain old filterOptions
+                  const existingCol = this.tableConfig?.columns?.find(c => c.key === col.key);
+                  if (existingCol?.filterOptions?.length) {
+                    filterOptions = existingCol.filterOptions;
+                  }
+      
+                  return {
+                    ...col,
+                    filterOptions,
+                    ...(existingCol?.totalCount   !== undefined && { totalCount:   existingCol.totalCount }),
+                    ...(existingCol?.currentPage  !== undefined && { currentPage:  existingCol.currentPage }),
+                    ...(existingCol?.totalPages   !== undefined && { totalPages:   existingCol.totalPages }),
+                  };
+                }),
               data: this.formattedData,
               searchTerm: this.term,
               actions: [],
@@ -510,8 +538,18 @@ export class WfhLimitedFlexibilitySummaryReportComponent implements OnInit {
               searchPlaceholder: 'Search by Employee',
             };
           } else {
-            this.tableConfig = {
-              columns: tableColumns,
+            const existingColumnsEmpty = this.tableConfig?.columns ?? [];
+              this.tableConfig = {
+                columns: tableColumns?.map(col => {
+                  const existingCol = existingColumnsEmpty.find((c: any) => c.key === col.key);
+                  return {
+                    ...col,
+                    filterOptions: existingCol?.filterOptions ?? [],
+                    ...(existingCol?.totalCount   !== undefined && { totalCount:   existingCol.totalCount }),
+                    ...(existingCol?.currentPage  !== undefined && { currentPage:  existingCol.currentPage }),
+                    ...(existingCol?.totalPages   !== undefined && { totalPages:   existingCol.totalPages }),
+                  };
+                }),
               data: [],
               searchTerm: this.term,
               actions: [],

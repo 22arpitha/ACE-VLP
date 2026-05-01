@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ApiserviceService } from '../../../service/apiservice.service';
 import { environment } from '../../../../environments/environment';
 import { DatePipe } from '@angular/common';
+import { CommonServiceService } from '../../../service/common-service.service';
 
 @Component({
   selector: 'app-leave-requests',
@@ -9,6 +10,7 @@ import { DatePipe } from '@angular/common';
   styleUrls: ['./leave-requests.component.scss']
 })
 export class LeaveRequestsComponent implements OnInit {
+   BreadCrumbsTitle: any = 'Leave Requests';
   selectedTabIndex = 0;
   activeStatus = 'pending';
   leaveRequests: any[] = [];
@@ -44,9 +46,10 @@ export class LeaveRequestsComponent implements OnInit {
     { label: 'Rejected', status: 'rejected' },
   ];
 
-  constructor(private apiService: ApiserviceService, private datePipe: DatePipe) {
+  constructor(private apiService: ApiserviceService, private common_service:CommonServiceService, private datePipe: DatePipe) {
     this.userId = sessionStorage.getItem('user_id');
     this.userRole = sessionStorage.getItem('user_role_name');
+    this.common_service.setTitle(this.BreadCrumbsTitle);
   }
 
   ngOnInit(): void {

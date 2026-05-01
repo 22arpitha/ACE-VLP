@@ -26,6 +26,7 @@ import { WfhConfigurationComponent } from './wfh-configuration/wfh-configuration
 import { WfhTypeComponent } from './wfh-type/wfh-type.component';
 import { DivisionComponent } from './division/division.component';
 import { DepartmentComponent } from './department/department.component';
+import { TimesheetEditableDaysComponent } from './timesheet-editable-days/timesheet-editable-days.component';
 @NgModule({
   declarations: [
     SettingsComponent,
@@ -46,7 +47,8 @@ import { DepartmentComponent } from './department/department.component';
     WfhConfigurationComponent,
     WfhTypeComponent,
     DivisionComponent,
-    DepartmentComponent
+    DepartmentComponent,
+    TimesheetEditableDaysComponent
   ],
   imports: [
     CommonModule,

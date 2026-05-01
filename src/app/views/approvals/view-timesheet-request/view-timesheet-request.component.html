@@ -1,0 +1,63 @@
+<div class="view-timesheet-request" *ngIf="requestData">
+    <div class="request-header">
+        <h4 class="request-title">Unlock Request</h4>
+        <span class="status-badge" [ngClass]="{
+                'status-pending': requestData?.status.toLowerCase() === 'pending_admin' || requestData?.status.toLowerCase() === 'pending_manager',
+                'status-rejected': requestData?.status.toLowerCase() === 'rejected',
+                'status-approved': requestData?.status.toLowerCase() === 'approved' || requestData?.status.toLowerCase() === 'auto_approved'
+              }">
+            {{ requestData?.status_display }}
+        </span>
+    </div>
+
+    <mat-divider class="mb-3"></mat-divider>
+
+    <div class=" request-section">
+        <h6 class="section-label">Request Reason</h6>
+        <p class="section-content">{{ requestData?.reason }}</p>
+    </div>
+
+    <div class="d-md-flex justify-content-md-between"  *ngIf="requestData.status.toLowerCase() === 'rejected'">
+        <div class="request-section">
+            <h6 class="section-label rejected-label">Rejected By</h6>
+            <p class="section-content">{{ requestData?.action_by_name }}</p>
+        </div>
+        <div class="request-section">
+          <h6 class="section-label rejected-label">Rejected Reason</h6>
+         <p class="section-content">{{ requestData?.rejected_reason }}</p>
+        </div>
+    </div>
+    <div>
+
+    <div class="request-section" *ngIf="requestData.status.toLowerCase() === 'approved'">
+        <h6 class="section-label approved-label">Approved By</h6>
+        <p class="section-content">{{ requestData?.action_by_name }}</p>
+    </div>
+
+    <div class="mt-2" *ngIf="canShowActions()">
+        <div class="request-section">
+            <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+                <mat-label>Reason <b class="r-star">*</b></mat-label>
+                <textarea matInput placeholder="Enter reason for rejection" autocomplete="off"
+                    [(ngModel)]="rejectionReason" maxlength="500" rows="3"></textarea>
+                <mat-hint align="end" class="mt-2">
+                    {{ rejectionReason?.length || 0 }}/500 ({{ 500 - (rejectionReason?.length || 0) }} left)
+                </mat-hint>
+            </mat-form-field>
+        </div>
+    </div>
+
+    <div class="action-buttons">
+        <button mat-button class="cancel-button mat-btn-s" type="button" mat-dialog-close>Close</button>
+        <div class="action-buttons-right" *ngIf="canShowActions()">
+            <button mat-raised-button class="delete-item-button mat-btn-s" type="button" (click)="rejectRequest()"
+                [disabled]="!rejectionReason?.trim()">
+                Reject
+            </button>
+            <button mat-raised-button class="proceedbtn mat-btn-s" type="button"
+                [disabled]="rejectionReason.length !== 0" (click)="approveRequest()">
+                Approve
+            </button>
+        </div>
+    </div>
+</div>

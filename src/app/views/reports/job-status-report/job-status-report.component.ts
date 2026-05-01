@@ -6,6 +6,7 @@ import { downloadFileFromUrl } from '../../../shared/file-download.util';
 import { buildPaginationQuery } from '../../../shared/pagination.util';
 import { getUniqueValues3 } from '../../../shared/unique-values.utils';
 import { environment } from '../../../../environments/environment';
+import { FilterQueryService } from '../../../service/filter-query.service';
 
 @Component({
   selector: 'app-job-status-report',
@@ -41,7 +42,7 @@ export class JobStatusReportComponent implements OnInit {
    statusList:String[]=[];
     user_id:any;
    userRole:any;
-   client_id:any;
+   client_id:any = null;
    isIncludeAllJobEnable:boolean=true;
    isIncludeAllJobValue:boolean=false;
   jobFilterList: any = [];
@@ -62,14 +63,11 @@ export class JobStatusReportComponent implements OnInit {
   primaryEmployees:any= [];
  constructor(
      private common_service:CommonServiceService,
-     private api:ApiserviceService
+     private api:ApiserviceService,
+     private filterQueryService: FilterQueryService
    ) {
     this.user_id = sessionStorage.getItem('user_id');
     this.userRole = sessionStorage.getItem('user_role_name');
-    // this.getJobList();
-    // this.getGroupList();
-    // this.getClienList();
-    // this.getStatusList();
     }
 
    async ngOnInit() {
@@ -94,20 +92,6 @@ export class JobStatusReportComponent implements OnInit {
     )
   }
 
-  getStatusList(){
-  this.api.getData(`${environment.live_url}/${environment.settings_status_group}/`).subscribe((res: any) => {
-    if(res){
-      // console.log(res)
-      this.statusName = res?.map((item: any) => ({
-        id: item.id,
-        // name: item.status_name // for job status 
-        name: item.group_name // for status group
-      }));
-    }
-  })
-  // console.log('statusName',this.statusName);
-  return this.statusName;
-}
 
    // Called when user changes page number from the dynamic table
  onTableDataChange(event: any) {
@@ -151,13 +135,13 @@ export class JobStatusReportComponent implements OnInit {
  }
 
  // Called from <app-dynamic-table> via @Output actionEvent
- handleAction(event: { actionType: string; detail: any,key:string }) {
-   switch (event.actionType) {
+ handleAction(event: { actionType: string; detail: any,key:string, fromFilter?: boolean }) {
+  switch (event.actionType) {
      case 'tableDataChange':
        this.onTableDataChange(event.detail);
        break;
        case 'tableSizeChange':
-       this.onTableSizeChange(event.detail);
+       if (!event.fromFilter) this.onTableSizeChange(event.detail);
        break;
        case 'search':
        this.onSearch(event.detail);
@@ -172,6 +156,7 @@ export class JobStatusReportComponent implements OnInit {
         this.tabStatus = event['action'];
         this.page= 1;
         this.tableSize = 50;  
+        this.client_id = null;
         this.selectedClientIds = [];
         this.selectedJobIds= [];
         this.selectedGroupIds = [];
@@ -180,9 +165,8 @@ export class JobStatusReportComponent implements OnInit {
         this.selectedStatusIds= [];
         this.primaryEmployees = [];
         this.filterDataCache={};
-        // this.getClienList();
-        // this.getJobList();
-        this.page=1;
+        this.isIncludeAllJobEnable=true;
+        this.isIncludeAllJobValue=false;
         this.getTableData({
           page: this.page,
           pageSize: this.tableSize,
@@ -198,8 +182,11 @@ export class JobStatusReportComponent implements OnInit {
         this.client_id = event['action'] && event['client_id'] ? event['client_id'] : null;
         this.isIncludeAllJobEnable = event['action']  || (!event['action'] && event['client_id'])  ? false : true;
         this.page=1;
-         this.filterDataCache={};
-        // this.filterDataCache['job_name']={data: [], page: 1, total: 0, searchTerm: ''};
+        // Reset job and employee filters
+        this.selectedJobIds = [];
+        this.primaryEmployees = [];
+        this.filterDataCache['job-ids'] = {data: [], page: 0, total: 0, searchTerm: ''};
+        this.filterDataCache['is-primary-ids'] = {data: [], page: 0, total: 0, searchTerm: ''};
         this.getTableData({
           page: this.page,
           pageSize: this.tableSize,
@@ -258,17 +245,26 @@ export class JobStatusReportComponent implements OnInit {
   });
  }
 
- onApplyFilter(filteredData: any[], filteredKey: string): void {
-  // console.log('filteredKey',filteredKey)
+ onApplyFilter(filteredData: any, filteredKey: string): void {
   if (filteredKey === 'client-ids') {
    this.selectedClientIds = filteredData;
-    if(filteredData && filteredData.length===0 || filteredData.length>1){
+    const { count, singleId } = this.getEffectiveClientSelection(filteredData);
+    if(count !== 1){
       this.filterDataCache={};
       this.isIncludeAllJobEnable=true;
       this.isIncludeAllJobValue=false;
       this.client_id=null;
     }else{
       this.isIncludeAllJobEnable=false;
+      this.client_id = singleId;
+    }
+    // When selectAll=false with excludedIds, use includeAlljobsids to determine single client
+    if (filteredData?.selectAllValue === false && filteredData?.excludedIds?.length > 0
+        && filteredData?.includeAlljobsids?.length === 1) {
+       this.client_id = filteredData.includeAlljobsids[0];
+      this.isIncludeAllJobEnable = false;
+    }else{
+      this.client_id = null;
     }
   }
   if (filteredKey === 'job-ids') {
@@ -323,170 +319,6 @@ onApplyDateFilter(filteredDate:string, filteredKey: string): void {
   });
 }
 
-getClienList(){
-  let query = `?status=True`;
- query += this.userRole ==='Admin' ? '':`&employee-id=${this.user_id}`;
-  this.api.getData(`${environment.live_url}/${environment.clients}/${query}`).subscribe((res: any) => {
-    if(res){
-      this.clientName = res?.map((item: any) => ({
-        id: item.id,
-        name: item.client_name
-      }));
-    }
-    let clientIds = this.clientName.map((client: any) => client.id);
-        if (clientIds && clientIds.length >= 1) {
-
-          this.getGroupList(clientIds);
-        }
-  })
-  return this.clientName;
-}
-  getJobList(){
-    let query = `?status=${this.tabStatus}`;
-    query += this.userRole ==='Admin' ? '':`&employee-id=${this.user_id}`;
-    this.api.getData(`${environment.live_url}/${environment.jobs}/${query}`).subscribe((res: any) => {
-      if(res){
-        this.jobName = res?.map((item: any) => ({
-          id: item.id,
-          name: item.job_name
-        }));
-      }
-    })
-    return this.jobName;
-  }
-  getGroupList(clientIds){
-    let query = this.userRole === 'Admin' ? '' : `?client-ids=[${clientIds}]`
-    this.groupName = [];
-    this.api.getData(`${environment.live_url}/${environment.clients_group}/${query}`).subscribe((respData: any) => {
-      this.groupName = respData?.map((group: any) => ({
-        id: group?.id,
-        name: group?.group_name
-      }))
-    }, (error => {
-      this.api.showError(error?.error?.detail)
-    }));
-    // this.api.getData(`${environment.live_url}/${environment.settings_status_group}/`).subscribe((res: any) => {
-    //   if(res){
-    //     this.groupName = res?.map((item: any) => ({
-    //       id: item.id,
-    //       name: item.group_name
-    //     }));
-    //   }
-    // })
-  }
- // Fetch table data from API with given params
-//  async getTableData(params?: { page?: number; pageSize?: number; searchTerm?: string;client_ids?:any;job_ids?:any;group_ids?:any;job_allocation_date?:any;job_status_date?:any,job_status?: any[]; }) {
-//   let finalQuery;
-//   this.formattedData = []; // Initialize/clear
-//    const page = params?.page ?? this.page;
-//    const pageSize = params?.pageSize ?? this.tableSize;
-//    const searchTerm = params?.searchTerm ?? this.term;
-//    const query = buildPaginationQuery({ page, pageSize, searchTerm });
-//    this.jobStatusList(this.tabStatus);
-//     // console.log(this.groupName,'groupName');
-//        finalQuery = query + `&job-status=[${this.statusList}]`;
-//        finalQuery += (this.userRole ==='Admin' || (this.userRole !='Admin' && this.client_id)) ? '':`&employee-id=${this.user_id}`;
-//        finalQuery += this.client_id ? `&client=${this.client_id}` : '';
-//        finalQuery += `&report-type=job-status-report`;
-//         if (params?.client_ids?.length) {
-//             finalQuery += `&client-ids=[${params.client_ids.join(',')}]`;
-//           }if (params?.job_ids?.length) {
-//             finalQuery += `&job-ids=[${params?.job_ids.join(',')}]`;
-//           }if (params?.group_ids?.length) {
-//             finalQuery += `&group-ids=[${params.group_ids.join(',')}]`;
-//           }if (params?.job_allocation_date?.startDate && params?.job_allocation_date?.endDate) {
-//             // console.log(params.job_allocation_date)
-//              finalQuery += `&start-date=${params?.job_allocation_date?.startDate}&end-date=${params?.job_allocation_date?.endDate}`
-//           }if (params?.job_status_date) {
-//             finalQuery += `&job-status-date=[${params?.job_status_date}]`;
-//           }if (params?.job_status?.length) {
-//             finalQuery += `&job-status-ids=[${params?.job_status.join(',')}]`;
-//           }
-
-//       // Inner API call for actual table data
-//       await this.api.getData(`${environment.live_url}/${environment.jobs}/${finalQuery}`).subscribe((response: any) => {
-//         if(response && response.results && Array.isArray(response.results) && response.results.length >=1){
-//           this.formattedData = response.results.map((item: any, i: number) => ({
-//             sl: (page - 1) * pageSize + i + 1,
-//             ...item,
-//             is_primary:item?.employees?.find((emp: any) => emp?.is_primary === true)?.employee_name || '',
-//           }));
-//           //console.log(this.formattedData);
-//           this.tableConfig = {
-//            columns: tableColumns?.map(col => {
-//               let filterOptions:any = [];
-//               if (col.filterable) {
-//                 if (col.key === 'client_name') {
-//                   filterOptions = this.clientName;
-//                 }else if (col.key === 'job_name') {
-//                   filterOptions = this.jobName;
-//                 }else if (col.key === 'group_name') {
-//                   filterOptions = this.groupName;
-//                 }else if (col.key === 'job_status_name') {
-//                    filterOptions = this.statusName;
-//                  }
-//               }
-//               return { ...col, filterOptions };
-//             }),
-//            data: this.formattedData,
-//            searchTerm: this.term,
-//            actions: [],
-//            accessConfig: [],
-//            tableSize: pageSize,
-//            pagination: true,
-//            searchable: true,
-//            headerTabs:true,
-//            showIncludeAllJobs:true,
-//            includeAllJobsEnable:this.isIncludeAllJobEnable ? this.isIncludeAllJobEnable : false,
-//            includeAllJobsValue:this.isIncludeAllJobValue ? this.isIncludeAllJobValue : false,
-//            selectedClientId:this.client_id ? this.client_id:null,
-//            sendEmail:true,
-//            currentPage:page,
-//            totalRecords: response.total_no_of_record, // Correctly use 'response' from inner call
-//            showDownload:true,
-//            searchPlaceholder:'Search by Client/Group/Job',
-//           };
-//         }else{
-//           this.tableConfig = {
-//               columns: tableColumns?.map(col => {
-//                       let filterOptions:any = [];
-//                       if (col.filterable) {
-//                         if (col.key === 'client_name') { filterOptions = this.clientName; }
-//                         else if (col.key === 'job_name') { filterOptions = this.jobName; }
-//                          else if (col.key === 'job_status_name') {
-//                    filterOptions = this.statusName;
-//                  }
-//                         else if (col.key === 'group_name') {
-//                   filterOptions = this.groupName;
-//                 }
-//                       }
-//                       return { ...col, filterOptions };
-//                     }),
-//                 data: [],
-//                 searchTerm: this.term,
-//                 actions: [],
-//                 accessConfig: [],
-//                 tableSize: pageSize,
-//                 pagination: true,
-//                 searchable: true,
-//                 headerTabs:true,
-//                 showIncludeAllJobs:true,
-//                 includeAllJobsEnable:this.isIncludeAllJobEnable ? this.isIncludeAllJobEnable : false,
-//                 includeAllJobsValue:this.isIncludeAllJobValue ? this.isIncludeAllJobValue : false,
-//                 selectedClientId:this.client_id ? this.client_id:null,
-//                 sendEmail:true,
-//                 currentPage:page,
-//                 totalRecords: 0,
-//                 showDownload:true,
-//                 searchPlaceholder:'Search by Client/Group/Job',
-//               };
-//         }
-//       }, (error: any) => { // Error handling for inner API call
-//         this.api.showError(error?.error?.detail);
-//         this.formattedData = [];
-//         this.tableConfig = { ...this.tableConfig, data: [], totalRecords: 0, currentPage: page };
-//       });
-//  }
 
    onSearch(term: string): void {
      this.term = term;
@@ -524,19 +356,7 @@ public sendEamils(){
               this.api.getData(`${environment.live_url}/${environment.all_jobs}/${finalQuery}`).subscribe((respData: any) => {
                   if (respData) {
               this.api.showSuccess(respData['message']);
-    //           this.resetValues();
-    //     setTimeout(() => {
-    //     this.getTableData({
-    //    page: 1,
-    //    pageSize: this.tableSize,
-    //    searchTerm: this.term,
-    //    client_ids: this.selectedClientIds,
-    //    job_ids: this.selectedJobIds,
-    //    group_ids: this.selectedGroupIds,
-    //    job_allocation_date: this.jobAllocationDate,
-    //    job_status_date:this.selectedStatusDate
-    //  });
-    //     }, 200);
+
                }
                 },
                 (error:any)=>{
@@ -546,31 +366,58 @@ public sendEamils(){
             )
             }
             }
-// public resetValues(){
-//   this.client_id=null;
-//     this.selectedDate='';
-//     this.term='';
-//     this.selectedStatusDate='';
-//     this.selectedClientIds=[];
-//     this.selectedGroupIds=[];
-//     this.selectedJobIds=[];
-//     this.isIncludeAllJobEnable=true;
-//     this.isIncludeAllJobValue=false;
-//     this.getGroupList();
-//     this.getClienList();
-//     this.getJobList();
-// }
 
-getClientNameById(clientId: number): string {
-  // console.log(this.filterDataCache['client-ids'])
-    // const client = this.clientName.find(c => c.id === clientId);
-     const client = this.filterDataCache['client-ids'].data.find(c => c.id === clientId);
-    return client ? client.name : 'NA';
+ 
+// Returns effective selected count and single client ID from FilterState or plain array
+private getEffectiveClientSelection(filterValue: any): { count: number; singleId: any } {
+    // Old format: plain array of ids
+    if (Array.isArray(filterValue)) {
+      return { count: filterValue.length, singleId: filterValue.length === 1 ? filterValue[0] : null };
+    }
+    if (!filterValue) return { count: 0, singleId: null };
+
+    const { selectAllValue, selectedOptions, excludedIds, selectedCount } = filterValue;
+
+    if (selectAllValue === null || selectAllValue === undefined) {
+      // null → use selectedOptions.length
+      const count = selectedOptions?.length || 0;
+      return { count, singleId: count === 1 ? selectedOptions[0].id : null };
+    } else if (selectAllValue === true) {
+      // true → use selectedCount (equals total)
+      const count = selectedCount || 0;
+      if (count === 1) {
+        const cache = this.filterDataCache['client-ids'];
+        return { count: 1, singleId: cache?.data?.[0]?.id || null };
+      }
+      return { count, singleId: null };
+    } else if (selectAllValue === false) {
+      // false → total minus excludedIds.length
+      const cache = this.filterDataCache['client-ids'];
+      const total = cache?.total || 0;
+      const excludedCount = excludedIds?.length || 0;
+      const count = total - excludedCount;
+
+      if (count === 1 && cache?.data) {
+        const excludedIdSet = new Set(excludedIds.map((e: any) => e.id ?? e));
+        const singleClient = cache.data.find((c: any) => !excludedIdSet.has(c.id));
+        return { count: 1, singleId: singleClient?.id || null };
+      }
+      return { count, singleId: null };
+    }
+    return { count: 0, singleId: null };
   }
 
+// select all code
+private buildQueryForFilter(filterValue: any, paramName: string): string {
+    if (!filterValue) return '';
+    // Old format: plain array of ids
+    if (Array.isArray(filterValue)) {
+      return filterValue.length ? `&${paramName}=[${filterValue.join(',')}]` : '';
+    }
+    // New format: FilterState object
+    return this.filterQueryService.buildFilterSegment(filterValue, paramName);
+  }
 
-
-  
 // new code
 private updateFilterColumn(key: string, cache: any) {
     this.tableConfig.columns = this.tableConfig.columns.map(col =>
@@ -579,7 +426,8 @@ private updateFilterColumn(key: string, cache: any) {
             ...col,
             filterOptions: cache.data,
             currentPage: cache.page,
-            totalPages: Math.ceil(cache.total / 20)
+            totalPages: Math.ceil(cache.total / 20),
+            totalCount: cache.total
           }
         : col
     );
@@ -588,30 +436,47 @@ private updateFilterColumn(key: string, cache: any) {
    exportCsvOrPdf(fileType) {
     const search = this.term?.trim().length >= 2? `search=${encodeURIComponent(this.term.trim())}&`: '';
     let finalQuery = `?${search}job-status=[${this.statusList}]&report-type=job-status-report&non-productive-jobs=false&file-type=${fileType}&download=true`;
-    finalQuery += this.client_id ? `&client=${this.client_id}` : '';
-       if(this.userRole ==='Manager' && !this.client_id){
-          // finalQuery += `&manager-ids=[${this.user_id}]`;
+    finalQuery += (this.client_id && this.isIncludeAllJobValue) ? `&client=${this.client_id}` : '';
+       // Old code
+       // if(this.userRole ==='Manager' && !this.client_id){
+       //    finalQuery += `&employee-id=${this.user_id}`;
+       // } else if ((this.userRole !='Manager' && this.userRole !='Admin')  && !this.client_id){
+       //    finalQuery += `&employee-id=${this.user_id}`;
+       // }
+       // only skip employee-id when Include All Jobs is actually active
+       if(this.userRole ==='Manager' && !(this.client_id && this.isIncludeAllJobValue)){
            finalQuery += `&employee-id=${this.user_id}`;
-        } else if ((this.userRole !='Manager' && this.userRole !='Admin')  && !this.client_id){
+        } else if ((this.userRole !='Manager' && this.userRole !='Admin') && !(this.client_id && this.isIncludeAllJobValue)){
           finalQuery += `&employee-id=${this.user_id}`;
         }
-        if( this.primaryEmployees?.length>0){
-          finalQuery += `&employee-ids=[${this.primaryEmployees}]`;
-        }
-        if (this.selectedClientIds?.length) {
-            finalQuery += `&client-ids=[${this.selectedClientIds.join(',')}]`;
-          }if (this.selectedJobIds?.length) {
-            finalQuery += `&job-ids=[${this.selectedJobIds.join(',')}]`;
-          }if (this.selectedGroupIds?.length) {
-            finalQuery += `&group-ids=[${this.selectedGroupIds.join(',')}]`;
-          }if(this.jobAllocationDate){
+        // Old filter query building (simple array join)
+        // if( this.primaryEmployees?.length>0){
+        //   finalQuery += `&employee-ids=[${this.primaryEmployees}]`;
+        // }
+        // if (this.selectedClientIds?.length) {
+        //     finalQuery += `&client-ids=[${this.selectedClientIds.join(',')}]`;
+        //   }if (this.selectedJobIds?.length) {
+        //     finalQuery += `&job-ids=[${this.selectedJobIds.join(',')}]`;
+        //   }if (this.selectedGroupIds?.length) {
+        //     finalQuery += `&group-ids=[${this.selectedGroupIds.join(',')}]`;
+        //   }
+        // New: FilterState-aware (handles select-all three-state logic)
+         finalQuery += this.buildQueryForFilter(this.primaryEmployees, 'employee');
+        finalQuery += this.buildQueryForFilter(this.selectedClientIds, 'client');
+        finalQuery += this.buildQueryForFilter(this.selectedJobIds, 'job');
+        finalQuery += this.buildQueryForFilter(this.selectedGroupIds, 'group');
+        if(this.jobAllocationDate){
            finalQuery += `&start-date=${this.jobAllocationDate['startDate']}&end-date=${this.jobAllocationDate['endDate']}`
           }
           if (this.selectedStatusDate) {
             finalQuery += `&job-status-date=[${this.selectedStatusDate}]`;
-          }if (this.selectedStatusIds?.length) {
-            finalQuery += `&status-group-ids=[${this.selectedStatusIds.join(',')}]`;
           }
+          // Old filter query building (simple array join)
+          // if (this.selectedStatusIds?.length) {
+          //   finalQuery += `&status-group-ids=[${this.selectedStatusIds.join(',')}]`;
+          // }
+          // New: FilterState-aware (handles select-all three-state logic)
+          finalQuery += this.buildQueryForFilter(this.selectedStatusIds, 'status-group');
           if(this.directionValue && this.sortValue){
             finalQuery += `&sort-by=${this.sortValue}&sort-type=${this.directionValue}`;
           }
@@ -626,39 +491,57 @@ private updateFilterColumn(key: string, cache: any) {
  }
 
 async getTableData(params?: { page?: number; pageSize?: number; searchTerm?: string;client_ids?:any;job_ids?:any;group_ids?:any;job_allocation_date?:any;job_status_date?:any,job_status?: any[]; prime_emp?:any}) {
-    let finalQuery;
+ let finalQuery;
    const page = params?.page ?? this.page;
     const pageSize = params?.pageSize ?? this.tableSize;
     const searchTerm = params?.searchTerm ?? this.term;
     let query = buildPaginationQuery({ page, pageSize, searchTerm });
     this.jobStatusList(this.tabStatus);
        finalQuery = query + `&job-status=[${this.statusList}]`;
-       if(this.userRole ==='Manager' && !this.client_id){
-          // finalQuery += `&manager-ids=[${this.user_id}]`;
+       // Old code
+       // if(this.userRole ==='Manager' && !this.client_id){
+       //    finalQuery += `&employee-id=${this.user_id}`;
+       // } else if ((this.userRole !='Manager' && this.userRole !='Admin')  && !this.client_id){
+       //    finalQuery += `&employee-id=${this.user_id}`;
+       // }
+       // only skip employee-id when iinclude All Jobs is actually active
+       if(this.userRole ==='Manager' && !(this.client_id && this.isIncludeAllJobValue)){
           finalQuery += `&employee-id=${this.user_id}`;
-        } else if ((this.userRole !='Manager' && this.userRole !='Admin')  && !this.client_id){
+        } else if ((this.userRole !='Manager' && this.userRole !='Admin') && !(this.client_id && this.isIncludeAllJobValue)){
           finalQuery += `&employee-id=${this.user_id}`;
         }
-        if( params?.prime_emp?.length>0){
-          finalQuery += `&employee-ids=[${params?.prime_emp}]`;
-        }
+        // old code 
+        // if( params?.prime_emp?.length>0){
+        //   finalQuery += `&employee-ids=[${params?.prime_emp}]`;
+        // }
       //  finalQuery += (this.userRole ==='Admin' || (this.userRole !='Admin' && this.client_id)) ? '':`&employee-ids=[${emp_ids}]`;
-       finalQuery += this.client_id ? `&client=${this.client_id}` : '';
+       finalQuery += (this.client_id && this.isIncludeAllJobValue) ? `&client=${this.client_id}` : '';
        finalQuery += `&report-type=job-status-report&non-productive-jobs=false`;
-        if (params?.client_ids?.length) {
-            finalQuery += `&client-ids=[${params.client_ids.join(',')}]`;
-          }if (params?.job_ids?.length) {
-            finalQuery += `&job-ids=[${params.job_ids.join(',')}]`;
-          }if (params?.group_ids?.length) {
-            finalQuery += `&group-ids=[${params.group_ids.join(',')}]`;
-          }if (params?.job_allocation_date?.startDate && params?.job_allocation_date?.endDate) {
+        // Old filter query building (simple array join)
+        // if (params?.client_ids?.length) {
+        //     finalQuery += `&client-ids=[${params.client_ids.join(',')}]`;
+        //   }if (params?.job_ids?.length) {
+        //     finalQuery += `&job-ids=[${params.job_ids.join(',')}]`;
+        //   }if (params?.group_ids?.length) {
+        //     finalQuery += `&group-ids=[${params.group_ids.join(',')}]`;
+        //   }
+        // New: FilterState-aware (handles select-all three-state logic)
+        finalQuery += this.buildQueryForFilter(params?.prime_emp, 'employee');
+        finalQuery += this.buildQueryForFilter(params?.client_ids, 'client');
+        finalQuery += this.buildQueryForFilter(params?.job_ids, 'job');
+        finalQuery += this.buildQueryForFilter(params?.group_ids, 'group');
+        if (params?.job_allocation_date?.startDate && params?.job_allocation_date?.endDate) {
             // console.log(params.job_allocation_date)
              finalQuery += `&start-date=${params?.job_allocation_date?.startDate}&end-date=${params?.job_allocation_date?.endDate}`
           }if (params?.job_status_date) {
             finalQuery += `&job-status-date=[${params?.job_status_date}]`;
-          }if (params?.job_status?.length) {
-            finalQuery += `&status-group-ids=[${params?.job_status.join(',')}]`;
           }
+          // Old filter query building (simple array join)
+          // if (params?.job_status?.length) {
+          //   finalQuery += `&status-group-ids=[${params?.job_status.join(',')}]`;
+          // }
+          // New: FilterState-aware (handles select-all three-state logic)
+          finalQuery += this.buildQueryForFilter(params?.job_status, 'status-group');
           if(this.directionValue && this.sortValue){
             finalQuery += `&sort-by=${this.sortValue}&sort-type=${this.directionValue}`;
           }
@@ -699,7 +582,11 @@ async getTableData(params?: { page?: number; pageSize?: number; searchTerm?: str
 
             return {
               ...col,
-              filterOptions
+              filterOptions,
+              // Preserve totalCount/currentPage/totalPages set by updateFilterColumn
+              ...(existingCol?.totalCount   !== undefined && { totalCount:   existingCol.totalCount }),
+              ...(existingCol?.currentPage  !== undefined && { currentPage:  existingCol.currentPage }),
+              ...(existingCol?.totalPages   !== undefined && { totalPages:   existingCol.totalPages }),
             };
           }),
         data: this.formattedData,
@@ -725,10 +612,12 @@ async getTableData(params?: { page?: number; pageSize?: number; searchTerm?: str
            searchPlaceholder:'Search by Client/Group/Job',
     }
   }else{
+          const existingColumnsEmpty = this.tableConfig?.columns ?? [];
           this.tableConfig = {
               columns: tableColumns?.map(col => {
-                      let filterOptions:any = [];
-                      if (col.filterable) {
+                      const existingCol = existingColumnsEmpty.find((c: any) => c.key === col.key);
+                      let filterOptions:any = existingCol?.filterOptions ?? [];
+                      if (!filterOptions.length && col.filterable) {
                         if (col.key === 'client_name') { filterOptions = this.clientName; }
                         else if (col.key === 'job_name') { filterOptions = this.jobName; }
                          else if (col.key === 'job_status_name') {
@@ -738,7 +627,13 @@ async getTableData(params?: { page?: number; pageSize?: number; searchTerm?: str
                   filterOptions = this.groupName;
                 }
                       }
-                      return { ...col, filterOptions };
+                      return {
+                        ...col,
+                        filterOptions,
+                        ...(existingCol?.totalCount   !== undefined && { totalCount:   existingCol.totalCount }),
+                        ...(existingCol?.currentPage  !== undefined && { currentPage:  existingCol.currentPage }),
+                        ...(existingCol?.totalPages   !== undefined && { totalPages:   existingCol.totalPages }),
+                      };
                     }),
                 data: [],
                 searchTerm: this.term,
@@ -805,9 +700,11 @@ getFilterOptions(event: { detail: any; key: string }) {
   }
   if (key === 'job-ids'){
     endpoint = environment.only_jobs
-    query += `&non-productive-jobs=false`;
+    query += `&non-productive-jobs=false&job-status=[${this.statusList}]`;
     if(this.isIncludeAllJobValue){
-      query += `&client-ids=[${this.selectedClientIds}]&job-status=[${this.statusList}]`
+      // old code
+      // query += `&client-ids=[${this.selectedClientIds}]&job-status=[${this.statusList}]`
+      query += `&client-ids=[${this.client_id}]`
     } else{
       query +=  this.userRole ==='Admin' ? '': `&employee-id=${this.user_id}`;
     }
@@ -823,7 +720,9 @@ getFilterOptions(event: { detail: any; key: string }) {
     endpoint = environment.get_primary_employees;
     query += `&job-status=[${this.statusList}]`;
     if(this.isIncludeAllJobValue){
-      query += `&client-id=${this.selectedClientIds}`
+      // old code
+      // query += `&client-id=${this.selectedClientIds}`
+      query += `&client-ids=[${this.client_id}]`;
     } else{
       query += this.userRole === 'Admin' ? '' : `&manager-id=${this.user_id}`
     }

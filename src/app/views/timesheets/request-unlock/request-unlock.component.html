@@ -1,0 +1,37 @@
+<div class="request-unlock">
+    <!-- Header -->
+    <div class="request-header">
+        <h4 class="request-title">Unlock Request</h4>
+    </div>
+
+    <mat-divider class="mb-3"></mat-divider>
+
+    <!-- Requesting Date -->
+    <div class="request-section">
+        <h6 class="section-label">Requesting Date</h6>
+        <div class="date-badge">
+            <span class="date-text">{{ this.data.requestedDate | dateFormater }}</span>
+        </div>
+    </div>
+
+    <!-- Reason Input -->
+    <div class="request-section">
+        <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
+            <mat-label>Reason <b class="r-star">*</b></mat-label>
+            <textarea matInput placeholder="Enter reason for unlock request" autocomplete="off"
+                [(ngModel)]="rejectionReason" maxlength="300" rows="3"></textarea>
+            <mat-hint align="end" class="mt-2">
+                {{ rejectionReason?.length || 0 }}/300 ({{ 300 - (rejectionReason?.length || 0) }} left)
+            </mat-hint>
+        </mat-form-field>
+    </div>
+
+    <!-- Actions -->
+    <div class="action-buttons">
+        <button mat-button class="cancel-button mat-btn-s" type="button" mat-dialog-close>Close</button>
+        <button mat-raised-button class="proceedbtn mat-btn-s" type="button"
+            (click)="requestUnlock()" [disabled]="!rejectionReason?.trim()">
+            Request Unlock
+        </button>
+    </div>
+</div>

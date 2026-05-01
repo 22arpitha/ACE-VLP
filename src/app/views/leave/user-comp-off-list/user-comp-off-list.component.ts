@@ -4,6 +4,7 @@ import { environment } from '../../../../environments/environment';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { GenericRemoveComponent } from '../../../generic-components/generic-remove/generic-remove.component';
 import { DatePipe } from '@angular/common';
+import { FilterQueryService } from '../../../service/filter-query.service';
 @Component({
   selector: 'app-user-comp-off-list',
   templateUrl: './user-comp-off-list.component.html',
@@ -17,6 +18,7 @@ export class UserCompOffListComponent implements OnInit {
     private apiService: ApiserviceService,
     private modalService: NgbModal,
     private datePipe: DatePipe,
+      private filterQueryService: FilterQueryService,
   ) {
     this.userRole = sessionStorage.getItem('user_role_name');
     this.user_id = sessionStorage.getItem('user_id');
@@ -43,15 +45,10 @@ export class UserCompOffListComponent implements OnInit {
   leaveStatus: any = [];
   mainStartDate: any;
   mainEndDate: any;
-  filters: {
-    leave_type: string[];
-    employees: string[];
-    status_name: string[];
-  } = {
-    leave_type: [],
-    employees: [],
-    status_name: [],
-  };
+   filters: any = {
+    leave_type: { selectAllValue: null, selectedOptions: [], excludedIds: [], selectedCount: 0 },
+    status_name: { selectAllValue: null, selectedOptions: [], excludedIds: [], selectedCount: 0 },
+  }
   ngOnInit(): void {
     this.getLeaveStatus();
     this.getallLeaveTypes();
@@ -137,12 +134,30 @@ export class UserCompOffListComponent implements OnInit {
     if (!Array.isArray(filterArray)) return '';
     return filterArray.map((x) => x.id).join(',');
   }
+    private getFilterParamName(filterType: string): string {
+    const mapping: { [key: string]: string } = {
+      'leave_type': 'leave-type', //leave_type_ids
+    };
+    return mapping[filterType] || filterType;
+  }
+
+  private buildFilterQuery(filterType: string): string {
+    return this.filterQueryService.buildFilterSegment(this.filters[filterType], this.getFilterParamName(filterType));
+  }
+
 
   getCompoffMyLeaves() {
     this.filterQuery = this.getFilterBaseUrl();
-    if (this.filters.status_name.length) {
-      this.filterQuery += `&status_values=[${this.filters.status_name.join(',')}]`;
-      this.filterQuery += `&status_values=[${this.ids(this.filters.status_name)}]`;
+    if(this.filters.status_name?.selectAllValue==true){
+      this.filterQuery += `&status_values=[${this.leaveStatus.map((status: any) => `${status.id}`).join(',')}]`
+    } else if(this.filters.status_name?.selectAllValue==false){
+      const excludedIds = this.filters.status_name?.excludedIds?.map((e:any) => e.id) || [];
+      let temp = this.leaveStatus.filter(
+          (status: any) => !excludedIds.includes(status.id)).map((status:any)=>status.id)
+      console.log(temp)
+      this.filterQuery += `&status_values=[${temp}]`;
+    } else if(this.filters.status_name?.selectAllValue==null && this.filters.status_name?.selectedOptions.length>0){
+      this.filterQuery += `&status_values=[${this.filters.status_name?.selectedOptions.map((option: any) => option.id).join(',')}]`;
     }
     // if (this.filters.status_name.length === 0) {
     //   this.filterQuery += `&status_values=[Approved,Rejected]`;

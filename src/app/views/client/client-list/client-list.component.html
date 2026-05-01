@@ -71,15 +71,15 @@
                 <i (click)="sort('descending','country__country_name')" *ngIf="arrowState['country__country_name']"
                   class="bi bi-arrow-up"></i>
                 <button mat-icon-button [matMenuTriggerFor]="countryFilterMenu" (menuOpened)="openFilter(countryFilter)"
-                  [ngClass]="filters.country.length>=1 ? 'filterdColumn':''">
-                  <span *ngIf="filters.country.length>=1">{{filters.country.length.toString().padStart(2, '0')}}</span>
+                  [ngClass]="filters['country'].selectedCount>=1 ? 'filterdColumn':''">
+                  <span *ngIf="filters['country'].selectedCount>=1">{{filters['country'].selectedCount.toString().padStart(2, '0')}}</span>
 
-                  <i class="bi-funnel" *ngIf="filters.country.length===0"></i>
+                  <i class="bi-funnel" *ngIf="filters['country'].selectedCount===0"></i>
                 </button>
 
                 <mat-menu #countryFilterMenu="matMenu">
                   <app-generic-table-filter #countryFilter [fetchOptions]="fetchCountry"
-                    [(selectedOptions)]="filters.country"
+                    [(selectedOptions)]="filters['country']"
                     (selectedOptionsChange)="onFilterChange($event, 'country')"></app-generic-table-filter>
                 </mat-menu>
               </th>
@@ -89,15 +89,15 @@
                 <i (click)="sort('descending','source__source_name')" *ngIf="arrowState['source__source_name']"
                   class="bi bi-arrow-up"></i>
                 <button mat-icon-button [matMenuTriggerFor]="sourceFilterMenu" (menuOpened)="openFilter(sourceFilter)"
-                  [ngClass]="filters.source.length>=1 ? 'filterdColumn':''">
-                  <span *ngIf="filters.source.length>=1">{{filters.source.length.toString().padStart(2, '0')}}</span>
-                  <i class="bi-funnel" *ngIf="filters.source.length===0"></i>
+                  [ngClass]="filters['source'].selectedCount>=1 ? 'filterdColumn':''">
+                  <span *ngIf="filters['source'].selectedCount>=1">{{filters['source'].selectedCount.toString().padStart(2, '0')}}</span>
+                  <i class="bi-funnel" *ngIf="filters['source'].selectedCount===0"></i>
                 </button>
 
                 <mat-menu #sourceFilterMenu="matMenu">
                   <app-generic-table-filter #sourceFilter [fetchOptions]="fetchSource"
-                    [(selectedOptions)]="filters.source"
-                    (selectedOptionsChange)="onFilterChange($event, 'client_name')"></app-generic-table-filter>
+                    [(selectedOptions)]="filters['source']"
+                    (selectedOptionsChange)="onFilterChange($event, 'source')"></app-generic-table-filter>
                 </mat-menu>
               </th>
               <th scope="col">Status</th>

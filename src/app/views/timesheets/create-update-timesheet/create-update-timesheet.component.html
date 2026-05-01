@@ -150,10 +150,10 @@
                             <button mat-button class="cancel-button mat-btn-s" type="button" (click)="backBtnFunc()">
                                 Back</button>
                             <button mat-raised-button class="proceedbtn mat-btn-s" type="submit"
-                                (click)="saveTimesheets()" [disabled]="weekTimesheetSubmitted"
+                                (click)="saveTimesheets()" [disabled]="isSubmitDisabled()"
                                 *ngIf="((user_role_name !== 'Admin' && accessPermissions[0]?.create) || user_role_name === 'Admin') && !isEditItem">
                                 <span>Submit</span></button>
-                            <button mat-raised-button class="proceedbtn mat-btn-s" type="submit" [disabled]="weekTimesheetSubmitted"
+                            <button mat-raised-button class="proceedbtn mat-btn-s" type="submit" [disabled]="isSubmitDisabled()"
                                 (click)="saveTimesheets()"
                                 *ngIf="((user_role_name !== 'Admin' && accessPermissions[0]?.update) || user_role_name === 'Admin') && isEditItem">
                                 <span>Update</span></button>

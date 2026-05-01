@@ -148,6 +148,11 @@ zoom:80%;
     max-width: 97vw !important;
     width: 97vw !important;
 }
+.request-unlock-dialog{
+    height: auto !important;
+    width: 45% !important;
+    max-height: 60vh !important;
+}
 .view-leave-details-dialog{
     // max-width: 97vw !important;
     height: 500px !important;
@@ -157,26 +162,27 @@ zoom:80%;
     .view-leave-details-dialog{
         width: 95% !important;
     }
+     .cancel-leave-details-dialog{
+        width: 90% !important;
+    }
+    .leave-or-compoff-form-dialog{
+        width: 90% !important;
+    }
+    .request-unlock-dialog{
+        width: 90% !important;
+    }
 }
 .leave-or-compoff-form-dialog{
     max-width: 97vw !important;
     // height: 500px !important;
     width: 80% !important;
 }
-@media only screen and (min-width: 280px) and (max-width: 767px)  {
-    .leave-or-compoff-form-dialog{
-        width: 90% !important;
-    }
-}
+
 .cancel-leave-details-dialog{
     height: auto !important;
     width: 60% !important;
 }
-@media only screen and (min-width: 280px) and (max-width: 767px)  {
-    .cancel-leave-details-dialog{
-        width: 90% !important;
-    }
-}
+
 .customize-balance-dialog{
   height: auto !important;
   width: auto !important;
@@ -224,7 +230,8 @@ mat-select.editable-cell:focus {
 }
 button.filterdColumn {
   background: #fff;
-  width: 24px !important;
+  width: auto !important;
+  min-width: 24px !important;
   height: 24px !important;
   line-height: 24px !important;
   border-radius: 8% !important;

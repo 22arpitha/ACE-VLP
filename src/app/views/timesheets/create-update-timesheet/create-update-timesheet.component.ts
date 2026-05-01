@@ -18,9 +18,9 @@ import { setMaxListeners } from 'events';
 })
 export class CreateUpdateTimesheetComponent implements CanComponentDeactivate,OnInit,OnDestroy {
   @ViewChild(FormGroupDirective) formGroupDirective!: FormGroupDirective;
-   @ViewChild('formInputField') formInputField: ElementRef;
+   @ViewChild('formInputField') formInputField!: ElementRef;
   BreadCrumbsTitle: any = 'Timesheet';
-  timesheetFormGroup: FormGroup
+  timesheetFormGroup!: FormGroup
   currentDate: any = new Date().toISOString();
   initialFormValue:any
   currentTime: any
@@ -42,6 +42,8 @@ export class CreateUpdateTimesheetComponent implements CanComponentDeactivate,On
 allJobStatus:any=[];
 weekTimesheetSubmitted: boolean = false;
 errorMessage:any='';
+selectedDate:any;
+status423: boolean = false;
   constructor(private fb: FormBuilder, private apiService: ApiserviceService, private datePipe: DatePipe,
     private accessControlService: SubModuleService, private router: Router, private common_service: CommonServiceService,
     private activeRoute: ActivatedRoute, private formErrorScrollService: FormErrorScrollUtilityService,private cdr: ChangeDetectorRef
@@ -179,7 +181,7 @@ this.formErrorScrollService.resetHasUnsavedValue();
       (res: any) => {
         // console.log('task data', res)
         this.taskList = res;
-        this.taskList.forEach((task_name) => {
+        this.taskList.forEach((task_name: any) => {
           if (task_name.value === 'Review' && this.user_role_name === 'Manager') {
             this.timesheetFormGroup.patchValue({ task: task_name.id })
           } else if (task_name.value === 'Processing' && this.user_role_name === 'Accountant') {
@@ -192,11 +194,58 @@ this.formErrorScrollService.resetHasUnsavedValue();
       }
     )
   }
-  dateSelected(event){
+  dateSelected(event:any){
   const { startOfWeek, endOfWeek } = this.getWeekRangeFromSelectedDate(this.formatDateToString(event.value));
   this.checkTimesheetSubmission(startOfWeek,endOfWeek);
-  this.getStartTimePreviousData()
+  this.getStartTimePreviousData();
+  this.selectedDate = this.datePipe.transform(event.value, 'yyyy-MM-dd');
+  this.checkValidation();
   }
+
+  checkValidation() {
+    let filterQuery = this.getFilterBaseUrl();
+    if (this.selectedDate) {
+        filterQuery += `&timesheet-date=${this.selectedDate}`;
+      }
+     this.apiService.getData(`${environment.live_url}/${environment.vlp_timesheets}/${filterQuery}`).subscribe(
+      (res: any) => {
+        this.status423 = false;
+        this.toggleFormState(this.status423);
+      },
+      (error: any) => {
+        if(error.status===423){
+          this.status423 = true;
+           this.toggleFormState(this.status423);
+        } else{
+           this.status423 = false;
+           this.toggleFormState(this.status423);
+        }
+        console.log(error)
+        this.apiService.showError(error?.error?.detail);
+      }
+    )
+  }
+
+  toggleFormState(isLocked: boolean) {
+    Object.keys(this.timesheetFormGroup.controls).forEach(key => {
+      if (isLocked && key !== 'date') {
+        this.timesheetFormGroup.get(key)?.disable({ emitEvent: false });
+      } else {
+        this.timesheetFormGroup.get(key)?.enable({ emitEvent: false });
+      }
+    });
+    this.timesheetFormGroup.updateValueAndValidity();
+}
+  isSubmitDisabled(): boolean {
+    return this.weekTimesheetSubmitted || this.status423 || this.timesheetFormGroup.invalid;
+  }
+  public getFilterBaseUrl(): string {
+     const base = `?page=${1}&page_size=${50}`;
+     const employeeParam = this.user_role_name !== 'Admin' ? `&timesheet-employee=${this.user_id}` : '';
+     return `${base}${employeeParam}`;
+    
+  }
+  
 formatDateToString(date: Date): string | null {
     return this.datePipe.transform(date, 'yyyy-MM-dd'); // Output: '2025-04-13'
   }
@@ -222,7 +271,7 @@ getWeekRangeFromSelectedDate(date: any): { startOfWeek: string; endOfWeek: strin
 }
 
 
-checkTimesheetSubmission(startDate,endDate) {
+checkTimesheetSubmission(startDate:any,endDate:any) {
   this.errorMessage='';
   this.weekTimesheetSubmitted=false;
     let query = `?employee-id=${this.user_id}&from-date=${startDate}&to-date=${endDate}`
@@ -479,7 +528,7 @@ dateClass = (date: Date) => {
 
 pageSizeDropdown = 10;
 
-dropdownState = {
+dropdownState:any = {
     job_id: {
     page: 1,
     list: [],
@@ -490,7 +539,7 @@ dropdownState = {
   },
 };
 
-dropdownEndpoints = {
+dropdownEndpoints :any = {
   job_id: environment.jobs_search,
 };
 
@@ -588,7 +637,7 @@ updateSelectedItems(key: string, selectedIds: any[]) {
   // Add new selected items from currently loaded list if missing
   selectedIds.forEach(id => {
     if (!selectedItems.some(item => item.id === id)) {
-      const found = state.list.find(item => item.id === id);
+      const found = state.list.find((item:any) => item.id === id);
       if (found) {
         selectedItems.push(found);
       } else {
@@ -603,14 +652,14 @@ updateSelectedItems(key: string, selectedIds: any[]) {
 getOptionsWithSelectedOnTop(key: string) {
   const state = this.dropdownState[key];
   const selectedItems = this.selectedItemsMap[key] || [];
-  const unselectedItems = state.list.filter(item =>
-    !selectedItems.some(sel => sel.id === item.id)
+  const unselectedItems = state.list.filter((item: any) =>
+    !selectedItems.some((sel: any) => sel.id === item.id)
   );
 
   return [...selectedItems, ...unselectedItems];
 }
 
-onDropdownOpened(isOpen, key: string) {
+onDropdownOpened(isOpen:boolean, key: string) {
   if (isOpen) {
     // ⬇⬇ ADD THIS BLOCK ⬇⬇
     if (!this.dropdownState[key].initialized || this.dropdownState[key].list.length === 0) {
@@ -631,7 +680,7 @@ onDropdownOpened(isOpen, key: string) {
   }
 }
 
-commonOnchangeFun(event, key){
+commonOnchangeFun(event:any, key:string){
   this.updateSelectedItems(key, event.value);
 }
 

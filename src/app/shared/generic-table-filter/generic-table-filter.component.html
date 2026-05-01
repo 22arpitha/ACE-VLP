@@ -19,7 +19,8 @@
  
 <div class="custom-mat-select-list-style" [attr.scroll]="fetchOptions  ? '' : null">
 <mat-selection-list class="dynamic-mat-selection" [attr.scroll]="fetchOptions  ? '' : null" (scroll)="fetchOptions  && onScroll($event)">
-    <mat-list-option
+  <mat-list-option [disabled]="filterSearchText.length>0" [selected]="selectAllValue === true" (click)="selectAllFun()">Select All</mat-list-option> 
+  <mat-list-option
       *ngFor="let option of displayOptions"
       [value]="option.id"
       [selected]="isSelected(option.id)"

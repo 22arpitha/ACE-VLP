@@ -81,7 +81,7 @@ export class DropDownPaginationService {
     mapItem: (item: any) => { id: any; name: string },
     extraParams: Record<string, any> = {}
   ): Observable<{ results: any[]; hasMore: boolean; totalCount: number }> {
-    const pageSize = 10;
+    const pageSize = 30;
     const params = new URLSearchParams();
 
     params.set('page', page.toString());

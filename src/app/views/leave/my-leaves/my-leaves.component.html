@@ -32,9 +32,9 @@
                 <i *ngIf="arrowState['leave_type_id']" class="bi bi-arrow-up"
                     (click)="sort('descending', 'leave_type_id')"></i>
                 <button mat-icon-button [matMenuTriggerFor]="leaveTypeFilterMenu"
-                    [ngClass]="filters.leave_type.length>=1 ? 'filterdColumn':''">
-                    <span *ngIf="filters.leave_type.length>=1">{{filters.leave_type.length}}</span>
-                    <i class="bi-funnel" *ngIf="filters.leave_type.length===0"></i>
+                    [ngClass]="(filters.leave_type.selectedCount || 0)>=1 ? 'filterdColumn':''">
+                    <span *ngIf="(filters.leave_type.selectedCount || 0)>=1">{{(filters.leave_type.selectedCount || 0).toString().padStart(2,'0')}}</span>
+                    <i class="bi-funnel" *ngIf="(filters.leave_type.selectedCount || 0)===0"></i>
                 </button>
 
                 <mat-menu #leaveTypeFilterMenu="matMenu">
@@ -69,9 +69,9 @@
                     (click)="sort('descending', 'status')"></i>
 
                 <button mat-icon-button [matMenuTriggerFor]="statusFilterMenu"
-                  [ngClass]="filters.status_name.length>=1 ? 'filterdColumn':''">
-                  <span *ngIf="filters.status_name.length>=1">{{filters.status_name.length}}</span>
-                  <i class="bi-funnel" *ngIf="filters.status_name.length===0"></i>
+                  [ngClass]="(filters.status_name.selectedCount || 0)>=1 ? 'filterdColumn':''">
+                  <span *ngIf="(filters.status_name.selectedCount || 0)>=1">{{(filters.status_name.selectedCount || 0).toString().padStart(2,'0')}}</span>
+                  <i class="bi-funnel" *ngIf="(filters.status_name.selectedCount || 0)===0"></i>
                 </button>
 
                 <mat-menu #statusFilterMenu="matMenu">

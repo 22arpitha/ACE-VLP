@@ -10,6 +10,7 @@ import { Router } from '@angular/router';
 import { EmployeeDetailsComponent } from './employee-details/employee-details.component';
 import { MatDialog } from '@angular/material/dialog';
 import { DatePipe } from '@angular/common';
+import { FilterQueryService } from '../../../service/filter-query.service';
 @Component({
   selector: 'app-timesheet-summary-report',
   templateUrl: './timesheet-summary-report.component.html',
@@ -52,7 +53,8 @@ export class TimesheetSummaryReportComponent implements OnInit {
     private api: ApiserviceService,
     private router:Router,
     private dialog: MatDialog,
-    private datePipe:DatePipe
+    private datePipe:DatePipe,
+    private filterQueryService: FilterQueryService
   ) {
 
   }
@@ -77,13 +79,13 @@ export class TimesheetSummaryReportComponent implements OnInit {
     this.getTableData({ page: this.page, pageSize: this.tableSize, searchTerm: this.term, employee_ids:this.selectedEmployeeId, fromdate: this.fromDate });
   }
 
-  handleAction(event: { actionType: string; detail: any }): void {
+  handleAction(event: { actionType: string; detail: any,formfilter?: boolean }): void {
     switch (event.actionType) {
       case 'tableDataChange':
         this.onTableDataChange(event.detail);
         break;
       case 'tableSizeChange':
-        this.onTableSizeChange(event.detail);
+        if (!event.formfilter) this.onTableSizeChange(event.detail);
         break;
       case 'search':
         this.onSearch(event.detail);
@@ -279,6 +281,55 @@ export class TimesheetSummaryReportComponent implements OnInit {
 
 
   // new code
+  private buildQueryForFilter(filterValue: any, paramName: string): string {
+    if (!filterValue) return '';
+    // Old format: plain array of ids
+    if (Array.isArray(filterValue)) {
+      return filterValue.length ? `&${paramName}-ids=[${filterValue.join(',')}]` : '';
+    }
+    // New format: FilterState object
+    return this.filterQueryService.buildFilterSegment(filterValue, paramName);
+  }
+
+  private buildEmployeeFilterQuery(employeeFilter: any): string {
+    // Check if it's the new FilterState format (object with selectAllValue)
+    if (employeeFilter && !Array.isArray(employeeFilter) && employeeFilter.selectAllValue !== undefined) {
+      // New FilterState format — use buildQueryForFilter
+      const segment = this.buildQueryForFilter(employeeFilter, 'employee');
+      if (segment) return segment;
+      // If FilterState produced nothing (null selectAll, no selections), fall back to non-admin default
+      if (this.user_role_name !== 'Admin' && this.user_id != null) {
+        return `&employee-id=${this.user_id}&timesheet-report-type=detailed`;
+      }
+      return '';
+    }
+
+    // Old format: plain array of ids
+    const currentSelectedIds = employeeFilter ?? [];
+    if (this.user_role_name !== 'Admin') {
+      if (currentSelectedIds.length > 0) {
+        const idsForQuery = new Set<string>();
+        currentSelectedIds.forEach(id => { if (id != null) idsForQuery.add(String(id)); });
+        if (idsForQuery.size > 0) {
+          return `&employee-ids=[${Array.from(idsForQuery).join(',')}]`;
+        }
+      }
+      if (this.user_id != null) {
+        return `&employee-id=${this.user_id}&timesheet-report-type=detailed`;
+      }
+      return '';
+    } else {
+      if (currentSelectedIds.length > 0) {
+        const idsForQuery = new Set<string>();
+        currentSelectedIds.forEach(id => { if (id != null) idsForQuery.add(String(id)); });
+        if (idsForQuery.size > 0) {
+          return `&employee-ids=[${Array.from(idsForQuery).join(',')}]`;
+        }
+      }
+      return '';
+    }
+  }
+
 private updateFilterColumn(key: string, cache: any) {
     this.tableConfig.columns = this.tableConfig.columns.map(col =>
       col.keyId === key
@@ -286,7 +337,8 @@ private updateFilterColumn(key: string, cache: any) {
             ...col,
             filterOptions: cache.data,
             currentPage: cache.page,
-            totalPages: Math.ceil(cache.total / 20)
+            totalPages: Math.ceil(cache.total / 20),
+            totalCount: cache.total
           }
         : col
     );
@@ -303,36 +355,39 @@ exportCsvOrPdf(fileType: string): void {
     const startDate = this.fromDate?.start_date ?? this.time.start_date;
     const formattedStartDate = this.datePipe.transform(startDate, 'yyyy-MM-dd');
     query += `&from-date=${formattedStartDate}`;
-    const currentSelectedIds =  this.selectedEmployeeId ?? [];
-    if (this.user_role_name !== 'Admin') {
-            if (currentSelectedIds.length > 0) {
-                const idsForQuery = new Set<string>();
-                currentSelectedIds.forEach(id => {
-                    if (id != null) idsForQuery.add(String(id));
-                });
-                if (idsForQuery.size > 0) {
-                    query += `&employee-ids=[${Array.from(idsForQuery).join(',')}]`;
-                }else{
-                  if (this.user_id != null) {
-                    query += `&employee-id=${this.user_id}&timesheet-report-type=detailed`;
-                  }
-                }
-            } else {
-                if (this.user_id != null) {
-                    query += `&employee-id=${this.user_id}&timesheet-report-type=detailed`;
-                }
-            }
-        } else {
-            if (currentSelectedIds.length > 0) {
-                const idsForQuery = new Set<string>();
-                currentSelectedIds.forEach(id => {
-                    if (id != null) idsForQuery.add(String(id));
-                });
-                if (idsForQuery.size > 0) {
-                     query += `&employee-ids=[${Array.from(idsForQuery).join(',')}]`;
-                }
-            }
-        }
+    // Old filter query building (simple array join)
+    // const currentSelectedIds =  this.selectedEmployeeId ?? [];
+    // if (this.user_role_name !== 'Admin') {
+    //         if (currentSelectedIds.length > 0) {
+    //             const idsForQuery = new Set<string>();
+    //             currentSelectedIds.forEach(id => {
+    //                 if (id != null) idsForQuery.add(String(id));
+    //             });
+    //             if (idsForQuery.size > 0) {
+    //                 query += `&employee-ids=[${Array.from(idsForQuery).join(',')}]`;
+    //             }else{
+    //               if (this.user_id != null) {
+    //                 query += `&employee-id=${this.user_id}&timesheet-report-type=detailed`;
+    //               }
+    //             }
+    //         } else {
+    //             if (this.user_id != null) {
+    //                 query += `&employee-id=${this.user_id}&timesheet-report-type=detailed`;
+    //             }
+    //         }
+    //     } else {
+    //         if (currentSelectedIds.length > 0) {
+    //             const idsForQuery = new Set<string>();
+    //             currentSelectedIds.forEach(id => {
+    //                 if (id != null) idsForQuery.add(String(id));
+    //             });
+    //             if (idsForQuery.size > 0) {
+    //                  query += `&employee-ids=[${Array.from(idsForQuery).join(',')}]`;
+    //             }
+    //         }
+    //     }
+    // New: FilterState-aware (handles select-all three-state logic)
+    query += this.buildEmployeeFilterQuery(this.selectedEmployeeId);
     if(this.directionValue && this.sortValue){
       query += `&sort-by=${this.sortValue}&sort-type=${this.directionValue}`;
     }
@@ -367,49 +422,56 @@ exportCsvOrPdf(fileType: string): void {
         let query = buildPaginationQuery({ page, pageSize, searchTerm });
 
         // Consolidate employee ID filtering logic
-        const currentSelectedIds = params?.employee_ids ?? this.selectedEmployeeId ?? [];
+        // Old filter query building (simple array join)
+        // const currentSelectedIds = params?.employee_ids ?? this.selectedEmployeeId ?? [];
+        // if(this.directionValue && this.sortValue){
+        //     query += `&sort-by=${this.sortValue}&sort-type=${this.directionValue}`;
+        //   }
+        // if (this.user_role_name !== 'Admin') {
+        //     // For Non-Admins:
+        //     if (currentSelectedIds.length > 0) {
+        //         // If filters are selected by a non-admin, combine them with the logged-in user's ID
+        //         const idsForQuery = new Set<string>();
+        //         currentSelectedIds.forEach(id => {
+        //             if (id != null) idsForQuery.add(String(id));
+        //         });
+        //
+        //         // Only add the parameter if the set is not empty after processing
+        //         if (idsForQuery.size > 0) {
+        //             query += `&employee-ids=[${Array.from(idsForQuery).join(',')}]`;
+        //         }else{
+        //           // If no filters are selected, use the logged-in user's ID
+        //           if (this.user_id != null) {
+        //             query += `&employee-id=${this.user_id}&timesheet-report-type=detailed`;
+        //           }
+        //         }
+        //     } else {
+        //         // If no filters are selected by a non-admin, query by their own ID using employee-id
+        //         if (this.user_id != null) {
+        //             query += `&employee-id=${this.user_id}&timesheet-report-type=detailed`;
+        //         }
+        //     }
+        // } else {
+        //     // For Admins:
+        //     // Only use selected filters, if any
+        //     if (currentSelectedIds.length > 0) {
+        //         const idsForQuery = new Set<string>();
+        //         currentSelectedIds.forEach(id => {
+        //             if (id != null) idsForQuery.add(String(id));
+        //         });
+        //         // Ensure we only add the param if the set is not empty after processing
+        //         if (idsForQuery.size > 0) {
+        //              query += `&employee-ids=[${Array.from(idsForQuery).join(',')}]`;
+        //         }
+        //     }
+        //     // If Admin and no filters selected, no employee-specific parameter is added by this block.
+        // }
+
+        // New: FilterState-aware (handles select-all three-state logic)
         if(this.directionValue && this.sortValue){
             query += `&sort-by=${this.sortValue}&sort-type=${this.directionValue}`;
           }
-        if (this.user_role_name !== 'Admin') {
-            // For Non-Admins:
-            if (currentSelectedIds.length > 0) {
-                // If filters are selected by a non-admin, combine them with the logged-in user's ID
-                const idsForQuery = new Set<string>();
-                currentSelectedIds.forEach(id => {
-                    if (id != null) idsForQuery.add(String(id));
-                });
-
-                // Only add the parameter if the set is not empty after processing
-                if (idsForQuery.size > 0) {
-                    query += `&employee-ids=[${Array.from(idsForQuery).join(',')}]`;
-                }else{
-                  // If no filters are selected, use the logged-in user's ID
-                  if (this.user_id != null) {
-                    query += `&employee-id=${this.user_id}&timesheet-report-type=detailed`;
-                  }
-                }
-            } else {
-                // If no filters are selected by a non-admin, query by their own ID using employee-id
-                if (this.user_id != null) {
-                    query += `&employee-id=${this.user_id}&timesheet-report-type=detailed`;
-                }
-            }
-        } else {
-            // For Admins:
-            // Only use selected filters, if any
-            if (currentSelectedIds.length > 0) {
-                const idsForQuery = new Set<string>();
-                currentSelectedIds.forEach(id => {
-                    if (id != null) idsForQuery.add(String(id));
-                });
-                // Ensure we only add the param if the set is not empty after processing
-                if (idsForQuery.size > 0) {
-                     query += `&employee-ids=[${Array.from(idsForQuery).join(',')}]`;
-                }
-            }
-            // If Admin and no filters selected, no employee-specific parameter is added by this block.
-        }
+        query += this.buildEmployeeFilterQuery(params?.employee_ids ?? this.selectedEmployeeId);
 
 
       const startDate = params?.fromdate?.start_date ?? this.time.start_date;
@@ -457,7 +519,11 @@ exportCsvOrPdf(fileType: string): void {
             }
             return {
               ...col,
-              filterOptions
+              filterOptions,
+              // Preserve totalCount/currentPage/totalPages set by updateFilterColumn
+              ...(existingCol?.totalCount   !== undefined && { totalCount:   existingCol.totalCount }),
+              ...(existingCol?.currentPage  !== undefined && { currentPage:  existingCol.currentPage }),
+              ...(existingCol?.totalPages   !== undefined && { totalPages:   existingCol.totalPages }),
             };
                  }),
                  data: formattedData,

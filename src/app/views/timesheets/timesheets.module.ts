@@ -10,6 +10,7 @@ import { CreateUpdateTimesheetComponent } from './create-update-timesheet/create
 import { DayEndReportsComponent } from './day-end-reports/day-end-reports.component';
 import { JobTimeDailyReportComponent } from './job-time-daily-report/job-time-daily-report.component';
 import { JobStatusDailyReportComponent } from './job-status-daily-report/job-status-daily-report.component';
+import { RequestUnlockComponent } from './request-unlock/request-unlock.component';
 
 
 @NgModule({
@@ -19,7 +20,8 @@ import { JobStatusDailyReportComponent } from './job-status-daily-report/job-sta
     CreateUpdateTimesheetComponent,
     DayEndReportsComponent,
     JobTimeDailyReportComponent,
-    JobStatusDailyReportComponent
+    JobStatusDailyReportComponent,
+    RequestUnlockComponent
   ],
   imports: [
     CommonModule,

@@ -13,6 +13,7 @@ import { EditInvoiceComponent } from '../edit-invoice/edit-invoice.component';
 import { MAT_DATE_RANGE_SELECTION_STRATEGY } from '@angular/material/datepicker';
 import { WeeklySelectionStrategy } from '../../../shared/weekly-selection-strategy';
 import { DropDownPaginationService } from '../../../service/drop-down-pagination.service';
+import { FilterQueryService } from '../../../service/filter-query.service';
 import { GenericTableFilterComponent } from '../../../shared/generic-table-filter/generic-table-filter.component';
 import { debounceTime, distinctUntilChanged, filter } from 'rxjs/operators';
 import { Subject } from 'rxjs';
@@ -21,6 +22,13 @@ import { FilterStateService } from '../../../service/filter-state.service';
 export interface IdNamePair {
   id: any;
   name: string;
+}
+
+export interface FilterState {
+  selectAllValue: boolean | null;
+  selectedOptions: IdNamePair[];
+  excludedIds: IdNamePair[];
+  selectedCount: number;
 }
 
 @Component({
@@ -55,8 +63,8 @@ BreadCrumbsTitle: any = 'Invoices';
     invoiceDate: string | null;
     dateFilterValue: string | null = null;
     filterQuery: string;
-    filters: {client_name: IdNamePair[]} = {
-      client_name: []
+    filters: any = {
+      client_name: { selectAllValue: null, selectedOptions: [], excludedIds: [], selectedCount: 0 }
     };
     allClientNames: any[] = [];
     datepicker: null;
@@ -73,7 +81,8 @@ BreadCrumbsTitle: any = 'Invoices';
     constructor(private common_service: CommonServiceService,private accessControlService:SubModuleService,
       private router:Router,private modalService: NgbModal,private dialog:MatDialog,
       private datePipe:DatePipe,private dropdownService: DropDownPaginationService,
-      private apiService: ApiserviceService,private http: HttpClient,private filterState: FilterStateService,) {
+      private apiService: ApiserviceService,private http: HttpClient,private filterState: FilterStateService,
+      private filterQueryService: FilterQueryService,) {
       this.common_service.setTitle(this.BreadCrumbsTitle)
       
     }
@@ -281,22 +290,26 @@ BreadCrumbsTitle: any = 'Invoices';
     }
     this.filterState.saveState(this.state);
   }
-    private ids(filterArray: any[]): string {
-      if (!Array.isArray(filterArray)) return '';
-      return filterArray.map(x => x.id).join(',');
+    private getFilterParamName(filterType: string): string {
+      const mapping: { [key: string]: string } = {
+        'client_name': 'client'
+      };
+      return mapping[filterType] || filterType;
+    }
+
+    private buildFilterQuery(filterType: string): string {
+      return this.filterQueryService.buildFilterSegment(this.filters[filterType], this.getFilterParamName(filterType));
     }
     filterData() {
       this.saveState();
       this.filterQuery = this.getFilterBaseUrl()
-      if (this.filters?.client_name?.length) {
-        this.filterQuery += `&client-ids=[${this.ids(this.filters.client_name)}]`;
-      }
+      
+      // Apply filter logic for client_name
+      this.filterQuery += this.buildFilterQuery('client_name');
+      
       if(this.directionValue && this.sortValue){
-      this.filterQuery += `&sort-by=${this.sortValue}&sort-type=${this.directionValue}`
-    }
-      // if (this.invoiceDate) {
-      //   this.filterQuery += `&dates=[${this.invoiceDate}]`;
-      // }
+        this.filterQuery += `&sort-by=${this.sortValue}&sort-type=${this.directionValue}`
+      }
       if(this.startDate && this.endDate){
         this.filterQuery += `&start-date=${this.startDate}&end-date=${this.endDate}`;
       }
@@ -307,6 +320,12 @@ BreadCrumbsTitle: any = 'Invoices';
         this.count = res?.['total_no_of_record'];
         this.page = res?.['current_page'];
       });
+    }
+
+    onFilterChange(event: any, filterType: string) {
+      const selectedOptions = event;
+      this.filters[filterType] = selectedOptions;
+      this.filterData();
     }
     clearDateFilter(){
       this.invoiceDate = null;
@@ -348,7 +367,8 @@ BreadCrumbsTitle: any = 'Invoices';
     );
   };
 
-  openFilter(filter: any): void {
+
+    openFilter(filter: any): void {
     if (filter) {
       filter.onMenuOpened();
     }

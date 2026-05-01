@@ -11,11 +11,21 @@ import { GenericDeleteComponent } from '../../../generic-components/generic-dele
 import { GenericTimesheetConfirmationComponent } from '../../../generic-components/generic-timesheet-confirmation/generic-timesheet-confirmation.component';
 import { debounceTime, distinctUntilChanged, filter, firstValueFrom, Observable, Subject } from 'rxjs';
 import { DropDownPaginationService } from '../../../service/drop-down-pagination.service';
+import { FilterQueryService } from '../../../service/filter-query.service';
 import { GenericTableFilterComponent } from '../../../shared/generic-table-filter/generic-table-filter.component';
 import { FilterStateService } from '../../../service/filter-state.service';
+import { MatDialog } from '@angular/material/dialog';
+import { RequestUnlockComponent } from '../request-unlock/request-unlock.component';
 export interface IdNamePair {
   id: any;
   name: string;
+}
+
+export interface FilterState {
+  selectAllValue: boolean | null;
+  selectedOptions: IdNamePair[];
+  excludedIds: IdNamePair[];
+  selectedCount: number;
 }
 @Component({
   selector: 'app-all-timesheets',
@@ -55,15 +65,16 @@ export class AllTimesheetsComponent implements OnInit {
   tableSizes = [50, 75, 100];
   currentIndex: any;
   allTimesheetsList: any = [];
+  status423: boolean = false;
   idsOfTimesheet: any = [];
   accessPermissions = []
   user_id: any;
   userRole: any;
-  filters: { client_name: IdNamePair[], job_name: IdNamePair[], employee_name: IdNamePair[], task_nmae: IdNamePair[] } = {
-    client_name: [],
-    job_name: [],
-    employee_name: [],
-    task_nmae: [],
+  filters: any = {
+    client_name: { selectAllValue: null, selectedOptions: [], excludedIds: [], selectedCount: 0 },
+    job_name: { selectAllValue: null, selectedOptions: [], excludedIds: [], selectedCount: 0 },
+    employee_name: { selectAllValue: null, selectedOptions: [], excludedIds: [], selectedCount: 0 },
+    task_nmae: { selectAllValue: null, selectedOptions: [], excludedIds: [], selectedCount: 0 },
   }
   allClientNames: IdNamePair[] = [];
   allJobsNames: IdNamePair[] = [];
@@ -75,6 +86,7 @@ export class AllTimesheetsComponent implements OnInit {
   filterQuery: string;
   initalTimesheetList: any = [];
   timesheetDate: string | null;
+  selectedWeekDate:any;
   total_working_hours: any;
   total_excepted_hours: any;
   shortfall: any;
@@ -99,8 +111,10 @@ export class AllTimesheetsComponent implements OnInit {
     private accessControlService: SubModuleService,
     private apiService: ApiserviceService,
     private datePipe: DatePipe,
+    private dialog: MatDialog,
     private dropdownService:DropDownPaginationService,
-   private filterState: FilterStateService,) {
+   private filterState: FilterStateService,
+    private filterQueryService: FilterQueryService,) {
     this.common_service.setTitle(this.BreadCrumbsTitle)
 
     this.user_id = sessionStorage.getItem('user_id');
@@ -288,7 +302,6 @@ export class AllTimesheetsComponent implements OnInit {
         const extraParams = {
         status: 'True'
       }
-      console.log(search, extraParams,'client funcion')
       return this.dropdownService.fetchDropdownData$(
         environment.all_clients,
         page,
@@ -328,6 +341,26 @@ export class AllTimesheetsComponent implements OnInit {
     if (this.jobNameFilter) {
       this.jobNameFilter.onMenuOpened();
     }
+  }
+
+  openFilter(filter: any): void {
+    if (filter) {
+      filter.onMenuOpened();
+    }
+  }
+
+  private getFilterParamName(filterType: string): string {
+    const mapping: { [key: string]: string } = {
+      'client_name': 'client',
+      'job_name': 'job',
+      'employee_name': 'timesheet-employee',
+      'task_nmae': 'timesheet-task'
+    };
+    return mapping[filterType] || filterType;
+  }
+
+  private buildFilterQuery(filterType: string): string {
+    return this.filterQueryService.buildFilterSegment(this.filters[filterType], this.getFilterParamName(filterType));
   }
   // GenericTableFilterComponent -> fetchClients (input) -> DropDownPaginationService -> API
   
@@ -579,7 +612,7 @@ export class AllTimesheetsComponent implements OnInit {
         backdrop: true,
         centered: true
       });
-      modelRef.componentInstance.status.subscribe(resp => {
+      modelRef.componentInstance.status.subscribe((resp: any) => {
         if (resp == "ok") {
           this.deleteContent(id);
           modelRef.close();
@@ -625,11 +658,17 @@ export class AllTimesheetsComponent implements OnInit {
     // console.log('week:', event);
     this.selectedDate = event.start_date;
     this.selectedWeek = event;
+    this.selectedWeekDate =''
     // this.startDate = this.datePipe.transform(event.start_date, 'yyyy-MM-dd');
     // this.endDate = this.datePipe.transform(event.end_date, 'yyyy-MM-dd');
     // console.log('this.selectedDate',this.selectedDate)
     this.getWeekData();
     // this.getTimesheets();
+  }
+
+  selectedDay(date:any){
+    this.selectedWeekDate=date;
+    this.filterData();
   }
 
   submitWeekTimesheet() {
@@ -662,7 +701,7 @@ export class AllTimesheetsComponent implements OnInit {
           },
           (error) => {
             console.log(error);
-            this.apiService.showError(error)
+            this.apiService.showError(error.error.detail)
           }
         )
         modelRef.close();
@@ -682,7 +721,7 @@ export class AllTimesheetsComponent implements OnInit {
     modelRef.componentInstance.title = `Are you sure you want to unlock`;
     modelRef.componentInstance.message = `Confirmation`;
     modelRef.componentInstance.buttonName = `Yes`;
-    modelRef.componentInstance.status.subscribe(resp => {
+    modelRef.componentInstance.status.subscribe((resp:any) => {
       if (resp == "ok") {
         let putData = {
           "timesheet-id": data.id,
@@ -711,6 +750,77 @@ export class AllTimesheetsComponent implements OnInit {
   // Filter related
 
 
+  requestUnlock() {
+    const modelRef = this.modalService.open(GenericTimesheetConfirmationComponent, {
+      size: <any>'sm',
+      backdrop: true,
+      centered: true,
+    });
+    modelRef.componentInstance.title = `Are you sure you want to request unlock?`;
+    modelRef.componentInstance.message = `Confirmation`;
+    modelRef.componentInstance.buttonName = `Yes`;
+    modelRef.componentInstance.status.subscribe((resp:any) => {
+      if (resp == "ok") {
+        this.checkRequestCount();
+        modelRef.close();
+      } else {
+        modelRef.close();
+      }
+    });
+  }
+
+
+  checkRequestCount() {
+    this.apiService.getData(`${environment.live_url}/${environment.request_unlock_count}/?employee_id=${this.user_id}&date=${this.selectedWeekDate}`).subscribe(
+      (res: any) => {
+        if(res.count>0){
+         const dialogRef = this.dialog.open(RequestUnlockComponent, {
+               data: {apiRes:res, requestedDate: this.selectedWeekDate},
+               panelClass: 'request-unlock-dialog',
+               disableClose: false,
+             });
+             dialogRef.afterClosed().subscribe((resp: any) => {
+               // console.log('resp', resp);
+               if (resp?.data === 'refresh') {
+                 this.selectedWeekDate = '';
+                 this.filterData();
+                 dialogRef.close();
+               }
+             });
+        } else{
+         this.sendRequestUnlock(res);
+        }
+
+      },
+      (error) => {
+        this.apiService.showError(error?.error?.detail || error?.error);
+      }
+    );
+
+  }
+
+  sendRequestUnlock(data:any){
+     const payload = {
+        "employee": (this.user_id),
+        // "request_count": data.count,
+        "requested_date": this.selectedWeekDate,
+        "reason": '',
+      }
+    this.apiService.postData(`${environment.live_url}/${environment.unlock_request}/`, payload).subscribe(
+      (res: any) => {
+        this.selectedWeekDate = '';
+        this.filterData();
+        this.apiService.showSuccess(res.message)
+      },
+      (error) => {
+        console.error('Error requesting unlock:', error);
+        this.apiService.showError(error?.error?.error)
+      }
+    );
+  }
+  // Filter related
+
+
   clearDateFilter() {
     this.timesheetDate = null;
     this.dateFilterValue = null;
@@ -721,6 +831,7 @@ export class AllTimesheetsComponent implements OnInit {
   }
   onDateSelected(event: any): void {
     const selectedDate = event.value;
+     this.selectedWeekDate =''
     if (selectedDate) {
       this.timesheetDate = this.datePipe.transform(selectedDate, 'yyyy-MM-dd');
     }
@@ -728,8 +839,8 @@ export class AllTimesheetsComponent implements OnInit {
   }
 
   onFilterChange(event: any, filterType: string) {
-    const selectedOptions = event;
-    this.filters[filterType] = selectedOptions;
+    this.filters[filterType] = event;
+    this.page = 1;
     this.filterData();
   }
   saveState() {
@@ -750,30 +861,13 @@ export class AllTimesheetsComponent implements OnInit {
     this.filterState.saveState(this.state);
   }
 
-  private ids(filterArray: any[]): string {
-    if (!Array.isArray(filterArray)) return '';
-    return filterArray.map(x => x.id).join(',');
-  }
   filterData() {
-    if(this.userRole!='Admin'){
-      this.saveState();
-    }
+    this.saveState();
     let filterQuery = this.getFilterBaseUrl()
-    // console.log(filterQuery)
-    if (this.filters.client_name.length) {
-      filterQuery += `&client-ids=[${this.ids(this.filters.client_name)}]`;
-    }
-
-    if (this.filters.job_name.length) {
-      filterQuery += `&job-ids=[${this.ids(this.filters.job_name)}]`;
-    }
-    if (this.filters.employee_name.length) {
-      // this.userRole === 'Accountant' ? filterQuery += `&timesheet-employee-ids=[${this.filters.employee_name.join(',')}]` :
-        filterQuery += `&timesheet-employee-ids=[${this.ids(this.filters.employee_name)}]`;
-    }
-    if (this.filters.task_nmae.length) {
-      filterQuery += `&timesheet-task-ids=[${this.ids(this.filters.task_nmae)}]`;
-    }
+    filterQuery += this.buildFilterQuery('client_name');
+    filterQuery += this.buildFilterQuery('job_name');
+    filterQuery += this.buildFilterQuery('employee_name');
+    filterQuery += this.buildFilterQuery('task_nmae');
      if(this.directionValue && this.sortValue){
       filterQuery += `&sort-by=${this.sortValue}&sort-type=${this.directionValue}`
     }
@@ -783,19 +877,23 @@ export class AllTimesheetsComponent implements OnInit {
       }
     }
     if (this.userRole !== 'Admin') {
-      if (this.timesheetDate) {
+      if (this.timesheetDate && !this.selectedWeekDate) {
         filterQuery += `&timesheet-dates=[${this.timesheetDate}]`;
       }
-      if(this.startDate && this.endDate){
+      if(this.startDate && this.endDate && !this.selectedWeekDate){
          filterQuery += `&start-date=${this.startDate}&end-date=${this.endDate}`; 
       }
+      if (this.selectedWeekDate) {
+        filterQuery += `&timesheet-date=${this.selectedWeekDate}`;
+      }
+
     }
     this.apiService.getData(`${environment.live_url}/${environment.vlp_timesheets}/${filterQuery}`).subscribe(
       (res: any) => {
         // this.allTimesheetsList = res?.results;
         // this.count = res?.['total_no_of_record'];
         // this.page = res?.['current_page'];
-
+        this.status423 = false;
         this.allTimesheetsList = res?.results;
         this.total_working_hours = res?.total_time_spent;
         this.total_excepted_hours = res?.total_working_hours;
@@ -807,7 +905,19 @@ export class AllTimesheetsComponent implements OnInit {
           // this.fetchEmployees = this._fetchEmployees.bind(this);
           // this.fetchClients = this._fetchClients.bind(this);
           // this.fetchJobs = this._fetchJobs.bind(this);
-      });
+      },
+      (error: any) => {
+        if(error.status===423){
+          this.allTimesheetsList = [];
+          this.status423 = true;
+        } else{
+          this.allTimesheetsList = [];
+           this.status423 = false;
+        }
+        console.log(error)
+        this.apiService.showError(error?.error?.detail);
+      }
+    )
   }
   onDateChange(event: any) {
     this.startDate = '';

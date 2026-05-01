@@ -62,7 +62,6 @@ import { ManagerListComponent } from './manager-list/manager-list.component';
     WeekPickerComponent,
     QuarterMonthYearPickerComponent,
     DateFormaterPipe,
-    // SingleSelectionDropdownComponent,
     ManagerListComponent,
   ],
   imports: [
@@ -145,7 +144,6 @@ import { ManagerListComponent } from './manager-list/manager-list.component';
     WeekPickerComponent,
     NgbDropdownModule,
     DateFormaterPipe,
-    // SingleSelectionDropdownComponent,
     ManagerListComponent
    ],
 

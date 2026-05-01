@@ -1,0 +1,63 @@
+.request-unlock {
+    padding: 4px 8px;
+
+    .request-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 12px;
+    }
+
+    .request-title {
+        margin: 0;
+        font-size: 20px;
+        font-weight: 600;
+        color: #1e293b;
+    }
+
+    .request-section {
+        margin-bottom: 16px;
+    }
+
+    .section-label {
+        font-size: 13px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.4px;
+        color: #64748b;
+        margin-bottom: 6px;
+    }
+
+    .date-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: #f1f5f9;
+        padding: 6px 14px;
+        border-radius: 8px;
+        border: 1px solid #e2e8f0;
+    }
+
+    .date-icon {
+        font-size: 18px;
+        width: 18px;
+        height: 18px;
+        color: #64748b;
+    }
+
+    .date-text {
+        font-size: 15px;
+        font-weight: 500;
+        color: #334155;
+    }
+
+    .action-buttons {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 8px;
+        margin-top: 8px;
+        padding-top: 12px;
+        border-top: 1px solid #e2e8f0;
+    }
+}

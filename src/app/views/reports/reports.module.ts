@@ -21,6 +21,8 @@ import { WfhProlongedHealthIssuesSummaryReportComponent } from './wfh-prolonged-
 import { WfhProlongedHealthIssuesTransactionReportComponent } from './wfh-prolonged-health-issues-transaction-report/wfh-prolonged-health-issues-transaction-report.component';
 import { DashboardWfhComponent } from './dashboard-wfh/dashboard-wfh.component';
 import { ItIssueReportsComponent } from './it-issue-reports/it-issue-reports.component';
+import { MissedTimesheetReportsComponent } from './missed-timesheet-reports/missed-timesheet-reports.component';
+import { PendingTimesheetReportsComponent } from './pending-timesheet-reports/pending-timesheet-reports.component';
 
 
 @NgModule({
@@ -43,6 +45,8 @@ import { ItIssueReportsComponent } from './it-issue-reports/it-issue-reports.com
     WfhProlongedHealthIssuesTransactionReportComponent,
     DashboardWfhComponent,
     ItIssueReportsComponent,
+    MissedTimesheetReportsComponent,
+    PendingTimesheetReportsComponent,
   ],
   imports: [
     CommonModule,

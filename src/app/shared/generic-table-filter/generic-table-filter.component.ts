@@ -1,209 +1,3 @@
-// import { Component, Input, Output, EventEmitter, OnInit, OnChanges, SimpleChanges } from '@angular/core'
-// import { Subject } from 'rxjs'
-// import { debounceTime, distinctUntilChanged, filter } from 'rxjs/operators'
-
-// @Component({
-//   selector: 'app-generic-table-filter', templateUrl: './generic-table-filter.component.html',
-//   styleUrls: ['./generic-table-filter.component.scss']
-// })
-
-// export class GenericTableFilterComponent implements OnInit, OnChanges {
-//   @Input() options: { id: any, name: string }[] = [];
-//   @Input() selectedOptions: any[] = [];
-//   @Output() selectedOptionsChange = new EventEmitter<any[]>();
-//   @Input() fetchOptions?: (page: number, search: string) => Promise<{ results: any[], hasMore: boolean, totalCount?: number }>;
-// // @Input() fetchOptions?: (page: number, search: string);
-//   filterSearchText: string = '';
-//   filteredOptions: { id: any, name: string }[] = []
-//   infiniteScrollOptions: { id: any, name: string }[] = [];
-//   private searchSubject = new Subject<string>();
-//   private latestSearchTerm: string = '';
-//   private currentPage: number = 1;
-//   private hasMore: boolean = true;
-//   private loading: boolean = false;
-//   pendingSearch: boolean = false;
-  
-
-//   ngOnInit(): void {
-//     this.searchSubject.pipe(
-//       debounceTime(300),
-//       distinctUntilChanged(),
-//       filter((term: string) => term === '' || term.length >= 2)
-//     ).subscribe(async (search: any) => {
-//       // if (search !== this.latestSearchTerm) {
-//       //   this.latestSearchTerm = search;
-//       //   this.currentPage = 1;
-//       //   this.infiniteScrollOptions = [];
-//       //   this.hasMore = true;
-//       //    this.loading = false;
-//       // }
-//       // console.log('here it comes',this.fetchOptions)
-//       this.pendingSearch = true;
-//       this.latestSearchTerm = search;
-//       this.currentPage = 1;
-//       this.infiniteScrollOptions = [];
-//       this.hasMore = true;
-//       this.loading = false;
-
-//       this.fetchMoreOptions(search);
-//       this.pendingSearch = false;
-
-
-//       // this.fetchMoreOptions(search);
-//     });
-//     //  if (this.fetchOptions) {
-//     //   this.stableFetchOptions = this.fetchOptions;
-//     // }
-//   }
-
-//   // ngOnChanges(changes: SimpleChanges): void {
-//   //   if (changes) {
-//   //     this.filterOptions();
-//   //   }
-//   // }
-// ngOnChanges(changes: SimpleChanges): void {
-//   if (changes['options'] || changes['fetchOptions']) {
-//     this.filterOptions();
-//     // console.log(this.fetchOptions,"foptions from timesheet");
-    
-//   }
-// }
-
-
-//   onSearchInput(event: any): void {
-//     // console.log('search options =====>', this.fetchOptions)
-//     const value = event?.target?.value || '';
-//     this.filterSearchText = value;
-//     if (this.filterSearchText === '') {
-//       this.latestSearchTerm = '';
-//       this.currentPage = 1;
-//       this.infiniteScrollOptions = [];
-//       this.hasMore = true;
-//     }
-
-//     this.searchSubject.next(this.filterSearchText);
-//   }
-//   onMenuOpened(): void {
-//     if (this.fetchOptions && this.infiniteScrollOptions.length === 0) {
-//       this.searchSubject.next('');
-//     }
-
-//   }
-
-//   filterOptions(): void {
-//     if (this.fetchOptions) {
-//       if (this.filterSearchText.length === 0 || this.filterSearchText.length >= 2) {
-//         this.searchSubject.next(this.filterSearchText);
-//       }
-//     } else {
-//       // if (this.filterSearchText.length > 0 && this.filterSearchText.length < 2) {
-//       //   return;
-//       // }
-//       const lower = this.filterSearchText.toLowerCase();
-//       this.filteredOptions = this.options.filter(opt =>
-//         opt.name.toLowerCase().includes(lower)
-//       );
-//     }
-//   }
-
-//   fetchMoreOptions(search: string): any{
-//     // if (this.loading || !this.hasMore || !this.fetchOptions) return;
-//     // this.loading = true;
-//     // this.fetchOptions(this.currentPage, search).then(data => {
-//     //   this.infiniteScrollOptions = [...this.infiniteScrollOptions, ...data.results];
-//     //   const totalLoaded = this.infiniteScrollOptions.length;
-//     //   this.hasMore = totalLoaded < (data.totalCount ?? totalLoaded); // fallback to loaded
-//     //   this.currentPage++;
-//     //   this.loading = false;
-//     // });
-
-//     // console.log('came here')
-//     // console.log('this.fetchOptions',  this.fetchOptions)
-//     if (this.loading || !this.hasMore || !this.fetchOptions) {
-//       // console.log('resolve here')
-//       return Promise.resolve();
-//     }
-
-
-//     this.loading = true;
-//     // console.log('after.fetchOptions',  this.fetchOptions)
-//     return this.fetchOptions(this.currentPage, search)
-//       .then(data => {
-//         // console.log('alsoooo here')
-//         const newIds = new Set(data.results.map(r => r.id));
-//         this.infiniteScrollOptions = [
-//           ...this.infiniteScrollOptions.filter(opt => !newIds.has(opt.id)),
-//           ...data.results,
-//         ];
-//         const totalLoaded = this.infiniteScrollOptions.length;
-//         this.hasMore = totalLoaded < (data.totalCount ?? totalLoaded);
-//         this.currentPage++;
-//       })
-//       .catch(err => {
-//         // console.error('API call failed:', err);
-//         this.hasMore = false;
-//       })
-//       .finally(() => {
-//         this.loading = false;
-//       });
-//   }
-
-//   isSelected(id: any): boolean {
-//     return this.selectedOptions.includes(id);
-//   }
-
-//   toggleSelection(id: any): void {
-//     const isAlreadySelected = this.selectedOptions.includes(id);
-//     const updated = isAlreadySelected
-//       ? this.selectedOptions.filter(optId => optId !== id)
-//       : [...this.selectedOptions, id];
-//     this.selectedOptions = updated;
-//     this.selectedOptionsChange.emit(this.selectedOptions);
-//     // if (this.fetchOptions && this.filterSearchText?.trim() !== '') {
-//     //   this.fetchMoreOptions(this.filterSearchText);
-//     // }
-//     // console.log('toggle======>',this.fetchOptions)
-//   }
-
-//   clearSearch(): void {
-//     this.filterSearchText = '';
-//     this.searchSubject.next(this.filterSearchText);
-//     this.filterOptions();
-//   }
-
-//   /** Combines filtered + selected to avoid selected options disappearing */
-//   get displayOptions(): { id: any, name: string }[] {
-//     const baseList = this.fetchOptions ? this.infiniteScrollOptions : this.filteredOptions;
-//     const selectedItems = this.selectedOptions.map(id => {
-//       return baseList.find(opt => opt.id === id) ||
-//         this.options.find(opt => opt.id === id) ||
-//         { id, name: '(Selected)' }; // fallback name if not found
-//     });
-
-//     // const selectedItems = this.options.filter(opt =>
-//     //   this.selectedOptions.includes(opt.id)
-//     // );
-
-//     const combined = [...selectedItems, ...baseList.filter(opt =>
-//       !this.selectedOptions.includes(opt.id)
-//     )];
-//     const unique = new Map(combined.map(opt => [opt.id, opt]));
-//     return Array.from(unique.values());
-//   }
-
-//   onScroll(event: any): void {
-//     const target = event.target;
-//     const atBottom = target.offsetHeight + target.scrollTop >= target.scrollHeight - 10;
-//     if (atBottom && this.fetchOptions) {
-//       this.fetchMoreOptions(this.latestSearchTerm);
-//     }
-//   }
-
-
-// }
-
-
-
 import { Component, Input, Output, EventEmitter, OnInit, OnChanges, SimpleChanges } from '@angular/core';
 import { Subject, Observable } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter } from 'rxjs/operators';
@@ -216,7 +10,10 @@ import { debounceTime, distinctUntilChanged, filter } from 'rxjs/operators';
 export class GenericTableFilterComponent implements OnInit, OnChanges {
   @Input() options: { id: any, name: string }[] = [];
   @Input() selectedOptions: any[] = [];
-  @Output() selectedOptionsChange = new EventEmitter<any[]>();
+  @Output() selectedOptionsChange = new EventEmitter<any>();
+
+  // old code 
+  //  @Output() selectedOptionsChange = new EventEmitter<any[]>();
 
   @Input() fetchOptions?: (page: number, search: string) => Observable<{ results: any[], hasMore: boolean, totalCount?: number }>;
 
@@ -229,8 +26,12 @@ export class GenericTableFilterComponent implements OnInit, OnChanges {
   private currentPage: number = 1;
   private hasMore: boolean = true;
   private loading: boolean = false;
-private menuOpened = false;
-  // ✅ Cache to prevent undefined issue after checkbox selection
+  private menuOpened = false;
+  selectAllValue: boolean | null = null;
+  excludedIds: { id: any, name: string }[] = [];
+  selectedCount: number = 0;
+  private totalCount: number = 0;
+  //Cache to prevent undefined issue after checkbox selection
   private stableFetchOptions?: (page: number, search: string) => Observable<{ results: any[], hasMore: boolean, totalCount?: number }>;
 
   ngOnInit(): void {
@@ -255,11 +56,30 @@ private menuOpened = false;
     }
 
     if (changes['options']) {
+      // Set totalCount to options length for static mode
+      this.totalCount = this.options.length;
       this.filterOptions();
     }
 
     if (changes['selectedOptions']) {
-      this.selectedOptions = changes['selectedOptions'].currentValue || [];
+      // old code 
+      // this.selectedOptions = changes['selectedOptions'].currentValue || [];
+
+      // new code 
+       const value = changes['selectedOptions'].currentValue;
+      if (Array.isArray(value)) {
+        this.selectedOptions = value;
+      } else {
+        this.selectedOptions = value?.selectedOptions || [];
+        this.selectAllValue = value?.selectAllValue ?? null;
+        this.excludedIds = value?.excludedIds || [];
+        // Capture totalCount if provided
+        if (value?.totalCount) {
+          this.totalCount = value.totalCount;
+        }
+      }
+      // new code ends here
+      this.updateSelectedCount();
       if (this.menuOpened &&(this.fetchOptions || this.stableFetchOptions)) {
         this.filterOptions();
       }
@@ -319,13 +139,42 @@ private menuOpened = false;
         const newIds = new Set(data.results.map(r => r.id));
 
         if (this.currentPage === 1) {
-          // ✅ New search: keep only selected items, remove old non-selected ones
-          this.infiniteScrollOptions = this.infiniteScrollOptions.filter(opt =>
-            this.selectedOptions.includes(opt.id)
-          );
+          // // New search: keep only selected items, remove old non-selected ones
+          // this.infiniteScrollOptions = this.infiniteScrollOptions.filter(opt =>
+          //   this.selectedOptions.includes(opt.id)
+          // );
+          // // Capture total count on first page
+          // this.totalCount = data.totalCount ?? 0;
+          // this.updateSelectedCount();
+
+          // 19th changes
+          //  this.totalCount = data.totalCount ?? 0;
+          
+          // issue fixing
+            if (!this.filterSearchText) {
+              this.totalCount = data.totalCount ?? 0;
+            }
+            // IMp: update count AFTER totalCount update
+            // if (this.selectAllValue === true || this.selectAllValue === false) {
+            //   this.updateSelectedCount();
+            // }
+            this.updateSelectedCount();
+            // this.selectedOptionsChange.emit({
+            //   selectedOptions: this.selectedOptions,
+            //   selectAllValue: this.selectAllValue,
+            //   excludedIds: this.excludedIds,
+            //   selectedCount: this.selectedCount,
+            //   totalCount: this.totalCount
+            // });
+            this.infiniteScrollOptions = this.infiniteScrollOptions.filter(opt =>
+              this.selectedOptions.some(sel => sel.id === opt.id)
+            );
+
+          // Note: not emitting selectedOptionsChange here — parent already gets
+          // totalCount via updateFilterColumn. Emitting here would trigger table API call.
         }
 
-        // ✅ Add new results, avoid duplicates
+        // Add new results, avoid duplicates
         this.infiniteScrollOptions = [
           ...this.infiniteScrollOptions,
           ...data.results.filter(r => !this.infiniteScrollOptions.some(o => o.id === r.id)),
@@ -334,6 +183,20 @@ private menuOpened = false;
         const totalLoaded = this.infiniteScrollOptions.length;
         this.hasMore = totalLoaded < (data.totalCount ?? totalLoaded);
         this.currentPage++;
+        // if (this.selectAllValue === true) {
+        //   const newItems = data.results.filter(r =>
+        //     !this.selectedOptions.some(sel => sel.id === r.id)
+        //   );
+
+        //   this.selectedOptions = [...this.selectedOptions, ...newItems];
+        //  // old code
+        //   // this.selectedOptionsChange.emit(this.selectedOptions);
+        //   this.selectedOptionsChange.emit({
+        //     selectedOptions: this.selectedOptions,
+        //     selectAllValue: this.selectAllValue,
+        //      excludedIds: this.excludedIds
+        //   });
+        // }
       },
       error: (err) => {
         // console.error('API call failed:', err);
@@ -346,53 +209,133 @@ private menuOpened = false;
   }
 
   isSelected(id: any): boolean {
+    // When selectAll is true or false (came from true): item is selected if NOT in excludedIds
+    if (this.selectAllValue === true || (this.selectAllValue === false && this.excludedIds.length > 0)) {
+      return !this.excludedIds.some(x => x.id === id);
+    }
+
+    // When selectAll is null: item is selected if it's in selectedOptions
     return Array.isArray(this.selectedOptions) && 
-         this.selectedOptions.some(x => x.id === id);
-    // return Array.isArray(this.selectedOptions) && this.selectedOptions.includes(id);
+           this.selectedOptions.some(x => x.id === id);
   }
 
-  // TOGGLE FUNCTION IS CHANGED BECAUSE WILL GET ID AND NAME INSTEAD OF ID
-
-  // toggleSelection(id: any): void {
-  //   if (!Array.isArray(this.selectedOptions)) {
-  //     this.selectedOptions = [];
-  //   }
-  //   const isAlreadySelected = this.selectedOptions.includes(id);
-  //   const updated = isAlreadySelected
-  //     ? this.selectedOptions.filter(optId => optId !== id)
-  //     : [...this.selectedOptions, id];
-
-  //   this.selectedOptions = updated;
-  //   this.selectedOptionsChange.emit(this.selectedOptions);
-
-  //   setTimeout(() => {
-  //     if (this.fetchOptions || this.stableFetchOptions) {
-  //       this.searchSubject.next(this.filterSearchText || '');
-  //     }
-  //   }, 0);
-  // }
+  private updateSelectedCount(): void {
+    if (this.selectAllValue === true) {
+      // When select all is true: count = total records
+      this.selectedCount = this.totalCount;
+    } else if (this.selectAllValue === false) {
+      // When select all is false: count = total records - excluded count
+      // 19th changes
+      // this.selectedCount = this.totalCount - this.excludedIds.length;
+      // issue fixing
+      this.selectedCount = Math.max(
+      this.totalCount - this.excludedIds.length, 0);
+    } else {
+      // When select all is null: count = selected options length (if > 0)
+      this.selectedCount = this.selectedOptions.length > 0 ? this.selectedOptions.length : 0;
+    }
+  }
 
   toggleSelection(option: { id: any; name: string }): void {
-  if (!Array.isArray(this.selectedOptions)) {
-    this.selectedOptions = [];
-  }
-
-  const exists = this.selectedOptions.some(x => x.id === option.id);
-
-  if (exists) {
-    this.selectedOptions = this.selectedOptions.filter(x => x.id !== option.id);
-  } else {
-    this.selectedOptions = [...this.selectedOptions, option];
-  }
-
-  this.selectedOptionsChange.emit(this.selectedOptions);
-
-  setTimeout(() => {
-    if (this.fetchOptions || this.stableFetchOptions) {
-      this.searchSubject.next(this.filterSearchText || '');
+    if (!Array.isArray(this.selectedOptions)) {
+      this.selectedOptions = [];
     }
-  }, 0);
-}
+
+    if (this.selectAllValue === true) {
+      // When selectAll is true and unchecking an item
+      const isExcluded = this.excludedIds.some(x => x.id === option.id);
+      if (isExcluded) {
+        // Recheck (remove from excluded)
+        this.excludedIds = this.excludedIds.filter(x => x.id !== option.id);
+      } else {
+        // Uncheck: change selectAll to false and add to excludedIds
+        this.selectAllValue = false;
+        this.excludedIds.push({ id: option.id, name: option.name });
+      }
+    } else if (this.selectAllValue === false) {
+      // When selectAll is false (came from true), items are implicitly selected if not in excludedIds
+      const isExcluded = this.excludedIds.some(x => x.id === option.id);
+      if (isExcluded) {
+        // Item is currently unchecked, clicking it will check (remove from excludedIds)
+        this.excludedIds = this.excludedIds.filter(x => x.id !== option.id);
+        
+        // If all items are now selected (excludedIds is empty), set selectAll to true
+        if (this.excludedIds.length === 0) {
+          this.selectAllValue = true;
+        }
+      } else {
+        // Item is currently checked, clicking it will uncheck (add to excludedIds)
+        this.excludedIds.push({ id: option.id, name: option.name });
+
+        // If all items are now excluded, reset to null (no selection)
+        if (this.excludedIds.length >= this.totalCount && !this.filterSearchText) {
+          this.selectAllValue = null;
+          this.selectedOptions = [];
+          this.excludedIds = [];
+        }
+
+      }
+    } else {
+      // When selectAllValue is null, toggle selectedOptions
+      const inSelected = this.selectedOptions.some(x => x.id === option.id);
+      if (inSelected) {
+        // Unselect: remove from selectedOptions and add to excludedIds
+        this.selectedOptions = this.selectedOptions.filter(x => x.id !== option.id);
+        const isExcluded = this.excludedIds.some(x => x.id === option.id);
+        if (!isExcluded) {
+          this.excludedIds.push({ id: option.id, name: option.name });
+        }
+      } else {
+        // Select: add to selectedOptions and remove from excludedIds if present
+        this.selectedOptions = [...this.selectedOptions, option];
+        this.excludedIds = this.excludedIds.filter(x => x.id !== option.id);
+
+        // If all options are now selected, set selectAllValue to true and clear arrays
+        if (this.selectedOptions.length === this.totalCount && this.totalCount > 0) {
+          this.selectAllValue = true;
+          this.selectedOptions = [];
+          this.excludedIds = [];
+        }
+      }
+    }
+
+    this.updateSelectedCount();
+
+    this.selectedOptionsChange.emit({
+      selectedOptions: this.selectedOptions,
+      selectAllValue: this.selectAllValue,
+      excludedIds: this.excludedIds,
+      selectedCount: this.selectedCount
+    });
+
+    setTimeout(() => {
+      if (this.fetchOptions || this.stableFetchOptions) {
+        this.searchSubject.next(this.filterSearchText || '');
+      }
+    }, 0);
+  }
+
+//   toggleSelection(option: { id: any; name: string }): void {
+//   if (!Array.isArray(this.selectedOptions)) {
+//     this.selectedOptions = [];
+//   }
+
+//   const exists = this.selectedOptions.some(x => x.id === option.id);
+
+//   if (exists) {
+//     this.selectedOptions = this.selectedOptions.filter(x => x.id !== option.id);
+//   } else {
+//     this.selectedOptions = [...this.selectedOptions, option];
+//   }
+
+//   this.selectedOptionsChange.emit(this.selectedOptions);
+
+//   setTimeout(() => {
+//     if (this.fetchOptions || this.stableFetchOptions) {
+//       this.searchSubject.next(this.filterSearchText || '');
+//     }
+//   }, 0);
+// }
 
 
   clearSearch(): void {
@@ -401,11 +344,18 @@ private menuOpened = false;
     this.currentPage = 1;
     this.hasMore = true;
 
-    // ✅ Reset to only selected options, then fetch new data
+    // Reset to only selected options, then fetch new data
+    // this.infiniteScrollOptions = this.infiniteScrollOptions.filter(opt =>
+    //   this.selectedOptions.includes(opt.id)
+    // );
+   if (this.selectAllValue !== true) {
     this.infiniteScrollOptions = this.infiniteScrollOptions.filter(opt =>
-      this.selectedOptions.includes(opt.id)
+      this.selectedOptions.some(sel => sel.id === opt.id)
     );
-
+  }
+    if (this.selectAllValue === true) {
+    this.selectedCount = 0;
+  }
     this.searchSubject.next(this.filterSearchText);
   }
 
@@ -413,22 +363,25 @@ private menuOpened = false;
     const baseList = (this.fetchOptions || this.stableFetchOptions)
       ? this.infiniteScrollOptions
       : this.filteredOptions;
-      // console.log(baseList)
-      const selectedItems = this.selectedOptions?.map(sel => {
-  return baseList.find(opt => opt.id === sel.id) ||
-         this.options.find(opt => opt.id === sel.id) ||
-         sel; // use stored {id, name}
-});
 
-    // const selectedItems = this.selectedOptions.map(id => {
-    //   return baseList.find(opt => opt.id === id) ||
-    //     this.options.find(opt => opt.id === id) ||
-    //     { id, name: '(Selected)' };
-    // });
+    // When selectAllValue is true, show all available options
+    if (this.selectAllValue === true) {
+      return baseList;
+    }
 
-    const combined = [...selectedItems, ...baseList.filter(opt =>
-      !this.selectedOptions?.includes(opt.id)
-    )];
+    // When selectAllValue is null, show selected items + available items
+    const selectedItems = (Array.isArray(this.selectedOptions) ? this.selectedOptions : []).map(sel => {
+      return baseList.find(opt => opt.id === sel.id) ||
+             this.options.find(opt => opt.id === sel.id) ||
+             sel;
+    });
+
+    const combined = [
+      ...selectedItems,
+      ...baseList.filter(opt =>
+        !this.selectedOptions.some(sel => sel.id === opt.id)
+      )
+    ];
 
     return Array.from(new Map(combined.map(opt => [opt.id, opt])).values());
   }
@@ -442,12 +395,48 @@ private menuOpened = false;
   }
 
   clearSelection(): void {
-  this.selectedOptions = [];
-  this.selectedOptionsChange.emit([]);
-  this.filterSearchText = '';
-  this.currentPage = 1;
-  this.hasMore = true;
-  this.fetchMoreOptions(this.filterSearchText); 
+    this.selectedOptions = [];
+    this.excludedIds = [];
+    this.selectAllValue = null;
+    this.updateSelectedCount();
+    
+    this.selectedOptionsChange.emit({
+      selectedOptions: this.selectedOptions,
+      selectAllValue: this.selectAllValue,
+      excludedIds: this.excludedIds,
+      selectedCount: this.selectedCount
+    });
+
+    this.filterSearchText = '';
+    this.currentPage = 1;
+    this.hasMore = true;
+    this.fetchMoreOptions(this.filterSearchText); 
+  }
+
+selectAllFun() {
+  if (this.filterSearchText) {
+    return; //prevent logic during search
+  }
+  if (this.selectAllValue === true) {
+    // Uncheck select all: selectAllValue becomes null, clear selectedOptions and excludedIds
+    this.selectAllValue = null;
+    this.selectedOptions = [];
+    this.excludedIds = [];
+  } else {
+    // Check select all: selectAllValue becomes true, clear both arrays
+    this.selectAllValue = true;
+    this.selectedOptions = [];
+    this.excludedIds = [];
+  }
+
+  this.updateSelectedCount();
+
+  this.selectedOptionsChange.emit({
+    selectedOptions: this.selectedOptions,
+    selectAllValue: this.selectAllValue,
+    excludedIds: this.excludedIds,
+    selectedCount: this.selectedCount
+  });
 }
 
 

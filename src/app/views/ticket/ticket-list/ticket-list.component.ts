@@ -10,11 +10,18 @@ import { debounceTime, distinctUntilChanged, filter, Subject, takeUntil } from '
 import { MatDialog } from '@angular/material/dialog';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { TicketDetailComponent } from '../ticket-detail/ticket-detail.component';
-import { GenericTimesheetConfirmationComponent } from 'src/app/generic-components/generic-timesheet-confirmation/generic-timesheet-confirmation.component';
-import { SubModuleService } from 'src/app/service/sub-module.service';
+import { GenericTimesheetConfirmationComponent } from '../../../generic-components/generic-timesheet-confirmation/generic-timesheet-confirmation.component';
+import { SubModuleService } from '../../../service/sub-module.service';
+import { FilterQueryService } from '../../../service/filter-query.service';
 export interface IdNamePair {
   id: any;
   name: string;
+}
+export interface FilterState {
+  selectAllValue: boolean | null;
+  selectedOptions: IdNamePair[];
+  excludedIds: IdNamePair[];
+  selectedCount: number;
 }
 
 @Component({
@@ -49,9 +56,9 @@ export class TicketListComponent implements OnInit, OnDestroy {
   currentIndex: any;
   term: any = '';
   client_id: any;
-  filters: { employees: IdNamePair[]; it_ticketstatus: IdNamePair[] } = {
-    employees: [],
-    it_ticketstatus: []
+  filters: any = {
+    employees: { selectAllValue: null, selectedOptions: [], excludedIds: [], selectedCount: 0 },
+    it_ticketstatus: { selectAllValue: null, selectedOptions: [], excludedIds: [], selectedCount: 0 }
   };
   allEmployeeNames: IdNamePair[] = [];
   allStatusNames: IdNamePair[] = [];
@@ -78,7 +85,7 @@ export class TicketListComponent implements OnInit, OnDestroy {
   };
   constructor(private datePipe: DatePipe, private common_service: CommonServiceService, private activateRoute: ActivatedRoute, private router: Router,
     private api: ApiserviceService, private dropdownService: DropDownPaginationService, private dialog: MatDialog, private modalService: NgbModal,
-    private accessControlService: SubModuleService
+    private accessControlService: SubModuleService, private filterQueryService: FilterQueryService
   ) {
     this.user_id = sessionStorage.getItem('user_id');
     this.userRole = sessionStorage.getItem('user_role_name').toLowerCase();
@@ -120,7 +127,7 @@ export class TicketListComponent implements OnInit, OnDestroy {
      this.accessControlService.getAccessForActiveUrl(this.user_id).subscribe((access) => {
       if (access) {
         this.accessPermissions = access[0].operations;
-        console.log(access)
+        // console.log(access)
          this.filterData();
       }
     },(error: any) => {
@@ -356,19 +363,35 @@ export class TicketListComponent implements OnInit, OnDestroy {
     this.filterData();
   }
 
-  private ids(filterArray: any[]): string {
-    if (!Array.isArray(filterArray)) return '';
-    return filterArray.map(x => x.id).join(',');
+  onFilterChange(event: any, filterType: string) {
+    this.filters[filterType] = event;
+    this.page = 1;
+    this.filterData();
   }
+
+  private getFilterParamName(filterType: string): string {
+    const mapping: { [key: string]: string } = {
+      'employees': 'ticket-employee', // old key employee-ids
+    };
+    return mapping[filterType] || filterType;
+  }
+
+  private buildFilterQuery(filterType: string): string {
+    return this.filterQueryService.buildFilterSegment(this.filters[filterType], this.getFilterParamName(filterType));
+  }
+
   filterData() {
     this.filterQuery = this.getFilterBaseUrl()
     this.filterQuery += this.userRole === 'manager' ? '&show_team=true' : '';
-    if (this.filters.it_ticketstatus.length) {
-      this.filterQuery += `&status=[${this.ids(this.filters.it_ticketstatus)}]`;
-    }
-    if (this.filters.employees.length) {
-      // this.userRole === 'accountant' ? this.filterQuery += `&employee-ids=[${this.filters.employees.join(',')}]` :
-      this.filterQuery += `&employee-ids=[${this.ids(this.filters.employees)}]`;
+    this.filterQuery += this.buildFilterQuery('employees');
+    if (this.filters.it_ticketstatus?.selectAllValue === true) {
+      this.filterQuery += `&status=[${this.it_status.map(s => s.name).join(',')}]`;
+    } else if (this.filters.it_ticketstatus?.selectAllValue === false) {
+      const excludedIds = this.filters.it_ticketstatus?.excludedIds?.map((e: any) => e.name) || [];
+      const remaining = this.it_status.filter(s => !excludedIds.includes(s.name)).map(s => s.name);
+      this.filterQuery += `&status=[${remaining.join(',')}]`;
+    } else if (this.filters.it_ticketstatus?.selectedOptions?.length) {
+      this.filterQuery += `&status=[${this.filters.it_ticketstatus.selectedOptions.map((s: any) => s.name).join(',')}]`;
     }
     if (this.raisedDateRange.start && this.raisedDateRange.end) {
       this.filterQuery += `&ticket_raised_start-date=${this.raisedDateRange.start}&ticket_raised_end-date=${this.raisedDateRange.end}`;

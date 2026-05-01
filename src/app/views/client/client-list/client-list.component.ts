@@ -13,6 +13,7 @@ import { ClientContactDetailsPopupComponent } from '../client-contact-details-po
 import { DatePipe } from '@angular/common';
 import { GenericTableFilterComponent } from '../../../shared/generic-table-filter/generic-table-filter.component';
 import { DropDownPaginationService } from '../../../service/drop-down-pagination.service';
+import { FilterQueryService } from '../../../service/filter-query.service';
 import { debounceTime, distinctUntilChanged, filter, Subject } from 'rxjs';
 import { FilterStateService } from '../../../service/filter-state.service';
 import { ClientFeedbackPopupComponent } from '../client-feedback-popup/client-feedback-popup.component';
@@ -21,6 +22,13 @@ import { ClientFeedbackPopupComponent } from '../client-feedback-popup/client-fe
 export interface IdNamePair {
   id: any;
   name: string;
+}
+
+export interface FilterState {
+  selectAllValue: boolean | null;
+  selectedOptions: IdNamePair[];
+  excludedIds: IdNamePair[];
+  selectedCount: number;
 }
 @Component({
   selector: 'app-client-list',
@@ -58,9 +66,9 @@ export class ClientListComponent implements OnInit {
   accessPermissions = []
   user_id: any;
   userRole: any;
-  filters: { country: IdNamePair[], source: IdNamePair[] } = {
-    country: [],
-    source: [],
+  filters: any = {
+    country: { selectAllValue: null, selectedOptions: [], excludedIds: [], selectedCount: 0 },
+    source: { selectAllValue: null, selectedOptions: [], excludedIds: [], selectedCount: 0 }
   }
   allCountriesNames: IdNamePair[] = [];
   allSourceNames: IdNamePair[] = [];
@@ -85,6 +93,7 @@ export class ClientListComponent implements OnInit {
     private apiService: ApiserviceService,
     private dropdownService: DropDownPaginationService,
     private filterState: FilterStateService,
+    private filterQueryService: FilterQueryService,
     private datePipe: DatePipe) {
     this.user_id = sessionStorage.getItem('user_id');
     this.userRole = sessionStorage.getItem('user_role_name');
@@ -120,8 +129,6 @@ export class ClientListComponent implements OnInit {
          this.filters = this.state.filters;
       } 
       this.filterData();
-    // this.getAllCountryList();
-    // this.getAllSourceList();
   }
 
   public getAllCountryList() {
@@ -160,11 +167,13 @@ export class ClientListComponent implements OnInit {
   }
 
   public openCreateClientPage() {
+    this.saveState();
     sessionStorage.setItem('access-name', this.access_name?.name)
     this.router.navigate(['/client/create']);
 
   }
   async edit(item: any) {
+    this.saveState();
     this.selectedItemId = item?.id;
     sessionStorage.setItem('access-name', this.access_name?.name)
     this.common_service.setClientActiveTabindex(0);
@@ -361,20 +370,27 @@ export class ClientListComponent implements OnInit {
     this.filterState.saveState(this.state);
    }
 
-  private ids(filterArray: any[]): string {
-  if (!Array.isArray(filterArray)) return '';
-  return filterArray.map(x => x.id).join(',');
-}
+  private getFilterParamName(filterType: string): string {
+    const mapping: { [key: string]: string } = {
+      'country': 'country',
+      'source': 'source'
+    };
+    return mapping[filterType] || filterType;
+  }
+
+  private buildFilterQuery(filterType: string): string {
+    return this.filterQueryService.buildFilterSegment(this.filters[filterType], this.getFilterParamName(filterType));
+  }
   filterData() {
     this.saveState();
     this.filterQuery = this.getFilterBaseUrl()
-    if (this.filters.country.length) {
-      this.filterQuery += `&country-ids=[${this.ids(this.filters.country)}]`;
-    }
-
-    if (this.filters.source.length) {
-      this.filterQuery += `&source-ids=[${this.ids(this.filters.source)}]`;
-    }
+    
+    // Apply new filter logic for country
+    this.filterQuery += this.buildFilterQuery('country');
+    
+    // Apply new filter logic for source
+    this.filterQuery += this.buildFilterQuery('source');
+    
     if(this.directionValue && this.sortValue){
       this.filterQuery += `&sort-by=${this.sortValue}&sort-type=${this.directionValue}`
     }
@@ -399,7 +415,7 @@ export class ClientListComponent implements OnInit {
   onFilterChange(event: any, filterType: string) {
     const selectedOptions = event;
     this.filters[filterType] = selectedOptions;
-    this.page = 1,
+    this.page = 1;
     this.filterData();
   }
 

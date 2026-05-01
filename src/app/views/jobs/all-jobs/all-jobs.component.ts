@@ -9,6 +9,7 @@ import { SubModuleService } from '../../../service/sub-module.service';
 import { environment } from '../../../../environments/environment';
 import { GenericTableFilterComponent } from '../../../shared/generic-table-filter/generic-table-filter.component';
 import { DropDownPaginationService } from '../../../service/drop-down-pagination.service';
+import { FilterQueryService } from '../../../service/filter-query.service';
 import { FilterStateService } from '../../../service/filter-state.service';
 import { NgxUiLoaderService } from 'ngx-ui-loader';
 import { HttpClient } from '@angular/common/http';
@@ -16,6 +17,13 @@ import { HttpClient } from '@angular/common/http';
 export interface IdNamePair {
   id: any;
   name: string;
+}
+
+export interface FilterState {
+  selectAllValue: boolean | null;
+  selectedOptions: IdNamePair[];
+  excludedIds: IdNamePair[];
+  selectedCount: number;
 }
 
 @Component({
@@ -71,14 +79,14 @@ export class AllJobsComponent implements OnInit {
   dateFilterValue: any = null;
   statusDateFilterValue: any = null;
   statusList: String[] = [];
-  filters: { group_name: IdNamePair[]; job_type_name: IdNamePair[]; client_name: IdNamePair[]; employees: IdNamePair[]; manager: IdNamePair[], status_name: IdNamePair[],status_group_name:IdNamePair[] } = {
-    group_name: [],
-    job_type_name: [],
-    client_name: [],
-    employees: [],
-    manager: [],
-    status_name: [],
-    status_group_name: [],
+  filters: any = {
+    group_name: { selectAllValue: null, selectedOptions: [], excludedIds: [], selectedCount: 0 },
+    job_type_name: { selectAllValue: null, selectedOptions: [], excludedIds: [], selectedCount: 0 },
+    client_name: { selectAllValue: null, selectedOptions: [], excludedIds: [], selectedCount: 0 },
+    employees: { selectAllValue: null, selectedOptions: [], excludedIds: [], selectedCount: 0 },
+    manager: { selectAllValue: null, selectedOptions: [], excludedIds: [], selectedCount: 0 },
+    status_name: { selectAllValue: null, selectedOptions: [], excludedIds: [], selectedCount: 0 },
+    status_group_name: { selectAllValue: null, selectedOptions: [], excludedIds: [], selectedCount: 0 }
   };
 private searchSubject = new Subject<string>();
 
@@ -134,6 +142,7 @@ private searchSubject = new Subject<string>();
     private fb: FormBuilder,
     private dropdownService: DropDownPaginationService,
     private filterState: FilterStateService,
+    private filterQueryService: FilterQueryService,
     private datePipe: DatePipe) {
     this.common_service.setTitle(this.BreadCrumbsTitle);
     this.user_id = sessionStorage.getItem('user_id');
@@ -275,31 +284,31 @@ private searchSubject = new Subject<string>();
     this.filterData();
   }
 
-  private ids(filterArray: any[]): string {
-  if (!Array.isArray(filterArray)) return '';
-  return filterArray.map(x => x.id).join(',');
-}
+  private getFilterParamName(filterType: string): string {
+    const mapping: { [key: string]: string } = {
+      'job_type_name': 'job-type',
+      'client_name': 'client',
+      'group_name': 'group',
+      'employees': 'employee',
+      'manager': 'manager',
+      'status_group_name': 'status-group'
+    };
+    return mapping[filterType] || filterType;
+  }
+
+  private buildFilterQuery(filterType: string): string {
+    return this.filterQueryService.buildFilterSegment(this.filters[filterType], this.getFilterParamName(filterType));
+  }
+
   filterData() {
      this.saveState();
     this.filterQuery = this.getFilterBaseUrl()
-    if (this.filters.client_name.length) {
-      this.filterQuery += `&client-ids=[${this.ids(this.filters.client_name)}]`;
-    }
-    if (this.filters.job_type_name.length) {
-      // this.filterQuery += `&job-type-ids=[${this.filters.job_type_name.join(',')}]`;
-      this.filterQuery += `&job-type-ids=[${this.ids(this.filters.job_type_name)}]`;
-    }
-    if (this.filters.group_name.length) {
-      this.filterQuery += `&group-ids=[${this.ids(this.filters.group_name)}]`;
-    }
-    if (this.filters.employees.length) {
-      // this.userRole === 'accountant' ? this.filterQuery += `&employee-ids=[${this.filters.employees.join(',')}]` :
-        this.filterQuery += `&employee-ids=[${this.ids(this.filters.employees)}]`;
-    }
-    if (this.filters.manager.length) {
-      this.userRole === 'manager' ? this.filterQuery += `&manager-ids=[${this.ids(this.filters.manager)}]` :
-        this.filterQuery += `&manager-ids=[${this.ids(this.filters.manager)}]`;
-    }
+    this.filterQuery += this.buildFilterQuery('client_name');
+    this.filterQuery += this.buildFilterQuery('job_type_name');
+    this.filterQuery += this.buildFilterQuery('group_name');
+    this.filterQuery += this.buildFilterQuery('employees');
+    this.filterQuery += this.buildFilterQuery('manager');
+    this.filterQuery += this.buildFilterQuery('status_group_name');
 
     if (this.dateRange.start && this.dateRange.end) {
       this.filterQuery += `&start-date=${this.dateRange.start}&end-date=${this.dateRange.end}`;
@@ -307,27 +316,23 @@ private searchSubject = new Subject<string>();
     if(this.directionValue && this.sortValue){
       this.filterQuery += `&sort-by=${this.sortValue}&sort-type=${this.directionValue}`
     }
-    // if (this.jobAllocationDate) {
-    //   this.filterQuery += `&job-allocation-date=[${this.jobAllocationDate}]`;
-    // }
     if (this.statusDate) {
       this.filterQuery += `&job-status-date=[${this.statusDate}]`;
     }
-    if(this.filters.status_group_name.length){
-      this.filterQuery += `&status-group-ids=[${this.ids(this.filters.status_group_name)}]`;
-    }
+    
     if(this.isUnassigned){
       this.filterQuery += `&unassigned=True`
     }
-    if (this.isCurrent && !this.isUnassigned && this.filters.status_name.length == 0) {
+    
+    if (this.isCurrent && !this.isUnassigned) {
       this.jobStatusList('True');
       this.filterQuery += `&job-status=[${this.statusList}]`;
     }
-    else if (!this.isCurrent && !this.isUnassigned && this.filters.status_name.length == 0) {
+    else if (!this.isCurrent && !this.isUnassigned) {
       this.jobStatusList('False');
       this.filterQuery += `&job-status=[${this.statusList}]`;
     } else {
-      // this.filterQuery += `&job-status=[${this.filters.status_name.join(',')}]`;
+      // status_name has custom handling, not using the new filter logic
     }
     this.apiService.getData(`${environment.live_url}/${environment.only_jobs}/${this.filterQuery}`).subscribe((res: any) => {
       this.allJobsList = res?.results;
@@ -651,16 +656,16 @@ private searchSubject = new Subject<string>();
   jobStatusList(status: any) {
     const isActive = status === 'True';
     this.statusList = this.allJobStatus?.filter((jobstatus: any) => isActive
-      ? jobstatus?.status_name !== "Cancelled" && jobstatus?.status_name !== "Completed"
-      : jobstatus?.status_name === "Cancelled" || jobstatus?.status_name === "Completed")
+      ? jobstatus?.status_name?.toLowerCase() !== "cancelled" && jobstatus?.status_name?.toLowerCase() !== "completed"
+      : jobstatus?.status_name?.toLowerCase() === "cancelled" || jobstatus?.status_name?.toLowerCase() === "completed")
       .map((status: any) => status?.status_name);
     // this.allStatusNames = this.allJobStatus
     // this.allStatuGroupNames = this.allJobStatus?.filter((status: any) => isActive ? status?.status_name !== "Cancelled" && status?.status_name !== "Completed"
     //   : status?.status_name === "Cancelled" || status?.status_name === "Completed").map((status: any) => ({
     //     id: status?.status_name, name: status?.status_name
     //   }))
-    this.allStatuGroupNames = this.groupList?.filter((group: any) => isActive ? group?.group_name !== "Cancelled" && group?.group_name !== "Completed"
-      : group?.group_name === "Cancelled" || group?.group_name === "Completed").map((status: any) => ({
+    this.allStatuGroupNames = this.groupList?.filter((group: any) => isActive ? group?.group_name?.toLowerCase() !== "cancelled" && group?.group_name?.toLowerCase() !== "completed"
+      : group?.group_name?.toLowerCase() === "cancelled" || group?.group_name?.toLowerCase() === "completed").map((status: any) => ({
         id: status?.group_name, name: status?.group_name
       }))
   }
@@ -710,7 +715,7 @@ private searchSubject = new Subject<string>();
   }
 
   isColumnVisible(key: string): boolean {
-    const col = this.columns.find(c => c.key === key);
+    const col = this.columns?.find(c => c.key === key);
     return col ? col.visible : false;
   }
   resetColumns() {
@@ -831,11 +836,11 @@ private searchSubject = new Subject<string>();
     (item:any) => {
       // Apply filter: if item should be excluded, return null
       if (this.isCurrent) {
-        if (item.group_name === 'Cancelled' || item.group_name === 'Completed') {
+        if (item.group_name?.toLowerCase() === 'cancelled' || item.group_name?.toLowerCase() === 'completed') {
           return null;
         }
       } else {
-        if (item.group_name !== 'Cancelled' && item.group_name !== 'Completed') {
+        if (item.group_name?.toLowerCase() !== 'cancelled' && item.group_name?.toLowerCase() !== 'completed') {
           return null;
         }
       }

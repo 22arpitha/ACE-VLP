@@ -8,6 +8,7 @@ import { environment } from '../../../../environments/environment';
 import { JobTimeSheetDetailsPopupComponent } from '../common/job-time-sheet-details-popup/job-time-sheet-details-popup.component';
 import { MatDialog } from '@angular/material/dialog';
 import { DatePipe } from '@angular/common';
+import { FilterQueryService } from '../../../service/filter-query.service';
 @Component({
   selector: 'app-timesheets-summary-report',
   templateUrl: './timesheets-summary-report.component.html',
@@ -59,7 +60,8 @@ export class TimesheetsSummaryReportComponent implements OnInit {
        private common_service:CommonServiceService,
        private api:ApiserviceService,
        private dialog:MatDialog,
-       private datePipe:DatePipe
+       private datePipe:DatePipe,
+       private filterQueryService: FilterQueryService
      ) {
       this.user_id = sessionStorage.getItem('user_id');
       this.userRole = sessionStorage.getItem('user_role_name');
@@ -132,7 +134,7 @@ export class TimesheetsSummaryReportComponent implements OnInit {
    }
   
    // Called from <app-dynamic-table> via @Output actionEvent
-   handleAction(event: { actionType: string; detail: any,key:any}) {
+   handleAction(event: { actionType: string; detail: any,key:any,formfilter?:boolean }) {
      switch (event.actionType) {
         case 'navigate':
           this.viewtimesheetDetails(event['row']);
@@ -141,7 +143,7 @@ export class TimesheetsSummaryReportComponent implements OnInit {
          this.onTableDataChange(event.detail);
          break;
          case 'tableSizeChange':
-         this.onTableSizeChange(event.detail);
+         if (!event.formfilter) this.onTableSizeChange(event.detail);
          break;
          case 'search':
          this.onSearch(event.detail);
@@ -210,7 +212,6 @@ export class TimesheetsSummaryReportComponent implements OnInit {
    }
 
    resetData(data:any){
-    console.log(data);
     this.formattedData =[];
     this.term = ''
     this.page = 1;
@@ -281,18 +282,23 @@ export class TimesheetsSummaryReportComponent implements OnInit {
     let query = `?${search}download=true`
      query += this.client_id ? `&client=${this.client_id}` : '';
      query += (this.userRole ==='Admin' || (this.userRole !='Admin' && this.client_id)) ? '':`&employee-id=${this.user_id}`;
-        if (this.selectedClientIds?.length) {
-          query += `&client-ids=[${this.selectedClientIds.join(',')}]`;
-        }
-        if (this.selectedJobIds?.length) {
-          query += `&job-ids=[${this.selectedJobIds.join(',')}]`;
-        }
-        // if (this.selectedStatusIds?.length) {
-        //   query += `&job-status-ids=[${this.selectedStatusIds.join(',')}]`;
+        // Old filter query building (simple array join)
+        // if (this.selectedClientIds?.length) {
+        //   query += `&client-ids=[${this.selectedClientIds.join(',')}]`;
         // }
-        if (this.selectedEmployeeIds?.length) {
-         query += `&employee-ids=[${this.selectedEmployeeIds.join(',')}]`;
-       }
+        // if (this.selectedJobIds?.length) {
+        //   query += `&job-ids=[${this.selectedJobIds.join(',')}]`;
+        // }
+        // // if (this.selectedStatusIds?.length) {
+        // //   query += `&job-status-ids=[${this.selectedStatusIds.join(',')}]`;
+        // // }
+        // if (this.selectedEmployeeIds?.length) {
+        //  query += `&employee-ids=[${this.selectedEmployeeIds.join(',')}]`;
+        // }
+        // New: FilterState-aware (handles select-all three-state logic)
+        query += this.buildQueryForFilter(this.selectedClientIds, 'client');
+        query += this.buildQueryForFilter(this.selectedJobIds, 'job');
+        query += this.buildQueryForFilter(this.selectedEmployeeIds, 'employee');
         if(this.time?.start_date && this.time?.end_date){
          query += `&timesheet-start-date=${this.time?.start_date}&timesheet-end-date=${this.time?.end_date}`;
        }
@@ -403,6 +409,17 @@ export class TimesheetsSummaryReportComponent implements OnInit {
       }
   
   
+      // select all code
+      private buildQueryForFilter(filterValue: any, paramName: string): string {
+        if (!filterValue) return '';
+        // Old format: plain array of ids
+        if (Array.isArray(filterValue)) {
+          return filterValue.length ? `&${paramName}-ids=[${filterValue.join(',')}]` : '';
+        }
+        // New format: FilterState object
+        return this.filterQueryService.buildFilterSegment(filterValue, paramName);
+      }
+
       // new code
       private updateFilterColumn(key: string, cache: any) {
           this.tableConfig.columns = this.tableConfig.columns.map(col =>
@@ -411,7 +428,8 @@ export class TimesheetsSummaryReportComponent implements OnInit {
                   ...col,
                   filterOptions: cache.data,
                   currentPage: cache.page,
-                  totalPages: Math.ceil(cache.total / 20)
+                  totalPages: Math.ceil(cache.total / 20),
+                  totalCount: cache.total
                 }
               : col
           );
@@ -438,15 +456,20 @@ export class TimesheetsSummaryReportComponent implements OnInit {
       finalQuery += (this.userRole ==='Admin' || (this.userRole !='Admin' && this.client_id)) ? '':`&employee-id=${this.user_id}`;
       finalQuery += this.client_id ? `&client=${this.client_id}` : '';
       finalQuery += `&report-type=timesheet-summary-report-new`;
-        if (params?.client_ids?.length) {
-          finalQuery += `&client-ids=[${params.client_ids.join(',')}]`;
-        }
-        if (params?.job_ids?.length) {
-          finalQuery += `&job-ids=[${params.job_ids.join(',')}]`;
-        }
-        if (params?.employee_ids?.length) {
-          finalQuery += `&employee-ids=[${params.employee_ids.join(',')}]`;
-        }
+        // Old filter query building (simple array join)
+        // if (params?.client_ids?.length) {
+        //   finalQuery += `&client-ids=[${params.client_ids.join(',')}]`;
+        // }
+        // if (params?.job_ids?.length) {
+        //   finalQuery += `&job-ids=[${params.job_ids.join(',')}]`;
+        // }
+        // if (params?.employee_ids?.length) {
+        //   finalQuery += `&employee-ids=[${params.employee_ids.join(',')}]`;
+        // }
+        // New: FilterState-aware (handles select-all three-state logic)
+        finalQuery += this.buildQueryForFilter(params?.client_ids, 'client');
+        finalQuery += this.buildQueryForFilter(params?.job_ids, 'job');
+        finalQuery += this.buildQueryForFilter(params?.employee_ids, 'employee');
         if(this.directionValue && this.sortValue){
           finalQuery += `&sort-by=${this.sortValue}&sort-type=${this.directionValue}`;
         }
@@ -493,7 +516,12 @@ export class TimesheetsSummaryReportComponent implements OnInit {
                 //  }
                  return {
                    ...col,
-                   filterOptions
+                   filterOptions,
+                   // Preserve totalCount/currentPage/totalPages set by updateFilterColumn
+                   // so selectAllFun uses the correct total_no_of_record from the filter dropdown API
+                   ...(existingCol?.totalCount   !== undefined && { totalCount:   existingCol.totalCount }),
+                   ...(existingCol?.currentPage  !== undefined && { currentPage:  existingCol.currentPage }),
+                   ...(existingCol?.totalPages   !== undefined && { totalPages:   existingCol.totalPages }),
                  };
                }),
          data: this.formattedData,
@@ -586,7 +614,6 @@ export class TimesheetsSummaryReportComponent implements OnInit {
       
       getFilterOptions(event: { detail: any; key: string }) {
         const { detail, key } = event;
-        console.log(this.selectedClientIds,'id')
         let cache = this.filterDataCache[key];
         const searchTerm = detail.search || '';
       

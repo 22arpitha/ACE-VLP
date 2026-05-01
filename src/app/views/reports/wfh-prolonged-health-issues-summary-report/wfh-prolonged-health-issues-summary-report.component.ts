@@ -6,6 +6,7 @@ import { CommonServiceService } from 'src/app/service/common-service.service';
 import { ApiserviceService } from 'src/app/service/apiservice.service';
 import { MatDialog } from '@angular/material/dialog';
 import { DatePipe } from '@angular/common';
+import { FilterQueryService } from '../../../service/filter-query.service';
 
 @Component({
   selector: 'app-wfh-prolonged-health-issues-summary-report',
@@ -63,6 +64,7 @@ export class WfhProlongedHealthIssuesSummaryReportComponent implements OnInit {
   constructor(
     private common_service: CommonServiceService,
     private api: ApiserviceService,
+    private filterQueryService: FilterQueryService,
     private dialog: MatDialog,
     private datePipe: DatePipe,
   ) {
@@ -285,12 +287,15 @@ export class WfhProlongedHealthIssuesSummaryReportComponent implements OnInit {
   }
   exportCsvOrPdf(fileType: string) {
     let query = `?file-type=${fileType}&download=true`;
-    if (this.selectedEmployeeIds?.length) {
-      query += `&employee-ids=[${this.selectedEmployeeIds.join(',')}]`;
-    }
+    // old code 
+    // if (this.selectedEmployeeIds?.length) {
+    //   query += `&employee-ids=[${this.selectedEmployeeIds.join(',')}]`;
+    // }
     if(this.userRole === 'Manager'&&!this.selectedEmployeeIds?.length){
       query += `&manager-id=${this.user_id}`;
     }
+    // select all code
+    query += this.buildQueryForFilter(this.selectedEmployeeIds, 'wfh-report-employee');
     // query += this.userRole === 'Manager' ? `&manager-id=${this.user_id}` : '';
     // if (this.selectedLeaveType) {
     //   query += `&leave-type-id=${this.selectedLeaveType}`;
@@ -315,9 +320,21 @@ export class WfhProlongedHealthIssuesSummaryReportComponent implements OnInit {
             filterOptions: cache.data,
             currentPage: cache.page,
             totalPages: Math.ceil(cache.total / 20),
+            totalCount: cache.total
           }
         : col,
     );
+  }
+
+  // select all code
+  private buildQueryForFilter(filterValue: any, paramName: string): string {
+    if (!filterValue) return '';
+    // Old format: plain array of ids
+    if (Array.isArray(filterValue)) {
+      return filterValue.length ? `&${paramName}=[${filterValue.join(',')}]` : '';
+    }
+    // New format: FilterState object
+    return this.filterQueryService.buildFilterSegment(filterValue, paramName);
   }
 
   async getTableData(params?: {
@@ -336,9 +353,12 @@ export class WfhProlongedHealthIssuesSummaryReportComponent implements OnInit {
     finalQuery = query;
     finalQuery +=
       this.userRole === 'Manager' ? `&manager-id=${this.user_id}` : '';
-    if (params?.employee_ids?.length) {
-      finalQuery += `&employee-ids=[${params.employee_ids.join(',')}]`;
-    }
+    //   // old code
+    // if (params?.employee_ids?.length) {
+    //   finalQuery += `&employee-ids=[${params.employee_ids.join(',')}]`;
+    // }
+    // select all code
+    finalQuery += this.buildQueryForFilter(params?.employee_ids, 'wfh-report-employee');
     // if (params?.leave_type) {
     //   finalQuery += `&leave-type-id=${params.leave_type}`;
     // }
@@ -383,6 +403,9 @@ export class WfhProlongedHealthIssuesSummaryReportComponent implements OnInit {
                 return {
                   ...col,
                   filterOptions,
+                    ...(existingCol?.totalCount   !== undefined && { totalCount:   existingCol.totalCount }),
+                    ...(existingCol?.currentPage  !== undefined && { currentPage:  existingCol.currentPage }),
+                    ...(existingCol?.totalPages   !== undefined && { totalPages:   existingCol.totalPages }),
                 };
               }),
               data: this.formattedData,
@@ -403,20 +426,18 @@ export class WfhProlongedHealthIssuesSummaryReportComponent implements OnInit {
               searchPlaceholder: 'Search by Client/Job/Employee',
             };
           } else {
-            this.tableConfig = {
-              columns: tableColumns?.map((col) => {
-                let filterOptions: any = [];
-                if (col.filterable) {
-                  if (col.key === 'client_name') {
-                    filterOptions = this.clientName;
-                  } else if (col.key === 'job_name') {
-                    filterOptions = this.jobName;
-                  } else if (col.key === 'employee_name') {
-                    filterOptions = [];
-                  }
-                }
-                return { ...col, filterOptions };
-              }),
+             const existingColumnsEmpty = this.tableConfig?.columns ?? [];
+             this.tableConfig = {
+                      columns: tableColumns?.map(col => {
+                        const existingCol = existingColumnsEmpty.find((c: any) => c.key === col.key);
+                        return {
+                          ...col,
+                          filterOptions: existingCol?.filterOptions ?? [],
+                          ...(existingCol?.totalCount   !== undefined && { totalCount:   existingCol.totalCount }),
+                          ...(existingCol?.currentPage  !== undefined && { currentPage:  existingCol.currentPage }),
+                          ...(existingCol?.totalPages   !== undefined && { totalPages:   existingCol.totalPages }),
+                        };
+                      }),
               data: [],
               searchTerm: this.term,
               actions: [],

@@ -24,6 +24,7 @@ import { WfhTypeComponent } from './wfh-type/wfh-type.component';
 
 import { DivisionComponent } from './division/division.component';
 import { DepartmentComponent } from './department/department.component';
+import { TimesheetEditableDaysComponent } from './timesheet-editable-days/timesheet-editable-days.component';
 
 const routes: Routes = [
   {
@@ -145,6 +146,11 @@ const routes: Routes = [
         component: PeriodComponent,
         canDeactivate:[CanDeactivateGuard]
       },
+      {
+        path: 'timesheet-editable-days',
+        component:TimesheetEditableDaysComponent,
+        canDeactivate:[CanDeactivateGuard]
+      }
     ]
   },
 ];

@@ -52,9 +52,9 @@ export class ActivateChildGuard implements CanActivateChild {
     if (state.url.includes('/changePasswords')) {
         return true;
       }
-    if (state.url.includes('/performance/dashboard')) {
-        return true;
-      }
+    // if (state.url.includes('/performance/dashboard')) {
+    //     return true;
+    //   }
     // if(state.url.includes('/approvals/leave-requests')) {
     //   return true;
     // }
@@ -74,7 +74,6 @@ export class ActivateChildGuard implements CanActivateChild {
 
       return hasViewPermission;
     } catch (error: any) {
-
       if (error.status === 404 || error.message?.includes('not found')) {
         this._router.navigate(['/404']);
       } else {

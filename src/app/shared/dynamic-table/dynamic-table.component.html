@@ -77,6 +77,15 @@
         <div class="col-auto mt-2 col-sm-auto col-md-auto col-lg-auto" *ngIf="config.showSubmit">
           <button ngbTooltip="send reports" placement="top" mat-raised-button class="mat-btn-s proceedbtn" type="button" (click)="sendDayEndReport()">Submit</button>
         </div>
+
+        <div class="col-auto col-sm-auto col-md-auto col-lg-auto px-0 mx-0 my-1 week-left-right-arrows" *ngIf="config?.weekLeftAndRightArrows">
+          <button mat-icon-button class="icon-btn-color"ngbTooltip="Previous Week" placement="top" (click)="previousWeek()">
+            <mat-icon>chevron_left</mat-icon>
+          </button>
+          <button mat-icon-button class="icon-btn-color" ngbTooltip="Next Week" placement="top" (click)="nextWeek()">
+            <mat-icon>chevron_right</mat-icon>
+          </button>
+        </div>
   <!-- Download Menu -->
 
       <div class="col-auto col-sm-auto col-md-auto col-lg-auto px-0 mx-0 my-1 downloads"
@@ -88,25 +97,6 @@
           <button mat-mini-fab  class="download-icons" (click)="downloadPDF()" *ngIf="config?.showPdf">
             <mat-icon style="color: red" ngbTooltip="PDF" placement="top">picture_as_pdf</mat-icon>
           </button>
-        <!-- <button
-          mat-icon-button
-          [matMenuTriggerFor]="downloadMenu"
-          aria-label="Download"
-          class="border rounded menu-trigger"
-        >
-          <i class="bi bi-download"></i>
-        </button> -->
-        <!-- <mat-menu #downloadMenu="matMenu" xPosition="after" yPosition="below">
-          <button mat-menu-item (click)="downloadCSV()">
-            <mat-icon style="color: green">table_view</mat-icon>
-            <span>CSV</span>
-          </button>
-          <button mat-menu-item (click)="downloadPDF()">
-            <mat-icon style="color: red">picture_as_pdf</mat-icon>
-            <span>PDF</span>
-          </button>
-        </mat-menu> -->
-      <!-- </div> -->
       </div>
       <!-- reset button -->
       <div class="col-auto col-sm-auto col-md-auto col-lg-auto px-0 mx-0 my-1" *ngIf="config.reset">
@@ -222,9 +212,16 @@
                 </ng-container>
                 <ng-container *ngSwitchCase="'multi-select'">
                   <div  *ngIf="!(userRole==='Accountant' && col.key==='is_primary')" ngbDropdown class="d-inline-block"  container="body"  (openChange)="onFilterOpen(col, $event)">
+                    <!-- Old badge (array length):
                     <button id="dropdownBasic1" mat-icon-button ngbDropdownToggle [ngClass]="tempFilters[col.key]?.length>=1 ? 'filterdColumn':''">
-                          <span *ngIf="tempFilters[col.key]?.length>=1">{{tempFilters[col.key]?.length.toString().padStart(2, '0')}}</span> 
+                          <span *ngIf="tempFilters[col.key]?.length>=1">{{tempFilters[col.key]?.length.toString().padStart(2, '00')}}</span> 
                       <i class="bi-funnel" *ngIf="!tempFilters[col.key] || tempFilters[col.key]?.length===0"></i>
+                    </button>
+                    -->
+                    <!-- New badge (per-column selectedCount) -->
+                    <button id="dropdownBasic1" mat-icon-button ngbDropdownToggle [ngClass]="(columnSelectedCount[col.key] || 0) >= 1 ? 'filterdColumn':''">
+                          <span *ngIf="(columnSelectedCount[col.key] || 0) >= 1">{{(columnSelectedCount[col.key] || 0).toString().padStart(2, '00')}}</span> 
+                      <i class="bi-funnel" *ngIf="(columnSelectedCount[col.key] || 0) === 0"></i>
                     </button>
                     <div ngbDropdownMenu aria-labelledby="dropdownBasic1"  class="p-2" (click)="$event.stopPropagation()" (scroll)="onFilterScroll($event, col)">
                       <ng-container *ngIf="col.key as columnKey" >
@@ -277,11 +274,17 @@
                         </div> -->
 
                         <div  >
+                          <!-- (ngModelChange) fires on phantom MatListOption.ngOnDestroy() too — causes unwanted API calls.
+                               (selectionChange) fires ONLY on real user clicks. -->
                           <mat-selection-list (scroll)="onFilterScroll($event, col)"
                            [(ngModel)]="columnFilters[columnKey]"
-                          (ngModelChange)="onSelectionChange($event, col)"
+                          (selectionChange)="onSelectionChange($event, col)"
                           [multiple]="true"
                         >
+                          <!-- Old: <mat-list-option [selected]="selectAllValue === true" (click)="selectAllFun()">Select All</mat-list-option> -->
+                          <!-- Old: <mat-list-option [selected]="columnSelectAll[col.key] === true" (click)="selectAllFun(col)">Select All</mat-list-option> -->
+                          <!-- New: sentinel value '__select_all__' in [(ngModel)] array — avoids [selected] vs ngModel conflict -->
+                          <mat-list-option [disabled]="filterSearchText[columnKey]" [value]="'__select_all__'">Select All</mat-list-option>
                           <mat-list-option
                             *ngFor="let option of getFilteredOptions(columnKey)"
                             [value]="option.id"
@@ -404,11 +407,12 @@
           </td>
         </tr>
         <tr *ngIf="!config.formContent">
-          <td *ngFor="let col of config.columns" [ngClass]="{'job-client-text-left': col.leftAlign, 'width-class': col.width}">
-            <div *ngIf="!col.navigation && !col.empNavigation && col.key != 'diff_days'" [ngStyle]="{ color:col.key === 'job_status_date' && item?.status_date_color ? item?.status_date_color : col.key === 'short_fall' ? item?.color : 'black' }" [ngClass]="col.key === 'remaining_time' ? isPositiveOrNegative(item?.remaining_time):''">
+          <td *ngFor="let col of config.columns" [ngClass]="{'job-client-text-left': col.leftAlign, 'width-class': col.width}"
+            [ngStyle]="col.key.startsWith('date_') ? { 'background-color': item[col.key] } : {}">
+           <div *ngIf="!col.navigation && !col.empNavigation && col.key != 'diff_days'" [ngStyle]="{ color:col.key === 'job_status_date' && item?.status_date_color ? item?.status_date_color : col.key === 'short_fall' ? item?.color : 'black' }" [ngClass]="col.key === 'remaining_time' ? isPositiveOrNegative(item?.remaining_time):''">
               <!-- {{ col.type === 'date' ? (item[col.key] | dateFormater) : item[col.key] !== null && item[col.key] !== undefined && item[col.key] !== '' ? item[col.key] : 'NA' }} -->
             
-              <!-- ✅ Attachment column -->
+              <!-- Attachment column -->
               <ng-container *ngIf="col.key === 'attachment'">
                 <a *ngIf="item[col.key]" [href]="item[col.key]" target="_blank" rel="noopener noreferrer">
                   Open Link
@@ -416,14 +420,22 @@
                 <span *ngIf="!item[col.key]">NA</span>
               </ng-container>
 
-              <!-- ✅ Other columns -->
+              <!-- Other columns -->
               <ng-container *ngIf="col.key !== 'attachment'">
-                {{ col.type === 'date'
+                <ng-container *ngIf="!col.key.startsWith('date_')">
+                  {{ col.type === 'date'
+                      ? (item[col.key] | dateFormater)
+                      : item[col.key] !== null && item[col.key] !== undefined && item[col.key] !== ''
+                        ? item[col.key]
+                        : 'NA'
+                  }}
+                </ng-container>
+                <!-- {{ col.type === 'date'
                     ? (item[col.key] | dateFormater)
                     : item[col.key] !== null && item[col.key] !== undefined && item[col.key] !== ''
                       ? item[col.key]
                       : 'NA'
-                }}
+                }} -->
               </ng-container>
             </div>
 

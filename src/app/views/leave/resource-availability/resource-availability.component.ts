@@ -1,12 +1,19 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { ApiserviceService } from '../../../service/apiservice.service';
 import { environment } from '../../../../environments/environment';
 import { DatePipe } from '@angular/common';
 import { DropDownPaginationService } from '../../../service/drop-down-pagination.service';
-
+import { FilterQueryService } from '../../../service/filter-query.service';
+import { GenericTableFilterComponent } from '../../../shared/generic-table-filter/generic-table-filter.component';
 export interface IdNamePair {
   id: any;
   name: string;
+}
+export interface FilterState {
+  selectAllValue: boolean | null;
+  selectedOptions: IdNamePair[];
+  excludedIds: IdNamePair[];
+  selectedCount: number;
 }
 
 @Component({
@@ -15,6 +22,7 @@ export interface IdNamePair {
   styleUrls: ['./resource-availability.component.scss']
 })
 export class ResourceAvailabilityComponent implements OnInit {
+  @ViewChild('employeeFilter') employeeFilter!: GenericTableFilterComponent;
   filterQuery: any
   page = 1;
   count = 0;
@@ -31,12 +39,11 @@ export class ResourceAvailabilityComponent implements OnInit {
   allDataLoaded = false;
   user_id: any;
   userRole: any;
-  filters: { leave_type: IdNamePair[], employees: IdNamePair[], status_name: IdNamePair[] } = {
-    leave_type: [],
-    employees: [],
-    status_name: [],
+   filters: any = {
+    employees: { selectAllValue: null, selectedOptions: [], excludedIds: [], selectedCount: 0 },
   }
-  constructor(private apiService: ApiserviceService, private datePipe: DatePipe, private dropdownService: DropDownPaginationService,) {
+  constructor(private apiService: ApiserviceService, private datePipe: DatePipe, 
+    private dropdownService: DropDownPaginationService, private filterQueryService: FilterQueryService,) {
     this.userRole = sessionStorage.getItem('user_role_name');
     this.user_id = sessionStorage.getItem('user_id');
   }
@@ -148,6 +155,16 @@ export class ResourceAvailabilityComponent implements OnInit {
   if (!Array.isArray(filterArray)) return '';
   return filterArray.map(x => x.id).join(',');
 }
+private getFilterParamName(filterType: string): string {
+    const mapping: { [key: string]: string } = {
+      'employees': 'resource-employee', // leave_employee_ids
+    };
+    return mapping[filterType] || filterType;
+  }
+
+  private buildFilterQuery(filterType: string): string {
+    return this.filterQueryService.buildFilterSegment(this.filters[filterType], this.getFilterParamName(filterType));
+  }
   getEmployeeCalendar() {
     if (this.isLoading) return;
     this.isLoading = true;
@@ -155,15 +172,19 @@ export class ResourceAvailabilityComponent implements OnInit {
     if (this.selectedPeriod) {
       this.filterQuery += `&leave_period=${this.selectedPeriod}`;
     }
-    const isDropdownSelected = this.userRole !== 'Admin' && this.filters.employees.length !== 0;
-    this.filterQuery += `&is_dropdown_selected=${isDropdownSelected}`;
-    let employeeIds = this.filters.employees.length ? this.ids(this.filters.employees): '';
+    // const isDropdownSelected = this.userRole !== 'Admin' && this.filters.employees.length !== 0;
+    // this.filterQuery += `&is_dropdown_selected=${isDropdownSelected}`;
+    // let employeeIds = this.filters.employees.length ? this.ids(this.filters.employees): '';
     if (this.userRole === 'Manager') {
-      employeeIds = employeeIds ? `${employeeIds},${this.user_id}`: `${this.user_id}`;
+      // old code 
+      // employeeIds = employeeIds ? `${employeeIds},${this.user_id}`: `${this.user_id}`;
+      // select all code  
+      this.filterQuery += `&manager_id=${this.user_id}`;
     }
-    if (employeeIds) {
-      this.filterQuery += `&employee-ids=[${employeeIds}]`;
-    }
+    // if (employeeIds) {
+    //   this.filterQuery += `&employee-ids=[${employeeIds}]`;
+    // }
+    this.filterQuery += this.buildFilterQuery('employees');
     // if (this.filters.employees.length) {
     //   this.filterQuery += `&employee-ids=[${this.ids(this.filters.employees)}]`;
     // }
@@ -219,7 +240,9 @@ export class ResourceAvailabilityComponent implements OnInit {
     this.mainStartDate = '';
     this.mainEndDate = '';
     this.selectedPeriod = '';
-    this.filters.employees = [];
+    // this.filters.employees = [];
+    this.filters.employees = { selectAllValue: null, selectedOptions: [], excludedIds: [], selectedCount: 0 };
+    this.resetFilters();
     this.page = 1
     this.tableSize = 50;
     this.isLoading = false;
@@ -227,4 +250,7 @@ export class ResourceAvailabilityComponent implements OnInit {
     this.getEmployeeCalendar()
   }
 
+   resetFilters(): void {
+    this.employeeFilter?.clearSelection();
+  }
 }

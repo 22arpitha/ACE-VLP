@@ -6,10 +6,18 @@ import { environment } from '../../../../environments/environment';
 import { DatePipe } from '@angular/common';
 import { GenericTableFilterComponent } from '../../../shared/generic-table-filter/generic-table-filter.component';
 import { DropDownPaginationService } from '../../../service/drop-down-pagination.service';
+import { FilterQueryService } from '../../../service/filter-query.service';
 import { debounceTime, distinctUntilChanged, filter, Subject } from 'rxjs';
 export interface IdNamePair {
   id: any;
   name: string;
+}
+
+export interface FilterState {
+  selectAllValue: boolean | null;
+  selectedOptions: IdNamePair[];
+  excludedIds: IdNamePair[];
+  selectedCount: number;
 }
 @Component({
   selector: 'app-jobs-of-endclient',
@@ -39,9 +47,9 @@ export class JobsOfEndclientComponent implements OnInit {
   term: any = '';
   client_id:any;
   end_client_id:any
-  filters: {employees:IdNamePair[];status:IdNamePair[] } = {
-    employees:[],
-    status:[]
+  filters: { [key: string]: FilterState } = {
+    employees: { selectAllValue: null, selectedOptions: [], excludedIds: [], selectedCount: 0 },
+    status: { selectAllValue: null, selectedOptions: [], excludedIds: [], selectedCount: 0 }
   };
   allEmployeeNames: IdNamePair[] = [];
   allStatusNames: IdNamePair[] = [];
@@ -49,10 +57,10 @@ export class JobsOfEndclientComponent implements OnInit {
   statusDateFilterValue: any = null;
   filteredList:any = [];
     datepicker:any;
-    filterQuery: string;
+    filterQuery: string | undefined;
     jobList:any = [];
-    jobAllocationDate: string | null;
-     dateRange = {
+    jobAllocationDate: string | null | undefined;
+     dateRange:any = {
       start: '',
       end: ''
     };
@@ -61,6 +69,7 @@ export class JobsOfEndclientComponent implements OnInit {
     userRole:any;
   constructor( private datePipe: DatePipe,private common_service: CommonServiceService,private activateRoute:ActivatedRoute,private router: Router,
     private api: ApiserviceService, private dropdownService: DropDownPaginationService,
+    private filterQueryService: FilterQueryService,
   ) {
     this.user_id = sessionStorage.getItem('user_id');
     this.userRole = sessionStorage.getItem('user_role_name');
@@ -180,37 +189,39 @@ export class JobsOfEndclientComponent implements OnInit {
     }
 
 
-    backToEndClients(id){
+    backToEndClients(id:any){
       this.common_service.setClientActiveTabindex(id);
       this.router.navigate([`/client/update-client/${this.client_id}`])
     }
 
-    private ids(filterArray: any[]): string {
-      if (!Array.isArray(filterArray)) return '';
-      return filterArray.map(x => x.id).join(',');
+    private getFilterParamName(filterType: string): string {
+      const mapping: { [key: string]: string } = {
+        'employees': 'employee',
+        'status': 'job-status'
+      };
+      return mapping[filterType] || filterType;
+    }
+
+    private buildFilterQuery(filterType: string): string {
+      return this.filterQueryService.buildFilterSegment(this.filters[filterType], this.getFilterParamName(filterType));
     }
     filterData() {
       this.filterQuery = this.getFilterBaseUrl()
-      if (this.filters.status.length) {
-        this.filterQuery += `&job-status-ids=[${this.ids(this.filters.status)}]`;
-      }
-      if (this.filters.employees.length) {
-        // this.userRole === 'accountant' ? this.filterQuery += `&employee-ids=[${this.filters.employees.join(',')}]` :
-        this.filterQuery += `&employee-ids=[${this.ids(this.filters.employees)}]` ;
-      }
+      
+      // Apply filter logic for status and employees
+      this.filterQuery += this.buildFilterQuery('status');
+      this.filterQuery += this.buildFilterQuery('employees');
+      
       if (this.dateRange.start && this.dateRange.end) {
-      this.filterQuery += `&start-date=${this.dateRange.start}&end-date=${this.dateRange.end}`;
+        this.filterQuery += `&start-date=${this.dateRange.start}&end-date=${this.dateRange.end}`;
       }
-       if(this.directionValue && this.sortValue){
+      if(this.directionValue && this.sortValue){
         this.filterQuery += `&sort-by=${this.sortValue}&sort-type=${this.directionValue}`
-       }
-
-      // if (this.jobAllocationDate) {
-      //   this.filterQuery += `&job-allocation-date=[${this.jobAllocationDate}]`;
-      // }
+      }
       if (this.statusDate) {
         this.filterQuery += `&job-status-date=[${this.statusDate}]`;
       }
+      
       this.api.getData(`${environment.live_url}/${environment.only_jobs}/${this.filterQuery}`).subscribe(
         (res: any) => {
           this.allJobs = res.results;
@@ -223,7 +234,7 @@ export class JobsOfEndclientComponent implements OnInit {
     }
   
 
-    setDateFilterColumn(event){
+    setDateFilterColumn(event:any){
       const selectedDate = event.value;
     if (selectedDate) {
       this.statusDate = this.datePipe.transform(selectedDate, 'yyyy-MM-dd');
@@ -293,6 +304,12 @@ fetchJobStatus = (page: number, search: string) => {
       (item) => ({ id: item.id, name: item.status_name }),
     );
 }
+
+onFilterChange(event: any, filterType: string) {
+    const selectedOptions = event;
+    this.filters[filterType] = selectedOptions;
+    this.filterData();
+  }
 
 openFilter(filter: any): void {
     if (filter) {

@@ -34,16 +34,16 @@
                   class="bi bi-arrow-up"></i>
                 <button mat-icon-button [matMenuTriggerFor]="employeesFilterMenu" *ngIf="userRole!=='accountant'"
                   (menuOpened)="openFilter(employeeFilter)"
-                  [ngClass]="filters.employees.length>=1 ? 'filterdColumn':''">
-                  <span *ngIf="filters.employees.length>=1">{{filters.employees.length.toString().padStart(2,
+                  [ngClass]="(filters.employees.selectedCount || 0) >= 1 ? 'filterdColumn':''">
+                  <span *ngIf="(filters.employees.selectedCount || 0) >= 1">{{(filters.employees.selectedCount || 0).toString().padStart(2,
                     '0')}}</span>
-                  <i class="bi-funnel" *ngIf="filters.employees.length===0"></i>
+                  <i class="bi-funnel" *ngIf="(filters.employees.selectedCount || 0) === 0"></i>
                 </button>
 
                 <mat-menu #employeesFilterMenu="matMenu">
                   <app-generic-table-filter #employeeFilter [fetchOptions]="fetchEmployees"
                     [(selectedOptions)]="filters.employees"
-                    (selectedOptionsChange)="filterData()"></app-generic-table-filter>
+                    (selectedOptionsChange)="onFilterChange($event, 'employees')"></app-generic-table-filter>
                 </mat-menu>
               </th>
               <th scope="col">Raised Date
@@ -77,16 +77,16 @@
                 <i *ngIf="arrowState['status']" (click)="sort('descending', 'status')"
                   class="bi bi-arrow-up"></i>
                 <button mat-icon-button [matMenuTriggerFor]="statusFilterMenu"
-                  [ngClass]="filters.it_ticketstatus.length>=1 ? 'filterdColumn':''">
-                  <span *ngIf="filters.it_ticketstatus.length>=1">{{filters.it_ticketstatus.length.toString().padStart(2, '0')}}</span>
-                  <i class="bi-funnel" *ngIf="filters.it_ticketstatus.length===0"></i>
+                  [ngClass]="(filters.it_ticketstatus.selectedCount || 0) >= 1 ? 'filterdColumn':''">
+                  <span *ngIf="(filters.it_ticketstatus.selectedCount || 0) >= 1">{{(filters.it_ticketstatus.selectedCount || 0).toString().padStart(2, '0')}}</span>
+                  <i class="bi-funnel" *ngIf="(filters.it_ticketstatus.selectedCount || 0) === 0"></i>
                 </button>
                 
 
                 <mat-menu #statusFilterMenu="matMenu">
                   <app-generic-table-filter  [options]="it_status"
                     [(selectedOptions)]="filters.it_ticketstatus"
-                    (selectedOptionsChange)="filterData()"></app-generic-table-filter>
+                    (selectedOptionsChange)="onFilterChange($event, 'it_ticketstatus')"></app-generic-table-filter>
                 </mat-menu>
               </th>
 

@@ -19,7 +19,8 @@ export const tableColumns  = [
     filterType: 'multi-select',
     paramskeyId: 'issue-ids',
     sortable: true,
-    width:true
+    width:true,
+    leftAlign:true
   },
   {
     label: 'Employee Name',
@@ -28,7 +29,7 @@ export const tableColumns  = [
     sortable: true,
     keyId: 'is_primary',
     paramskeyId: 'is-primary-ids',
-    filterable: false,
+    filterable: true,
     filterType: 'multi-select',
     leftAlign:true
   },

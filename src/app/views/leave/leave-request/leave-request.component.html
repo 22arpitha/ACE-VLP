@@ -55,15 +55,14 @@
                 <i *ngIf="arrowState['employee__full_name']" class="bi bi-arrow-up"
                   (click)="sort('descending', 'employee__full_name')"></i>
                  <button mat-icon-button [matMenuTriggerFor]="employeesFilterMenu" (menuOpened)="openFilter(employeeFilter)"
-                  [ngClass]="filters.employees.length>=1 ? 'filterdColumn':''">
-                  <span *ngIf="filters.employees.length>=1">{{filters.employees.length.toString().padStart(2,
-                    '0')}}</span>
-                  <i class="bi-funnel" *ngIf="filters.employees.length===0"></i>
+                  [ngClass]="filters['employees'].selectedCount>=1 ? 'filterdColumn':''">
+                  <span *ngIf="filters['employees'].selectedCount>=1">{{filters['employees'].selectedCount.toString().padStart(2, '0')}}</span>
+                  <i class="bi-funnel" *ngIf="filters['employees'].selectedCount===0"></i>
                 </button>
 
                 <mat-menu #employeesFilterMenu="matMenu">
-                  <app-generic-table-filter #employeeFilter [fetchOptions]="fetchEmployees" [(selectedOptions)]="filters.employees"
-                    (selectedOptionsChange)="getleaverequest()"></app-generic-table-filter>
+                  <app-generic-table-filter #employeeFilter [fetchOptions]="fetchEmployees" [(selectedOptions)]="filters['employees']"
+                    (selectedOptionsChange)="onFilterChange($event, 'employees')"></app-generic-table-filter>
                 </mat-menu>
 
 
@@ -74,14 +73,14 @@
                 <i *ngIf="arrowState['leave_type__leave_type_name']" class="bi bi-arrow-up"
                   (click)="sort('descending', 'leave_type__leave_type_name')"></i>
                 <button mat-icon-button [matMenuTriggerFor]="leaveTypeFilterMenu"
-                    [ngClass]="filters.leave_type.length>=1 ? 'filterdColumn':''">
-                    <span *ngIf="filters.leave_type.length>=1">{{filters.leave_type.length}}</span>
-                    <i class="bi-funnel" *ngIf="filters.leave_type.length===0"></i>
+                    [ngClass]="filters['leave_type'].selectedCount>=1 ? 'filterdColumn':''">
+                    <span *ngIf="filters['leave_type'].selectedCount>=1">{{filters['leave_type'].selectedCount.toString().padStart(2, '0')}}</span>
+                    <i class="bi-funnel" *ngIf="filters['leave_type'].selectedCount===0"></i>
                 </button>
 
                 <mat-menu #leaveTypeFilterMenu="matMenu">
                     <app-generic-table-filter [options]="leaveOptions"
-                        [(selectedOptions)]="filters.leave_type"
+                        [(selectedOptions)]="filters['leave_type']"
                         (selectedOptionsChange)="onFilterChange($event, 'leave_type')">
                     </app-generic-table-filter>
                 </mat-menu>
@@ -109,14 +108,14 @@
                 <i *ngIf="arrowState['status']" class="bi bi-arrow-up"
                   (click)="sort('descending', 'status')"></i>
                 <button mat-icon-button [matMenuTriggerFor]="statusFilterMenu"
-                  [ngClass]="filters.status_name.length>=1 ? 'filterdColumn':''">
-                  <span *ngIf="filters.status_name.length>=1">{{filters.status_name.length}}</span>
-                  <i class="bi-funnel" *ngIf="filters.status_name.length===0"></i>
+                  [ngClass]="filters['status_name'].selectedCount>=1 ? 'filterdColumn':''">
+                  <span *ngIf="filters['status_name'].selectedCount>=1">{{filters['status_name'].selectedCount.toString().padStart(2, '0')}}</span>
+                  <i class="bi-funnel" *ngIf="filters['status_name'].selectedCount===0"></i>
               </button>
 
               <mat-menu #statusFilterMenu="matMenu">
                   <app-generic-table-filter [options]="leaveStatus" #statusFilter
-                      [(selectedOptions)]="filters.status_name"
+                      [(selectedOptions)]="filters['status_name']"
                       (selectedOptionsChange)="onFilterChange($event, 'status_name')">
                   </app-generic-table-filter>
               </mat-menu>

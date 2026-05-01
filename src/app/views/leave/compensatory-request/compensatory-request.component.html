@@ -45,10 +45,10 @@
                                     (click)="sort('descending', 'employee__full_name')"></i>
                                 <button mat-icon-button [matMenuTriggerFor]="employeesFilterMenu"
                                     (menuOpened)="openFilter(employeeFilter)"
-                                    [ngClass]="filters.employees.length>=1 ? 'filterdColumn':''">
+                                    [ngClass]="(filters.employees.selectedCount || 0)>=1 ? 'filterdColumn':''">
                                     <span
-                                        *ngIf="filters.employees.length>=1">{{filters.employees.length.toString().padStart(2,'0')}}</span>
-                                    <i class="bi-funnel" *ngIf="filters.employees.length===0"></i>
+                                        *ngIf="(filters.employees.selectedCount || 0)>=1">{{(filters.employees.selectedCount || 0).toString().padStart(2,'0')}}</span>
+                                    <i class="bi-funnel" *ngIf="(filters.employees.selectedCount || 0)===0"></i>
                                 </button>
 
                                 <mat-menu #employeesFilterMenu="matMenu">
@@ -84,9 +84,9 @@
                                 <i *ngIf="arrowState['status']" class="bi bi-arrow-up"
                                     (click)="sort('descending', 'status')"></i>
                                 <button mat-icon-button [matMenuTriggerFor]="statusFilterMenu"
-                                    [ngClass]="filters.status_name.length>=1 ? 'filterdColumn':''">
-                                    <span *ngIf="filters.status_name.length>=1">{{filters.status_name.length}}</span>
-                                    <i class="bi-funnel" *ngIf="filters.status_name.length===0"></i>
+                                    [ngClass]="(filters.status_name.selectedCount || 0)>=1 ? 'filterdColumn':''">
+                                    <span *ngIf="(filters.status_name.selectedCount || 0)>=1">{{(filters.status_name.selectedCount || 0).toString().padStart(2,'0')}}</span>
+                                    <i class="bi-funnel" *ngIf="(filters.status_name.selectedCount || 0)===0"></i>
                                 </button>
 
                                 <mat-menu #statusFilterMenu="matMenu">

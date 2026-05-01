@@ -4,6 +4,7 @@ import { CommonServiceService } from '../../../service/common-service.service';
 import { ApiserviceService } from '../../../service/apiservice.service';
 import { buildPaginationQuery } from '../../../shared/pagination.util';
 import { environment } from '../../../../environments/environment';
+import { FilterQueryService } from '../../../service/filter-query.service';
 
 @Component({
   selector: 'app-it-issue-reports',
@@ -41,7 +42,8 @@ export class ItIssueReportsComponent implements OnInit {
   selectedIssues: any = [];
   constructor(
     private common_service: CommonServiceService,
-    private api: ApiserviceService
+    private api: ApiserviceService,
+    private filterQueryService: FilterQueryService
   ) {
     this.user_id = sessionStorage.getItem('user_id');
     this.userRole = sessionStorage.getItem('user_role_name');
@@ -91,13 +93,13 @@ export class ItIssueReportsComponent implements OnInit {
   }
 
   // Called from <app-dynamic-table> via @Output actionEvent
-  handleAction(event: { actionType: string; detail: any, key: string }) {
+  handleAction(event: { actionType: string; detail: any, key: string, fromFilter?: boolean }) {
    switch (event.actionType) {
       case 'tableDataChange':
         this.onTableDataChange(event.detail);
         break;
       case 'tableSizeChange':
-        this.onTableSizeChange(event.detail);
+        if (!event.fromFilter) this.onTableSizeChange(event.detail);
         break;
       case 'search':
         this.onSearch(event.detail);
@@ -215,6 +217,17 @@ export class ItIssueReportsComponent implements OnInit {
 
 
 
+  // select all code
+  private buildQueryForFilter(filterValue: any, paramName: string): string {
+    if (!filterValue) return '';
+    // Old format: plain array of ids
+    if (Array.isArray(filterValue)) {
+      return filterValue.length ? `&${paramName}=[${filterValue.join(',')}]` : '';
+    }
+    // New format: FilterState object
+    return this.filterQueryService.buildFilterSegment(filterValue, paramName);
+  }
+
   // new code
   private updateFilterColumn(key: string, cache: any) {
     this.tableConfig.columns = this.tableConfig.columns.map(col =>
@@ -223,7 +236,8 @@ export class ItIssueReportsComponent implements OnInit {
           ...col,
           filterOptions: cache.data,
           currentPage: cache.page,
-          totalPages: Math.ceil(cache.total / 20)
+          totalPages: Math.ceil(cache.total / 20),
+          totalCount: cache.total
         }
         : col
     );
@@ -233,18 +247,33 @@ export class ItIssueReportsComponent implements OnInit {
     const search = this.term?.trim().length >= 2 ? `search=${encodeURIComponent(this.term.trim())}&` : '';
     let finalQuery = `?${search}&file-type=${fileType}&download=true`;
 
-    if (this.primaryEmployees?.length > 0) {
-      finalQuery += `&employee-ids=[${this.primaryEmployees}]`;
-    }
+    // Old filter query building (simple array join)
+    // if (this.primaryEmployees?.length > 0) {
+    //   finalQuery += `&employee-ids=[${this.primaryEmployees}]`;
+    // }
+    // New: FilterState-aware (handles select-all three-state logic)
+    finalQuery += this.buildQueryForFilter(this.primaryEmployees, 'ticket-employee');
     if (this.raisedDate) {
       finalQuery += `&ticket_raised_date=${this.raisedDate}`
     }
     if (this.selectedStatusDate) {
       finalQuery += `&status_date=${this.selectedStatusDate}`;
     }
-    if(this.selectedStatus?.length > 0){
-       finalQuery += `&status=[${this.selectedStatus}]`;
+    // Old filter query building (simple array join)
+    // if(this.selectedStatus?.length > 0){
+    //    finalQuery += `&status=[${this.selectedStatus}]`;
+    // }
+    // New: FilterState-aware (handles select-all three-state logic)
+    if (this.selectedStatus?.selectAllValue === true) {
+      finalQuery += `&status=[${this.it_status.map(s => s.name).join(',')}]`;
+    } else if (this.selectedStatus?.selectAllValue === false) {
+      const excludedIds = this.selectedStatus?.excludedIds?.map((e: any) => e.name) || [];
+      const remaining = this.it_status.filter(s => !excludedIds.includes(s.name)).map(s => s.name);
+      finalQuery += `&status=[${remaining.join(',')}]`;
+    } else if (this.selectedStatus?.selectedOptions?.length) {
+      finalQuery += `&status=[${this.selectedStatus.selectedOptions.map((s: any) => s.name).join(',')}]`;
     }
+    finalQuery += this.buildQueryForFilter(this.selectedIssues, 'issue');
     if (this.directionValue && this.sortValue) {
       finalQuery += `&sort-by=${this.sortValue}&sort-type=${this.directionValue}`;
     }
@@ -252,31 +281,47 @@ export class ItIssueReportsComponent implements OnInit {
     window.open(url, '_blank');
   }
 
-  async getTableData(params?: { page?: number; pageSize?: number; searchTerm?: string; raised_date?: any; status_date?: any, ticket_status?: any[]; prime_emp?: any,issues?: any[] }) {
+  async getTableData(params?: { page?: number; pageSize?: number; searchTerm?: string; raised_date?: any; status_date?: any, ticket_status?: any; prime_emp?: any,issues?: any[] }) {
     let finalQuery;
     const page = params?.page ?? this.page;
     const pageSize = params?.pageSize ?? this.tableSize;
     const searchTerm = params?.searchTerm ?? this.term;
     let query = buildPaginationQuery({ page, pageSize, searchTerm });
     finalQuery = query
-    if (params?.prime_emp?.length > 0) {
-      finalQuery += `&employee-ids=[${params?.prime_emp}]`;
+    // Old filter query building (simple array join)
+    // if (params?.prime_emp?.length > 0) {
+    //   finalQuery += `&employee-ids=[${params?.prime_emp}]`;
+    // }
+    // New: FilterState-aware (handles select-all three-state logic)
+    finalQuery += this.buildQueryForFilter(params?.prime_emp, 'ticket-employee');
+    finalQuery += this.buildQueryForFilter(params?.issues, 'issue');
+
+    if (params?.ticket_status?.selectAllValue === true) {
+      finalQuery += `&status=[${this.it_status.map(s => s.name).join(',')}]`;
+    } else if (params?.ticket_status?.selectAllValue === false) {
+      const excludedIds = params?.ticket_status?.excludedIds?.map((e: any) => e.name) || [];
+      const remaining = this.it_status.filter(s => !excludedIds.includes(s.name)).map(s => s.name);
+      finalQuery += `&status=[${remaining.join(',')}]`;
+    } else if (params?.ticket_status?.selectedOptions?.length) {
+      finalQuery += `&status=[${params?.ticket_status.selectedOptions.map((s: any) => s.name).join(',')}]`;
     }
+
     if (params?.raised_date?.startDate && params?.raised_date?.endDate) {
       finalQuery += `&ticket_raised_start-date=${params?.raised_date.startDate}&ticket_raised_end-date=${params?.raised_date.endDate}`;
     } if (params?.status_date?.startDate && params?.status_date?.endDate) {
       finalQuery += `&status_start-date=${params?.status_date.startDate}&status_end-date=${params?.status_date.endDate}`;
     }
-    if (params?.issues?.length > 0) {
-      finalQuery += `&issue=[${params?.issues}]`;
-    }
+    // if (params?.issues?.length > 0) {
+    //   finalQuery += `&issue=[${params?.issues}]`;
+    // }
 
     if (this.directionValue && this.sortValue) {
       finalQuery += `&sort-by=${this.sortValue}&sort-type=${this.directionValue}`;
     }
-    if(this.selectedStatus?.length > 0){
-       finalQuery += `&status=[${this.selectedStatus}]`;
-    }
+    // Old filter query building (simple array join)
+    // if(this.selectedStatus?.length > 0){
+    //    finalQuery += `&status=[${this.selectedStatus}]`;
+    // }
     await this.api.getData(`${environment.live_url}/${environment.it_ticket}/${finalQuery}`).subscribe((res: any) => {
       if (res && Array.isArray(res.results)) {
         this.formattedData = res?.results?.map((item: any, i: number) => ({
@@ -295,7 +340,11 @@ export class ItIssueReportsComponent implements OnInit {
 
             return {
               ...col,
-              filterOptions
+              filterOptions,
+              // Preserve totalCount/currentPage/totalPages set by updateFilterColumn
+              ...(existingCol?.totalCount   !== undefined && { totalCount:   existingCol.totalCount }),
+              ...(existingCol?.currentPage  !== undefined && { currentPage:  existingCol.currentPage }),
+              ...(existingCol?.totalPages   !== undefined && { totalPages:   existingCol.totalPages }),
             };
           }),
           data: this.formattedData,
@@ -311,11 +360,17 @@ export class ItIssueReportsComponent implements OnInit {
           searchPlaceholder: 'Search by employee name',
         }
       } else {
+        const existingColumnsEmpty = this.tableConfig?.columns ?? [];
         this.tableConfig = {
           columns: tableColumns?.map(col => {
-            let filterOptions: any = [];
-
-            return { ...col, filterOptions };
+            const existingCol = existingColumnsEmpty.find((c: any) => c.key === col.key);
+            return {
+              ...col,
+              filterOptions: existingCol?.filterOptions ?? [],
+              ...(existingCol?.totalCount   !== undefined && { totalCount:   existingCol.totalCount }),
+              ...(existingCol?.currentPage  !== undefined && { currentPage:  existingCol.currentPage }),
+              ...(existingCol?.totalPages   !== undefined && { totalPages:   existingCol.totalPages }),
+            };
           }),
           data: [],
           searchTerm: this.term,
@@ -376,6 +431,10 @@ export class ItIssueReportsComponent implements OnInit {
        this.updateFilterColumn(key, { data: this.it_status, page: 1, total: this.it_status.length, searchTerm: '' });
       return;
     }
+    if (key === 'is-primary-ids'){
+    endpoint = environment.employee;
+    query +=  `&is_active=True&employee=True`
+  }
 
     this.api.getData(`${environment.live_url}/${endpoint}/${query}`)
       .subscribe((res: any) => {
@@ -383,6 +442,7 @@ export class ItIssueReportsComponent implements OnInit {
 
         const fieldMap: any = {
           'issue-ids': { id: 'issue_id', name: 'issue' }
+          , 'is-primary-ids': { id: 'user_id', name: 'user__full_name' }
         };
 
         const newData = res.results?.map((item: any) => ({

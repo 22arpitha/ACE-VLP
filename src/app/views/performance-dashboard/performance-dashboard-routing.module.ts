@@ -9,6 +9,7 @@ const routes: Routes = [
     path: '',
     component: PerformanceDashboardComponent,
     children: [
+      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       { path: 'dashboard', component: DefaultComponent },
     ],
   },

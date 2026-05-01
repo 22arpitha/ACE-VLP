@@ -8,10 +8,18 @@ import { SubModuleService } from '../../../service/sub-module.service';
 import { environment } from '../../../../environments/environment';
 import { GenericTableFilterComponent } from '../../../shared/generic-table-filter/generic-table-filter.component';
 import { DropDownPaginationService } from '../../../service/drop-down-pagination.service';
+import { FilterQueryService } from '../../../service/filter-query.service';
 
 export interface IdNamePair {
   id: any;
   name: string;
+}
+
+export interface FilterState {
+  selectAllValue: boolean | null;
+  selectedOptions: IdNamePair[];
+  excludedIds: IdNamePair[];
+  selectedCount: number;
 }
 
 @Component({
@@ -51,18 +59,12 @@ export class JobsOfClientsComponent implements OnInit {
   accessPermissions: any = [];
   access_name: any;
 
-  filters: {
-    group_name: IdNamePair[];
-    job_type_name: IdNamePair[];
-    employees: IdNamePair[];
-    manager: IdNamePair[];
-    status_group_name: IdNamePair[];
-  } = {
-    group_name: [],
-    job_type_name: [],
-    employees: [],
-    manager: [],
-    status_group_name: [],
+  filters: { [key: string]: FilterState } = {
+    group_name: { selectAllValue: null, selectedOptions: [], excludedIds: [], selectedCount: 0 },
+    job_type_name: { selectAllValue: null, selectedOptions: [], excludedIds: [], selectedCount: 0 },
+    employees: { selectAllValue: null, selectedOptions: [], excludedIds: [], selectedCount: 0 },
+    manager: { selectAllValue: null, selectedOptions: [], excludedIds: [], selectedCount: 0 },
+    status_group_name: { selectAllValue: null, selectedOptions: [], excludedIds: [], selectedCount: 0 },
   };
 
   allJobStatus: any = [];
@@ -105,6 +107,7 @@ export class JobsOfClientsComponent implements OnInit {
     private router: Router,
     private api: ApiserviceService,
     private dropdownService: DropDownPaginationService,
+    private filterQueryService: FilterQueryService,
   ) {
     this.user_id = sessionStorage.getItem('user_id');
     this.userRole = sessionStorage.getItem('user_role_name');
@@ -201,25 +204,30 @@ export class JobsOfClientsComponent implements OnInit {
     this.filterData();
   }
 
-  private ids(filterArray: any[]): string {
-    if (!Array.isArray(filterArray)) return '';
-    return filterArray.map(x => x.id).join(',');
+  private getFilterParamName(filterType: string): string {
+    const mapping: { [key: string]: string } = {
+      'job_type_name': 'job-type',
+      'group_name': 'group',
+      'employees': 'employee',
+      'manager': 'manager',
+      'status_group_name': 'status-group'
+    };
+    return mapping[filterType] || filterType;
+  }
+
+  private buildFilterQuery(filterType: string): string {
+    return this.filterQueryService.buildFilterSegment(this.filters[filterType], this.getFilterParamName(filterType));
   }
 
   filterData() {
     this.filterQuery = this.getFilterBaseUrl();
-    if (this.filters.job_type_name.length) {
-      this.filterQuery += `&job-type-ids=[${this.ids(this.filters.job_type_name)}]`;
-    }
-    if (this.filters.group_name.length) {
-      this.filterQuery += `&group-ids=[${this.ids(this.filters.group_name)}]`;
-    }
-    if (this.filters.employees.length) {
-      this.filterQuery += `&employee-ids=[${this.ids(this.filters.employees)}]`;
-    }
-    if (this.filters.manager.length) {
-      this.filterQuery += `&manager-ids=[${this.ids(this.filters.manager)}]`;
-    }
+    
+    // Apply new filter logic for all filter types
+    this.filterQuery += this.buildFilterQuery('job_type_name');
+    this.filterQuery += this.buildFilterQuery('group_name');
+    this.filterQuery += this.buildFilterQuery('employees');
+    this.filterQuery += this.buildFilterQuery('manager');
+    
     if (this.dateRange.start && this.dateRange.end) {
       this.filterQuery += `&start-date=${this.dateRange.start}&end-date=${this.dateRange.end}`;
     }
@@ -229,9 +237,9 @@ export class JobsOfClientsComponent implements OnInit {
     if (this.statusDate) {
       this.filterQuery += `&job-status-date=[${this.statusDate}]`;
     }
-    if (this.filters.status_group_name.length) {
-      this.filterQuery += `&status-group-ids=[${this.ids(this.filters.status_group_name)}]`;
-    }
+    
+    this.filterQuery += this.buildFilterQuery('status_group_name');
+    
     this.api.getData(`${environment.live_url}/${environment.only_jobs}/${this.filterQuery}`).subscribe(
       (res: any) => {
         this.allJobs = res?.results;
@@ -472,15 +480,16 @@ export class JobsOfClientsComponent implements OnInit {
     );
   };
 
+  onFilterChange(event: any, filterType: string) {
+    const selectedOptions = event;
+    this.filters[filterType] = selectedOptions;
+    this.filterData();
+  }
+
   openFilter(filter: any): void {
     if (filter) {
       filter.onMenuOpened();
     }
-  }
-
-  onFilterChange(event: any, filterType: keyof typeof this.filters) {
-    this.filters[filterType] = event;
-    this.filterData();
   }
 
   resetFilters(): void {
