@@ -216,9 +216,12 @@ this.formErrorScrollService.resetHasUnsavedValue();
         if(error.status===423){
           this.status423 = true;
            this.toggleFormState(this.status423);
-        } else{
-           this.status423 = false;
+        } else if(error.status===400){
+           this.status423 = true;
            this.toggleFormState(this.status423);
+        } else{
+          this.status423 = false;
+          this.toggleFormState(this.status423);
         }
         console.log(error)
         this.apiService.showError(error?.error?.detail);

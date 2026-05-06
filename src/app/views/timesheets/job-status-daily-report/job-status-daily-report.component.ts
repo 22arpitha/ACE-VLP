@@ -5,6 +5,7 @@ import { ApiserviceService } from '../../../service/apiservice.service';
 import { environment } from '../../../../environments/environment';
 import { buildPaginationQuery } from '../../../shared/pagination.util';
 import { DatePipe } from '@angular/common';
+import { FilterQueryService } from '../../../service/filter-query.service';
 @Component({
   selector: 'app-job-status-daily-report',
   templateUrl: './job-status-daily-report.component.html',
@@ -39,7 +40,8 @@ export class JobStatusDailyReportComponent implements OnInit {
   directionValue: string = '';
   constructor(
     private common_service: CommonServiceService,
-    private api: ApiserviceService, private datePipe: DatePipe
+    private api: ApiserviceService, private datePipe: DatePipe,
+     private filterQueryService: FilterQueryService
   ) {
     this.user_id = sessionStorage.getItem('user_id') || '';
     this.user_role_name = sessionStorage.getItem('user_role_name') || '';
@@ -202,18 +204,23 @@ export class JobStatusDailyReportComponent implements OnInit {
     const searchParam = this.term?.trim().length >= 2 ? `&search=${encodeURIComponent(this.term.trim())}` : '';
     if (this.user_role_name !== 'Admin') {
       query += `&user_id=${this.user_id}`;
-    } if (this.selectedClientIds.length) {
-      query += `&client-ids=[${this.selectedClientIds.join(',')}]`;
-    }
-    if (this.selectedJobIds.length) {
-      query += `&job-ids=[${this.selectedJobIds.join(',')}]`;
-    }
-    if (this.selectedGroupIds.length) {
-      query += `&group-ids=[${this.selectedGroupIds.join(',')}]`;
-    }
-    if (this.selectedStatusIds.length) {
-      query += `&job-status-ids=[${this.selectedStatusIds.join(',')}]`;
-    }
+    } 
+    // if (this.selectedClientIds.length) {
+    //   query += `&client-ids=[${this.selectedClientIds.join(',')}]`;
+    // }
+    // if (this.selectedJobIds.length) {
+    //   query += `&job-ids=[${this.selectedJobIds.join(',')}]`;
+    // }
+    // if (this.selectedGroupIds.length) {
+    //   query += `&group-ids=[${this.selectedGroupIds.join(',')}]`;
+    // }
+    // if (this.selectedStatusIds.length) {
+    //   query += `&job-status-ids=[${this.selectedStatusIds.join(',')}]`;
+    // }
+    query += this.buildQueryForFilter(this.selectedClientIds, 'client');
+      query += this.buildQueryForFilter(this.selectedJobIds, 'job');
+      query += this.buildQueryForFilter(this.selectedGroupIds, 'group');
+      query += this.buildQueryForFilter(this.selectedStatusIds, 'job-status');
     if (this.term) {
       query += searchParam;
     } if (this.selectedDate) {
@@ -238,6 +245,15 @@ export class JobStatusDailyReportComponent implements OnInit {
       job_status: this.selectedStatusIds,
     });
   }
+   private buildQueryForFilter(filterValue: any, paramName: string): string {
+    if (!filterValue) return '';
+    // Old format: plain array of ids
+    if (Array.isArray(filterValue)) {
+      return filterValue.length ? `&${paramName}-ids=[${filterValue.join(',')}]` : '';
+    }
+    // New format: FilterState object
+    return this.filterQueryService.buildFilterSegment(filterValue, paramName);
+  }
 
   private updateFilterColumn(key: string, cache: any) {
     this.tableConfig.columns = this.tableConfig.columns.map(col =>
@@ -246,7 +262,8 @@ export class JobStatusDailyReportComponent implements OnInit {
           ...col,
           filterOptions: cache.data,
           currentPage: cache.page,
-          totalPages: Math.ceil(cache.total / 20)
+          totalPages: Math.ceil(cache.total / 20),
+            totalCount: cache.total
         }
         : col
     );
@@ -261,15 +278,22 @@ export class JobStatusDailyReportComponent implements OnInit {
     query += `&report_type=job_status_daily_report`;
     if (this.user_role_name !== 'Admin') {
       query += `&user_id=${this.user_id}`;
-    } if (params?.client_ids?.length) {
-      query += `&client-ids=[${params.client_ids.join(',')}]`;
-    }
-    if (params?.job_ids?.length) {
-      query += `&job-ids=[${params.job_ids.join(',')}]`;
-    }
-    if (params?.employee_ids?.length) {
-      query += `&timesheet-employee-ids=[${params.employee_ids.join(',')}]`;
-    }
+    } 
+    // if (params?.client_ids?.length) {
+    //   query += `&client-ids=[${params.client_ids.join(',')}]`;
+    // }
+    // if (params?.job_ids?.length) {
+    //   query += `&job-ids=[${params.job_ids.join(',')}]`;
+    // }
+    // if (params?.employee_ids?.length) {
+    //   query += `&timesheet-employee-ids=[${params.employee_ids.join(',')}]`;
+    // }
+    
+      query += this.buildQueryForFilter(params?.client_ids, 'client');
+      query += this.buildQueryForFilter(params?.job_ids, 'job');
+      query += this.buildQueryForFilter(params?.group_ids, 'group');
+      query += this.buildQueryForFilter(params?.job_status, 'job-status');
+      
     if (this.selectedDate) {
       this.selectedDate = this.datePipe.transform(this.selectedDate, 'yyyy-MM-dd');
       query += `&date=${this.selectedDate}`;
@@ -295,7 +319,10 @@ export class JobStatusDailyReportComponent implements OnInit {
 
             return {
               ...col,
-              filterOptions
+              filterOptions,
+               ...(existingCol?.totalCount   !== undefined && { totalCount:   existingCol.totalCount }),
+              ...(existingCol?.currentPage  !== undefined && { currentPage:  existingCol.currentPage }),
+              ...(existingCol?.totalPages   !== undefined && { totalPages:   existingCol.totalPages }),
             };
           }),
           data: formattedData,
@@ -355,7 +382,7 @@ export class JobStatusDailyReportComponent implements OnInit {
       query += this.user_role_name === 'Admin' ? '' : `&employee-id=${this.user_id}`;
     }
     if (key === 'job-status-ids') {
-      endpoint = environment.settings_status_group;
+      endpoint = environment.settings_job_status;
     }
     if (key === 'job-ids') {
       endpoint = environment.only_jobs
@@ -380,7 +407,7 @@ export class JobStatusDailyReportComponent implements OnInit {
           'client-ids': { id: 'id', name: 'client_name' },
           'job-ids': { id: 'id', name: 'job_name' },
           'group-ids': { id: 'id', name: 'group_name' },
-          'job-status-ids': { id: 'id', name: 'group_name' },
+          'job-status-ids': { id: 'id', name: 'status_name' },
         };
 
         const newData = res.results?.map((item: any) => ({
