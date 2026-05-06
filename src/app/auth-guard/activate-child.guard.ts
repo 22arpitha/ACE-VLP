@@ -52,9 +52,9 @@ export class ActivateChildGuard implements CanActivateChild {
     if (state.url.includes('/changePasswords')) {
         return true;
       }
-    // if (state.url.includes('/performance/dashboard')) {
-    //     return true;
-    //   }
+    if (state.url.includes('/performance/dashboard')) {
+        return true;
+      }
     // if(state.url.includes('/approvals/leave-requests')) {
     //   return true;
     // }
