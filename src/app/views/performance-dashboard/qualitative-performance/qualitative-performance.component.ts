@@ -30,7 +30,7 @@ export class QualitativePerformanceComponent implements OnInit, OnChanges {
   userRole: any;
   constructor(private apiService: ApiserviceService) {
     this.user_id = sessionStorage.getItem('user_id');
-    this.userRole = sessionStorage.getItem('user_role_name');
+    this.userRole = sessionStorage.getItem('user_role_name')?.toLowerCase();
   }
 
   ngOnInit(): void {
@@ -44,7 +44,8 @@ export class QualitativePerformanceComponent implements OnInit, OnChanges {
       const employeeIdChanged = prev.employee_id !== current.employee_id;
       const periodicityChanged = prev.periodicity !== current.periodicity;
       const periodChanged = prev.period !== current.period;
-      if (employeeIdChanged || periodicityChanged || periodChanged) {
+      const managerIdChanged = prev.manager_id !== current.manager_id;
+      if (employeeIdChanged || periodicityChanged || periodChanged || managerIdChanged) {
         this.dropdwonFilterData = current;
         if (this.dropdwonFilterData.periodicity && this.dropdwonFilterData.period) {
           this.qualitativePerformanceData();
@@ -78,12 +79,22 @@ export class QualitativePerformanceComponent implements OnInit, OnChanges {
   }
 
   qualitativePerformanceData() {
-    let query = `?performance=qualitative`
+    let query = `?performance=qualitative`;
     if (this.dropdwonFilterData) {
-      query += this.dropdwonFilterData.employee_id ? `&employee-id=${this.dropdwonFilterData.employee_id}` : this.userRole === 'Admin' ? '' : `&employee-id=${this.user_id}`;
+       if(this.userRole=='admin' && this.dropdwonFilterData.employee_id){
+        query += this.dropdwonFilterData.employee_id.length > 1 ? `&employee-ids=${this.dropdwonFilterData.employee_id}` : `&employee-id=${this.user_id}`;
+      } else if(this.userRole==='manager' && this.dropdwonFilterData.employee_id){
+        query += `&employee-id=${this.dropdwonFilterData.employee_id}`;
+      }
+      else if(this.userRole!== 'admin' && this.userRole!== 'manager'){
+        query += `&employee-id=${this.user_id}`;
+      }
+      query += this.dropdwonFilterData.manager_id ? `&reporting-manager-id=${this.dropdwonFilterData.manager_id}` : '';
+      // query += this.userRole === 'Admin' && this.dropdwonFilterData.employee_id && this.dropdwonFilterData.employee_id?.length > 0 ? `&employee-ids=${this.dropdwonFilterData.employee_id}` : this.userRole!== 'Admin' && this.userRole!== 'Manager' ? `&employee-id=${this.user_id}` : '';
+      // query += this.dropdwonFilterData.employee_id ? `&employee-id=${this.dropdwonFilterData.employee_id}` : this.userRole === 'Admin' ? '' : `&employee-id=${this.user_id}`;
       query += this.dropdwonFilterData.periodicity ? `&periodicity=${this.dropdwonFilterData.periodicity}` : '';
       query += this.dropdwonFilterData.period ? `&period=${encodeURIComponent(JSON.stringify(this.dropdwonFilterData.period))}` : '';
-      query += !this.dropdwonFilterData.employee_id && this.userRole === 'Manager' ? `&show_team=true` : '';
+      query += !this.dropdwonFilterData.employee_id && this.userRole === 'manager' ? `&reporting-manager-id=${this.user_id}` : '';
     }
     this.apiService.getData(`${environment.live_url}/${environment.performance_dashboard}/${query}`).subscribe((res: any) => {
       if (res) {
