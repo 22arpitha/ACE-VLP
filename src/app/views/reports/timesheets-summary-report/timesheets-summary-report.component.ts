@@ -653,6 +653,7 @@ export class TimesheetsSummaryReportComponent implements OnInit {
         if (key === 'timesheet-employee-ids'){
           endpoint = environment.employee;
           query +=  `&is_active=True&employee=True`
+           query += this.userRole === 'Admin' ? '' : `&reporting_manager_id=${this.user_id}`
         } 
         // if (key === 'timesheet-task-ids') {
         //   // Task filter static

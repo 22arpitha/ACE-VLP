@@ -70,7 +70,7 @@ export class QuantitativePerformanceComponent implements OnInit, OnChanges {
     let query = `?performance=quantitative`
     if (this.dropdwonFilterData) {
       if(this.userRole=='admin' && this.dropdwonFilterData.employee_id){
-        query += this.dropdwonFilterData.employee_id.length > 1 ? `&employee-ids=${this.dropdwonFilterData.employee_id}` : `&employee-id=${this.user_id}`;
+        query += this.dropdwonFilterData.employee_id.length > 1 ? `&employee-ids=${this.dropdwonFilterData.employee_id}` : `&employee-id=${this.dropdwonFilterData.employee_id}`;
       } else if(this.userRole==='manager' && this.dropdwonFilterData.employee_id){
         query += `&employee-id=${this.dropdwonFilterData.employee_id}`;
       }

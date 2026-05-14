@@ -1,5 +1,6 @@
 
 // Column Definitions
+const userRole = sessionStorage.getItem('user_role_name');
 export const tableColumns  = [
   {
     label: 'Sl No',
@@ -39,10 +40,10 @@ export const tableColumns  = [
     key: 'primary_employee',
     keyId:'employee_id',
     sortKey:'primary_employee',
-    sortable: true,
+    sortable:  userRole !== 'Accountant' ? true : false,
     paramskeyId: 'timesheet-employee-ids',
     filterType: 'multi-select',
-    filterable: true,
+    filterable: userRole !== 'Accountant' ? true : false,
     leftAlign:true,
   },
   {

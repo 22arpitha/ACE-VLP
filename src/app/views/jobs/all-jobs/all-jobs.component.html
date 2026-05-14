@@ -160,7 +160,7 @@
               </th>
               <th scope="col" *ngIf="isColumnVisible('manager')">
                 Manager
-                <button mat-icon-button [matMenuTriggerFor]="managerFilterMenu" (menuOpened)="openFilter(managerFilter)"
+                <button *ngIf="userRole==='Admin'" mat-icon-button [matMenuTriggerFor]="managerFilterMenu" (menuOpened)="openFilter(managerFilter)"
                   [ngClass]="filters['manager']['selectedCount']>=1 ? 'filterdColumn':''">
                   <span *ngIf="filters['manager']['selectedCount']>=1">{{filters['manager']['selectedCount'].toString().padStart(2, '0')}}</span>
                   <i class="bi-funnel" *ngIf="filters['manager']['selectedCount']===0"></i>

@@ -579,6 +579,7 @@ getFilterOptions(event: { detail: any; key: string }) {
   if (key === 'employee_id'){
     endpoint = environment.employee;
     query +=  `&is_active=True&employee=True`
+    query += this.user_role_name === 'Admin' ? '' : `&reporting_manager_id=${this.user_id}`
   } 
   // if (key === 'timesheet-task-ids') {
   //   // Task filter static

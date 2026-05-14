@@ -1,8 +1,8 @@
 
-
+const userRole = sessionStorage.getItem('user_role_name');
   export const tableColumns = [
     { label: 'Sl No', key: 'sl' },
-    { label: 'Employee', sortKey: 'employee_name', key: 'employee_name', keyId:'employee_id', sortable: true ,filterable: true, filterType: 'multi-select' },
+    { label: 'Employee', sortKey: 'employee_name', key: 'employee_name', keyId:'employee_id', sortable:  userRole !== 'Accountant' ? true : false ,filterable: userRole !== 'Accountant' ? true : false, filterType: 'multi-select' },
     { label: 'Sun', sortKey: 'Sunday', key: 'Sunday', keyId:'Sunday_date', sortable: true,navigation:true},
     { label: 'Mon', sortKey: 'Monday', key: 'Monday',keyId:'Monday_date', sortable: true,navigation:true },
     { label: 'Tues', sortKey: 'Tuesday', key: 'Tuesday', keyId:'Tuesday_date', sortable: true,navigation:true },
