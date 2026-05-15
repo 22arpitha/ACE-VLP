@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { DatePipe } from '@angular/common';
 import { GenericEditComponent } from '../../../generic-components/generic-edit/generic-edit.component';
@@ -114,6 +114,7 @@ export class AllTimesheetsComponent implements OnInit {
     private dialog: MatDialog,
     private dropdownService:DropDownPaginationService,
    private filterState: FilterStateService,
+   private activeRoute: ActivatedRoute,
     private filterQueryService: FilterQueryService,) {
     this.common_service.setTitle(this.BreadCrumbsTitle)
 
@@ -169,6 +170,15 @@ export class AllTimesheetsComponent implements OnInit {
       // this.getTimesheets();
       this.filterData();
     }
+    this.activeRoute.queryParams.subscribe(params => {
+    const userId = params['user_id'];
+    if(userId) {
+      this.router.navigate([], {
+        queryParams: {},
+        replaceUrl: true
+      });
+     }
+   });
   }
   
   isTodayFriday(): boolean {
