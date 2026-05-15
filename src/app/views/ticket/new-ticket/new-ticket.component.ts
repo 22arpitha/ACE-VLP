@@ -33,7 +33,7 @@ export class NewTicketComponent implements OnInit, OnDestroy {
   BreadCrumbsTitle: any = 'Create Tickets';
   initialFormValue: any;
   userRole: any;
-  departmentName: any = '';
+  designation: any = '';
   today = new Date();
   constructor(
     private fb: FormBuilder,
@@ -77,14 +77,14 @@ export class NewTicketComponent implements OnInit, OnDestroy {
   getUrserData(id:any) {
     this.apiService.getData(`${environment.live_url}/${environment.user}/${id}/`).subscribe((res: any) => {
       if (res) {
-        this.departmentName = res.department__department_name || '';
+        this.designation = res.designation__designation_name || '';
         const data = {
           user_id: res.user_id,
           user__full_name: res.user__first_name + ' ' + res.user__last_name
         };
         const shouldPrefillAndDisable =
           this.userRole !== 'Admin' &&
-          this.departmentName?.toLowerCase() !== 'it department';
+          this.designation?.toLowerCase() !== 'technical team';
 
         if (shouldPrefillAndDisable) {
           this.ticketForm.get('employee_id')?.disable();

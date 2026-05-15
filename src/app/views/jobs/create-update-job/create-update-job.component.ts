@@ -587,8 +587,9 @@ onManagerSelectOpened(opened: boolean, index: number): void {
             return status === 'yet to start';
           });
           // console.log(data)
-          this.jobFormGroup.patchValue({ job_status: data[0]?.id })
-          this.jobFormGroup.patchValue({ percentage_of_completion: data[0]?.percentage_of_completion })
+          
+          this.jobFormGroup.patchValue({ job_status: data?.id })
+          this.jobFormGroup.patchValue({ percentage_of_completion: data?.percentage_of_completion })
         }
       }, (error: any) => {
         this.apiService.showError(error?.error?.detail);
