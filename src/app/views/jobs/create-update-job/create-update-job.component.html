@@ -490,7 +490,7 @@
   <div class="col-12 col-sm-12 col-md-6 col-lg-5 my-1  mb-3 no-padding pl-0 pr-5 align-self-center">
       <mat-radio-group formControlName="option" >
           <mat-radio-button class="radio-button" *ngFor="let key of objectKeys(jobBillingOption)" [value]="key"
-            [disabled]="!shouldDisableFields"
+            [disabled]="!shouldDisableFields || user_role_name!=='Admin'"
             [ngClass]="{ 'highlight-background': !shouldDisableFields }">
               {{ jobBillingOption[key] }}
             </mat-radio-button>
