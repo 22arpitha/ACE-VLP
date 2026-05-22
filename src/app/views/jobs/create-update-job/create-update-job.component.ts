@@ -1,11 +1,13 @@
 import { DatePipe } from '@angular/common';
-import { ChangeDetectorRef, Component, ElementRef, EventEmitter, HostListener, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, EventEmitter, HostListener, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { FormArray, FormBuilder, FormControl, FormGroup, FormGroupDirective, Validators } from '@angular/forms';
 import { MatPaginator } from '@angular/material/paginator';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Editor, Toolbar } from 'ngx-editor';
-import { Observable } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
+import { MatAutocomplete } from '@angular/material/autocomplete';
+import { ErrorStateMatcher } from '@angular/material/core';
 import { ApiserviceService } from '../../../service/apiservice.service';
 import { CommonServiceService } from '../../../service/common-service.service';
 import { environment } from '../../../../environments/environment';
@@ -15,21 +17,30 @@ import { SubModuleService } from '../../../service/sub-module.service';
 import { CanComponentDeactivate } from '../../../auth-guard/can-deactivate.guard';
 import { MatMenuTrigger } from '@angular/material/menu';
 import{GenericRedirectionConfirmationComponent} from '../../../generic-components/generic-redirection-confirmation/generic-redirection-confirmation.component'
-import { MatSelect, MatSelectModule } from '@angular/material/select';
 import { firstValueFrom } from 'rxjs';
+import { MatAutocompleteService } from '../../../service/mat-autocomplete.service';
+import { MAT_AUTOCOMPLETE_SCROLL_STRATEGY } from '@angular/material/autocomplete';
+import { Overlay } from '@angular/cdk/overlay';
 
 @Component({
   selector: 'app-create-update-job',
   templateUrl: './create-update-job.component.html',
-  styleUrls: ['./create-update-job.component.scss']
+  styleUrls: ['./create-update-job.component.scss'],
+   providers: [
+    {
+      provide: MAT_AUTOCOMPLETE_SCROLL_STRATEGY,
+      useFactory: (overlay: Overlay) => () => overlay.scrollStrategies.close(),
+      deps: [Overlay]
+    }
+  ]
 })
-export class CreateUpdateJobComponent implements CanComponentDeactivate, OnInit, OnDestroy {
+export class CreateUpdateJobComponent implements CanComponentDeactivate, OnInit, AfterViewInit, OnDestroy {
   BreadCrumbsTitle: any;
   @ViewChild(FormGroupDirective) formGroupDirective!: FormGroupDirective;
   @ViewChild(MatPaginator) paginator: MatPaginator | undefined;
   @Output() isEmployeeAdded:EventEmitter<boolean> = new EventEmitter<boolean>();
   @ViewChild('jobTypeSelect') jobTypeSelect: any;
-  jobFormGroup: FormGroup;
+  jobFormGroup!: FormGroup;
   allClientslist: any = [];
   endClientslists: any = [];
   groupslists: any = [];
@@ -51,6 +62,13 @@ export class CreateUpdateJobComponent implements CanComponentDeactivate, OnInit,
   filteredEmployeeLists: any[][] = [];
   searchManagerTextList: string[] = [];
   filteredManagerLists: any[][] = [];
+  employeeDisplayValues: any[] = [];
+  managerDisplayValues: any[] = [];
+  // Per-row FormControls for employee/manager autocomplete display inputs.
+  // [formControl] avoids the [(ngModel)] + MatAutocompleteTrigger CVA conflict
+  // that causes (optionSelected) to not fire after searching in Angular Material v14.
+  employeeDisplayControls: FormControl[] = [new FormControl('')];
+  managerDisplayControls:  FormControl[] = [new FormControl('')];
   job_id: any;
   isEditItem: boolean = false;
   pageSize = 10;
@@ -90,10 +108,10 @@ export class CreateUpdateJobComponent implements CanComponentDeactivate, OnInit,
   year: number = new Date()?.getFullYear();
   yearDefault = new Date()?.getFullYear();
   yearList: number[] = [];
-  yearRangeStart: number;
+  yearRangeStart!: number ;
   selectedMonth: string | null = null;
   selectedQuarter: string | null = null;
-  modeName: 'Monthly' | 'Quarterly' | 'Yearly'|'One off';
+  modeName: 'Monthly' | 'Quarterly' | 'Yearly' | 'One off' | undefined;
   months: string[] = [
     'January', 'February', 'March', 'April', 'May', 'June',
     'July', 'August', 'September', 'October', 'November', 'December'
@@ -106,20 +124,72 @@ export class CreateUpdateJobComponent implements CanComponentDeactivate, OnInit,
     { label: 'Q4', value: 'Dec-Qtr', months: ['October', 'November', 'December'] }
   ];
   @ViewChild('trigger') menuTrigger!: MatMenuTrigger;
+
+  // Autocomplete ViewChild references (for infinite scroll)
+  @ViewChild('clientAuto') clientAutoRef!: MatAutocomplete;
+  @ViewChild('endClientAuto') endClientAutoRef!: MatAutocomplete;
+  @ViewChild('jobTypeAuto') jobTypeAutoRef!: MatAutocomplete;
+
+  // Display FormControls for autocomplete inputs (separate from reactive form IDs)
+  clientDisplayControl:any = new FormControl<string>('');
+  endClientDisplayControl:any = new FormControl<string>('');
+  jobTypeDisplayControl:any = new FormControl<string>('');
+  serviceDisplayControl:any = new FormControl<string>('');
+  periodicityDisplayControl:any = new FormControl<string>('');
+  jobStatusDisplayControl:any = new FormControl<string>('');
+
+  // Filtered lists for non-paginated autocomplete dropdowns
+  filteredServicesAuto: any[] = [];
+  filteredPeriodicitiesAuto: any[] = [];
+  filteredJobStatusesAuto: any[] = [];
+
+  // Destroy subject for RxJS subscription cleanup
+  private destroy$ = new Subject<void>();
+
+  // Error state matchers delegating to actual form controls
+  clientErrorMatcher!: ErrorStateMatcher;
+  endClientErrorMatcher!: ErrorStateMatcher;
+  jobTypeErrorMatcher!: ErrorStateMatcher;
+  serviceErrorMatcher!: ErrorStateMatcher;
+  periodicityErrorMatcher!: ErrorStateMatcher;
+  jobStatusErrorMatcher!: ErrorStateMatcher;
+
+  // displayWith functions for mat-autocomplete panels (set in constructor via service)
+  displayClientFn!: (item: any) => string;
+  displayEndClientFn!: (item: any) => string;
+  displayJobTypeFn!: (item: any) => string;
+  displayServiceFn!: (item: any) => string;
+  displayPeriodicityFn!: (item: any) => string;
+  displayJobStatusFn!: (item: any) => string;
+  displayEmployeeFn!: (item: any) => string;
+  displayManagerFn!: (item: any) => string;
+
   constructor(private fb: FormBuilder, private activeRoute: ActivatedRoute, private accessControlService: SubModuleService,
     private common_service: CommonServiceService, private router: Router, private datepipe: DatePipe,
-    private apiService: ApiserviceService, private modalService: NgbModal, private formErrorScrollService: FormErrorScrollUtilityService, private cdr: ChangeDetectorRef) {
+    private apiService: ApiserviceService, private modalService: NgbModal, private formErrorScrollService: FormErrorScrollUtilityService, private cdr: ChangeDetectorRef,
+    private autoSvc: MatAutocompleteService) {
     this.common_service.setTitle(this.BreadCrumbsTitle);
     this.user_role_name = sessionStorage.getItem('user_role_name');
     this.user_id = Number(sessionStorage.getItem('user_id'));
     this.fromJobs = this.activeRoute.snapshot.queryParamMap.get('jobs') === 'true';
     this.client_id_for_query = this.activeRoute.snapshot.queryParamMap.get('client');
+    // Build displayWith functions via the autocomplete service
+    this.displayClientFn     = this.autoSvc.createDisplayFn('client_name');
+    this.displayEndClientFn  = this.autoSvc.createDisplayFn(['client_name', 'end_client_name']);
+    this.displayJobTypeFn    = this.autoSvc.createDisplayFn('job_type_name');
+    this.displayServiceFn    = this.autoSvc.createDisplayFn('service_name');
+    this.displayPeriodicityFn = this.autoSvc.createDisplayFn('periodicty_name');
+    this.displayJobStatusFn  = this.autoSvc.createDisplayFn('status_name');
+    this.displayEmployeeFn   = this.autoSvc.createDisplayFn('user__full_name');
+    this.displayManagerFn    = this.autoSvc.createDisplayFn('user__full_name');
   }
 
   ngOnInit(): void {
     this.yearRangeStart = this.yearDefault - (this.yearDefault % 10);
     this.editor = new Editor();
     this.intialForm();
+    this.setupErrorMatchers();
+    this.setupSearchSubscriptions();
     this.getModuleAccess();
     this.jobFormGroup?.valueChanges?.subscribe(() => {
       const currentFormValue = this.jobFormGroup?.getRawValue();
@@ -143,11 +213,19 @@ export class CreateUpdateJobComponent implements CanComponentDeactivate, OnInit,
     // Destroy the editor to prevent memory leaks
     this.editor.destroy();
     this.formErrorScrollService.resetHasUnsavedValue();
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  ngAfterViewInit(): void {
+    this.autoSvc.setupScrollListener(this.clientAutoRef,   this.dropdownState.client,   () => this.fetchData('client',   true), this.destroy$);
+    this.autoSvc.setupScrollListener(this.endClientAutoRef, this.dropdownState.end_client, () => this.fetchData('end_client', true), this.destroy$);
+    this.autoSvc.setupScrollListener(this.jobTypeAutoRef,  this.dropdownState.job_type,  () => this.fetchData('job_type',  true), this.destroy$);
   }
 
   public intialForm() {
     this.jobFormGroup = this.fb.group({
-      job_name: ['', Validators.pattern(/^[a-zA-Z0-9!@#$%^&*()_+{}\[\]:;"'<>,.?/\\|`~\-]+( [a-zA-Z0-9!@#$%^&*()_+{}\[\]:;"'<>,.?/\\|`~\-]+)*$/)],
+      job_name: [{value: '', disabled: true}, Validators.pattern(/^[a-zA-Z0-9!@#$%^&*()_+{}\[\]:;"'<>,.?/\\|`~\-]+( [a-zA-Z0-9!@#$%^&*()_+{}\[\]:;"'<>,.?/\\|`~\-]+)*$/)],
       client: ['', Validators.required],
       end_client: ['', Validators.required],
       group: [null],
@@ -177,6 +255,10 @@ export class CreateUpdateJobComponent implements CanComponentDeactivate, OnInit,
     this.initialFormValue = this.jobFormGroup?.getRawValue();
     this.filteredEmployeeLists[0] = [...this.allEmployeeList];
     this.filteredManagerLists[0] = [...this.allManagerList];
+    this.employeeDisplayValues = [null];
+    this.managerDisplayValues = [null];
+    this.employeeDisplayControls = [new FormControl('')];
+    this.managerDisplayControls  = [new FormControl('')];
   }
 
   public getAllDropdownData() {
@@ -309,7 +391,14 @@ export class CreateUpdateJobComponent implements CanComponentDeactivate, OnInit,
   public getJobBillingOptions() {
     this.jobBillingOption = {};
     this.apiService.getData(`${environment.live_url}/${environment.jobs}/?get-options=True`).subscribe((respData: any) => {
-      this.jobBillingOption = respData;
+      this.jobBillingOption = respData || {};
+        if (this.user_role_name !== 'Admin') {
+          Object.keys(this.jobBillingOption).forEach((key) => {
+            if (this.jobBillingOption[key]?.toLowerCase() === 'non-productive') {
+              delete this.jobBillingOption[key];
+            }
+          });
+        }
     }, (error: any) => {
       this.apiService.showError(error?.error?.detail);
     });
@@ -332,7 +421,7 @@ export class CreateUpdateJobComponent implements CanComponentDeactivate, OnInit,
   }
 
   accountManagerId: any;
-  public getEmployees(params) {
+  public getEmployees(params: any) {
     this.allEmployeeList = [];
     this.apiService.getData(`${environment.live_url}/${environment.employee}/${params}`).subscribe((respData: any) => {
       this.allEmployeeList = respData;
@@ -375,6 +464,7 @@ export class CreateUpdateJobComponent implements CanComponentDeactivate, OnInit,
         employeesDetailsArray?.at(0)?.get('employee')?.disable();
         employeesDetailsArray?.at(0)?.get('manager')?.disable();
         employeesDetailsArray?.at(0)?.get('is_primary')?.disable();
+        this.refreshEmployeeManagerDisplayValues();
       }
     }, (error => {
       this.apiService.showError(error?.error?.detail)
@@ -418,6 +508,113 @@ onManagerSelectOpened(opened: boolean, index: number): void {
   }
 }
 
+  // ── Employee / Manager mat-autocomplete handlers ──────────────────────────
+
+  onEmployeeInputChange(searchText: any, index: number): void {
+    // Update synchronously — no debounce. This ensures options.changes + delay(0)
+    // gap in Angular Material v14 fires immediately on keystroke, NOT during the
+    // user's subsequent click on an option (which would swallow optionSelected).
+    if (typeof searchText === 'string') {
+      this.filteredEmployeeLists[index] = this.autoSvc.filterByName(this.allEmployeeList, searchText);
+    }
+  }
+
+  onEmployeeAutoSelected(event: any, i: number): void {
+    const selectedEmp = event.option.value;
+    const formArray = this.employeeFormArray.controls;
+    const isEmployeeDuplicate = formArray.some((control: any, index: number) =>
+      index !== i && control.getRawValue().employee === selectedEmp?.user_id
+    );
+    if (isEmployeeDuplicate) {
+      this.employeeFormArray.at(i).get('employee')?.reset();
+      this.employeeFormArray.at(i).get('manager')?.reset();
+      this.employeeFormArray.at(i).get('is_primary')?.reset();
+      this.employeeDisplayValues[i] = null;
+      this.managerDisplayValues[i] = null;
+      this.employeeDisplayControls[i]?.setValue('', { emitEvent: false });
+      this.managerDisplayControls[i]?.setValue('',  { emitEvent: false });
+      this.apiService.showError('Employee already added');
+    } else {
+      this.employeeFormArray.at(i).get('employee')?.setValue(selectedEmp?.user_id);
+      this.employeeDisplayValues[i] = selectedEmp?.user__full_name || '';
+      this.employeeDisplayControls[i]?.setValue(selectedEmp?.user__full_name || '', { emitEvent: false });
+      this.filteredEmployeeLists[i] = [selectedEmp];
+      const mgr = this.allManagerList.find((m: any) => m.user_id === selectedEmp?.reporting_manager_id);
+      if (mgr) {
+        this.employeeFormArray.at(i).get('manager')?.setValue(selectedEmp?.reporting_manager_id);
+        this.managerDisplayValues[i] = mgr.user__full_name || '';
+        this.managerDisplayControls[i]?.setValue(mgr.user__full_name || '', { emitEvent: false });
+      } else {
+        this.employeeFormArray.at(i).get('manager')?.setValue('');
+        this.managerDisplayValues[i] = '';
+        this.managerDisplayControls[i]?.setValue('', { emitEvent: false });
+      }
+      this.filteredManagerLists[i] = mgr ? [mgr] : [...this.allManagerList];
+      if (this.employeeFormArray.length === 1) {
+        this.employeeFormArray.at(i).get('is_primary')?.setValue(true);
+      }
+    }
+  }
+
+  onManagerInputChange(searchText: any, index: number): void {
+    if (typeof searchText === 'string') {
+      this.filteredManagerLists[index] = this.autoSvc.filterByName(this.allManagerList, searchText);
+    }
+  }
+
+  onManagerAutoSelected(event: any, i: number): void {
+    const selectedManager = event.option.value;
+    this.employeeFormArray.at(i).get('manager')?.setValue(selectedManager?.user_id);
+    this.managerDisplayValues[i] = selectedManager?.user__full_name || '';
+    this.managerDisplayControls[i]?.setValue(selectedManager?.user__full_name || '', { emitEvent: false });
+    this.filteredManagerLists[i] = [selectedManager];
+  }
+
+  onEmployeeBlur(index: number): void {
+    // Use 150ms delay (not 0) to guarantee the click event and (optionSelected)
+    // fire before this callback. Do NOT reset filteredEmployeeLists here —
+    // resetting triggers options.changes + delay(0) gap which can swallow the click.
+    setTimeout(() => {
+      const currentId = this.employeeFormArray.at(index)?.getRawValue()?.employee;
+      const emp = this.allEmployeeList.find((e: any) => e.user_id === currentId);
+      const name = emp?.user__full_name || '';
+      this.employeeDisplayValues[index] = name;
+      this.employeeDisplayControls[index]?.setValue(name, { emitEvent: false });
+      this.employeeFormArray.at(index)?.get('employee')?.markAsTouched();
+    }, 150);
+  }
+
+  onManagerBlur(index: number): void {
+    setTimeout(() => {
+      const currentId = this.employeeFormArray.at(index)?.getRawValue()?.manager;
+      const mgr = this.allManagerList.find((m: any) => m.user_id === currentId);
+      const name = mgr?.user__full_name || '';
+      this.managerDisplayValues[index] = name;
+      this.managerDisplayControls[index]?.setValue(name, { emitEvent: false });
+      this.employeeFormArray.at(index)?.get('manager')?.markAsTouched();
+    }, 150);
+  }
+
+  refreshEmployeeManagerDisplayValues(): void {
+    while (this.employeeDisplayControls.length < this.employeeFormArray.controls.length) {
+      this.employeeDisplayControls.push(new FormControl(''));
+      this.managerDisplayControls.push(new FormControl(''));
+    }
+    this.employeeFormArray.controls.forEach((control, index) => {
+      const raw = control.getRawValue();
+      const emp = this.allEmployeeList.find((e: any) => e.user_id === raw.employee);
+      const mgr = this.allManagerList.find((m: any) => m.user_id === raw.manager);
+      const empName = emp?.user__full_name || '';
+      const mgrName = mgr?.user__full_name || '';
+      this.employeeDisplayValues[index] = empName;
+      this.managerDisplayValues[index]  = mgrName;
+      this.employeeDisplayControls[index]?.setValue(empName, { emitEvent: false });
+      this.managerDisplayControls[index]?.setValue(mgrName,  { emitEvent: false });
+    });
+  }
+
+  // ─────────────────────────────────────────────────────────────────────────
+
   public getAllActiveClients() {
     this.allClientslist = [];
     let query: any
@@ -441,8 +638,11 @@ onManagerSelectOpened(opened: boolean, index: number): void {
     this.jobFormGroup?.get('group')?.reset();
     this.jobFormGroup?.get('job_name')?.reset();
     this.dropdownState.end_client.initialized = false;
-    this.selectedItemsMap['end_client'] = []
-    this.dropdownState.end_client.list = []
+    this.dropdownState.end_client.list = [];
+    this.dropdownState.end_client.search = '';
+    this.dropdownState.end_client.page = 1;
+    this.selectedItemsMap['end_client'] = [];
+    this.endClientDisplayControl.setValue('', { emitEvent: false });
     this.updateSelectedItems('client', event.value);
     // this.getClientBasedEndClient(client_id);
   }
@@ -488,6 +688,8 @@ onManagerSelectOpened(opened: boolean, index: number): void {
     this.apiService.getData(`${environment.live_url}/${environment.settings_service}/`).subscribe(
       (res: any) => {
         this.allServiceslist = res;
+        this.filteredServicesAuto = [...res];
+        this.trySetNonPaginatedDisplayControls();
       }, (error: any) => {
         this.apiService.showError(error?.error?.detail);
       });
@@ -499,6 +701,8 @@ onManagerSelectOpened(opened: boolean, index: number): void {
     this.apiService.getData(`${environment.live_url}/${environment.settings_periodicty}/`).subscribe(
       (res: any) => {
         this.allPeroidicitylist = res;
+        this.filteredPeriodicitiesAuto = [...res];
+        this.trySetNonPaginatedDisplayControls();
       }, (error: any) => {
         this.apiService.showError(error?.error?.detail);
       });
@@ -538,7 +742,7 @@ onManagerSelectOpened(opened: boolean, index: number): void {
     }
     periodControl?.updateValueAndValidity();
   }
-  serviceName:string;
+  serviceName:string | undefined;
   public onServiceChange(event: any) {
     let service_name = this.getSelectedService(this.jobFormGroup?.get('service')?.value);
     this.serviceName = service_name.toLowerCase()
@@ -573,24 +777,28 @@ onManagerSelectOpened(opened: boolean, index: number): void {
     this.allJobStatusList = [];
     this.apiService.getData(`${environment.live_url}/${environment.settings_job_status}/`).subscribe(
       (res: any) => {
-        this.internalReviewOneIndex = res.findIndex(status => status.status_name.toLowerCase() === 'internal review 1');
+        this.internalReviewOneIndex = res.findIndex((status:any) => status.status_name.toLowerCase() === 'internal review 1');
         if (this.job_id) {
           this.allJobStatusList = res;
         } else {
           // console.log('this.internalReviewOneIndex',this.internalReviewOneIndex)
-          this.allJobStatusList = res.filter(job => {
+          this.allJobStatusList = res.filter((job: any) => {
             const status = job.status_name.toLowerCase();
             return status !== 'completed' && status !== 'cancelled';
           })
-          let data = res.find(job => {
+          let data = res.find((job: any) => {
             const status = job?.status_name?.toLowerCase?.();
             return status === 'yet to start';
           });
-          // console.log(data)
-          
           this.jobFormGroup.patchValue({ job_status: data?.id })
           this.jobFormGroup.patchValue({ percentage_of_completion: data?.percentage_of_completion })
+          if (data) {
+            this.jobStatusDisplayControl.setValue(data, { emitEvent: false });
+            this.filteredJobStatusesAuto = [data];
+          }
         }
+        // this.filteredJobStatusesAuto = [...this.allJobStatusList];
+        this.trySetNonPaginatedDisplayControls();
       }, (error: any) => {
         this.apiService.showError(error?.error?.detail);
       });
@@ -697,6 +905,7 @@ onManagerSelectOpened(opened: boolean, index: number): void {
         this.estimatedTime = respData?.estimated_time
         // new code
       this.patchDropdownValuesForEdit(respData);
+      this.trySetNonPaginatedDisplayControls();
 
         // this.getClientBasedEndClient(respData?.client);
         this.getEndClientBasedGroup(respData?.end_client);
@@ -751,7 +960,7 @@ onManagerSelectOpened(opened: boolean, index: number): void {
           this.isEmployeeAdded.emit(true);
           const employeesDetailsArray = this.jobFormGroup.get('employees') as FormArray;
           employeesDetailsArray.clear();
-          respData?.employees.forEach(({ employee, manager, is_primary }, index, array) => {
+          respData?.employees.forEach(({ employee, manager, is_primary }:any, index:any, array:any) => {
             this.filteredEmployeeLists[index] = [...this.allEmployeeList];
             this.filteredManagerLists[index] = [...this.allManagerList];
             const isLastItem = index === array.length - 1;
@@ -762,6 +971,7 @@ onManagerSelectOpened(opened: boolean, index: number): void {
             });
             employeesDetailsArray.push(employeeForm);
           });
+          this.refreshEmployeeManagerDisplayValues();
         } else{
           // if(this.user_role_name==='Accountant'){
           //   this.patchEmployeeData();
@@ -788,7 +998,7 @@ onManagerSelectOpened(opened: boolean, index: number): void {
           this.isEmployeeAdded.emit(true);
           const employeesDetailsArray = this.jobFormGroup.get('employees') as FormArray;
           employeesDetailsArray.clear();
-          this.jobDetails?.employees.forEach(({ employee, manager, is_primary }, index, array) => {
+          this.jobDetails?.employees.forEach(({ employee, manager, is_primary }:any, index:any, array:any) => {
             this.filteredEmployeeLists[index] = [...this.allEmployeeList];
             this.filteredManagerLists[index] = [...this.allManagerList];
             const isLastItem = index === array.length - 1;
@@ -799,6 +1009,7 @@ onManagerSelectOpened(opened: boolean, index: number): void {
             });
             employeesDetailsArray.push(employeeForm);
           });
+          this.refreshEmployeeManagerDisplayValues();
         }
          else{
           const employeesDetailsArray = this.jobFormGroup.get('employees') as FormArray;
@@ -810,6 +1021,7 @@ onManagerSelectOpened(opened: boolean, index: number): void {
           employeesDetailsArray?.at(0)?.get('employee')?.disable();
           employeesDetailsArray?.at(0)?.get('manager')?.disable();
           employeesDetailsArray?.at(0)?.get('is_primary')?.disable();
+          this.refreshEmployeeManagerDisplayValues();
         }
   }
      public backBtnFunc(): void {
@@ -820,7 +1032,7 @@ onManagerSelectOpened(opened: boolean, index: number): void {
             }
           });
         } else {
-           this.router.navigate(['/jobs/all-jobs']);
+            this.cleanupAndNavigate();
         }
       }
       
@@ -888,6 +1100,10 @@ onManagerSelectOpened(opened: boolean, index: number): void {
       const newIndex = this.employeeFormArray.length - 1;
       this.filteredEmployeeLists[newIndex] = this.allEmployeeList;
       this.filteredManagerLists[newIndex] = this.allManagerList;
+      this.employeeDisplayValues.push(null);
+      this.managerDisplayValues.push(null);
+      this.employeeDisplayControls.push(new FormControl(''));
+      this.managerDisplayControls.push(new FormControl(''));
        this.updatePrimaryEmployee();
     } else{
       this.employeeFormArray.markAllAsTouched();
@@ -907,11 +1123,15 @@ onManagerSelectOpened(opened: boolean, index: number): void {
     this.filteredEmployeeLists.splice(index, 1);
   }
     if (this.searchManagerTextList && this.searchManagerTextList.length > index) {
-    this.searchEmployeeTextList.splice(index, 1);
+    this.searchManagerTextList.splice(index, 1);
   }
   if (this.filteredManagerLists && this.filteredManagerLists.length > index) {
     this.filteredManagerLists.splice(index, 1);
   }
+      if (this.employeeDisplayValues.length > index) this.employeeDisplayValues.splice(index, 1);
+      if (this.managerDisplayValues.length > index) this.managerDisplayValues.splice(index, 1);
+      if (this.employeeDisplayControls.length > index) this.employeeDisplayControls.splice(index, 1);
+      if (this.managerDisplayControls.length > index)  this.managerDisplayControls.splice(index, 1);
       const lastItemIndex = this.employeeFormArray.length - 1;
       const lastItem = this.employeeFormArray.at(lastItemIndex);
       if (lastItem) {
@@ -923,7 +1143,7 @@ onManagerSelectOpened(opened: boolean, index: number): void {
   }
 
   tempSelectedJobStatus: any;
-  x
+
   selectJobStatus(event: any) {
     // console.log(event)
     let data = this.allJobStatusList.find((x: any) => x.id === event.value)
@@ -934,8 +1154,8 @@ onManagerSelectOpened(opened: boolean, index: number): void {
     this.jobFormGroup.patchValue({ job_status_date: currentDate });
     }
     // check the status
-    const selectedIndex = this.allJobStatusList.findIndex(status => status.status_name.toLowerCase() === this.tempSelectedJobStatus.toLowerCase());
-    const querySentIndex = this.allJobStatusList.findIndex(status => status.status_name.toLowerCase() === 'internal review 1');
+    const selectedIndex = this.allJobStatusList.findIndex((status: any) => status.status_name.toLowerCase() === this.tempSelectedJobStatus.toLowerCase());
+    const querySentIndex = this.allJobStatusList.findIndex((status: any) => status.status_name.toLowerCase() === 'internal review 1');
     if (this.job_id && (this.estimatedTime === '00:00' || this.estimatedTime === '0:00') && selectedIndex >= querySentIndex) {
       this.apiService.showError('Please upadte the estimated time to change the status.');
       this.tempSelectedJobStatus = '';
@@ -948,8 +1168,8 @@ onManagerSelectOpened(opened: boolean, index: number): void {
   if (this.estimatedTime !== '00:00') return false;
 
   const jobStatusList =  this.filteredJobStatusList(); // Or use the full list if needed
-  const querySentIndex = jobStatusList.findIndex(item => item.status_name === 'Query sent');
-  const currentIndex = jobStatusList.findIndex(item => item.status_name === statusName);
+  const querySentIndex = jobStatusList.findIndex((item: any) => item.status_name === 'Query sent');
+  const currentIndex = jobStatusList.findIndex((item: any) => item.status_name === statusName);
 
   return currentIndex >= querySentIndex;
 }
@@ -1014,7 +1234,7 @@ onManagerSelectOpened(opened: boolean, index: number): void {
 
   public createFromData() {
     this.formData = new FormData();
-    this.formData.set('job_number', this.jobFormGroup?.get('job_number')?.value.toString());
+    this.formData.set('job_number', this.jobFormGroup?.get('job_number')?.value?.toString());
     this.formData.set('job_name', this.jobFormGroup?.get('job_name')?.value.toString());
     this.formData.set('client', this.jobFormGroup?.get('client')?.value);
     this.formData.set('end_client', this.jobFormGroup?.get('end_client')?.value);
@@ -1060,7 +1280,7 @@ onManagerSelectOpened(opened: boolean, index: number): void {
     return json;
   }
 
-  AddOrRemoveRequiredValidators(isUnassigned) {
+  AddOrRemoveRequiredValidators(isUnassigned: boolean) {
     this.employeeFormArray.controls.forEach((control) => {
     if (isUnassigned) {
       // Checkbox = true → remove validators
@@ -1103,7 +1323,7 @@ onManagerSelectOpened(opened: boolean, index: number): void {
         backdrop: true,
         centered: true
       });
-      modelRef.componentInstance.status.subscribe(resp => {
+      modelRef.componentInstance.status.subscribe((resp: any) => {
         if (resp == "ok") {
           this.deleteContent(this.job_id);
           modelRef.close();
@@ -1174,6 +1394,7 @@ this.employeeFormArray.controls.forEach((controls:any,index:any)=>{
 this.filteredEmployeeLists[index]=[...this.allEmployeeList];
 this.filteredManagerLists[index]=[...this.allManagerList];
    });
+    this.refreshEmployeeManagerDisplayValues();
   }
 
 }
@@ -1191,6 +1412,10 @@ this.filteredManagerLists[index]=[...this.allManagerList];
       if(this.user_role_name!='Accountant'){
         this.employeeFormArray.clear();
         this.employeeFormArray.push(this.createEmployeeControl());
+        this.employeeDisplayValues = [null];
+        this.managerDisplayValues = [null];
+        this.employeeDisplayControls = [new FormControl('')];
+        this.managerDisplayControls  = [new FormControl('')];
         this.employeeFormArray.controls.forEach((control) => {
           control.get('employee')?.disable();
           control.get('manager')?.disable();
@@ -1202,13 +1427,26 @@ this.filteredManagerLists[index]=[...this.allManagerList];
           control.get('manager')?.setValue('')
           control.get('is_primary')?.setValue(false)
         });
+        this.employeeDisplayValues = [null];
+        this.managerDisplayValues = [null];
+        this.employeeDisplayControls = [new FormControl('')];
+        this.managerDisplayControls  = [new FormControl('')];
       }
     } else{
       if (this.user_role_name === 'Accountant') {
         this.patchEmployeeData();
       } else if(this.user_role_name!='Accountant'){
-         this.employeeFormArray.clear();
-        this.employeeFormArray.push(this.createEmployeeControl());
+        // In edit mode, restore previously saved employees; otherwise start with blank row
+        if (this.isEditItem && this.jobDetails?.employees?.length > 0) {
+          this.patchEmployeeData();
+        } else {
+          this.employeeFormArray.clear();
+          this.employeeFormArray.push(this.createEmployeeControl());
+          this.employeeDisplayValues = [null];
+          this.managerDisplayValues = [null];
+          this.employeeDisplayControls = [new FormControl('')];
+          this.managerDisplayControls  = [new FormControl('')];
+        }
       }
     }
   }
@@ -1216,7 +1454,7 @@ this.filteredManagerLists[index]=[...this.allManagerList];
   isUnassignedDisabled(): boolean {
   const employees = this.jobDetails?.employees || [];
   const isPresent = this.user_role_name === 'Accountant' && employees.length > 0 &&
-    employees.some(emp =>this.user_id === emp.employee);
+    employees.some((emp: any) => this.user_id === emp.employee);
   return (
     !this.shouldDisableFields || 
     (this.isEditItem && isPresent && this.user_role_name === 'Accountant') ||
@@ -1239,9 +1477,10 @@ getUnassignedTooltip(): string {
       this.employeeFormArray.clear();
       this.allEmployeeList.forEach((element: any,index:any) => {
         // Check if the reporting_manager_id exists in the allManagerList
-        this.filteredEmployeeLists[index] = [...this.allEmployeeList];
-        this.filteredManagerLists[index] = [...this.allManagerList];
+        this.filteredEmployeeLists[index] = [element];
         const isManagerValid = this.allManagerList?.some((manager: any) => manager?.user_id === element?.reporting_manager_id);
+        const mgr = this.allManagerList.find((m: any) => m.user_id === element?.reporting_manager_id);
+        this.filteredManagerLists[index] = isManagerValid && mgr ? [mgr] : [...this.allManagerList];
         // let empData = this.fb.group({
         //   'employee': element?.user_id,
         //   'manager': isManagerValid ? element?.reporting_manager_id : '',
@@ -1254,6 +1493,10 @@ getUnassignedTooltip(): string {
         });
 
         this.employeeFormArray.push(empData);
+        this.employeeDisplayValues[index] = element?.user__full_name || '';
+        this.managerDisplayValues[index] = isManagerValid ? (mgr?.user__full_name || '') : '';
+        this.employeeDisplayControls[index] = new FormControl(element?.user__full_name || '');
+        this.managerDisplayControls[index]  = new FormControl(isManagerValid ? (mgr?.user__full_name || '') : '');
 
         // Disable or enable fields based on reporting manager validity
         if (!isManagerValid) {
@@ -1273,6 +1516,10 @@ getUnassignedTooltip(): string {
       this.employeeFormArray.push(this.createEmployeeControl());
       this.filteredEmployeeLists[0] = [...this.allEmployeeList];
       this.filteredManagerLists[0] = [...this.allManagerList];
+      this.employeeDisplayValues = [null];
+      this.managerDisplayValues = [null];
+      this.employeeDisplayControls = [new FormControl('')];
+      this.managerDisplayControls  = [new FormControl('')];
     }
     this.checkAllEmployeeCheckbox();
   }
@@ -1402,8 +1649,8 @@ getUnassignedTooltip(): string {
     const service = this.allServiceslist.find((service: any) => service?.id === id)
     return service?.service_name || '';
   }
-  public formDataToJson(formData) {
-    let obj = {};
+  public formDataToJson(formData: FormData) {
+    let obj :any= {};
 
     formData.forEach((value:any, key:any) => {
       // Check if the key is 'employees' and the value is a string that looks like a JSON
@@ -1594,7 +1841,7 @@ filteredClientOptions: any[] = [];
 
 pageSizeDropdown = 10;
 
-dropdownState = {
+dropdownState:any = {
   client: {
     page: 1,
     list: [],
@@ -1621,7 +1868,7 @@ dropdownState = {
   }
 };
 
-dropdownEndpoints = {
+dropdownEndpoints: { [key: string]: string } = {
   client: environment.all_clients,
   job_type: environment.settings_job_type,
   end_client: environment.end_clients
@@ -1742,7 +1989,7 @@ updateSelectedItems(key: string, selectedIds: any[]) {
   selectedItems = selectedItems.filter(item => selectedIds.includes(item.id));
   selectedIds.forEach(id => {
     if (!selectedItems.some(item => item.id === id)) {
-      const found = state.list.find(item => item.id === id);
+      const found = state.list.find((item: any) => item.id === id);
       if (found) {
         selectedItems.push(found);
       } else {
@@ -1758,7 +2005,7 @@ updateSelectedItems(key: string, selectedIds: any[]) {
 getOptionsWithSelectedOnTop(key: string) {
   const state = this.dropdownState[key];
   const selectedItems = this.selectedItemsMap[key] || [];
-  const unselectedItems = state.list.filter(item =>
+  const unselectedItems = state.list.filter((item: any) =>
     !selectedItems.some(sel => sel.id === item.id)
   );
   return [...selectedItems, ...unselectedItems];
@@ -1771,7 +2018,7 @@ openDropdown(type: string): void {
 
 
 // Called when the dropdown opens or closes
-onDropdownOpened(isOpen, key: string) {
+onDropdownOpened(isOpen: boolean, key: string) {
   if (isOpen) {
     if (!this.dropdownState[key].initialized || this.dropdownState[key].list.length === 0) {
       this.dropdownState[key].page = 1;
@@ -1841,7 +2088,7 @@ onAutocompleteScroll(event: any, key: string) {
     this.fetchData(key, true);
   }
 }
-commonOnchangeFun(event, key){
+commonOnchangeFun(event: any, key: string){
   this.updateSelectedItems(key, event.value);
 }
 
@@ -1873,17 +2120,288 @@ patchDropdownValuesForEdit(data: any) {
   setDropdownValue('client', 'client', 'client_name');
   setDropdownValue('end_client', 'end_client', 'end_client_name');
   setDropdownValue('job_type', 'job_type', 'job_type_name');
+
+  // Set display controls for paginated autocomplete fields
+  if (data?.client_name) {
+    this.clientDisplayControl.setValue(
+      { id: data.client, client_name: data.client_name }, { emitEvent: false }
+    );
+  }
+  if (data?.end_client_name) {
+    this.endClientDisplayControl.setValue(
+      { id: data.end_client, client_name: data.end_client_name, end_client_name: data.end_client_name }, { emitEvent: false }
+    );
+  }
+  if (data?.job_type_name) {
+    this.jobTypeDisplayControl.setValue(
+      { id: data.job_type, job_type_name: data.job_type_name }, { emitEvent: false }
+    );
+  }
+
   this.cdr.detectChanges();
 }
 
-onSelectionAmendment(event){
+// ─── Autocomplete Infrastructure ─────────────────────────────────────────────
+
+  /** Build ErrorStateMatcher instances that delegate to actual reactive form controls */
+  private setupErrorMatchers(): void {
+    this.clientErrorMatcher      = this.autoSvc.createErrorMatcher(() => this.jobFormGroup?.get('client'));
+    this.endClientErrorMatcher   = this.autoSvc.createErrorMatcher(() => this.jobFormGroup?.get('end_client'));
+    this.jobTypeErrorMatcher     = this.autoSvc.createErrorMatcher(() => this.jobFormGroup?.get('job_type'));
+    this.serviceErrorMatcher     = this.autoSvc.createErrorMatcher(() => this.jobFormGroup?.get('service'));
+    this.periodicityErrorMatcher = this.autoSvc.createErrorMatcher(() => this.jobFormGroup?.get('periodicity'));
+    this.jobStatusErrorMatcher   = this.autoSvc.createErrorMatcher(() => this.jobFormGroup?.get('job_status'));
+  }
+
+  /** RxJS debounced search subscriptions for all autocomplete display controls */
+  private setupSearchSubscriptions(): void {
+    // ── Paginated: Client ─────────────────────────────────────────────────────
+    this.autoSvc.setupPaginatedSearch(this.clientDisplayControl, (value: string) => {
+      if (!value) {
+        this.jobFormGroup.get('client')?.setValue('');
+        this.jobFormGroup.get('client')?.markAsDirty();
+        this.selectedItemsMap['client'] = [];
+        this.dropdownState.end_client.list = [];
+        this.dropdownState.end_client.initialized = false;
+        this.endClientDisplayControl.setValue('', { emitEvent: false });
+        this.jobFormGroup.get('end_client')?.reset();
+        this.selectedItemsMap['end_client'] = [];
+      } else {
+        this.selectedItemsMap['client'] = [];
+        this.jobFormGroup.get('client')?.setValue('');
+      }
+      this.onSearch('client', value);
+    }, this.destroy$);
+
+    // ── Paginated: End Client ─────────────────────────────────────────────────
+    this.autoSvc.setupPaginatedSearch(this.endClientDisplayControl, (value: string) => {
+      if (!value) {
+        this.jobFormGroup.get('end_client')?.setValue('');
+        this.jobFormGroup.get('end_client')?.markAsDirty();
+        this.selectedItemsMap['end_client'] = [];
+      } else {
+        this.selectedItemsMap['end_client'] = [];
+        this.jobFormGroup.get('end_client')?.setValue('');
+      }
+      this.onSearch('end_client', value);
+    }, this.destroy$);
+
+    // ── Paginated: Job Type ───────────────────────────────────────────────────
+    this.autoSvc.setupPaginatedSearch(this.jobTypeDisplayControl, (value: string) => {
+      if (!value) {
+        this.jobFormGroup.get('job_type')?.setValue('');
+        this.jobFormGroup.get('job_type')?.markAsDirty();
+        this.selectedItemsMap['job_type'] = [];
+      } else {
+        this.selectedItemsMap['job_type'] = [];
+        this.jobFormGroup.get('job_type')?.setValue('');
+      }
+      this.onSearch('job_type', value);
+    }, this.destroy$);
+
+    // ── Non-paginated: Service (local filter) ─────────────────────────────────
+    this.autoSvc.setupLocalFilter(
+      this.serviceDisplayControl,
+      () => this.allServiceslist,
+      (results) => {
+        this.filteredServicesAuto = results;
+        this.jobFormGroup.get('service')?.setValue('');
+        this.jobFormGroup.get('service')?.markAsDirty();
+      },
+      'service_name', this.destroy$
+    );
+
+    // ── Non-paginated: Periodicity (local filter) ─────────────────────────────
+    this.autoSvc.setupLocalFilter(
+      this.periodicityDisplayControl,
+      () => this.allPeroidicitylist,
+      (results) => {
+        this.filteredPeriodicitiesAuto = results;
+        this.jobFormGroup.get('periodicity')?.setValue('');
+        this.jobFormGroup.get('periodicity')?.markAsDirty();
+      },
+      'periodicty_name', this.destroy$
+    );
+
+    // ── Non-paginated: Job Status (local filter) ──────────────────────────────
+    this.autoSvc.setupLocalFilter(
+      this.jobStatusDisplayControl,
+      () => this.allJobStatusList,
+      (results) => {
+        this.filteredJobStatusesAuto = results;
+        this.jobFormGroup.get('job_status')?.setValue('');
+        this.jobFormGroup.get('job_status')?.markAsDirty();
+      },
+      'status_name', this.destroy$
+    );
+  }
+
+  /** Trigger initial data fetch when a paginated autocomplete input is focused */
+  onAutocompleteInputFocus(key: string): void {
+    this.autoSvc.onFocus(
+      this.dropdownState[key],
+      this.selectedItemsMap[key] || [],
+      () => this.fetchData(key, false)
+    );
+  }
+
+  // ── Option-selected handlers ──
+
+  onClientOptionSelected(event: any): void {
+    const item = event.option.value;
+    if (item.id === this.jobFormGroup.get('client')?.value) return; // same selection — skip cascade
+    this.jobFormGroup.get('client')?.setValue(item.id);
+    this.jobFormGroup.get('client')?.markAsDirty();
+    this.selectedItemsMap['client'] = [item];
+    this.dropdownState.client.list = [item];
+    this.dropdownState.client.search = '';
+    this.onClientChange({ value: item.id });
+  }
+
+  onEndClientOptionSelected(event: any): void {
+    const item = event.option.value;
+    if (item.id === this.jobFormGroup.get('end_client')?.value) return; // same selection — skip cascade
+    this.jobFormGroup.get('end_client')?.setValue(item.id);
+    this.jobFormGroup.get('end_client')?.markAsDirty();
+    this.selectedItemsMap['end_client'] = [item];
+    this.dropdownState.end_client.list = [item];
+    this.dropdownState.end_client.search = '';
+    this.onEndClientChange({ value: item.id });
+  }
+
+  onJobTypeOptionSelected(event: any): void {
+    const item = event.option.value;
+    if (item.id === this.jobFormGroup.get('job_type')?.value) return; // same selection — no-op
+    this.jobFormGroup.get('job_type')?.setValue(item.id);
+    this.jobFormGroup.get('job_type')?.markAsDirty();
+    this.selectedItemsMap['job_type'] = [item];
+    this.dropdownState.job_type.list = [item];
+    this.dropdownState.job_type.search = '';
+    this.updateSelectedItems('job_type', [item.id]);
+  }
+
+  onServiceOptionSelected(event: any): void {
+    const item = event.option.value;
+    if (item.id === this.jobFormGroup.get('service')?.value) return; // same selection — no-op
+    this.jobFormGroup.get('service')?.setValue(item.id);
+    this.jobFormGroup.get('service')?.markAsDirty();
+    this.serviceDisplayControl.setValue(item.service_name, { emitEvent: false });
+    this.filteredServicesAuto = [item];
+    this.onServiceChange({ value: item.id });
+  }
+
+  onPeriodicityOptionSelected(event: any): void {
+    const item = event.option.value;
+    if (item.id === this.jobFormGroup.get('periodicity')?.value) return; // same selection — skip period reset
+    this.jobFormGroup.get('periodicity')?.setValue(item.id);
+    this.jobFormGroup.get('periodicity')?.markAsDirty();
+    this.periodicityDisplayControl.setValue(item.periodicty_name, { emitEvent: false });
+    this.filteredPeriodicitiesAuto = [item];
+    this.onPeroidicityChange({ value: item.id });
+  }
+
+  onJobStatusOptionSelected(event: any): void {
+    const item = event.option.value;
+    if (item.id === this.jobFormGroup.get('job_status')?.value) return; 
+    this.jobFormGroup.get('job_status')?.setValue(item.id);
+    this.jobFormGroup.get('job_status')?.markAsDirty();
+    this.jobStatusDisplayControl.setValue(item.status_name, { emitEvent: false });
+    this.filteredJobStatusesAuto = [item];
+    this.selectJobStatus({ value: item.id });
+  }
+
+  onDisplayControlBlur(controlName: string): void {
+    setTimeout(() => {
+      const formCtrl = this.jobFormGroup.get(controlName);
+      let displayControl: FormControl | null = null;
+      let fullList: any[] = [];
+      let filteredSetter: ((list: any[]) => void) | null = null;
+
+      switch (controlName) {
+        case 'service':
+          displayControl = this.serviceDisplayControl;
+          fullList = this.allServiceslist;
+          filteredSetter = (list) => this.filteredServicesAuto = list;
+          break;
+        case 'periodicity':
+          displayControl = this.periodicityDisplayControl;
+          fullList = this.allPeroidicitylist;
+          filteredSetter = (list) => this.filteredPeriodicitiesAuto = list;
+          break;
+        case 'job_status':
+          displayControl = this.jobStatusDisplayControl;
+          fullList = this.allJobStatusList;
+          filteredSetter = (list) => this.filteredJobStatusesAuto = list;
+          break;
+        case 'client':
+          displayControl = this.clientDisplayControl;
+          break;
+        case 'end_client':
+          displayControl = this.endClientDisplayControl;
+          break;
+        case 'job_type':
+          displayControl = this.jobTypeDisplayControl;
+          break;
+      }
+
+      formCtrl?.markAsTouched();
+
+      if (displayControl) {
+        const displayVal = displayControl.value;
+        if (!displayVal || (typeof displayVal === 'string' && !displayVal.trim())) {
+          formCtrl?.setValue('');
+          displayControl.setValue('');
+          if (filteredSetter) {
+            filteredSetter([...fullList]);
+          }
+        }
+      }
+    }, 150);
+  }
+
+  //  Determine if a job-status option should be disabled 
+  isJobStatusOptionDisabled(item: any): boolean {
+    if (this.estimatedTime !== '00:00' && this.estimatedTime !== '0:00') return false;
+    const index = this.allJobStatusList.findIndex((s: any) => s.id === item.id);
+    return index >= this.internalReviewOneIndex;
+  }
+
+  
+  private trySetNonPaginatedDisplayControls(): void {
+    if (!this.isEditItem || !this.jobDetails) return;
+    if (this.allServiceslist.length && this.jobDetails.service) {
+      const svc = this.allServiceslist.find((s: any) => s.id === this.jobDetails.service);
+      if (svc) {
+        this.serviceDisplayControl.setValue(svc, { emitEvent: false });
+        this.filteredServicesAuto = [svc]; // narrow to only the selected item
+      }
+    }
+    if (this.allPeroidicitylist.length && this.jobDetails.periodicity) {
+      const per = this.allPeroidicitylist.find((p: any) => p.id === Number(this.jobDetails.periodicity));
+      if (per) {
+        this.periodicityDisplayControl.setValue(per, { emitEvent: false });
+        this.filteredPeriodicitiesAuto = [per]; // narrow to only the selected item
+      }
+    }
+    if (this.allJobStatusList.length && this.jobDetails.job_status) {
+      const st = this.allJobStatusList.find((s: any) => s.id === this.jobDetails.job_status);
+      if (st) {
+        this.jobStatusDisplayControl.setValue(st, { emitEvent: false });
+        this.filteredJobStatusesAuto = [st]; // narrow to only the selected item
+      }
+    }
+  }
+
+// ─── End Autocomplete Infrastructure ──────────────────────────────────────────
+
+onSelectionAmendment(event: { checked: boolean }) {
   this.simpleToggleRequired(event.checked, [
       'amdment_number'
     ]);
   this.getCombinationJobName();
 }
 
-onAmdmentChange(event){
+onAmdmentChange(event: any){
   this.getCombinationJobName();
 }
 
@@ -1910,7 +2428,7 @@ simpleToggleRequired(enable: boolean, controlNames: string[]) {
   ];
 
   controlNames.forEach(name => {
-    const control = this.jobFormGroup.get(name);
+    const control:any = this.jobFormGroup.get(name);
     if (enable) {
       if (name === 'customer_service') {
         control.setValidators(customerServiceValidators);
@@ -1930,7 +2448,7 @@ get clientControl(): FormControl {
   return this.jobFormGroup.get('client') as FormControl;
 }
 
-fetchClients = async ({ search, page, page_size }) => {
+fetchClients = async ({ search, page, page_size }: { search: string; page: number; page_size: number }) => {
   return await firstValueFrom(
     this.apiService.getData(
       `${environment.live_url}/${environment.clients}/?search=${search}&page=${page}&page_size=${page_size}`

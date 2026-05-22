@@ -1,5 +1,6 @@
 import { ENTER, COMMA } from '@angular/cdk/keycodes';
-import { Component, ElementRef, Inject, OnInit, ViewChild } from '@angular/core';
+import { Overlay } from '@angular/cdk/overlay';
+import { Component, ChangeDetectorRef, ElementRef, Inject, OnInit, OnDestroy, AfterViewInit, ViewChild, Optional } from '@angular/core';
 import {
   FormBuilder,
   FormControl,
@@ -8,21 +9,39 @@ import {
   Validators,
 } from '@angular/forms';
 import { MatChipInputEvent } from '@angular/material/chips';
+import { Subject } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { ApiserviceService } from '../../../service/apiservice.service';
 import { CommonServiceService } from '../../../service/common-service.service';
-import { MatAutocomplete, MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
+import { MAT_AUTOCOMPLETE_SCROLL_STRATEGY, MatAutocomplete, MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
+import { ErrorStateMatcher } from '@angular/material/core';
+import { MatAutocompleteService } from '../../../service/mat-autocomplete.service';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { Optional } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-comp-off-grant',
   templateUrl: './comp-off-grant.component.html',
-  styleUrls: ['./comp-off-grant.component.scss']
+  styleUrls: ['./comp-off-grant.component.scss'],
+  providers: [
+    {
+      provide: MAT_AUTOCOMPLETE_SCROLL_STRATEGY,
+      useFactory: (overlay: Overlay) => () => overlay.scrollStrategies.close(),
+      deps: [Overlay]
+    }
+  ]
 })
-export class CompOffGrantComponent implements OnInit {
+export class CompOffGrantComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild(FormGroupDirective) formGroupDirective!: FormGroupDirective;
+  @ViewChild('employeeAutoRef') employeeAutoRef!: MatAutocomplete;
+
+  // ── Autocomplete infrastructure ──
+  private destroy$ = new Subject<void>();
+  employeeDisplayControl = new FormControl('');
+  displayEmployeeFn!: (item: any) => string;
+  employeeErrorMatcher!: ErrorStateMatcher;
+  // ──────────────────────────────────
+
   leave_balance: any = 'NA';
   userRole: any;
   user_id: any;
@@ -55,6 +74,8 @@ export class CompOffGrantComponent implements OnInit {
     private common_service: CommonServiceService,
     private fb: FormBuilder,
     private route: ActivatedRoute,
+    private autoSvc: MatAutocompleteService,
+    private cdr: ChangeDetectorRef,
     @Optional() public dialogRef: MatDialogRef<CompOffGrantComponent>,
     @Optional() @Inject(MAT_DIALOG_DATA) public data: any
     // public dialogRef: MatDialogRef<CompOffGrantComponent>,
@@ -63,10 +84,12 @@ export class CompOffGrantComponent implements OnInit {
     this.userRole = sessionStorage.getItem('user_role_name');
     this.common_service.setTitle(this.BreadCrumbsTitle);
     this.user_id = sessionStorage.getItem('user_id');
+    this.displayEmployeeFn = this.autoSvc.createDisplayFn('user__full_name');
   }
 
   ngOnInit(): void {
     this.initialForm();
+    this.setupAutocomplete();
     this.workCalendarlist();
     this.holidaylistsss();
     this.getAllEmployeeList2();
@@ -270,6 +293,7 @@ export class CompOffGrantComponent implements OnInit {
     this.leave_balance = 0
     this.selectedEmployees = [];
     this.employeeCtrl.setValue(null);
+    this.employeeDisplayControl.setValue('');
     this.formGroupDirective?.resetForm();
     this.getAllLeaveTypes();
     this.initialForm();
@@ -321,17 +345,17 @@ export class CompOffGrantComponent implements OnInit {
     }
   }
 
-  public onEmployeeChange(event: any) {
+  public onEmployeeChange(userId: any) {
     if(this.data?.employee===true){
       this.leaveApplyForm.get('reporting_to')?.reset('');
-      this.getManagerOfEmployee(event.value)
+      this.getManagerOfEmployee(userId)
     }
-    this.updateSelectedItems('employee', event.value);
+    this.updateSelectedItems('employee', userId);
   }
 
     pageSizeDropdown = 50;
 
-dropdownState = {
+dropdownState:any = {
   employee: {
     page: 1,
     list: [],
@@ -352,7 +376,7 @@ dropdownState = {
 //   }
 // };
 
-dropdownEndpoints = {
+dropdownEndpoints:any = {
   employee: environment.user,
 };
 
@@ -687,5 +711,68 @@ private getWeekNumberOfMonthKey(d: Date): string {
     return `${y}-${mmS}-${ddS}`;
   }
 
+  // ══════════════ Autocomplete lifecycle & helpers ══════════════
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  ngAfterViewInit(): void {
+    this.autoSvc.setupScrollListener(
+      this.employeeAutoRef,
+      this.dropdownState.employee,
+      () => this.fetchData('employee', true),
+      this.destroy$
+    );
+  }
+
+  private setupAutocomplete(): void {
+    this.employeeErrorMatcher = this.autoSvc.createErrorMatcher(
+      () => this.leaveApplyForm?.get('employee') as FormControl
+    );
+
+    // Paginated: Employee
+    this.autoSvc.setupPaginatedSearch(this.employeeDisplayControl, (value: string) => {
+      if (!value) {
+        this.leaveApplyForm.get('employee')?.setValue('');
+        this.leaveApplyForm.get('employee')?.markAsDirty();
+        this.selectedItemsMap['employee'] = [];
+      } else {
+        this.selectedItemsMap['employee'] = [];
+        this.leaveApplyForm.get('employee')?.setValue('');
+      }
+      this.onSearch('employee', value);
+    }, this.destroy$);
+  }
+
+  onEmployeeOptionSelected(event: any): void {
+    const item = event.option.value;
+    this.leaveApplyForm.get('employee')?.setValue(item.user_id);
+    this.leaveApplyForm.get('employee')?.markAsDirty();
+    this.employeeDisplayControl.setValue(item, { emitEvent: false });
+    this.updateSelectedItems('employee', [item.user_id]);
+    this.onEmployeeChange(item.user_id);
+  }
+
+  onEmployeeFocus(): void {
+    this.autoSvc.onFocus(
+      this.dropdownState.employee,
+      this.selectedItemsMap['employee'] || [],
+      () => this.fetchData('employee', false)
+    );
+  }
+
+  onEmployeeBlur(): void {
+    setTimeout(() => {
+      const ctrl = this.leaveApplyForm.get('employee');
+      const displayVal = this.employeeDisplayControl.value;
+      if (!displayVal || (typeof displayVal === 'string' && !displayVal.trim())) {
+        ctrl?.setValue('');
+        this.employeeDisplayControl.setValue('');
+      }
+      ctrl?.markAsTouched();
+    }, 150);
+  }
 
 }

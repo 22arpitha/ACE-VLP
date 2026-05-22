@@ -6,9 +6,12 @@ import {
   HostListener,
   OnDestroy,
   OnInit,
+  AfterViewInit,
   ViewChild,
 } from '@angular/core';
+import { Overlay } from '@angular/cdk/overlay';
 import { Router } from '@angular/router';
+import { FormControl } from '@angular/forms';
 import { debounceTime, distinctUntilChanged, filter, forkJoin, map, Observable, Subject } from 'rxjs';
 import { FormErrorScrollUtilityService } from '../../../service/form-error-scroll-utility-service.service';
 import { ApiserviceService } from '../../../service/apiservice.service';
@@ -16,18 +19,34 @@ import { CommonServiceService } from '../../../service/common-service.service';
 import { SubModuleService } from '../../../service/sub-module.service';
 import { environment } from '../../../../environments/environment';
 import { CanComponentDeactivate } from '../../../auth-guard/can-deactivate.guard';
-import { MatSelect } from '@angular/material/select';
+import { MAT_AUTOCOMPLETE_SCROLL_STRATEGY, MatAutocomplete } from '@angular/material/autocomplete';
+import { ErrorStateMatcher } from '@angular/material/core';
+import { MatAutocompleteService } from '../../../service/mat-autocomplete.service';
 
 @Component({
   selector: 'app-create-invoice',
   templateUrl: './create-invoice.component.html',
   styleUrls: ['./create-invoice.component.scss'],
+  providers: [
+    {
+      provide: MAT_AUTOCOMPLETE_SCROLL_STRATEGY,
+      useFactory: (overlay: Overlay) => () => overlay.scrollStrategies.close(),
+      deps: [Overlay]
+    }
+  ]
 })
 export class CreateInvoiceComponent
-  implements CanComponentDeactivate, OnInit, OnDestroy
+  implements CanComponentDeactivate, OnInit, OnDestroy, AfterViewInit
 {
-  @ViewChild('formInputField') formInputField: ElementRef;
-  @ViewChild('clientSelect') clientSelect!: MatSelect;
+  @ViewChild('formInputField') formInputField!: ElementRef;
+  @ViewChild('clientAutoRef') clientAutoRef!: MatAutocomplete;
+
+  // ── Autocomplete infrastructure ──
+  clientDisplayControl = new FormControl('');
+  displayClientFn!: (item: any) => string;
+  clientErrorMatcher!: ErrorStateMatcher;
+  private destroy$ = new Subject<void>();
+  // ──────────────────────────────────
 
   BreadCrumbsTitle: any = 'Create Invoice';
   term: any = '';
@@ -64,15 +83,18 @@ export class CreateInvoiceComponent
     private accessControlService: SubModuleService,
     private router: Router,
     private apiService: ApiserviceService,
-    private formErrorScrollService: FormErrorScrollUtilityService
+    private formErrorScrollService: FormErrorScrollUtilityService,
+    private autoSvc: MatAutocompleteService
   ) {
     this.common_service.setTitle(this.BreadCrumbsTitle);
+    this.displayClientFn = this.autoSvc.createDisplayFn('client_name');
   }
 
   ngOnInit(): void {
     this.user_id = sessionStorage.getItem('user_id');
     this.userRole = sessionStorage.getItem('user_role_name');
     this.getModuleAccess();
+    this.setupAutocomplete();
     this.searchSubject.pipe(
       debounceTime(500),
       distinctUntilChanged(),
@@ -83,7 +105,18 @@ export class CreateInvoiceComponent
     });
   }
 
+  ngAfterViewInit(): void {
+    this.autoSvc.setupScrollListener(
+      this.clientAutoRef,
+      this.dropdownState.client,
+      () => this.fetchData('client', true),
+      this.destroy$
+    );
+  }
+
   ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
     this.formErrorScrollService.resetHasUnsavedValue();
   }
 
@@ -103,20 +136,20 @@ export class CreateInvoiceComponent
     this.router.navigate(['/invoice/all-invoice']);
   }
 
-  public onClientChange(event: any) {
+  public onClientChange(clientId: any) {
     this.jobSelection = [];
-    this.selectedClientId = event?.value;
+    this.selectedClientId = clientId;
     if (this.selectedClientId) {
       this.getClientBasedJobsList();
-      const clientName = this.dropdownState.client.list.find(
+      const clientObj = this.dropdownState.client.list.find(
         (c: any) => c?.id === this.selectedClientId
       );
-      this.selectedClientName = clientName?.client_name || '';
+      this.selectedClientName = clientObj?.client_name || '';
       const isdirty =
         this.selectedClientId || this.jobSelection.length >= 1 ? true : false;
       this.formErrorScrollService.setUnsavedChanges(isdirty);
     }
-    this.updateSelectedItems('client', event?.value);
+    this.updateSelectedItems('client', [clientId]);
   }
 
   public clearSelection(event?: MouseEvent) {
@@ -126,6 +159,8 @@ export class CreateInvoiceComponent
     this.jobSelection = [];
     this.selectedClientId = null;
     this.selectedClientName = '';
+    this.clientDisplayControl.setValue('');
+    this.selectedItemsMap['client'] = [];
     this.page = 1;
     this.clearSearchDropD('client');
     this.formErrorScrollService.resetHasUnsavedValue();
@@ -404,7 +439,7 @@ isSomeJobsSelected() {
   // ========================
   pageSizeDropdown = 50;
 
-  dropdownState = {
+  dropdownState: any = {
     client: {
       page: 1,
       list: [],
@@ -415,41 +450,14 @@ isSomeJobsSelected() {
     },
   };
 
-  dropdownEndpoints = {
+  dropdownEndpoints: any = {
     client: environment.all_clients,
   };
-
-  private scrollListeners: { [key: string]: (event: Event) => void } = {};
 
   // Selected items for pagination dropdowns
   selectedItemsMap: { [key: string]: any[] } = {
     client: [],
   };
-
-  removeScrollListener(key: string) {
-    const panel = document.querySelector(
-      '.cdk-overlay-container .mat-select-panel'
-    );
-    if (panel && this.scrollListeners[key]) {
-      panel.removeEventListener('scroll', this.scrollListeners[key]);
-      delete this.scrollListeners[key];
-    }
-  }
-
-  onScroll(key: string, event: Event) {
-    const target = event.target as HTMLElement;
-    const state = this.dropdownState[key];
-
-    const scrollTop = target.scrollTop;
-    const scrollHeight = target.scrollHeight;
-    const clientHeight = target.clientHeight;
-
-    const atBottom = scrollHeight - scrollTop <= clientHeight + 5;
-    if (atBottom && !state.loading && state.page < state.totalPages) {
-      state.page++;
-      this.fetchData(key, true);
-    }
-  }
 
   onSearch(key: string, text: string) {
     const state = this.dropdownState[key];
@@ -517,7 +525,7 @@ isSomeJobsSelected() {
 
     selectedIds.forEach((id) => {
       if (!selectedItems.some((item) => item.id === id)) {
-        const found = state.list.find((item) => item.id === id);
+        const found = state.list.find((item: any) => item.id === id);
         if (found) {
           selectedItems.push(found);
         }
@@ -526,43 +534,55 @@ isSomeJobsSelected() {
     this.selectedItemsMap[key] = selectedItems;
   }
 
-  getOptionsWithSelectedOnTop(key: string) {
-    const state = this.dropdownState[key];
-    const selectedItems = this.selectedItemsMap[key] || [];
-    const unselectedItems = state.list.filter(
-      (item) => !selectedItems.some((sel) => sel.id === item.id)
+  // ── Autocomplete methods ──
+
+  private setupAutocomplete(): void {
+    this.clientErrorMatcher = this.autoSvc.createErrorMatcher(
+      () => null
     );
 
-    return [...selectedItems, ...unselectedItems];
-  }
-
-  onDropdownOpened(isOpen: boolean, key: string) {
-    if (isOpen) {
-      if (
-        !this.dropdownState[key].initialized ||
-        this.dropdownState[key].list.length === 0
-      ) {
-        this.dropdownState[key].page = 1;
-        this.fetchData(key, false);
-        this.dropdownState[key].initialized = true;
+    this.autoSvc.setupPaginatedSearch(this.clientDisplayControl, (value: string) => {
+      if (!value) {
+        this.selectedItemsMap['client'] = [];
+      } else {
+        this.selectedItemsMap['client'] = [];
       }
-      setTimeout(() => {
-        this.removeScrollListener(key);
-        const panel = document.querySelector(
-          '.cdk-overlay-container .mat-select-panel'
-        );
-        if (panel) {
-          this.scrollListeners[key] = (event: Event) =>
-            this.onScroll(key, event);
-          panel.addEventListener('scroll', this.scrollListeners[key]);
-        }
-      }, 0);
-    } else {
-      this.removeScrollListener(key);
-    }
+      this.onSearch('client', value);
+    }, this.destroy$);
   }
 
-  commonOnchangeFun(event: any, key: string) {
-    this.updateSelectedItems(key, event.value);
+  onClientOptionSelected(event: any): void {
+    const item = event.option.value;
+    this.clientDisplayControl.setValue(item, { emitEvent: false });
+    this.updateSelectedItems('client', [item.id]);
+    this.onClientChange(item.id);
+  }
+
+  onClientFocus(): void {
+    this.autoSvc.onFocus(
+      this.dropdownState.client,
+      this.selectedItemsMap['client'] || [],
+      () => this.fetchData('client', false)
+    );
+  }
+
+  onClientBlur(): void {
+    setTimeout(() => {
+      const displayVal = this.clientDisplayControl.value;
+      if (!displayVal || (typeof displayVal === 'string' && !displayVal.trim())) {
+        this.clientDisplayControl.setValue('');
+        if (this.selectedClientId) {
+          // User cleared - reset selection
+          this.clearSelection();
+        }
+      } else if (this.selectedClientId) {
+        const selectedItem = this.dropdownState.client.list.find(
+          (c: any) => c.id === this.selectedClientId
+        );
+        if (selectedItem) {
+          this.clientDisplayControl.setValue(selectedItem, { emitEvent: false });
+        }
+      }
+    }, 150);
   }
 }

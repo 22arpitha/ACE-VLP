@@ -1,5 +1,9 @@
-import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
+import { FormControl } from '@angular/forms';
+import { MatAutocomplete, MatAutocompleteTrigger } from '@angular/material/autocomplete';
+import { Subject } from 'rxjs';
 import { ApiserviceService } from '../../service/apiservice.service';
+import { MatAutocompleteService } from '../../service/mat-autocomplete.service';
 import { environment } from '../../../environments/environment';
 
 @Component({
@@ -7,7 +11,7 @@ import { environment } from '../../../environments/environment';
   templateUrl: './manager-list.component.html',
   styleUrls: ['./manager-list.component.scss']
 })
-export class ManagerListComponent implements OnInit {
+export class ManagerListComponent implements OnInit, OnChanges, OnDestroy, AfterViewInit {
 user_role_name: any;
   user_id: any;
   allEmployeeList: any = [];
@@ -16,9 +20,19 @@ user_role_name: any;
   @Input() resetFilterField: boolean = false;
   @Input() multiple: boolean = false;
   @Output() selectEmployee: EventEmitter<any> = new EventEmitter<any>();
-  constructor(private apiService: ApiserviceService) {
+
+  // ─── Autocomplete Properties (used when multiple === false) ────────────────────
+  private destroy$ = new Subject<void>();
+  managerDisplayControl = new FormControl('');
+  displayManagerFn: (item: any) => string;
+  @ViewChild('managerAuto') managerAutoRef!: MatAutocomplete;
+  @ViewChild(MatAutocompleteTrigger) managerTrigger!: MatAutocompleteTrigger;
+  private justSelected = false;
+
+  constructor(private apiService: ApiserviceService, private autoSvc: MatAutocompleteService) {
     this.user_role_name = sessionStorage.getItem('user_role_name');
     this.user_id = sessionStorage.getItem('user_id');
+    this.displayManagerFn = this.autoSvc.createDisplayFn('user__full_name');
   }
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['resetFilterField'] && changes['resetFilterField'].currentValue ===true) {
@@ -26,18 +40,59 @@ user_role_name: any;
       if (this.user_role_name === 'Accountant') {
         this.selectedEmployeeVal = this.allEmployeeList[0]?.user_id;
         this.selectEmployee.emit(this.allEmployeeList[0]?.user_id);
+        if (!this.multiple) {
+          this.managerDisplayControl.setValue(this.allEmployeeList[0] || '');
+        }
       } else {
         this.selectedEmployeeVal = null;
         this.searchEmployeeText='';
         this.selectEmployee.emit(null);
+        if (!this.multiple) {
+          this.managerDisplayControl.setValue('');
+        }
       }
       this.selectedItemsMap['manager'] = [];
-      this.clearSearchDropD('manager');
+      if (this.multiple) {
+        this.clearSearchDropD('manager');
+      } else {
+        this.dropdownState.manager.page = 1;
+        this.dropdownState.manager.search = '';
+        this.dropdownState.manager.list = [];
+        this.dropdownState.manager.initialized = false;
+      }
     }
   }
 
   ngOnInit(): void {
-      this.onDropdownOpened(true,'manager')
+    if (!this.multiple) {
+      // Setup paginated search subscription for autocomplete
+      this.autoSvc.setupPaginatedSearch(
+        this.managerDisplayControl,
+        (value: string) => this.onSearch('manager', value),
+        this.destroy$
+      );
+      // Trigger initial load
+      this.onManagerFocus();
+    } else {
+      // Original multi-select flow
+      this.onDropdownOpened(true, 'manager');
+    }
+  }
+
+  ngAfterViewInit(): void {
+    if (!this.multiple && this.managerAutoRef) {
+      this.autoSvc.setupScrollListener(
+        this.managerAutoRef,
+        this.dropdownState.manager,
+        () => this.fetchData('manager', true),
+        this.destroy$
+      );
+    }
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
 
@@ -68,6 +123,58 @@ user_role_name: any;
     this.selectedEmployeeVal = event.value;
     this.selectEmployee.emit(event.value);
     this.updateSelectedItems('manager', Array.isArray(event.value) ? event.value : event.value)
+  }
+
+  // ─── Autocomplete Handlers (used when multiple === false) ──────────────────────
+
+  onManagerOptionSelected(event: any): void {
+    this.justSelected = true;
+    const selected = event.option.value;
+    if (selected) {
+      this.selectedEmployeeVal = selected.user_id;
+      this.selectEmployee.emit(selected.user_id);
+      this.selectedItemsMap['manager'] = [selected];
+      this.dropdownState.manager.list = [selected];
+    }
+  }
+
+  onManagerFocus(): void {
+    this.justSelected = false;
+    const selectedItems = this.selectedItemsMap['manager'] || [];
+    this.autoSvc.onFocus(
+      this.dropdownState.manager,
+      selectedItems,
+      () => this.fetchData('manager', false)
+    );
+  }
+
+  onManagerBlur(): void {
+    setTimeout(() => {
+      if (this.justSelected) {
+        this.justSelected = false;
+        return;
+      }
+      const currentValue = this.managerDisplayControl.value;
+      // If user cleared the input, treat as deselection
+      if (currentValue === '' || currentValue === null) {
+        this.selectedEmployeeVal = null;
+        this.selectEmployee.emit(null);
+        this.selectedItemsMap['manager'] = [];
+        this.managerDisplayControl.setValue('');
+        this.dropdownState.manager.list = [];
+        this.dropdownState.manager.initialized = false;
+        return;
+      }
+      const selectedItems = this.selectedItemsMap['manager'] || [];
+      if (selectedItems.length > 0) {
+        this.managerDisplayControl.setValue(selectedItems[0]);
+        this.dropdownState.manager.list = [...selectedItems];
+      } else {
+        this.managerDisplayControl.setValue('');
+        this.dropdownState.manager.list = [];
+        this.dropdownState.manager.initialized = false;
+      }
+    }, 200);
   }
 
   // new code
@@ -127,6 +234,9 @@ onSearch(key: string, text: string) {
   state.search = text
   state.page = 1;
   state.list = [];
+  if (!text) {
+    this.selectedItemsMap[key] = [];
+  }
   this.fetchData(key, false);
 }
 
@@ -147,7 +257,7 @@ fetchData(key: string, append = false) {
     query += `&search=${encodeURIComponent(state.search)}`;
   }
  if(key==='manager'){
-  query += `is_active=True&employee=True&designation=manager`
+  query += `&is_active=True&employee=True&designation=manager`
  }
   
   this.apiService.getData(`${environment.live_url}/${this.dropdownEndpoints[key]}/?${query}`)
@@ -166,17 +276,21 @@ fetchData(key: string, append = false) {
       if(this.user_role_name ==='Accountant'){
          this.selectedEmployeeVal = res.results[0].user_id;
         this.selectEmployee.emit(res.results[0].user_id);
+        if (!this.multiple) {
+          this.selectedItemsMap['manager'] = [res.results[0]];
+          this.managerDisplayControl.setValue(res.results[0]);
+        }
       } else if (this.user_role_name === 'Manager' && this.managerData?.length) {
           let newManagerItems = this.managerData;
           if (state.search) {
             const searchLower = state.search.toLowerCase();
             newManagerItems = newManagerItems.filter(
-              mgr =>
+              (mgr: any) =>
                 mgr.user__full_name?.toLowerCase().includes(searchLower)
             );
           }
           newManagerItems = newManagerItems.filter(
-            mgr => !state.list.some(item => item.user_id === mgr.user_id)
+            (mgr: any) => !state.list.some((item: any) => item.user_id === mgr.user_id)
           );
           if (newManagerItems.length) {
             state.list = [...state.list, ...newManagerItems];
@@ -202,7 +316,7 @@ updateSelectedItems(key: string, selectedIds: any[]) {
   // Add new selected items from currently loaded list if missing
   selectedIds.forEach(user_id => {
     if (!selectedItems.some(item => item.user_id === user_id)) {
-      const found = state.list.find(item => item.user_id === user_id);
+      const found = state.list.find((item: any) => item.user_id === user_id);
       if (found) {
         selectedItems.push(found);
       } else {
@@ -216,14 +330,14 @@ updateSelectedItems(key: string, selectedIds: any[]) {
 getOptionsWithSelectedOnTop(key: string) {
   const state = this.dropdownState[key];
   const selectedItems = this.selectedItemsMap[key] || [];
-  const unselectedItems = state.list.filter(item =>
-    !selectedItems.some(sel => sel.user_id === item.user_id)
+  const unselectedItems = state.list.filter((item: any) =>
+    !selectedItems.some((sel: any) => sel.user_id === item.user_id)
   );
 
   return [...selectedItems, ...unselectedItems];
 }
 
-onDropdownOpened(isOpen, key: string) {
+onDropdownOpened(isOpen: any, key: string) {
   if (isOpen) {
     // ⬇⬇ ADD THIS BLOCK ⬇⬇
     if (!this.dropdownState[key].initialized || this.dropdownState[key].list.length === 0) {
@@ -244,7 +358,7 @@ onDropdownOpened(isOpen, key: string) {
   }
 }
 
-commonOnchangeFun(event, key){
+commonOnchangeFun(event: any, key: any){
   this.updateSelectedItems(key, event.value);
 }
 
@@ -253,9 +367,12 @@ patchDropdownValuesForEdit(data: any) {
     const idVal = data?.[idKey];
     const nameVal = data?.[nameKey];
     if (idVal != null) {
-      const obj: any = { id: idVal, [nameKey]: nameVal ?? '' };
+      const obj: any = { user_id: idVal, [nameKey]: nameVal ?? '' };
       this.selectedItemsMap[key] = [obj];
-      // this.timesheetFormGroup.get(key)?.patchValue(idVal);
+      if (!this.multiple) {
+        this.managerDisplayControl.setValue(obj);
+        this.selectedEmployeeVal = idVal;
+      }
       if (!this.dropdownState[key]) {
         this.dropdownState[key] = {
           page: 1,
@@ -267,12 +384,12 @@ patchDropdownValuesForEdit(data: any) {
         };
       }
       this.dropdownState[key].list = this.dropdownState[key].list.filter(
-        (it: any) => it?.id !== idVal
+        (it: any) => it?.user_id !== idVal
       );
       this.dropdownState[key].list.unshift(obj);
     }
   };
-  setDropdownValue('employee', 'employee', 'user__full_name');
+  setDropdownValue('manager', 'employee', 'user__full_name');
 }
 
 

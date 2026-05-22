@@ -1,5 +1,5 @@
-<div class="container-wrapper settings-main-content px-0">
-  <section class="settings-table-bg">
+<div class="container-wrapper settings-main-content px-0 user-dashboard">
+  <section class="settings-table-bg" cdkScrollable>
     <div class="row mx-0 my-2 px-0 table-wrapper">
 
       <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0 ">
@@ -12,21 +12,21 @@
           <div class="col-sm-12 col-md-6 col-lg-3 px-0">
             <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
               <mat-label>Employee</mat-label>
-              <mat-select autocomplete="off" placeholder="select" panelClass="custom-select-panel"
-                (selectionChange)="onEmployeeChange($event)" (openedChange)="onDropdownOpened($event, 'employee')">
-                <div class="mat-select-search-wrapper d-flex">
-                  <input matInput [(ngModel)]="dropdownState.employee.search"
-                    (ngModelChange)="onSearch('employee', $event)" autofocus [ngModelOptions]="{standalone: true}"
-                    placeholder="Search employee" class="mat-select-search">
-                  <mat-icon class="search-icon" *ngIf="!dropdownState.employee.search">search</mat-icon>
-                  <mat-icon class="search-icon" *ngIf="dropdownState.employee.search" type="button"
-                    (click)="clearSearchDropD('employee')">close</mat-icon>
-                </div>
-                <mat-option hidden disabled></mat-option>
-                <mat-option *ngFor="let item of getOptionsWithSelectedOnTop('employee')" [value]="item?.user_id">
-                  {{item?.user__full_name}}
-                </mat-option>
-              </mat-select>
+              <input matInput [formControl]="employeeDisplayControl"
+                  [matAutocomplete]="employeeAutoRef"
+                  placeholder="Search employee"
+                  (focus)="onEmployeeFocus()"
+                  (blur)="onEmployeeBlur()">
+              <mat-autocomplete #employeeAutoRef="matAutocomplete"
+                  [displayWith]="displayEmployeeFn"
+                  (optionSelected)="onEmployeeOptionSelected($event)">
+                  <mat-option *ngFor="let item of getOptionsWithSelectedOnTop('employee')" [value]="item">
+                      {{item?.user__full_name}}
+                  </mat-option>
+                  <mat-option *ngIf="dropdownState.employee.loading" disabled class="loading-option">
+                      Loading...
+                  </mat-option>
+              </mat-autocomplete>
             </mat-form-field>
           </div>
         </div>
@@ -58,53 +58,59 @@
     <div class="col-12" *ngIf="all_leaves?.length === 0">
       <app-generic-norecards></app-generic-norecards>
     </div>
-    <div class="row mx-0 mt-3">
-      <div class="col-md-4">
-        <div class="row mx-0 my-2 px-0 table-wrapper bg-white" style="overflow-x: hidden;">
-          <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0">
-            <div class="py-2">
-              <span class="fw-bold ps-3"><u>Upcoming Holidays</u></span>
-            </div>
-            <div class="row p-3" *ngFor="let i of upcoming_holidays">
-              <div class="col-4 fw-bold">{{i.date | dateFormater}}</div>
-              <div class="col-6 fw-bold">{{i.name}}</div>
-            </div>
+    <div class="row mx-0 mt-3 mb-4">
+
+      <!-- Upcoming Holidays -->
+      <div class="col-md-4 mb-3" *ngIf="upcoming_holidays?.length">
+        <div class="py-2">
+          <span class="fw-bold">Upcoming Holidays</span>
+        </div>
+        <div class="upcoming-card">
+          <div class="upcoming-card-body">
+            <table class="table table-hover table-list upcoming-table mb-0">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Holiday</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let i of upcoming_holidays">
+                  <td class="text-nowrap">{{i.date | dateFormater}}</td>
+                  <td>{{i.name}}</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
-        <!-- <div class="col-12"  *ngIf="all_leaves?.length === 0">
-              <app-generic-norecards></app-generic-norecards>
-            </div> -->
-
       </div>
 
-      <div class="col-md-8 bg-white" *ngIf="upcomingPendingLeaves.length>0">
-        <div class="row mx-0 my-2 px-0 table-wrapper" style="overflow-x: hidden;">
-          <div class="col-12 px-0">
-            <div class="py-2">
-              <span class="fw-bold"><u>Upcoming Leaves</u></span>
-            </div>
-
-            <!-- Header Row -->
-            <div class="row fw-bold border-bottom py-2">
-              <div class="col-sm-12 col-md-6 col-lg-4">Date</div>
-              <div class="col-sm-12 col-md-6 col-lg-4">Reason</div>
-              <div class="col-sm-12 col-md-6 col-lg-4">Leave Type</div>
-            </div>
-
-            <!-- Data Rows -->
-            <div class="row py-2 my-1" *ngFor="let i of upcomingPendingLeaves">
-              <div class="col-sm-12 col-md-6 col-lg-4">{{i.from_date | dateFormater}} - {{i.to_date | dateFormater}}</div>
-              <div class="col-sm-12 col-md-6 col-lg-4">{{i.message}}</div>
-              <div class="col-sm-12 col-md-6 col-lg-4">{{i.leave_type_name}}</div>
-            </div>
-            <div class="row mx-0" *ngIf="upcomingPendingLeaves?.length === 0">
-              <app-generic-norecards></app-generic-norecards>
-            </div>
+      <!-- Upcoming Leaves -->
+      <div class="col-md-8 mb-3" *ngIf="upcomingPendingLeaves?.length > 0">
+        <div class="py-2">
+          <span class="fw-bold">Upcoming Leaves</span>
+        </div>
+        <div class="upcoming-card">
+          <div class="upcoming-card-body">
+            <table class="table table-hover table-list upcoming-table mb-0">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Reason</th>
+                  <th>Leave Type</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let i of upcomingPendingLeaves">
+                  <td class="text-nowrap">{{i.from_date | dateFormater}} - {{i.to_date | dateFormater}}</td>
+                  <td>{{i.message}}</td>
+                  <td>{{i.leave_type_name}}</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
-
       </div>
-
 
     </div>
 

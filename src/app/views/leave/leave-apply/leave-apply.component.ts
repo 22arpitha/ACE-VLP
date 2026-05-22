@@ -1,5 +1,6 @@
 import { ENTER, COMMA } from '@angular/cdk/keycodes';
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Overlay } from '@angular/cdk/overlay';
+import { Component, ElementRef, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import {
   FormBuilder,
   FormControl,
@@ -8,11 +9,13 @@ import {
   Validators,
 } from '@angular/forms';
 import { MatChipInputEvent } from '@angular/material/chips';
-import { startWith, map, Observable } from 'rxjs';
+import { startWith, map, Observable, Subject } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { ApiserviceService } from '../../../service/apiservice.service';
 import { CommonServiceService } from '../../../service/common-service.service';
-import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
+import { MAT_AUTOCOMPLETE_SCROLL_STRATEGY, MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
+import { ErrorStateMatcher } from '@angular/material/core';
+import { MatAutocompleteService } from '../../../service/mat-autocomplete.service';
 import { MatDialog } from '@angular/material/dialog';
 import { CompOffGrantComponent } from '../comp-off-grant/comp-off-grant.component';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -22,9 +25,25 @@ import { SubModuleService } from '../../../service/sub-module.service';
   selector: 'app-leave-apply',
   templateUrl: './leave-apply.component.html',
   styleUrls: ['./leave-apply.component.scss'],
+  providers: [
+    {
+      provide: MAT_AUTOCOMPLETE_SCROLL_STRATEGY,
+      useFactory: (overlay: Overlay) => () => overlay.scrollStrategies.close(),
+      deps: [Overlay]
+    }
+  ]
 })
-export class LeaveApplyComponent implements OnInit {
+export class LeaveApplyComponent implements OnInit, OnDestroy {
   @ViewChild(FormGroupDirective) formGroupDirective!: FormGroupDirective;
+
+  // ── Autocomplete infrastructure ──
+  private destroy$ = new Subject<void>();
+  leaveTypeDisplayControl = new FormControl('');
+  filteredLeaveTypesAuto: any[] = [];
+  displayLeaveTypeFn!: (item: any) => string;
+  leaveTypeErrorMatcher!: ErrorStateMatcher;
+  // ──────────────────────────────────
+
   leave_balance: any = 'NA';
   selectedLeaveTypeName:any;
   employeeActive!:boolean; 
@@ -79,7 +98,8 @@ export class LeaveApplyComponent implements OnInit {
     private fb: FormBuilder,
     private router:Router,
     private activeRoute: ActivatedRoute,
-    private accessControlService: SubModuleService
+    private accessControlService: SubModuleService,
+    private autoSvc: MatAutocompleteService
   ) {
     this.leaveApplictaionId = this.activeRoute.snapshot.paramMap.get('id')
     this.filteredEmails = this.emailCtrl.valueChanges.pipe(
@@ -91,10 +111,12 @@ export class LeaveApplyComponent implements OnInit {
     this.BreadCrumbsTitle = this.leaveApplictaionId ? 'Edit Leave Application' : 'Apply Leave';
     this.common_service.setTitle(this.BreadCrumbsTitle);
     this.user_id = sessionStorage.getItem('user_id');
+    this.displayLeaveTypeFn = this.autoSvc.createDisplayFn('leave_type');
   }
 
   ngOnInit(): void {
     this.initialForm();
+    this.setupAutocomplete();
     this.getModuleAccess();
     this.getAllLeaveTypes();
     this.getAllEmployeeList2();
@@ -138,6 +160,12 @@ export class LeaveApplyComponent implements OnInit {
           number_of_leaves_applying_for:res?.number_of_leaves_applying_for
         });
         this.getLeaveTypeBalance(String(res?.leave_type));
+        // Patch leave type display control for autocomplete
+        const leaveTypeObj = this.allleavetypeList.find((t: any) => t.leave_type_id === String(res?.leave_type));
+        if (leaveTypeObj) {
+          this.leaveTypeDisplayControl.setValue(leaveTypeObj, { emitEvent: false });
+          this.filteredLeaveTypesAuto = [leaveTypeObj];
+        }
         this.selectedEmails = JSON.parse(res?.cc) || [];
         if (res?.attachment) {
           const fileName = this.getFileName(res.attachment);
@@ -216,8 +244,8 @@ employeeGender:any;
     });
   }
 
-  onLeaveTypeChange(event: any) {
-   this.getLeaveTypeBalance(event.value);
+  onLeaveTypeChange(leaveTypeId: any) {
+   this.getLeaveTypeBalance(leaveTypeId);
   }
 
   getLeaveTypeBalance(leave_type_id:string){
@@ -264,11 +292,13 @@ employeeGender:any;
 }
   public getAllLeaveTypes() {
     this.allleavetypeList = [];
+    this.filteredLeaveTypesAuto = [];
     this.apiService
       .getData(`${environment.live_url}/${environment.employees_leave}/?employee=${this.user_id}`)
       .subscribe(
         (respData: any) => {
           this.allleavetypeList = respData?.results?.filter((item:any)=>item.is_active===true && (item.leave_for===this.employeeGender?.value_check || item.leave_for==='all employees'));
+          this.filteredLeaveTypesAuto = [...this.allleavetypeList];
         },
         (error: any) => {
           this.apiService.showError(error?.error?.detail);
@@ -724,6 +754,9 @@ employeeGender:any;
     this.fileName = '';
     this.selectedEmails = []
     this.leave_balance = 0
+    this.leaveTypeDisplayControl.setValue('', { emitEvent: false });
+
+    this.filteredLeaveTypesAuto = [...this.allleavetypeList];
     this.formGroupDirective?.resetForm();
     this.initialForm();
     this.getUserData();
@@ -991,6 +1024,67 @@ private getDateFromControl(controlName: string): Date | null {
 
   onCancel(){
     this.router.navigate(['/leave/dashboard'])
+  }
+
+  // ══════════════ Autocomplete lifecycle & helpers ══════════════
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  private setupAutocomplete(): void {
+    this.leaveTypeErrorMatcher = this.autoSvc.createErrorMatcher(
+      () => this.leaveApplyForm?.get('leave_type') as FormControl
+    );
+
+    // Non-paginated: Leave Type (local filter)
+    this.autoSvc.setupLocalFilter(
+      this.leaveTypeDisplayControl,
+      () => this.allleavetypeList,
+      (filtered) => {
+        this.filteredLeaveTypesAuto = filtered;
+        this.leaveApplyForm.get('leave_type')?.setValue('');
+        this.leaveApplyForm.get('leave_type')?.markAsDirty();
+      },
+      'leave_type',
+      this.destroy$,
+      200
+    );
+  }
+
+  onLeaveTypeOptionSelected(event: any): void {
+    const item = event.option.value;
+    this.leaveApplyForm.get('leave_type')?.setValue(item.leave_type_id);
+    this.leaveApplyForm.get('leave_type')?.markAsDirty();
+    this.leaveTypeDisplayControl.setValue(item, { emitEvent: false });
+    this.filteredLeaveTypesAuto = [item];
+    this.onLeaveTypeChange(item.leave_type_id);
+  }
+
+  onLeaveTypeFocus(): void {
+    const ctrl = this.leaveApplyForm.get('leave_type');
+    if (!ctrl?.value) {
+      this.filteredLeaveTypesAuto = [...this.allleavetypeList];
+    }
+  }
+
+  onLeaveTypeBlur(): void {
+    setTimeout(() => {
+      const ctrl = this.leaveApplyForm.get('leave_type');
+      const displayVal = this.leaveTypeDisplayControl.value;
+      if (!displayVal || (typeof displayVal === 'string' && !displayVal.trim())) {
+        ctrl?.setValue('');
+        this.leaveTypeDisplayControl.setValue('');
+        this.filteredLeaveTypesAuto = [...this.allleavetypeList];
+      } else if (ctrl?.value) {
+        const selectedItem = this.allleavetypeList.find((t: any) => t.leave_type_id === ctrl.value);
+        if (selectedItem) {
+          this.leaveTypeDisplayControl.setValue(selectedItem, { emitEvent: false });
+        }
+      }
+      ctrl?.markAsTouched();
+    }, 150);
   }
 
 }

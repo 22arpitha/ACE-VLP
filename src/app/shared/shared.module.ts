@@ -47,6 +47,7 @@ import { DateFormaterPipe } from './date-formater.pipe';
 import { OverlayModule } from '@angular/cdk/overlay';
 // import { SingleSelectionDropdownComponent } from './single-selection-dropdown/single-selection-dropdown.component';
 import { ManagerListComponent } from './manager-list/manager-list.component';
+import { ScrollingModule } from '@angular/cdk/scrolling';
 @NgModule({
   declarations: [
     SortPipe,
@@ -98,7 +99,8 @@ import { ManagerListComponent } from './manager-list/manager-list.component';
     NgbTooltipModule,
     MatDialogModule,
     NgbDropdownModule,
-    OverlayModule
+    OverlayModule,
+    ScrollingModule
   ],
   exports:[
     AlphabetOnlyDirective,
@@ -135,6 +137,7 @@ import { ManagerListComponent } from './manager-list/manager-list.component';
     NgxPaginationModule,
     NgbTooltipModule,
     MatDialogModule,
+    ScrollingModule,
     DynamicTableComponent,
     EmployeeListComponent,
     PeriodicityComponent,

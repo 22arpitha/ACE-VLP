@@ -1,4 +1,4 @@
-<div class="container-wrapper settings-main-content px-0">
+<div class="container-wrapper settings-main-content px-0" cdkScrollable>
   <section class="settings-form-bg new-ticket p-0">
     <form [formGroup]="ticketForm" (ngSubmit)="onSubmit()" class="bg-ticket-details">
       <div class="row mx-0 my-0 p-0 mb-3">
@@ -11,22 +11,19 @@
             <div class="col-sm-12 col-md-6 col-lg-4 px-1">
               <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
                 <mat-label>Employee <b class="r-star">*</b></mat-label>
-                <mat-select formControlName="employee_id" autocomplete="off" placeholder="select"
-                  panelClass="custom-select-panel" [disableOptionCentering]="true"
-                  (selectionChange)="onEmployeeChange($event)" (openedChange)="onDropdownOpened($event, 'employee')">
-                  <div class="mat-select-search-wrapper d-flex">
-                    <input matInput [(ngModel)]="dropdownState.employee.search"
-                      (ngModelChange)="onSearch('employee', $event)" autofocus [ngModelOptions]="{standalone: true}"
-                      placeholder="Search employee" class="mat-select-search">
-                    <mat-icon class="search-icon" *ngIf="!dropdownState.employee.search">search</mat-icon>
-                    <mat-icon class="search-icon" *ngIf="dropdownState.employee.search" type="button"
-                      (click)="clearSearchDropD('employee')">close</mat-icon>
-                  </div>
-                  <mat-option hidden disabled></mat-option>
-                  <mat-option *ngFor="let item of getOptionsWithSelectedOnTop('employee')" [value]="item?.user_id">
+                <input matInput [formControl]="employeeDisplayControl"
+                  [matAutocomplete]="employeeAutoRef"
+                  [errorStateMatcher]="employeeErrorMatcher"
+                  placeholder="Search employee"
+                  (focus)="onEmployeeFocus()"
+                  (blur)="onEmployeeBlur()">
+                <mat-autocomplete #employeeAutoRef="matAutocomplete"
+                  [displayWith]="displayEmployeeFn"
+                  (optionSelected)="onEmployeeOptionSelected($event)">
+                  <mat-option *ngFor="let item of dropdownState.employee.list" [value]="item">
                     {{ item?.user__full_name }}
                   </mat-option>
-                </mat-select>
+                </mat-autocomplete>
                 <mat-error *ngIf="hasError('employee_id', 'required')">
                   Employee is required
                 </mat-error>

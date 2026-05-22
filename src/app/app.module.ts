@@ -77,6 +77,7 @@ import { NotificationsComponent } from './views/notifications/notifications.comp
 import { MAT_TOOLTIP_SCROLL_STRATEGY_FACTORY_PROVIDER } from '@angular/material/tooltip';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatMenuModule } from '@angular/material/menu';
+import { ScrollingModule } from '@angular/cdk/scrolling';
 const APP_CONTAINERS = [
   DefaultFooterComponent,
   DefaultHeaderComponent,
@@ -146,6 +147,7 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
     MatButtonModule,
     MatToolbarModule,
     MatMenuModule,
+    ScrollingModule,
     CarouselModule.forRoot(),
     ModalModule.forRoot(),
     ToastrModule.forRoot({

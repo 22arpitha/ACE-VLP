@@ -1,5 +1,5 @@
 <div class="container-wrapper settings-main-content px-0">
-    <section class="settings-form-bg px-0">
+    <section class="settings-form-bg px-0" cdkScrollable>
         <div class="row my-1 mx-0 px-0">
             <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0">
                 <form [formGroup]="timesheetFormGroup">
@@ -40,21 +40,19 @@
                         <div class="col-12 col-sm-12 col-md-6 col-lg-6 my-1 no-padding px-0">
                             <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
                                 <mat-label> Jobs<b class="r-star">*</b></mat-label>
-                                <mat-select formControlName="job_id" autocomplete="off" placeholder="Select job" (selectionChange)="commonOnchangeFun($event, 'job_id')"
-                                    panelClass="custom-select-panel" [disableOptionCentering]="true" (openedChange)="onDropdownOpened($event, 'job_id')">
-                                    <div class="mat-select-search-wrapper d-flex">
-                                        <input matInput [(ngModel)]="dropdownState.job_id.search" (ngModelChange)="onSearch('job_id', $event)" autofocus
-                                            [ngModelOptions]="{standalone: true}" placeholder="Search job"
-                                            class="mat-select-search">
-                                        <mat-icon class="search-icon" *ngIf="!dropdownState.job_id.search">search</mat-icon>
-                                        <mat-icon class="search-icon" *ngIf="dropdownState.job_id.search" type="button"
-                                            (click)="clearSearchDropD('job_id')">close</mat-icon>
-                                    </div>
-                                    <mat-option hidden disabled></mat-option>
-                                    <mat-option *ngFor="let item of getOptionsWithSelectedOnTop('job_id')" [value]="item?.id">
+                                <input matInput [formControl]="jobDisplayControl"
+                                    [matAutocomplete]="jobAuto"
+                                    [errorStateMatcher]="jobErrorMatcher"
+                                    placeholder="Select job"
+                                    (focus)="onJobFocus()"
+                                    (blur)="onJobBlur()">
+                                <mat-autocomplete #jobAuto="matAutocomplete"
+                                    [displayWith]="displayJobFn"
+                                    (optionSelected)="onJobOptionSelected($event)">
+                                    <mat-option *ngFor="let item of getOptionsWithSelectedOnTop('job_id')" [value]="item">
                                         {{item?.job_name}}
                                     </mat-option>
-                                </mat-select>
+                                </mat-autocomplete>
                                 <mat-error
                                     *ngIf="f['job_id']?.invalid && f['job_id']?.touched || f['job_id']?.dirty">
                                     <span *ngIf="f['job_id']?.errors?.['required']">Job is required</span>
@@ -69,12 +67,19 @@
                                 <div class="col-12 col-sm-12 col-md-6 col-lg-2 my-1 no-padding pl-0 pr-5">
                                     <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
                                         <mat-label>Task <b class="r-star">*</b></mat-label>
-                                        <mat-select formControlName="task" autocomplete="off" placeholder="Select task"
-                                            panelClass="custom-select-panel" [disableOptionCentering]="true">
-                                            <mat-option *ngFor="let item of taskList" [value]="item?.id">
+                                        <input matInput [formControl]="taskDisplayControl"
+                                            [matAutocomplete]="taskAuto"
+                                            [errorStateMatcher]="taskErrorMatcher"
+                                            placeholder="Select task"
+                                            (focus)="onTaskFocus()"
+                                            (blur)="onTaskBlur()">
+                                        <mat-autocomplete #taskAuto="matAutocomplete"
+                                            [displayWith]="displayTaskFn"
+                                            (optionSelected)="onTaskOptionSelected($event)">
+                                            <mat-option *ngFor="let item of filteredTasksAuto" [value]="item">
                                                 {{item?.value}}
                                             </mat-option>
-                                        </mat-select>
+                                        </mat-autocomplete>
                                         <mat-error *ngIf="f['task']?.invalid && f['task']?.touched || f['task']?.dirty">
                                             <span *ngIf="f['task']?.errors?.['required']">Task is required</span>
                                         </mat-error>

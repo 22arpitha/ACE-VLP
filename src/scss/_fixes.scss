@@ -588,12 +588,12 @@ form{
 .cdk-overlay-pane {
   transform: translateX(0px) translateY(0px) !important;
 }
-// .cdk-overlay-container,
-// .cdk-global-overlay-wrapper {
-//   pointer-events: all;
-// }
 
-
+mat-option{
+  font-size: 12px !important;
+  height: 3em !important;
+  font-weight: 500 !important;
+}
 form {
 
   input,

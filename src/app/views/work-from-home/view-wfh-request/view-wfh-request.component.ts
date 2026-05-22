@@ -716,7 +716,7 @@ export class ViewWfhRequestComponent implements OnInit {
       status === 'approved' &&
       this.leave_data?.is_confirmed_by_director === false
     ) {
-      return 'Awaiting Director Approval (Stage 2 of 2)';
+      return 'Awaiting Management Approval (Stage 2 of 2)';
     }
 
     return '';

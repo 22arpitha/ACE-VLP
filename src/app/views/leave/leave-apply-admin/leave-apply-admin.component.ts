@@ -1,5 +1,5 @@
 import { ENTER, COMMA } from '@angular/cdk/keycodes';
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, ChangeDetectorRef, ElementRef, OnInit, OnDestroy, AfterViewInit, ViewChild } from '@angular/core';
 import {
   FormBuilder,
   FormControl,
@@ -8,22 +8,45 @@ import {
   Validators,
 } from '@angular/forms';
 import { MatChipInputEvent } from '@angular/material/chips';
-import { startWith, map, Observable } from 'rxjs';
+import { startWith, map, Observable, Subject } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { ApiserviceService } from '../../../service/apiservice.service';
 import { CommonServiceService } from '../../../service/common-service.service';
-import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
+import { MatAutocomplete, MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
+import { ErrorStateMatcher } from '@angular/material/core';
+import { MatAutocompleteService } from '../../../service/mat-autocomplete.service';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { CompOffGrantComponent } from '../comp-off-grant/comp-off-grant.component';
+import { MAT_AUTOCOMPLETE_SCROLL_STRATEGY } from '@angular/material/autocomplete';
+import { Overlay } from '@angular/cdk/overlay';
+
 
 @Component({
   selector: 'app-leave-apply-admin',
   templateUrl: './leave-apply-admin.component.html',
-  styleUrls: ['./leave-apply-admin.component.scss']
+  styleUrls: ['./leave-apply-admin.component.scss'],
+  providers: [
+      {
+        provide: MAT_AUTOCOMPLETE_SCROLL_STRATEGY,
+        useFactory: (overlay: Overlay) => () => overlay.scrollStrategies.close(),
+        deps: [Overlay]
+      }
+    ]
 })
-export class LeaveApplyAdminComponent implements OnInit {
+export class LeaveApplyAdminComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild(FormGroupDirective) formGroupDirective!: FormGroupDirective;
+  @ViewChild('employeeAuto') employeeAutoRef!: MatAutocomplete;
+
+  // ── Autocomplete infrastructure ──
+  private destroy$ = new Subject<void>();
+  employeeDisplayControl = new FormControl('');
+  leaveTypeDisplayControl = new FormControl('');
+  filteredLeaveTypesAuto: any[] = [];
+  displayEmployeeFn!: (item: any) => string;
+  displayLeaveTypeFn!: (item: any) => string;
+  employeeErrorMatcher!: ErrorStateMatcher;
+  leaveTypeErrorMatcher!: ErrorStateMatcher;
+  // ──────────────────────────────────
+
   leave_balance: any = 'NA';
   selectedLeaveTypeName:any;
   employeeActive:boolean;
@@ -68,7 +91,9 @@ export class LeaveApplyAdminComponent implements OnInit {
     private apiService: ApiserviceService,
     private common_service: CommonServiceService,
     private dialogRef: MatDialogRef<LeaveApplyAdminComponent>,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private autoSvc: MatAutocompleteService,
+    private cdr: ChangeDetectorRef
   ) {
     this.filteredEmails = this.emailCtrl.valueChanges.pipe(
       startWith(null),
@@ -80,10 +105,14 @@ export class LeaveApplyAdminComponent implements OnInit {
     this.common_service.setTitle(this.BreadCrumbsTitle);
     this.user_id = sessionStorage.getItem('user_id');
     this.userRole = sessionStorage.getItem('user_role_name');
+
+    this.displayEmployeeFn = this.autoSvc.createDisplayFn('user__full_name');
+    this.displayLeaveTypeFn = this.autoSvc.createDisplayFn('leave_type');
   }
 
   ngOnInit(): void {
     this.initialForm();
+    this.setupAutocomplete();
     // this.getAllLeaveTypes();
     this.getAllEmployeeList2();
     this.workCalendarlist();
@@ -138,8 +167,8 @@ export class LeaveApplyAdminComponent implements OnInit {
     });
   }
 
-  onLeaveTypeChange(event: any) {
-    let temp = this.allleavetypeList.find((item: any) => item.leave_type_id === event.value)
+  onLeaveTypeChange(leaveTypeId: any) {
+    let temp = this.allleavetypeList.find((item: any) => item.leave_type_id === leaveTypeId)
     this.selectedLeaveTypeName = temp.leave_type.toLowerCase() || ''
     this.leave_balance = temp.closing_balance_leave;
           this.employeeActive = temp.is_active;
@@ -174,11 +203,13 @@ export class LeaveApplyAdminComponent implements OnInit {
 
   public getAllLeaveTypes(id:any) {
     this.allleavetypeList = [];
+    this.filteredLeaveTypesAuto = [];
    this.apiService
       .getData(`${environment.live_url}/${environment.employees_leave}/?employee=${id}`)
       .subscribe(
         (respData: any) => {
             this.allleavetypeList = respData?.results?.filter((item:any)=>item.is_active===true && (item.leave_for===this.employeeGender?.value_check || item.leave_for==='all employees'));
+            this.filteredLeaveTypesAuto = [...this.allleavetypeList];
         },
         (error: any) => {
           this.apiService.showError(error?.error?.detail);
@@ -687,22 +718,29 @@ export class LeaveApplyAdminComponent implements OnInit {
     this.fileDataUrl = '';
     this.selectedFile = null;
     this.fileName = '';
+    this.employeeDisplayControl.setValue('');
+    this.leaveTypeDisplayControl.setValue('');
+    this.filteredLeaveTypesAuto = [];
+    this.allleavetypeList = [];
     this.formGroupDirective?.resetForm();
   }
 
 
-  public onEmployeeChange(event: any) {
-     this.getAllLeaveTypes(event.value);
-    this.getManagerOfEmployee(event.value)
+  public onEmployeeChange(userId: any) {
+     this.getAllLeaveTypes(userId);
+    this.getManagerOfEmployee(userId)
     this.leave_balance = 'NA';
     this.leaveApplyForm.get('reporting_to')?.reset('');
     this.leaveApplyForm.get('leave_type')?.reset('');
-    if (event?.value) {
+    this.leaveTypeDisplayControl.setValue('');
+    this.filteredLeaveTypesAuto = [];
+    this.allleavetypeList = [];
+    if (userId) {
       this.leaveApplyForm.get('leave_type')?.enable();
     } else {
       this.leaveApplyForm.get('leave_type')?.disable();
     }
-    this.updateSelectedItems('employee', event.value);
+    this.updateSelectedItems('employee', userId);
   }
 
   pageSizeDropdown = 50;
@@ -1054,6 +1092,121 @@ private getDateFromControl(controlName: string): any  {
     if (!sessionValue) return false;
     const s = String(sessionValue).toLowerCase();
     return s.includes('2') || s.includes('pm') || s.includes('afternoon') || s.includes('session2');
+  }
+
+  // ══════════════ Autocomplete lifecycle & helpers ══════════════
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  ngAfterViewInit(): void {
+    this.autoSvc.setupScrollListener(
+      this.employeeAutoRef,
+      this.dropdownState.employee,
+      () => this.fetchData('employee', true),
+      this.destroy$
+    );
+  }
+
+  private setupAutocomplete(): void {
+    this.employeeErrorMatcher = this.autoSvc.createErrorMatcher(
+      () => this.leaveApplyForm?.get('employee') as FormControl
+    );
+    this.leaveTypeErrorMatcher = this.autoSvc.createErrorMatcher(
+      () => this.leaveApplyForm?.get('leave_type') as FormControl
+    );
+
+    // Paginated: Employee
+    this.autoSvc.setupPaginatedSearch(this.employeeDisplayControl, (value: string) => {
+      if (!value) {
+        this.leaveApplyForm.get('employee')?.setValue('');
+        this.leaveApplyForm.get('employee')?.markAsDirty();
+        this.selectedItemsMap['employee'] = [];
+      } else {
+        this.selectedItemsMap['employee'] = [];
+        this.leaveApplyForm.get('employee')?.setValue('');
+      }
+      this.onSearch('employee', value);
+    }, this.destroy$);
+
+    // Non-paginated: Leave Type (local filter)
+    this.autoSvc.setupLocalFilter(
+      this.leaveTypeDisplayControl,
+      () => this.allleavetypeList,
+      (filtered) => {
+        this.filteredLeaveTypesAuto = filtered;
+        this.leaveApplyForm.get('leave_type')?.setValue('');
+        this.leaveApplyForm.get('leave_type')?.markAsDirty();
+      },
+      'leave_type',
+      this.destroy$,
+      200
+    );
+  }
+
+  onEmployeeOptionSelected(event: any): void {
+    const item = event.option.value;
+    this.leaveApplyForm.get('employee')?.setValue(item.user_id);
+    this.leaveApplyForm.get('employee')?.markAsDirty();
+    this.employeeDisplayControl.setValue(item, { emitEvent: false });
+    this.updateSelectedItems('employee', [item.user_id]);
+    this.onEmployeeChange(item.user_id);
+  }
+
+  onLeaveTypeOptionSelected(event: any): void {
+    const item = event.option.value;
+    this.leaveApplyForm.get('leave_type')?.setValue(item.leave_type_id);
+    this.leaveApplyForm.get('leave_type')?.markAsDirty();
+    this.leaveTypeDisplayControl.setValue(item, { emitEvent: false });
+    this.filteredLeaveTypesAuto = [item];
+    this.onLeaveTypeChange(item.leave_type_id);
+  }
+
+  onEmployeeFocus(): void {
+    this.autoSvc.onFocus(
+      this.dropdownState.employee,
+      this.selectedItemsMap['employee'] || [],
+      () => this.fetchData('employee', false)
+    );
+  }
+
+  onLeaveTypeFocus(): void {
+    const ctrl = this.leaveApplyForm.get('leave_type');
+    if (!ctrl?.value) {
+      this.filteredLeaveTypesAuto = [...this.allleavetypeList];
+    }
+  }
+
+  onEmployeeBlur(): void {
+    setTimeout(() => {
+      const ctrl = this.leaveApplyForm.get('employee');
+      const displayVal = this.employeeDisplayControl.value;
+      if (!displayVal || (typeof displayVal === 'string' && !displayVal.trim())) {
+        ctrl?.setValue('');
+        this.employeeDisplayControl.setValue('');
+      }
+      ctrl?.markAsTouched();
+    }, 150);
+  }
+
+  onLeaveTypeBlur(): void {
+    setTimeout(() => {
+      const ctrl = this.leaveApplyForm.get('leave_type');
+      const displayVal = this.leaveTypeDisplayControl.value;
+      if (!displayVal || (typeof displayVal === 'string' && !displayVal.trim())) {
+        ctrl?.setValue('');
+        this.leaveTypeDisplayControl.setValue('');
+        this.filteredLeaveTypesAuto = [...this.allleavetypeList];
+      } else if (ctrl?.value) {
+        const selectedItem = this.allleavetypeList.find((t: any) => t.leave_type_id === ctrl.value);
+        if (selectedItem) {
+          this.leaveTypeDisplayControl.setValue(selectedItem, { emitEvent: false });
+        }
+      }
+      ctrl?.markAsTouched();
+    }, 150);
   }
 
 }

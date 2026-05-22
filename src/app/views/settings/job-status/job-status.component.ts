@@ -1,7 +1,8 @@
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { FormGroup, FormBuilder, Validators, FormGroupDirective } from '@angular/forms';
+import { Overlay } from '@angular/cdk/overlay';
+import { FormGroup, FormBuilder, FormControl, Validators, FormGroupDirective } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { Observable } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { CanComponentDeactivate } from '../../../auth-guard/can-deactivate.guard';
 import { SubModuleService } from '../../../service/sub-module.service';
@@ -11,11 +12,21 @@ import { ApiserviceService } from '../../../service/apiservice.service';
 import { GenericDeleteComponent } from '../../../generic-components/generic-delete/generic-delete.component';
 import { GenericEditComponent } from '../../../generic-components/generic-edit/generic-edit.component';
 import { environment } from '../../../../environments/environment';
+import { MAT_AUTOCOMPLETE_SCROLL_STRATEGY } from '@angular/material/autocomplete';
+import { ErrorStateMatcher } from '@angular/material/core';
+import { MatAutocompleteService } from '../../../service/mat-autocomplete.service';
 
 @Component({
   selector: 'app-job-status',
   templateUrl: './job-status.component.html',
-  styleUrls: ['./job-status.component.scss']
+  styleUrls: ['./job-status.component.scss'],
+  providers: [
+    {
+      provide: MAT_AUTOCOMPLETE_SCROLL_STRATEGY,
+      useFactory: (overlay: Overlay) => () => overlay.scrollStrategies.close(),
+      deps: [Overlay]
+    }
+  ]
 })
 
 export class JobStatusComponent implements CanComponentDeactivate, OnInit,OnDestroy {
@@ -53,12 +64,22 @@ export class JobStatusComponent implements CanComponentDeactivate, OnInit,OnDest
   };
   filteredList: any;
   allJobStatusName: { id: any; name: string; }[];
+
+  // ── Autocomplete infrastructure ──
+  private destroy$ = new Subject<void>();
+  statusGroupDisplayControl = new FormControl('');
+  displayStatusGroupFn!: (item: any) => string;
+  statusGroupErrorMatcher!: ErrorStateMatcher;
+  filteredStatusGroupsAuto: any[] = [];
+  // ──────────────────────────────────
   
   constructor(private fb: FormBuilder, private modalService: NgbModal,private accessControlService:SubModuleService,
     private common_service: CommonServiceService, private apiService: ApiserviceService,
-    private formUtilityService:FormErrorScrollUtilityService
+    private formUtilityService:FormErrorScrollUtilityService,
+    private autoSvc: MatAutocompleteService
   ) {
     this.common_service.setTitle(this.BreadCrumbsTitle);
+    this.displayStatusGroupFn = this.autoSvc.createDisplayFn('group_name');
   }
 
   ngOnInit(): void {
@@ -74,8 +95,11 @@ export class JobStatusComponent implements CanComponentDeactivate, OnInit,OnDest
      this.formUtilityService.setUnsavedChanges(unSavedChanges);
     });
     this.getFilterList();
+    this.setupAutocomplete();
   }
   ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
     this.formUtilityService.resetHasUnsavedValue();
   }
 
@@ -181,6 +205,8 @@ export class JobStatusComponent implements CanComponentDeactivate, OnInit,OnDest
     this.formUtilityService.resetHasUnsavedValue();
     this.isEditItem = false;
     this.term ='';
+    this.statusGroupDisplayControl.setValue('');
+    this.filteredStatusGroupsAuto = [...this.allStatusGroupList];
     this.initialFormValue = this.jobStatusForm?.getRawValue();
   }
   public sort(direction: string, column: string) {
@@ -275,6 +301,11 @@ export class JobStatusComponent implements CanComponentDeactivate, OnInit,OnDest
       this.jobStatusForm.patchValue({ 'status_name': respData?.status_name });
       this.jobStatusForm.patchValue({ 'percentage_of_completion': respData?.percentage_of_completion });
       this.jobStatusForm.patchValue({ 'status_group': respData?.status_group });
+      // Patch display control for autocomplete
+      const statusGroupObj = this.allStatusGroupList.find((s: any) => s.id === respData?.status_group);
+      if (statusGroupObj) {
+        this.statusGroupDisplayControl.setValue(statusGroupObj, { emitEvent: false });
+      }
     }, (error: any) => {
       this.apiService.showError(error?.error?.detail);
     })
@@ -295,6 +326,7 @@ export class JobStatusComponent implements CanComponentDeactivate, OnInit,OnDest
     this.allStatusGroupList = [];
     this.apiService.getData(`${environment.live_url}/${environment.settings_status_group}/`).subscribe((respData: any) => {
       this.allStatusGroupList = respData;
+      this.filteredStatusGroupsAuto = [...respData];
     }, (error: any) => {
       this.apiService.showError(error.detail);
     });
@@ -379,6 +411,59 @@ export class JobStatusComponent implements CanComponentDeactivate, OnInit,OnDest
         },(error: any) => {
           this.apiService.showError(error?.error?.detail);
         });
+  }
+
+  // ══════════════════════════════════════════════════════════════
+  // Autocomplete setup and handlers
+  // ══════════════════════════════════════════════════════════════
+
+  private setupAutocomplete(): void {
+    this.statusGroupErrorMatcher = this.autoSvc.createErrorMatcher(
+      () => this.jobStatusForm?.get('status_group') as FormControl
+    );
+
+    this.autoSvc.setupLocalFilter(
+      this.statusGroupDisplayControl,
+      () => this.allStatusGroupList,
+      (results) => { this.filteredStatusGroupsAuto = results; },
+      'group_name',
+      this.destroy$
+    );
+  }
+
+  onStatusGroupOptionSelected(event: any): void {
+    const item = event.option.value;
+    this.jobStatusForm.get('status_group')?.setValue(item.id);
+    this.jobStatusForm.get('status_group')?.markAsDirty();
+    this.statusGroupDisplayControl.setValue(item, { emitEvent: false });
+  }
+
+  onStatusGroupFocus(): void {
+    const ctrl = this.jobStatusForm.get('status_group');
+    if (ctrl?.value) {
+      const selectedItem = this.allStatusGroupList.find((s: any) => s.id === ctrl.value);
+      if (selectedItem) {
+        this.filteredStatusGroupsAuto = [selectedItem];
+        return;
+      }
+    }
+    this.filteredStatusGroupsAuto = [...this.allStatusGroupList];
+  }
+
+  onStatusGroupBlur(): void {
+    setTimeout(() => {
+      const ctrl = this.jobStatusForm.get('status_group');
+      const displayVal = this.statusGroupDisplayControl.value;
+      if (!displayVal || (typeof displayVal === 'string' && !displayVal.trim())) {
+        ctrl?.setValue(null);
+        this.statusGroupDisplayControl.setValue('');
+        this.filteredStatusGroupsAuto = [...this.allStatusGroupList];
+      } else if (ctrl?.value) {
+        const selectedItem = this.allStatusGroupList.find((s: any) => s.id === ctrl.value);
+        if (selectedItem) this.statusGroupDisplayControl.setValue(selectedItem, { emitEvent: false });
+      }
+      ctrl?.markAsTouched();
+    }, 150);
   }
 }
 

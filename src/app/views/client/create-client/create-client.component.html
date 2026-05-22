@@ -1,5 +1,5 @@
 <div class="container-wrapper settings-main-content clients px-0">
-  <section class="settings-form-bg px-0">
+  <section class="settings-form-bg px-0" cdkScrollable>
     <div class="row mx-0 px-0">
       <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0 text-end mr-2" *ngIf="isEditItem">
         <button mat-raised-button class="proceedbtn mat-btn-s" type="button" [disabled]="isEnabledEdit"
@@ -62,20 +62,16 @@
               <mat-form-field appearance="outline" [ngClass]="{ 'highlight-background': !shouldDisableFileds}"
                 class="w-100 custom-mat-form-field">
                 <mat-label>Select Country <b class="r-star">*</b></mat-label>
-                <mat-select formControlName="country" autocomplete="off" placeholder="Select"
-                  panelClass="custom-select-panel" [disableOptionCentering]="true">
-                  <div class="mat-select-search-wrapper d-flex">
-                    <input matInput [(ngModel)]="searchCountryText" [ngModelOptions]="{standalone: true}"
-                      placeholder="Search Country" class="mat-select-search">
-                    <mat-icon class="search-icon" *ngIf="!searchCountryText">search</mat-icon>
-                    <mat-icon class="search-icon" *ngIf="searchCountryText" type="button"
-                      (click)="clearSearch('con')">close</mat-icon>
-                  </div>
-                  <mat-option *ngFor="let item of filteredCountryList()" [value]="item?.id">
+                <input matInput [formControl]="countryDisplayControl" [matAutocomplete]="countryAuto"
+                  placeholder="Select" autocomplete="off" [errorStateMatcher]="countryErrorMatcher"
+                  (focus)="onCountryFocus()" (blur)="onCountryBlur()">
+                <mat-autocomplete #countryAuto="matAutocomplete" [displayWith]="displayCountryFn"
+                  (optionSelected)="onCountryOptionSelected($event)">
+                  <mat-option *ngFor="let item of filteredCountriesAuto" [value]="item">
                     {{item?.country_name}}
                   </mat-option>
-                </mat-select>
-                <mat-error *ngIf="f['country']?.invalid && f['country']?.touched || f['role']?.dirty">
+                </mat-autocomplete>
+                <mat-error *ngIf="f['country']?.invalid && f['country']?.touched || f['country']?.dirty">
                   <span *ngIf="f['country']?.errors?.['required']">Country is required</span>
                 </mat-error>
               </mat-form-field>
@@ -106,19 +102,15 @@
               <mat-form-field appearance="outline" [ngClass]="{ 'highlight-background': !shouldDisableFileds}"
                 class="w-100 custom-mat-form-field">
                 <mat-label>Select Source <b class="r-star">*</b></mat-label>
-                <mat-select formControlName="source" autocomplete="off" placeholder="Select"
-                  panelClass="custom-select-panel" [disableOptionCentering]="true">
-                  <div class="mat-select-search-wrapper d-flex">
-                    <input matInput [(ngModel)]="searchSourceText" [ngModelOptions]="{standalone: true}"
-                      placeholder="Search Source" class="mat-select-search">
-                    <mat-icon class="search-icon" *ngIf="!searchSourceText">search</mat-icon>
-                    <mat-icon class="search-icon" *ngIf="searchSourceText" type="button"
-                      (click)="clearSearch('sou')">close</mat-icon>
-                  </div>
-                  <mat-option *ngFor="let item of filteredSourceList()" [value]="item?.id">
+                <input matInput [formControl]="sourceDisplayControl" [matAutocomplete]="sourceAuto"
+                  placeholder="Select" autocomplete="off" [errorStateMatcher]="sourceErrorMatcher"
+                  (focus)="onSourceFocus()" (blur)="onSourceBlur()">
+                <mat-autocomplete #sourceAuto="matAutocomplete" [displayWith]="displaySourceFn"
+                  (optionSelected)="onSourceOptionSelected($event)">
+                  <mat-option *ngFor="let item of filteredSourcesAuto" [value]="item">
                     {{item?.source_name}}
                   </mat-option>
-                </mat-select>
+                </mat-autocomplete>
                 <mat-error *ngIf="f['source']?.invalid && f['source']?.touched || f['source']?.dirty">
                   <span *ngIf="f['source']?.errors?.['required']">Source is required</span>
                 </mat-error>
@@ -340,39 +332,20 @@
                         <mat-form-field appearance="outline" class="w-100 custom-mat-form-field"
                           [ngClass]="{ 'highlight-background': !shouldDisableFileds}">
                           <mat-label>Select Employee <b class="r-star">*</b></mat-label>
-                          <mat-select formControlName="employee_id" autocomplete="off" placeholder="Select"
-                            panelClass="custom-select-panel"
-                            (selectionChange)="onEmployeeChange($event,((currentPage - 1) * pageSize + i))"
-                            (openedChange)="onSelectOpened($event, ((currentPage - 1) * pageSize + i))">
-
-                            <!-- Search input field inside the panel -->
-                            <div class="mat-select-search-wrapper d-flex">
-                              <!-- <input matInput [(ngModel)]="searchEmployeeTextList[((currentPage - 1) * pageSize + i)]" [ngModelOptions]="{standalone: true}" placeholder="Search Employee" class="mat-select-search" (ngModelChange)="filterEmployeeList(((currentPage - 1) * pageSize + i))">
-                    <mat-icon class="search-icon" *ngIf="!searchEmployeeTextList[((currentPage - 1) * pageSize + i)]">search</mat-icon>
-                    <mat-icon class="search-icon" *ngIf="searchEmployeeTextList[((currentPage - 1) * pageSize + i)]" type="button" (click)="clearSearch('emp',((currentPage - 1) * pageSize + i))">close</mat-icon> -->
-                              <input matInput
-                                [(ngModel)]="dropdownState['emp_' + ((currentPage - 1) * pageSize + i)].search"
-                                [ngModelOptions]="{standalone: true}" placeholder="Search Employee"
-                                (ngModelChange)="onSearch('emp_' + ((currentPage - 1) * pageSize + i), $event)">
-                              <mat-icon class="search-icon"
-                                *ngIf="!dropdownState['emp_' + ((currentPage - 1) * pageSize + i)].search">search</mat-icon>
-                              <mat-icon class="search-icon"
-                                *ngIf="dropdownState['emp_' + ((currentPage - 1) * pageSize + i)].search"
-                                (click)="clearSearchDropD('emp_' + ((currentPage - 1) * pageSize + i))">close</mat-icon>
-                            </div>
-
-                            <!-- Filtered options -->
-                            <!-- <mat-option *ngFor="let emp of filteredEmployeeLists[((currentPage - 1) * pageSize + i)]" [value]="emp?.user_id">
-                    {{ emp?.user__full_name }}
-                  </mat-option> -->
-                            <mat-option hidden disabled></mat-option>
-                            <mat-option
-                              *ngFor="let empOpt of getOptionsWithSelectedOnTop('emp_' + ((currentPage - 1) * pageSize + i))"
-                              [value]="empOpt.user_id">
-                              {{ empOpt.user__full_name }}
+                          <input matInput
+                            [formControl]="employeeDisplayControls[(currentPage - 1) * pageSize + i]"
+                            [matAutocomplete]="empAuto" placeholder="Select" autocomplete="off"
+                            #empInput
+                            (input)="onEmployeeInputChange(empInput.value, (currentPage - 1) * pageSize + i)"
+                            (focus)="onEmployeeFocus((currentPage - 1) * pageSize + i)"
+                            (blur)="onEmployeeBlur((currentPage - 1) * pageSize + i)">
+                          <mat-autocomplete #empAuto="matAutocomplete" [displayWith]="displayEmployeeFn"
+                            (optionSelected)="onEmployeeAutoSelected($event, (currentPage - 1) * pageSize + i)">
+                            <mat-option *ngFor="let empOpt of filteredEmployeeLists[(currentPage - 1) * pageSize + i]"
+                              [value]="empOpt">
+                              {{ empOpt?.user__full_name }}
                             </mat-option>
-
-                          </mat-select>
+                          </mat-autocomplete>
                         </mat-form-field>
                         <div class="px-2"
                           *ngIf="emp?.get('employee_id')?.invalid && emp?.get('employee_id')?.touched || emp?.get('employee_id')?.dirty">

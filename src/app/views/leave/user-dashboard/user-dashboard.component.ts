@@ -1,4 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit, AfterViewInit, ViewChild } from '@angular/core';
+import { FormControl } from '@angular/forms';
+import { Subject } from 'rxjs';
+import { MAT_AUTOCOMPLETE_SCROLL_STRATEGY, MatAutocomplete } from '@angular/material/autocomplete';
+import { Overlay } from '@angular/cdk/overlay';
+import { ErrorStateMatcher } from '@angular/material/core';
+import { MatAutocompleteService } from '../../../service/mat-autocomplete.service';
 import { ApiserviceService } from '../../../service/apiservice.service';
 import { CommonServiceService } from '../../../service/common-service.service';
 import { SubModuleService } from '../../../service/sub-module.service';
@@ -7,9 +13,24 @@ import { environment } from '../../../../environments/environment';
 @Component({
   selector: 'app-user-dashboard',
   templateUrl: './user-dashboard.component.html',
-  styleUrls: ['./user-dashboard.component.scss']
+  styleUrls: ['./user-dashboard.component.scss'],
+  providers: [
+    {
+      provide: MAT_AUTOCOMPLETE_SCROLL_STRATEGY,
+      useFactory: (overlay: Overlay) => () => overlay.scrollStrategies.close(),
+      deps: [Overlay]
+    }
+  ]
 })
-export class UserDashboardComponent implements OnInit {
+export class UserDashboardComponent implements OnInit, OnDestroy, AfterViewInit {
+  @ViewChild('employeeAutoRef') employeeAutoRef!: MatAutocomplete;
+
+  // ── Autocomplete infrastructure ──
+  private destroy$ = new Subject<void>();
+  employeeDisplayControl = new FormControl('');
+  displayEmployeeFn!: (item: any) => string;
+  employeeErrorMatcher!: ErrorStateMatcher;
+  // ──────────────────────────────────
 
   all_employees_under_manager: any = [];
   selectedItems: any = [];
@@ -29,14 +50,16 @@ export class UserDashboardComponent implements OnInit {
   userGender: any= '';
   upcomingPendingLeaves:any =[]
   constructor(private common_service: CommonServiceService, private accessControlService: SubModuleService,
-    private apiService: ApiserviceService,) {
-    this.common_service.setTitle(this.BreadCrumbsTitle)
+    private apiService: ApiserviceService, private autoSvc: MatAutocompleteService, private cdr: ChangeDetectorRef) {
+    this.common_service.setTitle(this.BreadCrumbsTitle);
+    this.displayEmployeeFn = this.autoSvc.createDisplayFn('user__full_name');
   }
 
   ngOnInit(): void {
     this.user_id = sessionStorage.getItem('user_id');
     this.userRole = sessionStorage.getItem('user_role_name');
     this.common_service.setTitle(this.BreadCrumbsTitle);
+    this.setupAutocomplete();
     this.getModuleAccess();
     // this.getEmployeeLeaves();
     this.employeeGender(this.user_id)
@@ -75,11 +98,11 @@ export class UserDashboardComponent implements OnInit {
       }
     )
   }
-   public onEmployeeChange(event: any) {
-    this.updateSelectedItems('employee', event.value);
-    this.employeeGender(event.value)
+   public onEmployeeChange(userId: any) {
+    this.updateSelectedItems('employee', userId);
+    this.employeeGender(userId)
     // this.getEmployeeLeaves();
-    this.getPendingLeaves(event.value)
+    this.getPendingLeaves(userId)
   }
 
  
@@ -126,7 +149,7 @@ export class UserDashboardComponent implements OnInit {
 
   pageSizeDropdown = 50;
 
-  dropdownState = {
+  dropdownState:any = {
     employee: {
       page: 1,
       list: [],
@@ -137,7 +160,7 @@ export class UserDashboardComponent implements OnInit {
     }
   };
 
-  dropdownEndpoints = {
+  dropdownEndpoints:any = {
     employee: environment.user,
   };
 
@@ -282,6 +305,66 @@ export class UserDashboardComponent implements OnInit {
 
   commonOnchangeFun(event, key) {
     this.updateSelectedItems(key, event.value);
+  }
+
+  // ══════════════ Autocomplete lifecycle & helpers ══════════════
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  ngAfterViewInit(): void {
+    this.autoSvc.setupScrollListener(
+      this.employeeAutoRef,
+      this.dropdownState.employee,
+      () => this.fetchData('employee', true),
+      this.destroy$
+    );
+  }
+
+  private setupAutocomplete(): void {
+    this.employeeErrorMatcher = this.autoSvc.createErrorMatcher(
+      () => null
+    );
+
+    // Paginated: Employee
+    this.autoSvc.setupPaginatedSearch(this.employeeDisplayControl, (value: string) => {
+      if (!value) {
+        this.selectedItemsMap['employee'] = [];
+      } else {
+        this.selectedItemsMap['employee'] = [];
+      }
+      this.onSearch('employee', value);
+    }, this.destroy$);
+  }
+
+  onEmployeeOptionSelected(event: any): void {
+    const item = event.option.value;
+    this.employeeDisplayControl.setValue(item, { emitEvent: false });
+    this.updateSelectedItems('employee', [item.user_id]);
+    this.onEmployeeChange(item.user_id);
+  }
+
+  onEmployeeFocus(): void {
+    this.autoSvc.onFocus(
+      this.dropdownState.employee,
+      this.selectedItemsMap['employee'] || [],
+      () => this.fetchData('employee', false)
+    );
+  }
+
+  onEmployeeBlur(): void {
+    setTimeout(() => {
+      const displayVal = this.employeeDisplayControl.value;
+      if (!displayVal || (typeof displayVal === 'string' && !displayVal.trim())) {
+        this.employeeDisplayControl.setValue('');
+        this.selectedItemsMap['employee'] = [];
+        // Reset to current user's data
+        this.employeeGender(this.user_id);
+        this.getPendingLeaves(this.user_id);
+      }
+    }, 150);
   }
 
 }

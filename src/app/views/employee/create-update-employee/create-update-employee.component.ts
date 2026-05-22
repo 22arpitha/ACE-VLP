@@ -1,8 +1,9 @@
-import { Component, HostListener, OnInit, ViewChild } from '@angular/core';
+import { Component, HostListener, OnInit, OnDestroy, ViewChild } from '@angular/core';
+import { Overlay } from '@angular/cdk/overlay';
 import { ActivatedRoute, Router } from '@angular/router';
-import { FormBuilder, FormGroup, FormGroupDirective, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, FormGroupDirective, Validators } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { Observable } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { SubModuleService } from '../../../service/sub-module.service';
 import { FormErrorScrollUtilityService } from '../../../service/form-error-scroll-utility-service.service';
 import { CanComponentDeactivate } from '../../../auth-guard/can-deactivate.guard';
@@ -13,13 +14,23 @@ import { environment } from '../../../../environments/environment';
 import { GenericDeleteComponent } from '../../../generic-components/generic-delete/generic-delete.component';
 import { DatePipe } from '@angular/common';
 import { MatDialog } from '@angular/material/dialog';
-import{JobsOfAccountantComponent} from '../jobs-of-accountant/jobs-of-accountant.component'
+import { JobsOfAccountantComponent } from '../jobs-of-accountant/jobs-of-accountant.component';
+import { MAT_AUTOCOMPLETE_SCROLL_STRATEGY } from '@angular/material/autocomplete';
+import { ErrorStateMatcher } from '@angular/material/core';
+import { MatAutocompleteService } from '../../../service/mat-autocomplete.service';
 @Component({
   selector: 'app-create-update-employee',
   templateUrl: './create-update-employee.component.html',
-  styleUrls: ['./create-update-employee.component.scss']
+  styleUrls: ['./create-update-employee.component.scss'],
+  providers: [
+    {
+      provide: MAT_AUTOCOMPLETE_SCROLL_STRATEGY,
+      useFactory: (overlay: Overlay) => () => overlay.scrollStrategies.close(),
+      deps: [Overlay]
+    }
+  ]
 })
-export class CreateUpdateEmployeeComponent implements CanComponentDeactivate, OnInit {
+export class CreateUpdateEmployeeComponent implements CanComponentDeactivate, OnInit, OnDestroy {
   @ViewChild(FormGroupDirective) formGroupDirective!: FormGroupDirective;
   BreadCrumbsTitle: any = 'Employee';
   employeeFormGroup!: FormGroup;
@@ -42,13 +53,42 @@ export class CreateUpdateEmployeeComponent implements CanComponentDeactivate, On
   genders =[{name:'Male',value:'1',value_check:'male'},{name:'Female',value:'2',value_check:'female'},{name:'Others',value:'3',value_check:'others'}]
   getGenderValue:any;
   leaveTypeEnabled:boolean =false;
+
+  // ── Autocomplete infrastructure ──
+  private destroy$ = new Subject<void>();
+  roleDisplayControl = new FormControl('');
+  designationDisplayControl = new FormControl('');
+  departmentDisplayControl = new FormControl('');
+  reportingManagerDisplayControl = new FormControl('');
+  displayRoleFn!: (item: any) => string;
+  displayDesignationFn!: (item: any) => string;
+  displayDepartmentFn!: (item: any) => string;
+  displayReportingManagerFn!: (item: any) => string;
+  roleErrorMatcher!: ErrorStateMatcher;
+  designationErrorMatcher!: ErrorStateMatcher;
+  departmentErrorMatcher!: ErrorStateMatcher;
+  filteredRolesAuto: any[] = [];
+  filteredDesignationsAuto: any[] = [];
+  filteredDepartmentsAuto: any[] = [];
+  filteredManagersAuto: any[] = [];
+  // ──────────────────────────────────
   constructor(private fb: FormBuilder, private activeRoute: ActivatedRoute,
     private common_service: CommonServiceService, private router: Router,
     private apiService: ApiserviceService, private modalService: NgbModal,
     private accessControlService: SubModuleService, private datePipe: DatePipe, private dialog: MatDialog,
-    private formErrorScrollService: FormErrorScrollUtilityService) {
+    private formErrorScrollService: FormErrorScrollUtilityService,
+    private autoSvc: MatAutocompleteService) {
     this.user_id = sessionStorage.getItem('user_id');
     this.userRole = sessionStorage.getItem('user_role_name');
+    this.displayRoleFn = this.autoSvc.createDisplayFn('designation_name');
+    this.displayDesignationFn = this.autoSvc.createDisplayFn('sub_designation_name');
+    this.displayDepartmentFn = this.autoSvc.createDisplayFn('department_name');
+    this.displayReportingManagerFn = (item: any): string => {
+      if (!item) return '';
+      if (typeof item === 'string') return item;
+      if (item.user__full_name) return item.user__full_name;
+      return (item.first_name || '') + (item.last_name ? ' ' + item.last_name : '');
+    };
     if (this.activeRoute.snapshot.paramMap.get('id')) {
       this.employee_id = this.activeRoute.snapshot.paramMap.get('id');
       this.common_service.setTitle('Update ' + this.BreadCrumbsTitle);
@@ -69,6 +109,7 @@ export class CreateUpdateEmployeeComponent implements CanComponentDeactivate, On
   ngOnInit(): void {
     this.getModuleAccess();
     this.intialForm();
+    this.setupAutocomplete();
     this.employeeFormGroup?.valueChanges?.subscribe(() => {
       const currentFormValue = this.employeeFormGroup?.getRawValue();
       const isInvalid = this.employeeFormGroup?.touched && this.employeeFormGroup?.invalid;
@@ -79,11 +120,13 @@ export class CreateUpdateEmployeeComponent implements CanComponentDeactivate, On
     });
   }
   ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
     this.formErrorScrollService.resetHasUnsavedValue();
   }
 
   shouldDisableFields!: boolean;
-  isEnabledEdit: boolean;
+  isEnabledEdit!: boolean;
   getModuleAccess() {
     this.accessControlService.getAccessForActiveUrl(this.user_id).subscribe(
       (res: any) => {
@@ -150,6 +193,7 @@ export class CreateUpdateEmployeeComponent implements CanComponentDeactivate, On
     this.allUserRoleList = [];
     this.apiService.getData(`${environment.live_url}/${environment.settings_roles}/`).subscribe((respData: any) => {
       this.allUserRoleList = respData;
+      this.filteredRolesAuto = [...respData];
     }, (error => {
       this.apiService.showError(error?.error?.detail)
     }));
@@ -160,17 +204,10 @@ export class CreateUpdateEmployeeComponent implements CanComponentDeactivate, On
   }
 
   // Get Role Based Designation
-  public getUserRoleBasedDesignation(event: any) {
-    const role_id = event.value;
+  public getUserRoleBasedDesignation(roleId: any) {
     this.employeeFormGroup?.get('sub_designation')?.reset();
-    this.getDesignationList(role_id);
-    const temp = this.allUserRoleList.find((data: any) => data.id === event.value);
-    // if (temp?.designation_name === 'Manager') {
-    //   this.getDirectData()
-    // } else {
-    //   this.reportingManagerId = this.reportingManagerId.filter((data: any) => data.user__full_name != 'Vinayak Hegde')
-    //   // console.log(this.reportingManagerId)
-    // }
+    this.designationDisplayControl.setValue('');
+    this.getDesignationList(roleId);
   }
 
   getDirectData() {
@@ -186,8 +223,10 @@ export class CreateUpdateEmployeeComponent implements CanComponentDeactivate, On
   }
   private getDesignationList(role_id: any) {
     this.allDesignation = [];
+    this.filteredDesignationsAuto = [];
     this.apiService.getData(`${environment.live_url}/${environment.settings_designation}/?designation_id=${role_id}`).subscribe((respData: any) => {
       this.allDesignation = respData;
+      this.filteredDesignationsAuto = [...respData];
     }, (error => {
       this.apiService.showError(error?.error?.detail)
     }));
@@ -196,6 +235,7 @@ export class CreateUpdateEmployeeComponent implements CanComponentDeactivate, On
     this.allDepartment = [];
     this.apiService.getData(`${environment.live_url}/${environment.settings_department}/`).subscribe((respData: any) => {
       this.allDepartment = respData;
+      this.filteredDepartmentsAuto = [...respData];
     }, (error => {
       this.apiService.showError(error?.error?.detail)
     }));
@@ -208,6 +248,7 @@ export class CreateUpdateEmployeeComponent implements CanComponentDeactivate, On
     this.apiService.getData(`${environment.live_url}/${environment.employee}/?is_active=True&employee=True&designation=manager`).subscribe((respData: any) => {
       if (respData && respData.length >= 1) {
         this.reportingManagerId = respData;
+        this.filteredManagersAuto = [...respData];
       } else {
         this.adminData();
       }
@@ -236,6 +277,20 @@ export class CreateUpdateEmployeeComponent implements CanComponentDeactivate, On
         gender: respData?.user__gender,
         is_active: respData?.is_active,
       });
+      // Patch autocomplete display controls for edit mode
+      setTimeout(() => {
+        const roleObj = this.allUserRoleList.find((r: any) => r.id === respData?.designation_id);
+        if (roleObj) this.roleDisplayControl.setValue(roleObj, { emitEvent: false });
+
+        const desObj = this.allDesignation.find((d: any) => d.id === respData?.sub_designation_id);
+        if (desObj) this.designationDisplayControl.setValue(desObj, { emitEvent: false });
+
+        const deptObj = this.allDepartment.find((d: any) => d.id === respData?.department_id);
+        if (deptObj) this.departmentDisplayControl.setValue(deptObj, { emitEvent: false });
+
+        const mgrObj = this.reportingManagerId.find((m: any) => m.user_id === respData?.reporting_manager_id);
+        if (mgrObj) this.reportingManagerDisplayControl.setValue(mgrObj, { emitEvent: false });
+      }, 500);
       if(respData?.maternity_and_paternity_details.length>0){
         this.leaveTypeEnabled = respData?.maternity_and_paternity_details[0]?.is_enabled;
       }
@@ -332,13 +387,12 @@ export class CreateUpdateEmployeeComponent implements CanComponentDeactivate, On
   adminData() {
     this.apiService.getProfileDetails(`?role_id=${1}`).subscribe(
       (res: any) => {
-        // console.log('admin',res);
         let data :any= [];
-        // data.push({ 'first_name': res.first_name, 'id': res.id });
         res.forEach((element: any) => {
           data.push({ 'first_name': element?.first_name, 'last_name': element?.last_name || '', 'user_id': element.id });
         });
         this.reportingManagerId = data;
+        this.filteredManagersAuto = [...data];
       },
       (error: any) => {
         console.log('admin data error', error)
@@ -494,10 +548,9 @@ export class CreateUpdateEmployeeComponent implements CanComponentDeactivate, On
   };
 
   selectedJobsIds:any = []
-  changeReportingManager(event:any){
-    // console.log(event.value,this.managerOfAccountant);
-  let role_name = this.allUserRoleList.find((item:any)=>item.id===this.employeeFormGroup.get('designation')?.value)
-    if(this.isEditItem && role_name.designation_name==='Accountant' && this.managerOfAccountant!=event.value){
+  changeReportingManager(managerId: any){
+    let role_name = this.allUserRoleList.find((item:any)=>item.id===this.employeeFormGroup.get('designation')?.value)
+    if(this.isEditItem && role_name.designation_name==='Accountant' && this.managerOfAccountant!=managerId){
        const dialogRef =this.dialog.open(JobsOfAccountantComponent, {
         data: { employeeId:this.employee_id},
        panelClass: 'leave-or-compoff-form-dialog',
@@ -506,8 +559,6 @@ export class CreateUpdateEmployeeComponent implements CanComponentDeactivate, On
       dialogRef.afterClosed().subscribe((result:any)=>{
       if(result){
         this.selectedJobsIds = result;
-        // console.log('Jobs received from dialog:', this.selectedJobsIds);
-        // this.transferJobsApi()
       }
     });
     }
@@ -547,5 +598,203 @@ export class CreateUpdateEmployeeComponent implements CanComponentDeactivate, On
         }, (error: any) => {
           this.apiService.showError(error?.error?.detail);
         });
+  }
+
+  // ══════════════════════════════════════════════════════════════
+  // Autocomplete setup and handlers
+  // ══════════════════════════════════════════════════════════════
+
+  private setupAutocomplete(): void {
+    this.roleErrorMatcher = this.autoSvc.createErrorMatcher(
+      () => this.employeeFormGroup?.get('designation') as FormControl
+    );
+    this.designationErrorMatcher = this.autoSvc.createErrorMatcher(
+      () => this.employeeFormGroup?.get('sub_designation') as FormControl
+    );
+    this.departmentErrorMatcher = this.autoSvc.createErrorMatcher(
+      () => this.employeeFormGroup?.get('department_id') as FormControl
+    );
+
+    // Role (non-paginated)
+    this.autoSvc.setupLocalFilter(
+      this.roleDisplayControl,
+      () => this.allUserRoleList,
+      (results) => { this.filteredRolesAuto = results; },
+      'designation_name',
+      this.destroy$
+    );
+
+    // Designation (non-paginated)
+    this.autoSvc.setupLocalFilter(
+      this.designationDisplayControl,
+      () => this.allDesignation,
+      (results) => { this.filteredDesignationsAuto = results; },
+      'sub_designation_name',
+      this.destroy$
+    );
+
+    // Department (non-paginated)
+    this.autoSvc.setupLocalFilter(
+      this.departmentDisplayControl,
+      () => this.allDepartment,
+      (results) => { this.filteredDepartmentsAuto = results; },
+      'department_name',
+      this.destroy$
+    );
+
+    // Reporting Manager (non-paginated)
+    this.autoSvc.setupLocalFilter(
+      this.reportingManagerDisplayControl,
+      () => this.reportingManagerId,
+      (results) => { this.filteredManagersAuto = results; },
+      ['user__full_name', 'first_name'],
+      this.destroy$
+    );
+  }
+
+  // ─── Role ───
+  onRoleOptionSelected(event: any): void {
+    const item = event.option.value;
+    this.employeeFormGroup.get('designation')?.setValue(item.id);
+    this.employeeFormGroup.get('designation')?.markAsDirty();
+    this.roleDisplayControl.setValue(item, { emitEvent: false });
+    this.getUserRoleBasedDesignation(item.id);
+  }
+
+  onRoleFocus(): void {
+    const ctrl = this.employeeFormGroup.get('designation');
+    if (ctrl?.value) {
+      const selectedItem = this.allUserRoleList.find((r: any) => r.id === ctrl.value);
+      if (selectedItem) {
+        this.filteredRolesAuto = [selectedItem];
+        return;
+      }
+    }
+    this.filteredRolesAuto = [...this.allUserRoleList];
+  }
+
+  onRoleBlur(): void {
+    setTimeout(() => {
+      const ctrl = this.employeeFormGroup.get('designation');
+      const displayVal = this.roleDisplayControl.value;
+      if (!displayVal || (typeof displayVal === 'string' && !displayVal.trim())) {
+        ctrl?.setValue('');
+        this.roleDisplayControl.setValue('');
+        this.filteredRolesAuto = [...this.allUserRoleList];
+      } else if (ctrl?.value) {
+        const selectedItem = this.allUserRoleList.find((r: any) => r.id === ctrl.value);
+        if (selectedItem) this.roleDisplayControl.setValue(selectedItem, { emitEvent: false });
+      }
+      ctrl?.markAsTouched();
+    }, 150);
+  }
+
+  // ─── Designation ───
+  onDesignationOptionSelected(event: any): void {
+    const item = event.option.value;
+    this.employeeFormGroup.get('sub_designation')?.setValue(item.id);
+    this.employeeFormGroup.get('sub_designation')?.markAsDirty();
+    this.designationDisplayControl.setValue(item, { emitEvent: false });
+  }
+
+  onDesignationFocus(): void {
+    const ctrl = this.employeeFormGroup.get('sub_designation');
+    if (ctrl?.value) {
+      const selectedItem = this.allDesignation.find((d: any) => d.id === ctrl.value);
+      if (selectedItem) {
+        this.filteredDesignationsAuto = [selectedItem];
+        return;
+      }
+    }
+    this.filteredDesignationsAuto = [...this.allDesignation];
+  }
+
+  onDesignationBlur(): void {
+    setTimeout(() => {
+      const ctrl = this.employeeFormGroup.get('sub_designation');
+      const displayVal = this.designationDisplayControl.value;
+      if (!displayVal || (typeof displayVal === 'string' && !displayVal.trim())) {
+        ctrl?.setValue('');
+        this.designationDisplayControl.setValue('');
+        this.filteredDesignationsAuto = [...this.allDesignation];
+      } else if (ctrl?.value) {
+        const selectedItem = this.allDesignation.find((d: any) => d.id === ctrl.value);
+        if (selectedItem) this.designationDisplayControl.setValue(selectedItem, { emitEvent: false });
+      }
+      ctrl?.markAsTouched();
+    }, 150);
+  }
+
+  // ─── Department ───
+  onDepartmentOptionSelected(event: any): void {
+    const item = event.option.value;
+    this.employeeFormGroup.get('department_id')?.setValue(item.id);
+    this.employeeFormGroup.get('department_id')?.markAsDirty();
+    this.departmentDisplayControl.setValue(item, { emitEvent: false });
+  }
+
+  onDepartmentFocus(): void {
+    const ctrl = this.employeeFormGroup.get('department_id');
+    if (ctrl?.value) {
+      const selectedItem = this.allDepartment.find((d: any) => d.id === ctrl.value);
+      if (selectedItem) {
+        this.filteredDepartmentsAuto = [selectedItem];
+        return;
+      }
+    }
+    this.filteredDepartmentsAuto = [...this.allDepartment];
+  }
+
+  onDepartmentBlur(): void {
+    setTimeout(() => {
+      const ctrl = this.employeeFormGroup.get('department_id');
+      const displayVal = this.departmentDisplayControl.value;
+      if (!displayVal || (typeof displayVal === 'string' && !displayVal.trim())) {
+        ctrl?.setValue('');
+        this.departmentDisplayControl.setValue('');
+        this.filteredDepartmentsAuto = [...this.allDepartment];
+      } else if (ctrl?.value) {
+        const selectedItem = this.allDepartment.find((d: any) => d.id === ctrl.value);
+        if (selectedItem) this.departmentDisplayControl.setValue(selectedItem, { emitEvent: false });
+      }
+      ctrl?.markAsTouched();
+    }, 150);
+  }
+
+  // ─── Reporting Manager ───
+  onReportingManagerOptionSelected(event: any): void {
+    const item = event.option.value;
+    this.employeeFormGroup.get('reporting_manager_id')?.setValue(item.user_id);
+    this.employeeFormGroup.get('reporting_manager_id')?.markAsDirty();
+    this.reportingManagerDisplayControl.setValue(item, { emitEvent: false });
+    this.changeReportingManager(item.user_id);
+  }
+
+  onReportingManagerFocus(): void {
+    const ctrl = this.employeeFormGroup.get('reporting_manager_id');
+    if (ctrl?.value) {
+      const selectedItem = this.reportingManagerId.find((m: any) => m.user_id === ctrl.value);
+      if (selectedItem) {
+        this.filteredManagersAuto = [selectedItem];
+        return;
+      }
+    }
+    this.filteredManagersAuto = [...this.reportingManagerId];
+  }
+
+  onReportingManagerBlur(): void {
+    setTimeout(() => {
+      const ctrl = this.employeeFormGroup.get('reporting_manager_id');
+      const displayVal = this.reportingManagerDisplayControl.value;
+      if (!displayVal || (typeof displayVal === 'string' && !displayVal.trim())) {
+        ctrl?.setValue('');
+        this.reportingManagerDisplayControl.setValue('');
+        this.filteredManagersAuto = [...this.reportingManagerId];
+      } else if (ctrl?.value) {
+        const selectedItem = this.reportingManagerId.find((m: any) => m.user_id === ctrl.value);
+        if (selectedItem) this.reportingManagerDisplayControl.setValue(selectedItem, { emitEvent: false });
+      }
+      ctrl?.markAsTouched();
+    }, 150);
   }
 }

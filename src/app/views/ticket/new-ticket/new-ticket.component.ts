@@ -1,31 +1,49 @@
-import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewInit, ViewChild } from '@angular/core';
+import { Overlay } from '@angular/cdk/overlay';
 import { Router } from '@angular/router';
-import { FormBuilder, FormGroup, FormGroupDirective, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, FormGroupDirective, Validators } from '@angular/forms';
 import { Observable, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { TicketService } from 'src/app/service/ticket.service';
-import { CommonServiceService } from 'src/app/service/common-service.service';
-import { ApiserviceService } from 'src/app/service/apiservice.service';
-import { environment } from 'src/environments/environment';
-import { FormErrorScrollUtilityService } from 'src/app/service/form-error-scroll-utility-service.service';
-import { GenericRedirectionConfirmationComponent } from 'src/app/generic-components/generic-redirection-confirmation/generic-redirection-confirmation.component';
+import { TicketService } from '../../../service/ticket.service';
+import { CommonServiceService } from '../../../service/common-service.service';
+import { ApiserviceService } from '../../../service/apiservice.service';
+import { environment } from '../../../../environments/environment';
+import { FormErrorScrollUtilityService } from '../../../service/form-error-scroll-utility-service.service';
+import { GenericRedirectionConfirmationComponent } from '../../../generic-components/generic-redirection-confirmation/generic-redirection-confirmation.component';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { MAT_AUTOCOMPLETE_SCROLL_STRATEGY, MatAutocomplete } from '@angular/material/autocomplete';
+import { ErrorStateMatcher } from '@angular/material/core';
+import { MatAutocompleteService } from '../../../service/mat-autocomplete.service';
 
 
 @Component({
   selector: 'app-new-ticket',
   templateUrl: './new-ticket.component.html',
   styleUrls: ['./new-ticket.component.scss'],
-  standalone:false
+  standalone:false,
+  providers: [
+    {
+      provide: MAT_AUTOCOMPLETE_SCROLL_STRATEGY,
+      useFactory: (overlay: Overlay) => () => overlay.scrollStrategies.close(),
+      deps: [Overlay]
+    }
+  ]
 })
-export class NewTicketComponent implements OnInit, OnDestroy {
+export class NewTicketComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild(FormGroupDirective) formGroupDirective!: FormGroupDirective;
+  @ViewChild('employeeAutoRef') employeeAutoRef!: MatAutocomplete;
   ticketForm!: FormGroup;
   submitting = false;
   uploadingFile = false;
   selectedFile?: File;
   selectedFileName?: string;
   private destroy$ = new Subject<void>();
+
+  // ── Autocomplete infrastructure ──
+  employeeDisplayControl = new FormControl('');
+  displayEmployeeFn!: (item: any) => string;
+  employeeErrorMatcher!: ErrorStateMatcher;
+  // ──────────────────────────────────
 
   // Current user info (should come from auth service)
   currentUserId = '';
@@ -42,18 +60,30 @@ export class NewTicketComponent implements OnInit, OnDestroy {
     private apiService: ApiserviceService,
     private commonService: CommonServiceService,
     private modalService: NgbModal,
-    private formErrorScrollService: FormErrorScrollUtilityService
+    private formErrorScrollService: FormErrorScrollUtilityService,
+    private autoSvc: MatAutocompleteService
   ) {
     this.commonService.setTitle(this.BreadCrumbsTitle)
     this.currentUserId = sessionStorage.getItem('user_id');
     this.userRole = sessionStorage.getItem('user_role_name');
+    this.displayEmployeeFn = this.autoSvc.createDisplayFn('user__full_name');
   }
 
   ngOnInit(): void {
     this.initializeForm();
+    this.setupAutocomplete();
     if (this.isEmployee) {
       this.getUrserData(this.currentUserId);
     }
+  }
+
+  ngAfterViewInit(): void {
+    this.autoSvc.setupScrollListener(
+      this.employeeAutoRef,
+      this.dropdownState.employee,
+      () => this.fetchData('employee', true),
+      this.destroy$
+    );
   }
 
   ngOnDestroy(): void {
@@ -78,7 +108,7 @@ export class NewTicketComponent implements OnInit, OnDestroy {
     this.apiService.getData(`${environment.live_url}/${environment.user}/${id}/`).subscribe((res: any) => {
       if (res) {
         this.designation = res.designation__designation_name || '';
-        const data = {
+        const data:any = {
           user_id: res.user_id,
           user__full_name: res.user__first_name + ' ' + res.user__last_name
         };
@@ -92,8 +122,11 @@ export class NewTicketComponent implements OnInit, OnDestroy {
           this.selectedItemsMap['employee'] = [data];
           this.dropdownState.employee.list = [data];
           this.ticketForm.get('employee_id')?.setValue(res.user_id);
+          this.employeeDisplayControl.setValue(data, { emitEvent: false });
+          this.employeeDisplayControl.disable();
         } else {
           this.ticketForm.get('employee_id')?.enable();
+          this.employeeDisplayControl.enable();
         }
 
         // if (this.isEmployeeDisabled) {
@@ -231,6 +264,7 @@ export class NewTicketComponent implements OnInit, OnDestroy {
     this.formErrorScrollService.resetHasUnsavedValue();
     this.selectedFile = undefined;
     this.selectedFileName = undefined;
+    this.employeeDisplayControl.setValue('', { emitEvent: false });
     const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
     if (fileInput) fileInput.value = '';
     if (this.isEmployee) {
@@ -310,8 +344,8 @@ export class NewTicketComponent implements OnInit, OnDestroy {
 
   // dropdown 
 
-  public onEmployeeChange(event: any) {
-    this.updateSelectedItems('employee', event.value);
+  public onEmployeeChange(employeeId: any) {
+    this.updateSelectedItems('employee', employeeId);
   }
 
   pageSizeDropdown = 50;
@@ -331,34 +365,9 @@ export class NewTicketComponent implements OnInit, OnDestroy {
     employee: environment.user,
   };
 
-  private scrollListeners: { [key: string]: (event: Event) => void } = {};
-
-
   selectedItemsMap: { [key: string]: any[] } = {
     employee: [],
   };
-
-
-  removeScrollListener(key: string) {
-    const panel = document.querySelector('.cdk-overlay-container .mat-select-panel');
-    if (panel && this.scrollListeners[key]) {
-      panel.removeEventListener('scroll', this.scrollListeners[key]);
-      delete this.scrollListeners[key];
-    }
-  }
-
-  onScroll(key: string, event: Event) {
-    const target = event.target as HTMLElement;
-    const state = this.dropdownState[key];
-    const scrollTop = target.scrollTop;
-    const scrollHeight = target.scrollHeight;
-    const clientHeight = target.clientHeight;
-    const atBottom = scrollHeight - scrollTop <= clientHeight + 5;
-    if (atBottom && !state.loading && state.page < state.totalPages) {
-      state.page++;
-      this.fetchData(key, true);
-    }
-  }
 
   // Search input for pagination
   onSearch(key: string, text: string) {
@@ -436,40 +445,54 @@ export class NewTicketComponent implements OnInit, OnDestroy {
     this.selectedItemsMap[key] = selectedItems;
   }
 
-  // Return options with selected items on top, no duplicates
-  getOptionsWithSelectedOnTop(key: string) {
-    const state = this.dropdownState[key];
-    const selectedItems = this.selectedItemsMap[key] || [];
-    const unselectedItems = state.list.filter((item: any) =>
-      !selectedItems.some((sel: any) => sel.user_id === item.user_id)
+
+  // ── Autocomplete methods ──
+
+  private setupAutocomplete(): void {
+    this.employeeErrorMatcher = this.autoSvc.createErrorMatcher(
+      () => this.ticketForm?.get('employee_id') as FormControl
     );
-    return [...selectedItems, ...unselectedItems];
-  }
 
-
-  // Called when the dropdown opens or closes
-  onDropdownOpened(isOpen: boolean, key: string) {
-    if (isOpen) {
-      if (!this.dropdownState[key].initialized || this.dropdownState[key].list.length === 0) {
-        this.dropdownState[key].page = 1;
-        this.fetchData(key, false);
-        this.dropdownState[key].initialized = true;
+    this.autoSvc.setupPaginatedSearch(this.employeeDisplayControl, (value: string) => {
+      if (!value) {
+        this.ticketForm.get('employee_id')?.setValue('');
+        this.ticketForm.get('employee_id')?.markAsDirty();
+        this.selectedItemsMap['employee'] = [];
+      } else {
+        this.selectedItemsMap['employee'] = [];
+        this.ticketForm.get('employee_id')?.setValue('');
       }
-      setTimeout(() => {
-        this.removeScrollListener(key);
-
-        const panel = document.querySelector('.cdk-overlay-container .mat-select-panel');
-        if (panel) {
-          this.scrollListeners[key] = (event: Event) => this.onScroll(key, event);
-          panel.addEventListener('scroll', this.scrollListeners[key]);
-        }
-      }, 0);
-    } else {
-      this.removeScrollListener(key);
-    }
+      this.onSearch('employee', value);
+    }, this.destroy$);
   }
 
+  onEmployeeOptionSelected(event: any): void {
+    const item = event.option.value;
+    this.ticketForm.get('employee_id')?.setValue(item.user_id);
+    this.ticketForm.get('employee_id')?.markAsDirty();
+    this.employeeDisplayControl.setValue(item, { emitEvent: false });
+    this.updateSelectedItems('employee', [item.user_id]);
+    this.onEmployeeChange([item.user_id]);
+  }
 
+  onEmployeeFocus(): void {
+    this.autoSvc.onFocus(
+      this.dropdownState.employee,
+      this.selectedItemsMap['employee'] || [],
+      () => this.fetchData('employee', false)
+    );
+  }
 
+  onEmployeeBlur(): void {
+    setTimeout(() => {
+      const ctrl = this.ticketForm.get('employee_id');
+      const displayVal = this.employeeDisplayControl.value;
+      if (!displayVal || (typeof displayVal === 'string' && !displayVal.trim())) {
+        ctrl?.setValue('');
+        this.employeeDisplayControl.setValue('');
+      }
+      ctrl?.markAsTouched();
+    }, 150);
+  }
 
 }

@@ -1,5 +1,5 @@
 
-.settings-table-bg {
+.user-dashboard .settings-table-bg {
   // max-height: 90vh !important;
 }
 .mat-select-search-wrapper {
@@ -23,4 +23,33 @@
 ::ng-deep .mat-form-field-appearance-outline .mat-form-field-prefix,
 ::ng-deep .mat-form-field-appearance-outline .mat-form-field-suffix {
     top: .25em !important;
+}
+
+// Upcoming Cards
+.upcoming-card {
+  background: #fff;
+  border: 1px solid #e3e3e3;
+  overflow: hidden;
+}
+
+.upcoming-card-body {
+  max-height: 250px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.upcoming-table {
+  thead th {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    font-size: 12px;
+    height: 36px;
+    padding: 5px 10px !important;
+  }
+  tbody td {
+    font-size: 12px;
+    padding: 8px 10px !important;
+    vertical-align: middle;
+  }
 }

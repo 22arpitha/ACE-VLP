@@ -1,4 +1,4 @@
-<div class="container-wrapper settings-main-content px-0">
+<div class="container-wrapper settings-main-content px-0" cdkScrollable>
     <section class="settings-table-bg px-3">
         <div class="row mx-0 my-1 px-0 py-2">
             <div class="col-12 mt-2 col-sm-12 col-md-6 col-lg-3 search-div px-0">
@@ -10,19 +10,18 @@
 <div class="col-12 col-sm-12 col-md-6 col-lg-3 no-padding pl-5 pr-0 client-dropdown">
     <mat-form-field appearance="outline" class="w-100 custom-mat-form-field no-padding-bottom">
         <mat-label>Client <b class="r-star">*</b></mat-label>
-        <mat-select #clientSelect [(ngModel)]="selectedClientId" [ngModelOptions]="{standalone: true}" autocomplete="off"
-                placeholder="Client" panelClass="custom-select-panel" (openedChange)="onDropdownOpened($event, 'client')"
-                [disableOptionCentering]="true" (selectionChange)="onClientChange($event)" >
-                <div class="mat-select-search-wrapper d-flex">
-                  <input matInput [(ngModel)]="dropdownState.client.search" (ngModelChange)="onSearch('client', $event)" autofocus [ngModelOptions]="{standalone: true}" placeholder="Search Client" class="mat-select-search">
-                  <mat-icon class="search-icon" *ngIf="!dropdownState.client.search">search</mat-icon>
-                  <mat-icon class="search-icon" *ngIf="dropdownState.client.search" type="button" (click)="clearSearchDropD('client')">close</mat-icon>
-                </div>
-                <mat-option hidden disabled></mat-option>
-                <mat-option *ngFor="let item of getOptionsWithSelectedOnTop('client')" [value]="item?.id">
-                    {{item?.client_name}}
-                </mat-option>
-        </mat-select>
+        <input matInput [formControl]="clientDisplayControl"
+            [matAutocomplete]="clientAutoRef"
+            placeholder="Search Client"
+            (focus)="onClientFocus()"
+            (blur)="onClientBlur()">
+        <mat-autocomplete #clientAutoRef="matAutocomplete"
+            [displayWith]="displayClientFn"
+            (optionSelected)="onClientOptionSelected($event)">
+            <mat-option *ngFor="let item of dropdownState.client.list" [value]="item">
+                {{ item?.client_name }}
+            </mat-option>
+        </mat-autocomplete>
         <button mat-icon-button *ngIf="selectedClientId" matSuffix (click)="clearSelection($event)" tabindex="-1">
           <mat-icon>close</mat-icon>
         </button>

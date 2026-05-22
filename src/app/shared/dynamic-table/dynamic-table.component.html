@@ -40,30 +40,41 @@
       <div class="col-sm-12 col-md-6 col-lg-3 leave-type" *ngIf="config.leaveTypes">
         <mat-form-field appearance="outline" class="w-100 custom-mat-form-field">
               <mat-label>Leave Type<b class="r-star"></b></mat-label>
-              <mat-select autocomplete="off" placeholder="Select leave" panelClass="custom-select-panel"
-                [(ngModel)]="selectedLeaveType" (selectionChange)="selectLeaveTypesFunc($event)">
-                <mat-option *ngFor="let item of leaveTypes; let i = index" [value]="item.id">{{
-                  item.leave_type_name }}</mat-option>
-              </mat-select>
+              <input #leaveInput matInput [formControl]="leaveTypeDisplayControl"
+                  [matAutocomplete]="leaveTypeAuto"
+                  placeholder="Search Leave Type"
+                  (focus)="onLeaveTypeFocus()"
+                  (blur)="onLeaveTypeBlur()">
+              <mat-autocomplete #leaveTypeAuto="matAutocomplete"
+                  [displayWith]="displayLeaveTypeFn"
+                  (optionSelected)="onLeaveTypeOptionSelected($event)">
+                  <mat-option *ngFor="let item of filteredLeaveTypesAuto" [value]="item"
+                      (mousedown)="$event.preventDefault()">
+                      {{item.leave_type_name}}
+                  </mat-option>
+              </mat-autocomplete>
           </mat-form-field>
       </div>
       <div class="col-sm-12 col-md-6 col-lg-3 leave-type" *ngIf="config.employeeDropdown">
        <mat-form-field appearance="outline"  class="w-100 custom-mat-form-field">
           <mat-label>Employee <b class="r-star">*</b></mat-label>
-          <mat-select autocomplete="off" 
-                  placeholder="select" panelClass="custom-select-panel" [(ngModel)]="selectedEmployeeId"
-                  (selectionChange)="onEmployeeChange($event)" (openedChange)="onDropdownOpened($event, 'employee')" >
-                  <!-- [(ngModel)]="searchemployeeText" -->
-                  <div class="mat-select-search-wrapper d-flex">
-                  <input matInput  [(ngModel)]="dropdownState.employee.search" (ngModelChange)="onSearchDropdown('employee', $event)"  autofocus [ngModelOptions]="{standalone: true}" placeholder="Search employee" class="mat-select-search">
-                  <mat-icon class="search-icon" *ngIf="!dropdownState.employee.search">search</mat-icon>
-                  <mat-icon class="search-icon"  *ngIf="dropdownState.employee.search" type="button" (click)="clearSearchDropD('employee')">close</mat-icon>
-                  </div>
-                    <mat-option hidden disabled></mat-option>
-                  <mat-option *ngFor="let item of getOptionsWithSelectedOnTop('employee')" [value]="item?.user_id">
-                      {{item?.user__full_name}}
-                  </mat-option>
-          </mat-select>
+          <input class="mt-2" #empInput matInput [formControl]="employeeDisplayControl"
+              [matAutocomplete]="employeeAuto"
+              placeholder="Search Employee"
+              (focus)="onEmployeeFocus()"
+              (blur)="onEmployeeBlur()">
+          <mat-autocomplete #employeeAuto="matAutocomplete"
+              [displayWith]="displayEmployeeFn"
+              (optionSelected)="onEmployeeOptionSelected($event)">
+              <mat-option *ngFor="let item of dropdownState.employee.list" [value]="item"
+                  (mousedown)="$event.preventDefault()">
+                  {{item?.user__full_name}}
+              </mat-option>
+              <mat-option *ngIf="dropdownState.employee.loading" disabled>Loading...</mat-option>
+              <mat-option *ngIf="!dropdownState.employee.loading && !dropdownState.employee.list.length" disabled>
+                  No results found
+              </mat-option>
+          </mat-autocomplete>
        </mat-form-field>
       </div>
 

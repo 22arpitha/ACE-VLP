@@ -1,7 +1,8 @@
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { FormGroup, FormBuilder, Validators, FormGroupDirective } from '@angular/forms';
+import { Overlay } from '@angular/cdk/overlay';
+import { FormGroup, FormBuilder, FormControl, Validators, FormGroupDirective } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { Observable } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { CanComponentDeactivate } from '../../../auth-guard/can-deactivate.guard';
 import { SubModuleService } from '../../../../app/service/sub-module.service';
 import { FormErrorScrollUtilityService } from '../../../service/form-error-scroll-utility-service.service';
@@ -10,11 +11,21 @@ import { ApiserviceService } from '../../../service/apiservice.service';
 import { GenericDeleteComponent } from '../../../generic-components/generic-delete/generic-delete.component';
 import { GenericEditComponent } from '../../../generic-components/generic-edit/generic-edit.component';
 import { environment } from '../../../../environments/environment';
+import { MAT_AUTOCOMPLETE_SCROLL_STRATEGY } from '@angular/material/autocomplete';
+import { ErrorStateMatcher } from '@angular/material/core';
+import { MatAutocompleteService } from '../../../service/mat-autocomplete.service';
 
 @Component({
   selector: 'app-designations',
   templateUrl: './designations.component.html',
-  styleUrls: ['./designations.component.scss']
+  styleUrls: ['./designations.component.scss'],
+  providers: [
+    {
+      provide: MAT_AUTOCOMPLETE_SCROLL_STRATEGY,
+      useFactory: (overlay: Overlay) => () => overlay.scrollStrategies.close(),
+      deps: [Overlay]
+    }
+  ]
 })
 
 export class DesignationsComponent implements CanComponentDeactivate, OnInit,OnDestroy {
@@ -45,11 +56,21 @@ export class DesignationsComponent implements CanComponentDeactivate, OnInit,OnD
   userRole: any;
   initialFormValue:any;
 
+  // ── Autocomplete infrastructure ──
+  private destroy$ = new Subject<void>();
+  roleDisplayControl = new FormControl('');
+  displayRoleFn!: (item: any) => string;
+  roleErrorMatcher!: ErrorStateMatcher;
+  filteredRolesAuto: any[] = [];
+  // ──────────────────────────────────
+
   constructor(private fb: FormBuilder, private modalService: NgbModal,private accessControlService:SubModuleService,
     private common_service: CommonServiceService, private apiService: ApiserviceService,
-    private formUtilityService:FormErrorScrollUtilityService
+    private formUtilityService:FormErrorScrollUtilityService,
+    private autoSvc: MatAutocompleteService
   ) {
     this.common_service.setTitle(this.BreadCrumbsTitle);
+    this.displayRoleFn = this.autoSvc.createDisplayFn('designation_name');
   }
 
   ngOnInit(): void {
@@ -57,6 +78,7 @@ export class DesignationsComponent implements CanComponentDeactivate, OnInit,OnD
     this.userRole = sessionStorage.getItem('user_role_name');
     this.getModuleAccess();
     this.initializeForm();
+    this.setupAutocomplete();
     this.designationForm?.valueChanges?.subscribe(() => {
       const currentFormValue = this.designationForm?.getRawValue();
       const isInvalid = this.designationForm?.touched && this.designationForm?.invalid;
@@ -66,7 +88,9 @@ export class DesignationsComponent implements CanComponentDeactivate, OnInit,OnD
     });
   }
   ngOnDestroy(): void {
-this.formUtilityService.resetHasUnsavedValue();
+    this.destroy$.next();
+    this.destroy$.complete();
+    this.formUtilityService.resetHasUnsavedValue();
   }
 
   getModuleAccess(){
@@ -153,6 +177,8 @@ this.formUtilityService.resetHasUnsavedValue();
     this.formUtilityService.resetHasUnsavedValue();
     this.isEditItem = false;
     this.term='';
+    this.roleDisplayControl.setValue('');
+    this.filteredRolesAuto = [...this.RolesList];
     this.initialFormValue = this.designationForm?.getRawValue();
   }
 
@@ -239,6 +265,9 @@ this.formUtilityService.resetHasUnsavedValue();
     this.apiService.getData(`${environment.live_url}/${environment.settings_designation}/${id}/`).subscribe((respData: any) => {
       this.designationForm.patchValue({ 'sub_designation_name': respData?.sub_designation_name });
       this.designationForm.patchValue({ 'designation': respData?.designation });
+      // Patch display control for autocomplete
+      const roleObj = this.RolesList.find((r: any) => r.id === respData?.designation);
+      if (roleObj) this.roleDisplayControl.setValue(roleObj, { emitEvent: false });
     }, (error: any) => {
       this.apiService.showError(error?.error?.detail);
     })
@@ -258,6 +287,7 @@ this.formUtilityService.resetHasUnsavedValue();
     this.RolesList = [];
     this.apiService.getData(`${environment.live_url}/${environment.settings_roles}/`).subscribe((respData: any) => {
       this.RolesList = respData;
+      this.filteredRolesAuto = [...respData];
     }, (error: any) => {
       this.apiService.showError(error.detail);
     })
@@ -276,5 +306,57 @@ this.formUtilityService.resetHasUnsavedValue();
     return this.formUtilityService.isFormDirtyOrInvalidCheck(isFormChanged,this.designationForm);
   }
 
+  // ══════════════════════════════════════════════════════════════
+  // Autocomplete setup and handlers
+  // ══════════════════════════════════════════════════════════════
+
+  private setupAutocomplete(): void {
+    this.roleErrorMatcher = this.autoSvc.createErrorMatcher(
+      () => this.designationForm?.get('designation') as FormControl
+    );
+
+    this.autoSvc.setupLocalFilter(
+      this.roleDisplayControl,
+      () => this.RolesList,
+      (results) => { this.filteredRolesAuto = results; },
+      'designation_name',
+      this.destroy$
+    );
+  }
+
+  onRoleOptionSelected(event: any): void {
+    const item = event.option.value;
+    this.designationForm.get('designation')?.setValue(item.id);
+    this.designationForm.get('designation')?.markAsDirty();
+    this.roleDisplayControl.setValue(item, { emitEvent: false });
+  }
+
+  onRoleFocus(): void {
+    const ctrl = this.designationForm.get('designation');
+    if (ctrl?.value) {
+      const selectedItem = this.RolesList.find((r: any) => r.id === ctrl.value);
+      if (selectedItem) {
+        this.filteredRolesAuto = [selectedItem];
+        return;
+      }
+    }
+    this.filteredRolesAuto = [...this.RolesList];
+  }
+
+  onRoleBlur(): void {
+    setTimeout(() => {
+      const ctrl = this.designationForm.get('designation');
+      const displayVal = this.roleDisplayControl.value;
+      if (!displayVal || (typeof displayVal === 'string' && !displayVal.trim())) {
+        ctrl?.setValue(null);
+        this.roleDisplayControl.setValue('');
+        this.filteredRolesAuto = [...this.RolesList];
+      } else if (ctrl?.value) {
+        const selectedItem = this.RolesList.find((r: any) => r.id === ctrl.value);
+        if (selectedItem) this.roleDisplayControl.setValue(selectedItem, { emitEvent: false });
+      }
+      ctrl?.markAsTouched();
+    }, 150);
+  }
 }
 

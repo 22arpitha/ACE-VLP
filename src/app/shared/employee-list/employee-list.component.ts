@@ -1,5 +1,9 @@
-import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
+import { FormControl } from '@angular/forms';
+import { MatAutocomplete, MatAutocompleteTrigger } from '@angular/material/autocomplete';
+import { Subject } from 'rxjs';
 import { ApiserviceService } from '../../service/apiservice.service';
+import { MatAutocompleteService } from '../../service/mat-autocomplete.service';
 import { environment } from '../../../environments/environment';
 
 @Component({
@@ -7,7 +11,7 @@ import { environment } from '../../../environments/environment';
   templateUrl: './employee-list.component.html',
   styleUrls: ['./employee-list.component.scss']
 })
-export class EmployeeListComponent implements OnInit, OnChanges {
+export class EmployeeListComponent implements OnInit, OnChanges, OnDestroy, AfterViewInit {
   user_role_name: any;
   user_id: any;
   allEmployeeList: any = [];
@@ -16,9 +20,19 @@ export class EmployeeListComponent implements OnInit, OnChanges {
   @Input() resetFilterField: boolean = false;
   @Input() multiple: boolean = false;
   @Output() selectEmployee: EventEmitter<any> = new EventEmitter<any>();
-  constructor(private apiService: ApiserviceService) {
+
+  // ─── Autocomplete Properties (used when multiple === false) ────────────────────
+  private destroy$ = new Subject<void>();
+  employeeDisplayControl = new FormControl('');
+  displayEmployeeFn: (item: any) => string;
+  @ViewChild('employeeAuto') employeeAutoRef!: MatAutocomplete;
+  @ViewChild(MatAutocompleteTrigger) employeeTrigger!: MatAutocompleteTrigger;
+  private justSelected = false;
+
+  constructor(private apiService: ApiserviceService, private autoSvc: MatAutocompleteService) {
     this.user_role_name = sessionStorage.getItem('user_role_name');
     this.user_id = sessionStorage.getItem('user_id');
+    this.displayEmployeeFn = this.autoSvc.createDisplayFn('user__full_name');
   }
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['resetFilterField'] && changes['resetFilterField'].currentValue ===true) {
@@ -26,23 +40,68 @@ export class EmployeeListComponent implements OnInit, OnChanges {
       if (this.user_role_name === 'Accountant') {
         this.selectedEmployeeVal = this.allEmployeeList[0]?.user_id;
         this.selectEmployee.emit(this.allEmployeeList[0]?.user_id);
+        if (!this.multiple) {
+          this.employeeDisplayControl.setValue(this.allEmployeeList[0] || '');
+        }
       } else {
         this.selectedEmployeeVal = null;
         this.searchEmployeeText='';
         this.selectEmployee.emit(null);
+        if (!this.multiple) {
+          this.employeeDisplayControl.setValue('');
+        }
       }
       this.selectedItemsMap['employee'] = [];
-      this.clearSearchDropD('employee');
+      if (this.multiple) {
+        this.clearSearchDropD('employee');
+      } else {
+        this.dropdownState.employee.page = 1;
+        this.dropdownState.employee.search = '';
+        this.dropdownState.employee.list = [];
+        this.dropdownState.employee.initialized = false;
+      }
     }
   }
 
   ngOnInit(): void {
-    // this.getAllEmployeeList();
-    if(this.user_role_name==='Accountant'){
-      this.onDropdownOpened(true,'employee')
-    } else if(this.user_role_name==='Manager'){
-      this.getManagerData()
+    // Setup autocomplete search subscription only when not multi-select
+    if (!this.multiple) {
+      this.autoSvc.setupPaginatedSearch(
+        this.employeeDisplayControl,
+        (value: string) => this.onSearch('employee', value),
+        this.destroy$
+      );
+
+      if (this.user_role_name === 'Accountant') {
+        this.employeeDisplayControl.disable();
+        this.onEmployeeFocus();
+      } else if (this.user_role_name === 'Manager') {
+        this.getManagerData();
+      }
+    } else {
+      // Original multi-select flow
+      if (this.user_role_name === 'Accountant') {
+        this.onDropdownOpened(true, 'employee');
+      } else if (this.user_role_name === 'Manager') {
+        this.getManagerData();
+      }
     }
+  }
+
+  ngAfterViewInit(): void {
+    if (!this.multiple && this.employeeAutoRef) {
+      this.autoSvc.setupScrollListener(
+        this.employeeAutoRef,
+        this.dropdownState.employee,
+        () => this.fetchData('employee', true),
+        this.destroy$
+      );
+    }
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   // public getAllEmployeeList() {
@@ -96,6 +155,58 @@ export class EmployeeListComponent implements OnInit, OnChanges {
      this.selectedEmployeeVal = event.value;
     this.selectEmployee.emit(event.value);
     this.updateSelectedItems('employee', Array.isArray(event.value) ? event.value : event.value)
+  }
+
+  // ─── Autocomplete Handlers (used when multiple === false) ──────────────────────
+
+  onEmployeeOptionSelected(event: any): void {
+    this.justSelected = true;
+    const selected = event.option.value;
+    if (selected) {
+      this.selectedEmployeeVal = selected.user_id;
+      this.selectEmployee.emit(selected.user_id);
+      this.selectedItemsMap['employee'] = [selected];
+      this.dropdownState.employee.list = [selected];
+    }
+  }
+
+  onEmployeeFocus(): void {
+    this.justSelected = false;
+    const selectedItems = this.selectedItemsMap['employee'] || [];
+    this.autoSvc.onFocus(
+      this.dropdownState.employee,
+      selectedItems,
+      () => this.fetchData('employee', false)
+    );
+  }
+
+  onEmployeeBlur(): void {
+    setTimeout(() => {
+      if (this.justSelected) {
+        this.justSelected = false;
+        return;
+      }
+      const currentValue = this.employeeDisplayControl.value;
+      // If user cleared the input, treat as deselection
+      if (currentValue === '' || currentValue === null) {
+        this.selectedEmployeeVal = null;
+        this.selectEmployee.emit(null);
+        this.selectedItemsMap['employee'] = [];
+        this.employeeDisplayControl.setValue('');
+        this.dropdownState.employee.list = [];
+        this.dropdownState.employee.initialized = false;
+        return;
+      }
+      const selectedItems = this.selectedItemsMap['employee'] || [];
+      if (selectedItems.length > 0) {
+        this.employeeDisplayControl.setValue(selectedItems[0]);
+        this.dropdownState.employee.list = [...selectedItems];
+      } else {
+        this.employeeDisplayControl.setValue('');
+        this.dropdownState.employee.list = [];
+        this.dropdownState.employee.initialized = false;
+      }
+    }, 200);
   }
 
   // new code
@@ -155,6 +266,9 @@ onSearch(key: string, text: string) {
   state.search = text
   state.page = 1;
   state.list = [];
+  if (!text) {
+    this.selectedItemsMap[key] = [];
+  }
   this.fetchData(key, false);
 }
 
@@ -199,17 +313,21 @@ fetchData(key: string, append = false) {
       if(this.user_role_name ==='Accountant'){
          this.selectedEmployeeVal = res.results[0].user_id;
         this.selectEmployee.emit(res.results[0].user_id);
+        if (!this.multiple) {
+          this.selectedItemsMap['employee'] = [res.results[0]];
+          this.employeeDisplayControl.setValue(res.results[0]);
+        }
       } else if (this.user_role_name === 'Manager' && this.managerData?.length) {
           let newManagerItems = this.managerData;
           if (state.search) {
             const searchLower = state.search.toLowerCase();
             newManagerItems = newManagerItems.filter(
-              mgr =>
+              (mgr: any) =>
                 mgr.user__full_name?.toLowerCase().includes(searchLower)
             );
           }
           newManagerItems = newManagerItems.filter(
-            mgr => !state.list.some(item => item.user_id === mgr.user_id)
+            (mgr: any) => !state.list.some((item: any) => item.user_id === mgr.user_id)
           );
           if (newManagerItems.length) {
             state.list = [...state.list, ...newManagerItems];
@@ -235,7 +353,7 @@ updateSelectedItems(key: string, selectedIds: any[]) {
   // Add new selected items from currently loaded list if missing
   selectedIds.forEach(user_id => {
     if (!selectedItems.some(item => item.user_id === user_id)) {
-      const found = state.list.find(item => item.user_id === user_id);
+      const found = state.list.find((item: any) => item.user_id === user_id);
       if (found) {
         selectedItems.push(found);
       } else {
@@ -249,14 +367,14 @@ updateSelectedItems(key: string, selectedIds: any[]) {
 getOptionsWithSelectedOnTop(key: string) {
   const state = this.dropdownState[key];
   const selectedItems = this.selectedItemsMap[key] || [];
-  const unselectedItems = state.list.filter(item =>
-    !selectedItems.some(sel => sel.user_id === item.user_id)
+  const unselectedItems = state.list.filter((item: any) =>
+    !selectedItems.some((sel: any) => sel.user_id === item.user_id)
   );
 
   return [...selectedItems, ...unselectedItems];
 }
 
-onDropdownOpened(isOpen, key: string) {
+onDropdownOpened(isOpen: any, key: string) {
   if (isOpen) {
     // ⬇⬇ ADD THIS BLOCK ⬇⬇
     if (!this.dropdownState[key].initialized || this.dropdownState[key].list.length === 0) {
@@ -277,7 +395,7 @@ onDropdownOpened(isOpen, key: string) {
   }
 }
 
-commonOnchangeFun(event, key){
+commonOnchangeFun(event: any, key: any){
   this.updateSelectedItems(key, event.value);
 }
 
@@ -286,9 +404,12 @@ patchDropdownValuesForEdit(data: any) {
     const idVal = data?.[idKey];
     const nameVal = data?.[nameKey];
     if (idVal != null) {
-      const obj: any = { id: idVal, [nameKey]: nameVal ?? '' };
+      const obj: any = { user_id: idVal, [nameKey]: nameVal ?? '' };
       this.selectedItemsMap[key] = [obj];
-      // this.timesheetFormGroup.get(key)?.patchValue(idVal);
+      if (!this.multiple) {
+        this.employeeDisplayControl.setValue(obj);
+        this.selectedEmployeeVal = idVal;
+      }
       if (!this.dropdownState[key]) {
         this.dropdownState[key] = {
           page: 1,
@@ -300,7 +421,7 @@ patchDropdownValuesForEdit(data: any) {
         };
       }
       this.dropdownState[key].list = this.dropdownState[key].list.filter(
-        (it: any) => it?.id !== idVal
+        (it: any) => it?.user_id !== idVal
       );
       this.dropdownState[key].list.unshift(obj);
     }

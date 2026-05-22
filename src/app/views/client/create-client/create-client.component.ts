@@ -3,7 +3,7 @@ import { Validators, FormBuilder, FormGroup, FormGroupDirective, AbstractControl
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatPaginator } from '@angular/material/paginator';
 import { DatePipe } from '@angular/common';
-import { Observable, of } from 'rxjs';
+import { Observable, of, Subject } from 'rxjs';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Editor, Toolbar } from 'ngx-editor';
 import { ApiserviceService } from '../../../service/apiservice.service';
@@ -14,12 +14,23 @@ import { FormErrorScrollUtilityService } from '../../../service/form-error-scrol
 import { SubModuleService } from '../../../service/sub-module.service';
 import { urlToFile } from '../../../shared/fileUtils.utils';
 import { CanComponentDeactivate } from '../../../auth-guard/can-deactivate.guard';
-import { GenericRedirectionConfirmationComponent } from 'src/app/generic-components/generic-redirection-confirmation/generic-redirection-confirmation.component';
+import { GenericRedirectionConfirmationComponent } from '../../../generic-components/generic-redirection-confirmation/generic-redirection-confirmation.component';
+import { MatAutocompleteService } from '../../../service/mat-autocomplete.service';
+import { ErrorStateMatcher } from '@angular/material/core';
+import { MAT_AUTOCOMPLETE_SCROLL_STRATEGY } from '@angular/material/autocomplete';
+import { Overlay } from '@angular/cdk/overlay';
 
 @Component({
   selector: 'app-create-client',
   templateUrl: './create-client.component.html',
   styleUrls: ['./create-client.component.scss'],
+   providers: [
+      {
+        provide: MAT_AUTOCOMPLETE_SCROLL_STRATEGY,
+        useFactory: (overlay: Overlay) => () => overlay.scrollStrategies.close(),
+        deps: [Overlay]
+      }
+    ],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CreateClientComponent implements CanComponentDeactivate, OnInit, OnDestroy {
@@ -71,12 +82,41 @@ export class CreateClientComponent implements CanComponentDeactivate, OnInit, On
   isEnabledEdit: boolean = false;
   shouldDisableFileds: boolean = false;
   employeeDetails = [];
+
+  // ── Autocomplete infrastructure ───────────────────────────────────────────
+  private destroy$ = new Subject<void>();
+
+  // Display FormControls for Country & Source autocomplete inputs
+  countryDisplayControl = new FormControl('');
+  sourceDisplayControl = new FormControl('');
+
+  // Per-row FormControls for employee autocomplete
+  employeeDisplayControls: FormControl[] = [];
+
+  // Filtered lists for local autocomplete dropdowns
+  filteredCountriesAuto: any[] = [];
+  filteredSourcesAuto: any[] = [];
+
+  // displayWith functions
+  displayCountryFn!: (item: any) => string;
+  displaySourceFn!: (item: any) => string;
+  displayEmployeeFn!: (item: any) => string;
+
+  // Error state matchers
+  countryErrorMatcher!: ErrorStateMatcher;
+  sourceErrorMatcher!: ErrorStateMatcher;
+  // ──────────────────────────────────────────────────────────────────────────
   constructor(private fb: FormBuilder, private activeRoute: ActivatedRoute, private accessControlService: SubModuleService,
     private common_service: CommonServiceService, private router: Router, private datepipe: DatePipe, private modalService: NgbModal, private cdr: ChangeDetectorRef,
-    private apiService: ApiserviceService, private formErrorScrollService: FormErrorScrollUtilityService) {
+    private apiService: ApiserviceService, private formErrorScrollService: FormErrorScrollUtilityService,
+    private autoSvc: MatAutocompleteService) {
     this.common_service.setTitle(this.BreadCrumbsTitle)
     this.user_id = sessionStorage.getItem('user_id');
     this.userRole = sessionStorage.getItem('user_role_name');
+    // Build displayWith functions
+    this.displayCountryFn = this.autoSvc.createDisplayFn('country_name');
+    this.displaySourceFn = this.autoSvc.createDisplayFn('source_name');
+    this.displayEmployeeFn = this.autoSvc.createDisplayFn('user__full_name');
     // this.getModuleAccess()
     if (this.activeRoute.snapshot.paramMap.get('id')) {
       this.common_service.setTitle('Update ' + this.BreadCrumbsTitle)
@@ -99,6 +139,8 @@ export class CreateClientComponent implements CanComponentDeactivate, OnInit, On
   ngOnInit(): void {
     this.editor = new Editor();
     this.intialForm();
+    this.setupErrorMatchers();
+    this.setupSearchSubscriptions();
     this.clientFormGroup?.valueChanges?.subscribe(() => {
       const currentFormValue = this.clientFormGroup?.getRawValue();
       const isInvalid = this.clientFormGroup.touched && this.clientFormGroup.invalid;
@@ -112,6 +154,8 @@ export class CreateClientComponent implements CanComponentDeactivate, OnInit, On
     // Destroy the editor to prevent memory leaks
     this.editor.destroy();
     this.formErrorScrollService.resetHasUnsavedValue();
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   
@@ -207,6 +251,8 @@ export class CreateClientComponent implements CanComponentDeactivate, OnInit, On
     this.allCountry = [];
     this.apiService.getData(`${environment.live_url}/${environment.settings_country}/`).subscribe((respData: any) => {
       this.allCountry = respData;
+      this.filteredCountriesAuto = [...respData];
+      this.trySetDisplayControlsFromFormValues();
     }, (error => {
       this.apiService.showError(error?.error?.detail)
     }));
@@ -215,6 +261,8 @@ export class CreateClientComponent implements CanComponentDeactivate, OnInit, On
   public getSourceList() {
     this.apiService.getData(`${environment.live_url}/${environment.settings_source}/`).subscribe((respData: any) => {
       this.allSource = respData;
+      this.filteredSourcesAuto = [...respData];
+      this.trySetDisplayControlsFromFormValues();
     }, (error => {
       this.apiService.showError(error?.error?.detail)
     }));
@@ -224,6 +272,7 @@ export class CreateClientComponent implements CanComponentDeactivate, OnInit, On
     this.allEmployeeList = [];
     this.apiService.getData(`${environment.live_url}/${environment.employee}/?is_active=True&employee=True`).subscribe((respData: any) => {
       this.allEmployeeList = respData;
+      this.refreshEmployeeDisplayControls();
     }, (error => {
       this.apiService.showError(error?.error?.detail)
     }));
@@ -310,6 +359,7 @@ export class CreateClientComponent implements CanComponentDeactivate, OnInit, On
         allow_sending_job_time_report_to_client: respData?.allow_sending_job_time_report_to_client,
         practice_notes: respData?.practice_notes,
       });
+      this.trySetDisplayControlsFromFormValues();
       this.clientFormGroup?.get('client_file')?.setErrors(null);
       if (respData?.client_file) {
         urlToFile(respData?.client_file, this.getFileName(respData?.client_file))
@@ -338,6 +388,10 @@ export class CreateClientComponent implements CanComponentDeactivate, OnInit, On
           });
           empDetailsArray.push(empForm);
           
+          // Set up display control for this row
+          const empObj = { user_id: employee, user__full_name: user__full_name };
+          this.employeeDisplayControls[index] = new FormControl(empObj);
+          this.filteredEmployeeLists[index] = [empObj];
           
           // emp dropdown code, selected stays on top)
           this.initEmployeeDropdownState(index);
@@ -747,6 +801,7 @@ onClientFileDropped(event: DragEvent) {
         // below is new code 
         this.initEmployeeDropdownState(newIndex);
         this.filteredEmployeeLists[newIndex] = [...this.allEmployeeList];
+        this.employeeDisplayControls[newIndex] = new FormControl('');
       }
     }
     else {
@@ -754,6 +809,7 @@ onClientFileDropped(event: DragEvent) {
       this.employeeFormArray.push(this.createEmployeeControl());
       // below is new code 
        this.initEmployeeDropdownState(0);
+       this.employeeDisplayControls[0] = new FormControl('');
     }
     const totalItems = this.employeeFormArray.length;
     const totalPages = Math.ceil(totalItems / this.pageSize);
@@ -790,6 +846,10 @@ onClientFileDropped(event: DragEvent) {
   removeEmployee(index: number) {
   if (this.employeeFormArray?.length > 1) {
     this.employeeFormArray.removeAt(index);
+
+    // Splice display controls and filtered lists
+    this.employeeDisplayControls.splice(index, 1);
+    this.filteredEmployeeLists.splice(index, 1);
 
     const newDropdownState: any = {};
     const newSelectedItemsMap: any = {};
@@ -1106,8 +1166,203 @@ getOptionsWithSelectedOnTop(key: string) {
   return [...selectedItems, ...unselectedItems];
 }
 
+  // ═ Autocomplete helper methods ═
 
+  private setupErrorMatchers(): void {
+    this.countryErrorMatcher = this.autoSvc.createErrorMatcher(
+      () => this.clientFormGroup?.get('country') as FormControl
+    );
+    this.sourceErrorMatcher = this.autoSvc.createErrorMatcher(
+      () => this.clientFormGroup?.get('source') as FormControl
+    );
+  }
 
+  private setupSearchSubscriptions(): void {
+    // Country — local filter
+    this.autoSvc.setupLocalFilter(
+      this.countryDisplayControl,
+      () => this.allCountry,
+      (filtered) => { this.filteredCountriesAuto = filtered; this.cdr.detectChanges(); },
+      ['country_name'],
+      this.destroy$,
+      200
+    );
 
-  
+    // Source — local filter
+    this.autoSvc.setupLocalFilter(
+      this.sourceDisplayControl,
+      () => this.allSource,
+      (filtered) => { this.filteredSourcesAuto = filtered; this.cdr.detectChanges(); },
+      ['source_name'],
+      this.destroy$,
+      200
+    );
+  }
+
+  /** Called when a Country option is selected from autocomplete */
+  onCountryOptionSelected(event: any): void {
+    const selected = event.option.value;
+    this.clientFormGroup.get('country')?.setValue(selected?.id);
+    this.clientFormGroup.get('country')?.markAsDirty();
+    this.countryDisplayControl.setValue(selected);
+    this.filteredCountriesAuto = [selected];
+  }
+
+  /** Called when a Source option is selected from autocomplete */
+  onSourceOptionSelected(event: any): void {
+    const selected = event.option.value;
+    this.clientFormGroup.get('source')?.setValue(selected?.id);
+    this.clientFormGroup.get('source')?.markAsDirty();
+    this.sourceDisplayControl.setValue(selected);
+    this.filteredSourcesAuto = [selected];
+  }
+
+  /** Focus handler for Country autocomplete — reset list if no selection */
+  onCountryFocus(): void {
+    const ctrl = this.clientFormGroup.get('country');
+    if (!ctrl?.value) {
+      this.filteredCountriesAuto = [...this.allCountry];
+    }
+  }
+
+  /** Focus handler for Source autocomplete — reset list if no selection */
+  onSourceFocus(): void {
+    const ctrl = this.clientFormGroup.get('source');
+    if (!ctrl?.value) {
+      this.filteredSourcesAuto = [...this.allSource];
+    }
+  }
+
+  /** Blur handler for Country autocomplete */
+  onCountryBlur(): void {
+    setTimeout(() => {
+      const ctrl = this.clientFormGroup.get('country');
+      const displayVal = this.countryDisplayControl.value;
+      if (!displayVal || (typeof displayVal === 'string' && !displayVal.trim())) {
+        ctrl?.setValue('');
+        this.countryDisplayControl.setValue('');
+        this.filteredCountriesAuto = [...this.allCountry];
+      } else if (ctrl?.value) {
+        const selectedItem = this.allCountry.find((c: any) => c.id === ctrl.value);
+        if (selectedItem) {
+          this.countryDisplayControl.setValue(selectedItem, { emitEvent: false });
+        }
+      }
+    }, 150);
+  }
+
+  /** Blur handler for Source autocomplete */
+  onSourceBlur(): void {
+    setTimeout(() => {
+      const ctrl = this.clientFormGroup.get('source');
+      const displayVal = this.sourceDisplayControl.value;
+      if (!displayVal || (typeof displayVal === 'string' && !displayVal.trim())) {
+        ctrl?.setValue('');
+        this.sourceDisplayControl.setValue('');
+        this.filteredSourcesAuto = [...this.allSource];
+      } else if (ctrl?.value) {
+        const selectedItem = this.allSource.find((s: any) => s.id === ctrl.value);
+        if (selectedItem) {
+          this.sourceDisplayControl.setValue(selectedItem, { emitEvent: false });
+        }
+      }
+    }, 150);
+  }
+
+  // ═══════ Per-row Employee autocomplete methods ═══════
+
+  onEmployeeInputChange(value: string, index: number): void {
+    const search = value?.trim()?.toLowerCase() || '';
+    this.filteredEmployeeLists[index] = search
+      ? this.allEmployeeList.filter((emp: any) =>
+          emp?.user__full_name?.toLowerCase().includes(search)
+        )
+      : [...this.allEmployeeList];
+  }
+
+  onEmployeeAutoSelected(event: any, index: number): void {
+    const selected = event.option.value;
+    const formArray = this.employeeFormArray.controls;
+
+    // Duplicate check
+    const isDuplicate = formArray.some((control: any, idx: number) => {
+      return idx !== index && control.get('employee_id')?.value === selected.user_id;
+    });
+
+    if (isDuplicate) {
+      this.employeeFormArray.at(index).get('employee_id')?.reset();
+      this.employeeFormArray.at(index).get('start_date')?.reset();
+      this.employeeFormArray.at(index).get('end_date')?.reset();
+      this.employeeDisplayControls[index]?.setValue('');
+      this.filteredEmployeeLists[index] = [...this.allEmployeeList];
+      return;
+    }
+
+    this.employeeFormArray.at(index).patchValue({ employee_id: selected.user_id });
+    this.employeeDisplayControls[index]?.setValue(selected);
+    this.filteredEmployeeLists[index] = [selected];
+  }
+
+  onEmployeeBlur(index: number): void {
+    setTimeout(() => {
+      const ctrl = this.employeeFormArray.at(index)?.get('employee_id');
+      if (!ctrl?.value) {
+        this.employeeDisplayControls[index]?.setValue('');
+      } else {
+        const emp = this.allEmployeeList.find((e: any) => e.user_id === ctrl.value);
+        if (emp) {
+          this.employeeDisplayControls[index]?.setValue(emp, { emitEvent: false });
+        }
+      }
+    }, 150);
+  }
+
+  onEmployeeFocus(index: number): void {
+    const ctrl = this.employeeFormArray.at(index)?.get('employee_id');
+    if (!ctrl?.value) {
+      this.filteredEmployeeLists[index] = [...this.allEmployeeList];
+    }
+  }
+
+  /** Ensure employeeDisplayControls array has enough entries and sync values */
+  private refreshEmployeeDisplayControls(): void {
+    const formArray = this.employeeFormArray;
+    while (this.employeeDisplayControls.length < formArray.length) {
+      this.employeeDisplayControls.push(new FormControl(''));
+    }
+    formArray.controls.forEach((group: any, idx: number) => {
+      const empId = group.get('employee_id')?.value;
+      if (empId) {
+        const emp = this.allEmployeeList.find((e: any) => e.user_id === empId);
+        if (emp) {
+          this.employeeDisplayControls[idx].setValue(emp, { emitEvent: false });
+          this.filteredEmployeeLists[idx] = [emp];
+        }
+      }
+      if (!this.filteredEmployeeLists[idx]) {
+        this.filteredEmployeeLists[idx] = [...this.allEmployeeList];
+      }
+    });
+  }
+
+  /** Set display controls for country/source when form values and lists are both available */
+  private trySetDisplayControlsFromFormValues(): void {
+    const countryId = this.clientFormGroup?.get('country')?.value;
+    if (countryId && this.allCountry.length) {
+      const c = this.allCountry.find((item: any) => item.id === countryId);
+      if (c) {
+        this.countryDisplayControl.setValue(c, { emitEvent: false });
+        this.filteredCountriesAuto = [c];
+      }
+    }
+    const sourceId = this.clientFormGroup?.get('source')?.value;
+    if (sourceId && this.allSource.length) {
+      const s = this.allSource.find((item: any) => item.id === sourceId);
+      if (s) {
+        this.sourceDisplayControl.setValue(s, { emitEvent: false });
+        this.filteredSourcesAuto = [s];
+      }
+    }
+  }
+
 }

@@ -1,5 +1,5 @@
   <div class="container-wrapper settings-main-content px-0">
-      <section class="settings-form-bg px-0">
+      <section class="settings-form-bg px-0" cdkScrollable>
         <div class="row mx-0 my-1 px-0" *ngIf="isEditItem">
           <div class="col-12 col-sm-12 col-md-12 col-lg-12 pl-0 pr-5 text-end">
             <button mat-raised-button class="proceedbtn mat-btn-s" [disabled]="editJobDetails" type="button" (click)="enableEdit()">Edit</button>
@@ -44,24 +44,32 @@
 <div class="col-12 col-sm-12 col-md-6 col-lg-3 my-1 no-padding pl-0 pr-5">
       <mat-form-field appearance="outline"  [ngClass]="{ 'highlight-background':!shouldDisableFields}" class="w-100 custom-mat-form-field">
           <mat-label>Client <b class="r-star">*</b></mat-label>
-          <mat-select  formControlName="client" autocomplete="off" 
-                  placeholder="Client" panelClass="custom-select-panel"
-                  (selectionChange)="onClientChange($event)" (openedChange)="onDropdownOpened($event, 'client')" >
-                  
-                  <div class="mat-select-search-wrapper d-flex">
-                    <input matInput  [(ngModel)]="dropdownState.client.search" (ngModelChange)="onSearch('client', $event)"  autofocus [ngModelOptions]="{standalone: true}" placeholder="Search Client" class="mat-select-search">
-                    <mat-icon class="search-icon" *ngIf="!dropdownState.client.search">search</mat-icon>
-                    <mat-icon class="search-icon"  *ngIf="dropdownState.client.search" type="button" (click)="clearSearchDropD('client')">close</mat-icon>
-                  </div>
-                  <mat-option *ngIf="allClientslist.length === 0" hidden disabled>
-                  </mat-option>
-                  <mat-option *ngFor="let item of getOptionsWithSelectedOnTop('client')" [value]="item?.id">
-                      {{item?.client_name}}
-                  </mat-option>
-          </mat-select>
-          <mat-error *ngIf="f['client']?.invalid && f['client']?.touched || f['client']?.dirty">
-              <span  *ngIf="f['client']?.errors?.['required']">Client is required</span>
-        </mat-error>
+          <input matInput
+                 [formControl]="clientDisplayControl"
+                 [matAutocomplete]="clientAuto"
+                 [errorStateMatcher]="clientErrorMatcher"
+                 [readonly]="!shouldDisableFields"
+                 placeholder="Search Client"
+                 autocomplete="off"
+                 (focus)="onAutocompleteInputFocus('client')"
+                 (blur)="onDisplayControlBlur('client')">
+          <mat-autocomplete #clientAuto="matAutocomplete"
+                            [displayWith]="displayClientFn"
+                            (optionSelected)="onClientOptionSelected($event)"
+                            panelClass="custom-select-panel">
+            <mat-option *ngFor="let item of dropdownState.client.list" [value]="item">
+              {{item?.client_name}}
+            </mat-option>
+            <mat-option *ngIf="dropdownState.client.loading" disabled class="loading-option">
+              Loading...
+            </mat-option>
+            <mat-option *ngIf="!dropdownState.client.loading && !dropdownState.client.list.length" disabled>
+              No results found
+            </mat-option>
+          </mat-autocomplete>
+          <mat-error *ngIf="f['client']?.invalid && (f['client']?.touched || f['client']?.dirty)">
+              <span *ngIf="f['client']?.errors?.['required']">Client is required</span>
+          </mat-error>
       </mat-form-field>
   
   </div>
@@ -116,24 +124,32 @@
   <div class="col-12 col-sm-12 col-md-6 col-lg-3 my-1 no-padding pl-0 pr-5">
     <mat-form-field appearance="outline"  [ngClass]="{ 'highlight-background': !shouldDisableFields}" class="w-100 custom-mat-form-field">
         <mat-label>End Client <b class="r-star">*</b></mat-label>
-        <mat-select formControlName="end_client" autocomplete="off"
-                placeholder="End Client" panelClass="custom-select-panel" 
-                (openedChange)="onDropdownOpened($event, 'end_client')" [disabled]="!jobFormGroup?.get('client')?.value"
-                [disableOptionCentering]="true" (selectionChange)="onEndClientChange($event)">
-                <div class="mat-select-search-wrapper d-flex">
-                  <input matInput  [(ngModel)]="dropdownState.end_client.search" (ngModelChange)="onSearch('end_client', $event)" autofocus [ngModelOptions]="{standalone: true}" placeholder="Search End Client" class="mat-select-search" >
-                  <mat-icon class="search-icon" *ngIf="!dropdownState.end_client.search">search</mat-icon>
-                  <mat-icon class="search-icon" *ngIf="dropdownState.end_client.search" type="button" (click)="clearSearchDropD('end_client')">close</mat-icon>
-                </div>
-                <mat-option *ngIf="endClientslists.length === 0" hidden disabled>
-                  </mat-option>
-                <mat-option *ngFor="let item of getOptionsWithSelectedOnTop('end_client')" [value]="item?.id">
-                    {{item?.client_name || item.end_client_name }}
-                </mat-option>
-        </mat-select>
-        <mat-error *ngIf="f['end_client']?.invalid && f['end_client']?.touched || f['end_client']?.dirty">
-            <span  *ngIf="f['end_client']?.errors?.['required']">End Client is required</span>
-      </mat-error>
+        <input matInput
+               [formControl]="endClientDisplayControl"
+               [matAutocomplete]="endClientAuto"
+               [errorStateMatcher]="endClientErrorMatcher"
+               [readonly]="!shouldDisableFields || !jobFormGroup?.get('client')?.value"
+               placeholder="Search End Client"
+               autocomplete="off"
+               (focus)="onAutocompleteInputFocus('end_client')"
+               (blur)="onDisplayControlBlur('end_client')">
+        <mat-autocomplete #endClientAuto="matAutocomplete"
+                          [displayWith]="displayEndClientFn"
+                          (optionSelected)="onEndClientOptionSelected($event)"
+                          panelClass="custom-select-panel">
+          <mat-option *ngFor="let item of dropdownState.end_client.list" [value]="item">
+            {{item?.client_name || item?.end_client_name}}
+          </mat-option>
+          <mat-option *ngIf="dropdownState.end_client.loading" disabled class="loading-option">
+            Loading...
+          </mat-option>
+          <mat-option *ngIf="!dropdownState.end_client.loading && !dropdownState.end_client.list.length" disabled>
+            No results found
+          </mat-option>
+        </mat-autocomplete>
+        <mat-error *ngIf="f['end_client']?.invalid && (f['end_client']?.touched || f['end_client']?.dirty)">
+            <span *ngIf="f['end_client']?.errors?.['required']">End Client is required</span>
+        </mat-error>
     </mat-form-field>
 
   </div> 
@@ -162,21 +178,26 @@
   <div class="col-12 col-sm-12 col-md-6 col-lg-3 my-1 no-padding pl-0 pr-5">
       <mat-form-field appearance="outline"  [ngClass]="{ 'highlight-background': !shouldDisableFields}" class="w-100 custom-mat-form-field">
           <mat-label>Service <b class="r-star">*</b></mat-label>
-          <mat-select formControlName="service" autocomplete="off"
-                  placeholder="Service" panelClass="custom-select-panel"
-                  [disableOptionCentering]="true" (selectionChange)="onServiceChange($event)">
-                  <div class="mat-select-search-wrapper d-flex">
-                    <input matInput [(ngModel)]="searchServicesText" autofocus [ngModelOptions]="{standalone: true}" placeholder="Search Service" class="mat-select-search">
-                    <mat-icon class="search-icon" *ngIf="!searchServicesText">search</mat-icon>
-                    <mat-icon class="search-icon" *ngIf="searchServicesText" type="button" (click)="clearSearch('service')">close</mat-icon>
-                  </div>
-                  <mat-option *ngFor="let item of filteredServiceList()" [value]="item?.id">
-                      {{item?.service_name}}
-                  </mat-option>
-          </mat-select>
-          <mat-error *ngIf="f['service']?.invalid && f['service']?.touched || f['service']?.dirty">
-              <span  *ngIf="f['service']?.errors?.['required']">Service is required</span>
-        </mat-error>
+          <input matInput
+                 [formControl]="serviceDisplayControl"
+                 [matAutocomplete]="serviceAuto"
+                 [errorStateMatcher]="serviceErrorMatcher"
+                 [readonly]="!shouldDisableFields"
+                 placeholder="Search Service"
+                 autocomplete="off"
+                 (blur)="onDisplayControlBlur('service')">
+          <mat-autocomplete #serviceAuto="matAutocomplete"
+                            [displayWith]="displayServiceFn"
+                            (optionSelected)="onServiceOptionSelected($event)"
+                            panelClass="custom-select-panel">
+            <mat-option *ngFor="let item of filteredServicesAuto" [value]="item">
+              {{item?.service_name}}
+            </mat-option>
+            <mat-option *ngIf="!filteredServicesAuto.length" disabled>No results found</mat-option>
+          </mat-autocomplete>
+          <mat-error *ngIf="f['service']?.invalid && (f['service']?.touched || f['service']?.dirty)">
+              <span *ngIf="f['service']?.errors?.['required']">Service is required</span>
+          </mat-error>
       </mat-form-field>
   
   </div> 
@@ -232,21 +253,26 @@
   <div class="col-12 col-sm-12 col-md-6 col-lg-3 my-1 no-padding pl-0 pr-5">
       <mat-form-field appearance="outline"  [ngClass]="{ 'highlight-background': !shouldDisableFields}" class="w-100 custom-mat-form-field">
           <mat-label>Periodicity <b class="r-star">*</b></mat-label>
-          <mat-select formControlName="periodicity" autocomplete="off"
-                  placeholder="Periodicity" panelClass="custom-select-panel"
-                  [disableOptionCentering]="true"  (selectionChange)="onPeroidicityChange($event)">
-                  <div class="mat-select-search-wrapper d-flex">
-                    <input matInput [(ngModel)]="searchPeroidicityText" autofocus [ngModelOptions]="{standalone: true}" placeholder="Search Periodicity" class="mat-select-search">
-                    <mat-icon class="search-icon" *ngIf="!searchPeroidicityText">search</mat-icon>
-                    <mat-icon class="search-icon" *ngIf="searchPeroidicityText" type="button" (click)="clearSearch('periodicity')">close</mat-icon>
-                  </div>
-                  <mat-option *ngFor="let item of filteredPeriodicityList()" [value]="item?.id">
-                      {{item?.periodicty_name}}
-                  </mat-option>
-          </mat-select>
-          <mat-error *ngIf="f['periodicity']?.invalid && f['periodicity']?.touched || f['periodicity']?.dirty">
-              <span  *ngIf="f['periodicity']?.errors?.['required']">Periodicity is required</span>
-        </mat-error>
+          <input matInput
+                 [formControl]="periodicityDisplayControl"
+                 [matAutocomplete]="periodicityAuto"
+                 [errorStateMatcher]="periodicityErrorMatcher"
+                 [readonly]="!shouldDisableFields"
+                 placeholder="Search Periodicity"
+                 autocomplete="off"
+                 (blur)="onDisplayControlBlur('periodicity')">
+          <mat-autocomplete #periodicityAuto="matAutocomplete"
+                            [displayWith]="displayPeriodicityFn"
+                            (optionSelected)="onPeriodicityOptionSelected($event)"
+                            panelClass="custom-select-panel">
+            <mat-option *ngFor="let item of filteredPeriodicitiesAuto" [value]="item">
+              {{item?.periodicty_name}}
+            </mat-option>
+            <mat-option *ngIf="!filteredPeriodicitiesAuto.length" disabled>No results found</mat-option>
+          </mat-autocomplete>
+          <mat-error *ngIf="f['periodicity']?.invalid && (f['periodicity']?.touched || f['periodicity']?.dirty)">
+              <span *ngIf="f['periodicity']?.errors?.['required']">Periodicity is required</span>
+          </mat-error>
       </mat-form-field>
   
   </div> 
@@ -349,23 +375,32 @@
   <div class="col-12 col-sm-12 col-md-6 col-lg-3 no-padding pl-0 pr-5">
       <mat-form-field appearance="outline"  [ngClass]="{ 'highlight-background': !shouldDisableFields}" class="w-100 custom-mat-form-field">
           <mat-label>Job Type <b class="r-star">*</b></mat-label>
-          <mat-select formControlName="job_type" autocomplete="off"
-                  placeholder="Job Type" panelClass="custom-select-panel" (selectionChange)="commonOnchangeFun($event, 'job_type')"
-                  [disableOptionCentering]="true" (openedChange)="onDropdownOpened($event, 'job_type')">
-                  <div class="mat-select-search-wrapper d-flex">
-                    <input matInput [(ngModel)]="dropdownState.job_type.search" (ngModelChange)="onSearch('job_type', $event)" autofocus [ngModelOptions]="{standalone: true}" placeholder="Search Job Type" class="mat-select-search">
-                    <mat-icon class="search-icon" *ngIf="!dropdownState.job_type.search">search</mat-icon>
-                    <mat-icon class="search-icon" *ngIf="dropdownState.job_type.search" type="button" (click)="clearSearchDropD('job_type')">close</mat-icon>
-                  </div>
-                  <mat-option *ngIf="allJobtypeList.length === 0" hidden disabled>
-                  </mat-option>
-                  <mat-option *ngFor="let item of getOptionsWithSelectedOnTop('job_type')" [value]="item?.id">
-                      {{item?.job_type_name}}
-                  </mat-option>
-          </mat-select>
-          <mat-error *ngIf="f['job_type']?.invalid && f['job_type']?.touched || f['job_type']?.dirty">
-              <span  *ngIf="f['job_type']?.errors?.['required']">Job Type is required</span>
-        </mat-error>
+          <input matInput
+                 [formControl]="jobTypeDisplayControl"
+                 [matAutocomplete]="jobTypeAuto"
+                 [errorStateMatcher]="jobTypeErrorMatcher"
+                 [readonly]="!shouldDisableFields"
+                 placeholder="Search Job Type"
+                 autocomplete="off"
+                 (focus)="onAutocompleteInputFocus('job_type')"
+                 (blur)="onDisplayControlBlur('job_type')">
+          <mat-autocomplete #jobTypeAuto="matAutocomplete"
+                            [displayWith]="displayJobTypeFn"
+                            (optionSelected)="onJobTypeOptionSelected($event)"
+                            panelClass="custom-select-panel">
+            <mat-option *ngFor="let item of dropdownState.job_type.list" [value]="item">
+              {{item?.job_type_name}}
+            </mat-option>
+            <mat-option *ngIf="dropdownState.job_type.loading" disabled class="loading-option">
+              Loading...
+            </mat-option>
+            <mat-option *ngIf="!dropdownState.job_type.loading && !dropdownState.job_type.list.length" disabled>
+              No results found
+            </mat-option>
+          </mat-autocomplete>
+          <mat-error *ngIf="f['job_type']?.invalid && (f['job_type']?.touched || f['job_type']?.dirty)">
+              <span *ngIf="f['job_type']?.errors?.['required']">Job Type is required</span>
+          </mat-error>
       </mat-form-field>
   
   </div>
@@ -450,22 +485,28 @@
   <div class="col-12 col-sm-12 col-md-6 col-lg-3 no-padding pl-0 pr-5">
       <mat-form-field appearance="outline"  [ngClass]="{ 'highlight-background': !shouldDisableFields}" class="w-100 custom-mat-form-field">
           <mat-label>Job Status <b class="r-star">*</b></mat-label>
-          <mat-select formControlName="job_status" autocomplete="off"
-                  placeholder="Select Job Status" panelClass="custom-select-panel"
-                  [disableOptionCentering]="true" (selectionChange)="selectJobStatus($event)" [disabled]="user_role_name != 'Admin' && jobFormGroup?.get('only_admin_can_change_job_status')?.value==true">
-                  <div class="mat-select-search-wrapper d-flex">
-                    <input matInput [(ngModel)]="searchJobStatusText" autofocus [ngModelOptions]="{standalone: true}" placeholder="Search Job Status" class="mat-select-search">
-                    <mat-icon class="search-icon" *ngIf="!searchJobStatusText">search</mat-icon>
-                    <mat-icon class="search-icon" *ngIf="searchJobStatusText" type="button" (click)="clearSearch('job_status')">close</mat-icon>
-                  </div>
-                  <mat-option *ngFor="let item of filteredJobStatusList();let i = index" [value]="item?.id" [disabled]="(estimatedTime === '00:00' || estimatedTime === '0:00') &&i >= internalReviewOneIndex">
-                    {{item?.status_name}}
-                  </mat-option>
-                  <!-- [disabled]="!isEditItem && i >= internalReviewOneIndex" -->
-          </mat-select>
-          <mat-error *ngIf="f['job_status']?.invalid && f['job_status']?.touched || f['job_status']?.dirty">
-              <span  *ngIf="f['job_status']?.errors?.['required']">Job Status is required</span>
-        </mat-error>
+          <input matInput
+                 [formControl]="jobStatusDisplayControl"
+                 [matAutocomplete]="jobStatusAuto"
+                 [errorStateMatcher]="jobStatusErrorMatcher"
+                 [readonly]="!shouldDisableFields || (user_role_name != 'Admin' && jobFormGroup?.get('only_admin_can_change_job_status')?.value == true)"
+                 placeholder="Select Job Status"
+                 autocomplete="off"
+                 (blur)="onDisplayControlBlur('job_status')">
+          <mat-autocomplete #jobStatusAuto="matAutocomplete"
+                            [displayWith]="displayJobStatusFn"
+                            (optionSelected)="onJobStatusOptionSelected($event)"
+                            panelClass="custom-select-panel">
+            <mat-option *ngFor="let item of filteredJobStatusesAuto; let i = index"
+                        [value]="item"
+                        [disabled]="isJobStatusOptionDisabled(item)">
+              {{item?.status_name}}
+            </mat-option>
+            <mat-option *ngIf="!filteredJobStatusesAuto.length" disabled>No results found</mat-option>
+          </mat-autocomplete>
+          <mat-error *ngIf="f['job_status']?.invalid && (f['job_status']?.touched || f['job_status']?.dirty)">
+              <span *ngIf="f['job_status']?.errors?.['required']">Job Status is required</span>
+          </mat-error>
       </mat-form-field>
   
   </div>
@@ -490,7 +531,7 @@
   <div class="col-12 col-sm-12 col-md-6 col-lg-5 my-1  mb-3 no-padding pl-0 pr-5 align-self-center">
       <mat-radio-group formControlName="option" >
           <mat-radio-button class="radio-button" *ngFor="let key of objectKeys(jobBillingOption)" [value]="key"
-            [disabled]="!shouldDisableFields || user_role_name!=='Admin'"
+            [disabled]="!shouldDisableFields"
             [ngClass]="{ 'highlight-background': !shouldDisableFields }">
               {{ jobBillingOption[key] }}
             </mat-radio-button>
@@ -541,20 +582,24 @@
               <td>
                 <mat-form-field appearance="outline" [ngClass]="{ 'highlight-background': !shouldDisableFields}" class="w-100 custom-mat-form-field">
                   <mat-label>Select Employee <b class="r-star">*</b></mat-label>
-                  <mat-select formControlName="employee"  autocomplete="off" placeholder="Select" panelClass="custom-select-panel" (selectionChange)="onEmployeeChange($event,((currentPage - 1) * pageSize + i))" (openedChange)="onSelectOpened($event,((currentPage - 1) * pageSize + i))">
-                    
-                    <!-- Search input field inside the panel -->
-                    <div class="mat-select-search-wrapper d-flex">
-                      <input matInput [(ngModel)]="searchEmployeeTextList[((currentPage - 1) * pageSize + i)]" [ngModelOptions]="{standalone: true}" placeholder="Search Employee" class="mat-select-search" (ngModelChange)="filterEmployeeList(((currentPage - 1) * pageSize + i))">
-                      <mat-icon class="search-icon" *ngIf="!searchEmployeeTextList[((currentPage - 1) * pageSize + i)]">search</mat-icon>
-                      <mat-icon class="search-icon" *ngIf="searchEmployeeTextList[((currentPage - 1) * pageSize + i)]" type="button" (click)="clearSearch('emp',((currentPage - 1) * pageSize + i))">close</mat-icon>
-                    </div>
-                
-                    <!-- Filtered options -->
-                    <mat-option *ngFor="let emp of filteredEmployeeLists[((currentPage - 1) * pageSize + i)]" [value]="emp?.user_id">
-                      {{ emp?.user__full_name }}
+                  <input matInput #empInput
+                         [formControl]="employeeDisplayControls[(currentPage - 1) * pageSize + i]"
+                         [matAutocomplete]="empAuto"
+                         [matAutocompleteDisabled]="emp?.get('employee')?.disabled"
+                         [readonly]="emp?.get('employee')?.disabled"
+                         placeholder="Search Employee"
+                         autocomplete="off"
+                         (input)="onEmployeeInputChange(empInput.value, (currentPage - 1) * pageSize + i)"
+                         (blur)="onEmployeeBlur((currentPage - 1) * pageSize + i)">
+                  <mat-autocomplete #empAuto="matAutocomplete"
+                                    [displayWith]="displayEmployeeFn"
+                                    (optionSelected)="onEmployeeAutoSelected($event, (currentPage - 1) * pageSize + i)"
+                                    panelClass="custom-select-panel">
+                    <mat-option *ngFor="let e of filteredEmployeeLists[(currentPage - 1) * pageSize + i]" [value]="e">
+                      {{ e?.user__full_name }}
                     </mat-option>
-                  </mat-select>
+                    <mat-option *ngIf="!filteredEmployeeLists[(currentPage - 1) * pageSize + i]?.length" disabled>No results found</mat-option>
+                  </mat-autocomplete>
                 </mat-form-field>
                 <div class="px-2" *ngIf="emp?.get('employee')?.invalid && emp?.get('employee')?.touched || emp?.get('employee')?.dirty">
                   <span class="text-errors" *ngIf="emp?.get('employee')?.errors?.['required']">Employee is required</span>
@@ -563,20 +608,24 @@
               <td>
                 <mat-form-field appearance="outline" [ngClass]="{ 'highlight-background': !shouldDisableFields}" class="w-100 custom-mat-form-field">
                   <mat-label>Select Manager <b class="r-star">*</b></mat-label>
-                  <mat-select formControlName="manager"  autocomplete="off" placeholder="Select" panelClass="custom-select-panel" (openedChange)="onManagerSelectOpened($event, ((currentPage - 1) * pageSize + i))">
-                    
-                    <!-- Search input field inside the panel -->
-                    <div class="mat-select-search-wrapper d-flex">
-                      <input matInput [(ngModel)]="searchManagerTextList[((currentPage - 1) * pageSize + i)]" [ngModelOptions]="{standalone: true}" placeholder="Search Manager" class="mat-select-search" (ngModelChange)="filteredManagerList(((currentPage - 1) * pageSize + i))">
-                      <mat-icon class="search-icon" *ngIf="!searchManagerTextList[((currentPage - 1) * pageSize + i)]">search</mat-icon>
-                      <mat-icon class="search-icon" *ngIf="searchManagerTextList[((currentPage - 1) * pageSize + i)]" type="button" (click)="clearSearch('man',((currentPage - 1) * pageSize + i))">close</mat-icon>
-                    </div>
-                
-                    <!-- Filtered options -->
-                    <mat-option *ngFor="let emp of filteredManagerLists[((currentPage - 1) * pageSize + i)]" [value]="emp?.user_id">
-                      {{ emp?.user__full_name }}
+                  <input matInput #manInput
+                         [formControl]="managerDisplayControls[(currentPage - 1) * pageSize + i]"
+                         [matAutocomplete]="manAuto"
+                         [matAutocompleteDisabled]="emp?.get('manager')?.disabled"
+                         [readonly]="emp?.get('manager')?.disabled"
+                         placeholder="Search Manager"
+                         autocomplete="off"
+                         (input)="onManagerInputChange(manInput.value, (currentPage - 1) * pageSize + i)"
+                         (blur)="onManagerBlur((currentPage - 1) * pageSize + i)">
+                  <mat-autocomplete #manAuto="matAutocomplete"
+                                    [displayWith]="displayManagerFn"
+                                    (optionSelected)="onManagerAutoSelected($event, (currentPage - 1) * pageSize + i)"
+                                    panelClass="custom-select-panel">
+                    <mat-option *ngFor="let mgr of filteredManagerLists[(currentPage - 1) * pageSize + i]" [value]="mgr">
+                      {{ mgr?.user__full_name }}
                     </mat-option>
-                  </mat-select>
+                    <mat-option *ngIf="!filteredManagerLists[(currentPage - 1) * pageSize + i]?.length" disabled>No results found</mat-option>
+                  </mat-autocomplete>
                 </mat-form-field>
                 <div class="px-2" *ngIf="emp?.get('manager')?.invalid && (emp.get('manager').dirty || emp.get('manager').touched)">
                   <span class="text-errors" *ngIf="emp?.get('manager')?.errors?.['required']">Manager is required</span>

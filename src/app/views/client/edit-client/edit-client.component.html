@@ -1,5 +1,5 @@
-<div class="container-wrapper settings-main-content px-0">
-    <section class="settings-form-bg end-client">
+<div class="container-wrapper settings-main-content px-0" cdkScrollable>
+    <section class="settings-form-bg end-client" >
       <div class="row mx-0 px-0" #formInputField>
         <div class="col-12 col-sm-12 col-md-12 col-lg-12 px-0">
           <form [formGroup]="endClientForm">
@@ -24,17 +24,15 @@
               <div class="col-12 col-sm-12 col-md-6 col-lg-4 my-1 no-padding pl-5 pr-0">
                 <mat-form-field appearance="outline" [ngClass]="{ 'highlight-background': !shouldDisableGroupName && user_role_name !== 'Admin'}" class="w-100 custom-mat-form-field">
                     <mat-label>Group</mat-label>
-                    <mat-select formControlName="group" placeholder="Group" autocomplete="off"
-                      panelClass="custom-select-panel" [disableOptionCentering]="true">
-                      <div class="mat-select-search-wrapper d-flex">
-                        <input matInput [(ngModel)]="searchGroupText" autofocus [ngModelOptions]="{standalone: true}" placeholder="Search Group" class="mat-select-search">
-                        <mat-icon class="search-icon" *ngIf="!searchGroupText">search</mat-icon>
-                        <mat-icon class="search-icon" *ngIf="searchGroupText" type="button" (click)="clearSearch()">close</mat-icon>
-                      </div>
-                      <mat-option *ngFor="let group_item of filteredGroupList()" [value]="group_item?.id">
+                    <input matInput [formControl]="groupDisplayControl" [matAutocomplete]="groupAuto"
+                      placeholder="Search Group" autocomplete="off"
+                      (focus)="onGroupFocus()" (blur)="onGroupBlur()">
+                    <mat-autocomplete #groupAuto="matAutocomplete" [displayWith]="displayGroupFn"
+                      (optionSelected)="onGroupOptionSelected($event)">
+                      <mat-option *ngFor="let group_item of filteredGroupsAuto" [value]="group_item">
                         {{group_item?.group_name | titlecase}}
                       </mat-option>
-                    </mat-select>
+                    </mat-autocomplete>
                   </mat-form-field>
               </div>
   

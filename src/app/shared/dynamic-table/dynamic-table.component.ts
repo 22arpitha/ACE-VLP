@@ -1,5 +1,6 @@
 // dynamic-table.component.ts
 import {
+  AfterViewInit,
   ChangeDetectorRef,
   Component,
   DoCheck,
@@ -7,10 +8,12 @@ import {
   EventEmitter,
   Input,
   OnChanges,
+  OnDestroy,
   OnInit,
   Output,
   QueryList,
   SimpleChanges,
+  ViewChild,
   ViewChildren,
   ViewContainerRef,
 } from '@angular/core';
@@ -19,7 +22,7 @@ import { DatePipe } from '@angular/common';
 import { DynamicTableConfig } from './dynamic-table-config.model';
 import { ApiserviceService } from '../../service/apiservice.service';
 import { environment } from '../../../environments/environment';
-import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
+import { FormArray, FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { fileToBase64, urlToFile } from '../fileUtils.utils';
 import { OverlayRef } from '@angular/cdk/overlay';
 import { NgbDropdownConfig } from '@ng-bootstrap/ng-bootstrap';
@@ -27,13 +30,15 @@ import { MAT_DATE_RANGE_SELECTION_STRATEGY } from '@angular/material/datepicker'
 import { WeeklySelectionStrategy } from '../weekly-selection-strategy';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { MatAutocomplete, MatAutocompleteTrigger } from '@angular/material/autocomplete';
+import { MatAutocompleteService } from '../../service/mat-autocomplete.service';
 @Component({
   selector: 'app-dynamic-table',
   templateUrl: './dynamic-table.component.html',
   styleUrls: ['./dynamic-table.component.scss'],
   providers: [NgbDropdownConfig],
 })
-export class DynamicTableComponent implements OnInit, OnChanges, DoCheck {
+export class DynamicTableComponent implements OnInit, OnChanges, DoCheck, AfterViewInit, OnDestroy {
   @Output() filterOpened = new EventEmitter<any>(); // new
   @Output() filterScrolled = new EventEmitter<any>(); //new
   @Output() filterEvent = new EventEmitter<{ detail: any; key: string }>();
@@ -56,8 +61,8 @@ export class DynamicTableComponent implements OnInit, OnChanges, DoCheck {
   sunday: Date;
   columnStartDates: { [key: string]: any } = {};
   columnEndDates: { [key: string]: any } = {};
-  startDate;
-  endDate;
+  startDate:any;
+  endDate:any;
   mainStartDate: any;
   mainEndDate: any;
   currentPage = 1;
@@ -65,7 +70,7 @@ export class DynamicTableComponent implements OnInit, OnChanges, DoCheck {
   columnFilters: { [key: string]: any } = {};
   arrowState: { [sortKey: string]: boolean } = {};
   sortValue: string = '';
-  directionValue: string;
+  directionValue: any = '';
   filterSearchText: { [key: string]: string } = {};
   tableSize: number = 50;
   activeDateColumn: string | null = null;
@@ -101,6 +106,20 @@ export class DynamicTableComponent implements OnInit, OnChanges, DoCheck {
   dateRangeStartDate: string | null;
   is_leaveTypes: boolean;
   is_employeeDropdown: boolean = false;
+
+  // ─── Autocomplete Properties ─────────────────────────────────────────────────
+  private destroy$ = new Subject<void>();
+  employeeDisplayControl = new FormControl('');
+  displayEmployeeFn: (item: any) => string;
+  @ViewChild('employeeAuto') employeeAutoRef!: MatAutocomplete;
+  @ViewChild('empInput', { read: MatAutocompleteTrigger }) employeeTriggerRef!: MatAutocompleteTrigger;
+  private justSelectedEmployee = false;
+
+  leaveTypeDisplayControl = new FormControl('');
+  displayLeaveTypeFn: (item: any) => string;
+  filteredLeaveTypesAuto: any[] = [];
+  @ViewChild('leaveInput', { read: MatAutocompleteTrigger }) leaveTypeTriggerRef!: MatAutocompleteTrigger;
+  private justSelectedLeaveType = false;
   // select all logic
   selectAllValue: boolean | null = null;
   excludedIds: { id: any, name: string }[] = [];
@@ -121,11 +140,14 @@ export class DynamicTableComponent implements OnInit, OnChanges, DoCheck {
     private datePipe: DatePipe,
     private api: ApiserviceService,
     private ngbConfig: NgbDropdownConfig,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private autoSvc: MatAutocompleteService
   ) {
     this.ngbConfig.autoClose = 'outside'; // Changed from false to 'outside'
     this.user_id = sessionStorage.getItem('user_id');
     this.userRole = sessionStorage.getItem('user_role_name');
+    this.displayEmployeeFn = this.autoSvc.createDisplayFn('user__full_name');
+    this.displayLeaveTypeFn = this.autoSvc.createDisplayFn('leave_type_name');
   }
   tempFilters: { [key: string]: any[] } = {};
   searchSubject = new Subject<string>();
@@ -140,6 +162,33 @@ export class DynamicTableComponent implements OnInit, OnChanges, DoCheck {
         this.actionEvent.emit({ actionType: 'search', detail: value });
         this.applyFilters();
       });
+
+    // Setup paginated search for employee autocomplete
+    this.autoSvc.setupPaginatedSearch(
+      this.employeeDisplayControl,
+      (value: string) => this.onSearchDropdown('employee', value),
+      this.destroy$
+    );
+
+    // Setup local filter for leave type autocomplete
+    this.autoSvc.setupLocalFilter(
+      this.leaveTypeDisplayControl,
+      () => this.leaveTypes,
+      (filtered: any[]) => { this.filteredLeaveTypesAuto = filtered; },
+      'leave_type_name',
+      this.destroy$
+    );
+  }
+
+  ngAfterViewInit(): void {
+    if (this.employeeAutoRef) {
+      this.autoSvc.setupScrollListener(
+        this.employeeAutoRef,
+        this.dropdownState['employee'],
+        () => this.fetchData('employee', true),
+        this.destroy$
+      );
+    }
   }
 
   // Auto-selects newly scroll-loaded or search-returned items when columnSelectAll is true OR false (exclude mode).
@@ -202,10 +251,14 @@ export class DynamicTableComponent implements OnInit, OnChanges, DoCheck {
           if (reset && this.userRole === 'Manager') {
             this.selectedDropdownItems['employee'] = [];
             this.selectedEmployeeId = undefined;
+            this.employeeDisplayControl.setValue('');
+            this.dropdownState['employee'].initialized = false;
             this.cdr.detectChanges();
           } else {
             this.updateSelectedItems('employee', respData?.results[0].user_id);
             this.selectedEmployeeId = respData?.results[0].user_id;
+            this.selectedDropdownItems['employee'] = [respData?.results[0]];
+            this.employeeDisplayControl.setValue(respData?.results[0]);
           }
           
           this.actionEvent.emit({
@@ -229,10 +282,12 @@ export class DynamicTableComponent implements OnInit, OnChanges, DoCheck {
       .subscribe(
         (respData: any) => {
           this.leaveTypes = respData;
+          this.filteredLeaveTypesAuto = [...this.leaveTypes];
           if (this.leaveTypes?.length > 0) {
             // this.selectedLeaveType = this.leaveTypes[0].id;
             // this.actionEvent.emit({ actionType: 'leaveType', detail: {leave_type:this.selectedLeaveType,reset:false,user_id:this.user_id}});
             this.selectedLeaveType = this.leaveTypes[0].id;
+            this.leaveTypeDisplayControl.setValue(this.leaveTypes[0]);
             if (this.is_employeeDropdown && this.is_leaveTypes) {
               this.getEmployeesList(false);
             } else {
@@ -510,9 +565,13 @@ export class DynamicTableComponent implements OnInit, OnChanges, DoCheck {
     this.prevFilterOptionsLengths = {};
     if (this.is_employeeDropdown && this.is_leaveTypes) {
       this.selectedLeaveType = this.leaveTypes[0].id;
+      this.leaveTypeDisplayControl.setValue(this.leaveTypes[0], { emitEvent: false });
+      this.filteredLeaveTypesAuto = [...this.leaveTypes];
       this.getEmployeesList(true);
     } else if (!this.is_employeeDropdown && this.is_leaveTypes) {
       this.selectedLeaveType = this.leaveTypes[0].id;
+      this.leaveTypeDisplayControl.setValue(this.leaveTypes[0], { emitEvent: false });
+      this.filteredLeaveTypesAuto = [...this.leaveTypes];
       this.actionEvent.emit({
         actionType: 'leaveType',
         detail: {
@@ -1041,6 +1100,8 @@ export class DynamicTableComponent implements OnInit, OnChanges, DoCheck {
     if (this.overlayRef) {
       this.overlayRef.dispose();
     }
+    this.destroy$.next();
+    this.destroy$.complete();
   }
   isPositiveOrNegative(value: string): string {
     const number = parseFloat(value);
@@ -1121,6 +1182,114 @@ export class DynamicTableComponent implements OnInit, OnChanges, DoCheck {
       });
     }
     // this.actionEvent.emit({ actionType: 'leaveType', detail: {leave_type:this.selectedLeaveType,reset:false}});
+  }
+
+  // ─── Autocomplete Handlers ───────────────────────────────────────────────────
+
+  onEmployeeOptionSelected(event: any): void {
+    this.justSelectedEmployee = true;
+    const selected = event.option.value;
+    if (selected) {
+      this.selectedEmployeeId = selected.user_id;
+      this.selectedDropdownItems['employee'] = [selected];
+      this.dropdownState['employee'].list = [selected];
+      this.actionEvent.emit({
+        actionType: 'leaveType',
+        detail: {
+          leave_type: this.selectedLeaveType,
+          reset: false,
+          user_id: this.selectedEmployeeId,
+        },
+      });
+    }
+  }
+
+  onEmployeeFocus(): void {
+    this.justSelectedEmployee = false;
+    const selectedItems = this.selectedDropdownItems['employee'] || [];
+    this.autoSvc.onFocus(
+      this.dropdownState['employee'],
+      selectedItems,
+      () => this.fetchData('employee', false)
+    );
+  }
+
+  onEmployeeBlur(): void {
+    setTimeout(() => {
+      if (this.justSelectedEmployee) {
+        this.justSelectedEmployee = false;
+        return;
+      }
+      const currentValue = this.employeeDisplayControl.value;
+      // If user cleared the input, treat as deselection
+      if (currentValue === '' || currentValue === null) {
+        this.selectedEmployeeId = null;
+        this.selectedDropdownItems['employee'] = [];
+        this.employeeDisplayControl.setValue('');
+        this.dropdownState['employee'].list = [];
+        this.dropdownState['employee'].initialized = false;
+        return;
+      }
+      const selectedItems = this.selectedDropdownItems['employee'] || [];
+      if (selectedItems.length > 0) {
+        this.employeeDisplayControl.setValue(selectedItems[0]);
+        this.dropdownState['employee'].list = [...selectedItems];
+      } else {
+        this.employeeDisplayControl.setValue('');
+        this.dropdownState['employee'].list = [];
+        this.dropdownState['employee'].initialized = false;
+      }
+    }, 200);
+  }
+
+  onLeaveTypeOptionSelected(event: any): void {
+    this.justSelectedLeaveType = true;
+    const selected = event.option.value;
+    if (selected) {
+      this.selectedLeaveType = selected.id;
+      this.filteredLeaveTypesAuto = [selected];
+      this.selectLeaveTypesFunc(event);
+    }
+  }
+
+  onLeaveTypeFocus(): void {
+    this.justSelectedLeaveType = false;
+    const currentValue = this.leaveTypeDisplayControl.value;
+    if (this.selectedLeaveType && typeof currentValue !== 'string') {
+      const selectedItem = this.leaveTypes.find((item: any) => item.id === this.selectedLeaveType);
+      if (selectedItem) {
+        this.filteredLeaveTypesAuto = [selectedItem];
+        return;
+      }
+    }
+    this.filteredLeaveTypesAuto = [...this.leaveTypes];
+  }
+
+  onLeaveTypeBlur(): void {
+    setTimeout(() => {
+      if (this.justSelectedLeaveType) {
+        this.justSelectedLeaveType = false;
+        return;
+      }
+      const currentValue = this.leaveTypeDisplayControl.value;
+      // If user cleared the input, treat as deselection
+      if (currentValue === '' || currentValue === null) {
+        this.selectedLeaveType = null;
+        this.leaveTypeDisplayControl.setValue('');
+        this.filteredLeaveTypesAuto = [...this.leaveTypes];
+        return;
+      }
+      if (this.selectedLeaveType) {
+        const selectedItem = this.leaveTypes.find((item: any) => item.id === this.selectedLeaveType);
+        if (selectedItem) {
+          this.leaveTypeDisplayControl.setValue(selectedItem);
+          this.filteredLeaveTypesAuto = [selectedItem];
+          return;
+        }
+      }
+      this.leaveTypeDisplayControl.setValue('');
+      this.filteredLeaveTypesAuto = [...this.leaveTypes];
+    }, 200);
   }
 
   dateClass = (date: Date) => {
@@ -1504,7 +1673,7 @@ export class DynamicTableComponent implements OnInit, OnChanges, DoCheck {
 
   pageSizeDropdown = 50;
 
-  dropdownState = {
+  dropdownState: any = {
     employee: {
       page: 1,
       list: [],
@@ -1515,39 +1684,14 @@ export class DynamicTableComponent implements OnInit, OnChanges, DoCheck {
     },
   };
 
-  dropdownEndpoints = {
+  dropdownEndpoints: any = {
     employee: environment.user,
   };
-
-  private scrollListeners: { [key: string]: (event: Event) => void } = {};
 
   // Selected items for pagination dropdowns
   selectedDropdownItems: { [key: string]: any[] } = {
     employee: [],
   };
-
-  removeScrollListener(key: string) {
-    const panel = document.querySelector(
-      '.cdk-overlay-container .mat-select-panel'
-    );
-    if (panel && this.scrollListeners[key]) {
-      panel.removeEventListener('scroll', this.scrollListeners[key]);
-      delete this.scrollListeners[key];
-    }
-  }
-
-  onScroll(key: string, event: Event) {
-    const target = event.target as HTMLElement;
-    const state = this.dropdownState[key];
-    const scrollTop = target.scrollTop;
-    const scrollHeight = target.scrollHeight;
-    const clientHeight = target.clientHeight;
-    const atBottom = scrollHeight - scrollTop <= clientHeight + 5;
-    if (atBottom && !state.loading && state.page < state.totalPages) {
-      state.page++;
-      this.fetchData(key, true);
-    }
-  }
 
   // Search input for pagination
   onSearchDropdown(key: string, text: string) {
@@ -1555,14 +1699,9 @@ export class DynamicTableComponent implements OnInit, OnChanges, DoCheck {
     state.search = text.trim();
     state.page = 1;
     state.list = [];
-    this.fetchData(key, false);
-  }
-
-  // Clear search input
-  clearSearchDropD(key: string) {
-    this.dropdownState[key].search = '';
-    this.dropdownState[key].page = 1;
-    this.dropdownState[key].list = [];
+    if (!text.trim()) {
+      this.selectedDropdownItems[key] = [];
+    }
     this.fetchData(key, false);
   }
 
@@ -1622,7 +1761,7 @@ export class DynamicTableComponent implements OnInit, OnChanges, DoCheck {
     );
     selectedIds.forEach((id) => {
       if (!selectedItems.some((item) => item.user_id === id)) {
-        const found = state.list.find((item) => item.user_id === id);
+        const found = state.list.find((item: any) => item.user_id === id);
         if (found) {
           selectedItems.push(found);
         } else {
@@ -1632,44 +1771,6 @@ export class DynamicTableComponent implements OnInit, OnChanges, DoCheck {
     });
 
     this.selectedDropdownItems[key] = selectedItems;
-  }
-
-  // Return options with selected items on top, no duplicates
-  getOptionsWithSelectedOnTop(key: string) {
-    const state = this.dropdownState[key];
-    const selectedItems = this.selectedDropdownItems[key] || [];
-    const unselectedItems = state.list.filter(
-      (item) => !selectedItems.some((sel) => sel.user_id === item.user_id)
-    );
-    return [...selectedItems, ...unselectedItems];
-  }
-
-  // Called when the dropdown opens or closes
-  onDropdownOpened(isOpen, key: string) {
-    if (isOpen) {
-      if (
-        !this.dropdownState[key].initialized ||
-        this.dropdownState[key].list.length === 0
-      ) {
-        this.dropdownState[key].page = 1;
-        this.fetchData(key, false);
-        this.dropdownState[key].initialized = true;
-      }
-      setTimeout(() => {
-        this.removeScrollListener(key);
-
-        const panel = document.querySelector(
-          '.cdk-overlay-container .mat-select-panel'
-        );
-        if (panel) {
-          this.scrollListeners[key] = (event: Event) =>
-            this.onScroll(key, event);
-          panel.addEventListener('scroll', this.scrollListeners[key]);
-        }
-      }, 0);
-    } else {
-      this.removeScrollListener(key);
-    }
   }
 
 

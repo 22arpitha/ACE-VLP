@@ -1,4 +1,4 @@
-<div class="container-wrapper settings-main-content px-0">
+<div class="container-wrapper settings-main-content px-0" cdkScrollable>
   <section class="settings-form-bg Leave-apply p-0">
     <form [formGroup]="leaveApplyForm" class="bg-leave-details">
       <div class="row mx-0 my-0 p-0 mb-3">
@@ -15,12 +15,21 @@
             <div class="col-sm-8 col-md-3 col-lg-3 px-0">
               <mat-form-field appearance="outline" [ngClass]="{ 'highlight-background': !shouldDisableFields}" class="w-100 custom-mat-form-field">
                 <mat-label>Leave Type<b class="r-star">*</b></mat-label>
-                <mat-select placeholder="Leave Type" autocomplete="off" panelClass="custom-select-panel"
-                  [disableOptionCentering]="true" (selectionChange)="onLeaveTypeChange($event)"
-                  formControlName="leave_type">
-                  <mat-option *ngFor="let leave of allleavetypeList" [value]="leave.leave_type_id" [disabled]="isLeaveTypeDisabled(leave)">{{ leave.leave_type
-                    }}</mat-option>
-                </mat-select>
+                <input matInput [formControl]="leaveTypeDisplayControl"
+                    [matAutocomplete]="leaveTypeAuto"
+                    [errorStateMatcher]="leaveTypeErrorMatcher"
+                    [readonly]="!shouldDisableFields"
+                    placeholder="Select Leave Type"
+                    (focus)="onLeaveTypeFocus()"
+                    (blur)="onLeaveTypeBlur()">
+                <mat-autocomplete #leaveTypeAuto="matAutocomplete"
+                    [displayWith]="displayLeaveTypeFn"
+                    (optionSelected)="onLeaveTypeOptionSelected($event)">
+                    <mat-option *ngFor="let leave of filteredLeaveTypesAuto" [value]="leave"
+                        [disabled]="isLeaveTypeDisabled(leave)">
+                        {{ leave.leave_type }}
+                    </mat-option>
+                </mat-autocomplete>
                 <mat-error *ngIf="f['leave_type']?.invalid && f['leave_type']?.touched || f['leave_type']?.dirty">
                   <span *ngIf="f['leave_type']?.errors?.['required']">Leave type is required</span>
                 </mat-error>
