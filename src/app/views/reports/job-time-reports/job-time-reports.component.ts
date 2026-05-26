@@ -235,6 +235,7 @@ export class JobTimeReportsComponent implements OnInit {
         this.isIncludeAllJobValue = false;
         this.client_id = null;
       } else {
+        this.isIncludeAllJobEnable=false;
         this.client_id = singleId;
     }
     // When selectAll=false with excludedIds, use includeAlljobsids to determine single client
@@ -417,12 +418,14 @@ private buildQueryForFilter(filterValue: any, paramName: string): string {
           ...col,
           filterOptions: cache.data,
           currentPage: cache.page,
-          totalPages: Math.ceil(cache.total / 20)
+          totalPages: Math.ceil(cache.total / 20),
+          totalCount: cache.total
         }
         : col
     );
   }
   async getTableData(params?: { page?: number; pageSize?: number; searchTerm?: string; client_ids?: any[]; job_ids?: any[]; job_status?: any[]; prime_emp?: any }) {
+    console.log(params);
     let finalQuery;
     this.formattedData = [];
     const page = params?.page ?? this.page;

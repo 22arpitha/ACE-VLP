@@ -21,8 +21,8 @@ export class EditInvoiceComponent implements OnInit {
      private searchSubject = new Subject<string>();
      page = 1;
     count = 0;
-    tableSize = 50;
-    tableSizes = [50,75,100,150];
+    editTableSize = 50;
+    editTableSizes = [50,75,100,150];
      sortValue: string = '';
      directionValue: string = '';
      selectedItemId:any;
@@ -34,7 +34,7 @@ job_price:false,
 total_amount:false,
      };
      currentIndex: any;
-     allClientBasedJobsLists:any=[];
+     allClientJobsLists:any=[];
      accessPermissions = []
      user_id: any;
      userRole: any;
@@ -86,7 +86,7 @@ total_amount:false,
    
      }
      getFilterBaseUrl(): string {
-    const base = `?page=${this.page}&page_size=${this.tableSize}`;
+    const base = `?page=${this.page}&page_size=${this.editTableSize}`;
     const searchParam = this.term?.trim().length >= 2 ? `&search=${encodeURIComponent(this.term.trim())}` : '';
     return `${base}${searchParam}`;
   }
@@ -97,10 +97,17 @@ total_amount:false,
     this.apiService.getData(`${environment.live_url}/${environment.all_jobs}/${query}`).subscribe(
       (res:any)=>{
         console.log(res)
-        this.allClientBasedJobsLists = res?.results;
+        this.allClientJobsLists = res?.results;
          const noOfPages: number = res?.['total_pages']
-        this.count = noOfPages * this.tableSize;
+        this.count = noOfPages * this.editTableSize;
         this.page = res?.['current_page'];
+        this.count =
+        res?.total_no_of_record || 0;
+
+        setTimeout(() => {
+        this.page =
+        res?.current_page || 1;
+       });
         this.initializeSelection(res?.results);
       },
       (error:any)=>{
@@ -135,13 +142,13 @@ selectJobs(item: any) {
 // Toggle all jobs on the current page
 selectAllJobs(event: any) {
   if (event.checked) {
-    this.allClientBasedJobsLists.forEach(job => {
+    this.allClientJobsLists.forEach(job => {
       if (!this.jobSelection.some(sel => sel.id === job.id)) {
         this.jobSelection.push(job);
       }
     });
   } else {
-    this.allClientBasedJobsLists.forEach(job => {
+    this.allClientJobsLists.forEach(job => {
       const index = this.jobSelection.findIndex(sel => sel.id === job.id);
       if (index > -1) this.jobSelection.splice(index, 1);
     });
@@ -150,20 +157,20 @@ selectAllJobs(event: any) {
 
 // Master checkbox state
 allJobsSelected(): boolean {
-  return this.allClientBasedJobsLists.every(job => this.isJobSelected(job));
+  return this.allClientJobsLists.every(job => this.isJobSelected(job));
 }
 
 // Indeterminate state
 someJobsSelected(): boolean {
-  const selectedCount = this.allClientBasedJobsLists.filter(job =>
+  const selectedCount = this.allClientJobsLists.filter(job =>
     this.isJobSelected(job)
   ).length;
-  return selectedCount > 0 && selectedCount < this.allClientBasedJobsLists.length;
+  return selectedCount > 0 && selectedCount < this.allClientJobsLists.length;
 }
 
     public getClientBasedJobsList(){
       let query = this.getFilterBaseUrl()
-      this.allClientBasedJobsLists=[];
+      this.allClientJobsLists=[];
       this.jobSelection=[];
       // let query  = `?page=${this.page}&page_size=${this.tableSize}`;
       //  query += this.term?.trim().length >= 2 ? `&search=${this.term.trim()}` : '';
@@ -182,7 +189,7 @@ someJobsSelected(): boolean {
         return combinedResponse;
     })).subscribe((responseData:any)=>{
       console.log(responseData)
-      this.allClientBasedJobsLists = responseData.clientAllJobs.results;
+      this.allClientJobsLists = responseData.clientAllJobs.results;
 
   const selectedInvoiceDetails = responseData.selectedinvoiceDetails[0];
   this.client_name = selectedInvoiceDetails?.client_name;
@@ -201,12 +208,12 @@ someJobsSelected(): boolean {
     otherInvoiceJoblist?.map((invoiceJobItem: any) => invoiceJobItem?.job_id)
   );
 
-  this.allClientBasedJobsLists = responseData.clientAllJobs?.results?.filter((jobItem: any) => !clientInvoiceJobsSet.has(jobItem?.id));
+  this.allClientJobsLists = responseData.clientAllJobs?.results?.filter((jobItem: any) => !clientInvoiceJobsSet.has(jobItem?.id));
   const noOfPages: number = responseData.clientAllJobs?.['total_pages']
-  this.count = noOfPages * this.tableSize;
+  this.count = noOfPages * this.editTableSize;
   this.count = responseData.clientAllJobs?.['total_no_of_record'];
   this.page = responseData.clientAllJobs?.['current_page'];
-  this.allClientBasedJobsLists?.forEach((jobItem: any) => {
+  this.allClientJobsLists?.forEach((jobItem: any) => {
     selectedInvoiceDetails?.client_invoice?.forEach((invoiceJobItem: any) => {
       if (jobItem?.id === invoiceJobItem?.job_id) {
         this.jobSelection?.push(jobItem);
@@ -279,7 +286,7 @@ const jobsMappedData =  this.jobSelection?.map(({id,
     //   }
     // }
     isAllJobsSelected() {
-      return this.jobSelection?.length > 0 ? this.jobSelection?.length === this.allClientBasedJobsLists?.length : false;
+      return this.jobSelection?.length > 0 ? this.jobSelection?.length === this.allClientJobsLists?.length : false;
     }
   
     isSomeJobsSelected() {
@@ -289,7 +296,7 @@ const jobsMappedData =  this.jobSelection?.map(({id,
   
     toggleAllJobs(event: any) {
       if (event.checked) {
-        this.jobSelection = [...this.allClientBasedJobsLists];
+        this.jobSelection = [...this.allClientJobsLists];
       } else {
         this.jobSelection = [];
       }
@@ -327,7 +334,7 @@ const jobsMappedData =  this.jobSelection?.map(({id,
      onTableSizeChange(event: any): void {
     if (event) {
       this.page = 1;
-      this.tableSize = Number(event.value);
+      this.editTableSize = Number(event.value);
       // this.getClientBasedJobsList();
       this.getClientInvoiceees();
     }

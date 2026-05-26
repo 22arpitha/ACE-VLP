@@ -30,11 +30,11 @@ export class ViewInvoiceComponent implements OnInit {
     job_status_name: false,
     job_price: false,
   };
-  page = 1;
-  count = 0;
-  tableSize = 50;
-  tableSizes = [50,75,100,150];
-  currentIndex: any;
+  viewPage = 1;
+  viewCount = 0;
+  viewTableSize = 50;
+  viewTableSizes = [50,75,100,150];
+  viweCurrentIndex: any;
   allClientBasedJobsLists: any = [];
   accessPermissions = [];
   user_id: any;
@@ -137,9 +137,9 @@ export class ViewInvoiceComponent implements OnInit {
         this.allClientBasedJobsLists = res;
         this.client_id = res?.client_id;
         const noOfPages: number = res?.['total_pages']
-        this.count = noOfPages * this.tableSize;
-        this.count = res?.['total_no_of_record']
-        this.page = res?.['current_page'];
+        this.viewCount = noOfPages * this.viewTableSize;
+        // this.count = res?.['total_no_of_record']
+        this.viewPage = res?.['current_page'];
       });
   }
 
@@ -201,21 +201,21 @@ export class ViewInvoiceComponent implements OnInit {
 
   public getFilterBaseUrl(): string {
     if (this.userRole === 'Admin') {
-      return `?invoice-id=${this.invoice_id}&page=${this.page}&page_size=${this.tableSize}`;
+      return `?invoice-id=${this.invoice_id}&page=${this.viewPage}&page_size=${this.viewTableSize}`;
     } else {
-      return `?invoice-id=${this.invoice_id}&page=${this.page}&page_size=${this.tableSize}`;
+      return `?invoice-id=${this.invoice_id}&page=${this.viewPage}&page_size=${this.viewTableSize}`;
     }
   }
 
   public onTableSizeChange(event: any): void {
     if (event) {
-      this.page = 1;
-      this.tableSize = Number(event.value);
+      this.viewPage = 1;
+      this.viewTableSize = Number(event.value);
       this.getInvoiceDetailsList();
     }
   }
   public onTableDataChange(event: any) {
-    this.page = event;
+    this.viewPage = event;
     this.getInvoiceDetailsList();
   }
   public sort(direction: string, column: string) {
@@ -228,7 +228,7 @@ export class ViewInvoiceComponent implements OnInit {
   }
 
   public getContinuousIndex(index: number): number {
-    return (this.page - 1) * this.tableSize + index + 1;
+    return (this.viewPage - 1) * this.viewTableSize + index + 1;
   }
 
   public backToAllInvoice() {

@@ -1,22 +1,22 @@
-::ng-deep .mat-form-field-infix {
+::ng-deep .create-invoice .mat-form-field-infix {
   padding: 0.5em 0 !important;
   padding-bottom: 1em !important;
 }
-::ng-deep .mat-form-field-wrapper {
+::ng-deep .create-invoice .mat-form-field-wrapper {
   padding: 0px 0 !important;
 }
-.no-padding-bottom ::ng-deep .mat-form-field-wrapper {
+.create-invoice .no-padding-bottom ::ng-deep .mat-form-field-wrapper {
   padding: 0 !important;
 }
-.settings-table-bg{
+.create-invoice .settings-table-bg{
     max-height: 75vh !important;
 }
-.table-wrapper{
-    max-height: 55vh !important;
+.create-invoice .table-wrapper{
+    max-height: 57vh !important;
     overflow-x: auto;
     margin-bottom: 20px;
 }
-.mat-select-search-wrapper {
+.create-invoice .mat-select-search-wrapper {
     padding: 8px;
     background-color: #fff;
   }
@@ -25,11 +25,11 @@
     width: 100%;
   }
   
-  .custom-select-panel {
+  .create-invoice .custom-select-panel {
     max-height: 300px; /* Set a max height for the dropdown */
     overflow-y: auto; /* Make sure dropdown scrolls if it overflows */
   }
-  .search-icon{
+  .create-invoice .search-icon{
     font-size:x-large;
     color: #ccc;
   }
