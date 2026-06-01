@@ -678,6 +678,12 @@ employeeGender:any;
   toDate.setHours(0, 0, 0, 0);
 
     if (fromDate < current) {
+     if (Number(leaveTypeData?.utilization_after) === 0) {
+      this.apiService.showError(
+        `${leaveTypeData.leave_type} leave cannot be applied for past dates.`
+      );
+      return;
+    }
     if (leaveTypeData?.utilization_after && Number(leaveTypeData.utilization_after) > 0) {
       if (toDate < current) {
         // Count days from current date to TO date, excluding TO date
