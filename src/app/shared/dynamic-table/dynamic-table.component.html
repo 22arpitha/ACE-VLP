@@ -295,7 +295,7 @@
                           <!-- Old: <mat-list-option [selected]="selectAllValue === true" (click)="selectAllFun()">Select All</mat-list-option> -->
                           <!-- Old: <mat-list-option [selected]="columnSelectAll[col.key] === true" (click)="selectAllFun(col)">Select All</mat-list-option> -->
                           <!-- New: sentinel value '__select_all__' in [(ngModel)] array — avoids [selected] vs ngModel conflict -->
-                          <mat-list-option [disabled]="filterSearchText[columnKey]" [value]="'__select_all__'">Select All</mat-list-option>
+                          <mat-list-option [disabled]="!!filterSearchText[columnKey]" [value]="'__select_all__'">Select All</mat-list-option>
                           <mat-list-option
                             *ngFor="let option of getFilteredOptions(columnKey)"
                             [value]="option.id"

@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ApiserviceService } from '../../../service/apiservice.service';
 import { environment } from '../../../../environments/environment';
+import { CommonServiceService } from '../../../service/common-service.service';
 
 @Component({
   selector: 'app-default',
@@ -10,6 +11,7 @@ import { environment } from '../../../../environments/environment';
 })
 export class DefaultComponent implements OnInit {
     periodicityId: number | null = null;
+    BreadCrumbsTitle: any = 'Dashboard';
     period: { year: string; month_list: string } | null = null;
     employee: number | null = null;
     manager: number | null = null;
@@ -24,12 +26,13 @@ export class DefaultComponent implements OnInit {
     commonFilterData: any = { 'employee_id': '', 'periodicity': '', 'period': '', 'manager_id': '' };
     userRole: any;
     mutiple: boolean = true;
-    constructor(private apiService: ApiserviceService) {
+    constructor( private common_service: CommonServiceService, private apiService: ApiserviceService) {
         this.userRole = sessionStorage.getItem('user_role_name');
         this.getAllPeriodicity();
     }
 
     ngOnInit(): void {
+        this.common_service.setTitle(this.BreadCrumbsTitle)
         this.mutiple = this.userRole === 'Admin' ? true : false;
         setTimeout(() => this.applySearch(), 800);
     }
