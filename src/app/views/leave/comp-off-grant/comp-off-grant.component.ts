@@ -82,7 +82,9 @@ export class CompOffGrantComponent implements OnInit, OnDestroy, AfterViewInit {
     // @Inject(MAT_DIALOG_DATA) public data: any
   ) {
     this.userRole = sessionStorage.getItem('user_role_name');
-    this.common_service.setTitle(this.BreadCrumbsTitle);
+    if (!this.data) {
+      this.common_service.setTitle(this.BreadCrumbsTitle);
+    }
     this.user_id = sessionStorage.getItem('user_id');
     this.displayEmployeeFn = this.autoSvc.createDisplayFn('user__full_name');
   }

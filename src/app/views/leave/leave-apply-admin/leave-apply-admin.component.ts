@@ -11,7 +11,6 @@ import { MatChipInputEvent } from '@angular/material/chips';
 import { startWith, map, Observable, Subject } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { ApiserviceService } from '../../../service/apiservice.service';
-import { CommonServiceService } from '../../../service/common-service.service';
 import { MatAutocomplete, MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { ErrorStateMatcher } from '@angular/material/core';
 import { MatAutocompleteService } from '../../../service/mat-autocomplete.service';
@@ -53,7 +52,6 @@ export class LeaveApplyAdminComponent implements OnInit, OnDestroy, AfterViewIni
   user_id: any;
   userRole: any;
   allleavetypeList: any = [];
-  BreadCrumbsTitle: any = 'Leave Request';
   sessions: any = [
     { value: 'session 1', label: 'Session 1' },
     { value: 'session 2', label: 'Session 2' },
@@ -89,7 +87,6 @@ export class LeaveApplyAdminComponent implements OnInit, OnDestroy, AfterViewIni
 
   constructor(
     private apiService: ApiserviceService,
-    private common_service: CommonServiceService,
     private dialogRef: MatDialogRef<LeaveApplyAdminComponent>,
     private fb: FormBuilder,
     private autoSvc: MatAutocompleteService,
@@ -102,7 +99,6 @@ export class LeaveApplyAdminComponent implements OnInit, OnDestroy, AfterViewIni
       )
     );
 
-    this.common_service.setTitle(this.BreadCrumbsTitle);
     this.user_id = sessionStorage.getItem('user_id');
     this.userRole = sessionStorage.getItem('user_role_name');
 
