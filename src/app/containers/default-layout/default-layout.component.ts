@@ -103,12 +103,11 @@ export class DefaultLayoutComponent {
       // this.cdref.detectChanges();
     });
     this.testingFunction();
-    this.getNotification();
     // this.ngxService.start();
     // setTimeout(() => {
-    //   this.ngxService.stop();
-    // }, 500);
-    // this.ngxService.startBackground('do-background-things');
+      //   this.ngxService.stop();
+      // }, 500);
+      // this.ngxService.startBackground('do-background-things');
     // this.ngxService.stopBackground('do-background-things');
     // this.ngxService.startLoader('loader-01');
     // setTimeout(() => {
@@ -116,17 +115,17 @@ export class DefaultLayoutComponent {
     // }, 500);
 
     // if (this.user_role_Name && this.user_role_Name !== 'SuperAdmin') {
-    //   this.getMySubscription()
+      //   this.getMySubscription()
     // }
 
     // Listen to subscription state changes
     // this.common_service.subsctiptionState$.subscribe((res) => {
     //   if (res && this.user_role_Name !== 'SuperAdmin') {
-    //     this.getMySubscription();
-    //   }
-    // });
-
-    this.breakpointObserver
+      //     this.getMySubscription();
+      //   }
+      // });
+      
+      this.breakpointObserver
       .observe([`(max-width: 1023px)`])
       .subscribe(result => {
         this.isDesktop = !result.matches;
@@ -135,6 +134,7 @@ export class DefaultLayoutComponent {
           this.isSidebarCollapsed = false;
         } else {
           // Screen >= 1024px → default collapsed
+          this.getNotification();
           this.isSidebarCollapsed = true;
         }
       });
@@ -193,20 +193,37 @@ export class DefaultLayoutComponent {
   }
 
   getNotification() {
-    this.notificationServive.notificationCount.subscribe((data) => {
-      if (data) {
-        this.notification_count = data;
-      } else {
-        let params = `${environment.live_url}/${environment.vlp_notifications}/?user-id=${this.user_id}&page=1&page_size=10`
-        this.api.getData(params).subscribe((res: any) => {
-          if (res) {
-            this.notification_count = res?.total_no_of_record
-          }
-        }, ((error: any) => {
-          this.api.showError(error?.error?.detail)
-        }))
+     this.notificationServive.notificationCount.subscribe((data) => {
+     this.notification_count = data;
+    });
+
+    let params = `${environment.live_url}/${environment.vlp_notifications}/?user-id=${this.user_id}&page=1&page_size=10`;
+    this.api.getData(params).subscribe((res: any) => {
+      if (res) {
+        this.notificationServive.setNotificationCount(
+          res?.unread_count || 0
+        );
       }
-    })
+    },
+      (error: any) => {
+        console.log(error);
+      }
+    );
+    // this.notificationServive.notificationCount.subscribe((data) => {
+    //   console.log(data, 'notification count in default layout');
+    //   // if (data) {
+    //     this.notification_count = data;
+    //   // } else {
+    //     let params = `${environment.live_url}/${environment.vlp_notifications}/?user-id=${this.user_id}&page=1&page_size=10`
+    //     this.api.getData(params).subscribe((res: any) => {
+    //       if (res) {
+    //         this.notification_count = res?.unread_count;
+    //       }
+    //     }, ((error: any) => {
+    //       this.api.showError(error?.error?.detail)
+    //     }))
+    //   // }
+    // })
   }
 
   shouldDisableItem(item: any): boolean {

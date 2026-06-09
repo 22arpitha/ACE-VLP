@@ -245,22 +245,38 @@ export class DefaultHeaderComponent extends HeaderComponent implements OnInit {
  
   getNotification() {
     this.notificationServive.notificationCount.subscribe((data) => {
-      if(data){
-        this.notification_count = data;
-      }else{
-        let params = `${environment.live_url}/${environment.vlp_notifications}/?user-id=${this.user_id}&page=1&page_size=10`
-        this.api.getData(params).subscribe((res: any) => {
-          if (res) {
-          // console.log(res)
-            this.notification_count = res?.total_no_of_record
-            // this.storedNotification = JSON.parse(localStorage.getItem('seenNotifications') || '0');
-            // this.notification_count = this.storedNotification?.length ? res.results.length - this.storedNotification?.length : res.results.length
-          }
-        }, ((error: any) => {
-          this.api.showError(error?.error?.detail)
-        }))
+     this.notification_count = data;
+    });
+
+    let params = `${environment.live_url}/${environment.vlp_notifications}/?user-id=${this.user_id}&page=1&page_size=10`;
+    this.api.getData(params).subscribe((res: any) => {
+      if (res) {
+        this.notificationServive.setNotificationCount(
+          res?.unread_count || 0
+        );
       }
-    })
+    },
+      (error: any) => {
+        console.log(error);
+      }
+    );
+    // this.notificationServive.notificationCount.subscribe((data) => {
+    //   // if(data){
+    //     this.notification_count = data;
+    //   // }else{
+    //     let params = `${environment.live_url}/${environment.vlp_notifications}/?user-id=${this.user_id}&page=1&page_size=10`
+    //     this.api.getData(params).subscribe((res: any) => {
+    //       if (res) {
+    //       console.log(res,'header')
+    //         this.notification_count = res?.unread_count;
+    //         // this.storedNotification = JSON.parse(localStorage.getItem('seenNotifications') || '0');
+    //         // this.notification_count = this.storedNotification?.length ? res.results.length - this.storedNotification?.length : res.results.length
+    //       }
+    //     }, ((error: any) => {
+    //       this.api.showError(error?.error?.detail)
+    //     }))
+    //   // }
+    // })
   }
 
   welcomeMsg() {

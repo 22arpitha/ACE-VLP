@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ApiserviceService } from '../../service/apiservice.service';
 import { environment } from '../../../environments/environment';
+import { NotificationService } from '../pages/notification/notification.service';
 
 @Component({
   selector: 'app-notifications',
@@ -10,7 +11,7 @@ import { environment } from '../../../environments/environment';
 })
 export class NotificationsComponent implements OnInit {
   displayedNotifications$: any[] = [];
-  totalCount: any;
+  resDataList: any;
   user_id: any;
   page = 1;
   page_size = 10;
@@ -18,12 +19,17 @@ export class NotificationsComponent implements OnInit {
   constructor(
     private modal: NgbModal,
     private api: ApiserviceService,
+    private notificationService: NotificationService
   ) {
     this.user_id = sessionStorage.getItem('user_id');
    }
 
   ngOnInit(): void {
     this.getNotification(this.page,'init')
+    setTimeout(() => {
+          this.updateNotificationCount();
+          // this.getUpdatedCount();
+        }, 1000);
   }
 
   closeBtn() {
@@ -41,15 +47,40 @@ export class NotificationsComponent implements OnInit {
     }
     this.api.getData(`${environment.live_url}/${environment.vlp_notifications}/?user-id=${this.user_id}&page=${this.page}&page_size=${this.page_size}`).subscribe(
       (res:any)=>{
-        console.log(res);
         this.listOfNotification = res?.results;
-        this.totalCount = res.total_no_of_record;
+        this.resDataList = res;
       },
       (error:any)=>{
         console.log(error)
       }
     )
+    
   }
+
+  updateNotificationCount(){
+    let data = {
+     'user-id': this.user_id,
+    } 
+    if(this.resDataList?.unread_count > 0){
+      this.api.postData(`${environment.live_url}/${environment.read_notification}/`, data).subscribe(
+        (res:any)=>{
+          this.getUpdatedCount();
+        },
+        (error:any)=>{
+          console.log(error)
+        }
+      )
+    }
+  }
+  getUpdatedCount() {
+    this.api.getData(`${environment.live_url}/${environment.vlp_notifications}/?user-id=${this.user_id}&page=${this.page}&page_size=${this.page_size}`).subscribe(
+      (res:any)=>{ 
+        this.notificationService.setNotificationCount(res?.unread_count);
+       },
+       (error:any)=>{
+          console.log(error)
+       }
+    )}
 
   async handleNotificationClick(notification: any) {
     // await this.markAsRead(notification); // Call only if not already seen

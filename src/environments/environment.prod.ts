@@ -5,10 +5,10 @@ export const environment = {
 
   // Testing url
   // media_url: 'https://vlp.thestorywallcafe.com',
-  // media_url: 'https://vlp-prod.s3.amazonaws.com',
-  // live_url:'https://vlp.thestorywallcafe.com/api-vlp',
-  // // live_url:'https://65.2.116.105/api-vlp',
-  // socket_url:'projectacedevelop.thestorywallcafe.com',
+  media_url: 'https://vlp-prod.s3.amazonaws.com',
+  live_url:'https://vlp.thestorywallcafe.com/api-vlp',
+  // live_url:'https://65.2.116.105/api-vlp',
+  socket_url:'projectacedevelop.thestorywallcafe.com',
 
   // UAT url
   // media_url: 'https://vlpuat.thestorywallcafe.com',
@@ -17,9 +17,9 @@ export const environment = {
 
   
   // Staging URL
-  media_url: 'https://vlp-prod.s3.amazonaws.com',
-  live_url:'https://staging.vlpworkflow.com/api-vlp',
-  socket_url:'projectacedevelop.thestorywallcafe.com',
+  // media_url: 'https://vlp-prod.s3.amazonaws.com',
+  // live_url:'https://staging.vlpworkflow.com/api-vlp',
+  // socket_url:'projectacedevelop.thestorywallcafe.com',
 
  //  vlp Auth
  login:`login`,
@@ -118,6 +118,7 @@ leave_transaction_report: `leave-transaction-report`,
 leave_summary_report:`leave-summary-report`,
 resource_availability:`resource-availability`,
 vlp_notifications:`notifications`,
+read_notification: `notifications/mark_all_read`,
 wfh_limited_flexibility_summary_report:`wfh-limited-flexibility-summary-report`,
 wfh_limited_flexibility_transaction_report:`wfh-limited-flexibility-transaction-report`,
 wfh_prolonged_health_summary_report:`wfh-prolonged-health-summary-report`,
